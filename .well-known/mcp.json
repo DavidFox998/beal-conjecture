@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "zerobeacon-mf-1000": {
+      "url": "https://zerobeacon-mf-1000.fly.dev/mcp",
+      "transport": "http",
+      "description": "Zerobeacon MF 1000 — 1000 beacon-anchored tools — d=2303582338"
+    }
+  }
+}
