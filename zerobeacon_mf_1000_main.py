@@ -363,6 +363,97 @@ async def success_page(request: Request):
 
 # ── API key endpoints ─────────────────────────────────────────────────────────
 
+# Rate-limit counter for /api/key/resend: session_id → attempt count
+_resend_attempts: dict[str, int] = {}
+_RESEND_MAX_ATTEMPTS = 3
+
+
+@app.post("/api/key/resend")
+async def api_key_resend(request: Request):
+    """
+    Re-send the API key email for a Stripe checkout session.
+
+    Useful when the original email was lost, landed in spam, or never arrived.
+    Authenticated by the Stripe session_id (proof of payment — cryptographically
+    random, only the paying customer's browser receives it).
+
+    Request body: {"session_id": "cs_live_..."}
+    Returns 200 on success, 404 if session_id not found, 429 if rate-limited.
+    """
+    try:
+        body       = await request.json()
+        session_id = (body.get("session_id") or "").strip()
+    except Exception:
+        return JSONResponse({"error": "invalid JSON body"}, status_code=400)
+
+    if not session_id:
+        return JSONResponse(
+            {
+                "error": "session_id is required",
+                "hint":  "Use the session_id from your Stripe checkout success URL",
+            },
+            status_code=400,
+        )
+
+    # Rate-limit: max _RESEND_MAX_ATTEMPTS per session_id
+    attempts = _resend_attempts.get(session_id, 0)
+    if attempts >= _RESEND_MAX_ATTEMPTS:
+        return JSONResponse(
+            {
+                "error":   "Too many resend attempts for this session",
+                "hint":    f"Maximum {_RESEND_MAX_ATTEMPTS} resend attempts allowed per session. "
+                           "If you still need help, contact support.",
+            },
+            status_code=429,
+        )
+
+    api_key = keystore.lookup_by_session(session_id)
+    if api_key is None:
+        return JSONResponse(
+            {
+                "error":   "No API key found for this session_id",
+                "hint":    "Complete a payment first, then use the session_id from "
+                           "the Stripe success redirect",
+                "upgrade": "https://zerobeacon-mf-1000.fly.dev/pricing",
+            },
+            status_code=404,
+        )
+
+    record = keystore.lookup(api_key)
+    if record is None:
+        return JSONResponse({"error": "Key record not found"}, status_code=404)
+
+    email = record["email"]
+    tier  = record["tier"]
+
+    # Increment attempt counter before sending (counts even failed sends)
+    _resend_attempts[session_id] = attempts + 1
+
+    sent = send_api_key_email(email=email, api_key=api_key, tier=tier)
+    remaining = _RESEND_MAX_ATTEMPTS - _resend_attempts[session_id]
+
+    if sent:
+        return {
+            "ok":                True,
+            "message":           f"API key email resent to {email}",
+            "tier":              tier,
+            "tier_label":        keystore.TIER_LABEL[tier],
+            "attempts_remaining": remaining,
+        }
+    else:
+        return JSONResponse(
+            {
+                "error":            "Email could not be sent — check RESEND_API_KEY configuration",
+                "api_key":          api_key,
+                "tier":             tier,
+                "hint":             "Your key is shown above so you are not locked out. "
+                                    "Contact support if email delivery continues to fail.",
+                "attempts_remaining": remaining,
+            },
+            status_code=503,
+        )
+
+
 @app.post("/api/key/lookup")
 async def api_key_lookup(request: Request):
     """
