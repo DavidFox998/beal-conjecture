@@ -52,11 +52,11 @@ def beacon_payload(p=None):
 # ---------------------------------------------------------------------------
 # PayPal — customer payments
 # ---------------------------------------------------------------------------
-PAYPAL_EMAIL = "davidjfox998@gmail.com"   # update to your full PayPal email if needed
-PAYPAL_ME    = "https://paypal.me/davidjfox998"
-PAYPAL_LINK_10   = "https://paypal.me/davidjfox998/10"
-PAYPAL_LINK_100  = "https://paypal.me/davidjfox998/100"
-PAYPAL_LINK_1000 = "https://paypal.me/davidjfox998/1000"
+PAYPAL_EMAIL = "davidfox223@gmail.com"   # update to your full PayPal email if needed
+PAYPAL_ME    = "https://paypal.me/davidfox223"
+PAYPAL_LINK_10   = "https://paypal.me/davidfox223/10"
+PAYPAL_LINK_100  = "https://paypal.me/davidfox223/100"
+PAYPAL_LINK_1000 = "https://paypal.me/davidfox223/1000"
 
 # ---------------------------------------------------------------------------
 # Tier definitions  (informational — enforcement is future work)
@@ -97,9 +97,9 @@ TIERS = {
 }
 
 PRICING_SUMMARY = (
-    "FREE $0 100 tools | PRO $10/month 400 tools paypal.me/davidjfox998/10 | "
-    "PRO $100/month 800 tools paypal.me/davidjfox998/100 | "
-    "ENTERPRISE $1000/research 1000 tools paypal.me/davidjfox998/1000"
+    "FREE $0 100 tools | PRO $10/month 400 tools paypal.me/davidfox223/10 | "
+    "PRO $100/month 800 tools paypal.me/davidfox223/100 | "
+    "ENTERPRISE $1000/research 1000 tools paypal.me/davidfox223/1000"
 )
 
 

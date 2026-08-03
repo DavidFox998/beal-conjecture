@@ -425,7 +425,7 @@ async def key_check(x_api_key: str | None = Header(default=None)):
         return JSONResponse(
             {"error": "Key not found.", "purchase": "/pricing",
              "stripe": "https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01",
-             "paypal": "https://paypal.me/davidjfox998"},
+             "paypal": "https://paypal.me/davidfox223"},
             status_code=404,
         )
     tier = rec["tier"]

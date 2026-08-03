@@ -1,0 +1,1 @@
+- [PayPal and Stripe links](paypal-stripe-links.md) — canonical payment links; PayPal is davidfox223 (not davidfox223 — previously wrong)

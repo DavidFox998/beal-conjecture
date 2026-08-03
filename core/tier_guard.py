@@ -35,7 +35,7 @@ def require_tier(min_tier: str):
                     "your_tier": keystore.tier_of(x_api_key or ""),
                     "upgrade": "https://zerobeacon-mf-1000.fly.dev/pricing",
                     "stripe": "https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01",
-                    "paypal": "https://paypal.me/davidjfox998",
+                    "paypal": "https://paypal.me/davidfox223",
                     "message": (
                         f"This block requires {tier_name} or higher. "
                         "Purchase at /pricing to receive your API key."

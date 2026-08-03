@@ -53,7 +53,7 @@ def is_dummy(name: str) -> bool:
 # Rich metadata — assigns (cat1, cat2, tier_label, tier_tag, tag4, tag5)
 # for every tool based on its name and source batch.
 # ---------------------------------------------------------------------------
-PAYPAL  = 'https://paypal.me/davidjfox998'
+PAYPAL  = 'https://paypal.me/davidfox223'
 STRIPE  = 'https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01'
 SITE    = 'https://zerobeacon-mf-1000.fly.dev'
 FORMULA = 'frac(p*pi/10*2^32) ALPHA0=259+PI/10'
