@@ -981,7 +981,15 @@ async def stripe_webhook(
                 stripe_customer_id=stripe_customer_id or None,
             )
             print(f"🔑 Key issued: {api_key[:16]}… for {email} (session={session_id[:20]}…)", flush=True)
-            send_api_key_email(email=email, api_key=api_key, tier=tier)
+            _email_ok = send_api_key_email(email=email, api_key=api_key, tier=tier)
+            if not _email_ok:
+                print(
+                    f"[webhook] CRITICAL: API key email failed for {email} "
+                    f"(tier={tier} session={session_id[:20]}…). "
+                    "Key is stored — customer can retrieve it at "
+                    f"/success?session_id={session_id} or via POST /api/key/lookup.",
+                    flush=True,
+                )
 
     elif event["type"] == "customer.subscription.updated":
         sub                = event["data"]["object"]
@@ -1007,7 +1015,16 @@ async def stripe_webhook(
             stripe_customer_id=stripe_customer_id or None,
         )
         print(f"✅ SUB UPDATED ${amt:.2f} from {email} → tier={tier} key={api_key[:12]}…", flush=True)
-        send_api_key_email(email=email, api_key=api_key, tier=tier)
+        _email_ok = send_api_key_email(email=email, api_key=api_key, tier=tier)
+        if not _email_ok:
+            print(
+                f"[webhook] CRITICAL: API key email failed for {email} "
+                f"(tier={tier} event=subscription.updated stripe_customer_id={stripe_customer_id}). "
+                "Key is stored in keystore by Stripe customer ID. "
+                "Support must re-deliver manually: "
+                "POST /api/key/issue with admin_secret to re-issue and send a new key.",
+                flush=True,
+            )
 
     elif event["type"] == "customer.subscription.deleted":
         sub                = event["data"]["object"]

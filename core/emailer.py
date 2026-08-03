@@ -57,13 +57,27 @@ def validate_resend_key(api_key_env: str | None = None) -> tuple[bool, str]:
         return False, f"{type(exc).__name__}: {exc}"
 
 
-def send_api_key_email(email: str, api_key: str, tier: str) -> bool:
+def send_api_key_email(
+    email: str,
+    api_key: str,
+    tier: str,
+    *,
+    max_retries: int = 1,
+    retry_delay_seconds: float = 2.0,
+) -> bool:
     """
     Send the customer their API key by email.
 
-    Returns True on success, False on any failure (logs the error).
+    Automatically retries up to ``max_retries`` additional times (default 1)
+    after a short delay when the first attempt fails.  This ensures the
+    customer receives their key even if Resend has a brief transient error at
+    the moment the Stripe webhook fires.
+
+    Returns True on success, False if every attempt fails (logs each error).
     Never raises — callers (webhook handlers) must not crash due to email issues.
     """
+    import time as _time
+
     api_key_env = os.environ.get("RESEND_API_KEY", "").strip()
     # Resend allows sending from onboarding@resend.dev on free plans without domain
     # verification. Set EMAIL_FROM to your own verified domain address when ready.
@@ -160,31 +174,73 @@ def send_api_key_email(email: str, api_key: str, tier: str) -> bool:
         "text":    text_body,
     }).encode()
 
-    req = urllib.request.Request(
-        _RESEND_URL,
-        data=payload,
-        headers={
-            "Authorization": f"Bearer {api_key_env}",
-            "Content-Type":  "application/json",
-        },
-        method="POST",
-    )
-
-    try:
-        with urllib.request.urlopen(req, timeout=10) as resp:
-            status = resp.status
-            print(f"[emailer] sent to {email} tier={tier} status={status}", flush=True)
-            return status in (200, 201)
-    except urllib.error.HTTPError as e:
-        body = ""
+    total_attempts = 1 + max_retries
+    for attempt in range(1, total_attempts + 1):
+        req = urllib.request.Request(
+            _RESEND_URL,
+            data=payload,
+            headers={
+                "Authorization": f"Bearer {api_key_env}",
+                "Content-Type":  "application/json",
+            },
+            method="POST",
+        )
         try:
-            body = e.read().decode()
-        except Exception:
-            pass
-        print(f"[emailer] HTTP error {e.code} sending to {email}: {body}", flush=True)
-        print(f"[emailer] CRITICAL: email delivery failed — HTTP {e.code} from Resend (recipient={email})", flush=True)
-        return False
-    except Exception as exc:
-        print(f"[emailer] error sending to {email}: {exc}", flush=True)
-        print(f"[emailer] CRITICAL: email delivery failed — {type(exc).__name__}: {exc} (recipient={email})", flush=True)
-        return False
+            with urllib.request.urlopen(req, timeout=10) as resp:
+                status = resp.status
+                print(f"[emailer] sent to {email} tier={tier} status={status} attempt={attempt}", flush=True)
+                if status in (200, 201):
+                    return True
+                # Unexpected 2xx-variant — treat as failure and retry
+                print(f"[emailer] unexpected status {status} on attempt {attempt} (recipient={email})", flush=True)
+        except urllib.error.HTTPError as e:
+            body = ""
+            try:
+                body = e.read().decode()
+            except Exception:
+                pass
+            print(f"[emailer] HTTP error {e.code} sending to {email} attempt={attempt}: {body}", flush=True)
+            # Only a small set of 4xx codes are transient and worth retrying:
+            #   429 Too Many Requests (rate limit) — retryable, honour Retry-After
+            #   408 Request Timeout    — transient, retryable
+            # Every other 4xx (400, 401, 403, 404, 405, 410, 413, 415, 422 …)
+            # indicates a permanent client-side or auth error — do not retry.
+            _RETRYABLE_4XX = {408, 429}
+            if 400 <= e.code < 500 and e.code not in _RETRYABLE_4XX:
+                print(
+                    f"[emailer] CRITICAL: email delivery failed permanently — "
+                    f"HTTP {e.code} from Resend (recipient={email})",
+                    flush=True,
+                )
+                return False
+            # For 429 honour Retry-After if provided; otherwise fall through
+            # to the standard inter-attempt delay below.
+            if e.code == 429:
+                retry_after_raw = e.headers.get("Retry-After") if e.headers else None
+                if retry_after_raw:
+                    try:
+                        retry_delay_seconds = float(retry_after_raw)
+                        print(
+                            f"[emailer] 429 rate-limited; honouring Retry-After={retry_delay_seconds}s "
+                            f"for {email}",
+                            flush=True,
+                        )
+                    except ValueError:
+                        pass
+        except Exception as exc:
+            print(f"[emailer] error sending to {email} attempt={attempt}: {exc}", flush=True)
+
+        if attempt < total_attempts:
+            print(
+                f"[emailer] retrying email to {email} in {retry_delay_seconds}s "
+                f"(attempt {attempt}/{total_attempts})",
+                flush=True,
+            )
+            _time.sleep(retry_delay_seconds)
+
+    print(
+        f"[emailer] CRITICAL: email delivery failed after {total_attempts} attempt(s) — "
+        f"recipient={email} tier={tier}",
+        flush=True,
+    )
+    return False
