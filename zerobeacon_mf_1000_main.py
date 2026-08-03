@@ -552,6 +552,7 @@ def _build_tool_list():
             tools.append({
                 "name": f"mf_{block}_{name}",
                 "description": getattr(route, "description", "") or f"block={block} tool={name} d={D}",
+                "tags": route_tags,
                 "inputSchema": {
                     "type": "object",
                     "properties": {
