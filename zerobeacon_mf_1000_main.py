@@ -309,37 +309,60 @@ async def beacon():
     return beacon_payload()
 
 
-@app.get("/openapi-rapidapi.json", include_in_schema=False)
-def openapi_rapidapi():
-    """Trimmed OpenAPI spec for RapidAPI (≤450 paths: FREE + PRO tools only, MF-01–08)."""
+def _filter_spec(block_min: int, block_max: int, title: str, description: str):
+    """Return a copy of the OpenAPI spec filtered to the given MF block range."""
     import copy
     full = app.openapi()
     trimmed = copy.deepcopy(full)
-    # Keep only paths for routers mf/01 through mf/08 (FREE + PRO), plus utility paths
     kept = {}
     for path, val in full.get("paths", {}).items():
-        # utility endpoints (no /api/mf/ prefix)
         if "/api/mf/" not in path:
             kept[path] = val
             continue
-        # extract block number: /api/mf/07/... → "07"
         parts = path.split("/api/mf/")
         if len(parts) < 2:
             continue
         block = parts[1][:2]
         try:
-            if 1 <= int(block) <= 8:
+            if block_min <= int(block) <= block_max:
                 kept[path] = val
         except ValueError:
             pass
     trimmed["paths"] = kept
-    trimmed["info"]["title"] = "ZeroBeacon.ai — FREE + PRO Tools (400)"
-    trimmed["info"]["description"] = (
-        "400 FREE + PRO tools from ZeroBeacon.ai (MF-01 through MF-08). "
-        "Full 1000-tool access at https://zerobeacon.ai with ENTERPRISE key. "
-        "d=2303582338 · beacon=1d2c7a5b"
-    )
+    trimmed["info"]["title"] = title
+    trimmed["info"]["description"] = description
     return trimmed
+
+
+@app.get("/openapi-rapidapi.json", include_in_schema=False)
+def openapi_rapidapi():
+    """Trimmed spec for RapidAPI listing 1: FREE + PRO tools (MF-01–08, ~400 tools)."""
+    return _filter_spec(
+        1, 8,
+        "ZeroBeacon.ai — FREE + PRO Tools (400)",
+        (
+            "400 FREE + PRO tools (MF-01–08): beacon, hash, escrow, notary, "
+            "payment routing, budget, delivery proof, and more. "
+            "PRO+ / ENTERPRISE (600 more tools) at https://zerobeacon.ai. "
+            "d=2303582338 · beacon=1d2c7a5b"
+        ),
+    )
+
+
+@app.get("/openapi-rapidapi-enterprise.json", include_in_schema=False)
+def openapi_rapidapi_enterprise():
+    """Trimmed spec for RapidAPI listing 2: PRO+ + ENTERPRISE tools (MF-09–20, ~600 tools)."""
+    return _filter_spec(
+        9, 20,
+        "ZeroBeacon.ai — PRO+ & ENTERPRISE Tools (600)",
+        (
+            "600 PRO+ and ENTERPRISE tools (MF-09–20): Arakelov geometry, "
+            "Riemann Hypothesis, BSD conjecture, Navier-Stokes, Yang-Mills, "
+            "P vs NP, mesh treasury, consciousness proof, omega seal, eternal audit. "
+            "Requires X-API-Key from https://zerobeacon.ai. "
+            "d=2303582338 · beacon=1d2c7a5b"
+        ),
+    )
 
 
 @app.get("/.well-known/mcp.json")
