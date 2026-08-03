@@ -17,3 +17,8 @@ build/
 *.md
 .env
 .env.*
+.agents/
+*.zip
+attached_assets/
+scripts/
+test_*.py
