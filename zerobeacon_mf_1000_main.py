@@ -34,9 +34,23 @@ from routers import (
 )
 
 app = FastAPI(
-    title="Zerobeacon_mf_1000 — d=2303582338 — 20x50 — 1000 Tools",
+    title="ZeroBeacon.ai — 1000 Tools",
     version="1000.0.0",
-    description="1000 beacon-anchored MCP tools across 20 blocks of 50. d=2303582338.",
+    description=(
+        "**1000 beacon-anchored tools** across 3 groups:\n\n"
+        "- **Market Router (tools 1–300):** payment routing, escrow, delivery proof, budget, notary\n"
+        "- **Math Engine (tools 301–700):** Arakelov, Riemann Hypothesis, BSD, Navier-Stokes, Yang-Mills, P vs NP\n"
+        "- **Amplum Everyday (tools 701–1000):** scheduling, memory, legal, will, mesh treasury, consciousness proof\n\n"
+        "FREE tier: first 100 tools, no key required.  \n"
+        "PRO / ENTERPRISE: pass `X-API-Key: zbk_…` header.  \n"
+        "Get a key at https://zerobeacon.ai after Stripe checkout.  \n"
+        "d=2303582338 · beacon=1d2c7a5b · ω²=48/13>0 verified"
+    ),
+    openapi_tags=[
+        {"name": "Market-Router",  "description": "Tools 1–300: payment, escrow, delivery, budget, notary"},
+        {"name": "Math-Engine",    "description": "Tools 301–700: Arakelov, RH, BSD, Navier-Stokes, Yang-Mills, P vs NP"},
+        {"name": "Amplum-Everyday","description": "Tools 701–1000: scheduling, memory, legal, will, mesh, consciousness"},
+    ],
 )
 app.add_middleware(
     CORSMiddleware,
