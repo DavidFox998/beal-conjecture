@@ -11,6 +11,13 @@ primary_region = "sjc"
   auto_start_machines = true
   min_machines_running = 1
 
+# Persistent volume so api_keys.json, api_sessions.json, and
+# resend_attempts.json survive machine replacements and deploys.
+# Create the volume once with: fly volumes create zerobeacon_data --size 1 --region sjc
+[[mounts]]
+  source      = "zerobeacon_data"
+  destination = "/app/data"
+
 [[vm]]
   memory = "512mb"
   cpu_kind = "shared"

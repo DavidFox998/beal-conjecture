@@ -34,8 +34,10 @@ import core.keystore as keystore
 
 keystore.KEY_PATH     = Path("/tmp/test_resend_api_keys.json")
 keystore.SESSION_PATH = Path("/tmp/test_resend_sessions.json")
+keystore.RESEND_PATH  = Path("/tmp/test_resend_resend_attempts.json")
 keystore._store       = {}
 keystore._session_map = {}
+keystore._resend_store = {}
 
 # ── import app after patching keystore ────────────────────────────────────────
 import zerobeacon_mf_1000_main as main_module
@@ -62,9 +64,9 @@ def _resend(session_id: str):
 @pytest.fixture(autouse=True)
 def reset_state():
     """Reset keystore and rate-limit counters before every test."""
-    keystore._store       = {}
-    keystore._session_map = {}
-    main_module._resend_attempts.clear()
+    keystore._store        = {}
+    keystore._session_map  = {}
+    keystore._resend_store = {}
     yield
 
 

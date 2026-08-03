@@ -24,8 +24,10 @@ import core.keystore as keystore
 
 keystore.KEY_PATH     = Path("/tmp/test_admin_reset_api_keys.json")
 keystore.SESSION_PATH = Path("/tmp/test_admin_reset_sessions.json")
+keystore.RESEND_PATH  = Path("/tmp/test_admin_reset_resend_attempts.json")
 keystore._store       = {}
 keystore._session_map = {}
+keystore._resend_store = {}
 
 # ── import app after patching keystore ────────────────────────────────────────
 import zerobeacon_mf_1000_main as main_module
@@ -62,9 +64,9 @@ def _reset(body: dict, admin_secret_env: str | None = _GOOD_SECRET):
 @pytest.fixture(autouse=True)
 def reset_state():
     """Reset keystore and rate-limit counters before every test."""
-    keystore._store       = {}
-    keystore._session_map = {}
-    main_module._resend_attempts.clear()
+    keystore._store        = {}
+    keystore._session_map  = {}
+    keystore._resend_store = {}
     yield
 
 
@@ -105,7 +107,7 @@ class TestAdminReset:
         return 200 and report the previous attempt count."""
         # Seed a non-zero counter directly so we can verify it is cleared
         import time as _time
-        main_module._resend_attempts[_GOOD_SESSION] = (2, _time.time())
+        keystore._resend_store[_GOOD_SESSION] = [2, _time.time()]
 
         resp = _reset(
             {"session_id": _GOOD_SESSION, "admin_secret": _GOOD_SECRET},
@@ -121,8 +123,8 @@ class TestAdminReset:
         )
 
         # Counter must be gone so the customer can resend again
-        assert _GOOD_SESSION not in main_module._resend_attempts, (
-            "Rate-limit entry must be removed from _resend_attempts after reset"
+        assert _GOOD_SESSION not in keystore._resend_store, (
+            "Rate-limit entry must be removed from _resend_store after reset"
         )
 
     # ------------------------------------------------------------------

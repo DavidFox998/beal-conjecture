@@ -12,8 +12,16 @@ random and known only to the paying customer — they serve as proof of payment
 for the one-time key-retrieval flow.
 """
 
-import json, os, secrets, time
+import json, os, secrets, tempfile, time
 from pathlib import Path
+
+
+class ResendPersistenceError(OSError):
+    """Raised when the resend attempt counter cannot be durably committed to disk.
+
+    The resend endpoint must treat this as a hard failure and return 503 rather
+    than proceeding with the email — the cap must not be enforced only in memory.
+    """
 
 # ---------------------------------------------------------------------------
 # Storage path — prefer /app/data (Fly volume), fall back to /tmp
@@ -21,6 +29,7 @@ from pathlib import Path
 _DATA_DIR = Path("/app/data") if Path("/app/data").exists() else Path("/tmp")
 KEY_PATH     = _DATA_DIR / "api_keys.json"
 SESSION_PATH = _DATA_DIR / "api_sessions.json"
+RESEND_PATH  = _DATA_DIR / "resend_attempts.json"
 
 # ---------------------------------------------------------------------------
 # Tier ranking (higher = more access)
@@ -43,14 +52,20 @@ TIER_LABEL: dict[str, str] = {
 # In-memory stores
 #   _store:        api_key  → {"tier": str, "email": str, "created_at": int}
 #   _session_map:  session_id → api_key   (Stripe checkout session IDs)
+#   _resend_store: session_id → [attempt_count, first_attempt_ts]
 # ---------------------------------------------------------------------------
-_store:       dict[str, dict] = {}
-_session_map: dict[str, str]  = {}
+_store:        dict[str, dict]        = {}
+_session_map:  dict[str, str]         = {}
+_resend_store: dict[str, list]        = {}  # [count, first_ts]
+
+# True  → resend_attempts.json loaded successfully (or never existed → fresh start).
+# False → file existed but could not be read/parsed; resend endpoint must fail closed.
+_resend_store_valid: bool = True
 
 
 def load() -> None:
-    """Load keys (and sessions) from disk into memory. Safe to call multiple times."""
-    global _store, _session_map
+    """Load keys, sessions, and resend counters from disk into memory. Safe to call multiple times."""
+    global _store, _session_map, _resend_store, _resend_store_valid
     if KEY_PATH.exists():
         try:
             with KEY_PATH.open() as f:
@@ -73,16 +88,96 @@ def load() -> None:
     else:
         _session_map = {}
 
+    if RESEND_PATH.exists():
+        try:
+            with RESEND_PATH.open() as f:
+                _resend_store = json.load(f)
+            _resend_store_valid = True
+            print(f"[keystore] loaded {len(_resend_store)} resend counters from {RESEND_PATH}", flush=True)
+        except Exception as e:
+            # Do NOT reset to {} — a corrupt file must block resends, not reset limits.
+            # The endpoint will fail closed while _resend_store_valid is False.
+            _resend_store_valid = False
+            print(
+                f"[keystore] CRITICAL: resend counter file is unreadable/corrupt: {e}. "
+                "Resend endpoint will return 503 until the file is replaced or removed.",
+                flush=True,
+            )
+    else:
+        _resend_store = {}
+        _resend_store_valid = True
+
+
+def _atomic_write(path: Path, data: object) -> None:
+    """Write *data* as JSON to *path* atomically and durably.
+
+    1. Writes to a temp file in the same directory.
+    2. fsyncs the temp file (data contents durable).
+    3. os.replace() renames the temp file to the target path.
+    4. fsyncs the parent directory (rename metadata durable).
+
+    A crash at any point leaves either the old or new complete file; a
+    partial write is never visible to readers.
+    """
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp_path: str | None = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            "w",
+            dir=path.parent,
+            suffix=".tmp",
+            delete=False,
+        ) as tmp:
+            tmp_path = tmp.name
+            json.dump(data, tmp)
+            tmp.flush()
+            os.fsync(tmp.fileno())
+        os.replace(tmp_path, path)
+        tmp_path = None  # replace succeeded; no cleanup needed
+        # fsync the directory so the rename is durable across a crash/restart
+        dir_fd = os.open(str(path.parent), os.O_RDONLY)
+        try:
+            os.fsync(dir_fd)
+        finally:
+            os.close(dir_fd)
+    except Exception as e:
+        if tmp_path is not None:
+            try:
+                os.unlink(tmp_path)
+            except Exception:
+                pass
+        raise e
+
 
 def _save() -> None:
+    for path, data in (
+        (KEY_PATH,     _store),
+        (SESSION_PATH, _session_map),
+        (RESEND_PATH,  _resend_store),
+    ):
+        try:
+            _atomic_write(path, data)
+        except Exception as e:
+            print(f"[keystore] could not save {path.name}: {e}", flush=True)
+
+
+def _save_resend() -> None:
+    """Save only the resend counters atomically.
+
+    On success, marks the resend store as valid (clears any prior load-failure
+    flag) so subsequent requests can proceed normally.
+
+    Raises `ResendPersistenceError` on any I/O failure so callers can fail
+    closed rather than allowing a resend whose counter was not durably
+    committed.
+    """
+    global _resend_store_valid
     try:
-        KEY_PATH.parent.mkdir(parents=True, exist_ok=True)
-        with KEY_PATH.open("w") as f:
-            json.dump(_store, f)
-        with SESSION_PATH.open("w") as f:
-            json.dump(_session_map, f)
+        _atomic_write(RESEND_PATH, _resend_store)
+        _resend_store_valid = True
     except Exception as e:
-        print(f"[keystore] could not save: {e}", flush=True)
+        print(f"[keystore] CRITICAL: could not persist resend counter: {e}", flush=True)
+        raise ResendPersistenceError(f"resend counter commit failed: {e}") from e
 
 
 def issue_key(tier: str, email: str, session_id: str | None = None,
@@ -216,3 +311,100 @@ def list_keys() -> list[dict]:
          "email": v["email"], "created_at": v["created_at"]}
         for k, v in _store.items()
     ]
+
+
+# ---------------------------------------------------------------------------
+# Persistent resend-attempt counters
+#   These survive process restarts so the 3-attempt cap cannot be bypassed by
+#   waiting for a deploy or crash.
+# ---------------------------------------------------------------------------
+
+def _save_resend_best_effort() -> None:
+    """Save resend counters with a best-effort write (no exception on failure).
+
+    Used for background eviction only — a failed eviction save is not critical
+    because expired entries are ignored on the next read anyway.
+    """
+    try:
+        _atomic_write(RESEND_PATH, _resend_store)
+    except Exception as e:
+        print(f"[keystore] warning: eviction save of resend counters failed: {e}", flush=True)
+
+
+def resend_get(session_id: str, ttl_seconds: int = 86_400) -> int:
+    """
+    Return the current resend attempt count for *session_id*.
+
+    Raises `ResendPersistenceError` immediately if the counter store was not
+    loaded successfully at startup (corrupt/unreadable file) — the endpoint
+    must fail closed in that case.
+
+    Evicts expired entries (older than *ttl_seconds*) before returning.
+    Eviction saves use best-effort writes; failures are logged but do not
+    raise (the entries are skipped on the next read regardless).
+    """
+    if not _resend_store_valid:
+        raise ResendPersistenceError(
+            "resend counter store is invalid — file was unreadable/corrupt at load time"
+        )
+
+    now    = time.time()
+    cutoff = now - ttl_seconds
+
+    # Evict all expired entries (amortised O(n) — only runs on resend calls)
+    expired = [k for k, v in _resend_store.items() if v[1] < cutoff]
+    if expired:
+        for k in expired:
+            del _resend_store[k]
+        _save_resend_best_effort()
+
+    entry = _resend_store.get(session_id)
+    if entry is None:
+        return 0
+    count, ts = entry
+    if ts < cutoff:
+        del _resend_store[session_id]
+        _save_resend_best_effort()
+        return 0
+    return count
+
+
+def resend_increment(session_id: str,
+                     ttl_seconds: int = 86_400,
+                     max_entries: int = 10_000) -> int:
+    """
+    Increment the resend attempt count for *session_id* and persist it to disk.
+
+    Raises `ResendPersistenceError` if the counter store is invalid (load
+    failure) or if the disk commit fails — callers must not proceed with the
+    email in either case (fail closed).
+
+    Enforces a hard cap of *max_entries* by evicting the oldest entry when
+    the dict is full (after TTL eviction).  Returns the new count.
+    """
+    now   = time.time()
+    count = resend_get(session_id, ttl_seconds)   # also evicts; raises if store invalid
+
+    # Hard-cap guard: drop oldest if still over the limit
+    while len(_resend_store) >= max_entries:
+        oldest_key = min(_resend_store, key=lambda k: _resend_store[k][1])
+        del _resend_store[oldest_key]
+
+    new_count = count + 1
+    first_ts  = _resend_store[session_id][1] if session_id in _resend_store else now
+    _resend_store[session_id] = [new_count, first_ts]
+    _save_resend()   # raises ResendPersistenceError on failure
+    return new_count
+
+
+def resend_reset(session_id: str) -> int:
+    """
+    Clear the resend attempt counter for *session_id* (admin unlock).
+
+    Returns the previous attempt count (0 if there was no entry).
+    """
+    entry = _resend_store.pop(session_id, None)
+    previous = entry[0] if entry is not None else 0
+    if entry is not None:
+        _save_resend()
+    return previous

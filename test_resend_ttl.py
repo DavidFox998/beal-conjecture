@@ -4,11 +4,12 @@ Tests confirming that the resend rate-limit counter resets correctly after the
 24-hour TTL, so customers who hit the cap are not permanently locked out.
 
 Covers:
-  1. _resend_get returns 0 for an entry whose timestamp is > 24 h in the past
-  2. _resend_increment treats an expired entry as a fresh start (count = 1)
+  1. resend_get returns 0 for an entry whose timestamp is > 24 h in the past
+  2. resend_increment treats an expired entry as a fresh start (count = 1)
   3. A session that hit the 3-attempt cap returns 429; after the TTL the same
      session_id is accepted again (200)
   4. Only the expired entry is evicted; other, still-valid entries are untouched
+  5. Non-expired entry is still enforced (regression guard)
 
 Run:
     pytest test_resend_ttl.py -v
@@ -22,19 +23,19 @@ from unittest.mock import patch
 # ── isolate keystore so tests never touch production files ────────────────────
 import core.keystore as keystore
 
-keystore.KEY_PATH     = Path("/tmp/test_resend_ttl_api_keys.json")
-keystore.SESSION_PATH = Path("/tmp/test_resend_ttl_sessions.json")
-keystore._store       = {}
-keystore._session_map = {}
+keystore.KEY_PATH      = Path("/tmp/test_resend_ttl_api_keys.json")
+keystore.SESSION_PATH  = Path("/tmp/test_resend_ttl_sessions.json")
+keystore.RESEND_PATH   = Path("/tmp/test_resend_ttl_resend_attempts.json")
+keystore._store        = {}
+keystore._session_map  = {}
+keystore._resend_store = {}
 
-# ── import app and internal helpers after patching keystore ───────────────────
-import zerobeacon_mf_1000_main as main_module
+# ── import app and constants after patching keystore ─────────────────────────
 from zerobeacon_mf_1000_main import (
     app,
-    _resend_get,
-    _resend_increment,
     _RESEND_TTL_SECONDS,
     _RESEND_MAX_ATTEMPTS,
+    _RESEND_MAX_ENTRIES,
 )
 from fastapi.testclient import TestClient
 
@@ -46,11 +47,11 @@ client = TestClient(app, raise_server_exceptions=True)
 @pytest.fixture(autouse=True)
 def reset_state():
     """Reset keystore and rate-limit counters before every test."""
-    keystore._store       = {}
-    keystore._session_map = {}
-    main_module._resend_attempts.clear()
+    keystore._store        = {}
+    keystore._session_map  = {}
+    keystore._resend_store = {}
     yield
-    main_module._resend_attempts.clear()
+    keystore._resend_store = {}
 
 
 # ── helpers ───────────────────────────────────────────────────────────────────
@@ -63,12 +64,12 @@ def _issue(session_id: str, tier: str = "pro_10",
 def _inject_expired(session_id: str, count: int) -> None:
     """Directly write an entry whose timestamp is just over 24 h old."""
     expired_ts = time.time() - (_RESEND_TTL_SECONDS + 1)
-    main_module._resend_attempts[session_id] = (count, expired_ts)
+    keystore._resend_store[session_id] = [count, expired_ts]
 
 
 def _inject_recent(session_id: str, count: int) -> None:
     """Directly write an entry whose timestamp is only 1 second old."""
-    main_module._resend_attempts[session_id] = (count, time.time() - 1)
+    keystore._resend_store[session_id] = [count, time.time() - 1]
 
 
 # ── tests ─────────────────────────────────────────────────────────────────────
@@ -76,40 +77,40 @@ def _inject_recent(session_id: str, count: int) -> None:
 class TestResendTTLReset:
 
     # ------------------------------------------------------------------
-    # 1. _resend_get returns 0 for an expired entry
+    # 1. resend_get returns 0 for an expired entry
     # ------------------------------------------------------------------
     def test_get_returns_zero_after_ttl(self):
         """
         If an entry's first-attempt timestamp is more than 24 hours ago,
-        _resend_get must return 0 (treat it as if no attempts were made).
+        resend_get must return 0 (treat it as if no attempts were made).
         """
         _inject_expired("cs_expired", count=2)
 
-        result = _resend_get("cs_expired")
+        result = keystore.resend_get("cs_expired", _RESEND_TTL_SECONDS)
 
         assert result == 0, (
-            f"_resend_get should return 0 for an entry older than {_RESEND_TTL_SECONDS}s, "
+            f"resend_get should return 0 for an entry older than {_RESEND_TTL_SECONDS}s, "
             f"got {result}"
         )
         # The expired entry must also have been evicted from the dict
-        assert "cs_expired" not in main_module._resend_attempts, (
-            "Expired entry should be evicted from _resend_attempts"
+        assert "cs_expired" not in keystore._resend_store, (
+            "Expired entry should be evicted from _resend_store"
         )
 
     # ------------------------------------------------------------------
-    # 2. _resend_increment treats an expired entry as a fresh start
+    # 2. resend_increment treats an expired entry as a fresh start
     # ------------------------------------------------------------------
     def test_increment_resets_to_one_after_ttl(self):
         """
-        If the previous entry is expired, _resend_increment must start the
+        If the previous entry is expired, resend_increment must start the
         counter at 1 (not count+1 from the old entry).
         """
         _inject_expired("cs_exp_inc", count=_RESEND_MAX_ATTEMPTS)
 
-        new_count = _resend_increment("cs_exp_inc")
+        new_count = keystore.resend_increment("cs_exp_inc", _RESEND_TTL_SECONDS, _RESEND_MAX_ENTRIES)
 
         assert new_count == 1, (
-            f"_resend_increment after TTL expiry should return 1, got {new_count}"
+            f"resend_increment after TTL expiry should return 1, got {new_count}"
         )
 
     # ------------------------------------------------------------------
@@ -157,22 +158,22 @@ class TestResendTTLReset:
     # ------------------------------------------------------------------
     def test_only_expired_entries_are_evicted(self):
         """
-        When _resend_get is called for any session_id, it evicts ALL expired
+        When resend_get is called for any session_id, it evicts ALL expired
         entries from the dict but must leave non-expired entries intact.
         """
         _inject_expired("cs_old", count=2)
         _inject_recent("cs_new", count=1)
 
-        # Calling _resend_get for any session triggers eviction
-        _resend_get("cs_old")
+        # Calling resend_get for any session triggers eviction
+        keystore.resend_get("cs_old", _RESEND_TTL_SECONDS)
 
-        assert "cs_old" not in main_module._resend_attempts, (
+        assert "cs_old" not in keystore._resend_store, (
             "Expired entry 'cs_old' should have been evicted"
         )
-        assert "cs_new" in main_module._resend_attempts, (
+        assert "cs_new" in keystore._resend_store, (
             "Non-expired entry 'cs_new' must NOT be evicted"
         )
-        remaining_count, _ = main_module._resend_attempts["cs_new"]
+        remaining_count, _ = keystore._resend_store["cs_new"]
         assert remaining_count == 1
 
     # ------------------------------------------------------------------

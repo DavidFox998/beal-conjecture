@@ -7,6 +7,7 @@ from core.beacon import (beacon_payload, D, BEACON, GENESIS_P,
                          TIERS, PRICING_SUMMARY, PAYPAL_ME,
                          PAYPAL_LINK_10, PAYPAL_LINK_100, PAYPAL_LINK_1000)
 from core import keystore
+from core.keystore import ResendPersistenceError
 from core.tier_guard import require_tier
 from core.emailer import send_api_key_email, validate_resend_key
 from core.log_redactor import install_redaction_filter
@@ -654,45 +655,12 @@ async def success_page(request: Request):
 
 # ── API key endpoints ─────────────────────────────────────────────────────────
 
-# Rate-limit counter for /api/key/resend: session_id → (attempt_count, first_attempt_ts)
-# Entries are evicted after _RESEND_TTL_SECONDS so the dict cannot grow forever.
-_resend_attempts: dict[str, tuple[int, float]] = {}
+# Rate-limit constants for /api/key/resend.
+# The counters themselves are stored durably in keystore (resend_attempts.json)
+# so a process restart cannot be used to bypass the cap.
 _RESEND_MAX_ATTEMPTS  = 3
 _RESEND_TTL_SECONDS   = 86_400   # 24 hours
 _RESEND_MAX_ENTRIES   = 10_000   # hard cap: evict oldest when exceeded
-
-def _resend_get(session_id: str) -> int:
-    """Return the current attempt count for session_id, evicting expired entries first."""
-    now = time.time()
-    cutoff = now - _RESEND_TTL_SECONDS
-
-    # Evict all expired entries (O(n) but amortised; only runs on each resend call)
-    expired = [k for k, (_, ts) in _resend_attempts.items() if ts < cutoff]
-    for k in expired:
-        del _resend_attempts[k]
-
-    entry = _resend_attempts.get(session_id)
-    if entry is None:
-        return 0
-    count, ts = entry
-    if ts < cutoff:
-        del _resend_attempts[session_id]
-        return 0
-    return count
-
-def _resend_increment(session_id: str) -> int:
-    """Increment and persist the attempt count; enforce the hard cap."""
-    now   = time.time()
-    count = _resend_get(session_id)   # also evicts expired entries
-
-    # Hard-cap guard: if we're still over the limit after eviction, drop oldest entries
-    while len(_resend_attempts) >= _RESEND_MAX_ENTRIES:
-        oldest_key = min(_resend_attempts, key=lambda k: _resend_attempts[k][1])
-        del _resend_attempts[oldest_key]
-
-    new_count = count + 1
-    _resend_attempts[session_id] = (new_count, now if count == 0 else _resend_attempts.get(session_id, (0, now))[1])
-    return new_count
 
 
 @app.post("/api/key/resend/reset")
@@ -723,8 +691,7 @@ async def api_key_resend_reset(request: Request):
             status_code=400,
         )
 
-    entry    = _resend_attempts.pop(session_id, None)
-    previous = entry[0] if entry is not None else 0
+    previous = keystore.resend_reset(session_id)
     return {
         "ok":               True,
         "session_id":       session_id,
@@ -760,8 +727,23 @@ async def api_key_resend(request: Request):
             status_code=400,
         )
 
-    # Rate-limit: max _RESEND_MAX_ATTEMPTS per session_id (TTL-evicted)
-    attempts = _resend_get(session_id)
+    # Rate-limit: max _RESEND_MAX_ATTEMPTS per session_id (TTL-evicted, persisted across restarts).
+    # Fail closed: if the store is invalid (corrupt file at load), return 503 immediately.
+    try:
+        attempts = keystore.resend_get(session_id, _RESEND_TTL_SECONDS)
+    except ResendPersistenceError as exc:
+        print(
+            f"[keystore] CRITICAL: resend counter store invalid for "
+            f"session={session_id[:20]}… — refusing to process resend: {exc}",
+            flush=True,
+        )
+        return JSONResponse(
+            {
+                "error": "Resend temporarily unavailable — counter storage is not accessible",
+                "hint":  "Contact support if this persists. Your key is safe; no attempt was recorded.",
+            },
+            status_code=503,
+        )
     if attempts >= _RESEND_MAX_ATTEMPTS:
         return JSONResponse(
             {
@@ -791,8 +773,25 @@ async def api_key_resend(request: Request):
     email = record["email"]
     tier  = record["tier"]
 
-    # Increment attempt counter before sending (counts even failed sends)
-    new_attempts = _resend_increment(session_id)
+    # Increment attempt counter before sending (counts even failed sends).
+    # Persisted atomically to disk so restarts cannot reset the cap.
+    # Fail closed: if the disk commit fails, return 503 without sending the
+    # email — we must never send a resend whose attempt was not durably recorded.
+    try:
+        new_attempts = keystore.resend_increment(session_id, _RESEND_TTL_SECONDS, _RESEND_MAX_ENTRIES)
+    except ResendPersistenceError as exc:
+        print(
+            f"[keystore] CRITICAL: resend counter commit failed for "
+            f"session={session_id[:20]}… — refusing to send email: {exc}",
+            flush=True,
+        )
+        return JSONResponse(
+            {
+                "error": "Resend temporarily unavailable — counter storage is not accessible",
+                "hint":  "Contact support if this persists. Your key is safe; no attempt was recorded.",
+            },
+            status_code=503,
+        )
 
     sent = send_api_key_email(email=email, api_key=api_key, tier=tier)
     remaining = _RESEND_MAX_ATTEMPTS - new_attempts

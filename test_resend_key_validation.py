@@ -134,10 +134,12 @@ class TestValidateResendKey:
 import core.keystore as keystore
 from pathlib import Path
 
-keystore.KEY_PATH     = Path("/tmp/test_validate_api_keys.json")
-keystore.SESSION_PATH = Path("/tmp/test_validate_sessions.json")
-keystore._store       = {}
-keystore._session_map = {}
+keystore.KEY_PATH      = Path("/tmp/test_validate_api_keys.json")
+keystore.SESSION_PATH  = Path("/tmp/test_validate_sessions.json")
+keystore.RESEND_PATH   = Path("/tmp/test_validate_resend_attempts.json")
+keystore._store        = {}
+keystore._session_map  = {}
+keystore._resend_store = {}
 
 import zerobeacon_mf_1000_main as main_module
 from zerobeacon_mf_1000_main import app
@@ -148,9 +150,9 @@ client = TestClient(app, raise_server_exceptions=True)
 
 @pytest.fixture(autouse=True)
 def reset_state():
-    keystore._store       = {}
-    keystore._session_map = {}
-    main_module._resend_attempts.clear()
+    keystore._store        = {}
+    keystore._session_map  = {}
+    keystore._resend_store = {}
     yield
 
 
