@@ -8,7 +8,6 @@ from core.beacon import (beacon_payload, D, BEACON, GENESIS_P,
                          PAYPAL_LINK_10, PAYPAL_LINK_100, PAYPAL_LINK_1000)
 from core import keystore
 from core.tier_guard import require_tier
-from core.auth import tags_to_tier   # tag-string → tier-name parser only
 from core.emailer import send_api_key_email
 
 from routers import (
@@ -638,14 +637,15 @@ async def stripe_webhook(
 
 def _build_tool_list():
     tools = []
-    for mod, prefix, _tag, _min_tier in ROUTERS:
+    for mod, prefix, _tag, min_tier in ROUTERS:
         block = prefix.split("/")[-1]
         for route in mod.router.routes:
             if not hasattr(route, "endpoint"):
                 continue
             name       = route.endpoint.__name__
             route_tags = list(getattr(route, "tags", []) or [])
-            req_tier   = tags_to_tier(route_tags)
+            tool_key   = f"mf_{block}_{name}"
+            req_tier   = _tool_tier.get(tool_key, min_tier)
             tools.append({
                 "name": f"mf_{block}_{name}",
                 "description": getattr(route, "description", "") or f"block={block} tool={name} d={D}",
