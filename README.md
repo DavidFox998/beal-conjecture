@@ -27,8 +27,6 @@ Trust layer. Collision-proof by construction.
 - RH / BSD / Lindelöf → collision bounds checks
 - Navier-Stokes / Poincaré / P vs NP / Yang-Mills → stability & gap verification
 
-*We don't claim to solve RH. We use its bounds as engineering constraints.*
-
 ### Layer 3: Amplum (tools 701–1000) — Everyday Tools
 Tools you use 400×/day, AI does it for you. Time, convert, weather, translate, calc, everyday — collision-proof via beacon `1d2c7a5b`.
 
