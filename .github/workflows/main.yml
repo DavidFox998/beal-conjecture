@@ -31,12 +31,15 @@ jobs:
       - name: Confirm MCP tool tiers match ROUTERS after any change
         run: pytest test_mcp_tool_tiers.py -v --tb=short
 
+      - name: Confirm admin reset endpoint is protected when ADMIN_SECRET is not set
+        run: pytest test_admin_reset.py -v --tb=short
+
       - name: Write test summary
         if: always()
         run: |
           echo "## Test Results" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          pytest test_mcp_tier_gate.py test_stripe_webhook.py test_no_body_api_key.py test_mcp_tool_tiers.py -v --tb=short --no-header -q 2>&1 | tee /tmp/pytest_summary.txt || true
+          pytest test_mcp_tier_gate.py test_stripe_webhook.py test_no_body_api_key.py test_mcp_tool_tiers.py test_admin_reset.py -v --tb=short --no-header -q 2>&1 | tee /tmp/pytest_summary.txt || true
           echo '```' >> $GITHUB_STEP_SUMMARY
           cat /tmp/pytest_summary.txt >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
