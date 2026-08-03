@@ -133,3 +133,37 @@ class TestMcpTierGate:
         body = resp.json()
         assert "error" in body
         assert body["error"]["code"] == -32001
+
+    def test_api_key_in_json_body_is_ignored(self):
+        """
+        A valid pro_10 key stuffed into params.arguments must be ignored.
+        Only the X-API-Key header is authoritative; the body fallback was
+        removed to prevent key leakage in logs and transport bypass.
+        """
+        key = _issue("pro_10")
+        # Embed the key inside the tool arguments — no header
+        payload = {
+            "jsonrpc": "2.0",
+            "id": 1,
+            "method": "tools/call",
+            "params": {
+                "name": PRO_TOOL,
+                "arguments": {
+                    "p": 82843,
+                    "agent_id": "test",
+                    "payload": "",
+                    "amount": 0.0,
+                    "api_key": key,   # ← body-stuffed key; must NOT unlock the tool
+                },
+            },
+        }
+        resp = client.post("/mcp", json=payload)   # no X-API-Key header
+        assert resp.status_code == 200, resp.text
+        body = resp.json()
+        assert "error" in body, (
+            "Expected access-denied error when key is in body only, got: "
+            + str(body)
+        )
+        assert body["error"]["code"] == -32001, (
+            f"Expected -32001, got {body['error']['code']}"
+        )

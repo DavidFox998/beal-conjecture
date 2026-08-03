@@ -702,10 +702,12 @@ async def mcp_post(request: Request):
         # /mcp is a single endpoint so Depends() doesn't guard individual tools;
         # we check here using the persistent keystore.
         required_tier = _tool_tier.get(tool_name, "free")
+        # API key is accepted ONLY from the X-API-Key header.
+        # Accepting it from the JSON body (args) would allow callers to bypass
+        # transport-layer security and risk leaking the key in server logs.
         api_key = (
             request.headers.get("X-API-Key")
             or request.headers.get("x-api-key")
-            or args.get("api_key", "")   # allow key in arguments as fallback
         )
         allowed, reason = keystore.check_access(api_key, required_tier)
         if not allowed:
