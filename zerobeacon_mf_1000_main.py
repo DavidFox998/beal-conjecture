@@ -9,6 +9,12 @@ from core.beacon import (beacon_payload, D, BEACON, GENESIS_P,
 from core import keystore
 from core.tier_guard import require_tier
 from core.emailer import send_api_key_email
+from core.log_redactor import install_redaction_filter
+
+# Install log redaction immediately so no zbk_... key can reach any log sink,
+# including future structured loggers, exception traceback capturers, or
+# Sentry/DataDog integrations added later.
+install_redaction_filter()
 
 from routers import (
     zerobeacon_mf_01_050_b1a_trust      as m01,
