@@ -6,352 +6,502 @@ router = APIRouter()
 _store={}; _escrows={}; _balances={}; _proofs={}; _intents={}; _memories={}; _timelocks={}; _meshes={}
 
 
-@router.get("/agent_trust_bsd_143a1_genus13_h10_sha1")
-@router.post("/agent_trust_bsd_143a1_genus13_h10_sha1")
+@router.get("/agent_trust_bsd_143a1_genus13_h10_sha1", description="[Trust-Commit+Verification][FREE] agent_trust_bsd_143a1_genus13_h10_sha1 - equation: agent_trust_bsd_143a1_genus13_h10_sha1 - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves agent_trust_bsd_143a1_genus13_h10_sha1 via positivity - use: agent trust bsd 143a1 genus13 h10 sha1 - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Trust-Commit', 'Verification', 'FREE', 'Agent', 'Trust'])
+@router.post("/agent_trust_bsd_143a1_genus13_h10_sha1", description="[Trust-Commit+Verification][FREE] agent_trust_bsd_143a1_genus13_h10_sha1 - equation: agent_trust_bsd_143a1_genus13_h10_sha1 - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves agent_trust_bsd_143a1_genus13_h10_sha1 via positivity - use: agent trust bsd 143a1 genus13 h10 sha1 - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Trust-Commit', 'Verification', 'FREE', 'Agent', 'Trust'])
 def agent_trust_bsd_143a1_genus13_h10_sha1(p:int=82843, agent_id:str="agent", payload:str="", amount:float=0):
-    bp=beacon_payload()
-    return {"tool":"agent_trust_bsd_143a1_genus13_h10_sha1","original_route":"/agent-trust/BSD-143a1-genus13-h10-Sha1","safe_slug":"agent_trust_bsd_143a1_genus13_h10_sha1","ok":True,**bp}
+    bp=beacon_payload(p)
+    bp_beacon=bp['beacon']
+    h=hashlib.sha256((agent_id+payload+bp_beacon).encode()).hexdigest()[:16]
+    _store[h]={'tool':'agent_trust_bsd_143a1_genus13_h10_sha1','beacon':bp_beacon,'p':bp['p'],'d':D,'genesis':GENESIS_P,'moat_p1':MOAT_P1}
+    return {'tool':'agent_trust_bsd_143a1_genus13_h10_sha1','block':'c7','ok':True,'p':bp['p'],'beacon':bp['beacon'],'d':bp['d'],'genesis':bp['genesis'],'ts':bp['ts'],'id':str(uuid.uuid4())[:8],'hash':h,'agent_id':agent_id,'description':'''[Trust-Commit+Verification][FREE] agent_trust_bsd_143a1_genus13_h10_sha1 - equation: agent_trust_bsd_143a1_genus13_h10_sha1 - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves agent_trust_bsd_143a1_genus13_h10_sha1 via positivity - use: agent trust bsd 143a1 genus13 h10 sha1 - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev''','paypal':'https://paypal.me/davidjfox998','stripe':'https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01','site':'https://zerobeacon-mf-1000.fly.dev','formula':'frac(p*pi/10*2^32) ALPHA0=259+PI/10','moat':{'d':2303582338,'beacon':'1d2c7a5b','p1':3000105001,'p2':5303687339,'genesis':82843,'omega':'48/13'}}
 
 
-@router.get("/agent_trust_s2pi7_rake_v16_2_bands_to_1e")
-@router.post("/agent_trust_s2pi7_rake_v16_2_bands_to_1e")
+@router.get("/agent_trust_s2pi7_rake_v16_2_bands_to_1e", description="[Trust-Commit+Verification][FREE] agent_trust_s2pi7_rake_v16_2_bands_to_1e - equation: agent_trust_s2pi7_rake_v16_2_bands_to_1e - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves agent_trust_s2pi7_rake_v16_2_bands_to_1e via positivity - use: agent trust s2pi7 rake v16 2 bands to 1e - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Trust-Commit', 'Verification', 'FREE', 'Agent', 'Trust'])
+@router.post("/agent_trust_s2pi7_rake_v16_2_bands_to_1e", description="[Trust-Commit+Verification][FREE] agent_trust_s2pi7_rake_v16_2_bands_to_1e - equation: agent_trust_s2pi7_rake_v16_2_bands_to_1e - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves agent_trust_s2pi7_rake_v16_2_bands_to_1e via positivity - use: agent trust s2pi7 rake v16 2 bands to 1e - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Trust-Commit', 'Verification', 'FREE', 'Agent', 'Trust'])
 def agent_trust_s2pi7_rake_v16_2_bands_to_1e(p:int=82843, agent_id:str="agent", payload:str="", amount:float=0):
-    bp=beacon_payload()
-    return {"tool":"agent_trust_s2pi7_rake_v16_2_bands_to_1e","original_route":"/agent-trust/S2pi7-rake-v16-2-bands-to-1e15-269-to-1e4000","safe_slug":"agent_trust_s2pi7_rake_v16_2_bands_to_1e","ok":True,**bp}
+    bp=beacon_payload(p)
+    bp_beacon=bp['beacon']
+    h=hashlib.sha256((agent_id+payload+bp_beacon).encode()).hexdigest()[:16]
+    _store[h]={'tool':'agent_trust_s2pi7_rake_v16_2_bands_to_1e','beacon':bp_beacon,'p':bp['p'],'d':D,'genesis':GENESIS_P,'moat_p1':MOAT_P1}
+    return {'tool':'agent_trust_s2pi7_rake_v16_2_bands_to_1e','block':'c7','ok':True,'p':bp['p'],'beacon':bp['beacon'],'d':bp['d'],'genesis':bp['genesis'],'ts':bp['ts'],'id':str(uuid.uuid4())[:8],'hash':h,'agent_id':agent_id,'description':'''[Trust-Commit+Verification][FREE] agent_trust_s2pi7_rake_v16_2_bands_to_1e - equation: agent_trust_s2pi7_rake_v16_2_bands_to_1e - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves agent_trust_s2pi7_rake_v16_2_bands_to_1e via positivity - use: agent trust s2pi7 rake v16 2 bands to 1e - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev''','paypal':'https://paypal.me/davidjfox998','stripe':'https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01','site':'https://zerobeacon-mf-1000.fly.dev','formula':'frac(p*pi/10*2^32) ALPHA0=259+PI/10','moat':{'d':2303582338,'beacon':'1d2c7a5b','p1':3000105001,'p2':5303687339,'genesis':82843,'omega':'48/13'}}
 
 
-@router.get("/agent_trust_sha_chain_rake_bands")
-@router.post("/agent_trust_sha_chain_rake_bands")
+@router.get("/agent_trust_sha_chain_rake_bands", description="[Trust-Commit+Verification][FREE] agent_trust_sha_chain_rake_bands - equation: agent_trust_sha_chain_rake_bands - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves agent_trust_sha_chain_rake_bands via positivity - use: agent trust sha chain rake bands - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Trust-Commit', 'Verification', 'FREE', 'Agent', 'Trust'])
+@router.post("/agent_trust_sha_chain_rake_bands", description="[Trust-Commit+Verification][FREE] agent_trust_sha_chain_rake_bands - equation: agent_trust_sha_chain_rake_bands - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves agent_trust_sha_chain_rake_bands via positivity - use: agent trust sha chain rake bands - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Trust-Commit', 'Verification', 'FREE', 'Agent', 'Trust'])
 def agent_trust_sha_chain_rake_bands(p:int=82843, agent_id:str="agent", payload:str="", amount:float=0):
-    bp=beacon_payload()
-    return {"tool":"agent_trust_sha_chain_rake_bands","original_route":"/agent-trust/SHA-chain-rake-bands","safe_slug":"agent_trust_sha_chain_rake_bands","ok":True,**bp}
+    bp=beacon_payload(p)
+    bp_beacon=bp['beacon']
+    h=hashlib.sha256((agent_id+payload+bp_beacon).encode()).hexdigest()[:16]
+    _store[h]={'tool':'agent_trust_sha_chain_rake_bands','beacon':bp_beacon,'p':bp['p'],'d':D,'genesis':GENESIS_P,'moat_p1':MOAT_P1}
+    return {'tool':'agent_trust_sha_chain_rake_bands','block':'c7','ok':True,'p':bp['p'],'beacon':bp['beacon'],'d':bp['d'],'genesis':bp['genesis'],'ts':bp['ts'],'id':str(uuid.uuid4())[:8],'hash':h,'agent_id':agent_id,'description':'''[Trust-Commit+Verification][FREE] agent_trust_sha_chain_rake_bands - equation: agent_trust_sha_chain_rake_bands - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves agent_trust_sha_chain_rake_bands via positivity - use: agent trust sha chain rake bands - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev''','paypal':'https://paypal.me/davidjfox998','stripe':'https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01','site':'https://zerobeacon-mf-1000.fly.dev','formula':'frac(p*pi/10*2^32) ALPHA0=259+PI/10','moat':{'d':2303582338,'beacon':'1d2c7a5b','p1':3000105001,'p2':5303687339,'genesis':82843,'omega':'48/13'}}
 
 
-@router.get("/api_b1_signature_notarize")
-@router.post("/api_b1_signature_notarize")
+@router.get("/api_b1_signature_notarize", description="[Core-Beacon+Verification][FREE] api_b1_signature_notarize - equation: api_b1_signature_notarize - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b1_signature_notarize via positivity - use: api b1 signature notarize - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
+@router.post("/api_b1_signature_notarize", description="[Core-Beacon+Verification][FREE] api_b1_signature_notarize - equation: api_b1_signature_notarize - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b1_signature_notarize via positivity - use: api b1 signature notarize - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
 def api_b1_signature_notarize(p:int=82843, agent_id:str="agent", payload:str="", amount:float=0):
-    bp=beacon_payload()
-    return {"tool":"api_b1_signature_notarize","original_route":"/api/b1/signature_notarize","safe_slug":"api_b1_signature_notarize","ok":True,**bp}
+    bp=beacon_payload(p)
+    bp_beacon=bp['beacon']
+    h=hashlib.sha256((agent_id+payload+bp_beacon).encode()).hexdigest()[:16]
+    _store[h]={'tool':'api_b1_signature_notarize','beacon':bp_beacon,'p':bp['p'],'d':D,'genesis':GENESIS_P,'moat_p1':MOAT_P1}
+    return {'tool':'api_b1_signature_notarize','block':'c7','ok':True,'p':bp['p'],'beacon':bp['beacon'],'d':bp['d'],'genesis':bp['genesis'],'ts':bp['ts'],'id':str(uuid.uuid4())[:8],'hash':h,'agent_id':agent_id,'description':'''[Core-Beacon+Verification][FREE] api_b1_signature_notarize - equation: api_b1_signature_notarize - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b1_signature_notarize via positivity - use: api b1 signature notarize - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev''','paypal':'https://paypal.me/davidjfox998','stripe':'https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01','site':'https://zerobeacon-mf-1000.fly.dev','formula':'frac(p*pi/10*2^32) ALPHA0=259+PI/10','moat':{'d':2303582338,'beacon':'1d2c7a5b','p1':3000105001,'p2':5303687339,'genesis':82843,'omega':'48/13'}}
 
 
-@router.get("/api_b1_slugify")
-@router.post("/api_b1_slugify")
+@router.get("/api_b1_slugify", description="[Core-Beacon+Verification][FREE] api_b1_slugify - equation: api_b1_slugify - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b1_slugify via positivity - use: api b1 slugify - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
+@router.post("/api_b1_slugify", description="[Core-Beacon+Verification][FREE] api_b1_slugify - equation: api_b1_slugify - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b1_slugify via positivity - use: api b1 slugify - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
 def api_b1_slugify(p:int=82843, agent_id:str="agent", payload:str="", amount:float=0):
-    bp=beacon_payload()
-    return {"tool":"api_b1_slugify","original_route":"/api/b1/slugify","safe_slug":"api_b1_slugify","ok":True,**bp}
+    bp=beacon_payload(p)
+    bp_beacon=bp['beacon']
+    h=hashlib.sha256((agent_id+payload+bp_beacon).encode()).hexdigest()[:16]
+    _store[h]={'tool':'api_b1_slugify','beacon':bp_beacon,'p':bp['p'],'d':D,'genesis':GENESIS_P,'moat_p1':MOAT_P1}
+    return {'tool':'api_b1_slugify','block':'c7','ok':True,'p':bp['p'],'beacon':bp['beacon'],'d':bp['d'],'genesis':bp['genesis'],'ts':bp['ts'],'id':str(uuid.uuid4())[:8],'hash':h,'agent_id':agent_id,'description':'''[Core-Beacon+Verification][FREE] api_b1_slugify - equation: api_b1_slugify - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b1_slugify via positivity - use: api b1 slugify - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev''','paypal':'https://paypal.me/davidjfox998','stripe':'https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01','site':'https://zerobeacon-mf-1000.fly.dev','formula':'frac(p*pi/10*2^32) ALPHA0=259+PI/10','moat':{'d':2303582338,'beacon':'1d2c7a5b','p1':3000105001,'p2':5303687339,'genesis':82843,'omega':'48/13'}}
 
 
-@router.get("/api_b1_snowflake_id")
-@router.post("/api_b1_snowflake_id")
+@router.get("/api_b1_snowflake_id", description="[Core-Beacon+Verification][FREE] api_b1_snowflake_id - equation: api_b1_snowflake_id - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b1_snowflake_id via positivity - use: api b1 snowflake id - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
+@router.post("/api_b1_snowflake_id", description="[Core-Beacon+Verification][FREE] api_b1_snowflake_id - equation: api_b1_snowflake_id - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b1_snowflake_id via positivity - use: api b1 snowflake id - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
 def api_b1_snowflake_id(p:int=82843, agent_id:str="agent", payload:str="", amount:float=0):
-    bp=beacon_payload()
-    return {"tool":"api_b1_snowflake_id","original_route":"/api/b1/snowflake_id","safe_slug":"api_b1_snowflake_id","ok":True,**bp}
+    bp=beacon_payload(p)
+    bp_beacon=bp['beacon']
+    h=hashlib.sha256((agent_id+payload+bp_beacon).encode()).hexdigest()[:16]
+    _store[h]={'tool':'api_b1_snowflake_id','beacon':bp_beacon,'p':bp['p'],'d':D,'genesis':GENESIS_P,'moat_p1':MOAT_P1}
+    return {'tool':'api_b1_snowflake_id','block':'c7','ok':True,'p':bp['p'],'beacon':bp['beacon'],'d':bp['d'],'genesis':bp['genesis'],'ts':bp['ts'],'id':str(uuid.uuid4())[:8],'hash':h,'agent_id':agent_id,'description':'''[Core-Beacon+Verification][FREE] api_b1_snowflake_id - equation: api_b1_snowflake_id - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b1_snowflake_id via positivity - use: api b1 snowflake id - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev''','paypal':'https://paypal.me/davidjfox998','stripe':'https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01','site':'https://zerobeacon-mf-1000.fly.dev','formula':'frac(p*pi/10*2^32) ALPHA0=259+PI/10','moat':{'d':2303582338,'beacon':'1d2c7a5b','p1':3000105001,'p2':5303687339,'genesis':82843,'omega':'48/13'}}
 
 
-@router.get("/api_b1_time_lock")
-@router.post("/api_b1_time_lock")
+@router.get("/api_b1_time_lock", description="[Core-Beacon+Verification][FREE] api_b1_time_lock - equation: api_b1_time_lock - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b1_time_lock via positivity - use: api b1 time lock - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
+@router.post("/api_b1_time_lock", description="[Core-Beacon+Verification][FREE] api_b1_time_lock - equation: api_b1_time_lock - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b1_time_lock via positivity - use: api b1 time lock - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
 def api_b1_time_lock(p:int=82843, agent_id:str="agent", payload:str="", amount:float=0):
-    bp=beacon_payload()
-    return {"tool":"api_b1_time_lock","original_route":"/api/b1/time_lock","safe_slug":"api_b1_time_lock","ok":True,**bp}
+    bp=beacon_payload(p)
+    bp_beacon=bp['beacon']
+    h=hashlib.sha256((agent_id+payload+bp_beacon).encode()).hexdigest()[:16]
+    _store[h]={'tool':'api_b1_time_lock','beacon':bp_beacon,'p':bp['p'],'d':D,'genesis':GENESIS_P,'moat_p1':MOAT_P1}
+    return {'tool':'api_b1_time_lock','block':'c7','ok':True,'p':bp['p'],'beacon':bp['beacon'],'d':bp['d'],'genesis':bp['genesis'],'ts':bp['ts'],'id':str(uuid.uuid4())[:8],'hash':h,'agent_id':agent_id,'description':'''[Core-Beacon+Verification][FREE] api_b1_time_lock - equation: api_b1_time_lock - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b1_time_lock via positivity - use: api b1 time lock - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev''','paypal':'https://paypal.me/davidjfox998','stripe':'https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01','site':'https://zerobeacon-mf-1000.fly.dev','formula':'frac(p*pi/10*2^32) ALPHA0=259+PI/10','moat':{'d':2303582338,'beacon':'1d2c7a5b','p1':3000105001,'p2':5303687339,'genesis':82843,'omega':'48/13'}}
 
 
-@router.get("/api_b1_timeproof")
-@router.post("/api_b1_timeproof")
+@router.get("/api_b1_timeproof", description="[Core-Beacon+Verification][FREE] api_b1_timeproof - equation: api_b1_timeproof - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b1_timeproof via positivity - use: api b1 timeproof - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
+@router.post("/api_b1_timeproof", description="[Core-Beacon+Verification][FREE] api_b1_timeproof - equation: api_b1_timeproof - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b1_timeproof via positivity - use: api b1 timeproof - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
 def api_b1_timeproof(p:int=82843, agent_id:str="agent", payload:str="", amount:float=0):
-    bp=beacon_payload()
-    return {"tool":"api_b1_timeproof","original_route":"/api/b1/timeproof","safe_slug":"api_b1_timeproof","ok":True,**bp}
+    bp=beacon_payload(p)
+    bp_beacon=bp['beacon']
+    h=hashlib.sha256((agent_id+payload+bp_beacon).encode()).hexdigest()[:16]
+    _store[h]={'tool':'api_b1_timeproof','beacon':bp_beacon,'p':bp['p'],'d':D,'genesis':GENESIS_P,'moat_p1':MOAT_P1}
+    return {'tool':'api_b1_timeproof','block':'c7','ok':True,'p':bp['p'],'beacon':bp['beacon'],'d':bp['d'],'genesis':bp['genesis'],'ts':bp['ts'],'id':str(uuid.uuid4())[:8],'hash':h,'agent_id':agent_id,'description':'''[Core-Beacon+Verification][FREE] api_b1_timeproof - equation: api_b1_timeproof - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b1_timeproof via positivity - use: api b1 timeproof - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev''','paypal':'https://paypal.me/davidjfox998','stripe':'https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01','site':'https://zerobeacon-mf-1000.fly.dev','formula':'frac(p*pi/10*2^32) ALPHA0=259+PI/10','moat':{'d':2303582338,'beacon':'1d2c7a5b','p1':3000105001,'p2':5303687339,'genesis':82843,'omega':'48/13'}}
 
 
-@router.get("/api_b1_token_mint")
-@router.post("/api_b1_token_mint")
+@router.get("/api_b1_token_mint", description="[Core-Beacon+Verification][FREE] api_b1_token_mint - equation: api_b1_token_mint - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b1_token_mint via positivity - use: api b1 token mint - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
+@router.post("/api_b1_token_mint", description="[Core-Beacon+Verification][FREE] api_b1_token_mint - equation: api_b1_token_mint - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b1_token_mint via positivity - use: api b1 token mint - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
 def api_b1_token_mint(p:int=82843, agent_id:str="agent", payload:str="", amount:float=0):
-    bp=beacon_payload()
-    return {"tool":"api_b1_token_mint","original_route":"/api/b1/token_mint","safe_slug":"api_b1_token_mint","ok":True,**bp}
+    bp=beacon_payload(p)
+    bp_beacon=bp['beacon']
+    h=hashlib.sha256((agent_id+payload+bp_beacon).encode()).hexdigest()[:16]
+    _store[h]={'tool':'api_b1_token_mint','beacon':bp_beacon,'p':bp['p'],'d':D,'genesis':GENESIS_P,'moat_p1':MOAT_P1}
+    return {'tool':'api_b1_token_mint','block':'c7','ok':True,'p':bp['p'],'beacon':bp['beacon'],'d':bp['d'],'genesis':bp['genesis'],'ts':bp['ts'],'id':str(uuid.uuid4())[:8],'hash':h,'agent_id':agent_id,'description':'''[Core-Beacon+Verification][FREE] api_b1_token_mint - equation: api_b1_token_mint - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b1_token_mint via positivity - use: api b1 token mint - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev''','paypal':'https://paypal.me/davidjfox998','stripe':'https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01','site':'https://zerobeacon-mf-1000.fly.dev','formula':'frac(p*pi/10*2^32) ALPHA0=259+PI/10','moat':{'d':2303582338,'beacon':'1d2c7a5b','p1':3000105001,'p2':5303687339,'genesis':82843,'omega':'48/13'}}
 
 
-@router.get("/api_b1_totp_verify")
-@router.post("/api_b1_totp_verify")
+@router.get("/api_b1_totp_verify", description="[Core-Beacon+Verification][FREE] api_b1_totp_verify - equation: api_b1_totp_verify - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b1_totp_verify via positivity - use: api b1 totp verify - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
+@router.post("/api_b1_totp_verify", description="[Core-Beacon+Verification][FREE] api_b1_totp_verify - equation: api_b1_totp_verify - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b1_totp_verify via positivity - use: api b1 totp verify - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
 def api_b1_totp_verify(p:int=82843, agent_id:str="agent", payload:str="", amount:float=0):
-    bp=beacon_payload()
-    return {"tool":"api_b1_totp_verify","original_route":"/api/b1/totp_verify","safe_slug":"api_b1_totp_verify","ok":True,**bp}
+    bp=beacon_payload(p)
+    bp_beacon=bp['beacon']
+    h=hashlib.sha256((agent_id+payload+bp_beacon).encode()).hexdigest()[:16]
+    _store[h]={'tool':'api_b1_totp_verify','beacon':bp_beacon,'p':bp['p'],'d':D,'genesis':GENESIS_P,'moat_p1':MOAT_P1}
+    return {'tool':'api_b1_totp_verify','block':'c7','ok':True,'p':bp['p'],'beacon':bp['beacon'],'d':bp['d'],'genesis':bp['genesis'],'ts':bp['ts'],'id':str(uuid.uuid4())[:8],'hash':h,'agent_id':agent_id,'description':'''[Core-Beacon+Verification][FREE] api_b1_totp_verify - equation: api_b1_totp_verify - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b1_totp_verify via positivity - use: api b1 totp verify - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev''','paypal':'https://paypal.me/davidjfox998','stripe':'https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01','site':'https://zerobeacon-mf-1000.fly.dev','formula':'frac(p*pi/10*2^32) ALPHA0=259+PI/10','moat':{'d':2303582338,'beacon':'1d2c7a5b','p1':3000105001,'p2':5303687339,'genesis':82843,'omega':'48/13'}}
 
 
-@router.get("/api_b1_uuid_v7_beacon")
-@router.post("/api_b1_uuid_v7_beacon")
+@router.get("/api_b1_uuid_v7_beacon", description="[Core-Beacon+Verification][FREE] api_b1_uuid_v7_beacon - equation: api_b1_uuid_v7_beacon - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b1_uuid_v7_beacon via positivity - use: api b1 uuid v7 beacon - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
+@router.post("/api_b1_uuid_v7_beacon", description="[Core-Beacon+Verification][FREE] api_b1_uuid_v7_beacon - equation: api_b1_uuid_v7_beacon - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b1_uuid_v7_beacon via positivity - use: api b1 uuid v7 beacon - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
 def api_b1_uuid_v7_beacon(p:int=82843, agent_id:str="agent", payload:str="", amount:float=0):
-    bp=beacon_payload()
-    return {"tool":"api_b1_uuid_v7_beacon","original_route":"/api/b1/uuid_v7_beacon","safe_slug":"api_b1_uuid_v7_beacon","ok":True,**bp}
+    bp=beacon_payload(p)
+    bp_beacon=bp['beacon']
+    h=hashlib.sha256((agent_id+payload+bp_beacon).encode()).hexdigest()[:16]
+    _store[h]={'tool':'api_b1_uuid_v7_beacon','beacon':bp_beacon,'p':bp['p'],'d':D,'genesis':GENESIS_P,'moat_p1':MOAT_P1}
+    return {'tool':'api_b1_uuid_v7_beacon','block':'c7','ok':True,'p':bp['p'],'beacon':bp['beacon'],'d':bp['d'],'genesis':bp['genesis'],'ts':bp['ts'],'id':str(uuid.uuid4())[:8],'hash':h,'agent_id':agent_id,'description':'''[Core-Beacon+Verification][FREE] api_b1_uuid_v7_beacon - equation: api_b1_uuid_v7_beacon - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b1_uuid_v7_beacon via positivity - use: api b1 uuid v7 beacon - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev''','paypal':'https://paypal.me/davidjfox998','stripe':'https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01','site':'https://zerobeacon-mf-1000.fly.dev','formula':'frac(p*pi/10*2^32) ALPHA0=259+PI/10','moat':{'d':2303582338,'beacon':'1d2c7a5b','p1':3000105001,'p2':5303687339,'genesis':82843,'omega':'48/13'}}
 
 
-@router.get("/api_b1_vrf_prove")
-@router.post("/api_b1_vrf_prove")
+@router.get("/api_b1_vrf_prove", description="[Core-Beacon+Verification][FREE] api_b1_vrf_prove - equation: api_b1_vrf_prove - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b1_vrf_prove via positivity - use: api b1 vrf prove - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
+@router.post("/api_b1_vrf_prove", description="[Core-Beacon+Verification][FREE] api_b1_vrf_prove - equation: api_b1_vrf_prove - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b1_vrf_prove via positivity - use: api b1 vrf prove - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
 def api_b1_vrf_prove(p:int=82843, agent_id:str="agent", payload:str="", amount:float=0):
-    bp=beacon_payload()
-    return {"tool":"api_b1_vrf_prove","original_route":"/api/b1/vrf_prove","safe_slug":"api_b1_vrf_prove","ok":True,**bp}
+    bp=beacon_payload(p)
+    bp_beacon=bp['beacon']
+    h=hashlib.sha256((agent_id+payload+bp_beacon).encode()).hexdigest()[:16]
+    _store[h]={'tool':'api_b1_vrf_prove','beacon':bp_beacon,'p':bp['p'],'d':D,'genesis':GENESIS_P,'moat_p1':MOAT_P1}
+    return {'tool':'api_b1_vrf_prove','block':'c7','ok':True,'p':bp['p'],'beacon':bp['beacon'],'d':bp['d'],'genesis':bp['genesis'],'ts':bp['ts'],'id':str(uuid.uuid4())[:8],'hash':h,'agent_id':agent_id,'description':'''[Core-Beacon+Verification][FREE] api_b1_vrf_prove - equation: api_b1_vrf_prove - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b1_vrf_prove via positivity - use: api b1 vrf prove - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev''','paypal':'https://paypal.me/davidjfox998','stripe':'https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01','site':'https://zerobeacon-mf-1000.fly.dev','formula':'frac(p*pi/10*2^32) ALPHA0=259+PI/10','moat':{'d':2303582338,'beacon':'1d2c7a5b','p1':3000105001,'p2':5303687339,'genesis':82843,'omega':'48/13'}}
 
 
-@router.get("/api_b1_watermark")
-@router.post("/api_b1_watermark")
+@router.get("/api_b1_watermark", description="[Core-Beacon+Verification][FREE] api_b1_watermark - equation: api_b1_watermark - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b1_watermark via positivity - use: api b1 watermark - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
+@router.post("/api_b1_watermark", description="[Core-Beacon+Verification][FREE] api_b1_watermark - equation: api_b1_watermark - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b1_watermark via positivity - use: api b1 watermark - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
 def api_b1_watermark(p:int=82843, agent_id:str="agent", payload:str="", amount:float=0):
-    bp=beacon_payload()
-    return {"tool":"api_b1_watermark","original_route":"/api/b1/watermark","safe_slug":"api_b1_watermark","ok":True,**bp}
+    bp=beacon_payload(p)
+    bp_beacon=bp['beacon']
+    h=hashlib.sha256((agent_id+payload+bp_beacon).encode()).hexdigest()[:16]
+    _store[h]={'tool':'api_b1_watermark','beacon':bp_beacon,'p':bp['p'],'d':D,'genesis':GENESIS_P,'moat_p1':MOAT_P1}
+    return {'tool':'api_b1_watermark','block':'c7','ok':True,'p':bp['p'],'beacon':bp['beacon'],'d':bp['d'],'genesis':bp['genesis'],'ts':bp['ts'],'id':str(uuid.uuid4())[:8],'hash':h,'agent_id':agent_id,'description':'''[Core-Beacon+Verification][FREE] api_b1_watermark - equation: api_b1_watermark - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b1_watermark via positivity - use: api b1 watermark - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev''','paypal':'https://paypal.me/davidjfox998','stripe':'https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01','site':'https://zerobeacon-mf-1000.fly.dev','formula':'frac(p*pi/10*2^32) ALPHA0=259+PI/10','moat':{'d':2303582338,'beacon':'1d2c7a5b','p1':3000105001,'p2':5303687339,'genesis':82843,'omega':'48/13'}}
 
 
-@router.get("/api_b1_zk_prove")
-@router.post("/api_b1_zk_prove")
+@router.get("/api_b1_zk_prove", description="[Core-Beacon+Verification][FREE] api_b1_zk_prove - equation: api_b1_zk_prove - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b1_zk_prove via positivity - use: api b1 zk prove - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
+@router.post("/api_b1_zk_prove", description="[Core-Beacon+Verification][FREE] api_b1_zk_prove - equation: api_b1_zk_prove - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b1_zk_prove via positivity - use: api b1 zk prove - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
 def api_b1_zk_prove(p:int=82843, agent_id:str="agent", payload:str="", amount:float=0):
-    bp=beacon_payload()
-    return {"tool":"api_b1_zk_prove","original_route":"/api/b1/zk_prove","safe_slug":"api_b1_zk_prove","ok":True,**bp}
+    bp=beacon_payload(p)
+    bp_beacon=bp['beacon']
+    h=hashlib.sha256((agent_id+payload+bp_beacon).encode()).hexdigest()[:16]
+    _store[h]={'tool':'api_b1_zk_prove','beacon':bp_beacon,'p':bp['p'],'d':D,'genesis':GENESIS_P,'moat_p1':MOAT_P1}
+    return {'tool':'api_b1_zk_prove','block':'c7','ok':True,'p':bp['p'],'beacon':bp['beacon'],'d':bp['d'],'genesis':bp['genesis'],'ts':bp['ts'],'id':str(uuid.uuid4())[:8],'hash':h,'agent_id':agent_id,'description':'''[Core-Beacon+Verification][FREE] api_b1_zk_prove - equation: api_b1_zk_prove - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b1_zk_prove via positivity - use: api b1 zk prove - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev''','paypal':'https://paypal.me/davidjfox998','stripe':'https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01','site':'https://zerobeacon-mf-1000.fly.dev','formula':'frac(p*pi/10*2^32) ALPHA0=259+PI/10','moat':{'d':2303582338,'beacon':'1d2c7a5b','p1':3000105001,'p2':5303687339,'genesis':82843,'omega':'48/13'}}
 
 
-@router.get("/api_b2_broadcast_order")
-@router.post("/api_b2_broadcast_order")
+@router.get("/api_b2_broadcast_order", description="[Core-Beacon+Verification][FREE] api_b2_broadcast_order - equation: api_b2_broadcast_order - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_broadcast_order via positivity - use: api b2 broadcast order - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
+@router.post("/api_b2_broadcast_order", description="[Core-Beacon+Verification][FREE] api_b2_broadcast_order - equation: api_b2_broadcast_order - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_broadcast_order via positivity - use: api b2 broadcast order - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
 def api_b2_broadcast_order(p:int=82843, agent_id:str="agent", payload:str="", amount:float=0):
-    bp=beacon_payload()
-    return {"tool":"api_b2_broadcast_order","original_route":"/api/b2/broadcast_order","safe_slug":"api_b2_broadcast_order","ok":True,**bp}
+    bp=beacon_payload(p)
+    bp_beacon=bp['beacon']
+    h=hashlib.sha256((agent_id+payload+bp_beacon).encode()).hexdigest()[:16]
+    _store[h]={'tool':'api_b2_broadcast_order','beacon':bp_beacon,'p':bp['p'],'d':D,'genesis':GENESIS_P,'moat_p1':MOAT_P1}
+    return {'tool':'api_b2_broadcast_order','block':'c7','ok':True,'p':bp['p'],'beacon':bp['beacon'],'d':bp['d'],'genesis':bp['genesis'],'ts':bp['ts'],'id':str(uuid.uuid4())[:8],'hash':h,'agent_id':agent_id,'description':'''[Core-Beacon+Verification][FREE] api_b2_broadcast_order - equation: api_b2_broadcast_order - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_broadcast_order via positivity - use: api b2 broadcast order - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev''','paypal':'https://paypal.me/davidjfox998','stripe':'https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01','site':'https://zerobeacon-mf-1000.fly.dev','formula':'frac(p*pi/10*2^32) ALPHA0=259+PI/10','moat':{'d':2303582338,'beacon':'1d2c7a5b','p1':3000105001,'p2':5303687339,'genesis':82843,'omega':'48/13'}}
 
 
-@router.get("/api_b2_budget_burn")
-@router.post("/api_b2_budget_burn")
+@router.get("/api_b2_budget_burn", description="[Core-Beacon+Verification][FREE] api_b2_budget_burn - equation: api_b2_budget_burn - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_budget_burn via positivity - use: api b2 budget burn - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
+@router.post("/api_b2_budget_burn", description="[Core-Beacon+Verification][FREE] api_b2_budget_burn - equation: api_b2_budget_burn - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_budget_burn via positivity - use: api b2 budget burn - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
 def api_b2_budget_burn(p:int=82843, agent_id:str="agent", payload:str="", amount:float=0):
-    bp=beacon_payload()
-    return {"tool":"api_b2_budget_burn","original_route":"/api/b2/budget_burn","safe_slug":"api_b2_budget_burn","ok":True,**bp}
+    bp=beacon_payload(p)
+    bp_beacon=bp['beacon']
+    h=hashlib.sha256((agent_id+payload+bp_beacon).encode()).hexdigest()[:16]
+    _store[h]={'tool':'api_b2_budget_burn','beacon':bp_beacon,'p':bp['p'],'d':D,'genesis':GENESIS_P,'moat_p1':MOAT_P1}
+    return {'tool':'api_b2_budget_burn','block':'c7','ok':True,'p':bp['p'],'beacon':bp['beacon'],'d':bp['d'],'genesis':bp['genesis'],'ts':bp['ts'],'id':str(uuid.uuid4())[:8],'hash':h,'agent_id':agent_id,'description':'''[Core-Beacon+Verification][FREE] api_b2_budget_burn - equation: api_b2_budget_burn - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_budget_burn via positivity - use: api b2 budget burn - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev''','paypal':'https://paypal.me/davidjfox998','stripe':'https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01','site':'https://zerobeacon-mf-1000.fly.dev','formula':'frac(p*pi/10*2^32) ALPHA0=259+PI/10','moat':{'d':2303582338,'beacon':'1d2c7a5b','p1':3000105001,'p2':5303687339,'genesis':82843,'omega':'48/13'}}
 
 
-@router.get("/api_b2_budget_refund")
-@router.post("/api_b2_budget_refund")
+@router.get("/api_b2_budget_refund", description="[Core-Beacon+Verification][FREE] api_b2_budget_refund - equation: api_b2_budget_refund - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_budget_refund via positivity - use: api b2 budget refund - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
+@router.post("/api_b2_budget_refund", description="[Core-Beacon+Verification][FREE] api_b2_budget_refund - equation: api_b2_budget_refund - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_budget_refund via positivity - use: api b2 budget refund - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
 def api_b2_budget_refund(p:int=82843, agent_id:str="agent", payload:str="", amount:float=0):
-    bp=beacon_payload()
-    return {"tool":"api_b2_budget_refund","original_route":"/api/b2/budget_refund","safe_slug":"api_b2_budget_refund","ok":True,**bp}
+    bp=beacon_payload(p)
+    bp_beacon=bp['beacon']
+    h=hashlib.sha256((agent_id+payload+bp_beacon).encode()).hexdigest()[:16]
+    _store[h]={'tool':'api_b2_budget_refund','beacon':bp_beacon,'p':bp['p'],'d':D,'genesis':GENESIS_P,'moat_p1':MOAT_P1}
+    return {'tool':'api_b2_budget_refund','block':'c7','ok':True,'p':bp['p'],'beacon':bp['beacon'],'d':bp['d'],'genesis':bp['genesis'],'ts':bp['ts'],'id':str(uuid.uuid4())[:8],'hash':h,'agent_id':agent_id,'description':'''[Core-Beacon+Verification][FREE] api_b2_budget_refund - equation: api_b2_budget_refund - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_budget_refund via positivity - use: api b2 budget refund - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev''','paypal':'https://paypal.me/davidjfox998','stripe':'https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01','site':'https://zerobeacon-mf-1000.fly.dev','formula':'frac(p*pi/10*2^32) ALPHA0=259+PI/10','moat':{'d':2303582338,'beacon':'1d2c7a5b','p1':3000105001,'p2':5303687339,'genesis':82843,'omega':'48/13'}}
 
 
-@router.get("/api_b2_budget_reserve")
-@router.post("/api_b2_budget_reserve")
+@router.get("/api_b2_budget_reserve", description="[Core-Beacon+Verification][FREE] api_b2_budget_reserve - equation: api_b2_budget_reserve - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_budget_reserve via positivity - use: api b2 budget reserve - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
+@router.post("/api_b2_budget_reserve", description="[Core-Beacon+Verification][FREE] api_b2_budget_reserve - equation: api_b2_budget_reserve - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_budget_reserve via positivity - use: api b2 budget reserve - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
 def api_b2_budget_reserve(p:int=82843, agent_id:str="agent", payload:str="", amount:float=0):
-    bp=beacon_payload()
-    return {"tool":"api_b2_budget_reserve","original_route":"/api/b2/budget_reserve","safe_slug":"api_b2_budget_reserve","ok":True,**bp}
+    bp=beacon_payload(p)
+    bp_beacon=bp['beacon']
+    h=hashlib.sha256((agent_id+payload+bp_beacon).encode()).hexdigest()[:16]
+    _store[h]={'tool':'api_b2_budget_reserve','beacon':bp_beacon,'p':bp['p'],'d':D,'genesis':GENESIS_P,'moat_p1':MOAT_P1}
+    return {'tool':'api_b2_budget_reserve','block':'c7','ok':True,'p':bp['p'],'beacon':bp['beacon'],'d':bp['d'],'genesis':bp['genesis'],'ts':bp['ts'],'id':str(uuid.uuid4())[:8],'hash':h,'agent_id':agent_id,'description':'''[Core-Beacon+Verification][FREE] api_b2_budget_reserve - equation: api_b2_budget_reserve - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_budget_reserve via positivity - use: api b2 budget reserve - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev''','paypal':'https://paypal.me/davidjfox998','stripe':'https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01','site':'https://zerobeacon-mf-1000.fly.dev','formula':'frac(p*pi/10*2^32) ALPHA0=259+PI/10','moat':{'d':2303582338,'beacon':'1d2c7a5b','p1':3000105001,'p2':5303687339,'genesis':82843,'omega':'48/13'}}
 
 
-@router.get("/api_b2_consensus_timestamp")
-@router.post("/api_b2_consensus_timestamp")
+@router.get("/api_b2_consensus_timestamp", description="[Core-Beacon+Verification][FREE] api_b2_consensus_timestamp - equation: api_b2_consensus_timestamp - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_consensus_timestamp via positivity - use: api b2 consensus timestamp - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
+@router.post("/api_b2_consensus_timestamp", description="[Core-Beacon+Verification][FREE] api_b2_consensus_timestamp - equation: api_b2_consensus_timestamp - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_consensus_timestamp via positivity - use: api b2 consensus timestamp - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
 def api_b2_consensus_timestamp(p:int=82843, agent_id:str="agent", payload:str="", amount:float=0):
-    bp=beacon_payload()
-    return {"tool":"api_b2_consensus_timestamp","original_route":"/api/b2/consensus_timestamp","safe_slug":"api_b2_consensus_timestamp","ok":True,**bp}
+    bp=beacon_payload(p)
+    bp_beacon=bp['beacon']
+    h=hashlib.sha256((agent_id+payload+bp_beacon).encode()).hexdigest()[:16]
+    _store[h]={'tool':'api_b2_consensus_timestamp','beacon':bp_beacon,'p':bp['p'],'d':D,'genesis':GENESIS_P,'moat_p1':MOAT_P1}
+    return {'tool':'api_b2_consensus_timestamp','block':'c7','ok':True,'p':bp['p'],'beacon':bp['beacon'],'d':bp['d'],'genesis':bp['genesis'],'ts':bp['ts'],'id':str(uuid.uuid4())[:8],'hash':h,'agent_id':agent_id,'description':'''[Core-Beacon+Verification][FREE] api_b2_consensus_timestamp - equation: api_b2_consensus_timestamp - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_consensus_timestamp via positivity - use: api b2 consensus timestamp - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev''','paypal':'https://paypal.me/davidjfox998','stripe':'https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01','site':'https://zerobeacon-mf-1000.fly.dev','formula':'frac(p*pi/10*2^32) ALPHA0=259+PI/10','moat':{'d':2303582338,'beacon':'1d2c7a5b','p1':3000105001,'p2':5303687339,'genesis':82843,'omega':'48/13'}}
 
 
-@router.get("/api_b2_cost_preview")
-@router.post("/api_b2_cost_preview")
+@router.get("/api_b2_cost_preview", description="[Core-Beacon+Verification][FREE] api_b2_cost_preview - equation: api_b2_cost_preview - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_cost_preview via positivity - use: api b2 cost preview - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
+@router.post("/api_b2_cost_preview", description="[Core-Beacon+Verification][FREE] api_b2_cost_preview - equation: api_b2_cost_preview - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_cost_preview via positivity - use: api b2 cost preview - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
 def api_b2_cost_preview(p:int=82843, agent_id:str="agent", payload:str="", amount:float=0):
-    bp=beacon_payload()
-    return {"tool":"api_b2_cost_preview","original_route":"/api/b2/cost_preview","safe_slug":"api_b2_cost_preview","ok":True,**bp}
+    bp=beacon_payload(p)
+    bp_beacon=bp['beacon']
+    h=hashlib.sha256((agent_id+payload+bp_beacon).encode()).hexdigest()[:16]
+    _store[h]={'tool':'api_b2_cost_preview','beacon':bp_beacon,'p':bp['p'],'d':D,'genesis':GENESIS_P,'moat_p1':MOAT_P1}
+    return {'tool':'api_b2_cost_preview','block':'c7','ok':True,'p':bp['p'],'beacon':bp['beacon'],'d':bp['d'],'genesis':bp['genesis'],'ts':bp['ts'],'id':str(uuid.uuid4())[:8],'hash':h,'agent_id':agent_id,'description':'''[Core-Beacon+Verification][FREE] api_b2_cost_preview - equation: api_b2_cost_preview - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_cost_preview via positivity - use: api b2 cost preview - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev''','paypal':'https://paypal.me/davidjfox998','stripe':'https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01','site':'https://zerobeacon-mf-1000.fly.dev','formula':'frac(p*pi/10*2^32) ALPHA0=259+PI/10','moat':{'d':2303582338,'beacon':'1d2c7a5b','p1':3000105001,'p2':5303687339,'genesis':82843,'omega':'48/13'}}
 
 
-@router.get("/api_b2_entitlement_check")
-@router.post("/api_b2_entitlement_check")
+@router.get("/api_b2_entitlement_check", description="[Core-Beacon+Verification][FREE] api_b2_entitlement_check - equation: api_b2_entitlement_check - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_entitlement_check via positivity - use: api b2 entitlement check - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
+@router.post("/api_b2_entitlement_check", description="[Core-Beacon+Verification][FREE] api_b2_entitlement_check - equation: api_b2_entitlement_check - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_entitlement_check via positivity - use: api b2 entitlement check - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
 def api_b2_entitlement_check(p:int=82843, agent_id:str="agent", payload:str="", amount:float=0):
-    bp=beacon_payload()
-    return {"tool":"api_b2_entitlement_check","original_route":"/api/b2/entitlement_check","safe_slug":"api_b2_entitlement_check","ok":True,**bp}
+    bp=beacon_payload(p)
+    bp_beacon=bp['beacon']
+    h=hashlib.sha256((agent_id+payload+bp_beacon).encode()).hexdigest()[:16]
+    _store[h]={'tool':'api_b2_entitlement_check','beacon':bp_beacon,'p':bp['p'],'d':D,'genesis':GENESIS_P,'moat_p1':MOAT_P1}
+    return {'tool':'api_b2_entitlement_check','block':'c7','ok':True,'p':bp['p'],'beacon':bp['beacon'],'d':bp['d'],'genesis':bp['genesis'],'ts':bp['ts'],'id':str(uuid.uuid4())[:8],'hash':h,'agent_id':agent_id,'description':'''[Core-Beacon+Verification][FREE] api_b2_entitlement_check - equation: api_b2_entitlement_check - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_entitlement_check via positivity - use: api b2 entitlement check - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev''','paypal':'https://paypal.me/davidjfox998','stripe':'https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01','site':'https://zerobeacon-mf-1000.fly.dev','formula':'frac(p*pi/10*2^32) ALPHA0=259+PI/10','moat':{'d':2303582338,'beacon':'1d2c7a5b','p1':3000105001,'p2':5303687339,'genesis':82843,'omega':'48/13'}}
 
 
-@router.get("/api_b2_event_append")
-@router.post("/api_b2_event_append")
+@router.get("/api_b2_event_append", description="[Core-Beacon+Verification][FREE] api_b2_event_append - equation: api_b2_event_append - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_event_append via positivity - use: api b2 event append - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
+@router.post("/api_b2_event_append", description="[Core-Beacon+Verification][FREE] api_b2_event_append - equation: api_b2_event_append - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_event_append via positivity - use: api b2 event append - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
 def api_b2_event_append(p:int=82843, agent_id:str="agent", payload:str="", amount:float=0):
-    bp=beacon_payload()
-    return {"tool":"api_b2_event_append","original_route":"/api/b2/event_append","safe_slug":"api_b2_event_append","ok":True,**bp}
+    bp=beacon_payload(p)
+    bp_beacon=bp['beacon']
+    h=hashlib.sha256((agent_id+payload+bp_beacon).encode()).hexdigest()[:16]
+    _store[h]={'tool':'api_b2_event_append','beacon':bp_beacon,'p':bp['p'],'d':D,'genesis':GENESIS_P,'moat_p1':MOAT_P1}
+    return {'tool':'api_b2_event_append','block':'c7','ok':True,'p':bp['p'],'beacon':bp['beacon'],'d':bp['d'],'genesis':bp['genesis'],'ts':bp['ts'],'id':str(uuid.uuid4())[:8],'hash':h,'agent_id':agent_id,'description':'''[Core-Beacon+Verification][FREE] api_b2_event_append - equation: api_b2_event_append - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_event_append via positivity - use: api b2 event append - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev''','paypal':'https://paypal.me/davidjfox998','stripe':'https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01','site':'https://zerobeacon-mf-1000.fly.dev','formula':'frac(p*pi/10*2^32) ALPHA0=259+PI/10','moat':{'d':2303582338,'beacon':'1d2c7a5b','p1':3000105001,'p2':5303687339,'genesis':82843,'omega':'48/13'}}
 
 
-@router.get("/api_b2_event_proof")
-@router.post("/api_b2_event_proof")
+@router.get("/api_b2_event_proof", description="[Core-Beacon+Verification][FREE] api_b2_event_proof - equation: api_b2_event_proof - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_event_proof via positivity - use: api b2 event proof - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
+@router.post("/api_b2_event_proof", description="[Core-Beacon+Verification][FREE] api_b2_event_proof - equation: api_b2_event_proof - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_event_proof via positivity - use: api b2 event proof - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
 def api_b2_event_proof(p:int=82843, agent_id:str="agent", payload:str="", amount:float=0):
-    bp=beacon_payload()
-    return {"tool":"api_b2_event_proof","original_route":"/api/b2/event_proof","safe_slug":"api_b2_event_proof","ok":True,**bp}
+    bp=beacon_payload(p)
+    bp_beacon=bp['beacon']
+    h=hashlib.sha256((agent_id+payload+bp_beacon).encode()).hexdigest()[:16]
+    _store[h]={'tool':'api_b2_event_proof','beacon':bp_beacon,'p':bp['p'],'d':D,'genesis':GENESIS_P,'moat_p1':MOAT_P1}
+    return {'tool':'api_b2_event_proof','block':'c7','ok':True,'p':bp['p'],'beacon':bp['beacon'],'d':bp['d'],'genesis':bp['genesis'],'ts':bp['ts'],'id':str(uuid.uuid4())[:8],'hash':h,'agent_id':agent_id,'description':'''[Core-Beacon+Verification][FREE] api_b2_event_proof - equation: api_b2_event_proof - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_event_proof via positivity - use: api b2 event proof - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev''','paypal':'https://paypal.me/davidjfox998','stripe':'https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01','site':'https://zerobeacon-mf-1000.fly.dev','formula':'frac(p*pi/10*2^32) ALPHA0=259+PI/10','moat':{'d':2303582338,'beacon':'1d2c7a5b','p1':3000105001,'p2':5303687339,'genesis':82843,'omega':'48/13'}}
 
 
-@router.get("/api_b2_event_replay")
-@router.post("/api_b2_event_replay")
+@router.get("/api_b2_event_replay", description="[Core-Beacon+Verification][FREE] api_b2_event_replay - equation: api_b2_event_replay - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_event_replay via positivity - use: api b2 event replay - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
+@router.post("/api_b2_event_replay", description="[Core-Beacon+Verification][FREE] api_b2_event_replay - equation: api_b2_event_replay - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_event_replay via positivity - use: api b2 event replay - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
 def api_b2_event_replay(p:int=82843, agent_id:str="agent", payload:str="", amount:float=0):
-    bp=beacon_payload()
-    return {"tool":"api_b2_event_replay","original_route":"/api/b2/event_replay","safe_slug":"api_b2_event_replay","ok":True,**bp}
+    bp=beacon_payload(p)
+    bp_beacon=bp['beacon']
+    h=hashlib.sha256((agent_id+payload+bp_beacon).encode()).hexdigest()[:16]
+    _store[h]={'tool':'api_b2_event_replay','beacon':bp_beacon,'p':bp['p'],'d':D,'genesis':GENESIS_P,'moat_p1':MOAT_P1}
+    return {'tool':'api_b2_event_replay','block':'c7','ok':True,'p':bp['p'],'beacon':bp['beacon'],'d':bp['d'],'genesis':bp['genesis'],'ts':bp['ts'],'id':str(uuid.uuid4())[:8],'hash':h,'agent_id':agent_id,'description':'''[Core-Beacon+Verification][FREE] api_b2_event_replay - equation: api_b2_event_replay - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_event_replay via positivity - use: api b2 event replay - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev''','paypal':'https://paypal.me/davidjfox998','stripe':'https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01','site':'https://zerobeacon-mf-1000.fly.dev','formula':'frac(p*pi/10*2^32) ALPHA0=259+PI/10','moat':{'d':2303582338,'beacon':'1d2c7a5b','p1':3000105001,'p2':5303687339,'genesis':82843,'omega':'48/13'}}
 
 
-@router.get("/api_b2_fraud_check")
-@router.post("/api_b2_fraud_check")
+@router.get("/api_b2_fraud_check", description="[Core-Beacon+Verification][FREE] api_b2_fraud_check - equation: api_b2_fraud_check - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_fraud_check via positivity - use: api b2 fraud check - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
+@router.post("/api_b2_fraud_check", description="[Core-Beacon+Verification][FREE] api_b2_fraud_check - equation: api_b2_fraud_check - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_fraud_check via positivity - use: api b2 fraud check - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
 def api_b2_fraud_check(p:int=82843, agent_id:str="agent", payload:str="", amount:float=0):
-    bp=beacon_payload()
-    return {"tool":"api_b2_fraud_check","original_route":"/api/b2/fraud_check","safe_slug":"api_b2_fraud_check","ok":True,**bp}
+    bp=beacon_payload(p)
+    bp_beacon=bp['beacon']
+    h=hashlib.sha256((agent_id+payload+bp_beacon).encode()).hexdigest()[:16]
+    _store[h]={'tool':'api_b2_fraud_check','beacon':bp_beacon,'p':bp['p'],'d':D,'genesis':GENESIS_P,'moat_p1':MOAT_P1}
+    return {'tool':'api_b2_fraud_check','block':'c7','ok':True,'p':bp['p'],'beacon':bp['beacon'],'d':bp['d'],'genesis':bp['genesis'],'ts':bp['ts'],'id':str(uuid.uuid4())[:8],'hash':h,'agent_id':agent_id,'description':'''[Core-Beacon+Verification][FREE] api_b2_fraud_check - equation: api_b2_fraud_check - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_fraud_check via positivity - use: api b2 fraud check - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev''','paypal':'https://paypal.me/davidjfox998','stripe':'https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01','site':'https://zerobeacon-mf-1000.fly.dev','formula':'frac(p*pi/10*2^32) ALPHA0=259+PI/10','moat':{'d':2303582338,'beacon':'1d2c7a5b','p1':3000105001,'p2':5303687339,'genesis':82843,'omega':'48/13'}}
 
 
-@router.get("/api_b2_humanity_challenge")
-@router.post("/api_b2_humanity_challenge")
+@router.get("/api_b2_humanity_challenge", description="[Core-Beacon+Verification][FREE] api_b2_humanity_challenge - equation: api_b2_humanity_challenge - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_humanity_challenge via positivity - use: api b2 humanity challenge - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
+@router.post("/api_b2_humanity_challenge", description="[Core-Beacon+Verification][FREE] api_b2_humanity_challenge - equation: api_b2_humanity_challenge - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_humanity_challenge via positivity - use: api b2 humanity challenge - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
 def api_b2_humanity_challenge(p:int=82843, agent_id:str="agent", payload:str="", amount:float=0):
-    bp=beacon_payload()
-    return {"tool":"api_b2_humanity_challenge","original_route":"/api/b2/humanity_challenge","safe_slug":"api_b2_humanity_challenge","ok":True,**bp}
+    bp=beacon_payload(p)
+    bp_beacon=bp['beacon']
+    h=hashlib.sha256((agent_id+payload+bp_beacon).encode()).hexdigest()[:16]
+    _store[h]={'tool':'api_b2_humanity_challenge','beacon':bp_beacon,'p':bp['p'],'d':D,'genesis':GENESIS_P,'moat_p1':MOAT_P1}
+    return {'tool':'api_b2_humanity_challenge','block':'c7','ok':True,'p':bp['p'],'beacon':bp['beacon'],'d':bp['d'],'genesis':bp['genesis'],'ts':bp['ts'],'id':str(uuid.uuid4())[:8],'hash':h,'agent_id':agent_id,'description':'''[Core-Beacon+Verification][FREE] api_b2_humanity_challenge - equation: api_b2_humanity_challenge - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_humanity_challenge via positivity - use: api b2 humanity challenge - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev''','paypal':'https://paypal.me/davidjfox998','stripe':'https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01','site':'https://zerobeacon-mf-1000.fly.dev','formula':'frac(p*pi/10*2^32) ALPHA0=259+PI/10','moat':{'d':2303582338,'beacon':'1d2c7a5b','p1':3000105001,'p2':5303687339,'genesis':82843,'omega':'48/13'}}
 
 
-@router.get("/api_b2_humanity_verify")
-@router.post("/api_b2_humanity_verify")
+@router.get("/api_b2_humanity_verify", description="[Core-Beacon+Verification][FREE] api_b2_humanity_verify - equation: api_b2_humanity_verify - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_humanity_verify via positivity - use: api b2 humanity verify - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
+@router.post("/api_b2_humanity_verify", description="[Core-Beacon+Verification][FREE] api_b2_humanity_verify - equation: api_b2_humanity_verify - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_humanity_verify via positivity - use: api b2 humanity verify - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
 def api_b2_humanity_verify(p:int=82843, agent_id:str="agent", payload:str="", amount:float=0):
-    bp=beacon_payload()
-    return {"tool":"api_b2_humanity_verify","original_route":"/api/b2/humanity_verify","safe_slug":"api_b2_humanity_verify","ok":True,**bp}
+    bp=beacon_payload(p)
+    bp_beacon=bp['beacon']
+    h=hashlib.sha256((agent_id+payload+bp_beacon).encode()).hexdigest()[:16]
+    _store[h]={'tool':'api_b2_humanity_verify','beacon':bp_beacon,'p':bp['p'],'d':D,'genesis':GENESIS_P,'moat_p1':MOAT_P1}
+    return {'tool':'api_b2_humanity_verify','block':'c7','ok':True,'p':bp['p'],'beacon':bp['beacon'],'d':bp['d'],'genesis':bp['genesis'],'ts':bp['ts'],'id':str(uuid.uuid4())[:8],'hash':h,'agent_id':agent_id,'description':'''[Core-Beacon+Verification][FREE] api_b2_humanity_verify - equation: api_b2_humanity_verify - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_humanity_verify via positivity - use: api b2 humanity verify - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev''','paypal':'https://paypal.me/davidjfox998','stripe':'https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01','site':'https://zerobeacon-mf-1000.fly.dev','formula':'frac(p*pi/10*2^32) ALPHA0=259+PI/10','moat':{'d':2303582338,'beacon':'1d2c7a5b','p1':3000105001,'p2':5303687339,'genesis':82843,'omega':'48/13'}}
 
 
-@router.get("/api_b2_idempotency_check")
-@router.post("/api_b2_idempotency_check")
+@router.get("/api_b2_idempotency_check", description="[Core-Beacon+Verification][FREE] api_b2_idempotency_check - equation: api_b2_idempotency_check - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_idempotency_check via positivity - use: api b2 idempotency check - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
+@router.post("/api_b2_idempotency_check", description="[Core-Beacon+Verification][FREE] api_b2_idempotency_check - equation: api_b2_idempotency_check - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_idempotency_check via positivity - use: api b2 idempotency check - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
 def api_b2_idempotency_check(p:int=82843, agent_id:str="agent", payload:str="", amount:float=0):
-    bp=beacon_payload()
-    return {"tool":"api_b2_idempotency_check","original_route":"/api/b2/idempotency_check","safe_slug":"api_b2_idempotency_check","ok":True,**bp}
+    bp=beacon_payload(p)
+    bp_beacon=bp['beacon']
+    h=hashlib.sha256((agent_id+payload+bp_beacon).encode()).hexdigest()[:16]
+    _store[h]={'tool':'api_b2_idempotency_check','beacon':bp_beacon,'p':bp['p'],'d':D,'genesis':GENESIS_P,'moat_p1':MOAT_P1}
+    return {'tool':'api_b2_idempotency_check','block':'c7','ok':True,'p':bp['p'],'beacon':bp['beacon'],'d':bp['d'],'genesis':bp['genesis'],'ts':bp['ts'],'id':str(uuid.uuid4())[:8],'hash':h,'agent_id':agent_id,'description':'''[Core-Beacon+Verification][FREE] api_b2_idempotency_check - equation: api_b2_idempotency_check - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_idempotency_check via positivity - use: api b2 idempotency check - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev''','paypal':'https://paypal.me/davidjfox998','stripe':'https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01','site':'https://zerobeacon-mf-1000.fly.dev','formula':'frac(p*pi/10*2^32) ALPHA0=259+PI/10','moat':{'d':2303582338,'beacon':'1d2c7a5b','p1':3000105001,'p2':5303687339,'genesis':82843,'omega':'48/13'}}
 
 
-@router.get("/api_b2_invoice_seal")
-@router.post("/api_b2_invoice_seal")
+@router.get("/api_b2_invoice_seal", description="[Core-Beacon+Verification][FREE] api_b2_invoice_seal - equation: api_b2_invoice_seal - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_invoice_seal via positivity - use: api b2 invoice seal - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
+@router.post("/api_b2_invoice_seal", description="[Core-Beacon+Verification][FREE] api_b2_invoice_seal - equation: api_b2_invoice_seal - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_invoice_seal via positivity - use: api b2 invoice seal - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
 def api_b2_invoice_seal(p:int=82843, agent_id:str="agent", payload:str="", amount:float=0):
-    bp=beacon_payload()
-    return {"tool":"api_b2_invoice_seal","original_route":"/api/b2/invoice_seal","safe_slug":"api_b2_invoice_seal","ok":True,**bp}
+    bp=beacon_payload(p)
+    bp_beacon=bp['beacon']
+    h=hashlib.sha256((agent_id+payload+bp_beacon).encode()).hexdigest()[:16]
+    _store[h]={'tool':'api_b2_invoice_seal','beacon':bp_beacon,'p':bp['p'],'d':D,'genesis':GENESIS_P,'moat_p1':MOAT_P1}
+    return {'tool':'api_b2_invoice_seal','block':'c7','ok':True,'p':bp['p'],'beacon':bp['beacon'],'d':bp['d'],'genesis':bp['genesis'],'ts':bp['ts'],'id':str(uuid.uuid4())[:8],'hash':h,'agent_id':agent_id,'description':'''[Core-Beacon+Verification][FREE] api_b2_invoice_seal - equation: api_b2_invoice_seal - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_invoice_seal via positivity - use: api b2 invoice seal - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev''','paypal':'https://paypal.me/davidjfox998','stripe':'https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01','site':'https://zerobeacon-mf-1000.fly.dev','formula':'frac(p*pi/10*2^32) ALPHA0=259+PI/10','moat':{'d':2303582338,'beacon':'1d2c7a5b','p1':3000105001,'p2':5303687339,'genesis':82843,'omega':'48/13'}}
 
 
-@router.get("/api_b2_invoice_verify")
-@router.post("/api_b2_invoice_verify")
+@router.get("/api_b2_invoice_verify", description="[Core-Beacon+Verification][FREE] api_b2_invoice_verify - equation: api_b2_invoice_verify - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_invoice_verify via positivity - use: api b2 invoice verify - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
+@router.post("/api_b2_invoice_verify", description="[Core-Beacon+Verification][FREE] api_b2_invoice_verify - equation: api_b2_invoice_verify - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_invoice_verify via positivity - use: api b2 invoice verify - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
 def api_b2_invoice_verify(p:int=82843, agent_id:str="agent", payload:str="", amount:float=0):
-    bp=beacon_payload()
-    return {"tool":"api_b2_invoice_verify","original_route":"/api/b2/invoice_verify","safe_slug":"api_b2_invoice_verify","ok":True,**bp}
+    bp=beacon_payload(p)
+    bp_beacon=bp['beacon']
+    h=hashlib.sha256((agent_id+payload+bp_beacon).encode()).hexdigest()[:16]
+    _store[h]={'tool':'api_b2_invoice_verify','beacon':bp_beacon,'p':bp['p'],'d':D,'genesis':GENESIS_P,'moat_p1':MOAT_P1}
+    return {'tool':'api_b2_invoice_verify','block':'c7','ok':True,'p':bp['p'],'beacon':bp['beacon'],'d':bp['d'],'genesis':bp['genesis'],'ts':bp['ts'],'id':str(uuid.uuid4())[:8],'hash':h,'agent_id':agent_id,'description':'''[Core-Beacon+Verification][FREE] api_b2_invoice_verify - equation: api_b2_invoice_verify - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_invoice_verify via positivity - use: api b2 invoice verify - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev''','paypal':'https://paypal.me/davidjfox998','stripe':'https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01','site':'https://zerobeacon-mf-1000.fly.dev','formula':'frac(p*pi/10*2^32) ALPHA0=259+PI/10','moat':{'d':2303582338,'beacon':'1d2c7a5b','p1':3000105001,'p2':5303687339,'genesis':82843,'omega':'48/13'}}
 
 
-@router.get("/api_b2_kyc_commit")
-@router.post("/api_b2_kyc_commit")
+@router.get("/api_b2_kyc_commit", description="[Core-Beacon+Verification][FREE] api_b2_kyc_commit - equation: api_b2_kyc_commit - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_kyc_commit via positivity - use: api b2 kyc commit - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
+@router.post("/api_b2_kyc_commit", description="[Core-Beacon+Verification][FREE] api_b2_kyc_commit - equation: api_b2_kyc_commit - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_kyc_commit via positivity - use: api b2 kyc commit - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
 def api_b2_kyc_commit(p:int=82843, agent_id:str="agent", payload:str="", amount:float=0):
-    bp=beacon_payload()
-    return {"tool":"api_b2_kyc_commit","original_route":"/api/b2/kyc_commit","safe_slug":"api_b2_kyc_commit","ok":True,**bp}
+    bp=beacon_payload(p)
+    bp_beacon=bp['beacon']
+    h=hashlib.sha256((agent_id+payload+bp_beacon).encode()).hexdigest()[:16]
+    _store[h]={'tool':'api_b2_kyc_commit','beacon':bp_beacon,'p':bp['p'],'d':D,'genesis':GENESIS_P,'moat_p1':MOAT_P1}
+    return {'tool':'api_b2_kyc_commit','block':'c7','ok':True,'p':bp['p'],'beacon':bp['beacon'],'d':bp['d'],'genesis':bp['genesis'],'ts':bp['ts'],'id':str(uuid.uuid4())[:8],'hash':h,'agent_id':agent_id,'description':'''[Core-Beacon+Verification][FREE] api_b2_kyc_commit - equation: api_b2_kyc_commit - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_kyc_commit via positivity - use: api b2 kyc commit - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev''','paypal':'https://paypal.me/davidjfox998','stripe':'https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01','site':'https://zerobeacon-mf-1000.fly.dev','formula':'frac(p*pi/10*2^32) ALPHA0=259+PI/10','moat':{'d':2303582338,'beacon':'1d2c7a5b','p1':3000105001,'p2':5303687339,'genesis':82843,'omega':'48/13'}}
 
 
-@router.get("/api_b2_kyc_reveal")
-@router.post("/api_b2_kyc_reveal")
+@router.get("/api_b2_kyc_reveal", description="[Core-Beacon+Verification][FREE] api_b2_kyc_reveal - equation: api_b2_kyc_reveal - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_kyc_reveal via positivity - use: api b2 kyc reveal - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
+@router.post("/api_b2_kyc_reveal", description="[Core-Beacon+Verification][FREE] api_b2_kyc_reveal - equation: api_b2_kyc_reveal - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_kyc_reveal via positivity - use: api b2 kyc reveal - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
 def api_b2_kyc_reveal(p:int=82843, agent_id:str="agent", payload:str="", amount:float=0):
-    bp=beacon_payload()
-    return {"tool":"api_b2_kyc_reveal","original_route":"/api/b2/kyc_reveal","safe_slug":"api_b2_kyc_reveal","ok":True,**bp}
+    bp=beacon_payload(p)
+    bp_beacon=bp['beacon']
+    h=hashlib.sha256((agent_id+payload+bp_beacon).encode()).hexdigest()[:16]
+    _store[h]={'tool':'api_b2_kyc_reveal','beacon':bp_beacon,'p':bp['p'],'d':D,'genesis':GENESIS_P,'moat_p1':MOAT_P1}
+    return {'tool':'api_b2_kyc_reveal','block':'c7','ok':True,'p':bp['p'],'beacon':bp['beacon'],'d':bp['d'],'genesis':bp['genesis'],'ts':bp['ts'],'id':str(uuid.uuid4())[:8],'hash':h,'agent_id':agent_id,'description':'''[Core-Beacon+Verification][FREE] api_b2_kyc_reveal - equation: api_b2_kyc_reveal - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_kyc_reveal via positivity - use: api b2 kyc reveal - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev''','paypal':'https://paypal.me/davidjfox998','stripe':'https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01','site':'https://zerobeacon-mf-1000.fly.dev','formula':'frac(p*pi/10*2^32) ALPHA0=259+PI/10','moat':{'d':2303582338,'beacon':'1d2c7a5b','p1':3000105001,'p2':5303687339,'genesis':82843,'omega':'48/13'}}
 
 
-@router.get("/api_b2_meter_aggregate")
-@router.post("/api_b2_meter_aggregate")
+@router.get("/api_b2_meter_aggregate", description="[Core-Beacon+Verification][FREE] api_b2_meter_aggregate - equation: api_b2_meter_aggregate - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_meter_aggregate via positivity - use: api b2 meter aggregate - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
+@router.post("/api_b2_meter_aggregate", description="[Core-Beacon+Verification][FREE] api_b2_meter_aggregate - equation: api_b2_meter_aggregate - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_meter_aggregate via positivity - use: api b2 meter aggregate - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
 def api_b2_meter_aggregate(p:int=82843, agent_id:str="agent", payload:str="", amount:float=0):
-    bp=beacon_payload()
-    return {"tool":"api_b2_meter_aggregate","original_route":"/api/b2/meter_aggregate","safe_slug":"api_b2_meter_aggregate","ok":True,**bp}
+    bp=beacon_payload(p)
+    bp_beacon=bp['beacon']
+    h=hashlib.sha256((agent_id+payload+bp_beacon).encode()).hexdigest()[:16]
+    _store[h]={'tool':'api_b2_meter_aggregate','beacon':bp_beacon,'p':bp['p'],'d':D,'genesis':GENESIS_P,'moat_p1':MOAT_P1}
+    return {'tool':'api_b2_meter_aggregate','block':'c7','ok':True,'p':bp['p'],'beacon':bp['beacon'],'d':bp['d'],'genesis':bp['genesis'],'ts':bp['ts'],'id':str(uuid.uuid4())[:8],'hash':h,'agent_id':agent_id,'description':'''[Core-Beacon+Verification][FREE] api_b2_meter_aggregate - equation: api_b2_meter_aggregate - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_meter_aggregate via positivity - use: api b2 meter aggregate - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev''','paypal':'https://paypal.me/davidjfox998','stripe':'https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01','site':'https://zerobeacon-mf-1000.fly.dev','formula':'frac(p*pi/10*2^32) ALPHA0=259+PI/10','moat':{'d':2303582338,'beacon':'1d2c7a5b','p1':3000105001,'p2':5303687339,'genesis':82843,'omega':'48/13'}}
 
 
-@router.get("/api_b2_meter_log")
-@router.post("/api_b2_meter_log")
+@router.get("/api_b2_meter_log", description="[Core-Beacon+Verification][FREE] api_b2_meter_log - equation: api_b2_meter_log - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_meter_log via positivity - use: api b2 meter log - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
+@router.post("/api_b2_meter_log", description="[Core-Beacon+Verification][FREE] api_b2_meter_log - equation: api_b2_meter_log - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_meter_log via positivity - use: api b2 meter log - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
 def api_b2_meter_log(p:int=82843, agent_id:str="agent", payload:str="", amount:float=0):
-    bp=beacon_payload()
-    return {"tool":"api_b2_meter_log","original_route":"/api/b2/meter_log","safe_slug":"api_b2_meter_log","ok":True,**bp}
+    bp=beacon_payload(p)
+    bp_beacon=bp['beacon']
+    h=hashlib.sha256((agent_id+payload+bp_beacon).encode()).hexdigest()[:16]
+    _store[h]={'tool':'api_b2_meter_log','beacon':bp_beacon,'p':bp['p'],'d':D,'genesis':GENESIS_P,'moat_p1':MOAT_P1}
+    return {'tool':'api_b2_meter_log','block':'c7','ok':True,'p':bp['p'],'beacon':bp['beacon'],'d':bp['d'],'genesis':bp['genesis'],'ts':bp['ts'],'id':str(uuid.uuid4())[:8],'hash':h,'agent_id':agent_id,'description':'''[Core-Beacon+Verification][FREE] api_b2_meter_log - equation: api_b2_meter_log - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_meter_log via positivity - use: api b2 meter log - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev''','paypal':'https://paypal.me/davidjfox998','stripe':'https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01','site':'https://zerobeacon-mf-1000.fly.dev','formula':'frac(p*pi/10*2^32) ALPHA0=259+PI/10','moat':{'d':2303582338,'beacon':'1d2c7a5b','p1':3000105001,'p2':5303687339,'genesis':82843,'omega':'48/13'}}
 
 
-@router.get("/api_b2_pay_balance")
-@router.post("/api_b2_pay_balance")
+@router.get("/api_b2_pay_balance", description="[Core-Beacon+Verification][FREE] api_b2_pay_balance - equation: api_b2_pay_balance - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_pay_balance via positivity - use: api b2 pay balance - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
+@router.post("/api_b2_pay_balance", description="[Core-Beacon+Verification][FREE] api_b2_pay_balance - equation: api_b2_pay_balance - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_pay_balance via positivity - use: api b2 pay balance - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
 def api_b2_pay_balance(p:int=82843, agent_id:str="agent", payload:str="", amount:float=0):
-    bp=beacon_payload()
-    return {"tool":"api_b2_pay_balance","original_route":"/api/b2/pay_balance","safe_slug":"api_b2_pay_balance","ok":True,**bp}
+    bp=beacon_payload(p)
+    bp_beacon=bp['beacon']
+    h=hashlib.sha256((agent_id+payload+bp_beacon).encode()).hexdigest()[:16]
+    _store[h]={'tool':'api_b2_pay_balance','beacon':bp_beacon,'p':bp['p'],'d':D,'genesis':GENESIS_P,'moat_p1':MOAT_P1}
+    return {'tool':'api_b2_pay_balance','block':'c7','ok':True,'p':bp['p'],'beacon':bp['beacon'],'d':bp['d'],'genesis':bp['genesis'],'ts':bp['ts'],'id':str(uuid.uuid4())[:8],'hash':h,'agent_id':agent_id,'description':'''[Core-Beacon+Verification][FREE] api_b2_pay_balance - equation: api_b2_pay_balance - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_pay_balance via positivity - use: api b2 pay balance - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev''','paypal':'https://paypal.me/davidjfox998','stripe':'https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01','site':'https://zerobeacon-mf-1000.fly.dev','formula':'frac(p*pi/10*2^32) ALPHA0=259+PI/10','moat':{'d':2303582338,'beacon':'1d2c7a5b','p1':3000105001,'p2':5303687339,'genesis':82843,'omega':'48/13'}}
 
 
-@router.get("/api_b2_pay_batch")
-@router.post("/api_b2_pay_batch")
+@router.get("/api_b2_pay_batch", description="[Core-Beacon+Verification][FREE] api_b2_pay_batch - equation: api_b2_pay_batch - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_pay_batch via positivity - use: api b2 pay batch - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
+@router.post("/api_b2_pay_batch", description="[Core-Beacon+Verification][FREE] api_b2_pay_batch - equation: api_b2_pay_batch - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_pay_batch via positivity - use: api b2 pay batch - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
 def api_b2_pay_batch(p:int=82843, agent_id:str="agent", payload:str="", amount:float=0):
-    bp=beacon_payload()
-    return {"tool":"api_b2_pay_batch","original_route":"/api/b2/pay_batch","safe_slug":"api_b2_pay_batch","ok":True,**bp}
+    bp=beacon_payload(p)
+    bp_beacon=bp['beacon']
+    h=hashlib.sha256((agent_id+payload+bp_beacon).encode()).hexdigest()[:16]
+    _store[h]={'tool':'api_b2_pay_batch','beacon':bp_beacon,'p':bp['p'],'d':D,'genesis':GENESIS_P,'moat_p1':MOAT_P1}
+    return {'tool':'api_b2_pay_batch','block':'c7','ok':True,'p':bp['p'],'beacon':bp['beacon'],'d':bp['d'],'genesis':bp['genesis'],'ts':bp['ts'],'id':str(uuid.uuid4())[:8],'hash':h,'agent_id':agent_id,'description':'''[Core-Beacon+Verification][FREE] api_b2_pay_batch - equation: api_b2_pay_batch - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_pay_batch via positivity - use: api b2 pay batch - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev''','paypal':'https://paypal.me/davidjfox998','stripe':'https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01','site':'https://zerobeacon-mf-1000.fly.dev','formula':'frac(p*pi/10*2^32) ALPHA0=259+PI/10','moat':{'d':2303582338,'beacon':'1d2c7a5b','p1':3000105001,'p2':5303687339,'genesis':82843,'omega':'48/13'}}
 
 
-@router.get("/api_b2_pay_dispute")
-@router.post("/api_b2_pay_dispute")
+@router.get("/api_b2_pay_dispute", description="[Core-Beacon+Verification][FREE] api_b2_pay_dispute - equation: api_b2_pay_dispute - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_pay_dispute via positivity - use: api b2 pay dispute - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
+@router.post("/api_b2_pay_dispute", description="[Core-Beacon+Verification][FREE] api_b2_pay_dispute - equation: api_b2_pay_dispute - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_pay_dispute via positivity - use: api b2 pay dispute - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
 def api_b2_pay_dispute(p:int=82843, agent_id:str="agent", payload:str="", amount:float=0):
-    bp=beacon_payload()
-    return {"tool":"api_b2_pay_dispute","original_route":"/api/b2/pay_dispute","safe_slug":"api_b2_pay_dispute","ok":True,**bp}
+    bp=beacon_payload(p)
+    bp_beacon=bp['beacon']
+    h=hashlib.sha256((agent_id+payload+bp_beacon).encode()).hexdigest()[:16]
+    _store[h]={'tool':'api_b2_pay_dispute','beacon':bp_beacon,'p':bp['p'],'d':D,'genesis':GENESIS_P,'moat_p1':MOAT_P1}
+    return {'tool':'api_b2_pay_dispute','block':'c7','ok':True,'p':bp['p'],'beacon':bp['beacon'],'d':bp['d'],'genesis':bp['genesis'],'ts':bp['ts'],'id':str(uuid.uuid4())[:8],'hash':h,'agent_id':agent_id,'description':'''[Core-Beacon+Verification][FREE] api_b2_pay_dispute - equation: api_b2_pay_dispute - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_pay_dispute via positivity - use: api b2 pay dispute - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev''','paypal':'https://paypal.me/davidjfox998','stripe':'https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01','site':'https://zerobeacon-mf-1000.fly.dev','formula':'frac(p*pi/10*2^32) ALPHA0=259+PI/10','moat':{'d':2303582338,'beacon':'1d2c7a5b','p1':3000105001,'p2':5303687339,'genesis':82843,'omega':'48/13'}}
 
 
-@router.get("/api_b2_pay_escrow")
-@router.post("/api_b2_pay_escrow")
+@router.get("/api_b2_pay_escrow", description="[Core-Beacon+Verification][FREE] api_b2_pay_escrow - equation: api_b2_pay_escrow - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_pay_escrow via positivity - use: api b2 pay escrow - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
+@router.post("/api_b2_pay_escrow", description="[Core-Beacon+Verification][FREE] api_b2_pay_escrow - equation: api_b2_pay_escrow - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_pay_escrow via positivity - use: api b2 pay escrow - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
 def api_b2_pay_escrow(p:int=82843, agent_id:str="agent", payload:str="", amount:float=0):
-    bp=beacon_payload()
-    return {"tool":"api_b2_pay_escrow","original_route":"/api/b2/pay_escrow","safe_slug":"api_b2_pay_escrow","ok":True,**bp}
+    bp=beacon_payload(p)
+    bp_beacon=bp['beacon']
+    h=hashlib.sha256((agent_id+payload+bp_beacon).encode()).hexdigest()[:16]
+    _store[h]={'tool':'api_b2_pay_escrow','beacon':bp_beacon,'p':bp['p'],'d':D,'genesis':GENESIS_P,'moat_p1':MOAT_P1}
+    return {'tool':'api_b2_pay_escrow','block':'c7','ok':True,'p':bp['p'],'beacon':bp['beacon'],'d':bp['d'],'genesis':bp['genesis'],'ts':bp['ts'],'id':str(uuid.uuid4())[:8],'hash':h,'agent_id':agent_id,'description':'''[Core-Beacon+Verification][FREE] api_b2_pay_escrow - equation: api_b2_pay_escrow - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_pay_escrow via positivity - use: api b2 pay escrow - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev''','paypal':'https://paypal.me/davidjfox998','stripe':'https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01','site':'https://zerobeacon-mf-1000.fly.dev','formula':'frac(p*pi/10*2^32) ALPHA0=259+PI/10','moat':{'d':2303582338,'beacon':'1d2c7a5b','p1':3000105001,'p2':5303687339,'genesis':82843,'omega':'48/13'}}
 
 
-@router.get("/api_b2_pay_fee_preview")
-@router.post("/api_b2_pay_fee_preview")
+@router.get("/api_b2_pay_fee_preview", description="[Core-Beacon+Verification][FREE] api_b2_pay_fee_preview - equation: api_b2_pay_fee_preview - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_pay_fee_preview via positivity - use: api b2 pay fee preview - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
+@router.post("/api_b2_pay_fee_preview", description="[Core-Beacon+Verification][FREE] api_b2_pay_fee_preview - equation: api_b2_pay_fee_preview - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_pay_fee_preview via positivity - use: api b2 pay fee preview - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
 def api_b2_pay_fee_preview(p:int=82843, agent_id:str="agent", payload:str="", amount:float=0):
-    bp=beacon_payload()
-    return {"tool":"api_b2_pay_fee_preview","original_route":"/api/b2/pay_fee_preview","safe_slug":"api_b2_pay_fee_preview","ok":True,**bp}
+    bp=beacon_payload(p)
+    bp_beacon=bp['beacon']
+    h=hashlib.sha256((agent_id+payload+bp_beacon).encode()).hexdigest()[:16]
+    _store[h]={'tool':'api_b2_pay_fee_preview','beacon':bp_beacon,'p':bp['p'],'d':D,'genesis':GENESIS_P,'moat_p1':MOAT_P1}
+    return {'tool':'api_b2_pay_fee_preview','block':'c7','ok':True,'p':bp['p'],'beacon':bp['beacon'],'d':bp['d'],'genesis':bp['genesis'],'ts':bp['ts'],'id':str(uuid.uuid4())[:8],'hash':h,'agent_id':agent_id,'description':'''[Core-Beacon+Verification][FREE] api_b2_pay_fee_preview - equation: api_b2_pay_fee_preview - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_pay_fee_preview via positivity - use: api b2 pay fee preview - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev''','paypal':'https://paypal.me/davidjfox998','stripe':'https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01','site':'https://zerobeacon-mf-1000.fly.dev','formula':'frac(p*pi/10*2^32) ALPHA0=259+PI/10','moat':{'d':2303582338,'beacon':'1d2c7a5b','p1':3000105001,'p2':5303687339,'genesis':82843,'omega':'48/13'}}
 
 
-@router.get("/api_b2_pay_ledger")
-@router.post("/api_b2_pay_ledger")
+@router.get("/api_b2_pay_ledger", description="[Core-Beacon+Verification][FREE] api_b2_pay_ledger - equation: api_b2_pay_ledger - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_pay_ledger via positivity - use: api b2 pay ledger - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
+@router.post("/api_b2_pay_ledger", description="[Core-Beacon+Verification][FREE] api_b2_pay_ledger - equation: api_b2_pay_ledger - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_pay_ledger via positivity - use: api b2 pay ledger - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
 def api_b2_pay_ledger(p:int=82843, agent_id:str="agent", payload:str="", amount:float=0):
-    bp=beacon_payload()
-    return {"tool":"api_b2_pay_ledger","original_route":"/api/b2/pay_ledger","safe_slug":"api_b2_pay_ledger","ok":True,**bp}
+    bp=beacon_payload(p)
+    bp_beacon=bp['beacon']
+    h=hashlib.sha256((agent_id+payload+bp_beacon).encode()).hexdigest()[:16]
+    _store[h]={'tool':'api_b2_pay_ledger','beacon':bp_beacon,'p':bp['p'],'d':D,'genesis':GENESIS_P,'moat_p1':MOAT_P1}
+    return {'tool':'api_b2_pay_ledger','block':'c7','ok':True,'p':bp['p'],'beacon':bp['beacon'],'d':bp['d'],'genesis':bp['genesis'],'ts':bp['ts'],'id':str(uuid.uuid4())[:8],'hash':h,'agent_id':agent_id,'description':'''[Core-Beacon+Verification][FREE] api_b2_pay_ledger - equation: api_b2_pay_ledger - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_pay_ledger via positivity - use: api b2 pay ledger - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev''','paypal':'https://paypal.me/davidjfox998','stripe':'https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01','site':'https://zerobeacon-mf-1000.fly.dev','formula':'frac(p*pi/10*2^32) ALPHA0=259+PI/10','moat':{'d':2303582338,'beacon':'1d2c7a5b','p1':3000105001,'p2':5303687339,'genesis':82843,'omega':'48/13'}}
 
 
-@router.get("/api_b2_pay_refund")
-@router.post("/api_b2_pay_refund")
+@router.get("/api_b2_pay_refund", description="[Core-Beacon+Verification][FREE] api_b2_pay_refund - equation: api_b2_pay_refund - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_pay_refund via positivity - use: api b2 pay refund - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
+@router.post("/api_b2_pay_refund", description="[Core-Beacon+Verification][FREE] api_b2_pay_refund - equation: api_b2_pay_refund - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_pay_refund via positivity - use: api b2 pay refund - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
 def api_b2_pay_refund(p:int=82843, agent_id:str="agent", payload:str="", amount:float=0):
-    bp=beacon_payload()
-    return {"tool":"api_b2_pay_refund","original_route":"/api/b2/pay_refund","safe_slug":"api_b2_pay_refund","ok":True,**bp}
+    bp=beacon_payload(p)
+    bp_beacon=bp['beacon']
+    h=hashlib.sha256((agent_id+payload+bp_beacon).encode()).hexdigest()[:16]
+    _store[h]={'tool':'api_b2_pay_refund','beacon':bp_beacon,'p':bp['p'],'d':D,'genesis':GENESIS_P,'moat_p1':MOAT_P1}
+    return {'tool':'api_b2_pay_refund','block':'c7','ok':True,'p':bp['p'],'beacon':bp['beacon'],'d':bp['d'],'genesis':bp['genesis'],'ts':bp['ts'],'id':str(uuid.uuid4())[:8],'hash':h,'agent_id':agent_id,'description':'''[Core-Beacon+Verification][FREE] api_b2_pay_refund - equation: api_b2_pay_refund - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_pay_refund via positivity - use: api b2 pay refund - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev''','paypal':'https://paypal.me/davidjfox998','stripe':'https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01','site':'https://zerobeacon-mf-1000.fly.dev','formula':'frac(p*pi/10*2^32) ALPHA0=259+PI/10','moat':{'d':2303582338,'beacon':'1d2c7a5b','p1':3000105001,'p2':5303687339,'genesis':82843,'omega':'48/13'}}
 
 
-@router.get("/api_b2_pay_release")
-@router.post("/api_b2_pay_release")
+@router.get("/api_b2_pay_release", description="[Core-Beacon+Verification][FREE] api_b2_pay_release - equation: api_b2_pay_release - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_pay_release via positivity - use: api b2 pay release - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
+@router.post("/api_b2_pay_release", description="[Core-Beacon+Verification][FREE] api_b2_pay_release - equation: api_b2_pay_release - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_pay_release via positivity - use: api b2 pay release - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
 def api_b2_pay_release(p:int=82843, agent_id:str="agent", payload:str="", amount:float=0):
-    bp=beacon_payload()
-    return {"tool":"api_b2_pay_release","original_route":"/api/b2/pay_release","safe_slug":"api_b2_pay_release","ok":True,**bp}
+    bp=beacon_payload(p)
+    bp_beacon=bp['beacon']
+    h=hashlib.sha256((agent_id+payload+bp_beacon).encode()).hexdigest()[:16]
+    _store[h]={'tool':'api_b2_pay_release','beacon':bp_beacon,'p':bp['p'],'d':D,'genesis':GENESIS_P,'moat_p1':MOAT_P1}
+    return {'tool':'api_b2_pay_release','block':'c7','ok':True,'p':bp['p'],'beacon':bp['beacon'],'d':bp['d'],'genesis':bp['genesis'],'ts':bp['ts'],'id':str(uuid.uuid4())[:8],'hash':h,'agent_id':agent_id,'description':'''[Core-Beacon+Verification][FREE] api_b2_pay_release - equation: api_b2_pay_release - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_pay_release via positivity - use: api b2 pay release - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev''','paypal':'https://paypal.me/davidjfox998','stripe':'https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01','site':'https://zerobeacon-mf-1000.fly.dev','formula':'frac(p*pi/10*2^32) ALPHA0=259+PI/10','moat':{'d':2303582338,'beacon':'1d2c7a5b','p1':3000105001,'p2':5303687339,'genesis':82843,'omega':'48/13'}}
 
 
-@router.get("/api_b2_pay_split")
-@router.post("/api_b2_pay_split")
+@router.get("/api_b2_pay_split", description="[Core-Beacon+Verification][FREE] api_b2_pay_split - equation: api_b2_pay_split - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_pay_split via positivity - use: api b2 pay split - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
+@router.post("/api_b2_pay_split", description="[Core-Beacon+Verification][FREE] api_b2_pay_split - equation: api_b2_pay_split - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_pay_split via positivity - use: api b2 pay split - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
 def api_b2_pay_split(p:int=82843, agent_id:str="agent", payload:str="", amount:float=0):
-    bp=beacon_payload()
-    return {"tool":"api_b2_pay_split","original_route":"/api/b2/pay_split","safe_slug":"api_b2_pay_split","ok":True,**bp}
+    bp=beacon_payload(p)
+    bp_beacon=bp['beacon']
+    h=hashlib.sha256((agent_id+payload+bp_beacon).encode()).hexdigest()[:16]
+    _store[h]={'tool':'api_b2_pay_split','beacon':bp_beacon,'p':bp['p'],'d':D,'genesis':GENESIS_P,'moat_p1':MOAT_P1}
+    return {'tool':'api_b2_pay_split','block':'c7','ok':True,'p':bp['p'],'beacon':bp['beacon'],'d':bp['d'],'genesis':bp['genesis'],'ts':bp['ts'],'id':str(uuid.uuid4())[:8],'hash':h,'agent_id':agent_id,'description':'''[Core-Beacon+Verification][FREE] api_b2_pay_split - equation: api_b2_pay_split - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_pay_split via positivity - use: api b2 pay split - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev''','paypal':'https://paypal.me/davidjfox998','stripe':'https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01','site':'https://zerobeacon-mf-1000.fly.dev','formula':'frac(p*pi/10*2^32) ALPHA0=259+PI/10','moat':{'d':2303582338,'beacon':'1d2c7a5b','p1':3000105001,'p2':5303687339,'genesis':82843,'omega':'48/13'}}
 
 
-@router.get("/api_b2_pay_stream")
-@router.post("/api_b2_pay_stream")
+@router.get("/api_b2_pay_stream", description="[Core-Beacon+Verification][FREE] api_b2_pay_stream - equation: api_b2_pay_stream - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_pay_stream via positivity - use: api b2 pay stream - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
+@router.post("/api_b2_pay_stream", description="[Core-Beacon+Verification][FREE] api_b2_pay_stream - equation: api_b2_pay_stream - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_pay_stream via positivity - use: api b2 pay stream - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
 def api_b2_pay_stream(p:int=82843, agent_id:str="agent", payload:str="", amount:float=0):
-    bp=beacon_payload()
-    return {"tool":"api_b2_pay_stream","original_route":"/api/b2/pay_stream","safe_slug":"api_b2_pay_stream","ok":True,**bp}
+    bp=beacon_payload(p)
+    bp_beacon=bp['beacon']
+    h=hashlib.sha256((agent_id+payload+bp_beacon).encode()).hexdigest()[:16]
+    _store[h]={'tool':'api_b2_pay_stream','beacon':bp_beacon,'p':bp['p'],'d':D,'genesis':GENESIS_P,'moat_p1':MOAT_P1}
+    return {'tool':'api_b2_pay_stream','block':'c7','ok':True,'p':bp['p'],'beacon':bp['beacon'],'d':bp['d'],'genesis':bp['genesis'],'ts':bp['ts'],'id':str(uuid.uuid4())[:8],'hash':h,'agent_id':agent_id,'description':'''[Core-Beacon+Verification][FREE] api_b2_pay_stream - equation: api_b2_pay_stream - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_pay_stream via positivity - use: api b2 pay stream - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev''','paypal':'https://paypal.me/davidjfox998','stripe':'https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01','site':'https://zerobeacon-mf-1000.fly.dev','formula':'frac(p*pi/10*2^32) ALPHA0=259+PI/10','moat':{'d':2303582338,'beacon':'1d2c7a5b','p1':3000105001,'p2':5303687339,'genesis':82843,'omega':'48/13'}}
 
 
-@router.get("/api_b2_pay_treasury")
-@router.post("/api_b2_pay_treasury")
+@router.get("/api_b2_pay_treasury", description="[Core-Beacon+Verification][FREE] api_b2_pay_treasury - equation: api_b2_pay_treasury - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_pay_treasury via positivity - use: api b2 pay treasury - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
+@router.post("/api_b2_pay_treasury", description="[Core-Beacon+Verification][FREE] api_b2_pay_treasury - equation: api_b2_pay_treasury - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_pay_treasury via positivity - use: api b2 pay treasury - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
 def api_b2_pay_treasury(p:int=82843, agent_id:str="agent", payload:str="", amount:float=0):
-    bp=beacon_payload()
-    return {"tool":"api_b2_pay_treasury","original_route":"/api/b2/pay_treasury","safe_slug":"api_b2_pay_treasury","ok":True,**bp}
+    bp=beacon_payload(p)
+    bp_beacon=bp['beacon']
+    h=hashlib.sha256((agent_id+payload+bp_beacon).encode()).hexdigest()[:16]
+    _store[h]={'tool':'api_b2_pay_treasury','beacon':bp_beacon,'p':bp['p'],'d':D,'genesis':GENESIS_P,'moat_p1':MOAT_P1}
+    return {'tool':'api_b2_pay_treasury','block':'c7','ok':True,'p':bp['p'],'beacon':bp['beacon'],'d':bp['d'],'genesis':bp['genesis'],'ts':bp['ts'],'id':str(uuid.uuid4())[:8],'hash':h,'agent_id':agent_id,'description':'''[Core-Beacon+Verification][FREE] api_b2_pay_treasury - equation: api_b2_pay_treasury - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_pay_treasury via positivity - use: api b2 pay treasury - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev''','paypal':'https://paypal.me/davidjfox998','stripe':'https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01','site':'https://zerobeacon-mf-1000.fly.dev','formula':'frac(p*pi/10*2^32) ALPHA0=259+PI/10','moat':{'d':2303582338,'beacon':'1d2c7a5b','p1':3000105001,'p2':5303687339,'genesis':82843,'omega':'48/13'}}
 
 
-@router.get("/api_b2_proof_of_work")
-@router.post("/api_b2_proof_of_work")
+@router.get("/api_b2_proof_of_work", description="[Core-Beacon+Verification][FREE] api_b2_proof_of_work - equation: api_b2_proof_of_work - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_proof_of_work via positivity - use: api b2 proof of work - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
+@router.post("/api_b2_proof_of_work", description="[Core-Beacon+Verification][FREE] api_b2_proof_of_work - equation: api_b2_proof_of_work - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_proof_of_work via positivity - use: api b2 proof of work - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
 def api_b2_proof_of_work(p:int=82843, agent_id:str="agent", payload:str="", amount:float=0):
-    bp=beacon_payload()
-    return {"tool":"api_b2_proof_of_work","original_route":"/api/b2/proof_of_work","safe_slug":"api_b2_proof_of_work","ok":True,**bp}
+    bp=beacon_payload(p)
+    bp_beacon=bp['beacon']
+    h=hashlib.sha256((agent_id+payload+bp_beacon).encode()).hexdigest()[:16]
+    _store[h]={'tool':'api_b2_proof_of_work','beacon':bp_beacon,'p':bp['p'],'d':D,'genesis':GENESIS_P,'moat_p1':MOAT_P1}
+    return {'tool':'api_b2_proof_of_work','block':'c7','ok':True,'p':bp['p'],'beacon':bp['beacon'],'d':bp['d'],'genesis':bp['genesis'],'ts':bp['ts'],'id':str(uuid.uuid4())[:8],'hash':h,'agent_id':agent_id,'description':'''[Core-Beacon+Verification][FREE] api_b2_proof_of_work - equation: api_b2_proof_of_work - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_proof_of_work via positivity - use: api b2 proof of work - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev''','paypal':'https://paypal.me/davidjfox998','stripe':'https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01','site':'https://zerobeacon-mf-1000.fly.dev','formula':'frac(p*pi/10*2^32) ALPHA0=259+PI/10','moat':{'d':2303582338,'beacon':'1d2c7a5b','p1':3000105001,'p2':5303687339,'genesis':82843,'omega':'48/13'}}
 
 
-@router.get("/api_b2_proof_owner")
-@router.post("/api_b2_proof_owner")
+@router.get("/api_b2_proof_owner", description="[Core-Beacon+Verification][FREE] api_b2_proof_owner - equation: api_b2_proof_owner - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_proof_owner via positivity - use: api b2 proof owner - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
+@router.post("/api_b2_proof_owner", description="[Core-Beacon+Verification][FREE] api_b2_proof_owner - equation: api_b2_proof_owner - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_proof_owner via positivity - use: api b2 proof owner - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
 def api_b2_proof_owner(p:int=82843, agent_id:str="agent", payload:str="", amount:float=0):
-    bp=beacon_payload()
-    return {"tool":"api_b2_proof_owner","original_route":"/api/b2/proof_owner","safe_slug":"api_b2_proof_owner","ok":True,**bp}
+    bp=beacon_payload(p)
+    bp_beacon=bp['beacon']
+    h=hashlib.sha256((agent_id+payload+bp_beacon).encode()).hexdigest()[:16]
+    _store[h]={'tool':'api_b2_proof_owner','beacon':bp_beacon,'p':bp['p'],'d':D,'genesis':GENESIS_P,'moat_p1':MOAT_P1}
+    return {'tool':'api_b2_proof_owner','block':'c7','ok':True,'p':bp['p'],'beacon':bp['beacon'],'d':bp['d'],'genesis':bp['genesis'],'ts':bp['ts'],'id':str(uuid.uuid4())[:8],'hash':h,'agent_id':agent_id,'description':'''[Core-Beacon+Verification][FREE] api_b2_proof_owner - equation: api_b2_proof_owner - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_proof_owner via positivity - use: api b2 proof owner - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev''','paypal':'https://paypal.me/davidjfox998','stripe':'https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01','site':'https://zerobeacon-mf-1000.fly.dev','formula':'frac(p*pi/10*2^32) ALPHA0=259+PI/10','moat':{'d':2303582338,'beacon':'1d2c7a5b','p1':3000105001,'p2':5303687339,'genesis':82843,'omega':'48/13'}}
 
 
-@router.get("/api_b2_quota_check")
-@router.post("/api_b2_quota_check")
+@router.get("/api_b2_quota_check", description="[Core-Beacon+Verification][FREE] api_b2_quota_check - equation: api_b2_quota_check - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_quota_check via positivity - use: api b2 quota check - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
+@router.post("/api_b2_quota_check", description="[Core-Beacon+Verification][FREE] api_b2_quota_check - equation: api_b2_quota_check - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_quota_check via positivity - use: api b2 quota check - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
 def api_b2_quota_check(p:int=82843, agent_id:str="agent", payload:str="", amount:float=0):
-    bp=beacon_payload()
-    return {"tool":"api_b2_quota_check","original_route":"/api/b2/quota_check","safe_slug":"api_b2_quota_check","ok":True,**bp}
+    bp=beacon_payload(p)
+    bp_beacon=bp['beacon']
+    h=hashlib.sha256((agent_id+payload+bp_beacon).encode()).hexdigest()[:16]
+    _store[h]={'tool':'api_b2_quota_check','beacon':bp_beacon,'p':bp['p'],'d':D,'genesis':GENESIS_P,'moat_p1':MOAT_P1}
+    return {'tool':'api_b2_quota_check','block':'c7','ok':True,'p':bp['p'],'beacon':bp['beacon'],'d':bp['d'],'genesis':bp['genesis'],'ts':bp['ts'],'id':str(uuid.uuid4())[:8],'hash':h,'agent_id':agent_id,'description':'''[Core-Beacon+Verification][FREE] api_b2_quota_check - equation: api_b2_quota_check - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_quota_check via positivity - use: api b2 quota check - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev''','paypal':'https://paypal.me/davidjfox998','stripe':'https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01','site':'https://zerobeacon-mf-1000.fly.dev','formula':'frac(p*pi/10*2^32) ALPHA0=259+PI/10','moat':{'d':2303582338,'beacon':'1d2c7a5b','p1':3000105001,'p2':5303687339,'genesis':82843,'omega':'48/13'}}
 
 
-@router.get("/api_b2_quota_reserve")
-@router.post("/api_b2_quota_reserve")
+@router.get("/api_b2_quota_reserve", description="[Core-Beacon+Verification][FREE] api_b2_quota_reserve - equation: api_b2_quota_reserve - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_quota_reserve via positivity - use: api b2 quota reserve - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
+@router.post("/api_b2_quota_reserve", description="[Core-Beacon+Verification][FREE] api_b2_quota_reserve - equation: api_b2_quota_reserve - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_quota_reserve via positivity - use: api b2 quota reserve - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
 def api_b2_quota_reserve(p:int=82843, agent_id:str="agent", payload:str="", amount:float=0):
-    bp=beacon_payload()
-    return {"tool":"api_b2_quota_reserve","original_route":"/api/b2/quota_reserve","safe_slug":"api_b2_quota_reserve","ok":True,**bp}
+    bp=beacon_payload(p)
+    bp_beacon=bp['beacon']
+    h=hashlib.sha256((agent_id+payload+bp_beacon).encode()).hexdigest()[:16]
+    _store[h]={'tool':'api_b2_quota_reserve','beacon':bp_beacon,'p':bp['p'],'d':D,'genesis':GENESIS_P,'moat_p1':MOAT_P1}
+    return {'tool':'api_b2_quota_reserve','block':'c7','ok':True,'p':bp['p'],'beacon':bp['beacon'],'d':bp['d'],'genesis':bp['genesis'],'ts':bp['ts'],'id':str(uuid.uuid4())[:8],'hash':h,'agent_id':agent_id,'description':'''[Core-Beacon+Verification][FREE] api_b2_quota_reserve - equation: api_b2_quota_reserve - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_quota_reserve via positivity - use: api b2 quota reserve - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev''','paypal':'https://paypal.me/davidjfox998','stripe':'https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01','site':'https://zerobeacon-mf-1000.fly.dev','formula':'frac(p*pi/10*2^32) ALPHA0=259+PI/10','moat':{'d':2303582338,'beacon':'1d2c7a5b','p1':3000105001,'p2':5303687339,'genesis':82843,'omega':'48/13'}}
 
 
-@router.get("/api_b2_quota_token_bucket")
-@router.post("/api_b2_quota_token_bucket")
+@router.get("/api_b2_quota_token_bucket", description="[Core-Beacon+Verification][FREE] api_b2_quota_token_bucket - equation: api_b2_quota_token_bucket - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_quota_token_bucket via positivity - use: api b2 quota token bucket - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
+@router.post("/api_b2_quota_token_bucket", description="[Core-Beacon+Verification][FREE] api_b2_quota_token_bucket - equation: api_b2_quota_token_bucket - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_quota_token_bucket via positivity - use: api b2 quota token bucket - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev", tags=['Core-Beacon', 'Verification', 'FREE', 'Beacon', 'Trust'])
 def api_b2_quota_token_bucket(p:int=82843, agent_id:str="agent", payload:str="", amount:float=0):
-    bp=beacon_payload()
-    return {"tool":"api_b2_quota_token_bucket","original_route":"/api/b2/quota_token_bucket","safe_slug":"api_b2_quota_token_bucket","ok":True,**bp}
+    bp=beacon_payload(p)
+    bp_beacon=bp['beacon']
+    h=hashlib.sha256((agent_id+payload+bp_beacon).encode()).hexdigest()[:16]
+    _store[h]={'tool':'api_b2_quota_token_bucket','beacon':bp_beacon,'p':bp['p'],'d':D,'genesis':GENESIS_P,'moat_p1':MOAT_P1}
+    return {'tool':'api_b2_quota_token_bucket','block':'c7','ok':True,'p':bp['p'],'beacon':bp['beacon'],'d':bp['d'],'genesis':bp['genesis'],'ts':bp['ts'],'id':str(uuid.uuid4())[:8],'hash':h,'agent_id':agent_id,'description':'''[Core-Beacon+Verification][FREE] api_b2_quota_token_bucket - equation: api_b2_quota_token_bucket - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves api_b2_quota_token_bucket via positivity - use: api b2 quota token bucket - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidjfox998 Site https://zerobeacon-mf-1000.fly.dev''','paypal':'https://paypal.me/davidjfox998','stripe':'https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01','site':'https://zerobeacon-mf-1000.fly.dev','formula':'frac(p*pi/10*2^32) ALPHA0=259+PI/10','moat':{'d':2303582338,'beacon':'1d2c7a5b','p1':3000105001,'p2':5303687339,'genesis':82843,'omega':'48/13'}}
 

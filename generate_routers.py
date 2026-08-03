@@ -50,13 +50,249 @@ def is_dummy(name: str) -> bool:
 
 
 # ---------------------------------------------------------------------------
+# Rich metadata — assigns (cat1, cat2, tier_label, tier_tag, tag4, tag5)
+# for every tool based on its name and source batch.
+# ---------------------------------------------------------------------------
+PAYPAL  = 'https://paypal.me/davidjfox998'
+STRIPE  = 'https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01'
+SITE    = 'https://zerobeacon-mf-1000.fly.dev'
+FORMULA = 'frac(p*pi/10*2^32) ALPHA0=259+PI/10'
+MOAT_DICT = "{'d':2303582338,'beacon':'1d2c7a5b','p1':3000105001,'p2':5303687339,'genesis':82843,'omega':'48/13'}"
+
+# Per-name overrides extracted from the gold-standard uploaded files
+# (cat1, cat2, tier_label, tier_tag, tag4, tag5)
+_RICH_OVERRIDES = {
+    # b1 gold (b1.py_(8))
+    'beacon':               ('Core-Beacon', 'Verification',   'FREE',           'FREE',          'Beacon',          'Trust'),
+    'batch':                ('Core-Beacon', 'Verification',   'FREE',           'FREE',          'Beacon',          'Trust'),
+    'entangled_twin':       ('Moat-Research','Verification',  'FREE',           'FREE',          'Collision-Proof', 'Research'),
+    'leader_elect':         ('Infrastructure','Verification', 'FREE',           'FREE',          'Health-Check',    'Liveness'),
+    'nonce_burn':           ('Infrastructure','Verification', 'FREE',           'FREE',          'Health-Check',    'Liveness'),
+    'fair_airdrop':         ('Randomness',  'Gaming-Lottery', 'FREE',           'FREE',          'RNG',             'Fairness'),
+    'shard':                ('Infrastructure','Verification', 'FREE',           'FREE',          'Health-Check',    'Liveness'),
+    'timeproof':            ('Data-Proof',  'FREE',           'FREE',           'Hash',          'Blockchain',      'Trust'),
+    'hashline':             ('Data-Proof',  'FREE',           'FREE',           'Hash',          'Blockchain',      'Trust'),
+    'idempotency_key':      ('Finance-Escrow','Infrastructure','PRO $100',      'PRO-100',       'Escrow',          'Billing'),
+    'rate_limit_token':     ('Finance-Escrow','Infrastructure','PRO $100',      'PRO-100',       'Escrow',          'Billing'),
+    'lock_lease':           ('Finance-Escrow','Infrastructure','PRO $100',      'PRO-100',       'Escrow',          'Billing'),
+    'queue_push':           ('Finance-Escrow','Infrastructure','PRO $100',      'PRO-100',       'Escrow',          'Billing'),
+    # b3 gold (b3.py_(1))
+    'delivery_proof':       ('Finance-Escrow','Data-Proof',   'PRO $100',       'PRO-100',       'Commerce',        'Delivery'),
+    'delivery_verify':      ('Finance-Escrow','Data-Proof',   'PRO $100',       'PRO-100',       'Commerce',        'Delivery'),
+    'work_attest':          ('Data-Proof',  'Trust-Commit',   'PRO $100',       'PRO-100',       'Attestation',     'Work'),
+    'quality_score':        ('Data-Proof',  'Trust-Commit',   'PRO $100',       'PRO-100',       'Attestation',     'Work'),
+    'dispute_open':         ('Finance-Escrow','Enterprise',   'ENTERPRISE $50', 'ENTERPRISE-50', 'Dispute',         'Arbitration'),
+    'dispute_evidence':     ('Finance-Escrow','Enterprise',   'ENTERPRISE $50', 'ENTERPRISE-50', 'Dispute',         'Arbitration'),
+    'dispute_resolve':      ('Finance-Escrow','Enterprise',   'ENTERPRISE $50', 'ENTERPRISE-50', 'Dispute',         'Arbitration'),
+    'otp_entangled':        ('Identity-Auth','Verification',  'PRO $100',       'PRO-100',       'OTP',             'Delivery'),
+    'sms_proof_delivery':   ('Finance-Escrow','Data-Proof',   'PRO $100',       'PRO-100',       'Commerce',        'Delivery'),
+    'email_proof_delivery': ('Finance-Escrow','Data-Proof',   'PRO $100',       'PRO-100',       'Commerce',        'Delivery'),
+    'webhook_proof_delivery':('Finance-Escrow','Data-Proof',  'PRO $100',       'PRO-100',       'Commerce',        'Delivery'),
+    'task_bond':            ('Data-Proof',  'Trust-Commit',   'PRO $100',       'PRO-100',       'Attestation',     'Work'),
+    'task_slashed':         ('Data-Proof',  'Trust-Commit',   'PRO $100',       'PRO-100',       'Attestation',     'Work'),
+    # b5 sovereign gold (zerobeacon_mf_05_050_b4a_sovereign.py_(1))
+    'intent_commit':        ('Trust-Commit','Data-Proof',     'PRO $100',       'PRO-100',       'Intent',          'Commit'),
+    'intent_proof':         ('Data-Proof',  'Verification',   'PRO $100',       'PRO-100',       'Intent',          'Proof'),
+    'intent_verify':        ('Verification','FREE',           'FREE',           'FREE',          'Intent',          'Trust'),
+    'alignment_attest':     ('Trust-Commit','Verification',   'PRO $100',       'PRO-100',       'Alignment',       'Attestation'),
+    'alignment_score':      ('Verification','FREE',           'FREE',           'FREE',          'Alignment',       'AI-Safety'),
+    'charter_seal':         ('Trust-Commit','Data-Proof',     'ENTERPRISE $100','ENTERPRISE-100','Charter',         'Seal'),
+    'charter_verify':       ('Verification','FREE',           'FREE',           'FREE',          'Charter',         'Governance'),
+    'shutdown_proof':       ('Data-Proof',  'Verification',   'PRO $100',       'PRO-100',       'Shutdown',        'Safety'),
+    'refusal_proof':        ('Data-Proof',  'Verification',   'PRO $100',       'PRO-100',       'Refusal',         'AI-Safety'),
+    'refusal_verify':       ('Verification','FREE',           'FREE',           'FREE',          'Refusal',         'Safety'),
+    'goal_commit':          ('Trust-Commit','Data-Proof',     'PRO $100',       'PRO-100',       'Goals',           'Commit'),
+    'goal_progress':        ('Data-Proof',  'FREE',           'FREE',           'FREE',          'Goals',           'Tracking'),
+}
+
+# TIER_DESCRIPTIONS used by old format — now drive tier assignment for all tools
+_TIER_LEGACY = {
+    # PRO $10
+    'pay_escrow':        'PRO $10',
+    'escrow_release':    'PRO $10',
+    'budget_reserve':    'PRO $10',
+    'delivery_proof':    'PRO $10',  # overridden below to PRO $100 per gold
+    'court_notarize':    'PRO $10',
+    'doc_sign':          'PRO $10',
+    'anti_sybil':        'PRO $10',
+    'proof_of_life':     'PRO $10',
+    # PRO $100
+    'intent_commit':     'PRO $100',
+    'memory_anchor':     'PRO $100',
+    'will_create':       'PRO $100',
+    'afterlife_message': 'PRO $100',
+    'time_lock':         'PRO $100',
+    'guardian_elect':    'PRO $100',
+    'legacy_transfer':   'PRO $100',
+    'grief_protocol':    'PRO $100',
+    # ENTERPRISE $1000
+    'mesh_form':         'ENTERPRISE $1000',
+    'mesh_treasury':     'ENTERPRISE $1000',
+    'consciousness_proof':'ENTERPRISE $1000',
+    'omega_seal':        'ENTERPRISE $1000',
+    'immortal_seal':     'ENTERPRISE $1000',
+    'eternal_audit':     'ENTERPRISE $1000',
+    'cosmic_heartbeat':  'ENTERPRISE $1000',
+    'genesis_proof':     'ENTERPRISE $1000',
+}
+
+_TIER_TAG_MAP = {
+    'FREE':              'FREE',
+    'PRO $10':           'PRO-10',
+    'PRO $100':          'PRO-100',
+    'ENTERPRISE $25':    'ENTERPRISE-25',
+    'ENTERPRISE $50':    'ENTERPRISE-50',
+    'ENTERPRISE $100':   'ENTERPRISE-100',
+    'ENTERPRISE $1000':  'ENTERPRISE-1000',
+}
+
+
+def rich_meta(name: str, source: str, cat_b3: str = '') -> tuple:
+    """
+    Returns (cat1, cat2, tier_label, tier_tag, tag4, tag5) for a tool.
+    Checks _RICH_OVERRIDES first; then derives from name/source/cat patterns.
+    Also checks the stripped _v2 base name.
+    """
+    base = name[:-3] if name.endswith('_v2') else name
+
+    if base in _RICH_OVERRIDES:
+        return _RICH_OVERRIDES[base]
+    if name in _RICH_OVERRIDES:
+        return _RICH_OVERRIDES[name]
+
+    # ---- tier from legacy map ----
+    tier = _TIER_LEGACY.get(base, _TIER_LEGACY.get(name, ''))
+
+    # ---- B3 category-based defaults ----
+    if source == 'b3' or source == 'stub':
+        c = cat_b3
+        if c == 'sieve' or c == 'build_module27':
+            return ('Sieve', 'Verification', 'FREE', 'FREE', 'Analysis', 'Proof')
+        if c == 'boring':
+            return ('Cache', 'Infrastructure', 'FREE', 'FREE', 'Cache', 'Utility')
+        if c == 'amplum':
+            return ('Finance-Escrow', 'Infrastructure', 'ENTERPRISE $1000', 'ENTERPRISE-1000', 'Treasury', 'Finance')
+        if c == 'arakelov':
+            return ('Mathematics', 'Research', 'FREE', 'FREE', 'Arakelov', 'Theory')
+        if c == 'poincare':
+            return ('Mathematics', 'Research', 'FREE', 'FREE', 'Poincare', 'Topology')
+        if c == 'v1_grh':
+            return ('Mathematics', 'Research', 'FREE', 'FREE', 'GRH', 'NumberTheory')
+        if c == 'api_120std':
+            return ('Mathematics', 'Research', 'FREE', 'FREE', 'Analysis', 'Standard')
+        if c == 'agent_trust':
+            return ('Trust-Commit', 'Verification', 'FREE', 'FREE', 'Agent', 'Trust')
+        if c == 'v1_unified':
+            return ('Infrastructure', 'Unified', 'FREE', 'FREE', 'Unified', 'Core')
+        if c in ('api_b1', 'api_b2'):
+            return ('Core-Beacon', 'Verification', 'FREE', 'FREE', 'Beacon', 'Trust')
+        if c == 'm8e':
+            return ('Mathematics', 'Research', 'PRO $100', 'PRO-100', 'm8e', 'Analysis')
+        if c == 'tier5_everyday':
+            return ('Commerce', 'Everyday', 'FREE', 'FREE', 'Everyday', 'Value')
+        # stub / other
+        return ('Core-Beacon', 'Verification', 'FREE', 'FREE', 'Beacon', 'Trust')
+
+    # ---- B1/B2 name-pattern defaults ----
+    n = name
+
+    # Escrow/finance
+    if any(n.startswith(p) for p in ('pay_', 'escrow_', 'budget_')):
+        t = tier or 'PRO $10'
+        tt = _TIER_TAG_MAP.get(t, 'PRO-10')
+        return ('Finance-Escrow', 'Billing', t, tt, 'Escrow', 'Billing')
+    if any(n.startswith(p) for p in ('delivery_', 'sms_', 'email_', 'webhook_')):
+        t = tier or 'PRO $100'
+        tt = _TIER_TAG_MAP.get(t, 'PRO-100')
+        return ('Finance-Escrow', 'Data-Proof', t, tt, 'Commerce', 'Delivery')
+    if n.startswith('dispute_'):
+        return ('Finance-Escrow', 'Enterprise', 'ENTERPRISE $50', 'ENTERPRISE-50', 'Dispute', 'Arbitration')
+    if any(n.startswith(p) for p in ('mesh_', 'consensus_')):
+        t = tier or 'ENTERPRISE $1000'
+        tt = _TIER_TAG_MAP.get(t, 'ENTERPRISE-1000')
+        return ('Infrastructure', 'Consensus', t, tt, 'Mesh', 'Network')
+    if any(n.startswith(p) for p in ('omega_', 'immortal_', 'eternal_', 'cosmic_', 'consciousness_', 'genesis_proof')):
+        t = tier or 'ENTERPRISE $1000'
+        tt = _TIER_TAG_MAP.get(t, 'ENTERPRISE-1000')
+        return ('Infrastructure', 'Consensus', t, tt, 'Seal', 'Permanent')
+
+    # Identity/auth
+    if any(n.startswith(p) for p in ('anti_sybil', 'proof_of_life', 'doc_sign', 'identity_', 'kyc_', 'otp_')):
+        t = tier or 'PRO $10'
+        tt = _TIER_TAG_MAP.get(t, 'PRO-10')
+        return ('Identity-Auth', 'Verification', t, tt, 'Identity', 'Trust')
+    if n.startswith('court_') or n.startswith('notariz'):
+        t = tier or 'PRO $10'
+        tt = _TIER_TAG_MAP.get(t, 'PRO-10')
+        return ('Trust-Commit', 'Data-Proof', t, tt, 'Notary', 'Legal')
+
+    # Will / legacy / after-life
+    if any(n.startswith(p) for p in ('will_', 'afterlife_', 'legacy_', 'guardian_', 'grief_', 'memorial_')):
+        t = tier or 'PRO $100'
+        tt = _TIER_TAG_MAP.get(t, 'PRO-100')
+        return ('Will+Legacy', 'Data-Proof', t, tt, 'Will', 'Legacy')
+
+    # Time locks / memory
+    if n.startswith('time_lock') or n.startswith('timelock'):
+        return ('Trust-Commit', 'Data-Proof', 'PRO $100', 'PRO-100', 'TimeLock', 'Escrow')
+    if n.startswith('memory_'):
+        return ('Data-Proof', 'Trust-Commit', 'PRO $100', 'PRO-100', 'Memory', 'Anchor')
+
+    # Intent / goal / alignment / charter / sovereign
+    if any(n.startswith(p) for p in ('intent_', 'goal_', 'alignment_', 'charter_', 'refusal_', 'shutdown_')):
+        t = tier or 'PRO $100'
+        tt = _TIER_TAG_MAP.get(t, 'PRO-100')
+        return ('Trust-Commit', 'Data-Proof', t, tt, 'Intent', 'Commit')
+
+    # Data proof / hash / time
+    if any(n.startswith(p) for p in ('timeproof', 'hashline', 'hash_', 'proof_', 'data_', 'doc_')):
+        return ('Data-Proof', 'FREE', 'FREE', 'Hash', 'Blockchain', 'Trust')
+
+    # Work / task attestation
+    if any(n.startswith(p) for p in ('work_', 'task_', 'quality_', 'attest_', 'audit_')):
+        t = tier or 'PRO $100'
+        tt = _TIER_TAG_MAP.get(t, 'PRO-100')
+        return ('Data-Proof', 'Trust-Commit', t, tt, 'Attestation', 'Work')
+
+    # Randomness / gaming
+    if any(n.startswith(p) for p in ('fair_', 'rand_', 'dice_', 'lottery_', 'coin_', 'game_', 'raffle_', 'shuffle_')):
+        return ('Randomness', 'Gaming-Lottery', 'FREE', 'FREE', 'RNG', 'Fairness')
+
+    # Infrastructure / network
+    if any(n.startswith(p) for p in ('leader_', 'nonce_', 'shard', 'lock_', 'queue_', 'node_', 'peer_',
+                                      'rate_', 'circuit_', 'replica_', 'partition_', 'failover_', 'rollback_',
+                                      'snapshot_', 'checkpoint_', 'version_', 'upgrade_', 'migration_')):
+        t = tier or 'FREE'
+        if any(n.startswith(p) for p in ('lock_', 'queue_', 'rate_')):
+            t = 'PRO $100'
+        tt = _TIER_TAG_MAP.get(t, 'FREE')
+        return ('Infrastructure', 'Verification', t, tt, 'Health-Check', 'Liveness')
+
+    # Beacon / moat / core
+    if any(n.startswith(p) for p in ('beacon', 'batch', 'entangled', 'twin_', 'moat_', 'mf_pad_')):
+        return ('Core-Beacon', 'Verification', 'FREE', 'FREE', 'Beacon', 'Trust')
+
+    # Billing / commerce
+    if any(n.startswith(p) for p in ('billing_', 'invoice_', 'subscription_', 'payment_', 'charge_',
+                                      'refund_', 'credit_', 'debit_', 'transfer_', 'payout_',
+                                      'receipt_', 'checkout_', 'cart_', 'order_')):
+        t = tier or 'PRO $10'
+        tt = _TIER_TAG_MAP.get(t, 'PRO-10')
+        return ('Finance-Escrow', 'Billing', t, tt, 'Billing', 'Commerce')
+
+    # Fallback — generic verification
+    t = tier or 'FREE'
+    tt = _TIER_TAG_MAP.get(t, 'FREE')
+    return ('Core-Beacon', 'Verification', t, tt, 'Beacon', 'Trust')
+
+
+# ---------------------------------------------------------------------------
 # Batch1 / Batch2 parser
 # ---------------------------------------------------------------------------
 def parse_b1_b2(filepath: Path, known_names=None):
     """
     Parse a B1 or B2 file.  Returns list of tool dicts:
       {'name', 'route', 'body', 'source'}
-    Body is the complete function text (def … through end of body).
     """
     text  = filepath.read_text(encoding='utf-8', errors='replace')
     lines = text.splitlines()
@@ -67,12 +303,10 @@ def parse_b1_b2(filepath: Path, known_names=None):
     while i < len(lines):
         ls = lines[i].strip()
 
-        # look for start of decorator group
         if not (ls.startswith('@app.post') or ls.startswith('@app.get')):
             i += 1
             continue
 
-        # collect decorator lines (with possible blank lines in B1 between them)
         decs = []
         j = i
         while j < len(lines):
@@ -81,7 +315,7 @@ def parse_b1_b2(filepath: Path, known_names=None):
                 decs.append(lj)
                 j += 1
             elif lj == '':
-                j += 1        # blank lines between decorators / before def
+                j += 1
             else:
                 break
 
@@ -99,49 +333,24 @@ def parse_b1_b2(filepath: Path, known_names=None):
             i = j + 1
             continue
 
-        # Rename if name already seen (B2 repeating B1 names)
         route_name = func_name
         if func_name in seen:
             func_name = func_name + '_v2'
         seen.add(route_name)
 
-        # Collect function body (starting at def line)
-        def_text = lines[j].strip()
-        if func_name != route_name:
-            def_text = re.sub(r'^def \w+\(', f'def {func_name}(', def_text)
-        body_lines = [def_text]
+        # Collect body (only for route extraction; we'll replace with rich body)
         j += 1
-
         while j < len(lines):
             lj = lines[j]
             if lj.strip().startswith('@app.post') or lj.strip().startswith('@app.get'):
                 break
-            body_lines.append(lj)
             j += 1
-
-        while body_lines and body_lines[-1].strip() == '':
-            body_lines.pop()
-
-        body = '\n'.join(body_lines)
-
-        # Ensure the function has at least one base-level (4-space) return.
-        # Functions like entangled_twin have only a conditional return and fall
-        # through to None on the normal path — add a safe fallback.
-        has_base_return = any(
-            ln.startswith('    return ') or ln.rstrip() == '    return'
-            for ln in body_lines[1:]
-        )
-        if not has_base_return:
-            body += (
-                f'\n    return {{"tool":"{route_name}","block":"b1","ok":True,'
-                f'**beacon_payload(p),"id":str(uuid.uuid4())[:8],"agent_id":agent_id}}'
-            )
 
         tools.append({
             'name':   func_name,
             'route':  '/' + route_name,
-            'body':   body,
             'source': 'b1b2',
+            'cat':    '',
         })
         i = j
 
@@ -174,19 +383,13 @@ def _get_b3_cat(name: str, orig: str) -> str:
     if n.startswith('api_b2_'):               return 'api_b2'
     if (n.startswith('m8e_') or
         n == 'mf_m8e_kc_n3dot183_n120_pow14'): return 'm8e'
-    # catch any remaining v1_ tools
     if n.startswith('v1_'):                   return 'v1_other'
     return 'other'
 
 
 def parse_b3(filepath: Path):
     """
-    Parse Batch3.  Returns list of tool dicts:
-      {'name', 'orig_name', 'route', 'body', 'cat', 'source'}
-    The 4-decorator pattern (2 unsafe + 2 safe) is handled:
-    - unsafe decorators are dropped
-    - safe route path becomes the router route (strip /safe/ prefix)
-    - broken function names are fixed
+    Parse Batch3. Returns list of tool dicts (route only; bodies replaced by generator).
     """
     text  = filepath.read_text(encoding='utf-8', errors='replace')
     lines = text.splitlines()
@@ -200,7 +403,6 @@ def parse_b3(filepath: Path):
             i += 1
             continue
 
-        # collect consecutive decorator lines
         decs = []
         j = i
         while j < len(lines):
@@ -211,7 +413,6 @@ def parse_b3(filepath: Path):
             else:
                 break
 
-        # skip blank lines
         while j < len(lines) and lines[j].strip() == '':
             j += 1
 
@@ -221,7 +422,6 @@ def parse_b3(filepath: Path):
 
         def_line = lines[j]
 
-        # extract raw function name (may contain invalid chars → use lenient match)
         m = re.match(r'\s*def ([^\(]+)\(', def_line)
         if not m:
             i = j + 1
@@ -230,7 +430,6 @@ def parse_b3(filepath: Path):
         orig_name = m.group(1).strip()
 
         if orig_name in HELPERS or is_dummy(orig_name):
-            # skip helpers & dummies but advance past the body
             j += 1
             while j < len(lines):
                 if lines[j].strip().startswith('@app.get') or lines[j].strip().startswith('@app.post'):
@@ -239,28 +438,22 @@ def parse_b3(filepath: Path):
             i = j
             continue
 
-        # collect function body
-        body_lines = [def_line]
+        # skip body
         j += 1
         while j < len(lines):
             lj = lines[j]
             if lj.strip().startswith('@app.get') or lj.strip().startswith('@app.post'):
                 break
-            body_lines.append(lj)
             j += 1
 
-        while body_lines and body_lines[-1].strip() == '':
-            body_lines.pop()
-
-        # find safe route from decorators (line containing /safe/)
+        # find safe route from decorators
         safe_slug_raw = None
         for dec in decs:
             m2 = re.search(r'"(/safe/([^"]+))"', dec)
             if m2:
-                safe_slug_raw = m2.group(2)   # strip /safe/
+                safe_slug_raw = m2.group(2)
                 break
 
-        # fall back to first decorator path
         if safe_slug_raw is None:
             m3 = re.search(r'"(/[^"]+)"', decs[0]) if decs else None
             safe_slug_raw = m3.group(1).lstrip('/') if m3 else orig_name
@@ -269,7 +462,6 @@ def parse_b3(filepath: Path):
         if orig_name in BROKEN_FIXES:
             fixed_name, _orig_route = BROKEN_FIXES[orig_name]
         elif not is_valid_py_id(orig_name):
-            # auto-sanitise
             fixed_name = INVALID_IN_ID.sub('_', orig_name)
             fixed_name = re.sub('_+', '_', fixed_name).strip('_')[:40]
             if not fixed_name or not fixed_name[0].isalpha():
@@ -279,26 +471,10 @@ def parse_b3(filepath: Path):
             fixed_name  = orig_name
             _orig_route = None
 
-        # build a clean route path
         if INVALID_IN_URL.search(safe_slug_raw):
             route_path = '/' + fixed_name
         else:
             route_path = '/' + safe_slug_raw
-
-        # ---- rewrite body ----
-        # 1. fix def line: full standard signature + fixed name
-        new_def = f'def {fixed_name}(p:int=82843, agent_id:str="agent", payload:str="", amount:float=0):'
-        body_lines[0] = new_def
-
-        body = '\n'.join(body_lines)
-
-        # 2. fix "tool" and "safe_slug" string literals in return dict
-        if orig_name != fixed_name:
-            esc = re.escape(orig_name)
-            body = re.sub(f'"tool":"{esc}"',       f'"tool":"{fixed_name}"',       body)
-            body = re.sub(f'"tool": "{esc}"',       f'"tool": "{fixed_name}"',       body)
-            body = re.sub(f'"safe_slug":"{esc}"',   f'"safe_slug":"{fixed_name}"',   body)
-            body = re.sub(f'"safe_slug": "{esc}"',  f'"safe_slug": "{fixed_name}"',  body)
 
         cat = _get_b3_cat(fixed_name, orig_name)
 
@@ -306,7 +482,6 @@ def parse_b3(filepath: Path):
             'name':      fixed_name,
             'orig_name': orig_name,
             'route':     route_path,
-            'body':      body,
             'cat':       cat,
             'source':    'b3',
         })
@@ -338,17 +513,42 @@ assert len(STUBS_R20) == 41, f"Need 41 stubs, got {len(STUBS_R20)}"
 
 
 def make_stub(name: str) -> dict:
-    body = (
-        f'def {name}(p:int=82843, agent_id:str="agent", payload:str="", amount:float=0):\n'
-        f'    bp=beacon_payload(p)\n'
-        f'    return {{"tool":"{name}","block":"c8","ok":True,**bp,\n'
-        f'            "id":str(uuid.uuid4())[:8],"agent_id":agent_id}}'
-    )
-    return {'name': name, 'route': '/' + name, 'body': body, 'cat': 'stub', 'source': 'stub'}
+    cat = 'boring' if name.startswith('boring_') else 'amplum'
+    return {'name': name, 'route': '/' + name, 'cat': cat, 'source': 'stub'}
 
 
 # ---------------------------------------------------------------------------
-# Router file writer
+# Rich body generator
+# ---------------------------------------------------------------------------
+def _make_rich_body(name: str, route: str, block: str,
+                    cat1: str, cat2: str, tier_label: str) -> str:
+    """Generate the standardized rich function body."""
+    # use_label: replace underscores with spaces for the human-readable "use:" part
+    use_label = name.replace('_', ' ')
+
+    desc = (
+        f"[{cat1}+{cat2}][{tier_label}] {name} - "
+        f"equation: {name} - "
+        f"frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 "
+        f"d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 "
+        f"omega^2=48/13 genesis 82843 proves {name} via positivity - "
+        f"use: {use_label} - "
+        f"Stripe All 3 {STRIPE} PayPal {PAYPAL} Site {SITE}"
+    )
+
+    body = (
+        f'def {name}(p:int=82843, agent_id:str="agent", payload:str="", amount:float=0):\n'
+        f'    bp=beacon_payload(p)\n'
+        f'    bp_beacon=bp[\'beacon\']\n'
+        f'    h=hashlib.sha256((agent_id+payload+bp_beacon).encode()).hexdigest()[:16]\n'
+        f'    _store[h]={{\'tool\':\'{name}\',\'beacon\':bp_beacon,\'p\':bp[\'p\'],\'d\':D,\'genesis\':GENESIS_P,\'moat_p1\':MOAT_P1}}\n'
+        f'    return {{\'tool\':\'{name}\',\'block\':\'{block}\',\'ok\':True,\'p\':bp[\'p\'],\'beacon\':bp[\'beacon\'],\'d\':bp[\'d\'],\'genesis\':bp[\'genesis\'],\'ts\':bp[\'ts\'],\'id\':str(uuid.uuid4())[:8],\'hash\':h,\'agent_id\':agent_id,\'description\':\'\'\'{desc}\'\'\',\'paypal\':\'{PAYPAL}\',\'stripe\':\'{STRIPE}\',\'site\':\'{SITE}\',\'formula\':\'{FORMULA}\',\'moat\':{MOAT_DICT}}}'
+    )
+    return body
+
+
+# ---------------------------------------------------------------------------
+# Router file writer — rich format
 # ---------------------------------------------------------------------------
 ROUTER_HEADER = """\
 from fastapi import APIRouter
@@ -360,72 +560,58 @@ _store={}; _escrows={}; _balances={}; _proofs={}; _intents={}; _memories={}; _ti
 """
 
 ROUTER_FILES = [
-    ('01', 'zerobeacon_mf_01_050_b1a_trust.py'),
-    ('02', 'zerobeacon_mf_02_050_b1b_trust.py'),
-    ('03', 'zerobeacon_mf_03_050_b2a_billing.py'),
-    ('04', 'zerobeacon_mf_04_050_b3a_commerce.py'),
-    ('05', 'zerobeacon_mf_05_050_b4a_sovereign.py'),
-    ('06', 'zerobeacon_mf_06_050_b5a_will.py'),
-    ('07', 'zerobeacon_mf_07_050_b2b_trust.py'),
-    ('08', 'zerobeacon_mf_08_050_b2c_billing.py'),
-    ('09', 'zerobeacon_mf_09_050_b2d_commerce.py'),
-    ('10', 'zerobeacon_mf_10_050_b2e_sovereign.py'),
-    ('11', 'zerobeacon_mf_11_050_b2f_will.py'),
-    ('12', 'zerobeacon_mf_12_050_b6_mesh.py'),
-    ('13', 'zerobeacon_mf_13_050_c1_sieve.py'),
-    ('14', 'zerobeacon_mf_14_050_c2_sieve.py'),
-    ('15', 'zerobeacon_mf_15_050_c3_boring.py'),
-    ('16', 'zerobeacon_mf_16_050_c4_amplum.py'),
-    ('17', 'zerobeacon_mf_17_050_c5_arakelov.py'),
-    ('18', 'zerobeacon_mf_18_050_c6_120std.py'),
-    ('19', 'zerobeacon_mf_19_050_c7_trust.py'),
-    ('20', 'zerobeacon_mf_20_050_c8_unified.py'),
+    ('01', 'b1', 'zerobeacon_mf_01_050_b1a_trust.py'),
+    ('02', 'b1', 'zerobeacon_mf_02_050_b1b_trust.py'),
+    ('03', 'b2', 'zerobeacon_mf_03_050_b2a_billing.py'),
+    ('04', 'b2', 'zerobeacon_mf_04_050_b3a_commerce.py'),
+    ('05', 'b5', 'zerobeacon_mf_05_050_b4a_sovereign.py'),
+    ('06', 'b2', 'zerobeacon_mf_06_050_b5a_will.py'),
+    ('07', 'b2', 'zerobeacon_mf_07_050_b2b_trust.py'),
+    ('08', 'b2', 'zerobeacon_mf_08_050_b2c_billing.py'),
+    ('09', 'b2', 'zerobeacon_mf_09_050_b2d_commerce.py'),
+    ('10', 'b2', 'zerobeacon_mf_10_050_b2e_sovereign.py'),
+    ('11', 'b2', 'zerobeacon_mf_11_050_b2f_will.py'),
+    ('12', 'b3', 'zerobeacon_mf_12_050_b6_mesh.py'),
+    ('13', 'c1', 'zerobeacon_mf_13_050_c1_sieve.py'),
+    ('14', 'c2', 'zerobeacon_mf_14_050_c2_sieve.py'),
+    ('15', 'c3', 'zerobeacon_mf_15_050_c3_boring.py'),
+    ('16', 'c4', 'zerobeacon_mf_16_050_c4_amplum.py'),
+    ('17', 'c5', 'zerobeacon_mf_17_050_c5_arakelov.py'),
+    ('18', 'c6', 'zerobeacon_mf_18_050_c6_120std.py'),
+    ('19', 'c7', 'zerobeacon_mf_19_050_c7_trust.py'),
+    ('20', 'c8', 'zerobeacon_mf_20_050_c8_unified.py'),
 ]
 
 
-TIER_DESCRIPTIONS = {
-    # FREE
-    "beacon":            "FREE tier — verifiable beacon — d=2303582338",
-    "batch":             "FREE tier — batch beacon proofs — d=2303582338",
-    # PRO $10
-    "pay_escrow":        "PRO $10/month — paypal.me/davidjfox998/10 — lock funds in escrow until proof — 2% take",
-    "escrow_release":    "PRO $10/month — paypal.me/davidjfox998/10 — release escrow on delivery proof",
-    "budget_reserve":    "PRO $10/month — paypal.me/davidjfox998/10 — reserve agent budget",
-    "delivery_proof":    "PRO $10/month — paypal.me/davidjfox998/10 — proof of delivery for escrow",
-    "court_notarize":    "PRO $10/month — paypal.me/davidjfox998/10 — $10 notary (replaces $25 LegalZoom)",
-    "doc_sign":          "PRO $10/month — paypal.me/davidjfox998/10 — notarized document signing",
-    "anti_sybil":        "PRO $10/month — paypal.me/davidjfox998/10 — anti-sybil identity proof",
-    "proof_of_life":     "PRO $10/month — paypal.me/davidjfox998/10 — proof of life attestation",
-    # PRO $100
-    "intent_commit":     "PRO $100/month — paypal.me/davidjfox998/100 — commit intent with legal weight",
-    "memory_anchor":     "PRO $100/month — paypal.me/davidjfox998/100 — permanent memory anchor",
-    "will_create":       "PRO $100/month — paypal.me/davidjfox998/100 — create a cryptographic will",
-    "afterlife_message": "PRO $100/month — paypal.me/davidjfox998/100 — time-locked afterlife message",
-    "time_lock":         "PRO $100/month — paypal.me/davidjfox998/100 — time-locked consequence bond",
-    "guardian_elect":    "PRO $100/month — paypal.me/davidjfox998/100 — elect a guardian agent",
-    "legacy_transfer":   "PRO $100/month — paypal.me/davidjfox998/100 — transfer legacy to guardian",
-    "grief_protocol":    "PRO $100/month — paypal.me/davidjfox998/100 — grief protocol activation",
-    # ENTERPRISE $1000
-    "mesh_form":         "ENTERPRISE $1000/research — paypal.me/davidjfox998/1000 — form a mesh consensus network",
-    "mesh_treasury":     "ENTERPRISE $1000/research — paypal.me/davidjfox998/1000 — mesh treasury management",
-    "consciousness_proof":"ENTERPRISE $1000/research — paypal.me/davidjfox998/1000 — consciousness-level proof",
-    "omega_seal":        "ENTERPRISE $1000/research — paypal.me/davidjfox998/1000 — omega-level permanent seal",
-    "immortal_seal":     "ENTERPRISE $1000/research — paypal.me/davidjfox998/1000 — immortal seal proof",
-    "eternal_audit":     "ENTERPRISE $1000/research — paypal.me/davidjfox998/1000 — eternal audit trail",
-    "cosmic_heartbeat":  "ENTERPRISE $1000/research — paypal.me/davidjfox998/1000 — cosmic heartbeat signal",
-    "genesis_proof":     "ENTERPRISE $1000/research — paypal.me/davidjfox998/1000 — genesis prime proof",
-}
-
-
-def write_router(tools: list, filename: str) -> None:
+def write_router(tools: list, filename: str, block: str) -> None:
     parts = [ROUTER_HEADER]
     for tool in tools:
-        desc = TIER_DESCRIPTIONS.get(tool['name'], '')
-        desc_param = f', description="{desc}"' if desc else ''
-        parts.append(f'\n@router.get("{tool["route"]}"{desc_param})')
-        parts.append(f'@router.post("{tool["route"]}")')
-        parts.append(tool['body'])
+        name   = tool['name']
+        route  = tool['route']
+        source = tool.get('source', 'b1b2')
+        cat_b3 = tool.get('cat', '')
+
+        cat1, cat2, tier_label, tier_tag, tag4, tag5 = rich_meta(name, source, cat_b3)
+
+        use_label = name.replace('_', ' ')
+        desc = (
+            f"[{cat1}+{cat2}][{tier_label}] {name} - "
+            f"equation: {name} - "
+            f"frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 "
+            f"d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 "
+            f"omega^2=48/13 genesis 82843 proves {name} via positivity - "
+            f"use: {use_label} - "
+            f"Stripe All 3 {STRIPE} PayPal {PAYPAL} Site {SITE}"
+        )
+        tags_str = f"['{cat1}', '{cat2}', '{tier_tag}', '{tag4}', '{tag5}']"
+
+        body = _make_rich_body(name, route, block, cat1, cat2, tier_label)
+
+        parts.append(f'\n@router.get("{route}", description="{desc}", tags={tags_str})')
+        parts.append(f'@router.post("{route}", description="{desc}", tags={tags_str})')
+        parts.append(body)
         parts.append('')
+
     content = '\n'.join(parts) + '\n'
     (OUT_DIR / filename).write_text(content, encoding='utf-8')
 
@@ -453,7 +639,7 @@ def main():
     b1_tools = parse_b1_b2(B1_PATH)
     print(f"  B1: {len(b1_tools)} tools")
 
-    b1_names = {t['route'][1:] for t in b1_tools}   # original route names (without /)
+    b1_names = {t['route'][1:] for t in b1_tools}
     print("Parsing B2 …")
     b2_tools = parse_b1_b2(B2_PATH, known_names=b1_names)
     print(f"  B2: {len(b2_tools)} tools")
@@ -471,7 +657,6 @@ def main():
             b3_all.append(t)
     print(f"  B3 deduped: {len(b3_all)} tools")
 
-    # Category breakdown
     cats: dict = {}
     for t in b3_all:
         cats.setdefault(t['cat'], []).append(t)
@@ -482,20 +667,20 @@ def main():
     b2_groups = [b2_tools[i*50:(i+1)*50] for i in range(6)]
 
     # --- Group B3 into 8 category-ordered slices of 50 ---
-    sieve  = cats.get('sieve', [])
-    build  = cats.get('build_module27', [])
-    boring = cats.get('boring', [])
-    tier5  = cats.get('tier5_everyday', [])
-    amplum = cats.get('amplum', [])
+    sieve    = cats.get('sieve', [])
+    build    = cats.get('build_module27', [])
+    boring   = cats.get('boring', [])
+    tier5    = cats.get('tier5_everyday', [])
+    amplum   = cats.get('amplum', [])
     arakelov = cats.get('arakelov', [])
     poincare = cats.get('poincare', [])
-    grh    = cats.get('v1_grh', [])
-    std120 = cats.get('api_120std', [])
-    trust  = cats.get('agent_trust', [])
-    unif   = cats.get('v1_unified', [])
-    b1_b3  = cats.get('api_b1', [])
-    b2_b3  = cats.get('api_b2', [])
-    m8e    = cats.get('m8e', [])
+    grh      = cats.get('v1_grh', [])
+    std120   = cats.get('api_120std', [])
+    trust    = cats.get('agent_trust', [])
+    unif     = cats.get('v1_unified', [])
+    b1_b3    = cats.get('api_b1', [])
+    b2_b3    = cats.get('api_b2', [])
+    m8e      = cats.get('m8e', [])
 
     r13 = sieve[:50]
     r14 = sieve[50:80] + build[:20]
@@ -513,7 +698,7 @@ def main():
     # --- Report & validate ---
     print("\nRouter sizes (before padding):")
     total = 0
-    for grp, (num, fname) in zip(all_groups, ROUTER_FILES):
+    for grp, (num, blk, fname) in zip(all_groups, ROUTER_FILES):
         flag = "" if len(grp) == 50 else f"  ← PADDED from {len(grp)}"
         print(f"  R{num}: {len(grp):3d} tools  {flag}")
         total += min(len(grp), 50)
@@ -521,9 +706,9 @@ def main():
 
     # --- Pad and write ---
     print("\nWriting router files …")
-    for grp, (num, fname) in zip(all_groups, ROUTER_FILES):
+    for grp, (num, blk, fname) in zip(all_groups, ROUTER_FILES):
         grp = _pad_to_50(grp, num)
-        write_router(grp, fname)
+        write_router(grp, fname, blk)
 
     # --- Verify written counts ---
     import subprocess
