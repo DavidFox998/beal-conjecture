@@ -17,12 +17,18 @@ def require_tier(min_tier: str):
     """Return a FastAPI dependency that enforces `min_tier` access."""
     min_rank = keystore.rank_of(min_tier)
 
-    async def _check(x_api_key: str | None = Header(default=None)):
-        if x_api_key is None:
+    async def _check(
+        x_api_key: str | None = Header(default=None),
+        x_rapidapi_key: str | None = Header(default=None),
+    ):
+        # Accept X-API-Key (native) or X-RapidAPI-Key (RapidAPI gateway)
+        effective_key = x_api_key or x_rapidapi_key
+
+        if effective_key is None:
             # No key → treat as free
             caller_rank = 0
         else:
-            caller_rank = keystore.rank_of(keystore.tier_of(x_api_key))
+            caller_rank = keystore.rank_of(keystore.tier_of(effective_key))
 
         if caller_rank < min_rank:
             tier_name = min_tier.replace("_", " ").replace("pro 10", "PRO $10/mo").replace(
@@ -32,7 +38,7 @@ def require_tier(min_tier: str):
                 detail={
                     "error": "tier_required",
                     "required_tier": min_tier,
-                    "your_tier": keystore.tier_of(x_api_key or ""),
+                    "your_tier": keystore.tier_of(effective_key or ""),
                     "upgrade": "https://zerobeacon.ai/pricing",
                     "stripe": "https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01",
                     "paypal": "https://paypal.me/davidfox223",

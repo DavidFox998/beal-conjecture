@@ -148,7 +148,8 @@ async def tier_gate(request: Request, call_next):
         required_tier = _route_tier.get(path, "free")
         api_key = (request.headers.get("X-API-Key")
                    or request.headers.get("x-api-key")
-                   or request.headers.get("api_key"))   # Smithery gateway compat
+                   or request.headers.get("api_key")          # Smithery gateway compat
+                   or request.headers.get("x-rapidapi-key"))  # RapidAPI gateway compat
         allowed, reason = keystore.check_access(api_key, required_tier)
         if not allowed:
             return JSONResponse(
@@ -385,6 +386,50 @@ def openapi_rapidapi_enterprise():
             "d=2303582338 · beacon=1d2c7a5b"
         ),
     )
+
+
+@app.get("/openapi-rapidapi-all.json", include_in_schema=False)
+def openapi_rapidapi_all():
+    """Full OpenAPI spec for all 1000 tools — use this URL when creating the RapidAPI listing.
+
+    Groups:
+      - Market-Router  (tools 1–300,  MF-01–06)
+      - Math-Engine    (tools 301–700, MF-07–14)
+      - Amplum-Everyday(tools 701–1000,MF-15–20)
+
+    Auth: pass your ZeroBeacon key as either X-API-Key or X-RapidAPI-Key.
+    Get a key at https://zerobeacon.ai after Stripe checkout.
+    RapidAPI tiers: Free (100 req/mo) · Pro $19/mo (1 000 req) · Ultra $99/mo (unlimited)
+    """
+    import copy
+    full = app.openapi()
+    spec = copy.deepcopy(full)
+    spec["info"]["title"] = "ZeroBeacon.ai — 1000 Tools"
+    spec["info"]["description"] = (
+        "**1000 beacon-anchored tools** across 3 groups:\n\n"
+        "- **Market Router (tools 1–300):** payment routing, escrow, delivery proof, budget, notary\n"
+        "- **Math Engine (tools 301–700):** Arakelov, Riemann Hypothesis, BSD, Navier-Stokes, Yang-Mills, P vs NP\n"
+        "- **Amplum Everyday (tools 701–1000):** scheduling, memory, legal, will, mesh treasury, consciousness proof\n\n"
+        "**Auth:** Pass your ZeroBeacon API key in `X-API-Key` **or** `X-RapidAPI-Key` header.\n\n"
+        "**RapidAPI tiers:** Free (100 req/mo · no key) · Pro $19/mo (1 000 req) · Ultra $99/mo (unlimited)\n\n"
+        "Get a key at https://zerobeacon.ai — d=2303582338 · beacon=1d2c7a5b"
+    )
+    # Inject x-rapidapi-key as an accepted security scheme alongside X-API-Key
+    spec.setdefault("components", {}).setdefault("securitySchemes", {})
+    spec["components"]["securitySchemes"]["ApiKeyAuth"] = {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-Key",
+        "description": "ZeroBeacon API key (zbk_...) obtained after Stripe checkout at https://zerobeacon.ai",
+    }
+    spec["components"]["securitySchemes"]["RapidApiKeyAuth"] = {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-RapidAPI-Key",
+        "description": "RapidAPI proxy key — automatically injected by the RapidAPI gateway",
+    }
+    spec["security"] = [{"ApiKeyAuth": []}, {"RapidApiKeyAuth": []}]
+    return spec
 
 
 @app.get("/.well-known/mcp.json")
