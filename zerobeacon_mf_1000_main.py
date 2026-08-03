@@ -309,6 +309,39 @@ async def beacon():
     return beacon_payload()
 
 
+@app.get("/openapi-rapidapi.json", include_in_schema=False)
+def openapi_rapidapi():
+    """Trimmed OpenAPI spec for RapidAPI (≤450 paths: FREE + PRO tools only, MF-01–08)."""
+    import copy
+    full = app.openapi()
+    trimmed = copy.deepcopy(full)
+    # Keep only paths for routers mf/01 through mf/08 (FREE + PRO), plus utility paths
+    kept = {}
+    for path, val in full.get("paths", {}).items():
+        # utility endpoints (no /api/mf/ prefix)
+        if "/api/mf/" not in path:
+            kept[path] = val
+            continue
+        # extract block number: /api/mf/07/... → "07"
+        parts = path.split("/api/mf/")
+        if len(parts) < 2:
+            continue
+        block = parts[1][:2]
+        try:
+            if 1 <= int(block) <= 8:
+                kept[path] = val
+        except ValueError:
+            pass
+    trimmed["paths"] = kept
+    trimmed["info"]["title"] = "ZeroBeacon.ai — FREE + PRO Tools (400)"
+    trimmed["info"]["description"] = (
+        "400 FREE + PRO tools from ZeroBeacon.ai (MF-01 through MF-08). "
+        "Full 1000-tool access at https://zerobeacon.ai with ENTERPRISE key. "
+        "d=2303582338 · beacon=1d2c7a5b"
+    )
+    return trimmed
+
+
 @app.get("/.well-known/mcp.json")
 def well_known_mcp():
     return {
