@@ -9,6 +9,7 @@ from core.beacon import (beacon_payload, D, BEACON, GENESIS_P,
 from core import keystore
 from core.tier_guard import require_tier
 from core.auth import tags_to_tier   # tag-string → tier-name parser only
+from core.emailer import send_api_key_email
 
 from routers import (
     zerobeacon_mf_01_050_b1a_trust      as m01,
@@ -514,6 +515,7 @@ async def stripe_webhook(
         if tier != "free":
             api_key = keystore.issue_key(tier, email, session_id=session_id)
             print(f"🔑 Key issued: {api_key[:16]}… for {email} (session={session_id[:20]}…)", flush=True)
+            send_api_key_email(email=email, api_key=api_key, tier=tier)
 
     elif event["type"] == "customer.subscription.updated":
         sub   = event["data"]["object"]
@@ -536,6 +538,7 @@ async def stripe_webhook(
             tier = "free"
         api_key = keystore.issue_key(tier, email)
         print(f"✅ SUB UPDATED ${amt:.2f} from {email} → tier={tier} key={api_key[:12]}…", flush=True)
+        send_api_key_email(email=email, api_key=api_key, tier=tier)
 
     return {"received": True}
 
