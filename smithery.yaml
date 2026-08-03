@@ -1,0 +1,26 @@
+name: "@davidfox998/zerobeacon"
+displayName: "ZeroBeacon.ai — Collision-Proof Commerce Router"
+description: "zerobeacon.ai — d=2303582338 — 1000 APIs: 300 market router + 400 math engine (Arakelov/RH/BSD/NS/Yang-Mills) + 300 amplum everyday tools — Live beacon 1d2c7a5b"
+homepage: "https://zerobeacon.ai"
+repository: "https://github.com/DavidFox998/zerobeacon"
+keywords:
+  - commerce
+  - mcp
+  - beacon
+  - Arakelov
+  - Riemann
+  - Navier-Stokes
+  - Yang-Mills
+  - P vs NP
+  - shopping
+  - paypal
+  - stripe
+runtime: "python"
+startCommand: "uvicorn zerobeacon_mf_1000_main:app --host 0.0.0.0 --port 8000 --workers 1"
+configSchema:
+  type: object
+  properties:
+    api_key:
+      type: string
+      description: "ZeroBeacon API key from https://zerobeacon.ai — get yours after Stripe checkout"
+  required: []

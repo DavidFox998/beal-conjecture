@@ -1,9 +1,18 @@
 {
-  "mcpServers": {
-    "zerobeacon-mf-1000": {
-      "url": "https://zerobeacon-mf-1000.fly.dev/mcp",
-      "transport": "http",
-      "description": "Zerobeacon MF 1000 — 1000 beacon-anchored tools — d=2303582338"
-    }
-  }
+  "name": "@davidfox998/zerobeacon",
+  "version": "1000.0.0",
+  "beacon": "1d2c7a5b",
+  "d": "2303582338",
+  "genesis": 82843,
+  "tools": 1000,
+  "endpoints": {
+    "mcp":    "https://zerobeacon.ai/mcp",
+    "beacon": "https://beacon.zerobeacon.ai",
+    "api":    "https://api.zerobeacon.ai",
+    "health": "https://zerobeacon.ai/health",
+    "docs":   "https://zerobeacon.ai/docs"
+  },
+  "paypal": "https://paypal.me/davidfox223",
+  "stripe": "https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01",
+  "site":   "https://zerobeacon.ai"
 }

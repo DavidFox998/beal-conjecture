@@ -1,8 +1,8 @@
 {
-  "name": "zerobeacon-mf-1000",
-  "displayName": "Zerobeacon MF 1000 — Largest MCP — 1000 Tools — d=2303582338",
-  "description": "1000 tools — 20×50 architecture — Moat d=2303582338 beacon 1d2c7a5b genesis p=82843 0 collisions 4.19M — FREE $0 100 tools: beacon batch timeproof hash boring millions/day — PRO $10/month 400 tools: pay_escrow 2% take budget_reserve delivery_proof court_notarize $10 notary — PRO $100/month 800 tools: intent_commit memory_anchor will_create afterlife_message legal shield — ENTERPRISE $1000/research 1000 tools: mesh_treasury consciousness_proof omega_seal eternal_audit sieve arakelov",
-  "homepage": "https://zerobeacon-mf-1000.fly.dev",
+  "name": "@davidfox998/zerobeacon",
+  "displayName": "ZeroBeacon.ai — Collision-Proof Commerce Router — 1000 Tools",
+  "description": "zerobeacon.ai — d=2303582338 — 1000 APIs: 300 market router + 400 math engine (Arakelov/RH/BSD/NS/Yang-Mills) + 300 amplum everyday tools — Live beacon 1d2c7a5b — FREE 100 tools no key — PRO $10/mo 400 tools — PRO+ $100/mo 800 tools — ENTERPRISE $1000 all 1000 tools",
+  "homepage": "https://zerobeacon.ai",
   "repository": "https://github.com/DavidFox998/zerobeacon",
   "version": "1000.0.0",
   "author": {
@@ -13,11 +13,11 @@
     "beacon", "escrow", "notary", "mesh", "will", "intent", "memory",
     "amplum", "boring", "arakelov", "sieve", "120standard", "agent-trust",
     "1000-tools", "largest-mcp", "verifiable-randomness", "moat",
-    "d2303582338", "beacon-1d2c7a5b"
+    "d2303582338", "beacon-1d2c7a5b", "commerce", "paypal", "stripe"
   ],
   "startCommand": "uvicorn zerobeacon_mf_1000_main:app --host 0.0.0.0 --port 8000 --workers 1",
   "mcp": {
-    "endpoint": "/mcp",
+    "endpoint": "https://zerobeacon.ai/mcp",
     "transport": "http"
   },
   "moat": {
@@ -28,8 +28,7 @@
     "genesis": 82843,
     "formula": "frac(p*pi/10*2^32)",
     "collisions": 0,
-    "proofs": 4190000,
-    "unique_survivor": 551016649
+    "proofs": 4190000
   },
-  "architecture": "20x50 — 20 router files x 50 tools = 1000 tools — core/beacon.py single moat"
+  "architecture": "20x50 — 20 router files x 50 tools = 1000 tools"
 }
