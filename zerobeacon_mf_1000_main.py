@@ -493,9 +493,45 @@ async def success_page(request: Request):
 
 # ── API key endpoints ─────────────────────────────────────────────────────────
 
-# Rate-limit counter for /api/key/resend: session_id → attempt count
-_resend_attempts: dict[str, int] = {}
-_RESEND_MAX_ATTEMPTS = 3
+# Rate-limit counter for /api/key/resend: session_id → (attempt_count, first_attempt_ts)
+# Entries are evicted after _RESEND_TTL_SECONDS so the dict cannot grow forever.
+_resend_attempts: dict[str, tuple[int, float]] = {}
+_RESEND_MAX_ATTEMPTS  = 3
+_RESEND_TTL_SECONDS   = 86_400   # 24 hours
+_RESEND_MAX_ENTRIES   = 10_000   # hard cap: evict oldest when exceeded
+
+def _resend_get(session_id: str) -> int:
+    """Return the current attempt count for session_id, evicting expired entries first."""
+    now = time.time()
+    cutoff = now - _RESEND_TTL_SECONDS
+
+    # Evict all expired entries (O(n) but amortised; only runs on each resend call)
+    expired = [k for k, (_, ts) in _resend_attempts.items() if ts < cutoff]
+    for k in expired:
+        del _resend_attempts[k]
+
+    entry = _resend_attempts.get(session_id)
+    if entry is None:
+        return 0
+    count, ts = entry
+    if ts < cutoff:
+        del _resend_attempts[session_id]
+        return 0
+    return count
+
+def _resend_increment(session_id: str) -> int:
+    """Increment and persist the attempt count; enforce the hard cap."""
+    now   = time.time()
+    count = _resend_get(session_id)   # also evicts expired entries
+
+    # Hard-cap guard: if we're still over the limit after eviction, drop oldest entries
+    while len(_resend_attempts) >= _RESEND_MAX_ENTRIES:
+        oldest_key = min(_resend_attempts, key=lambda k: _resend_attempts[k][1])
+        del _resend_attempts[oldest_key]
+
+    new_count = count + 1
+    _resend_attempts[session_id] = (new_count, now if count == 0 else _resend_attempts.get(session_id, (0, now))[1])
+    return new_count
 
 
 @app.post("/api/key/resend/reset")
@@ -526,7 +562,8 @@ async def api_key_resend_reset(request: Request):
             status_code=400,
         )
 
-    previous = _resend_attempts.pop(session_id, 0)
+    entry    = _resend_attempts.pop(session_id, None)
+    previous = entry[0] if entry is not None else 0
     return {
         "ok":               True,
         "session_id":       session_id,
@@ -562,8 +599,8 @@ async def api_key_resend(request: Request):
             status_code=400,
         )
 
-    # Rate-limit: max _RESEND_MAX_ATTEMPTS per session_id
-    attempts = _resend_attempts.get(session_id, 0)
+    # Rate-limit: max _RESEND_MAX_ATTEMPTS per session_id (TTL-evicted)
+    attempts = _resend_get(session_id)
     if attempts >= _RESEND_MAX_ATTEMPTS:
         return JSONResponse(
             {
@@ -594,10 +631,10 @@ async def api_key_resend(request: Request):
     tier  = record["tier"]
 
     # Increment attempt counter before sending (counts even failed sends)
-    _resend_attempts[session_id] = attempts + 1
+    new_attempts = _resend_increment(session_id)
 
     sent = send_api_key_email(email=email, api_key=api_key, tier=tier)
-    remaining = _RESEND_MAX_ATTEMPTS - _resend_attempts[session_id]
+    remaining = _RESEND_MAX_ATTEMPTS - new_attempts
 
     if sent:
         return {
