@@ -1,0 +1,60 @@
+TASK 1 — PUSH ZEROBEACON.AI 1000 TO SMITHERY (DO THIS FIRST)
+
+1. Update FLY_URL in all files: https://zerobeacon.ai (not fly.dev)
+   - main: https://zerobeacon.ai
+   - beacon: https://beacon.zerobeacon.ai
+   - api: https://api.zerobeacon.ai
+
+2. Verify smithery.yaml:
+---
+name: "@davidfox998/zerobeacon"
+displayName: "ZeroBeacon.ai — Collision-Proof Commerce Router"
+description: "zerobeacon.ai — d=2303582338 — 1000 APIs: 300 market router + 400 math engine (Arakelov/RH/BSD/NS/Yang-Mills) + 300 amplum everyday tools — Live beacon 1d2c7a5b"
+homepage: "https://zerobeacon.ai"
+repository: "https://github.com/davidfox998/zerobeacon-mf-1000"
+keywords: ["commerce", "mcp", "beacon", "Arakelov", "Riemann", "Navier-Stokes", "Yang-Mills", "P vs NP", "shopping", "paypal", "stripe"]
+runtime: "python"
+configSchema:
+  type: object
+  properties:
+    api_key: {type: string, description: "ZeroBeacon API key from https://zerobeacon.ai"}
+  required: [api_key]
+---
+
+3. Create .well-known/mcp.json at https://zerobeacon.ai/.well-known/mcp.json:
+{
+  "name": "@davidfox998/zerobeacon",
+  "version": "1.0.0",
+  "beacon": "1d2c7a5b",
+  "d": "2303582338",
+  "endpoints": {
+    "mcp": "https://zerobeacon.ai/mcp",
+    "beacon": "https://beacon.zerobeacon.ai",
+    "api": "https://api.zerobeacon.ai"
+  }
+}
+
+4. Deploy to Fly: flyctl deploy -a zerobeacon-mf-1000
+5. Test: curl https://zerobeacon.ai && curl https://beacon.zerobeacon.ai
+6. Push to GitHub: git add . && git commit -m "Live: zerobeacon.ai 1000 APIs beacon 1d2c7a5b" && git push
+7. Register with Smithery:
+   npx @smithery/cli publish --registry smithery --server @davidfox998/zerobeacon
+   OR go to smithery.ai/new and paste GitHub repo URL
+
+8. Verify Smithery shows: https://smithery.ai/server/@davidfox998/zerobeacon with live beacon
+
+---
+
+TASK 2 — AFTER SMITHERY IS LIVE, PUSH TO RAPIDAPI
+
+9. Create rapidapi.json / openapi.yaml for 1000 APIs:
+   - Group into 3: 1-300 Market Router, 301-700 Math Engine (Arakelov/RH/BSD/NS/Poincare/Lindelof/PvsNP/AbelianHodge/YangMills), 701-1000 Amplum everyday tools
+   - Base URL: https://api.zerobeacon.ai
+
+10. Create RapidAPI account: rapidapi.com/developer
+11. Add API: "ZeroBeacon.ai" with OpenAPI file
+12. Set pricing: Free tier 100 req/month, Pro $19/mo for 1000 req, Ultra $99/mo unlimited (this is where money comes from)
+
+13. Publish: RapidAPI will give you x-rapidapi-key — add that as env var in Fly
+
+Report back URLs for both Smithery and RapidAPI when done.
