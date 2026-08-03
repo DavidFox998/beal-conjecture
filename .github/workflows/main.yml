@@ -28,12 +28,15 @@ jobs:
       - name: Audit — no endpoint accepts api_key from request body
         run: pytest test_no_body_api_key.py -v --tb=short
 
+      - name: Confirm MCP tool tiers match ROUTERS after any change
+        run: pytest test_mcp_tool_tiers.py -v --tb=short
+
       - name: Write test summary
         if: always()
         run: |
           echo "## Test Results" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          pytest test_mcp_tier_gate.py test_stripe_webhook.py test_no_body_api_key.py -v --tb=short --no-header -q 2>&1 | tee /tmp/pytest_summary.txt || true
+          pytest test_mcp_tier_gate.py test_stripe_webhook.py test_no_body_api_key.py test_mcp_tool_tiers.py -v --tb=short --no-header -q 2>&1 | tee /tmp/pytest_summary.txt || true
           echo '```' >> $GITHUB_STEP_SUMMARY
           cat /tmp/pytest_summary.txt >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
