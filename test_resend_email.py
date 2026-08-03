@@ -156,6 +156,53 @@ class TestResendEmailUnit:
         resp = client.post("/api/key/resend", json={})
         assert resp.status_code == 400, resp.text
 
+    # ------------------------------------------------------------------
+    # 6. CRITICAL log emitted when RESEND_API_KEY is absent
+    # ------------------------------------------------------------------
+    def test_critical_log_emitted_when_resend_key_absent(self, capsys):
+        """When RESEND_API_KEY is absent send_api_key_email must print a
+        CRITICAL log line so ops can grep/alert on it."""
+        from core.emailer import send_api_key_email
+
+        env_without_key = {k: v for k, v in os.environ.items()
+                           if k != "RESEND_API_KEY"}
+        with patch.dict(os.environ, env_without_key, clear=True):
+            result = send_api_key_email(
+                email="test@example.com",
+                api_key="zbk_test_key",
+                tier="pro_10",
+            )
+
+        assert result is False
+        captured = capsys.readouterr()
+        assert "[emailer] CRITICAL:" in captured.out, (
+            "Expected '[emailer] CRITICAL:' in stdout when RESEND_API_KEY is absent"
+        )
+
+    # ------------------------------------------------------------------
+    # 7. /health endpoint reports RESEND_API_KEY status
+    # ------------------------------------------------------------------
+    def test_health_reports_resend_key_absent(self):
+        """/health must report resend_api_key_set=False when key is absent."""
+        env_without_key = {k: v for k, v in os.environ.items()
+                           if k != "RESEND_API_KEY"}
+        with patch.dict(os.environ, env_without_key, clear=True):
+            resp = client.get("/health")
+
+        assert resp.status_code == 200, resp.text
+        body = resp.json()
+        assert "resend_api_key_set" in body, "/health must include resend_api_key_set"
+        assert body["resend_api_key_set"] is False
+
+    def test_health_reports_resend_key_present(self):
+        """/health must report resend_api_key_set=True when key is set."""
+        with patch.dict(os.environ, {"RESEND_API_KEY": "re_test_key"}, clear=False):
+            resp = client.get("/health")
+
+        assert resp.status_code == 200, resp.text
+        body = resp.json()
+        assert body.get("resend_api_key_set") is True
+
 
 # ── integration test (live Resend API) ────────────────────────────────────────
 

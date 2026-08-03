@@ -381,7 +381,15 @@ def pricing():
 @app.get("/health")
 def health():
     bp = beacon_payload(GENESIS_P)
-    return {"ok": True, "tools": 1000, "d": D, "beacon": BEACON, "p": bp["p"]}
+    resend_key_set = bool(os.environ.get("RESEND_API_KEY", "").strip())
+    return {
+        "ok": True,
+        "tools": 1000,
+        "d": D,
+        "beacon": BEACON,
+        "p": bp["p"],
+        "resend_api_key_set": resend_key_set,
+    }
 
 
 # ── Stripe checkout success page ──────────────────────────────────────────────
@@ -600,6 +608,11 @@ async def api_key_resend(request: Request):
             "attempts_remaining": remaining,
         }
     else:
+        print(
+            f"[emailer] CRITICAL: email delivery failed — /api/key/resend 503 "
+            f"for session={session_id[:20]}… recipient={email} tier={tier}",
+            flush=True,
+        )
         return JSONResponse(
             {
                 "error":            "Email could not be sent — check RESEND_API_KEY configuration",

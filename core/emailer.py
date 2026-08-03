@@ -34,7 +34,7 @@ def send_api_key_email(email: str, api_key: str, tier: str) -> bool:
     from_addr   = os.environ.get("EMAIL_FROM", "onboarding@resend.dev").strip()
 
     if not api_key_env:
-        print("[emailer] RESEND_API_KEY not set — skipping email to " + email, flush=True)
+        print("[emailer] CRITICAL: email delivery failed — RESEND_API_KEY is not set (skipping email to " + email + ")", flush=True)
         return False
 
     tier_label    = TIER_LABEL.get(tier, tier)
@@ -146,7 +146,9 @@ def send_api_key_email(email: str, api_key: str, tier: str) -> bool:
         except Exception:
             pass
         print(f"[emailer] HTTP error {e.code} sending to {email}: {body}", flush=True)
+        print(f"[emailer] CRITICAL: email delivery failed — HTTP {e.code} from Resend (recipient={email})", flush=True)
         return False
     except Exception as exc:
         print(f"[emailer] error sending to {email}: {exc}", flush=True)
+        print(f"[emailer] CRITICAL: email delivery failed — {type(exc).__name__}: {exc} (recipient={email})", flush=True)
         return False
