@@ -293,6 +293,28 @@ async def beacon():
     return beacon_payload()
 
 
+@app.get("/.well-known/mcp.json")
+def well_known_mcp():
+    return {
+        "name": "@davidfox998/zerobeacon",
+        "version": "1000.0.0",
+        "beacon": BEACON,
+        "d": str(D),
+        "genesis": GENESIS_P,
+        "tools": 1000,
+        "endpoints": {
+            "mcp":    "https://zerobeacon.ai/mcp",
+            "beacon": "https://beacon.zerobeacon.ai",
+            "api":    "https://api.zerobeacon.ai",
+            "health": "https://zerobeacon.ai/health",
+            "docs":   "https://zerobeacon.ai/docs",
+        },
+        "paypal": "https://paypal.me/davidfox223",
+        "stripe": "https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01",
+        "site":   "https://zerobeacon.ai",
+    }
+
+
 @app.get("/pricing")
 def pricing():
     return {
