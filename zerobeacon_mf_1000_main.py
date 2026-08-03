@@ -8,6 +8,7 @@ from core.beacon import (beacon_payload, D, BEACON, GENESIS_P,
                          PAYPAL_LINK_10, PAYPAL_LINK_100, PAYPAL_LINK_1000)
 from core import keystore
 from core.tier_guard import require_tier
+from core.auth import tags_to_tier   # tag-string → tier-name parser only
 
 from routers import (
     zerobeacon_mf_01_050_b1a_trust      as m01,
@@ -86,6 +87,58 @@ for mod, prefix, tag, min_tier in ROUTERS:
         )
 
 
+# ── Per-route and per-tool tier maps (built at import time) ───────────────────
+# Used by the HTTP middleware (belt-and-suspenders) and MCP tier gate.
+
+_route_tier: dict[str, str] = {}
+_tool_tier:  dict[str, str] = {}
+
+def _build_tier_maps() -> None:
+    """Populate _route_tier and _tool_tier from router metadata."""
+    for mod, prefix, _tag, _min_tier in ROUTERS:
+        block = prefix.split("/")[-1]
+        for route in mod.router.routes:
+            path = getattr(route, "path", None)
+            if path is None:
+                continue
+            route_tags = list(getattr(route, "tags", []) or [])
+            tier = tags_to_tier(route_tags)
+            _route_tier[prefix + path] = tier
+            if hasattr(route, "endpoint"):
+                _tool_tier[f"mf_{block}_{route.endpoint.__name__}"] = tier
+
+_build_tier_maps()
+
+
+# ── HTTP middleware (belt-and-suspenders over the Depends gate) ───────────────
+
+@app.middleware("http")
+async def tier_gate(request: Request, call_next):
+    """
+    Secondary tier check for /api/mf/* routes.
+    The primary gate is Depends(require_tier()) on include_router; this
+    middleware catches any path that slips through and also ensures the
+    keystore (persistent) is the authority for all checks.
+    """
+    path = request.url.path
+    if path.startswith("/api/mf/"):
+        required_tier = _route_tier.get(path, "free")
+        api_key = request.headers.get("X-API-Key") or request.headers.get("x-api-key")
+        allowed, reason = keystore.check_access(api_key, required_tier)
+        if not allowed:
+            return JSONResponse(
+                {
+                    "error":         "Access denied",
+                    "required_tier": required_tier,
+                    "reason":        reason,
+                    "upgrade":       "https://zerobeacon-mf-1000.fly.dev/pricing",
+                    "get_key":       "Visit /success?session_id=<your-stripe-session-id>",
+                },
+                status_code=403,
+            )
+    return await call_next(request)
+
+
 # ── Landing page ─────────────────────────────────────────────────────────────
 
 @app.get("/", response_class=HTMLResponse)
@@ -106,6 +159,8 @@ async def landing():
   .links a{{color:#88aaff;text-decoration:none;border:1px solid #334;padding:6px 14px;border-radius:6px;transition:border-color .2s}}
   .links a:hover{{border-color:#88aaff}}
   .moat{{color:#556;font-size:.75rem;margin-top:2rem}}
+  .gate-info{{background:#111;border:1px solid #2a2a3a;border-radius:10px;padding:16px 20px;max-width:640px;margin:0 auto 2rem;text-align:left;font-size:.85rem;line-height:1.7;color:#aabbdd}}
+  .gate-info code{{background:#1a1a2a;padding:2px 6px;border-radius:4px;font-size:.82rem;color:#88ffcc}}
 </style>
 </head><body>
   <h1>zerobeacon — MF 1000</h1>
@@ -114,6 +169,15 @@ async def landing():
     Positivity is a theorem, not an assumption.&nbsp;
     ω²=48/13=3.6923 &gt;0 on X₀(143) — Lean4 verified
   </p>
+
+  <div class="gate-info">
+    <b>🔑 API key gating is active</b><br>
+    FREE tools (first 100) require no key.<br>
+    PRO / ENTERPRISE tools require an <code>X-API-Key</code> header.<br>
+    After Stripe checkout you are redirected to <code>/success?session_id=…</code>
+    where your key is shown automatically.
+    Already have a key? Verify it at <code>GET /key/check</code>.
+  </div>
 
   <div class="box">
     <stripe-pricing-table
@@ -127,6 +191,7 @@ async def landing():
     <a href="/beacon">/beacon JSON</a>
     <a href="/health">/health</a>
     <a href="/pricing">/pricing</a>
+    <a href="/key/check">/key/check</a>
     <a href="{PAYPAL_ME}">PayPal</a>
   </div>
 
@@ -146,11 +211,42 @@ async def beacon():
 def pricing():
     return {
         "tiers": {
-            "free":            {"tools": 100,  "price": "$0/month",       "paypal": None},
-            "pro_10":          {"tools": 400,  "price": "$10/month",      "paypal": PAYPAL_LINK_10},
-            "pro_100":         {"tools": 800,  "price": "$100/month",     "paypal": PAYPAL_LINK_100},
-            "enterprise_1000": {"tools": 1000, "price": "$1000/research", "paypal": PAYPAL_LINK_1000},
+            "free": {
+                "tools": 100,
+                "price": "$0/month",
+                "paypal": None,
+                "api_key_required": False,
+            },
+            "pro_10": {
+                "tools": 400,
+                "price": "$10/month",
+                "paypal": PAYPAL_LINK_10,
+                "api_key_required": True,
+                "stripe": "https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01",
+            },
+            "pro_100": {
+                "tools": 800,
+                "price": "$100/month",
+                "paypal": PAYPAL_LINK_100,
+                "api_key_required": True,
+                "stripe": "https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01",
+            },
+            "enterprise_1000": {
+                "tools": 1000,
+                "price": "$1000/research",
+                "paypal": PAYPAL_LINK_1000,
+                "api_key_required": True,
+                "stripe": "https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01",
+            },
         },
+        "how_to_get_your_key": {
+            "step_1": "Complete payment via Stripe (success page shows your key automatically)",
+            "step_2": "Or retrieve it: POST /api/key/lookup  {\"session_id\": \"cs_live_...\"}",
+            "step_3": "The session_id is in your browser URL after Stripe checkout completes",
+            "step_4": "Use it: add header  X-API-Key: <your-key>  to every request",
+            "verify": "GET /key/check with X-API-Key header to verify tier at any time",
+        },
+        "success_page": "/success?session_id=<your-session-id>",
         "stripe_pricing_table": "prctbl_1U04FRIYX4ykfJS5WtHndstc",
         "moat": {"d": D, "beacon": BEACON, "genesis": GENESIS_P},
     }
@@ -160,6 +256,218 @@ def pricing():
 def health():
     bp = beacon_payload(GENESIS_P)
     return {"ok": True, "tools": 1000, "d": D, "beacon": BEACON, "p": bp["p"]}
+
+
+# ── Stripe checkout success page ──────────────────────────────────────────────
+
+@app.get("/success", response_class=HTMLResponse)
+async def success_page(request: Request):
+    """
+    Stripe success redirect page.
+    Configure Stripe success_url as:
+        https://your-domain/success?session_id={CHECKOUT_SESSION_ID}
+    The page fetches the API key from /api/key/lookup using the session_id.
+    """
+    session_id = request.query_params.get("session_id", "")
+    return f"""<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Payment successful — zerobeacon MF 1000</title>
+<style>
+  *{{box-sizing:border-box;margin:0;padding:0}}
+  body{{background:#0a0a0f;color:#e6e6ff;font-family:system-ui,-apple-system,sans-serif;
+        padding:60px 20px;text-align:center}}
+  h1{{font-size:1.8rem;font-weight:700;margin-bottom:.5rem;color:#88ffcc}}
+  .sub{{color:#8899cc;font-size:.95rem;line-height:1.6;margin-bottom:2rem}}
+  .card{{max-width:640px;margin:0 auto 2rem;border:1px solid #2a3a2a;padding:28px 32px;
+         border-radius:14px;background:#0d1a0d;text-align:left}}
+  .label{{color:#8899cc;font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}}
+  .key-box{{background:#0a0f0a;border:1px solid #2a4a2a;border-radius:8px;padding:14px 16px;
+            font-family:monospace;font-size:.9rem;color:#88ffcc;word-break:break-all;
+            user-select:all;cursor:pointer;margin-bottom:1.5rem}}
+  .key-box:hover{{border-color:#44aa44}}
+  .usage{{font-size:.83rem;line-height:1.8;color:#aabbdd;margin-top:1rem}}
+  .usage code{{background:#1a1a2a;padding:2px 6px;border-radius:4px;color:#88aaff}}
+  .links{{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:2rem;font-size:.88rem}}
+  .links a{{color:#88aaff;text-decoration:none;border:1px solid #334;padding:6px 14px;
+            border-radius:6px;transition:border-color .2s}}
+  .links a:hover{{border-color:#88aaff}}
+</style>
+</head><body>
+  <h1>🎉 Payment received!</h1>
+  <p class="sub">Your API key is ready. Copy it now and keep it safe — treat it like a password.</p>
+
+  <div class="card" id="card">
+    <div id="loading" style="text-align:center;color:#8899cc">Retrieving your key…</div>
+  </div>
+
+  <div class="links">
+    <a href="/docs">API docs (1000 tools)</a>
+    <a href="/pricing">Pricing tiers</a>
+    <a href="/key/check">/key/check</a>
+    <a href="/">Home</a>
+  </div>
+
+<script>
+(async () => {{
+  const sessionId = {repr(session_id)};
+  const card = document.getElementById('card');
+
+  if (!sessionId) {{
+    card.innerHTML = '<p style="color:#cc8888">No session_id found in URL. '
+      + 'Return to checkout and complete your payment.</p>';
+    return;
+  }}
+
+  try {{
+    const res = await fetch('/api/key/lookup', {{
+      method: 'POST',
+      headers: {{'Content-Type': 'application/json'}},
+      body: JSON.stringify({{session_id: sessionId}})
+    }});
+    const data = await res.json();
+
+    if (!res.ok) {{
+      card.innerHTML = '<p style="color:#cc8888">Key not found yet — the webhook may still be '
+        + 'processing. Refresh in a few seconds. (Error: ' + data.error + ')</p>';
+      return;
+    }}
+
+    card.innerHTML = `
+      <div class="label">Your API Key (${{data.tier_label}})</div>
+      <div class="key-box" onclick="navigator.clipboard.writeText(this.innerText);
+           this.style.borderColor='#44aa44'" title="Click to copy">${{data.api_key}}</div>
+      <div class="label">Tier</div>
+      <p style="margin-bottom:1rem;color:#e6e6ff">${{data.tier_label}} — ${{data.tools_unlocked}} tools unlocked</p>
+      <div class="usage">
+        <b>How to use:</b><br>
+        Add this header to every API request:<br>
+        <code>X-API-Key: ${{data.api_key}}</code><br><br>
+        Example:<br>
+        <code>curl -H "X-API-Key: ${{data.api_key}}" \\<br>
+        &nbsp;&nbsp;https://zerobeacon-mf-1000.fly.dev/api/mf/03/delivery_proof</code>
+      </div>`;
+  }} catch (e) {{
+    card.innerHTML = '<p style="color:#cc8888">Error fetching key: ' + e.message + '</p>';
+  }}
+}})();
+</script>
+</body></html>
+"""
+
+
+# ── API key endpoints ─────────────────────────────────────────────────────────
+
+@app.post("/api/key/lookup")
+async def api_key_lookup(request: Request):
+    """
+    Retrieve the API key issued for a Stripe checkout session.
+
+    Requires the Stripe checkout session ID that Stripe includes in the
+    success-redirect URL as ?session_id=....  Only the customer who completed
+    the payment receives that URL, so the session ID serves as proof of payment.
+    Email alone is NOT accepted — email addresses are not secrets.
+
+    Request body: {"session_id": "cs_live_..."}
+    Returns: {"tier": ..., "api_key": ..., "tools_unlocked": ...}
+    """
+    try:
+        body       = await request.json()
+        session_id = (body.get("session_id") or "").strip()
+    except Exception:
+        return JSONResponse({"error": "invalid JSON body"}, status_code=400)
+
+    if not session_id:
+        return JSONResponse(
+            {
+                "error": "session_id is required",
+                "hint":  "Use the session_id from your Stripe checkout success URL, "
+                         "or visit /success?session_id=<id> in your browser",
+            },
+            status_code=400,
+        )
+
+    key = keystore.lookup_by_session(session_id)
+    if key is None:
+        return JSONResponse(
+            {
+                "error":   "No API key found for this session_id",
+                "hint":    "Complete a payment first, then use the session_id from "
+                           "the Stripe success redirect",
+                "upgrade": "https://zerobeacon-mf-1000.fly.dev/pricing",
+            },
+            status_code=404,
+        )
+
+    record = keystore.lookup(key)
+    tier   = record["tier"]
+    tools  = TIERS.get(tier, {}).get("tools", 100)
+    return {
+        "tier":           tier,
+        "tier_label":     keystore.TIER_LABEL[tier],
+        "api_key":        key,
+        "tools_unlocked": tools,
+        "usage":          "Add header  X-API-Key: <api_key>  to every request",
+    }
+
+
+@app.get("/key/check")
+async def key_check(x_api_key: str | None = Header(default=None)):
+    """Let a customer verify their API key and see their tier."""
+    if not x_api_key:
+        return JSONResponse(
+            {"error": "Pass your key in the X-API-Key header.", "purchase": "/pricing"},
+            status_code=401,
+        )
+    rec = keystore.lookup(x_api_key)
+    if not rec:
+        return JSONResponse(
+            {"error": "Key not found.", "purchase": "/pricing",
+             "stripe": "https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01",
+             "paypal": "https://paypal.me/davidjfox998"},
+            status_code=404,
+        )
+    tier = rec["tier"]
+    rank = keystore.rank_of(tier)
+    return {
+        "valid":           True,
+        "tier":            tier,
+        "tier_label":      keystore.TIER_LABEL[tier],
+        "tools_unlocked":  [100, 400, 800, 1000][rank],
+        "blocks_unlocked": f"MF-01 – MF-{['02','08','16','20'][rank]}",
+        "email":           rec["email"],
+        "key_prefix":      x_api_key[:12] + "…",
+        "upgrade":         None if rank == 3 else "https://zerobeacon-mf-1000.fly.dev/pricing",
+    }
+
+
+@app.post("/api/key/issue")
+async def api_key_issue(request: Request):
+    """
+    Admin endpoint: manually issue an API key for email+tier.
+    Protected by ADMIN_SECRET env var.
+
+    Request body: {"email": ..., "tier": ..., "admin_secret": ...}
+    """
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"error": "invalid JSON body"}, status_code=400)
+
+    admin_secret = os.environ.get("ADMIN_SECRET", "")
+    if not admin_secret or body.get("admin_secret") != admin_secret:
+        return JSONResponse({"error": "forbidden"}, status_code=403)
+
+    email = (body.get("email") or "").strip().lower()
+    tier  = body.get("tier", "free")
+    if not email:
+        return JSONResponse({"error": "email required"}, status_code=400)
+    if tier not in keystore.TIER_RANK:
+        return JSONResponse({"error": f"unknown tier '{tier}'"}, status_code=400)
+
+    key = keystore.issue_key(tier, email)
+    return {"ok": True, "email": email, "tier": tier, "api_key": key}
 
 
 # ── Stripe webhook ────────────────────────────────────────────────────────────
@@ -181,10 +489,12 @@ async def stripe_webhook(
         return JSONResponse({"error": str(e)}, status_code=400)
 
     if event["type"] == "checkout.session.completed":
-        sess  = event["data"]["object"]
-        email = sess.get("customer_details", {}).get("email", "unknown")
-        amt   = sess.get("amount_total", 0) / 100
-        # Map amount to tier
+        sess       = event["data"]["object"]
+        email      = (sess.get("customer_details", {}).get("email") or "unknown").strip().lower()
+        amt        = sess.get("amount_total", 0) / 100
+        session_id = sess.get("id", "")   # e.g. "cs_live_..." — proof-of-payment token
+
+        # Map payment amount → tier
         if amt >= 1000:
             tier = "enterprise_1000"
         elif amt >= 100:
@@ -193,21 +503,26 @@ async def stripe_webhook(
             tier = "pro_10"
         else:
             tier = "free"
-        # Issue a persistent API key for this customer
-        api_key = keystore.issue_key(tier, email)
-        print(f"✅ PAID ${amt:.2f} from {email} → tier={tier} key={api_key[:12]}…", flush=True)
+
+        print(f"✅ PAID ${amt:.2f} from {email} → tier={tier}", flush=True)
+
+        # Issue (or refresh) the customer's API key, binding to the session ID
+        # so they can retrieve it from the /success page without guessable info.
+        if tier != "free":
+            api_key = keystore.issue_key(tier, email, session_id=session_id)
+            print(f"🔑 Key issued: {api_key[:16]}… for {email} (session={session_id[:20]}…)", flush=True)
 
     elif event["type"] == "customer.subscription.updated":
         sub   = event["data"]["object"]
         email = sub.get("customer_email", "")
-        # Pull email from customer object if not on sub directly
         if not email:
             try:
                 cust  = stripe.Customer.retrieve(sub.get("customer", ""))
                 email = cust.get("email", "unknown")
             except Exception:
                 email = "unknown"
-        amt = sub.get("plan", {}).get("amount", 0) / 100
+        email = email.strip().lower()
+        amt   = sub.get("plan", {}).get("amount", 0) / 100
         if amt >= 1000:
             tier = "enterprise_1000"
         elif amt >= 100:
@@ -222,50 +537,21 @@ async def stripe_webhook(
     return {"received": True}
 
 
-# ── API key self-service ───────────────────────────────────────────────────────
-
-@app.get("/key/check")
-async def key_check(x_api_key: str | None = Header(default=None)):
-    """Let a customer verify their API key and see their tier."""
-    if not x_api_key:
-        return JSONResponse(
-            {"error": "Pass your key in the X-API-Key header.", "purchase": "/pricing"},
-            status_code=401,
-        )
-    rec = keystore.lookup(x_api_key)
-    if not rec:
-        return JSONResponse(
-            {"error": "Key not found.", "purchase": "/pricing",
-             "stripe": "https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01",
-             "paypal": "https://paypal.me/davidjfox998"},
-            status_code=404,
-        )
-    tier = rec["tier"]
-    rank = keystore.rank_of(tier)
-    return {
-        "valid": True,
-        "tier":  tier,
-        "tools_unlocked": [100, 400, 800, 1000][rank],
-        "blocks_unlocked": f"MF-01 – MF-{['02','08','16','20'][rank]}",
-        "email": rec["email"],
-        "key_prefix": x_api_key[:12] + "…",
-        "upgrade": None if rank == 3 else "https://zerobeacon-mf-1000.fly.dev/pricing",
-    }
-
-
 # ── MCP protocol ──────────────────────────────────────────────────────────────
 
 def _build_tool_list():
     tools = []
-    for mod, prefix, _tag, _tier in ROUTERS:
+    for mod, prefix, _tag, _min_tier in ROUTERS:
         block = prefix.split("/")[-1]
         for route in mod.router.routes:
             if not hasattr(route, "endpoint"):
                 continue
-            name = route.endpoint.__name__
+            name       = route.endpoint.__name__
+            route_tags = list(getattr(route, "tags", []) or [])
+            req_tier   = tags_to_tier(route_tags)
             tools.append({
                 "name": f"mf_{block}_{name}",
-                "description": f"block={block} tool={name} d={D}",
+                "description": getattr(route, "description", "") or f"block={block} tool={name} d={D}",
                 "inputSchema": {
                     "type": "object",
                     "properties": {
@@ -275,6 +561,7 @@ def _build_tool_list():
                         "amount":   {"type": "number",  "default": 0},
                     },
                 },
+                "tier": req_tier,
             })
     seen, unique = set(), []
     for t in tools:
@@ -312,11 +599,38 @@ async def mcp_post(request: Request):
         params    = body.get("params", {})
         tool_name = params.get("name", "")
         args      = params.get("arguments", {})
+
+        # ── Tier gate for MCP tool calls ──────────────────────────────────────
+        # /mcp is a single endpoint so Depends() doesn't guard individual tools;
+        # we check here using the persistent keystore.
+        required_tier = _tool_tier.get(tool_name, "free")
+        api_key = (
+            request.headers.get("X-API-Key")
+            or request.headers.get("x-api-key")
+            or args.get("api_key", "")   # allow key in arguments as fallback
+        )
+        allowed, reason = keystore.check_access(api_key, required_tier)
+        if not allowed:
+            return JSONResponse(
+                {
+                    "jsonrpc": "2.0", "id": req_id,
+                    "error": {
+                        "code":    -32001,
+                        "message": f"Access denied: {reason}",
+                        "data": {
+                            "required_tier": required_tier,
+                            "upgrade":       "https://zerobeacon-mf-1000.fly.dev/pricing",
+                        },
+                    },
+                }
+            )
+        # ─────────────────────────────────────────────────────────────────────
+
         parts = tool_name.split("_", 2)
         if len(parts) >= 3 and parts[0] == "mf":
             block_num = parts[1]
             fn_name   = parts[2]
-            for mod, prefix, _tag, _tier in ROUTERS:
+            for mod, prefix, _tag, _min_tier in ROUTERS:
                 if prefix.endswith(block_num):
                     for route in mod.router.routes:
                         if hasattr(route, "endpoint") and route.endpoint.__name__ == fn_name:
@@ -330,3 +644,16 @@ async def mcp_post(request: Request):
 
     return JSONResponse({"jsonrpc": "2.0", "id": req_id,
                          "error": {"code": -32601, "message": f"Method not found: {method}"}})
+
+
+# ── Startup ───────────────────────────────────────────────────────────────────
+
+@app.on_event("startup")
+async def on_startup():
+    free_count = sum(1 for t in _route_tier.values() if t == "free")
+    paid_count = len(_route_tier) - free_count
+    print(
+        f"🛡️  Tier gate ready — {free_count} FREE paths, {paid_count} gated paths "
+        f"| keystore: {len(keystore._store)} keys loaded",
+        flush=True,
+    )
