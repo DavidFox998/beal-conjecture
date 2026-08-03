@@ -19,6 +19,42 @@ from core.keystore import TIER_LABEL
 
 _BASE_URL = "https://zerobeacon.ai"
 _RESEND_URL = "https://api.resend.com/emails"
+_RESEND_VALIDATE_URL = "https://api.resend.com/api-keys"
+
+
+def validate_resend_key(api_key_env: str | None = None) -> tuple[bool, str]:
+    """
+    Probe the Resend API to confirm RESEND_API_KEY is valid and accepted.
+
+    Returns (True, "ok") on success, or (False, reason) when the key is
+    missing, invalid, or expired.  Never raises — safe to call from startup
+    hooks or background tasks.
+
+    Args:
+        api_key_env: override the env-var lookup (used in tests).
+    """
+    if api_key_env is None:
+        api_key_env = os.environ.get("RESEND_API_KEY", "").strip()
+
+    if not api_key_env:
+        return False, "RESEND_API_KEY is not set"
+
+    req = urllib.request.Request(
+        _RESEND_VALIDATE_URL,
+        headers={"Authorization": f"Bearer {api_key_env}"},
+        method="GET",
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            if resp.status == 200:
+                return True, "ok"
+            return False, f"unexpected status {resp.status}"
+    except urllib.error.HTTPError as e:
+        if e.code in (401, 403):
+            return False, f"invalid or expired key (HTTP {e.code})"
+        return False, f"HTTP {e.code} from Resend validation endpoint"
+    except Exception as exc:
+        return False, f"{type(exc).__name__}: {exc}"
 
 
 def send_api_key_email(email: str, api_key: str, tier: str) -> bool:

@@ -8,7 +8,7 @@ from core.beacon import (beacon_payload, D, BEACON, GENESIS_P,
                          PAYPAL_LINK_10, PAYPAL_LINK_100, PAYPAL_LINK_1000)
 from core import keystore
 from core.tier_guard import require_tier
-from core.emailer import send_api_key_email
+from core.emailer import send_api_key_email, validate_resend_key
 from core.log_redactor import install_redaction_filter
 
 # Install log redaction immediately so no zbk_... key can reach any log sink,
@@ -105,6 +105,41 @@ for mod, prefix, tag, min_tier in ROUTERS:
             mod.router, prefix=prefix, tags=[tag],
             dependencies=[Depends(require_tier(min_tier))],
         )
+
+
+# ── Resend key validation cache ───────────────────────────────────────────────
+# Populated once at startup (and refreshed by any future periodic probe).
+# /health reads this cache — it never makes a live network call itself.
+
+_resend_key_valid: bool = False
+_resend_key_status: str = "not checked yet"
+
+
+# ── Startup: validate Resend API key ─────────────────────────────────────────
+
+@app.on_event("startup")
+async def _validate_resend_on_startup() -> None:
+    """
+    Probe the Resend API on startup so a rotated or expired key is caught
+    immediately rather than on the first customer email.
+
+    Stores the result in module-level cache variables so /health can report
+    it without making a live network call on every request.
+    Emits a CRITICAL log if the key is missing, invalid, or expired.
+    Never crashes the server — email misconfiguration must not block startup.
+    """
+    global _resend_key_valid, _resend_key_status
+    valid, reason = validate_resend_key()
+    _resend_key_valid  = valid
+    _resend_key_status = reason
+    if not valid:
+        print(
+            f"[emailer] CRITICAL: RESEND_API_KEY validation failed on startup — {reason}. "
+            "Email delivery will fail until the key is corrected.",
+            flush=True,
+        )
+    else:
+        print("[emailer] RESEND_API_KEY validated successfully on startup.", flush=True)
 
 
 # ── Per-route and per-tool tier maps (built at import time) ───────────────────
@@ -505,6 +540,7 @@ def pricing():
 def health():
     bp = beacon_payload(GENESIS_P)
     resend_key_set = bool(os.environ.get("RESEND_API_KEY", "").strip())
+    # Read cached validation result — never probe Resend live from /health.
     return {
         "ok": True,
         "tools": 1000,
@@ -512,6 +548,8 @@ def health():
         "beacon": BEACON,
         "p": bp["p"],
         "resend_api_key_set": resend_key_set,
+        "resend_api_key_valid": _resend_key_valid,
+        "resend_api_key_status": _resend_key_status,
     }
 
 
