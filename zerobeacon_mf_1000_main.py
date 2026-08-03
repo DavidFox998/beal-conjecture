@@ -126,7 +126,9 @@ async def tier_gate(request: Request, call_next):
     path = request.url.path
     if path.startswith("/api/mf/"):
         required_tier = _route_tier.get(path, "free")
-        api_key = request.headers.get("X-API-Key") or request.headers.get("x-api-key")
+        api_key = (request.headers.get("X-API-Key")
+                   or request.headers.get("x-api-key")
+                   or request.headers.get("api_key"))   # Smithery gateway compat
         allowed, reason = keystore.check_access(api_key, required_tier)
         if not allowed:
             return JSONResponse(
