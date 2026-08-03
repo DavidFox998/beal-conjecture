@@ -20,10 +20,20 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Run MCP tier-gate tests
-        run: pytest test_mcp_tier_gate.py -v
+        run: pytest test_mcp_tier_gate.py -v --tb=short
 
       - name: Run Stripe webhook tests
-        run: pytest test_stripe_webhook.py -v
+        run: pytest test_stripe_webhook.py -v --tb=short
+
+      - name: Write test summary
+        if: always()
+        run: |
+          echo "## Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          pytest test_mcp_tier_gate.py test_stripe_webhook.py -v --tb=short --no-header -q 2>&1 | tee /tmp/pytest_summary.txt || true
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat /tmp/pytest_summary.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
 
   deploy:
     name: Deploy
