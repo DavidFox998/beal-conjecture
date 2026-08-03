@@ -349,17 +349,33 @@ def openapi_rapidapi():
     )
 
 
+@app.get("/openapi-rapidapi-pro-plus.json", include_in_schema=False)
+def openapi_rapidapi_pro_plus():
+    """Trimmed spec for RapidAPI listing 2: PRO+ tools (MF-09–16, ~400 tools)."""
+    return _filter_spec(
+        9, 16,
+        "ZeroBeacon.ai — PRO+ Tools (400)",
+        (
+            "400 PRO+ tools (MF-09–16, $100/mo): Arakelov geometry, "
+            "Riemann Hypothesis, BSD conjecture, Navier-Stokes, Yang-Mills, P vs NP, "
+            "intent commit, memory anchor, will creation, legal shield, and more. "
+            "Requires X-API-Key from https://zerobeacon.ai. "
+            "d=2303582338 · beacon=1d2c7a5b"
+        ),
+    )
+
+
 @app.get("/openapi-rapidapi-enterprise.json", include_in_schema=False)
 def openapi_rapidapi_enterprise():
-    """Trimmed spec for RapidAPI listing 2: PRO+ + ENTERPRISE tools (MF-09–20, ~600 tools)."""
+    """Trimmed spec for RapidAPI listing 3: ENTERPRISE tools (MF-17–20, ~200 tools)."""
     return _filter_spec(
-        9, 20,
-        "ZeroBeacon.ai — PRO+ & ENTERPRISE Tools (600)",
+        17, 20,
+        "ZeroBeacon.ai — ENTERPRISE Tools (200)",
         (
-            "600 PRO+ and ENTERPRISE tools (MF-09–20): Arakelov geometry, "
-            "Riemann Hypothesis, BSD conjecture, Navier-Stokes, Yang-Mills, "
-            "P vs NP, mesh treasury, consciousness proof, omega seal, eternal audit. "
-            "Requires X-API-Key from https://zerobeacon.ai. "
+            "200 ENTERPRISE research-grade tools (MF-17–20, $1000): "
+            "mesh treasury, consciousness proof, omega seal, eternal audit, "
+            "sieve, arakelov, and the full research suite. "
+            "Requires ENTERPRISE X-API-Key from https://zerobeacon.ai. "
             "d=2303582338 · beacon=1d2c7a5b"
         ),
     )
