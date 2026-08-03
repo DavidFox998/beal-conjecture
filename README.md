@@ -1,11 +1,77 @@
-# Zerobeacon MF 1000
+# ZeroBeacon.ai — Collision-Proof Commerce Router for AI Agents
 
-**1000 beacon-anchored MCP tools across 20 blocks of 50.**
+*Beacon:* `1d2c7a5b` | *d:* `2303582338` | *Products:* 1000 | *Status:* LIVE
 
-[![Smithery](https://smithery.ai/badge/zerobeacon-mf-1000)](https://smithery.ai/server/zerobeacon-mf-1000)
-[![Fly.io](https://img.shields.io/badge/live-fly.io-purple?logo=fly.io)](https://zerobeacon-mf-1000.fly.dev/health)
-[![MCP](https://img.shields.io/badge/MCP-HTTP-blue)](https://zerobeacon-mf-1000.fly.dev/mcp)
-[![Tools](https://img.shields.io/badge/tools-1000-brightgreen)](https://zerobeacon-mf-1000.fly.dev/mcp)
+**Most MCP servers have 12 tools. ZeroBeacon has 1000.**
+
+🌐 [zerobeacon.ai](https://zerobeacon.ai) — [beacon.zerobeacon.ai](https://beacon.zerobeacon.ai) — [api.zerobeacon.ai](https://api.zerobeacon.ai)
+
+[![Smithery](https://smithery.ai/badge/@davidjfox998/zerobeacon-1000)](https://smithery.ai/server/@davidjfox998/zerobeacon-1000)
+[![Fly.io](https://img.shields.io/badge/live-fly.io-purple?logo=fly.io)](https://zerobeacon.ai/health)
+[![MCP](https://img.shields.io/badge/MCP-HTTP-blue)](https://zerobeacon.ai/mcp)
+[![Tools](https://img.shields.io/badge/tools-1000-brightgreen)](https://zerobeacon.ai/mcp)
+
+---
+
+## The 3 Layers — 1000 APIs Total
+
+### Layer 1: Commerce Router (tools 0–300) — B2 Live
+Routes 12 markets to real checkout. Live PayPal + Stripe.
+- PayPal: [paypal.me/davidfox223](https://paypal.me/davidfox223)
+- Stripe: [buy.stripe.com/eVq7sMdXk5d7chy941ebu01](https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01)
+
+### Layer 2: Math Engine (tools 301–700) — Opera Numerorum
+Trust layer. Collision-proof by construction.
+- Arakelov Positivity → positivity guarantee
+- Abelian/Non-Abelian Hodge → valid map filter
+- RH / BSD / Lindelöf → collision bounds checks
+- Navier-Stokes / Poincaré / P vs NP / Yang-Mills → stability & gap verification
+
+*We don't claim to solve RH. We use its bounds as engineering constraints.*
+
+### Layer 3: Amplum (tools 701–1000) — Everyday Tools
+Tools you use 400×/day, AI does it for you. Time, convert, weather, translate, calc, everyday — collision-proof via beacon `1d2c7a5b`.
+
+---
+
+## Endpoints
+
+| Endpoint | Purpose |
+|---|---|
+| `zerobeacon.ai` | Human landing page |
+| `beacon.zerobeacon.ai` | AI heartbeat `{"beacon":"1d2c7a5b","d":"2303582338","status":"LIVE"}` <50ms |
+| `api.zerobeacon.ai` | Full 1000-tool map |
+
+---
+
+## Smithery
+
+```bash
+npx @smithery/cli install @davidjfox998/zerobeacon
+```
+
+---
+
+## RapidAPI — 3 Listings, Same Backend
+
+| Listing | Tools | Spec |
+|---|---|---|
+| Commerce Router | 300 | `openapi-commerce.yaml` |
+| Math Engine | 400 | `openapi-math.yaml` |
+| Amplum | 300 | `openapi-amplum.yaml` |
+
+All served from `https://api.zerobeacon.ai`
+
+---
+
+## Beacon Genesis
+
+```
+beacon:  1d2c7a5b
+d:       2303582338
+genesis: 82843
+ip:      66.241.124.12
+```
 
 ---
 
