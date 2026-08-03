@@ -146,59 +146,142 @@ async def tier_gate(request: Request, call_next):
 
 @app.get("/", response_class=HTMLResponse)
 async def landing():
+    import time as _t
     return f"""<!DOCTYPE html>
 <html lang="en"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>zerobeacon MF 1000 — d=2303582338 — 20x50 — 1000 Tools</title>
+<title>ZeroBeacon.ai — 1000 Tools — d=2303582338</title>
+<meta name="description" content="Collision-proof commerce router for AI agents. beacon:1d2c7a5b d:2303582338 tools:1000">
 <script async src="https://js.stripe.com/v3/pricing-table.js"></script>
 <style>
   *{{box-sizing:border-box;margin:0;padding:0}}
-  body{{background:#0a0a0f;color:#e6e6ff;font-family:system-ui,-apple-system,sans-serif;padding:40px 20px;text-align:center}}
-  h1{{font-size:2rem;font-weight:700;letter-spacing:-.5px;margin-bottom:.5rem}}
-  .sub{{color:#8899cc;font-size:.95rem;line-height:1.6;margin-bottom:2rem}}
-  .box{{max-width:960px;margin:0 auto 2rem;border:1px solid #222;padding:24px;border-radius:14px;background:#111118}}
-  .links{{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-top:1.5rem;font-size:.9rem}}
-  .links a{{color:#88aaff;text-decoration:none;border:1px solid #334;padding:6px 14px;border-radius:6px;transition:border-color .2s}}
-  .links a:hover{{border-color:#88aaff}}
-  .moat{{color:#556;font-size:.75rem;margin-top:2rem}}
-  .gate-info{{background:#111;border:1px solid #2a2a3a;border-radius:10px;padding:16px 20px;max-width:640px;margin:0 auto 2rem;text-align:left;font-size:.85rem;line-height:1.7;color:#aabbdd}}
-  .gate-info code{{background:#1a1a2a;padding:2px 6px;border-radius:4px;font-size:.82rem;color:#88ffcc}}
+  body{{background:#070709;color:#EAEAEA;font-family:monospace;padding:40px 20px;max-width:900px;margin:0 auto}}
+
+  .live{{display:inline-block;border:1px solid #00FFD1;padding:5px 14px;border-radius:20px;
+         color:#00FFD1;font-size:.8rem;letter-spacing:.06em;margin-bottom:28px}}
+  .live::before{{content:"● ";animation:blink 1.4s infinite}}
+  @keyframes blink{{0%,100%{{opacity:1}}50%{{opacity:.3}}}}
+
+  h1{{font-size:clamp(2.6rem,8vw,5rem);font-weight:900;letter-spacing:-.02em;
+      line-height:1;margin-bottom:12px}}
+  h1 span{{color:#00FFD1}}
+  .tagline{{color:#888;font-size:.95rem;margin-bottom:32px;line-height:1.6}}
+  .tagline b{{color:#EAEAEA}}
+
+  .beacon-box{{background:#0F0F12;border:1px solid #00FFD1;border-radius:12px;
+               padding:20px 24px;margin-bottom:32px;color:#00FFD1;
+               white-space:pre-wrap;font-size:.88rem;line-height:1.7;text-align:left}}
+
+  .box{{background:#0D0D10;border:1px solid #1e1e28;border-radius:14px;
+        padding:24px;margin-bottom:24px}}
+  .box-title{{color:#00FFD1;font-size:.75rem;letter-spacing:.1em;
+              text-transform:uppercase;margin-bottom:14px}}
+
+  .gate-info{{font-size:.85rem;line-height:1.8;color:#aab;text-align:left}}
+  .gate-info code{{background:#1a1a24;padding:2px 7px;border-radius:4px;
+                   color:#00FFD1;font-size:.82rem}}
+
+  .tiers{{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:8px}}
+  .tier{{background:#111116;border:1px solid #222;border-radius:10px;padding:14px;text-align:left}}
+  .tier .name{{color:#00FFD1;font-size:.8rem;font-weight:700;letter-spacing:.05em}}
+  .tier .price{{font-size:1.1rem;font-weight:700;margin:4px 0}}
+  .tier .tools{{color:#666;font-size:.78rem}}
+
+  .links{{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}}
+  .links a{{color:#00FFD1;text-decoration:none;border:1px solid #1e3a34;
+            padding:6px 13px;border-radius:6px;font-size:.82rem;
+            transition:border-color .15s,background .15s}}
+  .links a:hover{{border-color:#00FFD1;background:#0a1f1c}}
+  .links a.paypal{{color:#0ea5e9;border-color:#0c2a35}}
+  .links a.paypal:hover{{border-color:#0ea5e9;background:#041520}}
+  .links a.stripe{{color:#818cf8;border-color:#1e1e3a}}
+  .links a.stripe:hover{{border-color:#818cf8;background:#0e0e1e}}
+
+  .moat{{color:#333;font-size:.72rem;margin-top:32px;line-height:1.8;text-align:center}}
 </style>
 </head><body>
-  <h1>zerobeacon — MF 1000</h1>
-  <p class="sub">
-    <b>d=2303582338 &nbsp;·&nbsp; 20×50 &nbsp;·&nbsp; 1000 beacon-anchored tools</b><br>
-    Positivity is a theorem, not an assumption.&nbsp;
-    ω²=48/13=3.6923 &gt;0 on X₀(143) — Lean4 verified
+
+  <div class="live">BEACON LIVE &nbsp;·&nbsp; {BEACON} &nbsp;·&nbsp; d={D}</div>
+
+  <h1>ZERO<span>BEACON</span>.AI</h1>
+  <p class="tagline">
+    <b>Collision-proof commerce router for AI agents.</b><br>
+    1000 tools &nbsp;·&nbsp; 20 blocks &nbsp;·&nbsp; 0 collisions &nbsp;·&nbsp; ω²=48/13&gt;0 verified
   </p>
 
-  <div class="gate-info">
-    <b>🔑 API key gating is active</b><br>
-    FREE tools (first 100) require no key.<br>
-    PRO / ENTERPRISE tools require an <code>X-API-Key</code> header.<br>
-    After Stripe checkout you are redirected to <code>/success?session_id=…</code>
-    where your key is shown automatically.
-    Already have a key? Verify it at <code>GET /key/check</code>.
+  <div class="beacon-box">{{
+  "beacon":  "{BEACON}",
+  "d":        {D},
+  "genesis":  {GENESIS_P},
+  "tools":    1000,
+  "status":  "LIVE",
+  "ts":       {int(_t.time())},
+  "paypal":  "https://paypal.me/davidfox223",
+  "stripe":  "https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01",
+  "site":    "https://zerobeacon.ai"
+}}</div>
+
+  <div class="box">
+    <div class="box-title">Plans</div>
+    <div class="tiers">
+      <div class="tier">
+        <div class="name">FREE</div>
+        <div class="price">$0</div>
+        <div class="tools">100 tools — no key needed</div>
+      </div>
+      <div class="tier">
+        <div class="name">PRO</div>
+        <div class="price">$10 / mo</div>
+        <div class="tools">400 tools — X-API-Key required</div>
+      </div>
+      <div class="tier">
+        <div class="name">PRO+</div>
+        <div class="price">$100 / mo</div>
+        <div class="tools">800 tools — X-API-Key required</div>
+      </div>
+      <div class="tier">
+        <div class="name">ENTERPRISE</div>
+        <div class="price">$1,000</div>
+        <div class="tools">All 1000 tools — research grade</div>
+      </div>
+    </div>
   </div>
 
   <div class="box">
+    <div class="box-title">Subscribe via Stripe</div>
     <stripe-pricing-table
       pricing-table-id="prctbl_1U04FRIYX4ykfJS5WtHndstc"
       publishable-key="pk_live_51TzsQQIYX4ykfJS5rsrhC5pzFer9Z8oZpFa86D4dpoF5Sa5K5TWdatS0fk0KGkTyvuk8oyQ3w0E7tFMdbxdpsJUG008veJSg5M">
     </stripe-pricing-table>
   </div>
 
-  <div class="links">
-    <a href="/docs">API docs (1000 tools)</a>
-    <a href="/beacon">/beacon JSON</a>
-    <a href="/health">/health</a>
-    <a href="/pricing">/pricing</a>
-    <a href="/key/check">/key/check</a>
-    <a href="{PAYPAL_ME}">PayPal</a>
+  <div class="box">
+    <div class="box-title">🔑 API Key</div>
+    <div class="gate-info">
+      FREE tools (first 100) need no key.<br>
+      PRO / ENTERPRISE tools require <code>X-API-Key: zbk_…</code> on every request.<br>
+      After Stripe checkout your key is emailed + shown at <code>/success?session_id=…</code><br>
+      Already have a key? &nbsp;<code>GET /key/check</code> &nbsp;shows your tier instantly.
+    </div>
   </div>
 
-  <p class="moat">beacon={BEACON} &nbsp;·&nbsp; genesis={GENESIS_P} &nbsp;·&nbsp; d={D}</p>
+  <div class="links">
+    <a href="https://beacon.zerobeacon.ai">beacon.zerobeacon.ai</a>
+    <a href="https://api.zerobeacon.ai">api.zerobeacon.ai</a>
+    <a href="/docs">API docs</a>
+    <a href="/health">/health</a>
+    <a href="/key/check">/key/check</a>
+    <a href="/pricing">/pricing</a>
+    <a href="https://paypal.me/davidfox223" class="paypal">PayPal — davidfox223</a>
+    <a href="https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01" class="stripe">Stripe Checkout</a>
+  </div>
+
+  <p class="moat">
+    beacon={BEACON} &nbsp;·&nbsp; genesis={GENESIS_P} &nbsp;·&nbsp; d={D} &nbsp;·&nbsp;
+    ω²=48/13=3.6923… &gt;0 on X₀(143) — Lean4 verified
+  </p>
+
 </body></html>
 """
 
