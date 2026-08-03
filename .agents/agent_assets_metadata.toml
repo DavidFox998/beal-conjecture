@@ -1,0 +1,9 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "l-xY2YlryVVR0Lo6CYuX6"
+uri = "file://zerobeacon-mf-1000.zip"
+type = "unspecified"
+title = "Zerobeacon MF 1000 — Full Project"
+description = "All 1000 tools (20 routers × 50), generate_routers.py, Dockerfile, fly.toml, GitHub Actions, core beacon, mcp.json, smithery.json, README, MARKETING."
