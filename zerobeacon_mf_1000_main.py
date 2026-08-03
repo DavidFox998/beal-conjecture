@@ -94,18 +94,21 @@ _route_tier: dict[str, str] = {}
 _tool_tier:  dict[str, str] = {}
 
 def _build_tier_maps() -> None:
-    """Populate _route_tier and _tool_tier from router metadata."""
-    for mod, prefix, _tag, _min_tier in ROUTERS:
+    """Populate _route_tier and _tool_tier from router metadata.
+
+    Uses the block-level min_tier from ROUTERS as the authoritative source
+    rather than per-route tags, which can be inconsistent with the block
+    configuration.
+    """
+    for mod, prefix, _tag, min_tier in ROUTERS:
         block = prefix.split("/")[-1]
         for route in mod.router.routes:
             path = getattr(route, "path", None)
             if path is None:
                 continue
-            route_tags = list(getattr(route, "tags", []) or [])
-            tier = tags_to_tier(route_tags)
-            _route_tier[prefix + path] = tier
+            _route_tier[prefix + path] = min_tier
             if hasattr(route, "endpoint"):
-                _tool_tier[f"mf_{block}_{route.endpoint.__name__}"] = tier
+                _tool_tier[f"mf_{block}_{route.endpoint.__name__}"] = min_tier
 
 _build_tier_maps()
 
