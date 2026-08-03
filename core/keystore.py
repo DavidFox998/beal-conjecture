@@ -85,16 +85,22 @@ def _save() -> None:
         print(f"[keystore] could not save: {e}", flush=True)
 
 
-def issue_key(tier: str, email: str, session_id: str | None = None) -> str:
+def issue_key(tier: str, email: str, session_id: str | None = None,
+              stripe_customer_id: str | None = None) -> str:
     """
     Generate a new API key for `email` at `tier`, persist it, return the key.
     If `session_id` is provided (Stripe checkout session), bind the key to it
     so the customer can retrieve it via the success-redirect proof-of-payment flow.
+    If `stripe_customer_id` is provided, store it so revocation can target the
+    specific Stripe customer rather than matching solely by email.
     """
     if tier not in TIER_RANK:
         raise ValueError(f"Unknown tier: {tier}")
     key = "zbk_" + secrets.token_hex(16)
-    _store[key] = {"tier": tier, "email": email, "created_at": int(time.time())}
+    record: dict = {"tier": tier, "email": email, "created_at": int(time.time())}
+    if stripe_customer_id:
+        record["stripe_customer_id"] = stripe_customer_id
+    _store[key] = record
     if session_id:
         _session_map[session_id] = key
     _save()
@@ -146,6 +152,61 @@ def check_access(api_key: str | None, required_tier: str) -> tuple[bool, str]:
         f"Key tier '{rec['tier']}' is below required tier '{required_tier}'. "
         "Upgrade at https://zerobeacon.ai/pricing"
     )
+
+
+def revoke_by_customer_id(stripe_customer_id: str) -> int:
+    """
+    Downgrade all keys belonging to `stripe_customer_id` to the 'free' tier.
+
+    Preferred revocation method — uses the Stripe customer ID stored at key
+    issuance rather than email, so a cancellation for one subscription does
+    not accidentally affect a renewed subscription at the same email address.
+
+    Returns the number of keys that were downgraded.
+    """
+    cid = stripe_customer_id.strip()
+    if not cid:
+        return 0
+    count = 0
+    now = int(time.time())
+    for record in _store.values():
+        if record.get("stripe_customer_id") == cid and record.get("tier") != "free":
+            record["tier"] = "free"
+            record["cancelled_at"] = now
+            count += 1
+    if count:
+        _save()
+        print(f"[keystore] revoked {count} key(s) for customer={cid} → tier=free", flush=True)
+    return count
+
+
+def revoke_by_email(email: str) -> int:
+    """
+    Downgrade all keys belonging to `email` to the 'free' tier.
+
+    Fallback revocation method used when no stripe_customer_id is stored on
+    the key record. Prefer revoke_by_customer_id when a Stripe customer ID is
+    available to avoid matching keys from a renewed subscription at the same
+    email address.
+
+    Returns the number of keys that were downgraded.
+    """
+    email = email.strip().lower()
+    if not email:
+        return 0
+    count = 0
+    now = int(time.time())
+    for record in _store.values():
+        if (record.get("email", "").strip().lower() == email
+                and not record.get("stripe_customer_id")   # skip if ID present
+                and record.get("tier") != "free"):
+            record["tier"] = "free"
+            record["cancelled_at"] = now
+            count += 1
+    if count:
+        _save()
+        print(f"[keystore] revoked {count} key(s) for {email} → tier=free", flush=True)
+    return count
 
 
 def list_keys() -> list[dict]:

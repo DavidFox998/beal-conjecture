@@ -826,10 +826,11 @@ async def stripe_webhook(
         return JSONResponse({"error": str(e)}, status_code=400)
 
     if event["type"] == "checkout.session.completed":
-        sess       = event["data"]["object"]
-        email      = (sess.get("customer_details", {}).get("email") or "unknown").strip().lower()
-        amt        = sess.get("amount_total", 0) / 100
-        session_id = sess.get("id", "")   # e.g. "cs_live_..." — proof-of-payment token
+        sess               = event["data"]["object"]
+        email              = (sess.get("customer_details", {}).get("email") or "unknown").strip().lower()
+        amt                = sess.get("amount_total", 0) / 100
+        session_id         = sess.get("id", "")          # e.g. "cs_live_…"
+        stripe_customer_id = (sess.get("customer") or "").strip()
 
         # Map payment amount → tier
         if amt >= 1000:
@@ -846,20 +847,24 @@ async def stripe_webhook(
         # Issue (or refresh) the customer's API key, binding to the session ID
         # so they can retrieve it from the /success page without guessable info.
         if tier != "free":
-            api_key = keystore.issue_key(tier, email, session_id=session_id)
+            api_key = keystore.issue_key(
+                tier, email,
+                session_id=session_id,
+                stripe_customer_id=stripe_customer_id or None,
+            )
             print(f"🔑 Key issued: {api_key[:16]}… for {email} (session={session_id[:20]}…)", flush=True)
             send_api_key_email(email=email, api_key=api_key, tier=tier)
 
     elif event["type"] == "customer.subscription.updated":
-        sub   = event["data"]["object"]
-        email = sub.get("customer_email", "")
+        sub                = event["data"]["object"]
+        stripe_customer_id = (sub.get("customer") or "").strip()
+        email              = (sub.get("customer_email") or "").strip().lower()
         if not email:
             try:
-                cust  = stripe.Customer.retrieve(sub.get("customer", ""))
-                email = cust.get("email", "unknown")
+                cust  = stripe.Customer.retrieve(stripe_customer_id)
+                email = (cust.get("email") or "").strip().lower()
             except Exception:
                 email = "unknown"
-        email = email.strip().lower()
         amt   = sub.get("plan", {}).get("amount", 0) / 100
         if amt >= 1000:
             tier = "enterprise_1000"
@@ -869,9 +874,57 @@ async def stripe_webhook(
             tier = "pro_10"
         else:
             tier = "free"
-        api_key = keystore.issue_key(tier, email)
+        api_key = keystore.issue_key(
+            tier, email,
+            stripe_customer_id=stripe_customer_id or None,
+        )
         print(f"✅ SUB UPDATED ${amt:.2f} from {email} → tier={tier} key={api_key[:12]}…", flush=True)
         send_api_key_email(email=email, api_key=api_key, tier=tier)
+
+    elif event["type"] == "customer.subscription.deleted":
+        sub                = event["data"]["object"]
+        stripe_customer_id = (sub.get("customer") or "").strip()
+
+        if not stripe_customer_id:
+            # No customer ID in the event — nothing we can reliably revoke.
+            print("[webhook] subscription.deleted: missing customer ID — skipping", flush=True)
+            return {"received": True}
+
+        # Resolve the customer email for logging.  Use only for fallback
+        # revocation (keys issued before customer-ID tracking was added).
+        email = (sub.get("customer_email") or "").strip().lower()
+        if not email:
+            try:
+                cust  = stripe.Customer.retrieve(stripe_customer_id)
+                email = (cust.get("email") or "").strip().lower()
+            except stripe.error.StripeError as exc:
+                # Transient Stripe API error — return 500 so Stripe retries
+                # the delivery.  Do NOT acknowledge with 200 or the event is
+                # permanently dropped and the customer keeps paid access.
+                print(
+                    f"[webhook] subscription.deleted: customer lookup failed "
+                    f"for {stripe_customer_id}: {exc}",
+                    flush=True,
+                )
+                return JSONResponse(
+                    {"error": f"could not resolve Stripe customer: {exc}"},
+                    status_code=500,
+                )
+
+        # Revoke by Stripe customer ID (preferred — unambiguous across
+        # re-subscriptions at the same email address).
+        revoked = keystore.revoke_by_customer_id(stripe_customer_id)
+
+        # Fallback: revoke email-only keys written before customer-ID
+        # tracking was introduced (revoke_by_email skips keys that carry an ID).
+        if email:
+            revoked += keystore.revoke_by_email(email)
+
+        print(
+            f"🚫 SUB CANCELLED customer={stripe_customer_id} email={email} "
+            f"— {revoked} key(s) downgraded to free",
+            flush=True,
+        )
 
     return {"received": True}
 

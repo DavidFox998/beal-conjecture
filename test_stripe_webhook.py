@@ -12,6 +12,7 @@ Verifies:
   7. checkout.session.completed key is stored and retrievable by session_id
   8. customer.subscription.updated → key issued + email sent
   9. Unknown event type → 200 received:True, no key issued
+ 10. customer.subscription.deleted → existing paid key downgraded to free
 
 Run:
     pytest test_stripe_webhook.py -v
@@ -68,6 +69,26 @@ def _make_subscription_event(amount_cents: int,
                 "plan": {"amount": amount_cents},
             }
         },
+    }
+
+
+def _make_subscription_deleted_event(
+        stripe_customer_id: str = "cus_test_cancel",
+        customer_email: str | None = None,
+) -> dict:
+    """
+    Real-shaped customer.subscription.deleted event.
+    Stripe subscription objects carry `customer` (a customer ID), not
+    `customer_email`.  `customer_email` is accepted as an optional field
+    to simulate the rare case where the gateway forwards it; omitting it
+    is the normal production shape.
+    """
+    obj: dict = {"customer": stripe_customer_id}
+    if customer_email is not None:
+        obj["customer_email"] = customer_email
+    return {
+        "type": "customer.subscription.deleted",
+        "data": {"object": obj},
     }
 
 
@@ -277,4 +298,123 @@ class TestStripeWebhook:
         assert resp.status_code == 200
         assert resp.json() == {"received": True}
         assert keystore._store == before, "No keys should be issued for unknown events"
+        mock_email.assert_not_called()
+
+    # 10. subscription.deleted (real shape: customer ID only) → key revoked ------
+
+    def test_subscription_deleted_by_customer_id_downgrades_key(self):
+        """
+        Real Stripe event shape: only `customer` ID present, no customer_email.
+        The handler must call stripe.Customer.retrieve to get the email, then
+        downgrade the matching paid key to free.
+        """
+        cid   = "cus_test_cancel_001"
+        email = "cancel@example.com"
+        api_key = keystore.issue_key("pro_10", email, stripe_customer_id=cid)
+        assert keystore.lookup(api_key)["tier"] == "pro_10"
+
+        event = _make_subscription_deleted_event(stripe_customer_id=cid)
+
+        fake_customer = MagicMock()
+        fake_customer.get = lambda k, *a: email if k == "email" else (a[0] if a else None)
+
+        with patch.dict(os.environ, {"STRIPE_WEBHOOK_SECRET": FAKE_SECRET}), \
+             patch("stripe.Customer.retrieve", return_value=fake_customer):
+            resp, mock_email = _post(event)
+
+        assert resp.status_code == 200
+        assert resp.json() == {"received": True}
+
+        record = keystore.lookup(api_key)
+        assert record is not None, "Key record should still exist after cancellation"
+        assert record["tier"] == "free", (
+            f"Expected tier 'free' after cancellation, got '{record['tier']}'"
+        )
+        # No confirmation email is sent on cancellation
+        mock_email.assert_not_called()
+
+    def test_subscription_deleted_customer_lookup_failure_returns_500(self):
+        """
+        If stripe.Customer.retrieve raises a StripeError (transient network
+        issue), the handler must return 500 so Stripe retries the event.
+        Acknowledging with 200 would permanently drop it and leave the
+        customer's paid key active.
+        """
+        import stripe as _stripe
+        cid     = "cus_test_cancel_transient"
+        api_key = keystore.issue_key("pro_10", "transient@example.com", stripe_customer_id=cid)
+
+        event = _make_subscription_deleted_event(stripe_customer_id=cid)
+        err   = _stripe.error.StripeError("network timeout")
+
+        with patch.dict(os.environ, {"STRIPE_WEBHOOK_SECRET": FAKE_SECRET}), \
+             patch("stripe.Customer.retrieve", side_effect=err):
+            resp, mock_email = _post(event)
+
+        assert resp.status_code == 500, (
+            "Transient customer-lookup failure must return 500 so Stripe retries"
+        )
+        # Key must NOT have been downgraded — the event will be retried
+        assert keystore.lookup(api_key)["tier"] == "pro_10"
+        mock_email.assert_not_called()
+
+    def test_subscription_deleted_null_email_still_revokes_by_customer_id(self):
+        """
+        If the Stripe customer has no email (edge case), the handler must still
+        revoke access using the customer ID and return 200 (not crash).
+        """
+        cid     = "cus_test_cancel_noemail"
+        api_key = keystore.issue_key("pro_100", "noemail@example.com", stripe_customer_id=cid)
+
+        event        = _make_subscription_deleted_event(stripe_customer_id=cid)
+        fake_customer = MagicMock()
+        fake_customer.get = lambda k, *a: None  # email is None
+
+        with patch.dict(os.environ, {"STRIPE_WEBHOOK_SECRET": FAKE_SECRET}), \
+             patch("stripe.Customer.retrieve", return_value=fake_customer):
+            resp, mock_email = _post(event)
+
+        assert resp.status_code == 200
+        # Key revoked by customer ID even though email resolution returned None
+        assert keystore.lookup(api_key)["tier"] == "free"
+        mock_email.assert_not_called()
+
+    def test_subscription_deleted_does_not_affect_other_customer_same_email(self):
+        """
+        Two customers can share an email address (e.g. re-subscription).
+        Cancelling cus_A must not revoke the key that belongs to cus_B.
+        """
+        email   = "shared@example.com"
+        cid_a   = "cus_test_cancel_A"
+        cid_b   = "cus_test_cancel_B"
+        key_a   = keystore.issue_key("pro_10",  email, stripe_customer_id=cid_a)
+        key_b   = keystore.issue_key("pro_100", email, stripe_customer_id=cid_b)
+
+        event = _make_subscription_deleted_event(stripe_customer_id=cid_a,
+                                                  customer_email=email)
+
+        with patch.dict(os.environ, {"STRIPE_WEBHOOK_SECRET": FAKE_SECRET}):
+            resp, mock_email = _post(event)
+
+        assert resp.status_code == 200
+        assert keystore.lookup(key_a)["tier"] == "free",  "cus_A key must be revoked"
+        assert keystore.lookup(key_b)["tier"] == "pro_100", "cus_B key must be untouched"
+        mock_email.assert_not_called()
+
+    def test_subscription_deleted_no_matching_keys_is_a_noop(self):
+        """
+        customer.subscription.deleted for a customer with no paid keys must
+        return 200 and leave the keystore unchanged.
+        """
+        cid   = "cus_test_cancel_nobody"
+        event = _make_subscription_deleted_event(stripe_customer_id=cid,
+                                                  customer_email="nobody@example.com")
+        before = dict(keystore._store)
+
+        with patch.dict(os.environ, {"STRIPE_WEBHOOK_SECRET": FAKE_SECRET}):
+            resp, mock_email = _post(event)
+
+        assert resp.status_code == 200
+        assert resp.json() == {"received": True}
+        assert keystore._store == before
         mock_email.assert_not_called()
