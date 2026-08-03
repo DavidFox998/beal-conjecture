@@ -19,29 +19,18 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Run MCP tier-gate tests
-        run: pytest test_mcp_tier_gate.py -v --tb=short
-
-      - name: Run Stripe webhook tests
-        run: pytest test_stripe_webhook.py -v --tb=short
-
-      - name: Audit — no endpoint accepts api_key from request body
-        run: pytest test_no_body_api_key.py -v --tb=short
-
-      - name: Confirm MCP tool tiers match ROUTERS after any change
-        run: pytest test_mcp_tool_tiers.py -v --tb=short
-
-      - name: Confirm admin reset endpoint is protected when ADMIN_SECRET is not set
-        run: pytest test_admin_reset.py -v --tb=short
+      - name: Run all tests
+        run: |
+          pytest test_mcp_tier_gate.py test_stripe_webhook.py test_no_body_api_key.py test_mcp_tool_tiers.py test_admin_reset.py -v --tb=short 2>&1 | tee /tmp/pytest_results.txt
+          exit ${PIPESTATUS[0]}
 
       - name: Write test summary
         if: always()
         run: |
           echo "## Test Results" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          pytest test_mcp_tier_gate.py test_stripe_webhook.py test_no_body_api_key.py test_mcp_tool_tiers.py test_admin_reset.py -v --tb=short --no-header -q 2>&1 | tee /tmp/pytest_summary.txt || true
           echo '```' >> $GITHUB_STEP_SUMMARY
-          cat /tmp/pytest_summary.txt >> $GITHUB_STEP_SUMMARY
+          cat /tmp/pytest_results.txt >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
 
   deploy:
@@ -78,7 +67,9 @@ jobs:
         run: sleep 15
 
       - name: Smoke test — branded domain returns site == "https://zerobeacon.ai"
-        run: pytest test_smoke_domain.py -v --tb=short
+        run: |
+          pytest test_smoke_domain.py -v --tb=short 2>&1 | tee /tmp/smoke_results.txt
+          exit ${PIPESTATUS[0]}
 
       - name: Write smoke-test summary
         if: always()
@@ -87,7 +78,6 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "Endpoint: \`https://zerobeacon.ai/api/mf/01/beacon\`" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          pytest test_smoke_domain.py -v --tb=short --no-header -q 2>&1 | tee /tmp/smoke_summary.txt || true
           echo '```' >> $GITHUB_STEP_SUMMARY
-          cat /tmp/smoke_summary.txt >> $GITHUB_STEP_SUMMARY
+          cat /tmp/smoke_results.txt >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
