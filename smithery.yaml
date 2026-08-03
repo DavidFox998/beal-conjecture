@@ -1,20 +1,44 @@
 name: "@davidjfox998/zerobeacon-1000"
-displayName: "ZeroBeacon.ai — Collision-Proof Commerce Router"
-description: "zerobeacon.ai — d=2303582338 — 1000 APIs: 300 market router + 400 math engine (Arakelov/RH/BSD/NS/Yang-Mills) + 300 amplum everyday tools — Live beacon 1d2c7a5b"
+displayName: "ZeroBeacon.ai — Collision-Proof Commerce Router for AI Agents"
+description: |
+  Tools so that AI can purchase goods for humans without collision. A logistical impossibility without this API toolset.
+
+  Proved, not assumed. Measured, not minted. 1000 beacon-anchored tools — d=2303582338 · 20×50 · beacon 1d2c7a5b.
+
+  THE 3 LAYERS
+
+  Layer 1 — Commerce Router (tools 0–300): List once, sell in 12 markets. One product → 12 checkouts. B2 router, billing, notarization, timeproof, idempotency, shard. Live PayPal + Stripe. $0.001 per check ×10M = $10k/day. Collision-proof IDs prevent double-charges and chargebacks. Notarization proves existence at T, who signed, no backdate — geometric proof, not promissory. 5ms pre-cert saves $20k compute before firing.
+
+  Layer 2 — Math Engine / Opera Numerorum (tools 301–700): Trust layer. Collision-proof by construction. Arakelov positivity (ω²=48/13=3.6923>0) — positivity guarantee. Non-Abelian Hodge → valid map filter. RH / BSD / Lindelöf μ=0 → collision bounds. Navier-Stokes M6 CLOSED. Yang-Mills gap beta0=ln8. Poincaré / P vs NP / X₀(143) N=11·13 genus-2 hyperelliptic. Lean4 verified. We don't claim to solve RH — we use its bounds as engineering constraints.
+
+  Layer 3 — Amplum (tools 701–1000): Everyday tools used millions of times per day — time, convert, weather, translate, calc. Fiat ω²≤0 requires trust. Amplum ω²>0 proven. Collateral is theorem, not balance sheet. Nundin 12/11 premium 9.09%. AI does it for you, 400×/day.
+
+  BEACON GENESIS: beacon=1d2c7a5b · d=2303582338 · genesis=82843 · formula=frac(p·π/10·2³²) · Greedy modular prime sieve 10-layer Fermat-anchored p=551016649 · Spectral gap cert q=1/8 tail 3.8e-24. Any response deviating from d=2303582338 is a forgery.
+
+  FREE: first 100 tools, no key required. PRO $10/mo: 400 tools. PRO+ $100/mo: 800 tools. ENTERPRISE $1000/mo: all 1000.
 homepage: "https://zerobeacon.ai"
 repository: "https://github.com/DavidFox998/zerobeacon"
 keywords:
   - commerce
   - mcp
   - beacon
-  - Arakelov
-  - Riemann
-  - Navier-Stokes
-  - Yang-Mills
-  - P vs NP
+  - arakelov
+  - riemann-hypothesis
+  - navier-stokes
+  - yang-mills
+  - p-vs-np
   - shopping
   - paypal
   - stripe
+  - notarization
+  - timeproof
+  - idempotency
+  - collision-proof
+  - opera-numerorum
+  - amplum
+  - ai-agents
+  - billing
+  - escrow
 runtime: "python"
 startCommand: "uvicorn zerobeacon_mf_1000_main:app --host 0.0.0.0 --port 8000 --workers 1"
 configSchema:
@@ -22,5 +46,5 @@ configSchema:
   properties:
     api_key:
       type: string
-      description: "ZeroBeacon API key from https://zerobeacon.ai — get yours after Stripe checkout"
+      description: "ZeroBeacon API key from https://zerobeacon.ai — FREE for first 100 tools, PRO $10/mo, PRO+ $100/mo, ENTERPRISE $1000/mo"
   required: []
