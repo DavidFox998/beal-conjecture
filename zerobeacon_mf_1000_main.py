@@ -248,6 +248,8 @@ def pricing():
             "step_3": "The session_id is in your browser URL after Stripe checkout completes",
             "step_4": "Use it: add header  X-API-Key: <your-key>  to every request",
             "verify": "GET /key/check with X-API-Key header to verify tier at any time",
+            "resend_key_email": "POST /api/key/resend  {\"session_id\": \"cs_live_...\"} — re-sends your API key email (max 3 attempts per session)",
+            "resend_counter_reset": "Admin only: POST /api/key/resend/reset  {\"session_id\": \"cs_live_...\", \"admin_secret\": \"...\"} — clears the resend attempt counter so a locked-out customer can retry",
         },
         "success_page": "/success?session_id=<your-session-id>",
         "stripe_pricing_table": "prctbl_1U04FRIYX4ykfJS5WtHndstc",
@@ -365,6 +367,43 @@ async def success_page(request: Request):
 # Rate-limit counter for /api/key/resend: session_id → attempt count
 _resend_attempts: dict[str, int] = {}
 _RESEND_MAX_ATTEMPTS = 3
+
+
+@app.post("/api/key/resend/reset")
+async def api_key_resend_reset(request: Request):
+    """
+    Admin endpoint: clear the resend rate-limit counter for a Stripe session.
+
+    Use this when a customer is locked out after 3 failed resend attempts
+    (e.g. bounced emails) so they can request another resend without a
+    server restart.
+
+    Request body: {"session_id": "cs_live_...", "admin_secret": "..."}
+    Returns 200 on success, 403 on bad secret, 400 on missing fields.
+    """
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"error": "invalid JSON body"}, status_code=400)
+
+    admin_secret = os.environ.get("ADMIN_SECRET", "")
+    if not admin_secret or body.get("admin_secret") != admin_secret:
+        return JSONResponse({"error": "forbidden"}, status_code=403)
+
+    session_id = (body.get("session_id") or "").strip()
+    if not session_id:
+        return JSONResponse(
+            {"error": "session_id is required"},
+            status_code=400,
+        )
+
+    previous = _resend_attempts.pop(session_id, 0)
+    return {
+        "ok":               True,
+        "session_id":       session_id,
+        "attempts_cleared": previous,
+        "message":          f"Resend counter reset (was {previous}). Customer may now resend again.",
+    }
 
 
 @app.post("/api/key/resend")
