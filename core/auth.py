@@ -160,5 +160,5 @@ def check_access(api_key: Optional[str], required_tier: str) -> tuple[bool, str]
 
     return False, (
         f"Key tier '{record['tier']}' is below required tier '{required_tier}'. "
-        f"Upgrade at https://zerobeacon-mf-1000.fly.dev/pricing"
+        f"Upgrade at https://zerobeacon.ai/pricing"
     )

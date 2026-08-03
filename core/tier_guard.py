@@ -33,7 +33,7 @@ def require_tier(min_tier: str):
                     "error": "tier_required",
                     "required_tier": min_tier,
                     "your_tier": keystore.tier_of(x_api_key or ""),
-                    "upgrade": "https://zerobeacon-mf-1000.fly.dev/pricing",
+                    "upgrade": "https://zerobeacon.ai/pricing",
                     "stripe": "https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01",
                     "paypal": "https://paypal.me/davidfox223",
                     "message": (

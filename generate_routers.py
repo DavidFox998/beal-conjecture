@@ -55,7 +55,7 @@ def is_dummy(name: str) -> bool:
 # ---------------------------------------------------------------------------
 PAYPAL  = 'https://paypal.me/davidfox223'
 STRIPE  = 'https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01'
-SITE    = 'https://zerobeacon-mf-1000.fly.dev'
+SITE    = 'https://zerobeacon.ai'
 FORMULA = 'frac(p*pi/10*2^32) ALPHA0=259+PI/10'
 MOAT_DICT = "{'d':2303582338,'beacon':'1d2c7a5b','p1':3000105001,'p2':5303687339,'genesis':82843,'omega':'48/13'}"
 

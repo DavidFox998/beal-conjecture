@@ -17,7 +17,7 @@ import urllib.error
 
 from core.keystore import TIER_LABEL
 
-_BASE_URL = "https://zerobeacon-mf-1000.fly.dev"
+_BASE_URL = "https://zerobeacon.ai"
 _RESEND_URL = "https://api.resend.com/emails"
 
 

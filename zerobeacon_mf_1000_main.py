@@ -134,7 +134,7 @@ async def tier_gate(request: Request, call_next):
                     "error":         "Access denied",
                     "required_tier": required_tier,
                     "reason":        reason,
-                    "upgrade":       "https://zerobeacon-mf-1000.fly.dev/pricing",
+                    "upgrade":       "https://zerobeacon.ai/pricing",
                     "get_key":       "Visit /success?session_id=<your-stripe-session-id>",
                 },
                 status_code=403,
@@ -351,7 +351,7 @@ async def success_page(request: Request):
         <code>X-API-Key: ${{data.api_key}}</code><br><br>
         Example:<br>
         <code>curl -H "X-API-Key: ${{data.api_key}}" \\<br>
-        &nbsp;&nbsp;https://zerobeacon-mf-1000.fly.dev/api/mf/03/delivery_proof</code>
+        &nbsp;&nbsp;https://zerobeacon.ai/api/mf/03/delivery_proof</code>
       </div>`;
   }} catch (e) {{
     card.innerHTML = '<p style="color:#cc8888">Error fetching key: ' + e.message + '</p>';
@@ -452,7 +452,7 @@ async def api_key_resend(request: Request):
                 "error":   "No API key found for this session_id",
                 "hint":    "Complete a payment first, then use the session_id from "
                            "the Stripe success redirect",
-                "upgrade": "https://zerobeacon-mf-1000.fly.dev/pricing",
+                "upgrade": "https://zerobeacon.ai/pricing",
             },
             status_code=404,
         )
@@ -528,7 +528,7 @@ async def api_key_lookup(request: Request):
                 "error":   "No API key found for this session_id",
                 "hint":    "Complete a payment first, then use the session_id from "
                            "the Stripe success redirect",
-                "upgrade": "https://zerobeacon-mf-1000.fly.dev/pricing",
+                "upgrade": "https://zerobeacon.ai/pricing",
             },
             status_code=404,
         )
@@ -571,7 +571,7 @@ async def key_check(x_api_key: str | None = Header(default=None)):
         "blocks_unlocked": f"MF-01 – MF-{['02','08','16','20'][rank]}",
         "email":           rec["email"],
         "key_prefix":      x_api_key[:12] + "…",
-        "upgrade":         None if rank == 3 else "https://zerobeacon-mf-1000.fly.dev/pricing",
+        "upgrade":         None if rank == 3 else "https://zerobeacon.ai/pricing",
     }
 
 
@@ -758,7 +758,7 @@ async def mcp_post(request: Request):
                         "message": f"Access denied: {reason}",
                         "data": {
                             "required_tier": required_tier,
-                            "upgrade":       "https://zerobeacon-mf-1000.fly.dev/pricing",
+                            "upgrade":       "https://zerobeacon.ai/pricing",
                         },
                     },
                 }
