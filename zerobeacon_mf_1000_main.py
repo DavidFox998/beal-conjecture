@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request, Header
+from fastapi import FastAPI, Request, Header, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, HTMLResponse
 import time, os, stripe
@@ -6,6 +6,8 @@ import time, os, stripe
 from core.beacon import (beacon_payload, D, BEACON, GENESIS_P,
                          TIERS, PRICING_SUMMARY, PAYPAL_ME,
                          PAYPAL_LINK_10, PAYPAL_LINK_100, PAYPAL_LINK_1000)
+from core import keystore
+from core.tier_guard import require_tier
 
 from routers import (
     zerobeacon_mf_01_050_b1a_trust      as m01,
@@ -43,21 +45,45 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# ROUTERS: (module, prefix, tag, min_tier)
+# MF-01/02 → FREE (100 tools open)
+# MF-03–08 → PRO $10/mo   (400 tools)
+# MF-09–16 → PRO $100/mo  (800 tools)
+# MF-17–20 → ENTERPRISE   (1000 tools)
 ROUTERS = [
-    (m01, "/api/mf/01", "MF-01"), (m02, "/api/mf/02", "MF-02"),
-    (m03, "/api/mf/03", "MF-03"), (m04, "/api/mf/04", "MF-04"),
-    (m05, "/api/mf/05", "MF-05"), (m06, "/api/mf/06", "MF-06"),
-    (m07, "/api/mf/07", "MF-07"), (m08, "/api/mf/08", "MF-08"),
-    (m09, "/api/mf/09", "MF-09"), (m10, "/api/mf/10", "MF-10"),
-    (m11, "/api/mf/11", "MF-11"), (m12, "/api/mf/12", "MF-12"),
-    (m13, "/api/mf/13", "MF-13"), (m14, "/api/mf/14", "MF-14"),
-    (m15, "/api/mf/15", "MF-15"), (m16, "/api/mf/16", "MF-16"),
-    (m17, "/api/mf/17", "MF-17"), (m18, "/api/mf/18", "MF-18"),
-    (m19, "/api/mf/19", "MF-19"), (m20, "/api/mf/20", "MF-20"),
+    (m01, "/api/mf/01", "MF-01", "free"),
+    (m02, "/api/mf/02", "MF-02", "free"),
+    (m03, "/api/mf/03", "MF-03", "pro_10"),
+    (m04, "/api/mf/04", "MF-04", "pro_10"),
+    (m05, "/api/mf/05", "MF-05", "pro_10"),
+    (m06, "/api/mf/06", "MF-06", "pro_10"),
+    (m07, "/api/mf/07", "MF-07", "pro_10"),
+    (m08, "/api/mf/08", "MF-08", "pro_10"),
+    (m09, "/api/mf/09", "MF-09", "pro_100"),
+    (m10, "/api/mf/10", "MF-10", "pro_100"),
+    (m11, "/api/mf/11", "MF-11", "pro_100"),
+    (m12, "/api/mf/12", "MF-12", "pro_100"),
+    (m13, "/api/mf/13", "MF-13", "pro_100"),
+    (m14, "/api/mf/14", "MF-14", "pro_100"),
+    (m15, "/api/mf/15", "MF-15", "pro_100"),
+    (m16, "/api/mf/16", "MF-16", "pro_100"),
+    (m17, "/api/mf/17", "MF-17", "enterprise_1000"),
+    (m18, "/api/mf/18", "MF-18", "enterprise_1000"),
+    (m19, "/api/mf/19", "MF-19", "enterprise_1000"),
+    (m20, "/api/mf/20", "MF-20", "enterprise_1000"),
 ]
 
-for mod, prefix, tag in ROUTERS:
-    app.include_router(mod.router, prefix=prefix, tags=[tag])
+# Load persisted API keys before mounting routers
+keystore.load()
+
+for mod, prefix, tag, min_tier in ROUTERS:
+    if min_tier == "free":
+        app.include_router(mod.router, prefix=prefix, tags=[tag])
+    else:
+        app.include_router(
+            mod.router, prefix=prefix, tags=[tag],
+            dependencies=[Depends(require_tier(min_tier))],
+        )
 
 
 # ── Landing page ─────────────────────────────────────────────────────────────
@@ -167,16 +193,71 @@ async def stripe_webhook(
             tier = "pro_10"
         else:
             tier = "free"
-        print(f"✅ PAID ${amt:.2f} from {email} → tier={tier}", flush=True)
+        # Issue a persistent API key for this customer
+        api_key = keystore.issue_key(tier, email)
+        print(f"✅ PAID ${amt:.2f} from {email} → tier={tier} key={api_key[:12]}…", flush=True)
+
+    elif event["type"] == "customer.subscription.updated":
+        sub   = event["data"]["object"]
+        email = sub.get("customer_email", "")
+        # Pull email from customer object if not on sub directly
+        if not email:
+            try:
+                cust  = stripe.Customer.retrieve(sub.get("customer", ""))
+                email = cust.get("email", "unknown")
+            except Exception:
+                email = "unknown"
+        amt = sub.get("plan", {}).get("amount", 0) / 100
+        if amt >= 1000:
+            tier = "enterprise_1000"
+        elif amt >= 100:
+            tier = "pro_100"
+        elif amt >= 9:
+            tier = "pro_10"
+        else:
+            tier = "free"
+        api_key = keystore.issue_key(tier, email)
+        print(f"✅ SUB UPDATED ${amt:.2f} from {email} → tier={tier} key={api_key[:12]}…", flush=True)
 
     return {"received": True}
+
+
+# ── API key self-service ───────────────────────────────────────────────────────
+
+@app.get("/key/check")
+async def key_check(x_api_key: str | None = Header(default=None)):
+    """Let a customer verify their API key and see their tier."""
+    if not x_api_key:
+        return JSONResponse(
+            {"error": "Pass your key in the X-API-Key header.", "purchase": "/pricing"},
+            status_code=401,
+        )
+    rec = keystore.lookup(x_api_key)
+    if not rec:
+        return JSONResponse(
+            {"error": "Key not found.", "purchase": "/pricing",
+             "stripe": "https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01",
+             "paypal": "https://paypal.me/davidjfox998"},
+            status_code=404,
+        )
+    tier = rec["tier"]
+    rank = keystore.rank_of(tier)
+    return {
+        "valid": True,
+        "tier":  tier,
+        "tools_unlocked": [100, 400, 800, 1000][rank],
+        "blocks_unlocked": f"MF-01 – MF-{['02','08','16','20'][rank]}",
+        "email": rec["email"],
+        "key_prefix": x_api_key[:12] + "…",
+        "upgrade": None if rank == 3 else "https://zerobeacon-mf-1000.fly.dev/pricing",
+    }
 
 
 # ── MCP protocol ──────────────────────────────────────────────────────────────
 
 def _build_tool_list():
     tools = []
-    for mod, prefix, _ in ROUTERS:
+    for mod, prefix, _tag, _tier in ROUTERS:
         block = prefix.split("/")[-1]
         for route in mod.router.routes:
             if not hasattr(route, "endpoint"):
@@ -235,7 +316,7 @@ async def mcp_post(request: Request):
         if len(parts) >= 3 and parts[0] == "mf":
             block_num = parts[1]
             fn_name   = parts[2]
-            for mod, prefix, _ in ROUTERS:
+            for mod, prefix, _tag, _tier in ROUTERS:
                 if prefix.endswith(block_num):
                     for route in mod.router.routes:
                         if hasattr(route, "endpoint") and route.endpoint.__name__ == fn_name:
