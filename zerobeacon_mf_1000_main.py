@@ -169,6 +169,36 @@ def _build_tier_maps() -> None:
 _build_tier_maps()
 
 
+# ── RapidAPI subscription → ZeroBeacon tier mapping ──────────────────────────
+# X-RapidAPI-Subscription values injected by the RapidAPI gateway:
+#   BASIC → free (100 tools)
+#   PRO   → pro_10  ($10/mo, 400 tools)
+#   ULTRA → pro_100 ($100/mo, 800 tools)
+#   MEGA  → enterprise_1000 ($199/mo, all 1000 tools)
+
+RAPIDAPI_SUBSCRIPTION_TIER: dict[str, str] = {
+    "BASIC": "free",
+    "PRO":   "pro_10",
+    "ULTRA": "pro_100",
+    "MEGA":  "enterprise_1000",
+}
+
+
+def _rapidapi_tier(request: Request) -> str | None:
+    """Return the ZeroBeacon tier for an inbound RapidAPI request, or None.
+
+    Returns a tier string only when both X-RapidAPI-Key AND
+    X-RapidAPI-Subscription are present, so the caller knows this is a
+    genuine RapidAPI gateway request and should bypass the zbk_ keystore.
+    Returns None for all other requests (native zbk_ keys, Smithery, etc.).
+    """
+    rapidapi_key = request.headers.get("x-rapidapi-key")
+    if not rapidapi_key:
+        return None
+    subscription = (request.headers.get("x-rapidapi-subscription") or "BASIC").upper()
+    return RAPIDAPI_SUBSCRIPTION_TIER.get(subscription, "free")
+
+
 # ── HTTP middleware (belt-and-suspenders over the Depends gate) ───────────────
 
 @app.middleware("http")
@@ -178,15 +208,33 @@ async def tier_gate(request: Request, call_next):
     The primary gate is Depends(require_tier()) on include_router; this
     middleware catches any path that slips through and also ensures the
     keystore (persistent) is the authority for all checks.
+
+    RapidAPI requests are identified by the presence of X-RapidAPI-Key and
+    granted access based on X-RapidAPI-Subscription instead of a zbk_ key
+    lookup, so paid RapidAPI subscribers reach the right tool tier without
+    needing a separate ZeroBeacon API key.
     """
     path = request.url.path
     if path.startswith("/api/mf/"):
         required_tier = _route_tier.get(path, "free")
-        api_key = (request.headers.get("X-API-Key")
-                   or request.headers.get("x-api-key")
-                   or request.headers.get("api_key")          # Smithery gateway compat
-                   or request.headers.get("x-rapidapi-key"))  # RapidAPI gateway compat
-        allowed, reason = keystore.check_access(api_key, required_tier)
+        required_rank = keystore.rank_of(required_tier)
+
+        rapidapi_tier = _rapidapi_tier(request)
+        if rapidapi_tier is not None:
+            # RapidAPI gateway request — use subscription tier directly
+            caller_rank = keystore.rank_of(rapidapi_tier)
+            allowed = caller_rank >= required_rank
+            reason  = rapidapi_tier if allowed else (
+                f"RapidAPI subscription '{rapidapi_tier}' is below required tier "
+                f"'{required_tier}'. Upgrade at https://rapidapi.com/davidjfox998/api/zerobeacon"
+            )
+        else:
+            # Native zbk_ key, Smithery api_key header, or no key
+            api_key = (request.headers.get("X-API-Key")
+                       or request.headers.get("x-api-key")
+                       or request.headers.get("api_key"))   # Smithery gateway compat
+            allowed, reason = keystore.check_access(api_key, required_tier)
+
         if not allowed:
             return JSONResponse(
                 {
@@ -194,7 +242,7 @@ async def tier_gate(request: Request, call_next):
                     "required_tier": required_tier,
                     "reason":        reason,
                     "upgrade":       "https://zerobeacon.ai/pricing",
-                    "get_key":       "Visit /success?session_id=<your-stripe-session-id>",
+                    "rapidapi":      "https://rapidapi.com/davidjfox998/api/zerobeacon",
                 },
                 status_code=403,
             )
