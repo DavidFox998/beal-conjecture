@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Request, Header, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, HTMLResponse
-import time, os, stripe
+import time, os, stripe, asyncio
 
 from core.beacon import (beacon_payload, D, BEACON, GENESIS_P,
                          TIERS, PRICING_SUMMARY, PAYPAL_ME,
@@ -142,6 +142,59 @@ async def _validate_resend_on_startup() -> None:
         )
     else:
         print("[emailer] RESEND_API_KEY validated successfully on startup.", flush=True)
+
+
+# Configurable probe interval — override with RESEND_CHECK_INTERVAL env var (seconds).
+_RESEND_CHECK_INTERVAL: int = int(os.environ.get("RESEND_CHECK_INTERVAL", "3600"))
+
+
+async def _resend_probe_loop() -> None:
+    """
+    Background loop: re-validate RESEND_API_KEY every _RESEND_CHECK_INTERVAL seconds.
+
+    Updates the module-level _resend_key_valid / _resend_key_status flags so
+    /health reflects the current state without making a live network call on every
+    request.  Emits [emailer] CRITICAL on failure and a recovery message when the
+    key becomes valid again.  Exceptions inside validate_resend_key are caught and
+    logged so the loop never propagates and never crashes the server.
+    """
+    global _resend_key_valid, _resend_key_status
+    while True:
+        await asyncio.sleep(_RESEND_CHECK_INTERVAL)
+        try:
+            valid, reason = validate_resend_key()
+        except Exception as exc:
+            print(
+                f"[emailer] periodic probe raised an unexpected exception: "
+                f"{type(exc).__name__}: {exc}",
+                flush=True,
+            )
+            continue
+
+        prev_valid = _resend_key_valid
+        _resend_key_valid  = valid
+        _resend_key_status = reason
+
+        if not valid and prev_valid:
+            # Newly failed — emit CRITICAL once so it appears prominently in Fly.io logs.
+            print(
+                f"[emailer] CRITICAL: RESEND_API_KEY validation failed (periodic probe) — "
+                f"{reason}. Email delivery will fail until the key is corrected.",
+                flush=True,
+            )
+        elif valid and not prev_valid:
+            # Recovered — emit one info line so the recovery is traceable.
+            print(
+                "[emailer] RESEND_API_KEY is valid again (periodic probe recovered).",
+                flush=True,
+            )
+        # If status unchanged, stay silent — no log spam every hour.
+
+
+@app.on_event("startup")
+async def _start_resend_periodic_check() -> None:
+    """Launch the background Resend key probe loop as a fire-and-forget asyncio task."""
+    asyncio.create_task(_resend_probe_loop())
 
 
 @app.on_event("startup")
