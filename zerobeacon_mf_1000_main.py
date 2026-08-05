@@ -11,6 +11,7 @@ from core.keystore import ResendPersistenceError
 from core.tier_guard import require_tier
 from core.emailer import send_api_key_email, validate_resend_key
 from core.log_redactor import install_redaction_filter
+from core.rapidapi_auth import verify_rapidapi_request, RAPIDAPI_SUBSCRIPTION_TIER
 
 # Install log redaction immediately so no zbk_... key can reach any log sink,
 # including future structured loggers, exception traceback capturers, or
@@ -170,33 +171,29 @@ _build_tier_maps()
 
 
 # ── RapidAPI subscription → ZeroBeacon tier mapping ──────────────────────────
+# Canonical mapping lives in core/rapidapi_auth.py (re-exported here for tests
+# and OpenAPI spec generation that import this module directly).
 # X-RapidAPI-Subscription values injected by the RapidAPI gateway:
 #   BASIC → free (100 tools)
 #   PRO   → pro_10  ($10/mo, 400 tools)
 #   ULTRA → pro_100 ($100/mo, 800 tools)
 #   MEGA  → enterprise_1000 ($199/mo, all 1000 tools)
-
-RAPIDAPI_SUBSCRIPTION_TIER: dict[str, str] = {
-    "BASIC": "free",
-    "PRO":   "pro_10",
-    "ULTRA": "pro_100",
-    "MEGA":  "enterprise_1000",
-}
+# RAPIDAPI_SUBSCRIPTION_TIER is imported from core.rapidapi_auth above.
 
 
-def _rapidapi_tier(request: Request) -> str | None:
-    """Return the ZeroBeacon tier for an inbound RapidAPI request, or None.
+def _verified_rapidapi_tier(request: Request) -> tuple[str | None, str]:
+    """Verify an inbound RapidAPI gateway request and return (tier, reason).
 
-    Returns a tier string only when both X-RapidAPI-Key AND
-    X-RapidAPI-Subscription are present, so the caller knows this is a
-    genuine RapidAPI gateway request and should bypass the zbk_ keystore.
-    Returns None for all other requests (native zbk_ keys, Smithery, etc.).
+    Delegates to core.rapidapi_auth.verify_rapidapi_request which validates
+    the X-RapidAPI-Proxy-Secret against the RAPIDAPI_PROXY_SECRET env var
+    before trusting the subscription header.  Returns (None, reason) when
+    verification fails so callers fall through to the zbk_ keystore path.
     """
-    rapidapi_key = request.headers.get("x-rapidapi-key")
-    if not rapidapi_key:
-        return None
-    subscription = (request.headers.get("x-rapidapi-subscription") or "BASIC").upper()
-    return RAPIDAPI_SUBSCRIPTION_TIER.get(subscription, "free")
+    return verify_rapidapi_request(
+        x_rapidapi_key=request.headers.get("x-rapidapi-key"),
+        x_rapidapi_proxy_secret=request.headers.get("x-rapidapi-proxy-secret"),
+        x_rapidapi_subscription=request.headers.get("x-rapidapi-subscription"),
+    )
 
 
 # ── HTTP middleware (belt-and-suspenders over the Depends gate) ───────────────
@@ -219,9 +216,9 @@ async def tier_gate(request: Request, call_next):
         required_tier = _route_tier.get(path, "free")
         required_rank = keystore.rank_of(required_tier)
 
-        rapidapi_tier = _rapidapi_tier(request)
+        rapidapi_tier, rapidapi_reason = _verified_rapidapi_tier(request)
         if rapidapi_tier is not None:
-            # RapidAPI gateway request — use subscription tier directly
+            # Verified RapidAPI gateway request — use subscription tier directly
             caller_rank = keystore.rank_of(rapidapi_tier)
             allowed = caller_rank >= required_rank
             reason  = rapidapi_tier if allowed else (

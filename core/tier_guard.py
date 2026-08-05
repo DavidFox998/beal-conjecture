@@ -14,25 +14,20 @@ Missing / FREE keys are allowed only on FREE-tier routers.
 
 from fastapi import Depends, HTTPException, Header, Request
 from core import keystore
-
-# RapidAPI plan name → ZeroBeacon internal tier
-# Must stay in sync with RAPIDAPI_SUBSCRIPTION_TIER in zerobeacon_mf_1000_main.py
-_RAPIDAPI_TIER: dict[str, str] = {
-    "BASIC": "free",
-    "PRO":   "pro_10",
-    "ULTRA": "pro_100",
-    "MEGA":  "enterprise_1000",
-}
+from core.rapidapi_auth import verify_rapidapi_request
 
 
 def require_tier(min_tier: str):
     """Return a FastAPI dependency that enforces `min_tier` access.
 
     Auth priority (first match wins):
-    1. X-RapidAPI-Key + X-RapidAPI-Subscription  → tier from subscription plan
-    2. X-API-Key (zbk_…)                          → tier from keystore lookup
-    3. api_key header (Smithery gateway)           → tier from keystore lookup
-    4. No key                                      → free (rank 0)
+    1. X-RapidAPI-Key + validated X-RapidAPI-Proxy-Secret → tier from subscription
+    2. X-API-Key (zbk_…)                                  → tier from keystore
+    3. api_key header (Smithery gateway)                   → tier from keystore
+    4. No key                                              → free (rank 0)
+
+    RapidAPI requests that fail proxy-secret validation fall through to the
+    zbk_ keystore path — they are NOT granted subscription-level access.
     """
     min_rank = keystore.rank_of(min_tier)
 
@@ -40,16 +35,22 @@ def require_tier(min_tier: str):
         request: Request,
         x_api_key: str | None = Header(default=None),
         x_rapidapi_key: str | None = Header(default=None),
+        x_rapidapi_proxy_secret: str | None = Header(default=None),
         x_rapidapi_subscription: str | None = Header(default=None),
         api_key: str | None = Header(default=None),   # Smithery gateway
     ):
-        if x_rapidapi_key is not None:
-            # RapidAPI gateway request — use subscription tier directly,
-            # no zbk_ keystore lookup required.
-            plan = (x_rapidapi_subscription or "BASIC").upper()
-            caller_tier = _RAPIDAPI_TIER.get(plan, "free")
+        rapidapi_tier, _ = verify_rapidapi_request(
+            x_rapidapi_key=x_rapidapi_key,
+            x_rapidapi_proxy_secret=x_rapidapi_proxy_secret,
+            x_rapidapi_subscription=x_rapidapi_subscription,
+        )
+
+        if rapidapi_tier is not None:
+            # Verified RapidAPI gateway request
+            caller_tier = rapidapi_tier
             caller_rank = keystore.rank_of(caller_tier)
         else:
+            # Native zbk_ key or Smithery api_key header
             effective_key = x_api_key or api_key
             if effective_key is None:
                 caller_rank = 0
