@@ -175,29 +175,76 @@ class TestPeriodicProbeInterval:
 
 class TestPeriodicProbeSafety:
 
-    def test_exception_in_validate_does_not_propagate(self):
-        """An unexpected exception inside validate_resend_key must not kill the server."""
+    def test_exception_in_validate_is_logged_not_raised(self):
+        """RuntimeError inside validate_resend_key is caught, logged, and the loop continues."""
         import io, contextlib
 
         main = _fresh_main_module()
 
+        call_count = {"n": 0}
+
         async def fake_sleep(n):
-            raise asyncio.CancelledError   # stop after first sleep
+            call_count["n"] += 1
+            if call_count["n"] >= 2:
+                # Cancel after the first full probe cycle (sleep → validate → sleep)
+                raise asyncio.CancelledError
 
         buf = io.StringIO()
         with patch("zerobeacon_mf_1000_main.asyncio.sleep", side_effect=fake_sleep), \
              patch("zerobeacon_mf_1000_main.validate_resend_key",
-                   side_effect=RuntimeError("connection reset")), \
+                   side_effect=RuntimeError("connection reset by peer")), \
              contextlib.redirect_stdout(buf):
             try:
                 asyncio.run(main._resend_probe_loop())
             except asyncio.CancelledError:
                 pass
 
-        # Exception was swallowed; loop did not raise RuntimeError
         log = buf.getvalue()
-        # The error should be logged, not raised
-        assert "RuntimeError" in log or "connection reset" in log or True  # gracefully handled
+        # The RuntimeError must be caught and its message logged
+        assert "connection reset by peer" in log or "RuntimeError" in log, (
+            f"Expected exception to be logged; got: {log!r}"
+        )
+
+    def test_validate_dispatched_to_thread_not_called_directly(self):
+        """validate_resend_key is invoked via asyncio.to_thread, not called directly
+        on the event loop, so a slow Resend API response cannot freeze requests."""
+        import io, contextlib
+
+        main = _fresh_main_module()
+        to_thread_invoked = []
+
+        async def tracking_to_thread(fn, *args, **kwargs):
+            """Records invocations and delegates to the (patched) fn."""
+            to_thread_invoked.append(True)
+            return fn(*args, **kwargs)
+
+        call_count = {"n": 0}
+
+        async def fake_sleep(n):
+            call_count["n"] += 1
+            if call_count["n"] >= 2:
+                raise asyncio.CancelledError
+
+        buf = io.StringIO()
+        with patch("zerobeacon_mf_1000_main.asyncio.sleep", side_effect=fake_sleep), \
+             patch("zerobeacon_mf_1000_main.asyncio.to_thread",
+                   side_effect=tracking_to_thread), \
+             patch("zerobeacon_mf_1000_main.validate_resend_key",
+                   return_value=(True, "ok")), \
+             contextlib.redirect_stdout(buf):
+            try:
+                asyncio.run(main._resend_probe_loop())
+            except asyncio.CancelledError:
+                pass
+
+        assert to_thread_invoked, (
+            "asyncio.to_thread was never called — validate_resend_key is being "
+            "called directly on the event loop, which blocks requests for up to "
+            "10 s whenever the Resend API is slow."
+        )
+        # Flags must be updated correctly even when going through to_thread
+        assert main._resend_key_valid is True
+        assert main._resend_key_status == "ok"
 
 
 import os  # needed for TestPeriodicProbeInterval

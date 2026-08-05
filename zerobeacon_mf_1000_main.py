@@ -162,7 +162,9 @@ async def _resend_probe_loop() -> None:
     while True:
         await asyncio.sleep(_RESEND_CHECK_INTERVAL)
         try:
-            valid, reason = validate_resend_key()
+            # Run the blocking urllib call in a thread pool so the event loop
+            # stays responsive while the probe is waiting on Resend's API.
+            valid, reason = await asyncio.to_thread(validate_resend_key)
         except Exception as exc:
             print(
                 f"[emailer] periodic probe raised an unexpected exception: "
