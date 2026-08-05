@@ -66,3 +66,63 @@ def test_branded_domain_beacon_ok_flag():
     assert data.get("ok") is True, (
         f"'ok' flag is not True. Got: {data.get('ok')}"
     )
+
+
+# ── /health endpoint smoke tests ──────────────────────────────────────────────
+
+HEALTH_URL = f"{DOMAIN}/health"
+
+
+def test_health_status():
+    """The /health endpoint must return HTTP 200."""
+    resp = requests.get(HEALTH_URL, timeout=TIMEOUT)
+    assert resp.status_code == 200, (
+        f"Expected 200 from {HEALTH_URL}, got {resp.status_code}. "
+        f"Body: {resp.text[:300]}"
+    )
+
+
+def test_health_ok_flag():
+    """/health body must include ok == True."""
+    resp = requests.get(HEALTH_URL, timeout=TIMEOUT)
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data.get("ok") is True, (
+        f"/health 'ok' is not True. Got: {data.get('ok')}"
+    )
+
+
+def test_health_site_field():
+    """/health must include site == 'https://zerobeacon.ai' — confirms branded domain is configured."""
+    resp = requests.get(HEALTH_URL, timeout=TIMEOUT)
+    assert resp.status_code == 200
+    data = resp.json()
+    assert "site" in data, (
+        f"'site' key missing from /health response. Keys present: {list(data.keys())}"
+    )
+    assert data["site"] == EXPECTED_SITE, (
+        f"/health site mismatch: expected '{EXPECTED_SITE}', got '{data['site']}'"
+    )
+
+
+def test_health_beacon_identity():
+    """/health beacon and d values must match the canonical moat constants."""
+    resp = requests.get(HEALTH_URL, timeout=TIMEOUT)
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data.get("beacon") == EXPECTED_BEACON, (
+        f"/health beacon mismatch: expected '{EXPECTED_BEACON}', got '{data.get('beacon')}'"
+    )
+    assert data.get("d") == EXPECTED_D, (
+        f"/health d mismatch: expected {EXPECTED_D}, got {data.get('d')}"
+    )
+
+
+def test_health_tool_count():
+    """/health must report exactly 1000 tools."""
+    resp = requests.get(HEALTH_URL, timeout=TIMEOUT)
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data.get("tools") == 1000, (
+        f"/health tools count wrong: expected 1000, got {data.get('tools')}"
+    )

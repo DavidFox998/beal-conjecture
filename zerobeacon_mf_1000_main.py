@@ -616,13 +616,14 @@ def health():
     rapidapi_secret_ok = _proxy_secret_configured()
     # Read cached validation result — never probe Resend live from /health.
     return {
-        "ok": True,
-        "tools": 1000,
-        "d": D,
+        "ok":     True,
+        "tools":  1000,
+        "d":      D,
         "beacon": BEACON,
-        "p": bp["p"],
-        "resend_api_key_set": resend_key_set,
-        "resend_api_key_valid": _resend_key_valid,
+        "p":      bp["p"],
+        "site":   "https://zerobeacon.ai",   # canonical branded domain — smoke tests assert this
+        "resend_api_key_set":    resend_key_set,
+        "resend_api_key_valid":  _resend_key_valid,
         "resend_api_key_status": _resend_key_status,
         "rapidapi_proxy_secret": (
             "configured" if rapidapi_secret_ok
