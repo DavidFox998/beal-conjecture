@@ -144,6 +144,32 @@ async def _validate_resend_on_startup() -> None:
         print("[emailer] RESEND_API_KEY validated successfully on startup.", flush=True)
 
 
+@app.on_event("startup")
+async def _check_rapidapi_proxy_secret() -> None:
+    """
+    Warn at startup if RAPIDAPI_PROXY_SECRET is not configured.
+
+    Without this secret, all RapidAPI paid-subscriber requests will be rejected
+    (fail-closed design in core/rapidapi_auth.py).  The warning is CRITICAL so
+    it appears at the top of Fly.io logs and is not buried in INFO-level output.
+
+    Never crashes the server — RapidAPI misconfiguration must not block Stripe/
+    zbk_ key access for direct subscribers.
+    """
+    from core.rapidapi_auth import _proxy_secret_configured
+    if not _proxy_secret_configured():
+        print(
+            "[rapidapi] CRITICAL: RAPIDAPI_PROXY_SECRET is not set. "
+            "All RapidAPI paid-subscriber requests will be rejected until this secret "
+            "is configured in Fly.io (fly secrets set RAPIDAPI_PROXY_SECRET=<value>) "
+            "and the identical value is set as the Proxy Secret in the RapidAPI dashboard. "
+            "See rapidapi_guide.md for setup instructions.",
+            flush=True,
+        )
+    else:
+        print("[rapidapi] RAPIDAPI_PROXY_SECRET is configured — RapidAPI gateway access enabled.", flush=True)
+
+
 # ── Per-route and per-tool tier maps (built at import time) ───────────────────
 # Used by the HTTP middleware (belt-and-suspenders) and MCP tier gate.
 
