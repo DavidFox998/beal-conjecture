@@ -191,3 +191,80 @@ class TestResendTTLReset:
         assert r.status_code == 429, (
             f"Non-expired capped session must still return 429, got {r.status_code}"
         )
+
+
+class TestResendMaxEntriesCap:
+    """
+    Confirm that the hard-cap eviction path keeps the dict bounded when the
+    server runs long enough to accumulate millions of unique session IDs.
+    """
+
+    # ------------------------------------------------------------------
+    # 6. Dict stays at or below _RESEND_MAX_ENTRIES after overflow
+    # ------------------------------------------------------------------
+    def test_dict_size_stays_bounded(self):
+        """
+        Pre-fill _resend_store with _RESEND_MAX_ENTRIES + 1 unique sessions
+        (all unexpired, so TTL eviction cannot interfere), then call
+        resend_increment for one more.  The dict must not exceed
+        _RESEND_MAX_ENTRIES entries.
+        """
+        now = time.time()
+
+        # All entries are unexpired: timestamps range from (now - TTL + 3600)
+        # to (now - 1).  No entry crosses the TTL boundary, so only the
+        # hard-cap guard is responsible for keeping the dict bounded.
+        base_ts = now - (_RESEND_TTL_SECONDS - 3600)   # 1 hour inside the TTL window
+        for i in range(_RESEND_MAX_ENTRIES + 1):
+            ts = base_ts + i   # older entries have smaller timestamps
+            keystore._resend_store[f"cs_cap_{i:06d}"] = [1, ts]
+
+        assert len(keystore._resend_store) == _RESEND_MAX_ENTRIES + 1
+
+        # Calling resend_increment for a brand-new session must trigger eviction.
+        keystore.resend_increment("cs_cap_new", _RESEND_TTL_SECONDS, _RESEND_MAX_ENTRIES)
+
+        assert len(keystore._resend_store) <= _RESEND_MAX_ENTRIES, (
+            f"Dict grew to {len(keystore._resend_store)} entries; "
+            f"hard cap is {_RESEND_MAX_ENTRIES}"
+        )
+
+    # ------------------------------------------------------------------
+    # 7. Evicted entry is the oldest (min timestamp), not a random one
+    # ------------------------------------------------------------------
+    def test_oldest_entry_is_evicted(self):
+        """
+        When the hard cap triggers, the entry with the smallest first-attempt
+        timestamp must be evicted, not a random one.
+
+        All entries are unexpired (within the TTL window) so that only the
+        hard-cap guard runs, not the TTL eviction path.
+        """
+        now = time.time()
+
+        # The known-oldest entry is unexpired but has the smallest timestamp
+        # inside the TTL window (1 hour before expiry → still valid).
+        oldest_id = "cs_cap_oldest"
+        oldest_ts = now - (_RESEND_TTL_SECONDS - 3600)   # unexpired, but oldest
+        keystore._resend_store[oldest_id] = [1, oldest_ts]
+
+        # All other entries are more recent (timestamps between now-1 and now).
+        for i in range(_RESEND_MAX_ENTRIES - 1):
+            recent_ts = now - (i + 1) / _RESEND_MAX_ENTRIES   # fractional seconds, all > oldest_ts
+            keystore._resend_store[f"cs_cap_recent_{i:06d}"] = [1, recent_ts]
+
+        assert len(keystore._resend_store) == _RESEND_MAX_ENTRIES
+
+        # One more increment must push us over the cap and evict the oldest.
+        keystore.resend_increment("cs_cap_trigger", _RESEND_TTL_SECONDS, _RESEND_MAX_ENTRIES)
+
+        assert oldest_id not in keystore._resend_store, (
+            f"Expected the oldest unexpired entry '{oldest_id}' (ts={oldest_ts:.2f}) "
+            "to be evicted by the hard-cap guard, but it is still present"
+        )
+        assert "cs_cap_trigger" in keystore._resend_store, (
+            "The newly incremented session must be present after eviction"
+        )
+        assert len(keystore._resend_store) <= _RESEND_MAX_ENTRIES, (
+            f"Dict size {len(keystore._resend_store)} exceeds cap {_RESEND_MAX_ENTRIES}"
+        )
