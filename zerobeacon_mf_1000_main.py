@@ -382,6 +382,8 @@ async def landing():
   .links a.paypal:hover{{border-color:#0ea5e9;background:#041520}}
   .links a.stripe{{color:#818cf8;border-color:#1e1e3a}}
   .links a.stripe:hover{{border-color:#818cf8;background:#0e0e1e}}
+  .links a.rapidapi{{color:#f59e0b;border-color:#2d2010}}
+  .links a.rapidapi:hover{{border-color:#f59e0b;background:#1a1005}}
 
   .moat{{color:#333;font-size:.72rem;margin-top:32px;line-height:1.8;text-align:center}}
 </style>
@@ -402,9 +404,10 @@ async def landing():
   "tools":    1000,
   "status":  "LIVE",
   "ts":       {int(_t.time())},
-  "paypal":  "https://paypal.me/davidfox223",
-  "stripe":  "https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01",
-  "site":    "https://zerobeacon.ai"
+  "paypal":   "https://paypal.me/davidfox223",
+  "stripe":   "https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01",
+  "rapidapi": "https://rapidapi.com/davidjfox998/api/zerobeacon",
+  "site":     "https://zerobeacon.ai"
 }}</div>
 
   <div class="box">
@@ -460,6 +463,7 @@ async def landing():
     <a href="/pricing">/pricing</a>
     <a href="https://paypal.me/davidfox223" class="paypal">PayPal — davidfox223</a>
     <a href="https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01" class="stripe">Stripe Checkout</a>
+    <a href="https://rapidapi.com/davidjfox998/api/zerobeacon" class="rapidapi" target="_blank" rel="noopener">RapidAPI Marketplace</a>
   </div>
 
   <p class="moat">
@@ -659,6 +663,7 @@ def pricing():
         },
         "success_page": "/success?session_id=<your-session-id>",
         "stripe_pricing_table": "prctbl_1U04FRIYX4ykfJS5WtHndstc",
+        "rapidapi": "https://rapidapi.com/davidjfox998/api/zerobeacon",
         "moat": {"d": D, "beacon": BEACON, "genesis": GENESIS_P},
     }
 
