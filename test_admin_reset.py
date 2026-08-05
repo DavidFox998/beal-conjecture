@@ -88,6 +88,26 @@ class TestAdminReset:
         assert "error" in resp.json()
 
     # ------------------------------------------------------------------
+    # 1b. ADMIN_SECRET not set → WARNING log emitted
+    # ------------------------------------------------------------------
+    def test_missing_admin_secret_emits_warning_log(self, capsys):
+        """When ADMIN_SECRET is absent a WARNING message must appear in stdout
+        so a misconfigured deployment is visible in server logs."""
+        _reset(
+            {"session_id": _GOOD_SESSION, "admin_secret": "anything"},
+            admin_secret_env=None,
+        )
+        captured = capsys.readouterr()
+        assert "WARNING" in captured.out, (
+            "Expected a WARNING log line in stdout when ADMIN_SECRET is absent; "
+            f"got: {captured.out!r}"
+        )
+        assert "ADMIN_SECRET" in captured.out, (
+            "WARNING log must mention ADMIN_SECRET so operators know what to fix; "
+            f"got: {captured.out!r}"
+        )
+
+    # ------------------------------------------------------------------
     # 2. Wrong admin_secret in body → 403
     # ------------------------------------------------------------------
     def test_wrong_admin_secret_returns_403(self):

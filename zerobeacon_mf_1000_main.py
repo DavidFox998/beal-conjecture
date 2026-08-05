@@ -759,7 +759,20 @@ async def api_key_resend_reset(request: Request):
         return JSONResponse({"error": "invalid JSON body"}, status_code=400)
 
     admin_secret = os.environ.get("ADMIN_SECRET", "")
-    if not admin_secret or body.get("admin_secret") != admin_secret:
+    if not admin_secret:
+        # ADMIN_SECRET is missing from the environment — this indicates a
+        # misconfigured deployment.  Log at WARNING so it is visible in
+        # Fly.io logs without revealing any information to the caller.
+        print(
+            "[admin] WARNING: /api/key/resend/reset was called but ADMIN_SECRET "
+            "is not set in the environment. This endpoint is permanently disabled "
+            "until ADMIN_SECRET is configured (fly secrets set ADMIN_SECRET=<value>). "
+            "All callers are rejected with 403.",
+            flush=True,
+        )
+        return JSONResponse({"error": "forbidden"}, status_code=403)
+
+    if body.get("admin_secret") != admin_secret:
         return JSONResponse({"error": "forbidden"}, status_code=403)
 
     session_id = (body.get("session_id") or "").strip()
