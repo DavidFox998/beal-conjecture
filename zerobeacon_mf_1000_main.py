@@ -1080,6 +1080,59 @@ async def api_key_issue(request: Request):
     return {"ok": True, "email": email, "tier": tier, "api_key": key}
 
 
+# ── Background email dispatch (Stripe webhook only) ──────────────────────────
+
+async def _send_email_in_background(
+    email: str,
+    api_key: str,
+    tier: str,
+    *,
+    label: str,
+) -> None:
+    """
+    Dispatch send_api_key_email to a thread-pool worker so the Stripe webhook
+    handler can return 200 OK immediately without blocking on Resend I/O.
+
+    With max_retries=1 and a 10-second timeout per attempt plus a 2-second
+    sleep, a total failure can take ~22 seconds — close to Stripe's 30-second
+    webhook timeout.  Running the send in a background task eliminates that
+    risk: the key is already persisted in the keystore before this task fires,
+    so the customer can always retrieve it via /success?session_id=… or
+    POST /api/key/lookup even if email delivery fails.
+
+    Args:
+        email:   Recipient address.
+        api_key: The zbk_… key that was just issued.
+        tier:    Subscription tier string.
+        label:   Context string included in CRITICAL logs
+                 (e.g. "session=cs_live_xxx…" or "event=subscription.updated
+                 stripe_customer_id=cus_xxx").  Used by support to identify
+                 which customer is affected and re-issue via POST /api/key/issue
+                 or retrieve via POST /api/key/lookup.
+    """
+    try:
+        ok = await asyncio.to_thread(send_api_key_email, email, api_key, tier)
+    except Exception as exc:
+        print(
+            f"[webhook] CRITICAL: email background task raised "
+            f"{type(exc).__name__}: {exc} — "
+            f"recipient={email} tier={tier} {label}. "
+            "Key is stored; customer can retrieve at "
+            "/success?session_id=<id> or via POST /api/key/lookup.",
+            flush=True,
+        )
+        return
+
+    if not ok:
+        print(
+            f"[webhook] CRITICAL: API key email failed in background — "
+            f"recipient={email} tier={tier} {label}. "
+            "Key is stored; customer can retrieve at "
+            "/success?session_id=<id> or via POST /api/key/lookup.",
+            flush=True,
+        )
+
+
 # ── Stripe webhook ────────────────────────────────────────────────────────────
 
 @app.post("/webhook")
@@ -1126,15 +1179,10 @@ async def stripe_webhook(
                 stripe_customer_id=stripe_customer_id or None,
             )
             print(f"🔑 Key issued: {api_key[:16]}… for {email} (session={session_id[:20]}…)", flush=True)
-            _email_ok = send_api_key_email(email=email, api_key=api_key, tier=tier)
-            if not _email_ok:
-                print(
-                    f"[webhook] CRITICAL: API key email failed for {email} "
-                    f"(tier={tier} session={session_id[:20]}…). "
-                    "Key is stored — customer can retrieve it at "
-                    f"/success?session_id={session_id} or via POST /api/key/lookup.",
-                    flush=True,
-                )
+            asyncio.create_task(_send_email_in_background(
+                email, api_key, tier,
+                label=f"session={session_id[:20]}…",
+            ))
 
     elif event["type"] == "customer.subscription.updated":
         sub                = event["data"]["object"]
@@ -1160,16 +1208,13 @@ async def stripe_webhook(
             stripe_customer_id=stripe_customer_id or None,
         )
         print(f"✅ SUB UPDATED ${amt:.2f} from {email} → tier={tier} key={api_key[:12]}…", flush=True)
-        _email_ok = send_api_key_email(email=email, api_key=api_key, tier=tier)
-        if not _email_ok:
-            print(
-                f"[webhook] CRITICAL: API key email failed for {email} "
-                f"(tier={tier} event=subscription.updated stripe_customer_id={stripe_customer_id}). "
-                "Key is stored in keystore by Stripe customer ID. "
-                "Support must re-deliver manually: "
-                "POST /api/key/issue with admin_secret to re-issue and send a new key.",
-                flush=True,
-            )
+        asyncio.create_task(_send_email_in_background(
+            email, api_key, tier,
+            label=(
+                f"event=subscription.updated "
+                f"stripe_customer_id={stripe_customer_id}"
+            ),
+        ))
 
     elif event["type"] == "customer.subscription.deleted":
         sub                = event["data"]["object"]
