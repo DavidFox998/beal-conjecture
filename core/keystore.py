@@ -304,6 +304,78 @@ def revoke_by_email(email: str) -> int:
     return count
 
 
+def downgrade_by_customer_id(stripe_customer_id: str, new_tier: str) -> int:
+    """
+    Downgrade all keys belonging to `stripe_customer_id` that are above `new_tier`
+    to exactly `new_tier`.
+
+    Used when a subscription is updated to a lower plan: an enterprise customer
+    who downgrades to pro_10 must lose enterprise-level access immediately —
+    not just on the next server restart.
+
+    Returns the number of keys that were downgraded.
+    """
+    if new_tier not in TIER_RANK:
+        raise ValueError(f"Unknown tier: {new_tier}")
+    cid = stripe_customer_id.strip()
+    if not cid:
+        return 0
+    new_rank = TIER_RANK[new_tier]
+    count = 0
+    now = int(time.time())
+    for record in _store.values():
+        if record.get("stripe_customer_id") == cid:
+            old_rank = TIER_RANK.get(record.get("tier", "free"), 0)
+            if old_rank > new_rank:
+                record["tier"] = new_tier
+                record["downgraded_at"] = now
+                count += 1
+    if count:
+        _save()
+        print(
+            f"[keystore] downgraded {count} key(s) for customer={cid} → tier={new_tier}",
+            flush=True,
+        )
+    return count
+
+
+def downgrade_by_email(email: str, new_tier: str) -> int:
+    """
+    Downgrade all keys belonging to `email` that are above `new_tier` to
+    exactly `new_tier`.
+
+    Fallback for keys that pre-date stripe_customer_id tracking (i.e. keys
+    that carry no customer ID).  Prefer downgrade_by_customer_id when a Stripe
+    customer ID is available to avoid touching keys from a renewed subscription
+    at the same email address.
+
+    Returns the number of keys that were downgraded.
+    """
+    if new_tier not in TIER_RANK:
+        raise ValueError(f"Unknown tier: {new_tier}")
+    email = email.strip().lower()
+    if not email:
+        return 0
+    new_rank = TIER_RANK[new_tier]
+    count = 0
+    now = int(time.time())
+    for record in _store.values():
+        if (record.get("email", "").strip().lower() == email
+                and not record.get("stripe_customer_id")):   # skip if ID present
+            old_rank = TIER_RANK.get(record.get("tier", "free"), 0)
+            if old_rank > new_rank:
+                record["tier"] = new_tier
+                record["downgraded_at"] = now
+                count += 1
+    if count:
+        _save()
+        print(
+            f"[keystore] downgraded {count} key(s) for {email} → tier={new_tier}",
+            flush=True,
+        )
+    return count
+
+
 def list_keys() -> list[dict]:
     """Return all key records (without the raw key value) for admin use."""
     return [

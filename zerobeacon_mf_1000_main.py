@@ -1212,6 +1212,17 @@ async def stripe_webhook(
             tier = "pro_10"
         else:
             tier = "free"
+
+        # ── Downgrade any existing higher-tier keys before issuing the new one ──
+        # An enterprise customer who downgrades to pro_10 must lose enterprise
+        # access immediately; leaving the old key active until a restart is a
+        # security gap.  Prefer the Stripe customer ID (unambiguous across
+        # re-subscriptions); fall back to email for keys that pre-date ID tracking.
+        if stripe_customer_id:
+            keystore.downgrade_by_customer_id(stripe_customer_id, tier)
+        if email and email != "unknown":
+            keystore.downgrade_by_email(email, tier)
+
         api_key = keystore.issue_key(
             tier, email,
             stripe_customer_id=stripe_customer_id or None,

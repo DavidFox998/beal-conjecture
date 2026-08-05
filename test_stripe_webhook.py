@@ -496,3 +496,73 @@ class TestStripeWebhook:
         assert call_kw["email"] == email
         assert call_kw["tier"]  == "pro_10"
         assert call_kw["api_key"] == new_key
+
+    # 12. subscription.updated with a lower tier → old higher-tier key downgraded ---
+
+    def test_subscription_updated_lower_tier_downgrades_old_key(self):
+        """
+        When subscription.updated fires with a lower tier than the customer's
+        current key, the old higher-tier key must be downgraded immediately.
+
+        Scenario:
+          1. Customer has an enterprise_1000 key (issued directly in keystore).
+          2. subscription.updated fires with a $10/mo plan (pro_10).
+          3. The old enterprise key must be downgraded to pro_10.
+          4. A new pro_10 key is issued and emailed.
+          5. The old key must no longer grant enterprise access.
+        """
+        email = "enterprise_downgrade@example.com"
+        cid   = "cus_test_downgrade_001"
+
+        # Step 1: customer starts on enterprise_1000
+        old_key = keystore.issue_key("enterprise_1000", email, stripe_customer_id=cid)
+        assert keystore.lookup(old_key)["tier"] == "enterprise_1000"
+
+        # Verify old key grants enterprise access before the event
+        allowed, _ = keystore.check_access(old_key, "enterprise_1000")
+        assert allowed, "Old key must grant enterprise access before downgrade"
+
+        # Step 2: subscription.updated fires with pro_10 plan ($10 = 1000 cents)
+        event = {
+            "type": "customer.subscription.updated",
+            "data": {
+                "object": {
+                    "customer": cid,
+                    "customer_email": email,
+                    "plan": {"amount": 1000},   # $10 → pro_10
+                }
+            },
+        }
+        with patch.dict(os.environ, {"STRIPE_WEBHOOK_SECRET": FAKE_SECRET}):
+            resp, mock_email = _post(event)
+
+        assert resp.status_code == 200
+        assert resp.json() == {"received": True}
+
+        # Step 3: old key must now be pro_10 (downgraded from enterprise_1000)
+        old_record = keystore.lookup(old_key)
+        assert old_record is not None, "Old key record must still exist"
+        assert old_record["tier"] == "pro_10", (
+            f"Old enterprise key must be downgraded to pro_10, got {old_record['tier']}"
+        )
+
+        # Step 4: a new pro_10 key was issued
+        matching = [
+            (k, v) for k, v in keystore._store.items()
+            if v.get("email") == email and k != old_key
+        ]
+        assert matching, "A new pro_10 key must be issued after subscription.updated"
+        new_key, new_record = matching[0]
+        assert new_record["tier"] == "pro_10"
+
+        # Step 5: old key no longer grants enterprise access
+        denied, _ = keystore.check_access(old_key, "enterprise_1000")
+        assert not denied, (
+            "Downgraded key must NOT pass enterprise_1000 access check"
+        )
+
+        # Email was sent for the new key
+        mock_email.assert_called_once()
+        call_kw = mock_email.call_args[1]
+        assert call_kw["email"] == email
+        assert call_kw["tier"]  == "pro_10"
