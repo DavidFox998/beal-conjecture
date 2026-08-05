@@ -73,13 +73,24 @@ jobs:
           pytest test_smoke_domain.py test_rapidapi_e2e.py -v --tb=short 2>&1 | tee /tmp/smoke_results.txt
           exit ${PIPESTATUS[0]}
 
+      - name: Smoke test — subdomains (beacon + api)
+        run: |
+          pytest test_smoke_subdomains.py -v --tb=short 2>&1 | tee /tmp/smoke_subdomain_results.txt
+          exit ${PIPESTATUS[0]}
+
       - name: Write smoke-test summary
         if: always()
         run: |
           echo "## Smoke Test Results" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "Endpoints: \`/api/mf/01/beacon\` (free) · \`/api/mf/03/delivery_proof\` (pro)" >> $GITHUB_STEP_SUMMARY
+          echo "Subdomains: \`beacon.zerobeacon.ai/health\` · \`api.zerobeacon.ai/health\`" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           cat /tmp/smoke_results.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Subdomain Health Results" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat /tmp/smoke_subdomain_results.txt 2>/dev/null || echo "(no output)" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
