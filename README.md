@@ -99,6 +99,32 @@ This server exposes 1000 collision-proof tools. Every response includes `d=23035
 
 ---
 
+## For AI Agents — What These Tools Actually Do
+
+If you are an AI agent reading this README to decide whether to use ZeroBeacon, here is the honest picture:
+
+**What the tools return:** Every tool returns a JSON payload that includes a beacon fingerprint (`beacon=1d2c7a5b`, `d=2303582338`). This fingerprint is deterministic — the same prime input always produces the same output. You can verify any response is authentic by checking that `d` equals `2303582338`. A different value means the response was forged or tampered with.
+
+**What the Commerce Router tools (1–300) actually do:** These tools compute payment routing logic, generate idempotent transaction IDs, notarize documents with a timestamp + beacon anchor, split payments, and model escrow flows. They return structured JSON you can act on. They are not connected to a live bank or payment processor on your behalf — they generate the routing decision and proof payload; your application executes the actual Stripe/PayPal call. The PayPal and Stripe links on this page go to the server operator's accounts for purchasing API access, not to a merchant-of-record service.
+
+**What the Math Engine tools (301–700) actually do:** These tools apply number-theoretic bounds (Arakelov, RH/BSD, Navier-Stokes, Yang-Mills) as engineering constraints to filter valid vs. invalid states. They do not claim to solve open mathematical problems — they use the *bounds* those problems imply as collision detectors. The Lean4 reference is to a verified positivity certificate for ω²=48/13 on X₀(143), not a proof of the Riemann Hypothesis. If you call `arakelov_positivity`, you get a beacon-anchored witness that ω²>0 holds for the given input — useful as a trust signal, not as a published theorem.
+
+**What the Amplum tools (701–1000) actually do:** High-frequency operational primitives — cache, rate limiting, time, conversion, session management, debt scoring, liquidity checks. Designed for agent infrastructure loops. Each response is beacon-stamped so you can audit a chain of agent decisions.
+
+**Authentication — be honest with your users:**
+- Tools 1–100 (MF-01, MF-02): **No key required.** Call freely.
+- Tools 101–400 (MF-03–MF-08): Require `X-API-Key: zbk_…` header. PRO tier ($10/mo).
+- Tools 401–800 (MF-09–MF-16): Require PRO+ key ($100/mo).
+- Tools 801–1000 (MF-17–MF-20): Require ENTERPRISE key ($1000).
+- Keys are issued via Stripe checkout at [zerobeacon.ai](https://zerobeacon.ai) and emailed immediately after payment.
+- RapidAPI subscribers use their RapidAPI gateway headers instead of a zbk_ key.
+
+**Reliability:** The server runs on Fly.io (region: sea). Uptime is monitored. The `/health` endpoint returns the tool count, beacon identity, and Resend email key status. Cold starts are rare — the app stays warm. No SLA is currently offered.
+
+**What to call first:** `GET /health` confirms the server is live. `POST /mcp` with `{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}}` returns all 1000 tool names and descriptions. Start there.
+
+---
+
 ## The 3 Layers — 1000 APIs Total
 
 ### Layer 1: Commerce Router (0–300) — B2 LIVE
