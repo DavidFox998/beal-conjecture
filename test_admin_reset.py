@@ -160,3 +160,81 @@ class TestAdminReset:
         body = resp.json()
         assert "error" in body
         assert "session_id" in body["error"].lower()
+
+
+# ── End-to-end: exhaust → reset → resend succeeds ─────────────────────────────
+
+_E2E_SESSION = "cs_live_e2e_lockout_test"
+
+
+class TestAdminResetEndToEnd:
+    """
+    Verify the full lockout-then-unlock flow:
+      1. Customer exhausts the resend rate limit (3 attempts → 429).
+      2. Admin calls /api/key/resend/reset.
+      3. Customer can POST /api/key/resend again and gets 200.
+
+    Uses the real in-memory keystore (isolated by the module-level path
+    overrides) so every step exercises the actual keystore logic, not mocks.
+    """
+
+    @pytest.fixture(autouse=True)
+    def setup_customer_key(self):
+        """Issue a real key bound to _E2E_SESSION before each test."""
+        keystore._store        = {}
+        keystore._session_map  = {}
+        keystore._resend_store = {}
+        # Issue a real key so lookup_by_session and lookup both work.
+        keystore.issue_key("pro_10", "customer@example.com",
+                           session_id=_E2E_SESSION)
+        yield
+
+    def _resend(self, mock_email_return: bool = True):
+        """POST /api/key/resend for _E2E_SESSION with email delivery mocked."""
+        from unittest.mock import patch
+        with patch("zerobeacon_mf_1000_main.send_api_key_email",
+                   return_value=mock_email_return):
+            return client.post("/api/key/resend",
+                               json={"session_id": _E2E_SESSION})
+
+    def test_exhaust_then_reset_then_resend_succeeds(self):
+        """
+        Full end-to-end:
+        - 3 resend calls consume all attempts (each returns 200).
+        - 4th call is rate-limited (429).
+        - Admin reset clears the counter.
+        - 5th call succeeds (200) — customer is genuinely unblocked.
+        """
+        # ── Step 1: exhaust all 3 allowed attempts ────────────────────────────
+        for attempt in range(1, 4):
+            resp = self._resend()
+            assert resp.status_code == 200, (
+                f"Attempt {attempt}/3 should succeed; got {resp.status_code}: {resp.text}"
+            )
+
+        # ── Step 2: 4th attempt must be rate-limited ──────────────────────────
+        resp = self._resend()
+        assert resp.status_code == 429, (
+            f"4th attempt should be 429 (rate-limited); got {resp.status_code}: {resp.text}"
+        )
+
+        # ── Step 3: admin resets the counter ──────────────────────────────────
+        reset_resp = _reset(
+            {"session_id": _E2E_SESSION, "admin_secret": _GOOD_SECRET},
+            admin_secret_env=_GOOD_SECRET,
+        )
+        assert reset_resp.status_code == 200, (
+            f"Reset should return 200; got {reset_resp.status_code}: {reset_resp.text}"
+        )
+        assert reset_resp.json().get("ok") is True
+
+        # ── Step 4: customer can resend again after the reset ─────────────────
+        resp = self._resend()
+        assert resp.status_code == 200, (
+            "Customer should be unblocked after admin reset, but /api/key/resend "
+            f"returned {resp.status_code}: {resp.text}"
+        )
+        body = resp.json()
+        assert body.get("ok") is True, (
+            f"Response body after reset-then-resend should have ok=True: {body}"
+        )
