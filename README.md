@@ -15,3 +15,14 @@
 
 ```bash
 npx @smithery/cli install @davidjfox998/zerobeacon-1000
+## MCP Config
+
+```json
+{
+  "mcpServers": {
+    "zerobeacon-1000": {
+      "command": "npx",
+      "args": ["-y", "@davidjfox998/zerobeacon-1000"]
+    }
+  }
+}
