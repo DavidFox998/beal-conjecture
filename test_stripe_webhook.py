@@ -418,3 +418,81 @@ class TestStripeWebhook:
         assert resp.json() == {"received": True}
         assert keystore._store == before
         mock_email.assert_not_called()
+
+    # 11. Re-subscription: old (downgraded) key stays free; new key grants access ----
+
+    def test_resubscription_old_key_stays_free_new_key_grants_paid_access(self):
+        """
+        Full re-subscription lifecycle:
+          1. Issue a paid key for a customer.
+          2. Fire subscription.deleted  → key downgraded to free.
+          3. Fire checkout.session.completed (same email, new session) → new paid key issued.
+          4. Old key must still be free-tier and must NOT pass a paid-tier access check.
+          5. New key must be pro_10 and MUST pass the same access check.
+        """
+        email     = "resub@example.com"
+        cid       = "cus_test_resub_001"
+        old_session = "cs_test_resub_old"
+        new_session = "cs_test_resub_new"
+
+        # ── Step 1: issue a paid key ──────────────────────────────────────────
+        old_key = keystore.issue_key("pro_10", email,
+                                     session_id=old_session,
+                                     stripe_customer_id=cid)
+        assert keystore.lookup(old_key)["tier"] == "pro_10"
+        allowed, _ = keystore.check_access(old_key, "pro_10")
+        assert allowed, "Old key must grant pro_10 access before cancellation"
+
+        # ── Step 2: fire subscription.deleted → downgrade ────────────────────
+        deleted_event = _make_subscription_deleted_event(stripe_customer_id=cid)
+        fake_customer = MagicMock()
+        fake_customer.get = lambda k, *a: email if k == "email" else (a[0] if a else None)
+
+        with patch.dict(os.environ, {"STRIPE_WEBHOOK_SECRET": FAKE_SECRET}), \
+             patch("stripe.Customer.retrieve", return_value=fake_customer):
+            resp, mock_email = _post(deleted_event)
+
+        assert resp.status_code == 200
+        assert keystore.lookup(old_key)["tier"] == "free", \
+            "Old key must be downgraded to free after subscription.deleted"
+        mock_email.assert_not_called()
+
+        # ── Step 3: fire checkout.session.completed for the same email ───────
+        checkout_event = _make_checkout_event(
+            1000,  # $10 → pro_10
+            email=email,
+            session_id=new_session,
+        )
+        with patch.dict(os.environ, {"STRIPE_WEBHOOK_SECRET": FAKE_SECRET}):
+            resp2, mock_email2 = _post(checkout_event)
+
+        assert resp2.status_code == 200
+
+        # ── Step 4: old key is still free, fails paid-tier check ─────────────
+        old_record = keystore.lookup(old_key)
+        assert old_record is not None, "Old key record must still exist"
+        assert old_record["tier"] == "free", \
+            f"Old key must remain free after re-subscription, got {old_record['tier']}"
+        denied, reason = keystore.check_access(old_key, "pro_10")
+        assert not denied, (
+            f"Old (free) key must NOT pass pro_10 access check; check_access returned "
+            f"allowed={denied}, reason={reason!r}"
+        )
+
+        # ── Step 5: new key is pro_10, passes paid-tier check ────────────────
+        new_key = keystore.lookup_by_session(new_session)
+        assert new_key is not None, "New key must have been issued for new checkout session"
+        assert new_key != old_key, "New key must be a different key from the old one"
+
+        new_record = keystore.lookup(new_key)
+        assert new_record["tier"] == "pro_10", \
+            f"New key must be pro_10, got {new_record['tier']}"
+        allowed2, _ = keystore.check_access(new_key, "pro_10")
+        assert allowed2, "New key must grant pro_10 access after re-subscription"
+
+        # Email must have been sent for the new checkout
+        mock_email2.assert_called_once()
+        call_kw = mock_email2.call_args[1]
+        assert call_kw["email"] == email
+        assert call_kw["tier"]  == "pro_10"
+        assert call_kw["api_key"] == new_key
