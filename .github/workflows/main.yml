@@ -66,9 +66,9 @@ jobs:
       - name: Wait for Fly.io deploy to go live
         run: sleep 15
 
-      - name: Smoke test — branded domain returns site == "https://zerobeacon.ai"
+      - name: Smoke test — branded domain + RapidAPI trial flow
         run: |
-          pytest test_smoke_domain.py -v --tb=short 2>&1 | tee /tmp/smoke_results.txt
+          pytest test_smoke_domain.py test_rapidapi_e2e.py -v --tb=short 2>&1 | tee /tmp/smoke_results.txt
           exit ${PIPESTATUS[0]}
 
       - name: Write smoke-test summary
@@ -76,7 +76,7 @@ jobs:
         run: |
           echo "## Smoke Test Results" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "Endpoint: \`https://zerobeacon.ai/api/mf/01/beacon\`" >> $GITHUB_STEP_SUMMARY
+          echo "Endpoints: \`/api/mf/01/beacon\` (free) · \`/api/mf/03/delivery_proof\` (pro)" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           cat /tmp/smoke_results.txt >> $GITHUB_STEP_SUMMARY
