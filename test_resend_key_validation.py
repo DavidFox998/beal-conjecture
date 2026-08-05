@@ -206,6 +206,44 @@ class TestHealthResendValidField:
             "/health must not call validate_resend_key(); it should read the cache"
         )
 
+    # ------------------------------------------------------------------
+    # 12. /health includes resend_key_checked_at and resend_key_cache_age_seconds
+    # ------------------------------------------------------------------
+    def test_health_includes_checked_at_fields(self):
+        """/health must include resend_key_checked_at (ISO string) and resend_key_cache_age_seconds (int)."""
+        import time as _time
+        main_module._resend_key_valid      = True
+        main_module._resend_key_status     = "ok"
+        main_module._resend_key_checked_at = _time.time() - 120  # simulate 2 minutes ago
+
+        resp = client.get("/health")
+
+        assert resp.status_code == 200, resp.text
+        body = resp.json()
+        assert "resend_key_checked_at" in body, "/health must include resend_key_checked_at"
+        assert body["resend_key_checked_at"] is not None
+        # Must be an ISO-8601 UTC string
+        assert "T" in body["resend_key_checked_at"] and body["resend_key_checked_at"].endswith("Z"), (
+            f"resend_key_checked_at must be ISO-8601 UTC, got: {body['resend_key_checked_at']!r}"
+        )
+        assert "resend_key_cache_age_seconds" in body, "/health must include resend_key_cache_age_seconds"
+        age = body["resend_key_cache_age_seconds"]
+        assert isinstance(age, int), f"resend_key_cache_age_seconds must be int, got {type(age)}"
+        assert 100 <= age <= 200, f"Expected age ~120s, got {age}"
+
+    def test_health_checked_at_none_before_first_probe(self):
+        """/health returns None for timestamp fields when no probe has run yet."""
+        main_module._resend_key_valid      = False
+        main_module._resend_key_status     = "not checked yet"
+        main_module._resend_key_checked_at = 0.0
+
+        resp = client.get("/health")
+
+        assert resp.status_code == 200, resp.text
+        body = resp.json()
+        assert body["resend_key_checked_at"] is None
+        assert body["resend_key_cache_age_seconds"] is None
+
 
 # ── Startup hook tests ────────────────────────────────────────────────────────
 # anyio is installed; use @pytest.mark.anyio to run coroutines.

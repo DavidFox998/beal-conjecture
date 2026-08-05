@@ -115,6 +115,7 @@ for mod, prefix, tag, min_tier in ROUTERS:
 
 _resend_key_valid: bool = False
 _resend_key_status: str = "not checked yet"
+_resend_key_checked_at: float = 0.0  # unix timestamp; 0.0 means "never checked"
 
 
 # ── Startup: validate Resend API key ─────────────────────────────────────────
@@ -130,10 +131,11 @@ async def _validate_resend_on_startup() -> None:
     Emits a CRITICAL log if the key is missing, invalid, or expired.
     Never crashes the server — email misconfiguration must not block startup.
     """
-    global _resend_key_valid, _resend_key_status
+    global _resend_key_valid, _resend_key_status, _resend_key_checked_at
     valid, reason = validate_resend_key()
-    _resend_key_valid  = valid
-    _resend_key_status = reason
+    _resend_key_valid      = valid
+    _resend_key_status     = reason
+    _resend_key_checked_at = time.time()
     if not valid:
         print(
             f"[emailer] CRITICAL: RESEND_API_KEY validation failed on startup — {reason}. "
@@ -158,7 +160,7 @@ async def _resend_probe_loop() -> None:
     key becomes valid again.  Exceptions inside validate_resend_key are caught and
     logged so the loop never propagates and never crashes the server.
     """
-    global _resend_key_valid, _resend_key_status
+    global _resend_key_valid, _resend_key_status, _resend_key_checked_at
     while True:
         await asyncio.sleep(_RESEND_CHECK_INTERVAL)
         try:
@@ -174,8 +176,9 @@ async def _resend_probe_loop() -> None:
             continue
 
         prev_valid = _resend_key_valid
-        _resend_key_valid  = valid
-        _resend_key_status = reason
+        _resend_key_valid      = valid
+        _resend_key_status     = reason
+        _resend_key_checked_at = time.time()
 
         if not valid and prev_valid:
             # Newly failed — emit CRITICAL once so it appears prominently in Fly.io logs.
@@ -675,6 +678,16 @@ def health():
     resend_key_set = bool(os.environ.get("RESEND_API_KEY", "").strip())
     rapidapi_secret_ok = _proxy_secret_configured()
     # Read cached validation result — never probe Resend live from /health.
+    import datetime as _dt
+    now = time.time()
+    if _resend_key_checked_at > 0.0:
+        checked_at_iso = _dt.datetime.fromtimestamp(
+            _resend_key_checked_at, tz=_dt.timezone.utc
+        ).strftime("%Y-%m-%dT%H:%M:%SZ")
+        cache_age_seconds = int(now - _resend_key_checked_at)
+    else:
+        checked_at_iso    = None
+        cache_age_seconds = None
     return {
         "ok":     True,
         "tools":  1000,
@@ -682,9 +695,11 @@ def health():
         "beacon": BEACON,
         "p":      bp["p"],
         "site":   "https://zerobeacon.ai",   # canonical branded domain — smoke tests assert this
-        "resend_api_key_set":    resend_key_set,
-        "resend_api_key_valid":  _resend_key_valid,
-        "resend_api_key_status": _resend_key_status,
+        "resend_api_key_set":            resend_key_set,
+        "resend_api_key_valid":          _resend_key_valid,
+        "resend_api_key_status":         _resend_key_status,
+        "resend_key_checked_at":         checked_at_iso,
+        "resend_key_cache_age_seconds":  cache_age_seconds,
         "rapidapi_proxy_secret": (
             "configured" if rapidapi_secret_ok
             else "NOT SET — paid subscribers will be blocked"

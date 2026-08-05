@@ -248,3 +248,45 @@ class TestPeriodicProbeSafety:
 
 
 import os  # needed for TestPeriodicProbeInterval
+
+
+class TestPeriodicProbeTimestamp:
+
+    def test_checked_at_advances_after_probe(self):
+        """_resend_key_checked_at must be updated (and advance) after each probe cycle."""
+        import time as _time
+
+        main = _fresh_main_module()
+        # Start with a sentinel value in the past
+        main._resend_key_checked_at = 0.0
+
+        before = _time.time()
+        asyncio.run(_run_one_probe_cycle(main, (True, "ok")))
+        after = _time.time()
+
+        assert main._resend_key_checked_at > 0.0, (
+            "_resend_key_checked_at must be non-zero after a probe cycle"
+        )
+        assert before <= main._resend_key_checked_at <= after, (
+            "_resend_key_checked_at must be set to the current time during the probe"
+        )
+
+    def test_checked_at_advances_on_second_probe(self):
+        """_resend_key_checked_at must strictly advance between two probe cycles."""
+        import time as _time
+
+        main = _fresh_main_module()
+        main._resend_key_checked_at = 0.0
+
+        asyncio.run(_run_one_probe_cycle(main, (True, "ok")))
+        first_ts = main._resend_key_checked_at
+        assert first_ts > 0.0
+
+        _time.sleep(0.05)  # ensure clock advances
+
+        asyncio.run(_run_one_probe_cycle(main, (True, "ok")))
+        second_ts = main._resend_key_checked_at
+
+        assert second_ts >= first_ts, (
+            "_resend_key_checked_at must not go backwards between probe cycles"
+        )
