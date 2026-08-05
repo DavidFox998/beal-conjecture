@@ -610,8 +610,10 @@ def pricing():
 
 @app.get("/health")
 def health():
+    from core.rapidapi_auth import _proxy_secret_configured
     bp = beacon_payload(GENESIS_P)
     resend_key_set = bool(os.environ.get("RESEND_API_KEY", "").strip())
+    rapidapi_secret_ok = _proxy_secret_configured()
     # Read cached validation result — never probe Resend live from /health.
     return {
         "ok": True,
@@ -622,6 +624,10 @@ def health():
         "resend_api_key_set": resend_key_set,
         "resend_api_key_valid": _resend_key_valid,
         "resend_api_key_status": _resend_key_status,
+        "rapidapi_proxy_secret": (
+            "configured" if rapidapi_secret_ok
+            else "NOT SET — paid subscribers will be blocked"
+        ),
     }
 
 
