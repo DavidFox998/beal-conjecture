@@ -238,3 +238,57 @@ class TestAdminResetEndToEnd:
         assert body.get("ok") is True, (
             f"Response body after reset-then-resend should have ok=True: {body}"
         )
+
+    def test_expired_counter_resets_automatically_after_24_hours(self):
+        """
+        Verify that the 24-hour TTL eviction in resend_get() works end-to-end:
+
+        - A resend counter entry is seeded with attempt_count=3 (exhausted)
+          and a first_attempt timestamp that is > 86 400 s in the past.
+        - POST /api/key/resend is called without any admin intervention.
+        - The endpoint must return 200 (not 429) because the TTL has elapsed
+          and the expired entry is treated as 0 prior attempts.
+
+        This proves the rate-limit resets automatically after 24 hours so
+        locked-out customers do not need admin help once a full day has passed.
+        """
+        import time as _time
+
+        # ── Step 1: seed an exhausted-but-expired counter ────────────────────
+        expired_ts = _time.time() - 86_401   # just over 24 hours ago
+        keystore._resend_store[_E2E_SESSION] = [3, expired_ts]
+
+        # Sanity-check: without TTL eviction this would be 429
+        assert keystore._resend_store[_E2E_SESSION][0] == 3, (
+            "Pre-condition: counter should show 3 attempts before the call"
+        )
+
+        # ── Step 2: call the resend endpoint (no admin reset) ─────────────────
+        resp = self._resend()
+
+        # ── Step 3: must succeed — expired counter evicted → 0 attempts ───────
+        assert resp.status_code == 200, (
+            "POST /api/key/resend should return 200 after the 24-hour TTL "
+            f"has elapsed (expired counter must be auto-evicted), "
+            f"but got {resp.status_code}: {resp.text}"
+        )
+        body = resp.json()
+        assert body.get("ok") is True, (
+            f"Response body should have ok=True after TTL eviction: {body}"
+        )
+
+        # ── Step 4: confirm the old expired entry is gone from the store ──────
+        # The new entry (from the successful resend above) has count=1 and a
+        # fresh timestamp; the old [3, expired_ts] entry must not exist.
+        entry = keystore._resend_store.get(_E2E_SESSION)
+        if entry is not None:
+            _count, _ts = entry
+            assert _ts > expired_ts, (
+                "The resend store entry's timestamp must be newer than the "
+                "expired timestamp — the old entry must have been evicted "
+                f"and replaced. Got ts={_ts}, expired_ts={expired_ts}"
+            )
+            assert _count < 3, (
+                f"After TTL eviction the attempt count must have restarted "
+                f"from 0 (now 1 after the successful resend), got {_count}"
+            )
