@@ -1,0 +1,41 @@
+name: Uptime check — zerobeacon.ai
+
+on:
+  schedule:
+    # Every 15 minutes around the clock
+    - cron: "*/15 * * * *"
+  workflow_dispatch: {}   # allow manual trigger for testing
+
+jobs:
+  domain-uptime:
+    name: Branded-domain uptime check
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install test dependencies
+        run: pip install requests pytest
+
+      - name: Check zerobeacon.ai is reachable
+        # Runs the same smoke tests used after deploys.
+        # GitHub automatically emails the repo owner on workflow failure,
+        # so any outage triggers an alert within one cron cycle (≤15 min).
+        run: |
+          pytest test_smoke_domain.py -v --tb=short 2>&1 | tee /tmp/uptime_results.txt
+          exit ${PIPESTATUS[0]}
+
+      - name: Write uptime-check summary
+        if: always()
+        run: |
+          echo "## Uptime check — $(date -u '+%Y-%m-%d %H:%M UTC')" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Endpoint: \`https://zerobeacon.ai/api/mf/01/beacon\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat /tmp/uptime_results.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
