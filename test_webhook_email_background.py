@@ -4,7 +4,7 @@ task so the handler returns 200 OK without blocking on Resend I/O.
 
 Relevant production code
 ------------------------
-zerobeacon_mf_1000_main._send_email_in_background()
+zerobeacon_mf_1000_main._email_background_task()
 zerobeacon_mf_1000_main.stripe_webhook() — checkout.session.completed
 zerobeacon_mf_1000_main.stripe_webhook() — customer.subscription.updated
 """
@@ -20,6 +20,23 @@ from unittest.mock import patch, AsyncMock, MagicMock
 
 import pytest
 from fastapi.testclient import TestClient
+
+
+# ── module-restore fixture ────────────────────────────────────────────────────
+# _fresh_main() removes and re-imports zerobeacon_mf_1000_main, leaving a
+# different module object in sys.modules.  test_stripe_webhook.py holds a
+# reference to the original `app` object; its patch targets become stale if
+# sys.modules["zerobeacon_mf_1000_main"] points to a different instance.
+# This autouse fixture snaps the original entry back after every test.
+
+@pytest.fixture(autouse=True)
+def _restore_main_module():
+    original = sys.modules.get("zerobeacon_mf_1000_main")
+    yield
+    if original is not None:
+        sys.modules["zerobeacon_mf_1000_main"] = original
+    elif "zerobeacon_mf_1000_main" in sys.modules:
+        del sys.modules["zerobeacon_mf_1000_main"]
 
 
 # ── helpers ───────────────────────────────────────────────────────────────────
@@ -74,7 +91,7 @@ def _fake_stripe_construct(event_dict):
 # ── TestSendEmailInBackground ─────────────────────────────────────────────────
 
 class TestSendEmailInBackground:
-    """Unit tests for the _send_email_in_background coroutine."""
+    """Unit tests for the _email_background_task coroutine."""
 
     def test_dispatches_via_to_thread(self):
         """send_api_key_email is called via asyncio.to_thread (non-blocking)."""
@@ -89,7 +106,7 @@ class TestSendEmailInBackground:
                    side_effect=tracking_to_thread), \
              patch("zerobeacon_mf_1000_main.send_api_key_email",
                    return_value=True):
-            asyncio.run(main._send_email_in_background(
+            asyncio.run(main._email_background_task(
                 "a@b.com", "zbk_test", "pro_10", label="session=cs_test"
             ))
 
@@ -106,7 +123,7 @@ class TestSendEmailInBackground:
         with patch("zerobeacon_mf_1000_main.send_api_key_email",
                    return_value=False), \
              contextlib.redirect_stdout(buf):
-            asyncio.run(main._send_email_in_background(
+            asyncio.run(main._email_background_task(
                 "x@y.com", "zbk_test", "pro_10", label="session=cs_test_abc"
             ))
 
@@ -123,7 +140,7 @@ class TestSendEmailInBackground:
         with patch("zerobeacon_mf_1000_main.send_api_key_email",
                    side_effect=RuntimeError("connection refused")), \
              contextlib.redirect_stdout(buf):
-            asyncio.run(main._send_email_in_background(
+            asyncio.run(main._email_background_task(
                 "z@z.com", "zbk_test", "enterprise_1000",
                 label="session=cs_exc_test"
             ))
@@ -141,7 +158,7 @@ class TestSendEmailInBackground:
         with patch("zerobeacon_mf_1000_main.send_api_key_email",
                    return_value=True), \
              contextlib.redirect_stdout(buf):
-            asyncio.run(main._send_email_in_background(
+            asyncio.run(main._email_background_task(
                 "ok@ok.com", "zbk_ok", "pro_100", label="session=cs_ok"
             ))
 
@@ -155,7 +172,7 @@ class TestSendEmailInBackground:
         with patch("zerobeacon_mf_1000_main.send_api_key_email",
                    return_value=False), \
              contextlib.redirect_stdout(buf):
-            asyncio.run(main._send_email_in_background(
+            asyncio.run(main._email_background_task(
                 "hint@test.com", "zbk_hint", "pro_10", label="session=cs_hint"
             ))
 
@@ -271,27 +288,28 @@ class TestWebhookEmailIsBackgrounded:
             f"session_id prefix not found in log: {log!r}"
         )
 
-    def test_email_dispatched_via_create_task_not_awaited(self):
+    def test_email_registered_as_background_task_not_awaited_inline(self):
         """
-        send_api_key_email is wrapped in asyncio.create_task so the webhook
-        handler does not block waiting for it to complete.
+        send_api_key_email is registered via FastAPI BackgroundTasks so the
+        webhook response is sent to Stripe before email delivery begins.
+        The background task uses asyncio.to_thread internally so it never
+        blocks the event loop during Resend I/O.
         """
         main = _fresh_main()
         event = _make_checkout_event(amount_total=1000)
 
-        tasks_created = []
-        real_create_task = asyncio.create_task
+        to_thread_calls = []
 
-        def recording_create_task(coro, **kw):
-            tasks_created.append(coro.__qualname__ if hasattr(coro, "__qualname__") else str(coro))
-            return real_create_task(coro, **kw)
+        async def tracking_to_thread(fn, *args, **kwargs):
+            to_thread_calls.append(True)
+            return fn(*args, **kwargs)
 
         with patch.dict("os.environ", _WEBHOOK_ENV), \
              patch("stripe.Webhook.construct_event",
                    side_effect=_fake_stripe_construct(event)), \
              patch("core.keystore.issue_key", return_value="zbk_task_test"), \
-             patch("zerobeacon_mf_1000_main.asyncio.create_task",
-                   side_effect=recording_create_task), \
+             patch("zerobeacon_mf_1000_main.asyncio.to_thread",
+                   side_effect=tracking_to_thread), \
              patch("zerobeacon_mf_1000_main.send_api_key_email",
                    return_value=True):
 
@@ -303,9 +321,9 @@ class TestWebhookEmailIsBackgrounded:
             )
 
         assert resp.status_code == 200
-        assert tasks_created, (
-            "asyncio.create_task was never called — email is being awaited "
-            "synchronously, which can cause Stripe webhook timeouts."
+        assert to_thread_calls, (
+            "asyncio.to_thread was never called inside the background task — "
+            "send_api_key_email is blocking the event loop directly."
         )
 
     def test_resend_endpoint_still_synchronous(self):

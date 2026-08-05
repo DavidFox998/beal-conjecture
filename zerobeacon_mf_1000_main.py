@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request, Header, Depends
+from fastapi import FastAPI, Request, Header, Depends, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, HTMLResponse
 import time, os, stripe, asyncio
@@ -1082,7 +1082,7 @@ async def api_key_issue(request: Request):
 
 # ── Background email dispatch (Stripe webhook only) ──────────────────────────
 
-async def _send_email_in_background(
+async def _email_background_task(
     email: str,
     api_key: str,
     tier: str,
@@ -1090,8 +1090,13 @@ async def _send_email_in_background(
     label: str,
 ) -> None:
     """
-    Dispatch send_api_key_email to a thread-pool worker so the Stripe webhook
-    handler can return 200 OK immediately without blocking on Resend I/O.
+    Background task: dispatch send_api_key_email via asyncio.to_thread so the
+    Stripe webhook handler can return 200 OK immediately without blocking on
+    Resend I/O.
+
+    Registered with FastAPI's BackgroundTasks so Starlette runs it after the
+    response is sent to Stripe but within the request lifecycle — this ensures
+    test mocks stay active and the task does not outlive the process.
 
     With max_retries=1 and a 10-second timeout per attempt plus a 2-second
     sleep, a total failure can take ~22 seconds — close to Stripe's 30-second
@@ -1104,14 +1109,16 @@ async def _send_email_in_background(
         email:   Recipient address.
         api_key: The zbk_… key that was just issued.
         tier:    Subscription tier string.
-        label:   Context string included in CRITICAL logs
-                 (e.g. "session=cs_live_xxx…" or "event=subscription.updated
-                 stripe_customer_id=cus_xxx").  Used by support to identify
-                 which customer is affected and re-issue via POST /api/key/issue
-                 or retrieve via POST /api/key/lookup.
+        label:   Context string included in CRITICAL logs (e.g.
+                 "session=cs_live_xxx…" or "event=subscription.updated
+                 stripe_customer_id=cus_xxx") so support can identify which
+                 customer is affected and re-issue via POST /api/key/issue or
+                 POST /api/key/lookup.
     """
     try:
-        ok = await asyncio.to_thread(send_api_key_email, email, api_key, tier)
+        ok = await asyncio.to_thread(
+            send_api_key_email, email=email, api_key=api_key, tier=tier
+        )
     except Exception as exc:
         print(
             f"[webhook] CRITICAL: email background task raised "
@@ -1138,6 +1145,7 @@ async def _send_email_in_background(
 @app.post("/webhook")
 async def stripe_webhook(
     request: Request,
+    background_tasks: BackgroundTasks,
     stripe_signature: str = Header(None, alias="Stripe-Signature"),
 ):
     payload = await request.body()
@@ -1179,10 +1187,11 @@ async def stripe_webhook(
                 stripe_customer_id=stripe_customer_id or None,
             )
             print(f"🔑 Key issued: {api_key[:16]}… for {email} (session={session_id[:20]}…)", flush=True)
-            asyncio.create_task(_send_email_in_background(
+            background_tasks.add_task(
+                _email_background_task,
                 email, api_key, tier,
                 label=f"session={session_id[:20]}…",
-            ))
+            )
 
     elif event["type"] == "customer.subscription.updated":
         sub                = event["data"]["object"]
@@ -1208,13 +1217,14 @@ async def stripe_webhook(
             stripe_customer_id=stripe_customer_id or None,
         )
         print(f"✅ SUB UPDATED ${amt:.2f} from {email} → tier={tier} key={api_key[:12]}…", flush=True)
-        asyncio.create_task(_send_email_in_background(
+        background_tasks.add_task(
+            _email_background_task,
             email, api_key, tier,
             label=(
                 f"event=subscription.updated "
                 f"stripe_customer_id={stripe_customer_id}"
             ),
-        ))
+        )
 
     elif event["type"] == "customer.subscription.deleted":
         sub                = event["data"]["object"]
