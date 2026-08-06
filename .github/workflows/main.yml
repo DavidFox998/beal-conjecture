@@ -31,7 +31,10 @@ name: Lean Build -- Brothers Desert Proof
           run: lake build Eutheos.RationalTheta
 
         # -- Bridge + Assembly -----------------------------------------------------
-        - name: "Eutheos -- Bridge (RiemannHypothesis defn, bridge_equivalence, SORRY2+3)"
+        - name: "RouteC -- GrowthRepulsionBridge (GrowthBound, ZeroRepulsion, riemannHypothesis_of_growth_and_repulsion 0-sorry)"
+        run: lake build RouteC.GrowthRepulsionBridge
+
+      - name: "Eutheos -- Bridge (ThetaRH_implies_RH honest-conditional 0-sorry, bridge_iff)"
           run: lake build Eutheos.Bridge
 
         - name: "Eutheos -- RH (theta_irrational, ThetaSelfSymmetryRH_proved, riemannHypothesis)"
