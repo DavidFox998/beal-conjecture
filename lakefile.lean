@@ -14,6 +14,10 @@ require eutheos from git
 lean_lib BrothersDesertProof where
   srcDir := "."
   globs := #[
+    -- The Object layer (new Self-Symmetry formalization)
+    .one `Eutheos.Object,
+    .one `Eutheos.Theta,
+    -- SelfSymmetry layer (wraps eutheos-property theorems)
     .one `SelfSymmetry.Core,
     .one `SelfSymmetry.Desert,
     .one `SelfSymmetry.JitterSymmetry,
