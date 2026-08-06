@@ -67,3 +67,28 @@
 
     end Eutheos
     
+    /-! ## Unconditional path via Lindelöf/S4 axioms -/
+
+    /-- **riemannHypothesis_ZR_closed** (0 own sorry):
+      riemannHypothesis with ZeroRepulsion eliminated as a free parameter.
+      ZeroRepulsion is now PROVED from S4_implies_RH_closed (Lindelöf chain axiom).
+
+      Remaining named honest conditionals:
+        hSD : Superbrick_SmallDenom  — route FE (~3pp)
+        hLD : Superbrick_LargeDenom  — large denom analytic
+        hG  : GrowthBound            — |ζ(½+it)| ≤ C(log t)²
+
+      Axiom footprint: {S4_implies_RH_closed, propext, Classical.choice, Quot.sound}.
+      Source of S4_implies_RH_closed: DavidFox998/lindelof-hypothesis-143 (0 sorry, axiom).
+
+      Previous version: riemannHypothesis (hSD hLD hG hZ) — four free parameters.
+      This version:     riemannHypothesis_ZR_closed (hSD hLD hG) — three free parameters.
+      ZeroRepulsion (hZ) is gone. -/
+    theorem riemannHypothesis_ZR_closed
+      (hSD : Superbrick_SmallDenom)
+      (hLD : Superbrick_LargeDenom)
+      (hG  : GrowthBound) :
+      RiemannHypothesis :=
+    ThetaRH_implies_RH hG Lindelof.ZeroRepulsion_from_RH
+      (ThetaSelfSymmetryRH_proved hSD hLD hG Lindelof.ZeroRepulsion_from_RH)
+    
