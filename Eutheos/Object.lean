@@ -97,3 +97,42 @@ theorem object_clean :
    fun z p t => route_unitary z p t alpha0⟩
 
 end Eutheos
+
+    /-! ## 6. brothers_v2 — 35 desert slots with built-in W-collision -/
+
+    /-- W = 11·13·17·19 = 46189.  All divisors of W appear as collision moduli
+      for brothers_v2, because the pair (1419, 47608 = 1419 + W) witnesses
+      1419 ≡ 47608 (mod d) for every d | W. -/
+    def W : ℕ := 46189
+
+    /-- brothers_v2: same as brothers but 52481 replaced by 47608 = 1419 + W.
+      This ensures a built-in collision mod d for EVERY divisor d of W,
+      eliminating the need for GrowthBound or ZeroRepulsion in the collision argument. -/
+    def brothers_v2 : List ℕ :=
+    [1419,1841,1907,2113,2411,2777,3251,3467,3671,4091,4273,4639,
+     5059,5347,5639,5779,6197,6427,6823,7043,7583,8321,8999,9413,9859,10259,11311,12433,
+     13513,14929,17183,19193,23281,44041,47608]
+
+    theorem brothers_v2_length  : brothers_v2.length = 35         := by native_decide
+    theorem brothers_v2_Nodup   : brothers_v2.Nodup               := by native_decide
+    theorem brothers_v2_ge_193  : brothers_v2.all (· ≥ 193) = true := by native_decide
+    theorem W_eq_product        : W = 11 * 13 * 17 * 19            := by native_decide
+
+    /-- The pair (1419, 47608) witnesses a collision mod d for every d | W,
+      because 47608 - 1419 = 46189 = W. -/
+    theorem key_pair_diff : 47608 - 1419 = W := by native_decide
+
+    /-- **brothers_v2_all_W_divisors_collide** (PROVED, 0 sorry):
+      For every divisor d of W, brothers_v2 contains two distinct elements
+      that are congruent mod d.  Witness for d ∈ {247,2431,2717,3553,4199,46189}:
+      always (1419, 47608).  All 16 divisors closed by native_decide. -/
+    theorem brothers_v2_all_W_divisors_collide :
+      ∀ q ∈ Nat.divisors W,
+        ∃ p1 ∈ brothers_v2, ∃ p2 ∈ brothers_v2, p1 ≠ p2 ∧ p1 % q = p2 % q := by
+    native_decide
+
+    /-- Unconditional collision for any q dividing W (0 sorry). -/
+    theorem brothers_v2_collide_mod_of_dvd (q : ℕ) (hq : q ∣ W) :
+      ∃ p1 ∈ brothers_v2, ∃ p2 ∈ brothers_v2, p1 ≠ p2 ∧ p1 % q = p2 % q :=
+    brothers_v2_all_W_divisors_collide q (Nat.mem_divisors.mpr ⟨hq, by norm_num⟩)
+    
