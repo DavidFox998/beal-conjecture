@@ -40,3 +40,5 @@ import Lake
       .one `Protocol.Chain
     ]
     
+lean_lib EutheosFinalAxioms { roots := #[`Eutheos.FinalAxioms] }
+lean_lib EutheosUnconditional { roots := #[`Eutheos.Unconditional] }
