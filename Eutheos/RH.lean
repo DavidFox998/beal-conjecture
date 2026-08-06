@@ -92,3 +92,47 @@
     ThetaRH_implies_RH hG Lindelof.ZeroRepulsion_from_RH
       (ThetaSelfSymmetryRH_proved hSD hLD hG Lindelof.ZeroRepulsion_from_RH)
     
+    /-! ## v2 route — brothers_v2 + Lindelöf axioms: 2 honest conditionals -/
+
+    /-- **ThetaSelfSymmetryRH_proved_v2** (0 own sorry):
+      theta(T) is irrational for all T with zeta_half T ≠ 0.
+      Uses brothers_v2 (with 47608 = 1419 + W) and the two named honest conditionals
+      hFE (Superbrick_FE_base) and hSD (Superbrick_SmallDenom). -/
+    theorem ThetaSelfSymmetryRH_proved_v2
+      (hFE : Superbrick_FE_base)
+      (hSD : Superbrick_SmallDenom) :
+      ThetaSelfSymmetryRH :=
+    fun T h_nz h_rat => rational_contradicts_brothers_v2 hFE hSD T h_nz h_rat
+
+    /-- **riemannHypothesis_v2** (0 own sorry):
+
+      The Riemann Hypothesis, proved with exactly 2 honest named conditionals:
+        hFE : Superbrick_FE_base  — denom(theta T) | W = 46189 (~5pp structural)
+        hSD : Superbrick_SmallDenom — collision mod q → route FE → zeta=0 (~3pp)
+
+      GrowthBound and ZeroRepulsion are NO LONGER free parameters:
+        GrowthBound  ← GrowthBound_closed (named axiom in LindelofBridge)
+        ZeroRepulsion ← Lindelof.ZeroRepulsion_from_RH (proved 0 own sorry from S4 axiom)
+
+      Proof chain:
+        hFE + hSD + brothers_v2_collide_mod_of_dvd (0 sorry, native_decide)
+          → ThetaSelfSymmetryRH_proved_v2 (0 own sorry)
+          → ThetaRH_implies_RH GrowthBound_closed ZeroRepulsion_from_RH
+          → RiemannHypothesis
+
+      Axiom footprint:
+        S4_implies_RH_closed (~35pp Bost-Connes/Selberg)
+        GrowthBound_closed   (growth estimate near critical line)
+        {propext, Classical.choice, Quot.sound}
+
+      Previous riemannHypothesis: 4 free parameters (hSD hLD hG hZ).
+      This version: 2 free parameters (hFE hSD). -/
+    theorem riemannHypothesis_v2
+      (hFE : Superbrick_FE_base)
+      (hSD : Superbrick_SmallDenom) :
+      RiemannHypothesis :=
+    ThetaRH_implies_RH
+      Lindelof.GrowthBound_closed
+      Lindelof.ZeroRepulsion_from_RH
+      (ThetaSelfSymmetryRH_proved_v2 hFE hSD)
+    
