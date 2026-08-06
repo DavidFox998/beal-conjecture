@@ -1,0 +1,38 @@
+name: Lean Build -- Brothers Desert Proof
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Elan
+        run: |
+          curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh \
+            | sh -s -- -y --default-toolchain leanprover/lean4:v4.15.0
+          echo "$HOME/.elan/bin" >> $GITHUB_PATH
+
+      - name: Lake update
+        run: lake update
+
+      - name: "SelfSymmetry -- Core (35 brothers, Nodup, pop6, Hamming≥2)"
+        run: lake build SelfSymmetry.Core
+
+      - name: "SelfSymmetry -- Desert (S4 exceptional, desert empty, mod-191 injective)"
+        run: lake build SelfSymmetry.Desert
+
+      - name: "SelfSymmetry -- JitterSymmetry (pi/10 irrational, Nodup 1419, EMI -30dB)"
+        run: lake build SelfSymmetry.JitterSymmetry
+
+      - name: "SelfSymmetry -- TwinWormhole (twin-prime product injectivity)"
+        run: lake build SelfSymmetry.TwinWormhole
+
+      - name: "SelfSymmetry -- ClayWitness (GapMCSP L=2240>33, self-symmetry certificate)"
+        run: lake build SelfSymmetry.ClayWitness
+
+      - name: "Protocol -- Chain (master certificate, all four properties)"
+        run: lake build Protocol.Chain
