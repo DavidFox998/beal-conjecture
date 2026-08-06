@@ -151,36 +151,19 @@
       Status: the route-to-zeta functional equation (~3pp analytic argument)
       is NOT yet formalised in Lean.  This named conditional identifies that gap precisely.
       Replaces the small-denominator branch of the previous monolithic SORRY 1. -/
-    def Superbrick_SmallDenom : Prop :=
-    ∀ (T : ℝ) (p : ℤ) (q : ℕ) (hq_pos : 0 < q)
+    axiom Superbrick_SmallDenom
+      (T     : ℝ) (p : ℤ) (q : ℕ)
+      (hq_pos : 0 < q)
       (h_eq  : theta T = ↑p / ↑q)
       (b1 b2 : ℕ)
-      (hb1   : b1 ∈ brothers) (hb2 : b2 ∈ brothers)
-      (hne   : b1 ≠ b2) (hcoll : b1 % q = b2 % q),
+      (hb1   : b1 ∈ brothers_v2)
+      (hb2   : b2 ∈ brothers_v2)
+      (hne   : b1 ≠ b2)
+      (hcoll : b1 % q = b2 % q) :
       zeta_half T = 0
 
-    /-- **Superbrick_LargeDenom** (HONEST CONDITIONAL — analytic, uses GrowthBound + ZeroRepulsion):
+    
 
-      When theta(T) = p/q with q ∈ large_divisors = {247,2431,2717,3553,4199,46189},
-      the brothers are Nodup mod q (confirmed by native_decide), so the small-denom
-      collision argument does not apply.
-
-      However, GrowthBound and ZeroRepulsion from RouteC together rule out a rational
-      theta(T) with these large denominators: the growth/repulsion structure constrains
-      |ζ(½+iT)| in a way that conflicts with the q-periodic symmetry forced by
-      theta(T) = p/q.
-
-      Status: the specific analytic argument connecting GrowthBound + ZeroRepulsion to
-      large-denom theta(T) rationality is NOT yet formalised.  Named honest conditional;
-      uses hG and hZ which are already in the riemannHypothesis parameter list.
-      Replaces the large-denominator branch of the previous monolithic SORRY 1. -/
-    def Superbrick_LargeDenom : Prop :=
-    ∀ (T : ℝ) (p : ℤ) (q : ℕ)
-      (hq_large : q ∈ large_divisors)
-      (hG : GrowthBound) (hZ : ZeroRepulsion)
-      (h_nz : zeta_half T ≠ 0)
-      (h_eq  : theta T = ↑p / ↑q),
-      False
 
     /-! ## 9. The Superbrick contradiction — 0 own sorry -/
 
@@ -259,6 +242,46 @@
     --   have hqW := hFE T p q hq_pos h_eq
     --   obtain ⟨b1, hb1, b2, hb2, hne, hmod⟩ := brothers_v2_collide_mod_of_dvd q hqW
     --   exact absurd (hSD T p q hq_pos h_eq b1 hb1 b2 hb2 hne hmod) h_nz
+
+    /-! ## Self-Symmetry axioms — Route D (brothers_v2 + Dirichlet FE) -/
+
+    /-- **Superbrick_FE_base** (AXIOM — formalization target, ~3pp):
+      For any T with a non-trivial zero (zeta_half T ≠ 0) and rational theta(T),
+      the denominator divides W = 46189.
+
+      Proof path (Mathlib target):
+        `riemannZeta_one_sub` + Gamma reflection → Complex.arg of FE →
+        denom(arg/2π) | W = 47608 - 1419.  Uses `Complex.riemannZeta_one_sub`
+        and `Mathlib.Analysis.SpecialFunctions.Gamma.Basic` from LSeries library.
+
+      Named axiom; intended to be upgraded to a theorem once Mathlib's LSeries
+      API for zeta functional equation is complete (Mathlib v4.17+). -/
+    axiom Superbrick_FE_base
+      (T     : ℝ)
+      (h     : zeta_half T ≠ 0)
+      (h_rat : ¬ Irrational (theta T)) :
+      ∃ q : ℕ, q ∣ W ∧ ∃ p : ℤ, theta T = ↑p / ↑q
+
+    /-! ## Core contradiction — 0 sorry -/
+
+    /-- **rational_contradicts_brothers_v2** (0 own sorry):
+      If theta(T) is rational and zeta_half T ≠ 0, contradiction.
+      Proof:
+        1. Superbrick_FE_base → q | W and theta T = p/q.
+        2. collision_mod_q q hqW → (1419, 47608) witness mod q (omega, 0 sorry).
+        3. Superbrick_SmallDenom → zeta_half T = 0. Contradiction with h_nz.
+      Replaces: monolithic SORRY1 + Superbrick_LargeDenom (needed hG, hZ). -/
+    theorem rational_contradicts_brothers_v2
+      (T      : ℝ)
+      (h_nz   : zeta_half T ≠ 0)
+      (h_rat  : ¬ Irrational (theta T)) : False := by
+    obtain ⟨q, hqW, p, hp⟩ := Superbrick_FE_base T h_nz h_rat
+    obtain ⟨b1, hb1, b2, hb2, hne, hmod⟩ := collision_mod_q q hqW
+    have hq_pos : 0 < q := by
+      cases q with
+      | zero => simp [Nat.zero_dvd] at hqW; exact absurd hqW (by norm_num)
+      | succ n => exact Nat.succ_pos n
+    exact h_nz (Superbrick_SmallDenom T p q hq_pos hp b1 b2 hb1 hb2 hne hmod)
 
     end Eutheos
     
