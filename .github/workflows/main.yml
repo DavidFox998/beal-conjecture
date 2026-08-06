@@ -30,13 +30,24 @@ name: Lean Build -- Brothers Desert Proof
         - name: "Eutheos -- RationalTheta (rational_gives_zero_dist, brothers_Nodup_1419, frac_inj, SORRY1=SuperbrickFE)"
           run: lake build Eutheos.RationalTheta
 
-        # -- Number-theoretic bridge (SORRY 2+3 tagged) ----------------------------
+        # -- Bridge + Assembly -----------------------------------------------------
         - name: "Eutheos -- Bridge (RiemannHypothesis defn, bridge_equivalence, SORRY2+3)"
           run: lake build Eutheos.Bridge
 
-        # -- Assembly ---------------------------------------------------------------
-        - name: "Eutheos -- RH (theta_irrational 0-own-sorry, ThetaSelfSymmetryRH_proved, riemannHypothesis)"
+        - name: "Eutheos -- RH (theta_irrational, ThetaSelfSymmetryRH_proved, riemannHypothesis)"
           run: lake build Eutheos.RH
+
+        # -- Ramanujan factorization (0 sorry) -------------------------------------
+        - name: "Eutheos -- RamanujanFactorization (0 sorry, pure algebra, alpha-beta witnesses)"
+          run: lake build Eutheos.RamanujanFactorization
+
+        # -- RouteC: Bost-Connes → Ramanujan → GRH --------------------------------
+        - name: "Route -- RouteC (Deligne axiom, Bost-Connes thm6, M9/M10 steps, p5 boundary)"
+          run: lake build Route.RouteC
+
+        # -- SIEGEL ----------------------------------------------------------------
+        - name: "Siegel -- SiegelZeroFree (D_eff<bound, c1>threshold, ratio>1, SORRY=repulsion)"
+          run: lake build Siegel.SiegelZeroFree
 
         # -- SelfSymmetry layer ----------------------------------------------------
         - name: "SelfSymmetry -- Core (35 brothers, Nodup, pop6, Hamming>=2)"
