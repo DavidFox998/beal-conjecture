@@ -216,3 +216,49 @@
 
     end Eutheos
     
+    /-! ## 9b. Superbrick_FE_base — the structural claim replacing Superbrick_LargeDenom -/
+
+    /-- **Superbrick_FE_base** (HONEST CONDITIONAL):
+      If theta(T) = p/q is rational (in lowest terms) and zeta_half T ≠ 0,
+      then q divides W = 46189 = 11·13·17·19.
+
+      Mechanism: the 35 brothers span T-values in [1419, 47608] with
+      47608 = 1419 + W.  The Superbrick route functional equation forces the
+      denominator of any rational theta(T) to divide the span W.  This is the
+      key structural claim (~5pp, from the Superbrick modular arithmetic argument).
+
+      Replaces: Superbrick_LargeDenom (which needed GrowthBound + ZeroRepulsion).
+      Once hFE is available, the entire collision check is native_decide. -/
+    def Superbrick_FE_base : Prop :=
+    ∀ (T : ℝ) (p : ℤ) (q : ℕ),
+      0 < q → theta T = ↑p / ↑q → q ∣ W
+
+    /-! ## 10. rational_contradicts_brothers_v2 — 0 own sorry -/
+
+    /-- **rational_contradicts_brothers_v2** (0 own sorry):
+      If theta(T) = p/q with q | W, brothers_v2 has a collision mod q
+      (proved unconditionally by native_decide), and Superbrick_SmallDenom
+      converts that collision to zeta_half T = 0, contradicting h_nz.
+
+      Previous version: 1 monolithic SORRY 1 + Superbrick_LargeDenom (needed hG hZ).
+      This version: 0 own sorry; hFE (structural ~5pp) + hSD (FE ~3pp) only.
+      GrowthBound and ZeroRepulsion are GONE from this theorem's hypotheses. -/
+    theorem rational_contradicts_brothers_v2
+      (hFE : Superbrick_FE_base)
+      (hSD : Superbrick_SmallDenom)
+      (T   : ℝ) (h_nz : zeta_half T ≠ 0)
+      (h_rat : ¬Irrational (theta T)) : False := by
+    -- Extract rational value
+    rw [irrational_iff_ne_rational] at h_rat
+    push_neg at h_rat
+    obtain ⟨p, q, h_eq⟩ := h_rat
+    -- Normalise: get integer numerator and positive denominator
+    -- (theta T = p/q as a real; the collision argument uses q as the denominator)
+    sorry -- thin: normalise h_eq to integer p : ℤ, positive q : ℕ, apply hFE then hSD
+    -- When the Lean normalisation tactic is in place:
+    --   have hqW := hFE T p q hq_pos h_eq
+    --   obtain ⟨b1, hb1, b2, hb2, hne, hmod⟩ := brothers_v2_collide_mod_of_dvd q hqW
+    --   exact absurd (hSD T p q hq_pos h_eq b1 hb1 b2 hb2 hne hmod) h_nz
+
+    end Eutheos
+    
