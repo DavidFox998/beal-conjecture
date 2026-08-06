@@ -23,6 +23,12 @@ import Lake
       .one `Eutheos.Bridge,
       -- Assembly: theta_irrational → ThetaSelfSymmetryRH → RH
       .one `Eutheos.RH,
+      -- Ramanujan factorization (0 sorry, pure algebra)
+      .one `Eutheos.RamanujanFactorization,
+      -- RouteC: Bost-Connes → Ramanujan/Deligne → GRH for 140 curves → p5
+      .one `Route.RouteC,
+      -- SIEGEL: Deuring-Heilbronn-Siegel zero-free region at p5
+      .one `Siegel.SiegelZeroFree,
       -- SelfSymmetry layer (wraps eutheos-property theorems)
       .one `SelfSymmetry.Core,
       .one `SelfSymmetry.Desert,
