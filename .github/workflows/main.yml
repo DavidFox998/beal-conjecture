@@ -19,6 +19,15 @@ jobs:
       - name: Lake update
         run: lake update
 
+      # -- The Object layer ------------------------------------------------------
+      - name: "Eutheos -- Object (theta0=pi/10, gate norm=1, route unitary, 35 brothers)"
+        run: lake build Eutheos.Object
+
+      # Theta.lean has intentional sorry stubs (pending Mathlib RiemannZeta)
+      # - name: "Eutheos -- Theta (TARGET: zeta connection)"
+      #   run: lake build Eutheos.Theta
+
+      # -- SelfSymmetry layer ----------------------------------------------------
       - name: "SelfSymmetry -- Core (35 brothers, Nodup, pop6, Hamming≥2)"
         run: lake build SelfSymmetry.Core
 
