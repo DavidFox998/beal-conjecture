@@ -21,6 +21,7 @@ import Lake
       .one `Eutheos.RationalTheta,
       -- Number-theoretic bridge: ThetaSelfSymmetryRH ↔ RH (SORRY 2, 3 tagged)
       .one `RouteC.GrowthRepulsionBridge,
+    .one `Lindelof.LindelofBridge,
     .one `Eutheos.Bridge,
       -- Assembly: theta_irrational → ThetaSelfSymmetryRH → RH
       .one `Eutheos.RH,
