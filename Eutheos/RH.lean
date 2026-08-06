@@ -1,41 +1,61 @@
 -- Eutheos/RH.lean
-    -- Assembly: rational_contradicts_brothers → theta_irrational → RH.
+    -- Assembly: Superbrick FE → theta_irrational → ThetaSelfSymmetryRH → RH.
     --
     -- Own sorry count: 0.
-    -- Inherited: SORRY 1 (Superbrick FE) + SORRY 2 (analytic bridge).
-    -- SORRY 3 (backward bridge) is not used here.
+    -- Remaining open:
+    --   SORRY 1 — rational_contradicts_brothers (Superbrick FE, novel to this repo)
+    --   GrowthBound   — honest open conditional (analytic, from RouteC)
+    --   ZeroRepulsion — honest open conditional (analytic, from RouteC)
+    --
+    -- Comparison with previous version:
+    --   Before: SORRY 1 + SORRY 2 (hidden) + SORRY 3 (hidden)
+    --   After:  SORRY 1 + GrowthBound (named) + ZeroRepulsion (named)
+    --   SORRY 2 and SORRY 3 are eliminated; replaced by honest named conditionals.
     import Eutheos.RationalTheta
     import Eutheos.Bridge
 
     namespace Eutheos
 
+    open RouteC
+
     /-! ## 1. theta(T) is irrational -/
 
     /-- For every T with zeta_half T ≠ 0, theta(T) is irrational.
-
-      Proof by contradiction: assume rational; rational_contradicts_brothers
-      (SORRY 1 — Superbrick FE) derives False directly. -/
+      Proof by contradiction via Superbrick FE (SORRY 1). -/
     theorem theta_irrational (T : ℝ) (h_nz : zeta_half T ≠ 0) :
       Irrational (theta T) :=
     fun h_rat => rational_contradicts_brothers T h_nz h_rat
 
-    /-! ## 2. ThetaSelfSymmetryRH is proved -/
+    /-! ## 2. ThetaSelfSymmetryRH holds (pending SORRY 1) -/
 
-    /-- The Self-Symmetry RH conjecture holds (pending SORRY 1). -/
     theorem ThetaSelfSymmetryRH_proved : ThetaSelfSymmetryRH :=
     theta_irrational
 
     /-! ## 3. The Riemann Hypothesis -/
 
-    /-- **The Riemann Hypothesis.**
+    /-- **The Riemann Hypothesis** (0 own sorry):
 
-      Two open sorries remain in the full chain:
-        SORRY 1 — Superbrick FE (finite pigeonhole on 35 brothers mod denom(theta T))
-        SORRY 2 — ThetaRH_implies_RH (analytic bridge via Riemann–Siegel machinery)
+      Open inputs:
+        SORRY 1     — rational_contradicts_brothers (Superbrick FE — novel to this repo)
+        GrowthBound — honest open conditional (|ζ(½+it)| ≤ C(log t)² — Lindelöf direction)
+        ZeroRepulsion — honest open conditional (Ingham repulsion — analytic NT)
 
-      Every other step carries 0 sorry. -/
-    theorem riemannHypothesis : RiemannHypothesis :=
-    ThetaRH_implies_RH ThetaSelfSymmetryRH_proved
+      Proof chain (each step 0 own sorry):
+        rational_contradicts_brothers  →  theta_irrational
+        theta_irrational               →  ThetaSelfSymmetryRH_proved
+        ThetaSelfSymmetryRH_proved
+          + GrowthBound + ZeroRepulsion
+          + riemannHypothesis_of_growth_and_repulsion (0 sorry, RouteC)
+        →  riemannHypothesis
+
+      Previous version had SORRY 2 + SORRY 3 hidden inside Bridge.lean.
+      Those are now named GrowthBound and ZeroRepulsion — two honest open conditionals
+      from DavidFox998/rh-growth-contradiction (RouteC). -/
+    theorem riemannHypothesis
+      (hG : GrowthBound)
+      (hZ : ZeroRepulsion) :
+      RiemannHypothesis :=
+    ThetaRH_implies_RH hG hZ ThetaSelfSymmetryRH_proved
 
     end Eutheos
     
