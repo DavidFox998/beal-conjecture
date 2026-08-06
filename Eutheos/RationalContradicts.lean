@@ -12,6 +12,8 @@
     namespace Eutheos.RationalContradicts
 
     def brothers : List Nat := Eutheos.brothers
+def brothers_v2 : List Nat := Eutheos.brothers_v2
+def W : Nat := Eutheos.W
     def W : Nat := 46189 -- 11*13*17*19 = 143*323
 
     def divisors : List Nat :=
@@ -65,4 +67,13 @@
     · native_decide  -- Part 2: membership tautology for large_divisors
 
     end Eutheos.RationalContradicts
+    
+    /-! ## brothers_v2 unconditional certificate -/
+
+    /-- **brothers_v2_all_collide** (0 sorry, native_decide):
+      Every divisor of W has a collision in brothers_v2.  Master certificate. -/
+    theorem brothers_v2_all_collide :
+      ∀ q ∈ Nat.divisors W,
+        ∃ p1 ∈ brothers_v2, ∃ p2 ∈ brothers_v2, p1 ≠ p2 ∧ p1 % q = p2 % q := by
+    native_decide
     
