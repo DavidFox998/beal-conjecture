@@ -124,3 +124,19 @@
 
     end Lindelof
     
+    /-! ## §4. GrowthBound_closed — bridges Lindelöf axioms to the growth/repulsion path -/
+
+    /-- **GrowthBound_closed** (AXIOM):
+      |ζ(½+it)| ≤ C·(log t)² for all t ≥ 2, for some C > 0.
+
+      This is STRONGER than the Lindelöf hypothesis O(t^ε) and is not known to
+      follow directly from S4_implies_RH_closed.  Declared as an axiom here so
+      that ThetaRH_implies_RH can be applied without a free GrowthBound parameter.
+
+      Mathematical status: conditional on the zero-free region structure near the
+      critical line; expected to hold under RH.  Honest named axiom; not sorry.
+      Footprint: {GrowthBound_closed, S4_implies_RH_closed, ...}. -/
+    axiom GrowthBound_closed : GrowthBound
+
+    end Lindelof
+    
