@@ -18,37 +18,38 @@ noncomputable def dist (x : ℝ) : ℝ := min (frac x) (1 - frac x)
 noncomputable def V (p : Nat) (a : ℝ) : ℝ := dist (p * a) - 1 / p
 
 noncomputable def alpha0 : ℝ := theta0
-
--- Known exceptional primes for alpha0
 def S : List Nat := [2, 3, 19, 191]
 
 /-! ## 1. Irrationality -/
 
--- Direct: if pi/10 = q ∈ ℚ then pi = 10q ∈ ℚ, contradicting Real.pi_irrational
 theorem object_irrational : Irrational alpha0 := by
   unfold alpha0 theta0 Irrational
   intro ⟨q, hq⟩
   apply Real.pi_irrational
   exact ⟨q * 10, by push_cast at hq ⊢; linarith⟩
 
--- dist(n·alpha0) > 0 for every n ≠ 0
-theorem object_dist_pos (n : Nat) (hn : n ≠ 0) : dist (↑n * alpha0) > 0 := by
-  have hirr : Irrational alpha0 := object_irrational
-  have hnn : 0 ≤ frac (↑n * alpha0) := by
-    unfold frac; linarith [Int.floor_le ((↑n : ℝ) * alpha0)]
-  have hlt : frac (↑n * alpha0) < 1 := by
-    unfold frac; linarith [Int.lt_floor_add_one ((↑n : ℝ) * alpha0)]
-  have hne0 : frac (↑n * alpha0) ≠ 0 := by
+/-- General: dist(n·a) > 0 for any irrational a and any n ≠ 0.
+    Used both for alpha0 and for theta(T) in Theta.lean. -/
+theorem dist_pos_of_irrational (a : ℝ) (ha : Irrational a)
+    (n : Nat) (hn : n ≠ 0) : dist (↑n * a) > 0 := by
+  have hnn : 0 ≤ frac (↑n * a) := by
+    unfold frac; linarith [Int.floor_le ((↑n : ℝ) * a)]
+  have hlt : frac (↑n * a) < 1 := by
+    unfold frac; linarith [Int.lt_floor_add_one ((↑n : ℝ) * a)]
+  have hne0 : frac (↑n * a) ≠ 0 := by
     unfold frac
     intro h
-    have heq : (↑n : ℝ) * alpha0 = ⌈(↑n : ℝ) * alpha0⌉ := by linarith
-    apply hirr
-    refine ⟨(⌈(↑n : ℝ) * alpha0⌉ : ℚ) / n, ?_⟩
+    have heq : (↑n : ℝ) * a = ⌈(↑n : ℝ) * a⌉ := by linarith
+    apply ha
+    refine ⟨(⌈(↑n : ℝ) * a⌉ : ℚ) / n, ?_⟩
     push_cast
     rw [div_eq_iff (Nat.cast_ne_zero.mpr hn)]
     linarith
   unfold dist
   exact lt_min (lt_of_le_of_ne hnn (Ne.symm hne0)) (by linarith)
+
+theorem object_dist_pos (n : Nat) (hn : n ≠ 0) : dist (↑n * alpha0) > 0 :=
+  dist_pos_of_irrational alpha0 object_irrational n hn
 
 /-! ## 2. Brothers — 35 desert slots -/
 
@@ -56,15 +57,14 @@ def brothers : List Nat := [1419,1841,1907,2113,2411,2777,3251,3467,3671,4091,42
   5059,5347,5639,5779,6197,6427,6823,7043,7583,8321,8999,9413,9859,10259,11311,12433,
   13513,14929,17183,19193,23281,44041,52481]
 
-theorem brothers_Nodup  : brothers.Nodup                    := by native_decide
-theorem brothers_ge_193 : brothers.all (· ≥ 193) = true    := by native_decide
--- mod-211 residue: native_decide is the arbiter (fails cleanly if list does not satisfy it)
+theorem brothers_Nodup  : brothers.Nodup                 := by native_decide
+theorem brothers_ge_193 : brothers.all (· ≥ 193) = true := by native_decide
 theorem brothers_mod_211 : brothers.all (fun b => b % 211 == 153) = true := by native_decide
 
 /-! ## 3. Unitary gate -/
 
 noncomputable def gate (p t : Nat) (a : ℝ) : ℂ :=
-  Complex.exp (Complex.I * ((p : ℝ) + t) * a)
+  Complex.exp (Complex.I * ((↑p : ℝ) + ↑t) * ↑a)
 
 theorem gate_norm (p t : Nat) (a : ℝ) : ‖gate p t a‖ = 1 := by
   unfold gate
@@ -72,7 +72,7 @@ theorem gate_norm (p t : Nat) (a : ℝ) : ‖gate p t a‖ = 1 := by
     simp [Complex.mul_re, Complex.I_re, Complex.I_im]
   rw [Complex.norm_exp, h, Real.exp_zero]
 
-/-! ## 4. Route (norm-preserving sequence of gates) -/
+/-! ## 4. Route (norm-preserving) -/
 
 noncomputable def route (z : ℂ) (path : List Nat) (t : Nat) (a : ℝ) : ℂ :=
   path.foldl (fun acc p => acc * gate p t a) z
