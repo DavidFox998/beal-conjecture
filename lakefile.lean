@@ -20,7 +20,8 @@ import Lake
       -- Rational-theta contradiction + brothers Nodup (SORRY 1 tagged)
       .one `Eutheos.RationalTheta,
       -- Number-theoretic bridge: ThetaSelfSymmetryRH ↔ RH (SORRY 2, 3 tagged)
-      .one `Eutheos.Bridge,
+      .one `RouteC.GrowthRepulsionBridge,
+    .one `Eutheos.Bridge,
       -- Assembly: theta_irrational → ThetaSelfSymmetryRH → RH
       .one `Eutheos.RH,
       -- Ramanujan factorization (0 sorry, pure algebra)
