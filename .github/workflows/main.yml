@@ -1,46 +1,59 @@
 name: Lean Build -- Brothers Desert Proof
 
-on:
-  push:
-  pull_request:
+    on:
+    push:
+    pull_request:
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
+    jobs:
+    build:
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v4
 
-      - name: Install Elan
-        run: |
-          curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh \
-            | sh -s -- -y --default-toolchain leanprover/lean4:v4.15.0
-          echo "$HOME/.elan/bin" >> $GITHUB_PATH
+        - name: Install Elan
+          run: |
+            curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh \
+              | sh -s -- -y --default-toolchain leanprover/lean4:v4.15.0
+            echo "$HOME/.elan/bin" >> $GITHUB_PATH
 
-      - name: Lake update
-        run: lake update
+        - name: Lake update
+          run: lake update
 
-      # -- The Object layer (0 sorry) --------------------------------------------
-      - name: "Eutheos -- Object (theta0, dist_pos_of_irrational, gate, route unitary)"
-        run: lake build Eutheos.Object
+        # -- Object layer (0 sorry) ------------------------------------------------
+        - name: "Eutheos -- Object (theta0, dist_pos_of_irrational, gate, route unitary)"
+          run: lake build Eutheos.Object
 
-      - name: "Eutheos -- Theta (zeta_half from Mathlib, theta=arg/2pi, honest conditional)"
-        run: lake build Eutheos.Theta
+        - name: "Eutheos -- Theta (zeta_half from Mathlib, theta=arg/2pi, honest conditional)"
+          run: lake build Eutheos.Theta
 
-      # -- SelfSymmetry layer ----------------------------------------------------
-      - name: "SelfSymmetry -- Core (35 brothers, Nodup, pop6, Hamming≥2)"
-        run: lake build SelfSymmetry.Core
+        # -- Rational-theta contradiction (SORRY 1 tagged) -------------------------
+        - name: "Eutheos -- RationalTheta (rational_gives_zero_dist, brothers_Nodup_1419, frac_inj, SORRY1=SuperbrickFE)"
+          run: lake build Eutheos.RationalTheta
 
-      - name: "SelfSymmetry -- Desert (S4 exceptional, desert empty, mod-191 injective)"
-        run: lake build SelfSymmetry.Desert
+        # -- Number-theoretic bridge (SORRY 2+3 tagged) ----------------------------
+        - name: "Eutheos -- Bridge (RiemannHypothesis defn, bridge_equivalence, SORRY2+3)"
+          run: lake build Eutheos.Bridge
 
-      - name: "SelfSymmetry -- JitterSymmetry (pi/10 irrational, Nodup 1419, EMI -30dB)"
-        run: lake build SelfSymmetry.JitterSymmetry
+        # -- Assembly ---------------------------------------------------------------
+        - name: "Eutheos -- RH (theta_irrational 0-own-sorry, ThetaSelfSymmetryRH_proved, riemannHypothesis)"
+          run: lake build Eutheos.RH
 
-      - name: "SelfSymmetry -- TwinWormhole (twin-prime product injectivity)"
-        run: lake build SelfSymmetry.TwinWormhole
+        # -- SelfSymmetry layer ----------------------------------------------------
+        - name: "SelfSymmetry -- Core (35 brothers, Nodup, pop6, Hamming>=2)"
+          run: lake build SelfSymmetry.Core
 
-      - name: "SelfSymmetry -- ClayWitness (GapMCSP L=2240>33, self-symmetry certificate)"
-        run: lake build SelfSymmetry.ClayWitness
+        - name: "SelfSymmetry -- Desert (S4 exceptional, desert empty, mod-191 injective)"
+          run: lake build SelfSymmetry.Desert
 
-      - name: "Protocol -- Chain (master certificate, all four properties)"
-        run: lake build Protocol.Chain
+        - name: "SelfSymmetry -- JitterSymmetry (pi/10 irrational, Nodup 1419, EMI -30dB)"
+          run: lake build SelfSymmetry.JitterSymmetry
+
+        - name: "SelfSymmetry -- TwinWormhole (twin-prime product injectivity)"
+          run: lake build SelfSymmetry.TwinWormhole
+
+        - name: "SelfSymmetry -- ClayWitness (GapMCSP L=2240>33, self-symmetry certificate)"
+          run: lake build SelfSymmetry.ClayWitness
+
+        - name: "Protocol -- Chain (master certificate, all four properties)"
+          run: lake build Protocol.Chain
+    
