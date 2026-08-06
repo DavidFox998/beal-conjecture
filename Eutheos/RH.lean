@@ -22,14 +22,20 @@
 
     /-- For every T with zeta_half T ≠ 0, theta(T) is irrational.
       Proof by contradiction via Superbrick FE (SORRY 1). -/
-    theorem theta_irrational (T : ℝ) (h_nz : zeta_half T ≠ 0) :
+    theorem theta_irrational
+      (hSD : Superbrick_SmallDenom) (hLD : Superbrick_LargeDenom)
+      (hG : GrowthBound) (hZ : ZeroRepulsion)
+      (T : ℝ) (h_nz : zeta_half T ≠ 0) :
       Irrational (theta T) :=
-    fun h_rat => rational_contradicts_brothers T h_nz h_rat
+    fun h_rat => rational_contradicts_brothers hSD hLD hG hZ T h_nz h_rat
 
     /-! ## 2. ThetaSelfSymmetryRH holds (pending SORRY 1) -/
 
-    theorem ThetaSelfSymmetryRH_proved : ThetaSelfSymmetryRH :=
-    theta_irrational
+    theorem ThetaSelfSymmetryRH_proved
+      (hSD : Superbrick_SmallDenom) (hLD : Superbrick_LargeDenom)
+      (hG : GrowthBound) (hZ : ZeroRepulsion) :
+      ThetaSelfSymmetryRH :=
+    theta_irrational hSD hLD hG hZ
 
     /-! ## 3. The Riemann Hypothesis -/
 
@@ -52,10 +58,12 @@
       Those are now named GrowthBound and ZeroRepulsion — two honest open conditionals
       from DavidFox998/rh-growth-contradiction (RouteC). -/
     theorem riemannHypothesis
-      (hG : GrowthBound)
-      (hZ : ZeroRepulsion) :
+      (hSD : Superbrick_SmallDenom)
+      (hLD : Superbrick_LargeDenom)
+      (hG  : GrowthBound)
+      (hZ  : ZeroRepulsion) :
       RiemannHypothesis :=
-    ThetaRH_implies_RH hG hZ ThetaSelfSymmetryRH_proved
+    ThetaRH_implies_RH hG hZ (ThetaSelfSymmetryRH_proved hSD hLD hG hZ)
 
     end Eutheos
     
