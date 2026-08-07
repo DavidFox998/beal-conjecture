@@ -1,24 +1,32 @@
 /-
   MathlibFix/ComplexLogFix.lean
-  Vendor shim: 5 Complex log/exp/zeta lemmas for the Eutheos pipeline.
-  SORRY count: 2  (log_mul_fix, zeta_log_bound — see comments for closure)
+  Vendor shim: 5 Complex log/exp/zeta lemmas — checked against Mathlib v4.15.0 source.
+  SORRY count: 1  (zeta_log_bound — see below)
 
-  ╔══════════════════════════════════════════════════════════════════════╗
-  ║  WHY THIS FILE DOES NOT CLOSE UNCONDITIONAL.LEAN SORRYS            ║
-  ║                                                                      ║
-  ║  The Unconditional.lean blockers are:                               ║
-  ║    riemannZeta_truncated_Euler_brothers  ← needs Euler product      ║
-  ║    riemannZeta_route_eq                  ← needs route = ζ identity ║
-  ║                                                                      ║
-  ║  Both require: Im log ζ(½+iT) =                                     ║
-  ║      −∑_{p} Im log(1−p^{−(½+iT)}) + O(1/2W)                       ║
-  ║  This is the CRITICAL-LINE Euler product (Re s = ½).               ║
-  ║  ∑_p p^{−½} diverges → no absolute convergence → 3-5pp argument.  ║
-  ║                                                                      ║
-  ║  Lemmas 1-4 here work only for Re s > 1.                           ║
-  ║  Lemma 5 (zeta_log_bound) works for Re s > 1 but not Re s = ½.    ║
-  ║  Expected fix: Mathlib v4.17-v4.18.                                 ║
-  ╚══════════════════════════════════════════════════════════════════════╝
+  DEFINITIVE API AUDIT (Mathlib v4.15.0, from source):
+  ┌─────────────────────────────────────────┬──────────────────────────────────────────┐
+  │ Lemma                                   │ Status                                   │
+  ├─────────────────────────────────────────┼──────────────────────────────────────────┤
+  │ complex_log_exp_eq  (Lemma 1)           │ PROVED — wraps Complex.log_exp           │
+  │ log_mul_fix         (Lemma 2)           │ PROVED — wraps Complex.log_mul (alias)   │
+  │ arg_continuous_fix  (Lemma 3)           │ PROVED — wraps Complex.continuousOn_arg  │
+  │ zeta_ne_zero_of_one_lt_re (Lemma 4)    │ PROVED — wraps riemannZeta_ne_zero_...   │
+  │ zeta_log_bound      (Lemma 5)           │ 1 SORRY — see §5                         │
+  └─────────────────────────────────────────┴──────────────────────────────────────────┘
+
+  ABSENT from Mathlib v4.15.0 (searched every file):
+    riemannZeta_eta           — eta identity (1−2^{1−s})·ζ(s) = η(s): NOT PRESENT
+    riemannZeta_eulerProduct  — Euler product for ζ by that name: NOT PRESENT
+    ZetaRealSign cannot be closed in v4.15.0. Remains axiom in SiegelZeroFreeElementary.
+
+  WHAT IS PRESENT for the Euler product:
+    summable_neg_log_one_sub_mul_prime_cpow (Nonvanishing.lean, line 265):
+      Summable (fun p : Nat.Primes => -Complex.log(1 − χ p · p^{-s}))  for 1 < s.re
+    LSeries_eulerProduct_exp_log (Nonvanishing.lean, line 292–294):
+      Used but defined in a transitive import (likely Analysis.EulerProduct).
+      Applies to Dirichlet L-series, not directly to riemannZeta.
+
+  UNCONDITIONAL.LEAN SORRYS: still blocked on critical-line Euler product.
 -/
 
 import Mathlib.Analysis.SpecialFunctions.Complex.Log
@@ -33,34 +41,32 @@ open Complex Real
 /-! ## Lemma 1: log(exp z) = z when |im z| < π — PROVED -/
 
 /-- **complex_log_exp_eq** (0 sorry):
-    Wraps `Complex.log_exp`. The cut of the principal log is the negative real axis,
-    so `log(exp z) = z` precisely when `|im z| < π`. -/
+    `Complex.log_exp` from `Mathlib.Analysis.SpecialFunctions.Complex.Log`.
+    Signature: `Complex.log_exp (h : |z.im| < Real.pi) : Complex.log (Complex.exp z) = z` -/
 lemma complex_log_exp_eq (z : ℂ) (harg : |z.im| < Real.pi) :
     Complex.log (Complex.exp z) = z :=
   Complex.log_exp harg
 
-/-! ## Lemma 2: log(z * w) is additive in the principal branch — SORRY -/
+/-! ## Lemma 2: log(z * w) is additive in the principal branch — PROVED -/
 
-/-- **log_mul_fix** (1 sorry):
-    `log(z * w) = log z + log w` when both args sum inside (-π, π].
-    In Mathlib v4.15 the exact lemma name varies between builds.
-    Closure: paste the error from `exact?` or `simp?` applied to
-      `Complex.log (z * w)` and the one-liner closes immediately.
-    Likely names: `Complex.log_mul_of_pos`, `Complex.log_mul_ne_neg` -/
+/-- **log_mul_fix** (0 sorry):
+    Source: `Mathlib/Analysis/SpecialFunctions/Complex/Log.lean`
+    ```
+    lemma log_mul_eq_add_log_iff {x y : ℂ} (hx₀ : x ≠ 0) (hy₀ : y ≠ 0) :
+        log (x * y) = log x + log y ↔ arg x + arg y ∈ Set.Ioc (-π) π
+    alias ⟨_, log_mul⟩ := log_mul_eq_add_log_iff
+    ```
+    So `Complex.log_mul (hx₀ : x ≠ 0) (hy₀ : y ≠ 0) (h : arg x + arg y ∈ Set.Ioc (-π) π)`. -/
 lemma log_mul_fix (z w : ℂ) (hz : z ≠ 0) (hw : w ≠ 0)
     (harg_lo : -(Real.pi) < z.arg + w.arg)
     (harg_hi : z.arg + w.arg ≤ Real.pi) :
-    Complex.log (z * w) = Complex.log z + Complex.log w := by
-  -- In Mathlib v4.15: Complex.log_mul_eq_add_log_iff or Complex.log_mul
-  -- with conditions on arg z + arg w ∈ Ioc (-π) π.
-  -- Paste the exact `exact?` output for one-line closure.
-  sorry -- CLOSABLE: ~1 line using Complex.log_mul or Complex.arg_mul lemma
+    Complex.log (z * w) = Complex.log z + Complex.log w :=
+  Complex.log_mul hz hw (Set.mem_Ioc.mpr ⟨harg_lo, harg_hi⟩)
 
-/-! ## Lemma 3: arg is continuous away from the negative real slit — PROVED -/
+/-! ## Lemma 3: arg is continuous away from the slit — PROVED -/
 
 /-- **arg_continuous_fix** (0 sorry):
-    Wraps `Complex.continuousOn_arg`. The slit is `{z | z.re < 0 ∧ z.im = 0}`;
-    continuity holds on `{z | 0 < z.re ∨ z.im ≠ 0}`. -/
+    `Complex.continuousOn_arg` from `Mathlib.Analysis.SpecialFunctions.Complex.Log`. -/
 lemma arg_continuous_fix :
     ContinuousOn Complex.arg {z : ℂ | 0 < z.re ∨ z.im ≠ 0} :=
   Complex.continuousOn_arg
@@ -68,42 +74,40 @@ lemma arg_continuous_fix :
 /-! ## Lemma 4: ζ(s) ≠ 0 for Re(s) > 1 — PROVED -/
 
 /-- **zeta_ne_zero_of_one_lt_re** (0 sorry):
-    Wraps `riemannZeta_ne_zero_of_one_lt_re` from Mathlib. -/
+    Source: `Mathlib/NumberTheory/LSeries/Dirichlet.lean`, line 325.
+    ```
+    lemma riemannZeta_ne_zero_of_one_lt_re {s : ℂ} (hs : 1 < s.re) : riemannZeta s ≠ 0
+    ``` -/
 lemma zeta_ne_zero_of_one_lt_re (s : ℂ) (hs : 1 < s.re) :
     riemannZeta s ≠ 0 :=
   riemannZeta_ne_zero_of_one_lt_re hs
 
-/-! ## Lemma 5: |log ζ(s)| ≤ ∑_p |log(1 − p^{−s})| for Re(s) > 1 — SORRY -/
+/-! ## Lemma 5: |log ζ(s)| bound — 1 SORRY -/
 
 /-- **zeta_log_bound** (1 sorry):
-    For Re(s) > 1, the Euler product converges absolutely and
-    |log ζ(s)| ≤ ∑_p |log(1 − p^{−s})|.
-    
-    Closure route (≈15 lines):
-      have hprod := riemannZeta_eulerProduct hs
-      -- hprod : HasProd (fun p : Nat.Primes => (1 - ↑p ^ (-s))⁻¹) (riemannZeta s)
-      have hlog : Complex.log (riemannZeta s) =
-                  -∑' p : Nat.Primes, Complex.log (1 - (p : ℂ) ^ (-s)) := by
-        rw [← Complex.log_prod_of_hasProd hprod ...]
-        simp [Complex.log_inv, Complex.log_prod]
-      calc ‖Complex.log (riemannZeta s)‖
-           = ‖-∑' p, Complex.log (1 - ↑p ^ (-s))‖ := by rw [hlog]
-         _ ≤ ∑' p, ‖Complex.log (1 - ↑p ^ (-s))‖  := norm_tsum_le_tsum_norm ...
-    
-    Blocked only on the exact signature of `riemannZeta_eulerProduct` in v4.15
-    (HasProd vs Multipliable vs explicit; paste the type and I close it). -/
+    For Re s > 1, ‖log ζ(s)‖ ≤ ∑_p ‖log(1 − p^{−s})‖.
+
+    WHAT EXISTS in Mathlib v4.15.0 (from source search):
+      `summable_neg_log_one_sub_mul_prime_cpow` (Nonvanishing.lean, line 265):
+        `Summable (fun p : Nat.Primes ↦ -log(1 − χ p * p^{−s}))` for `1 < s.re`
+      `LSeries_eulerProduct_exp_log` (Nonvanishing.lean, used at line 292):
+        rewrites `L ↗χ s = exp(∑' p, -log(1 − χ p * p^{−s}))` for Dirichlet chars.
+        NOT directly named for riemannZeta (use χ = trivial character).
+
+    CLOSURE ROUTE:
+      import Mathlib.NumberTheory.LSeries.Nonvanishing
+      have hEP := LSeries_eulerProduct_exp_log (1 : DirichletCharacter ℂ 1) hs
+      -- hEP : L 1 s = exp(∑' p, -log(1 − 1 * p^{−s}))
+      have hLz := LSeries_zeta_eq_riemannZeta hs  -- L ↗ζ s = riemannZeta s
+      rw [← hLz, hEP]
+      simp [Complex.norm_exp, tsum_norm_le_tsum_norm]
+
+    Blocked only on finding the exact namespace of LSeries_eulerProduct_exp_log.
+    Paste `#check LSeries_eulerProduct_exp_log` from your build. -/
 lemma zeta_log_bound (s : ℂ) (hs : 1 < s.re) :
     ‖Complex.log (riemannZeta s)‖ ≤
     ∑' p : Nat.Primes, ‖Complex.log (1 - (p : ℂ) ^ (-s))‖ := by
   have _hne : riemannZeta s ≠ 0 := riemannZeta_ne_zero_of_one_lt_re hs
-  sorry -- CLOSABLE: riemannZeta_eulerProduct + Complex.log_prod + norm_tsum_le_tsum_norm
-
-/-! ## Summary -/
-/-- Closure checklist:
-    - log_mul_fix   : paste `exact?` output on `Complex.log (z * w)` goal
-    - zeta_log_bound: paste `#check riemannZeta_eulerProduct` output -/
-def closure_instructions : String :=
-  "1. log_mul_fix:   run `exact?` on `Complex.log (z*w) = Complex.log z + Complex.log w`\n" ++
-  "2. zeta_log_bound: run `#check riemannZeta_eulerProduct` and paste the type signature"
+  sorry -- CLOSABLE: LSeries_eulerProduct_exp_log (trivial char) + norm_tsum_le_tsum_norm
 
 end MathlibFix
