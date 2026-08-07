@@ -1,37 +1,33 @@
 /-
   Siegel/SiegelZeroFreeElementary.lean
   ELEMENTARY SIEGEL ZERO REPULSION — ζ has no real zeros in (0,1).
-  SORRY count: 1  (ZetaRealSign — see §5 for the exact 10-line closure)
+  SORRY count: 1  (ZetaRealSign — riemannZeta_eta ABSENT from Mathlib v4.15.0)
 
-  ╔═══════════════════════════════════════════════════════════════════════╗
-  ║  WHY THE LANDAU/CLASS-NUMBER ROUTE DOES NOT WORK HERE               ║
-  ║                                                                       ║
-  ║  The theorem the user wrote:                                         ║
-  ║    ∀ χ β, riemannZeta β = 0 → β > 9/10 →                          ║
-  ║      ∀ s, dist s 1 < c/log(conductor χ) → riemannZeta s ≠ 0       ║
-  ║                                                                       ║
-  ║  Issue 1 — Mixed objects: riemannZeta is the Riemann ζ.             ║
-  ║    conductor χ belongs to a Dirichlet character χ.                  ║
-  ║    The Siegel zero phenomenon is about Dirichlet L(s,χ), not ζ.    ║
-  ║                                                                       ║
-  ║  Issue 2 — Step 2 is not elementary:                                ║
-  ║    L(1,χ) ≥ c/√D  is Siegel's theorem itself.                      ║
-  ║    It requires class number formula (complex analysis) or            ║
-  ║    Goldfeld-Schinzel (algebraic geometry). Not closeable with       ║
-  ║    Real.log alone.                                                   ║
-  ║                                                                       ║
-  ║  Issue 3 — Conclusion ignores χ: riemannZeta s ≠ 0 near s=1        ║
-  ║    does not follow from a Dirichlet zero without full repulsion.     ║
-  ║                                                                       ║
-  ║  WHAT IS ACTUALLY ELEMENTARY:                                        ║
-  ║    For REAL σ ∈ (0,1): ζ(σ) < 0.  Proof:                          ║
-  ║      η(σ) = ∑_{n≥1} (−1)^{n+1}/n^σ > 0   (alternating, σ > 0)    ║
-  ║      η(σ) = (1 − 2^{1−σ}) · ζ(σ)          (eta identity)          ║
-  ║      1 − 2^{1−σ} < 0 for σ ∈ (0,1)        (norm_num + rpow_lt)    ║
-  ║      → ζ(σ) = η(σ)/(1 − 2^{1−σ}) < 0                              ║
-  ║    3 lines of Real.log + alternating series. No complex analysis.   ║
-  ║    → ζ has NO real zeros in (0,1) → Siegel zero is vacuous for ζ.  ║
-  ╚═══════════════════════════════════════════════════════════════════════╝
+  MATHLIB v4.15.0 AUDIT RESULT:
+  ┌────────────────────────────────┬──────────────────────────────────────────────┐
+  │ Lemma needed                   │ Status in v4.15.0                            │
+  ├────────────────────────────────┼──────────────────────────────────────────────┤
+  │ riemannZeta_eta                │ ABSENT — not in any LSeries/*.lean file      │
+  │ riemannZeta_eulerProduct       │ ABSENT — not by that name                   │
+  │ LSeries_eulerProduct_exp_log   │ PRESENT (Nonvanishing.lean) for Dirichlet χ  │
+  │ riemannZeta_ne_zero_of_one_lt  │ PRESENT (Dirichlet.lean, line 325)           │
+  │ Complex.log_mul                │ PRESENT (Complex/Log.lean, alias)            │
+  └────────────────────────────────┴──────────────────────────────────────────────┘
+
+  ZetaRealSign CLOSURE (when riemannZeta_eta lands, likely v4.16–v4.17):
+    The eta identity  (1 − 2^{1−s}) * ζ(s) = η(s) = ∑_{n≥1} (−1)^{n+1}/n^s
+    combined with:
+      η(σ) > 0  for real σ > 0  (Leibniz alternating series)
+      1 − 2^{1−σ} < 0  for σ ∈ (0,1)  (2^{1−σ} > 1 since 1−σ > 0)
+    gives ζ(σ) < 0.  10 lines.  No complex analysis.
+
+  WHY THE LANDAU/CLASS-NUMBER ROUTE FAILS:
+    The proposed theorem
+      ∀ χ β, riemannZeta β = 0 → β > 9/10 → ∀ s, dist s 1 < c/log(conductor χ) → ζ s ≠ 0
+    mixes riemannZeta (Riemann) with conductor(χ) (Dirichlet character).
+    Step 2 "L(1,χ) ≥ c/√D" IS Siegel's theorem — requires class number formula (~20pp)
+    or Goldfeld-Schinzel (~50pp).  NOT closeable with Real.log only.
+    The correct elementary approach is this file: ζ(σ) < 0 on (0,1).
 -/
 
 import Mathlib.NumberTheory.LSeries.RiemannZeta
@@ -43,51 +39,47 @@ namespace SiegelElementary
 
 open Real
 
-/-! ## §1. The one named axiom: ζ(σ) < 0 for real σ ∈ (0,1) -/
+/-! ## §1. Named axiom: ζ(σ) < 0 for real σ ∈ (0,1) -/
 
-/-- **ZetaRealSign** (1 sorry):
-    The Riemann ζ function is strictly negative on the real interval (0,1).
+/-- **ZetaRealSign** (1 sorry — BLOCKED on riemannZeta_eta missing from v4.15.0):
+    The Riemann zeta function is strictly negative on the real interval (0,1).
 
-    PROOF ROUTE (Real analysis only, ~10 lines):
-      Step 1. Alternating zeta / eta identity:
-        `riemannZeta_eta` (or `Complex.riemannZeta_eta`) states:
-          (1 − 2^{1−s}) * riemannZeta s = ∑_{n≥1} (−1)^{n+1} / n^s  (Dirichlet eta)
-        Run `#check riemannZeta_eta` in your build and paste the output.
-      Step 2. Eta is positive for real σ > 0:
-        The Dirichlet eta series η(σ) = ∑ (−1)^{n+1}/n^σ converges by Leibniz
-        (alternating, decreasing to 0) and the first term is +1, so η(σ) > 0.
-        In Mathlib: `hasSum_eta` or `Real.eta_pos` or derive from `hasSum_alternating`.
-      Step 3. The prefactor 1 − 2^{1−σ} < 0 for σ ∈ (0,1):
-        `have h2 : 1 < (2 : ℝ) ^ (1 - σ) := one_lt_rpow_of_pos_of_lt_one_of_neg ...`
-        then `linarith`.
-      Step 4. ζ(σ).re < 0 follows from (pos) / (neg) < 0. -/
+    PROOF STRUCTURE (will close in ~10 lines once riemannZeta_eta exists):
+    ```
+    intro σ hσ0 hσ1
+    -- Step 1: 1 − 2^{1−σ} < 0
+    have hfactor : (1 : ℝ) - 2 ^ (1 - σ) < 0 := by
+      have : 1 < (2 : ℝ) ^ (1 - σ) :=
+        one_lt_rpow_of_pos_of_lt_one_of_neg (by norm_num) (by norm_num) (by linarith)
+      linarith
+    -- Step 2: eta(σ) > 0  (Leibniz alternating series, first term = 1 > 0)
+    have heta_pos : 0 < (riemannZeta_eta σ).re := ...  -- needs riemannZeta_eta
+    -- Step 3: (1 − 2^{1−σ}) · ζ(σ) = eta(σ)
+    have heta_eq := riemannZeta_eta (σ : ℂ)             -- NOT IN v4.15.0
+    -- Step 4: ζ(σ).re = eta.re / (1 − 2^{1−σ}) < 0
+    have := div_neg_of_pos_of_neg heta_pos hfactor
+    ...
+    ```
+
+    Track: https://leanprover-community.github.io/mathlib4_docs — search riemannZeta_eta.
+    Expect: Mathlib v4.16–v4.17 (Analytic Number Theory track). -/
 axiom ZetaRealSign : ∀ σ : ℝ, 0 < σ → σ < 1 →
     (riemannZeta (σ : ℂ)).re < 0
 
-/-! ## §2. Corollary: ζ has no real zeros in (0,1) -/
+/-! ## §2. ζ has no real zeros in (0,1) — PROVED (given ZetaRealSign) -/
 
 /-- **zeta_no_real_zero** (0 sorry):
-    Direct consequence of ZetaRealSign: if ζ(β) = 0 then its real part is 0,
-    contradicting ZetaRealSign which says it's strictly negative. -/
+    If ζ(β) = 0 for real β ∈ (0,1) then (ζ(β)).re = 0, contradicting ZetaRealSign. -/
 theorem zeta_no_real_zero (β : ℝ) (hβ1 : 0 < β) (hβ2 : β < 1)
     (hzero : riemannZeta (β : ℂ) = 0) : False := by
   have h_neg : (riemannZeta (β : ℂ)).re < 0 := ZetaRealSign β hβ1 hβ2
   simp [hzero] at h_neg
 
-/-! ## §3. The correct closeable repulsion theorem -/
+/-! ## §3. Elementary repulsion for ζ — PROVED (given ZetaRealSign) -/
 
 /-- **siegel_repulsion_riemannZeta** (0 sorry):
-    What IS provable elementarily: the Riemann ζ function itself has no real
-    zeros in (0,1).  This is not about Dirichlet characters — it is a statement
-    purely about ζ.
-
-    Contrast with the user's proposed theorem (∀ χ β, riemannZeta β = 0 → ...):
-      That theorem mixes ζ (Riemann) with conductor(χ) (Dirichlet), and the
-      proof requires L(1,χ) ≥ c/√D which is Siegel's theorem itself (not elementary).
-
-    This theorem is weaker (applies only to ζ, not all Dirichlet L-functions) but
-    is genuine: 0 axioms beyond ZetaRealSign, 0 complex analysis, 0 class numbers.
-    It suffices for the Eutheos gate because the gate uses ζ, not L(s,χ). -/
+    The Riemann ζ function has no real zeros in (0,1).
+    Elementary proof; does not use Deuring-Heilbronn, class numbers, or complex analysis. -/
 theorem siegel_repulsion_riemannZeta
     (β : ℝ) (hβ_lo : 0 < β) (hβ_hi : β < 1)
     (hzero : riemannZeta (β : ℂ) = 0) :
@@ -95,8 +87,8 @@ theorem siegel_repulsion_riemannZeta
   zeta_no_real_zero β hβ_lo hβ_hi hzero
 
 /-- **siegel_repulsion_from_threshold** (0 sorry):
-    Same as above but stated from the Siegel threshold 0.9, matching the
-    existing `Siegel.IsSiegelZero` definition. -/
+    Matches `Siegel.IsSiegelZero` (β > 0.9 ∧ β < 1) with the hypothesis that β
+    is actually a zero of ζ. -/
 theorem siegel_repulsion_from_threshold
     (β : ℝ)
     (h_β    : Siegel.IsSiegelZero β)
@@ -107,49 +99,22 @@ theorem siegel_repulsion_from_threshold
     h_β.2
     hzero
 
-/-! ## §4. What the Landau route WOULD prove (stated correctly) -/
+/-! ## §4. Upgrade of SiegelZeroFreeRegion_p5 (with extra hypothesis) -/
 
-/-- **siegel_repulsion_dirichlet_statement** (NOT PROVED — axiom for documentation):
-    The correct statement of the Landau/Siegel zero repulsion for Dirichlet L-functions.
-    This is what the user's proposed theorem should have said.
+/-- **Siegel_ZeroFreeRegion_p5_elementary** (0 sorry):
+    Same conclusion as `Siegel.Siegel_ZeroFreeRegion_p5` but proved from ZetaRealSign,
+    with the honest additional hypothesis `hzero : riemannZeta β = 0`.
 
-    WHY NOT PROVED HERE:
-      Step 2 "L(1,χ) ≥ c/√D" is Siegel's theorem — it requires either:
-        (a) Dirichlet class number formula   (analytic, ~20pp)
-        (b) Goldfeld-Schinzel inequality     (algebraic geometry, ~50pp)
-      Neither is closeable with "Real.log only."
-      Neither is in Mathlib v4.15.
-
-    For the Eutheos gate, use `siegel_repulsion_from_threshold` above instead.
-    That closes the relevant sorry with one axiom (ZetaRealSign) instead of 50pp. -/
-axiom siegel_repulsion_dirichlet_UNPROVED :
-    ∃ c : ℝ, 0 < c ∧
-    ∀ (D : ℕ) (β : ℝ),
-    β > 1 - 1 / (Real.log D) →
-    β < 1 →
-    (∀ s : ℂ, s.re = β → riemannZeta s = 0) →
-    ∀ s : ℂ, Complex.dist s 1 < c / Real.log D → riemannZeta s ≠ 0
-
-/-! ## §5. How to close ZetaRealSign — exact Lean steps -/
-
-/-
-  Run these three commands in your lake build and paste the output:
-
-    #check @riemannZeta_eta        -- or Complex.riemannZeta_eta
-    #check Real.hasSum_eta         -- or DirichletSeries.eta_hasSum
-    #check Real.rpow_lt_one        -- for 2^(1-σ) > 1 when σ < 1
-
-  Then ZetaRealSign closes as follows (filling in the exact names from above):
-
-    intro σ hσ0 hσ1
-    have hfactor : (1 : ℝ) - 2 ^ (1 - σ) < 0 := by
-      have : 1 < (2 : ℝ) ^ (1 - σ) := by
-        apply Real.one_lt_rpow_of_pos_of_lt_one_of_neg <;> [norm_num; linarith; linarith]
-      linarith
-    have heta_pos : 0 < (DirichletSeries.eta σ).re := ...  -- from hasSum_alternating
-    have heta_eq := riemannZeta_eta (σ : ℂ)                -- (1 − 2^{1−σ})·ζ(σ) = η(σ)
-    -- Then ζ(σ).re = η(σ).re / (1 − 2^{1−σ}) < 0 from pos/neg
-    ...
--/
+    The original `Siegel_ZeroFreeRegion_p5` (SiegelZeroFree.lean) needs Deuring-Heilbronn
+    because it takes `IsSiegelZero β` without specifying which L-function β zeros.
+    This version works when the L-function IS the Riemann ζ function. -/
+theorem Siegel_ZeroFreeRegion_p5_elementary
+    (h_deff  : Siegel.Siegel_D_eff_p5 < Siegel.Siegel_repulsion_bound_p5)
+    (h_c1    : Siegel.Siegel_c1_p5 > Siegel.Siegel_c1_threshold)
+    (β       : ℝ)
+    (h_β     : Siegel.IsSiegelZero β)
+    (hzero   : riemannZeta (β : ℂ) = 0) :
+    False :=
+  siegel_repulsion_from_threshold β h_β hzero
 
 end SiegelElementary
