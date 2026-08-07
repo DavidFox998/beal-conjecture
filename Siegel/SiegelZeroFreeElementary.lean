@@ -10,29 +10,40 @@
     · the eta identity (1−2^{1−σ})·ζ(σ) = η(σ)
     · the sign of each factor
 
-  SORRY COUNT: 1  (eta_identity — Abelian theorem for L-series)
+  SORRY COUNT: 2  (eta_identity — Step A and Step D; see below)
   WHY IT'S NOT 0:
-    The complex identity (1−2^{1−s})·ζ(s) = ZMod.LFunction Φ s (for Φ = ![−1,1])
-    holds for Re(s)>1 by an even/odd Dirichlet-series splitting and extends to all
-    s ≠ 1 by the analytic identity theorem — both steps are now structured in Lean below.
-    The remaining gap is the ABELIAN THEOREM for L-series:
-      Re(ZMod.LFunction Φ σ) = ∑' n, (−1)^n·(n+1)^{−σ}   for σ ∈ (0,1).
-    This connects the analytic L-function value (reached by continuation from Re(s)>1)
-    to the conditionally convergent real alternating series (established by Leibniz).
-    No Abelian theorem for Dirichlet series exists in Mathlib v4.15.0.
+
+  STEP A (sorry): Algebraic identity for Re(s) > 1.
+    ZMod.LFunction Φ s = (1−2^{1−s})·ζ(s) for Re(s)>1.
+    Proof route: ZMod.LFunction_eq_LSeries (Mathlib ZMod.lean L90) + even/odd tsum splitting
+    (tsum_even_add_odd, zeta_eq_tsum_one_div_nat_add_one_cpow).  The algebra is elementary
+    but the bijection bookkeeping has not yet been written out in this file.
+
+  STEP D (sorry): Abelian theorem for Dirichlet L-series.
+    Re(ZMod.LFunction Φ σ) = ∑' n, (−1)^n·(n+1)^{−σ}   for σ ∈ (0,1).
+    This connects the analytic continuation value at σ ∈ (0,1) to the conditionally
+    convergent Leibniz sum established by the Leibniz test.  The standard proof needs
+    local uniform convergence of the alternating Dirichlet series on {Re(s)>0} (Abel
+    summation + Weierstrass M-test), which is not available in Mathlib v4.15.0.
+
+  Steps B and C are now fully proved in Lean (see eta_identity below):
+    B: identity theorem (eqOn_of_preconnected_of_eventuallyEq) extends the Step A
+       agreement on {Re>1} to all of ℂ \ {1}.
+    C: real-part extraction using Complex.ofReal_cpow to confirm the eta factor is real.
 
   PROOF STRUCTURE:
-    factor_neg           (PROVED) : 1 − 2^{1−σ} < 0 for σ ∈ (0,1)
-    eta_antitone         (PROVED) : n ↦ (n+1)^{−σ} is antitone for σ > 0
-    eta_tends_zero       (PROVED) : (n+1)^{−σ} → 0 for σ > 0
-    eta_hasSum           (PROVED) : ∑_{n≥0} (−1)^n/(n+1)^σ converges (Leibniz)
-    eta_pair             (PROVED) : pair sums gₖ = (2k+1)^{−σ} − (2k+2)^{−σ} ≥ 0
-    eta_pos              (PROVED) : η(σ) > 0  [via pair-sum subsequence + tsum_pos]
+    factor_neg             (PROVED) : 1 − 2^{1−σ} < 0 for σ ∈ (0,1)
+    eta_antitone           (PROVED) : n ↦ (n+1)^{−σ} is antitone for σ > 0
+    eta_tends_zero         (PROVED) : (n+1)^{−σ} → 0 for σ > 0
+    eta_hasSum             (PROVED) : ∑_{n≥0} (−1)^n/(n+1)^σ converges (Leibniz)
+    eta_pair               (PROVED) : pair sums gₖ = (2k+1)^{−σ} − (2k+2)^{−σ} ≥ 0
+    eta_pos                (PROVED) : η(σ) > 0  [via pair-sum subsequence + tsum_pos]
     compl_one_preconnected (PROVED) : ℂ \ {1} is preconnected
-    lf_analytic_ne_one   (PROVED) : ZMod.LFunction Φ analytic on ℂ \ {1}
-    eta_factor_analytic  (PROVED) : s ↦ (1−2^{1−s})·ζ(s) analytic on ℂ \ {1}
-    eta_identity         (1 SORRY): (1−2^{1−σ}) · ζ(σ).re = η(σ)  [Abelian theorem]
-    ZetaRealSign         (PROVED) : ζ(σ).re < 0 on (0,1)
+    lf_analytic_ne_one     (PROVED) : ZMod.LFunction Φ analytic on ℂ \ {1}
+    eta_factor_analytic    (PROVED) : s ↦ (1−2^{1−s})·ζ(s) analytic on ℂ \ {1}
+    eta_identity           (2 SORRY): (1−2^{1−σ})·ζ(σ).re = η(σ)
+                                      Step A (Re>1 identity) + Step D (Abelian theorem)
+    ZetaRealSign           (PROVED) : ζ(σ).re < 0 on (0,1)
 -/
 
 import Mathlib.Analysis.SpecificLimits.Normed
@@ -253,34 +264,83 @@ private lemma compl_one_preconnected : IsPreconnected {s : ℂ | s ≠ 1} := by
   have h : Module.rank ℝ ℂ = 2 := Complex.rank_real_complex
   simp [h]
 
-/-! ## § 4 (continued). The eta identity — 1 SORRY (Abelian theorem) -/
+/-! ## § 4 (continued). The eta identity — 2 SORRYS (Step A + Step D) -/
 
 lemma eta_identity (σ : ℝ) (hσ0 : 0 < σ) (hσ1 : σ < 1) :
     (1 - (2 : ℝ) ^ (1 - σ)) * (riemannZeta (σ : ℂ)).re =
     ∑' n : ℕ, ((-1 : ℝ) ^ n * (n + 1 : ℝ) ^ (-σ)) := by
   obtain ⟨l, hl⟩ := eta_hasSum σ hσ0
   rw [hl.tsum_eq]
-  -- ── Steps A & B: identity theorem on ℂ \ {1} ──────────────────────────────
-  -- By eqOn_of_preconnected_of_eventuallyEq, the two analytic functions
-  --   f₁(s) := ZMod.LFunction altChar s
-  --   f₂(s) := (1 − (2:ℂ)^(1−s)) · ζ(s)
-  -- agree on {s | s ≠ 1}, because:
-  --   (i)  both are analytic on {s ≠ 1} [lf_analytic_ne_one, eta_factor_analytic],
-  --   (ii) {s ≠ 1} is preconnected [compl_one_preconnected],
-  --   (iii) they agree near s₀ = 2 (where Re(s) > 1) via the algebraic identity (Step A).
-  -- Evaluated at (σ:ℂ) ∈ ℂ \ {1}: ZMod.LFunction altChar σ = (1 − 2^{1−σ}) · ζ(σ).
-  -- ── Step C: real-part extraction ──────────────────────────────────────────
-  -- Since σ ∈ ℝ, (2:ℂ)^(1−σ:ℂ) is real, so Re((1−2^{1−σ})·ζ(σ)) = (1−2^{1−σ})·Re(ζ(σ)).
-  -- ── Step D: ABELIAN THEOREM (the 1 sorry) ─────────────────────────────────
-  -- Re(ZMod.LFunction altChar (σ:ℂ)) = l
-  -- Requires: Abel's theorem for Dirichlet L-series (not in Mathlib v4.15.0).
-  -- Once this sorry is closed, eta_identity is fully proved.
-  --
-  -- Proved infrastructure available above:
-  --   lf_analytic_ne_one   : AnalyticOnNhd ℂ (ZMod.LFunction altChar) {s | s ≠ 1}
-  --   eta_factor_analytic  : AnalyticOnNhd ℂ (fun s => (1−2^{1−s})·ζ s) {s | s ≠ 1}
-  --   compl_one_preconnected : IsPreconnected {s : ℂ | s ≠ 1}
-  sorry
+  -- (σ:ℂ) ≠ 1 because 0 < σ < 1 implies σ ≠ 1 as a real, hence as a complex number.
+  have hσ_ne1 : (σ : ℂ) ≠ 1 := by
+    intro h
+    have := congr_arg Complex.re h
+    simp only [Complex.ofReal_re, Complex.one_re] at this
+    linarith
+  -- ── Step A (SORRY): algebraic identity ZMod.LFunction altChar s = (1−2^{1−s})·ζ(s)
+  --    for all s with Re(s) > 1.
+  --    Proof route: ZMod.LFunction_eq_LSeries (ZMod.lean L90) rewrites the L-function as
+  --    an LSeries, then even/odd tsum splitting (tsum_even_add_odd) and
+  --    zeta_eq_tsum_one_div_nat_add_one_cpow identify the result with (1−2^{1−s})·ζ(s).
+  --    The algebra is elementary; the bijection bookkeeping has not yet been written here.
+  have hA : ∀ s : ℂ, 1 < s.re →
+      ZMod.LFunction altChar s = (1 - (2 : ℂ) ^ (1 - s)) * riemannZeta s := by
+    intro s _hs
+    sorry -- Step A: Re(s)>1 algebraic identity (not yet formalized in this file)
+  -- ── Step B (PROVED): identity theorem extends equality to all of ℂ \ {1} ──
+  --    eqOn_of_preconnected_of_eventuallyEq (Analytic/Uniqueness.lean L226):
+  --      · lf_analytic_ne_one  : ZMod.LFunction altChar analytic on {s | s ≠ 1}
+  --      · eta_factor_analytic : s ↦ (1−2^{1−s})·ζ(s) analytic on {s | s ≠ 1}
+  --      · compl_one_preconnected : {s : ℂ | s ≠ 1} is preconnected
+  --      · basepoint 2 ∈ {s | s ≠ 1}
+  --      · hfg : both functions agree in 𝓝 (2:ℂ), since {Re(s)>1} is a neighborhood
+  --        of 2 in ℂ and Step A gives agreement on {Re(s)>1}.
+  have heqOn : EqOn (ZMod.LFunction altChar)
+      (fun s => (1 - (2 : ℂ) ^ (1 - s)) * riemannZeta s) {s : ℂ | s ≠ 1} :=
+    lf_analytic_ne_one.eqOn_of_preconnected_of_eventuallyEq
+      eta_factor_analytic
+      compl_one_preconnected
+      (show (2 : ℂ) ∈ {s : ℂ | s ≠ 1} from by norm_num)
+      (Filter.eventually_of_mem
+        ((isOpen_lt continuous_const continuous_re).mem_nhds
+          (show 1 < (2 : ℂ).re from by norm_num [Complex.ofReal_re]))
+        (fun s hs => hA s hs))
+  -- Evaluate at (σ:ℂ) ∈ ℂ \ {1}:
+  have hval : ZMod.LFunction altChar (σ : ℂ) =
+      (1 - (2 : ℂ) ^ (1 - (σ : ℂ))) * riemannZeta (σ : ℂ) :=
+    heqOn hσ_ne1
+  -- ── Step C (PROVED): real-part extraction ──────────────────────────────────
+  --    Since σ : ℝ, the exponent 1−σ is real, so (2:ℂ)^(1−σ) is a positive real
+  --    raised to a real power: Complex.ofReal_cpow gives (2:ℂ)^(1−σ:ℂ) = ↑((2:ℝ)^(1−σ)).
+  --    Therefore the eta factor (1−2^{1−σ:ℂ}) is real, and:
+  --      Re((1−2^{1−σ:ℂ})·ζ(σ)) = (1−2^{1−σ})·Re(ζ(σ)).
+  have h2pow : (2 : ℂ) ^ (1 - (σ : ℂ)) = ((2 : ℝ) ^ (1 - σ) : ℝ) := by
+    rw [show (1 : ℂ) - (σ : ℂ) = ((1 - σ : ℝ) : ℂ) by push_cast; ring]
+    exact (Complex.ofReal_cpow (by norm_num : (0 : ℝ) ≤ 2) (1 - σ)).symm
+  have hC : ((1 - (2 : ℂ) ^ (1 - (σ : ℂ))) * riemannZeta (σ : ℂ)).re =
+      (1 - (2 : ℝ) ^ (1 - σ)) * (riemannZeta (σ : ℂ)).re := by
+    rw [mul_re, h2pow]
+    simp only [Complex.sub_re, Complex.sub_im, Complex.ofReal_re, Complex.ofReal_im,
+               Complex.one_re, Complex.one_im]
+    ring
+  -- ── Step D (SORRY): Abelian theorem — THE DEEPER SORRY ────────────────────
+  --    Re(ZMod.LFunction altChar (σ:ℂ)) = l,
+  --    where hl : HasSum (fun n => (−1)^n * (n+1)^{−σ}) l.
+  --    Mathematical content: Abel's theorem for Dirichlet L-series.
+  --    The analytic continuation value at σ ∈ (0,1) equals the conditionally
+  --    convergent Leibniz sum.  Proof requires local uniform convergence of the
+  --    alternating Dirichlet series on {Re(s)>0} (Abel summation + Weierstrass
+  --    M-test).  Not available in Mathlib v4.15.0.
+  have hD : (ZMod.LFunction altChar (σ : ℂ)).re = l := by
+    sorry -- Step D: Abelian theorem (not in Mathlib v4.15.0)
+  -- ── Combine A+B+C+D ────────────────────────────────────────────────────────
+  --    hval + hC : (ZMod.LFunction altChar (σ:ℂ)).re = (1−2^{1−σ})·ζ(σ).re
+  --    hD        : (ZMod.LFunction altChar (σ:ℂ)).re = l
+  --    Therefore  (1−2^{1−σ})·ζ(σ).re = l, which is the goal.
+  have hstep : (ZMod.LFunction altChar (σ : ℂ)).re =
+      (1 - (2 : ℝ) ^ (1 - σ)) * (riemannZeta (σ : ℂ)).re := by
+    rw [hval]; exact hC
+  linarith
 
 /-! ## § 5. The main theorem — PROVED -/
 
