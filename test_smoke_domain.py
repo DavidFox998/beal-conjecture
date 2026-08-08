@@ -5,7 +5,12 @@ Hits https://zerobeacon.ai/api/mf/01/beacon (a free, no-key-required endpoint)
 and asserts that:
   - the response is HTTP 200
   - the JSON body contains  site == "https://zerobeacon.ai"
-  - the body also contains the expected beacon and d values (basic sanity)
+  - the body also contains the expected moat-anchor d and beacon values
+
+Note: the top-level 'beacon' field in the /api/mf/01/beacon response is the
+*current* dynamically-computed prime beacon (changes on every call).  The
+*fixed* moat anchor lives at data['moat']['beacon'] and is what we check here.
+The /health endpoint always returns the moat anchor directly in data['beacon'].
 
 Run after every Fly.io deploy:
     pytest test_smoke_domain.py -v
@@ -16,8 +21,8 @@ import requests
 DOMAIN = "https://zerobeacon.ai"
 BEACON_URL = f"{DOMAIN}/api/mf/01/beacon"
 EXPECTED_SITE = "https://zerobeacon.ai"
-EXPECTED_BEACON = "1d2c7a5b"
-EXPECTED_D = 2303582338
+EXPECTED_BEACON = "1d2c7a5b"   # moat anchor — never changes; update via scripts/sync-beacon-constants.sh
+EXPECTED_D = 2303582338        # moat d     — never changes; update via scripts/sync-beacon-constants.sh
 
 TIMEOUT = 30  # seconds – generous to allow for cold-start
 
@@ -45,13 +50,20 @@ def test_branded_domain_beacon_site_field():
 
 
 def test_branded_domain_beacon_identity():
-    """Response beacon and d values must match the canonical moat constants."""
+    """Moat-anchor beacon and d values must match the canonical constants.
+
+    The /api/mf/01/beacon endpoint returns two beacon values:
+      - data['beacon']        — the current dynamically-computed prime beacon (changes each call)
+      - data['moat']['beacon'] — the fixed moat anchor (always 1d2c7a5b)
+    We test the moat anchor, which is what's claimed as the collision-proof constant.
+    """
     resp = requests.get(BEACON_URL, timeout=TIMEOUT)
     assert resp.status_code == 200, f"Non-200 response: {resp.status_code}"
     data = resp.json()
 
-    assert data.get("beacon") == EXPECTED_BEACON, (
-        f"beacon mismatch: expected '{EXPECTED_BEACON}', got '{data.get('beacon')}'"
+    moat = data.get("moat", {})
+    assert moat.get("beacon") == EXPECTED_BEACON, (
+        f"moat beacon mismatch: expected '{EXPECTED_BEACON}', got '{moat.get('beacon')}'"
     )
     assert data.get("d") == EXPECTED_D, (
         f"d mismatch: expected {EXPECTED_D}, got {data.get('d')}"
