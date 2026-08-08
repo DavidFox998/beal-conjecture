@@ -19,12 +19,16 @@ from core.keystore import TIER_LABEL
 
 _BASE_URL = "https://zerobeacon.ai"
 _RESEND_URL = "https://api.resend.com/emails"
-_RESEND_VALIDATE_URL = "https://api.resend.com/api-keys"
 
 
 def validate_resend_key(api_key_env: str | None = None) -> tuple[bool, str]:
     """
     Probe the Resend API to confirm RESEND_API_KEY is valid and accepted.
+
+    Uses POST /emails with a deliberately minimal payload so the probe works
+    from any IP (including Fly.io), unlike GET /api-keys which Resend blocks
+    from certain cloud-provider IP ranges.  HTTP 200 or 422 (authenticated
+    but bad request data) both confirm the key is valid.
 
     Returns (True, "ok") on success, or (False, reason) when the key is
     missing, invalid, or expired.  Never raises — safe to call from startup
@@ -39,20 +43,40 @@ def validate_resend_key(api_key_env: str | None = None) -> tuple[bool, str]:
     if not api_key_env:
         return False, "RESEND_API_KEY is not set"
 
+    # Send a minimal payload to POST /emails.
+    # Resend returns 422 when the key authenticates but the request data is
+    # invalid (e.g. unverified domain), and 200 if the email is actually
+    # accepted.  Both confirm the key is live.  401/403 means the key itself
+    # is rejected.
+    probe_payload = json.dumps({
+        "from": "_probe_@_invalid_.example",
+        "to":   ["_probe_@_invalid_.example"],
+        "subject": "_zerobeacon_key_probe_",
+        "html": ".",
+    }).encode()
+
     req = urllib.request.Request(
-        _RESEND_VALIDATE_URL,
-        headers={"Authorization": f"Bearer {api_key_env}"},
-        method="GET",
+        _RESEND_URL,
+        data=probe_payload,
+        headers={
+            "Authorization":  f"Bearer {api_key_env}",
+            "Content-Type":   "application/json",
+        },
+        method="POST",
     )
     try:
         with urllib.request.urlopen(req, timeout=10) as resp:
-            if resp.status == 200:
-                return True, "ok"
-            return False, f"unexpected status {resp.status}"
+            # 200 = accepted (key valid and domain verified)
+            return True, "ok"
     except urllib.error.HTTPError as e:
-        if e.code in (401, 403):
-            return False, f"invalid or expired key (HTTP {e.code})"
-        return False, f"HTTP {e.code} from Resend validation endpoint"
+        if e.code == 422:
+            # Authenticated but bad request data — key itself is valid
+            return True, "ok"
+        if e.code == 401:
+            return False, "invalid or expired key (HTTP 401)"
+        if e.code == 403:
+            return False, "key rejected by Resend (HTTP 403) — check key permissions and IP allowlists"
+        return False, f"HTTP {e.code} from Resend"
     except Exception as exc:
         return False, f"{type(exc).__name__}: {exc}"
 
