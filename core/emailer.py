@@ -1,9 +1,21 @@
 """
 Transactional email sender for Zerobeacon MF 1000.
 
-Uses Resend (https://resend.com) — set RESEND_API_KEY as a secret.
-If the key is absent the function logs a warning and returns False without
-crashing, so a missing secret never breaks the Stripe webhook.
+Uses Resend via SMTP (smtp.resend.com:587 / STARTTLS) rather than the
+Resend HTTP API.  Resend's HTTP API endpoint (api.resend.com) is routed
+through Cloudflare, which blocks certain cloud-provider IP ranges (Fly.io
+included) with error 1010.  SMTP takes a direct network path that is not
+affected by this restriction.
+
+SMTP credentials
+    host:     smtp.resend.com
+    port:     587  (STARTTLS)
+    username: resend          (literal string)
+    password: $RESEND_API_KEY
+
+Set RESEND_API_KEY as a Fly.io secret.  Set EMAIL_FROM to your own
+verified Resend domain address when ready; default is onboarding@resend.dev
+(works on Resend free plan without domain verification).
 
 Usage:
     from core.emailer import send_api_key_email
@@ -11,28 +23,29 @@ Usage:
 """
 
 import os
-import json
-import urllib.request
-import urllib.error
+import smtplib
+import time as _time
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
 from core.keystore import TIER_LABEL
 
-_BASE_URL = "https://zerobeacon.ai"
-_RESEND_URL = "https://api.resend.com/emails"
+_BASE_URL        = "https://zerobeacon.ai"
+_SMTP_HOST       = "smtp.resend.com"
+_SMTP_PORT       = 587
+_SMTP_USER       = "resend"          # Resend requires this literal username
 
 
 def validate_resend_key(api_key_env: str | None = None) -> tuple[bool, str]:
     """
-    Probe the Resend API to confirm RESEND_API_KEY is valid and accepted.
+    Probe Resend via SMTP login to confirm RESEND_API_KEY is valid.
 
-    Uses POST /emails with a deliberately minimal payload so the probe works
-    from any IP (including Fly.io), unlike GET /api-keys which Resend blocks
-    from certain cloud-provider IP ranges.  HTTP 200 or 422 (authenticated
-    but bad request data) both confirm the key is valid.
+    Uses SMTP STARTTLS to smtp.resend.com:587.  A successful login (SMTP 235)
+    means the key is live.  This avoids the Resend HTTP API endpoint
+    (api.resend.com) which Cloudflare blocks for certain cloud-provider IPs.
 
-    Returns (True, "ok") on success, or (False, reason) when the key is
-    missing, invalid, or expired.  Never raises — safe to call from startup
-    hooks or background tasks.
+    Returns (True, "ok") on success, or (False, reason) on failure.
+    Never raises — safe to call from startup hooks or background tasks.
 
     Args:
         api_key_env: override the env-var lookup (used in tests).
@@ -43,40 +56,15 @@ def validate_resend_key(api_key_env: str | None = None) -> tuple[bool, str]:
     if not api_key_env:
         return False, "RESEND_API_KEY is not set"
 
-    # Send a minimal payload to POST /emails.
-    # Resend returns 422 when the key authenticates but the request data is
-    # invalid (e.g. unverified domain), and 200 if the email is actually
-    # accepted.  Both confirm the key is live.  401/403 means the key itself
-    # is rejected.
-    probe_payload = json.dumps({
-        "from": "_probe_@_invalid_.example",
-        "to":   ["_probe_@_invalid_.example"],
-        "subject": "_zerobeacon_key_probe_",
-        "html": ".",
-    }).encode()
-
-    req = urllib.request.Request(
-        _RESEND_URL,
-        data=probe_payload,
-        headers={
-            "Authorization":  f"Bearer {api_key_env}",
-            "Content-Type":   "application/json",
-        },
-        method="POST",
-    )
     try:
-        with urllib.request.urlopen(req, timeout=10) as resp:
-            # 200 = accepted (key valid and domain verified)
-            return True, "ok"
-    except urllib.error.HTTPError as e:
-        if e.code == 422:
-            # Authenticated but bad request data — key itself is valid
-            return True, "ok"
-        if e.code == 401:
-            return False, "invalid or expired key (HTTP 401)"
-        if e.code == 403:
-            return False, "key rejected by Resend (HTTP 403) — check key permissions and IP allowlists"
-        return False, f"HTTP {e.code} from Resend"
+        with smtplib.SMTP(_SMTP_HOST, _SMTP_PORT, timeout=10) as s:
+            s.starttls()
+            s.login(_SMTP_USER, api_key_env)
+        return True, "ok"
+    except smtplib.SMTPAuthenticationError:
+        return False, "SMTP authentication failed — invalid or expired key"
+    except smtplib.SMTPConnectError as exc:
+        return False, f"SMTP connection error: {exc}"
     except Exception as exc:
         return False, f"{type(exc).__name__}: {exc}"
 
@@ -90,33 +78,30 @@ def send_api_key_email(
     retry_delay_seconds: float = 2.0,
 ) -> bool:
     """
-    Send the customer their API key by email.
+    Send the customer their API key by email via Resend SMTP.
 
     Automatically retries up to ``max_retries`` additional times (default 1)
-    after a short delay when the first attempt fails.  This ensures the
-    customer receives their key even if Resend has a brief transient error at
-    the moment the Stripe webhook fires.
+    after a short delay when the first attempt fails.
 
     Returns True on success, False if every attempt fails (logs each error).
     Never raises — callers (webhook handlers) must not crash due to email issues.
     """
-    import time as _time
-
     api_key_env = os.environ.get("RESEND_API_KEY", "").strip()
-    # Resend allows sending from onboarding@resend.dev on free plans without domain
-    # verification. Set EMAIL_FROM to your own verified domain address when ready.
     from_addr   = os.environ.get("EMAIL_FROM", "onboarding@resend.dev").strip()
 
     if not api_key_env:
-        print("[emailer] CRITICAL: email delivery failed — RESEND_API_KEY is not set (skipping email to " + email + ")", flush=True)
+        print(
+            "[emailer] CRITICAL: email delivery failed — RESEND_API_KEY is not set "
+            f"(skipping email to {email})",
+            flush=True,
+        )
         return False
 
-    tier_label    = TIER_LABEL.get(tier, tier)
-    check_url     = f"{_BASE_URL}/key/check"
-    docs_url      = f"{_BASE_URL}/docs"
-    pricing_url   = f"{_BASE_URL}/pricing"
-
-    subject = f"Your Zerobeacon API key ({tier_label})"
+    tier_label  = TIER_LABEL.get(tier, tier)
+    check_url   = f"{_BASE_URL}/key/check"
+    docs_url    = f"{_BASE_URL}/docs"
+    pricing_url = f"{_BASE_URL}/pricing"
+    subject     = f"Your Zerobeacon API key ({tier_label})"
 
     html_body = f"""<!DOCTYPE html>
 <html lang="en">
@@ -190,69 +175,54 @@ def send_api_key_email(
         f"Keep this key private — treat it like a password."
     )
 
-    payload = json.dumps({
-        "from":    from_addr,
-        "to":      [email],
-        "subject": subject,
-        "html":    html_body,
-        "text":    text_body,
-    }).encode()
+    msg = MIMEMultipart("alternative")
+    msg["Subject"] = subject
+    msg["From"]    = from_addr
+    msg["To"]      = email
+    msg.attach(MIMEText(text_body, "plain"))
+    msg.attach(MIMEText(html_body, "html"))
 
     total_attempts = 1 + max_retries
     for attempt in range(1, total_attempts + 1):
-        req = urllib.request.Request(
-            _RESEND_URL,
-            data=payload,
-            headers={
-                "Authorization": f"Bearer {api_key_env}",
-                "Content-Type":  "application/json",
-            },
-            method="POST",
-        )
         try:
-            with urllib.request.urlopen(req, timeout=10) as resp:
-                status = resp.status
-                print(f"[emailer] sent to {email} tier={tier} status={status} attempt={attempt}", flush=True)
-                if status in (200, 201):
-                    return True
-                # Unexpected 2xx-variant — treat as failure and retry
-                print(f"[emailer] unexpected status {status} on attempt {attempt} (recipient={email})", flush=True)
-        except urllib.error.HTTPError as e:
-            body = ""
-            try:
-                body = e.read().decode()
-            except Exception:
-                pass
-            print(f"[emailer] HTTP error {e.code} sending to {email} attempt={attempt}: {body}", flush=True)
-            # Only a small set of 4xx codes are transient and worth retrying:
-            #   429 Too Many Requests (rate limit) — retryable, honour Retry-After
-            #   408 Request Timeout    — transient, retryable
-            # Every other 4xx (400, 401, 403, 404, 405, 410, 413, 415, 422 …)
-            # indicates a permanent client-side or auth error — do not retry.
-            _RETRYABLE_4XX = {408, 429}
-            if 400 <= e.code < 500 and e.code not in _RETRYABLE_4XX:
-                print(
-                    f"[emailer] CRITICAL: email delivery failed permanently — "
-                    f"HTTP {e.code} from Resend (recipient={email})",
-                    flush=True,
-                )
-                return False
-            # For 429 honour Retry-After if provided; otherwise fall through
-            # to the standard inter-attempt delay below.
-            if e.code == 429:
-                retry_after_raw = e.headers.get("Retry-After") if e.headers else None
-                if retry_after_raw:
-                    try:
-                        retry_delay_seconds = float(retry_after_raw)
-                        print(
-                            f"[emailer] 429 rate-limited; honouring Retry-After={retry_delay_seconds}s "
-                            f"for {email}",
-                            flush=True,
-                        )
-                    except ValueError:
-                        pass
+            with smtplib.SMTP(_SMTP_HOST, _SMTP_PORT, timeout=15) as s:
+                s.starttls()
+                s.login(_SMTP_USER, api_key_env)
+                s.sendmail(from_addr, [email], msg.as_string())
+            print(
+                f"[emailer] sent to {email} tier={tier} attempt={attempt}",
+                flush=True,
+            )
+            return True
+
+        except smtplib.SMTPAuthenticationError as exc:
+            print(
+                f"[emailer] CRITICAL: SMTP authentication failed — invalid or expired key "
+                f"(recipient={email}): {exc}",
+                flush=True,
+            )
+            return False   # auth errors are permanent; no point retrying
+
+        except smtplib.SMTPRecipientsRefused as exc:
+            print(
+                f"[emailer] CRITICAL: recipient refused by Resend — {email}: {exc}",
+                flush=True,
+            )
+            return False   # bad address; permanent
+
+        except smtplib.SMTPSenderRefused as exc:
+            print(
+                f"[emailer] CRITICAL: sender refused by Resend — from={from_addr}: {exc}",
+                flush=True,
+            )
+            return False   # domain not verified; permanent
+
         except Exception as exc:
-            print(f"[emailer] error sending to {email} attempt={attempt}: {exc}", flush=True)
+            print(
+                f"[emailer] error sending to {email} attempt={attempt}: "
+                f"{type(exc).__name__}: {exc}",
+                flush=True,
+            )
 
         if attempt < total_attempts:
             print(
