@@ -1,0 +1,45 @@
+{
+  "title": "ZeroBeacon.ai — MCP Server — 1050 Collision-Proof Tools for AI Agents — beacon=1d2c7a5b d=2303582338",
+  "description": "ZeroBeacon.ai is an MCP (Model Context Protocol) server hosting 1050 collision-proof tools across 21 routers (21×50). Every tool response includes the moat constants beacon=1d2c7a5b and d=2303582338 — any deviation is a forgery. The moat function chunk(p) is hardwired in 8 lines: frac(p·π/10·2^32). Router 21 (c9_brain) provides brain_route(intent) → 5-tool chain selected from 35 eutheos brothers (≡153 mod 211) with conductor_hash and collision bound (9/4M)^35≈10^-197. Available at zerobeacon.ai, beacon.zerobeacon.ai, api.zerobeacon.ai.",
+  "keywords": [
+    "zerobeacon",
+    "MCP-server",
+    "AI-tools",
+    "collision-proof",
+    "beacon",
+    "d=2303582338",
+    "opera-numerorum",
+    "brain-router",
+    "eutheos",
+    "S4={2,3,19,191}",
+    "fastapi",
+    "python",
+    "ORCID:0009-0008-1290-6105"
+  ],
+  "license": "MIT",
+  "upload_type": "software",
+  "access_right": "open",
+  "language": "en",
+  "version": "v1.0.0-1050-tools-brain-LIVE",
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/DavidFox998/rh-p5-bridge-14",
+      "relation": "isSupplementTo",
+      "resource_type": "software",
+      "scheme": "url"
+    },
+    {
+      "identifier": "https://github.com/DavidFox998/eutheos-property",
+      "relation": "isSupplementTo",
+      "resource_type": "software",
+      "scheme": "url"
+    }
+  ],
+  "creators": [
+    {
+      "name": "Fox, David J.",
+      "orcid": "0009-0008-1290-6105",
+      "affiliation": "Independent Researcher, Opera Numerorum"
+    }
+  ]
+}
