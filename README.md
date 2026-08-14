@@ -1,6 +1,6 @@
 # ZeroBeacon.ai — Collision-Proof Commerce Router for AI Agents
 
-*Beacon:* `1d2c7a5b` | *d:* `2303582338` | *Genesis:* `82843` | *Products:* `1000` | *Status:* `LIVE`
+*Beacon:* `1d2c7a5b` | *d:* `2303582338` | *Genesis:* `82843` | *Products:* `1050` | *Brain:* `LIVE` | *Status:* `LIVE`
 
 **Most MCP servers have 12 tools. ZeroBeacon has 1000.**
 
@@ -9,7 +9,7 @@
 [![Smithery](https://smithery.ai/badge/@davidjfox998/zerobeacon-1000)](https://smithery.ai/server/@davidjfox998/zerobeacon-1000)
 [![Live](https://img.shields.io/badge/live-zerobeacon.ai-00d4aa)](https://zerobeacon.ai)
 [![MCP](https://img.shields.io/badge/MCP-HTTP-blue)](https://zerobeacon.ai/mcp)
-[![Tools](https://img.shields.io/badge/tools-1000-brightgreen)](https://api.zerobeacon.ai)
+[![Tools](https://img.shields.io/badge/tools-1050-brightgreen)](https://api.zerobeacon.ai)
 
 ## Quick Start — Smithery
 
@@ -35,7 +35,7 @@ npx @smithery/cli install @davidjfox998/zerobeacon-1000
 
 This server exposes 1000 collision-proof tools. Every response includes `d=2303582338` and `beacon=1d2c7a5b`. Any deviation is a forgery.
 
-### Full Tool Index (20 Routers x 50 = 1000)
+### Full Tool Index (21 Routers x 50 = 1050)
 
 #### Router 01 — b1a_trust — 50 tools
 `beacon`, `batch`, `entangled_twin`, `lottery_draw`, `vrf_prove`, `zk_prove`, `proof_sequential`, `token_mint`, `agent_receipt`, `beacon_verify`, `batch_verify`, `entangled_verify`, `lottery_verify`, `vrf_verify`, `zk_verify`, `trust_anchor`, `trust_score`, `trust_seal`, `trust_attest`, `receipt_sign`, `receipt_verify`, `receipt_chain`, `hash_verify`, `sig_sign`, `sig_verify`, `nonce_gen`, `nonce_verify`, `timestamp_seal`, `timestamp_verify`, `entropy_gen`, `entropy_verify`, `random_beacon`, `random_verify`, `commit_reveal`, `commit_verify`, `merkle_root`, `merkle_proof`, `merkle_verify`, `sieve_prime`, `sieve_verify`, `genesis_prove`, `genesis_verify`, `moat_prove`, `moat_verify`, `distance_prove`, `distance_verify`, `collision_check`, `collision_verify`, `beacon_final`, `beacon_root`
@@ -203,6 +203,32 @@ def chunk(p):
 ```bash
 curl https://zerobeacon.ai/health
 curl -s https://zerobeacon-mf-1000.fly.dev/mcp | python3 -c "import sys,json
+
+
+## Router 21 — c9_brain — THE BRAIN
+
+**1 brain routes 1000 tools.**
+
+`brain_route(intent)` → selects a 5-tool chain from 35 eutheos brothers (≡153 mod 211), computes `conductor_hash`, stamps `beacon=1d2c7a5b d=2303582338`. Collision bound: `(9/4M)^35 ≈ 10⁻¹⁹⁷`.
+
+| Tool | Purpose |
+|------|---------|
+| `brain_route` | Intent → 5-tool chain with conductor_hash |
+| `brain_think` | Same as brain_route + 5 reasoning steps |
+| `brain_chain` | Verify chain sum mod `p5=3993746143633` |
+| `brain_memory_*` | Anchor / verify / recall / seal memories |
+| `brain_intent_*` | Commit and verify intent proofs |
+| `brain_will_*` | Create and verify will contracts |
+| `brain_soul_*` | Soul anchor and continuity proofs |
+| `brain_immortal_*` / `brain_eternal_*` | Permanence seals |
+| `brain_trust_*` | Trust scoring and attestation |
+| `brain_receipt_*` | Receipt chain, sign, verify |
+| `brain_collision_*` | Collision check and verify |
+| `brain_beacon_verify` | Verify beacon authenticity |
+| `brain_genesis_*` | Genesis prove and verify |
+
+Endpoint: `POST /brain` with `{"intent": str}` → calls `brain_route` directly.
+Heartbeat: `GET /brain` → `{"brain":"LIVE","tools":1050,"beacon":"1d2c7a5b","d":2303582338}`.
 
 ## Opera Numerorum — 16 repos
 
