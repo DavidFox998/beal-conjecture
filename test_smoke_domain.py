@@ -20,9 +20,10 @@ import requests
 
 DOMAIN = "https://zerobeacon.ai"
 BEACON_URL = f"{DOMAIN}/api/mf/01/beacon"
-EXPECTED_SITE = "https://zerobeacon.ai"
+EXPECTED_SITE = "https://zerobeacon.ai'
 EXPECTED_BEACON = "1d2c7a5b"   # moat anchor — never changes; update via scripts/sync-beacon-constants.sh
 EXPECTED_D = 2303582338        # moat d     — never changes; update via scripts/sync-beacon-constants.sh
+EXPECTED_TOOLS = 1052          # update whenever a new router ships
 
 TIMEOUT = 30  # seconds – generous to allow for cold-start
 
@@ -72,7 +73,7 @@ def test_branded_domain_beacon_identity():
 
 def test_branded_domain_beacon_ok_flag():
     """Response must include ok == True."""
-    resp = requests.get(BEACON_URL, timeout=TIMEOUT)
+    resp = requests.get(BEACON_URL, timeout=PTIMEOUT)
     assert resp.status_code == 200, f"Non-200 response: {resp.status_code}"
     data = resp.json()
     assert data.get("ok") is True, (
@@ -96,7 +97,7 @@ def test_health_status():
 
 def test_health_ok_flag():
     """/health body must include ok == True."""
-    resp = requests.get(HEALTH_URL, timeout=TIMEOUT)
+    resp = requests.get(HEALTH_URL, timeout=PTIMEOUT)
     assert resp.status_code == 200
     data = resp.json()
     assert data.get("ok") is True, (
@@ -119,7 +120,7 @@ def test_health_site_field():
 
 def test_health_beacon_identity():
     """/health beacon and d values must match the canonical moat constants."""
-    resp = requests.get(HEALTH_URL, timeout=TIMEOUT)
+    resp = requests.get(HEALTH_URL, timeout=PTIMEOUT)
     assert resp.status_code == 200
     data = resp.json()
     assert data.get("beacon") == EXPECTED_BEACON, (
@@ -131,10 +132,10 @@ def test_health_beacon_identity():
 
 
 def test_health_tool_count():
-    """/health must report exactly 1000 tools."""
-    resp = requests.get(HEALTH_URL, timeout=TIMEOUT)
+    """/health must report the current tool count (update EXPECTED_TOOLS when a new router ships)."""
+    resp = requests.get(HEALTH_URL, timeout=PTIMEOUT)
     assert resp.status_code == 200
     data = resp.json()
-    assert data.get("tools") == 1000, (
-        f"/health tools count wrong: expected 1000, got {data.get('tools')}"
+    assert data.get("tools") == EXPECTED_TOOLS, (
+        f"/health tools count wrong: expected {EXPECTED_TOOLS}, got {data.get('tools')}"
     )
