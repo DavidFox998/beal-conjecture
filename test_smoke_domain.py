@@ -20,7 +20,7 @@ import requests
 
 DOMAIN = "https://zerobeacon.ai"
 BEACON_URL = f"{DOMAIN}/api/mf/01/beacon"
-EXPECTED_SITE = "https://zerobeacon.ai'
+EXPECTED_SITE = "https://zerobeacon.ai"
 EXPECTED_BEACON = "1d2c7a5b"   # moat anchor — never changes; update via scripts/sync-beacon-constants.sh
 EXPECTED_D = 2303582338        # moat d     — never changes; update via scripts/sync-beacon-constants.sh
 EXPECTED_TOOLS = 1052          # update whenever a new router ships
