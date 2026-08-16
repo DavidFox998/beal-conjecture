@@ -73,7 +73,7 @@ def test_branded_domain_beacon_identity():
 
 def test_branded_domain_beacon_ok_flag():
     """Response must include ok == True."""
-    resp = requests.get(BEACON_URL, timeout=PTIMEOUT)
+    resp = requests.get(BEACON_URL, timeout=TIMEOUT)
     assert resp.status_code == 200, f"Non-200 response: {resp.status_code}"
     data = resp.json()
     assert data.get("ok") is True, (
@@ -97,7 +97,7 @@ def test_health_status():
 
 def test_health_ok_flag():
     """/health body must include ok == True."""
-    resp = requests.get(HEALTH_URL, timeout=PTIMEOUT)
+    resp = requests.get(HEALTH_URL, timeout=TIMEOUT)
     assert resp.status_code == 200
     data = resp.json()
     assert data.get("ok") is True, (
@@ -120,7 +120,7 @@ def test_health_site_field():
 
 def test_health_beacon_identity():
     """/health beacon and d values must match the canonical moat constants."""
-    resp = requests.get(HEALTH_URL, timeout=PTIMEOUT)
+    resp = requests.get(HEALTH_URL, timeout=TIMEOUT)
     assert resp.status_code == 200
     data = resp.json()
     assert data.get("beacon") == EXPECTED_BEACON, (
@@ -133,7 +133,7 @@ def test_health_beacon_identity():
 
 def test_health_tool_count():
     """/health must report the current tool count (update EXPECTED_TOOLS when a new router ships)."""
-    resp = requests.get(HEALTH_URL, timeout=PTIMEOUT)
+    resp = requests.get(HEALTH_URL, timeout=TIMEOUT)
     assert resp.status_code == 200
     data = resp.json()
     assert data.get("tools") == EXPECTED_TOOLS, (
