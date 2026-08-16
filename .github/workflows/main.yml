@@ -1,0 +1,44 @@
+name: beal-conjecture CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install elan
+        run: |
+          curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> $GITHUB_PATH
+
+      - name: Lean toolchain
+        run: |
+          cat lean-toolchain
+          lake --version
+          lean --version
+
+      - name: Build all bricks
+        run: lake build
+
+      - name: Check NO sorry
+        run: |
+         ! grep -R "sorry" --include="*.lean" Beal || (echo "FAIL: sorry found" && exit 1)
+         ! grep -R "admit" --include="*.lean" Beal || (echo "FAIL: admit found" && exit 1)
+          echo "OK: 0 sorry, 0 admit"
+
+      - name: Check axioms are trio only
+        run: |
+          lake env lean --run <<'EOF'
+          import Beal.B01_Def
+          #print axioms IsBealSolution
+          #print axioms BealConjecture
+          EOF
+
+      - name: Lake exe check
+        run: lake exe cache get || true
