@@ -690,7 +690,8 @@ def health():
         cache_age_seconds = None
     return {
         "ok":     True,
-        "tools":  1000,
+        "status": "ok",
+        "tools":  1052,
         "d":      D,
         "beacon": BEACON,
         "p":      bp["p"],
