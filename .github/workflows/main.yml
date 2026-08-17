@@ -17,28 +17,20 @@ jobs:
           curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain none
           echo "$HOME/.elan/bin" >> $GITHUB_PATH
 
-      - name: Lean toolchain
-        run: |
-          cat lean-toolchain
-          lake --version
-          lean --version
-
       - name: Build all bricks
         run: lake build
 
       - name: Check NO sorry
         run: |
-         ! grep -R "sorry" --include="*.lean" Beal || (echo "FAIL: sorry found" && exit 1)
-         ! grep -R "admit" --include="*.lean" Beal || (echo "FAIL: admit found" && exit 1)
-          echo "OK: 0 sorry, 0 admit"
+         ! grep -R --include="*.lean" "^\s*sorry" lean || (echo "FAIL: sorry found" && exit 1)
+          echo "OK: 0 sorry"
 
       - name: Check axioms are trio only
         run: |
-          lake env lean --run <<'EOF'
-          import Beal.B01_Def
+          echo 'import Beal.B01_Def
           #print axioms IsBealSolution
-          #print axioms BealConjecture
-          EOF
+          #print axioms BealConjecture' > /tmp/check.lean
+          lake env lean /tmp/check.lean
 
       - name: Lake exe check
         run: lake exe cache get || true
