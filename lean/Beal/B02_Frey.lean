@@ -4,12 +4,20 @@ def Frey_AB (A x : Nat) : Nat := A ^ x
 def Frey_C (C z : Nat) : Nat := C ^ z
 
 def Frey_discriminant (A B C x y z : Nat) : Int :=
-    - (16 : Int) * (A ^ x * B ^ y * C ^ z) ^ 2
+  -16 * ((A ^ x * B ^ y * C ^ z : Int) ^ 2)
 
 theorem frey_discriminant_ne_zero (A B C x y z : Nat)
   (hA : 0 < A) (hB : 0 < B) (hC : 0 < C) :
   Frey_discriminant A B C x y z ≠ 0 := by
   unfold Frey_discriminant
-  have h : 0 < A ^ x * B ^ y * C ^ z := by
-    exact Nat.mul_pos (Nat.mul_pos (Nat.pow_pos hA) (Nat.pow_pos hB)) (Nat.pow_pos hC)
-  simp [pow_ne_zero, ne_of_gt h]
+  have hAx : 0 < A ^ x := Nat.pow_pos hA
+  have hBy : 0 < B ^ y := Nat.pow_pos hB
+  have hCz : 0 < C ^ z := Nat.pow_pos hC
+  have hAB : 0 < A ^ x * B ^ y := Nat.mul_pos hAx hBy
+  have hABC : 0 < A ^ x * B ^ y * C ^ z := Nat.mul_pos hAB hCz
+  have hABC_int : (A ^ x * B ^ y * C ^ z : Int) ≠ 0 := by
+    have : (0 : Int) < A ^ x * B ^ y * C ^ z := by exact_mod_cast hABC
+    exact ne_of_gt this
+  have h16 : (-16 : Int) ≠ 0 := by norm_num
+  have hsq : ((A ^ x * B ^ y * C ^ z : Int) ^ 2) ≠ 0 := pow_ne_zero 2 hABC_int
+  exact mul_ne_zero h16 hsq
