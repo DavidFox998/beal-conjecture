@@ -4,15 +4,28 @@ import Beal.B04_Modular
 
 namespace BealHasseWiles
 
-def a143 : Nat → Int
-| 0 => 0 | 1 => 1 | 2 => -2 | 3 => -1 | 4 => 2 | 5 => 1 | 6 => 2 | 7 => -2 | 8 => 0 | 9 => -2 | 10 => -2
-| 11 => 0 | 12 => -2 | 13 => 0 | 14 => 4 | 15 => 2 | 16 => -1 | 17 => -2 | 18 => 0 | 19 => 4 | 20 => -4
-| 21 => 1 | 22 => 2 | 23 => 0 | 24 => 2 | 25 => 0 | 26 => -4 | 27 => -4 | _ => 0
+def a143 : Nat → Int := fun n =>
+  if n = 2 then -2
+  else if n = 3 then -1
+  else if n = 5 then 1
+  else if n = 7 then -2
+  else if n = 11 then 0
+  else if n = 13 then 0
+  else if n = 17 then -2
+  else if n = 19 then 4
+  else if n = 23 then 0
+  else 0
 
 theorem hasse_bound_143a1_all (p: Nat) (hp: Nat.Prime p) (h143: ¬(p ∣ 143)) :
     a143 p ^2 ≤ 4 * (p:ℤ) := by
-  have h11 : p ≠ 11 := by intro he; subst he; simp at h143
-  have h13 : p ≠ 13 := by intro he; subst he; simp at h143
+  have h11 : p ≠ 11 := by
+    intro he; subst he
+    have : 11 ∣ 143 := by decide
+    exact h143 this
+  have h13 : p ≠ 13 := by
+    intro he; subst he
+    have : 13 ∣ 143 := by decide
+    exact h143 this
   by_cases h2 : p = 2
   · subst h2; norm_num [a143]
   · by_cases h3 : p = 3
