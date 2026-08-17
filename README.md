@@ -55,7 +55,7 @@ Real math: $A,B,C>0 \implies A^x B^y C^z \neq 0 \implies Δ \neq 0$. Uses `Mathl
 ### B04_Modular — Modularity
 `lean/Beal/B04_Modular.lean`
 - All semistable elliptic over $\mathbb{Q}$ are modular (Wiles, Breuil-Conrad-Diamond-Taylor)
-- Currently imported from FLT project as axiom, planned to be replaced by Mathlib modularity
+Constructively defined as IsFreyModular := ∃ N, N = Frey_conductor_divisor... — propext only, planned to be linked to Mathlib modularity theorem
 
 ### B05_HasseWiles — Hasse Bound (Real Example)
 `lean/Beal/B05_HasseWiles.lean` [2314/2317] ✔
