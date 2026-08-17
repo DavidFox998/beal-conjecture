@@ -42,7 +42,6 @@ theorem hasse_bound_143a1_all (p: Nat) (hp: Nat.Prime p) (h143: ¬(p ∣ 143)) :
               · subst h23; norm_num [a143]
               · have ha : a143 p = 0 := by simp [a143, h2, h3, h5, h7, h11, h13, h17, h19, h23]
                 rw [ha]
-                simp
                 positivity
 
 theorem BSD_HasseFull_143_CLOSED : ∀ p : Nat, p.Prime → ¬(p ∣ 143) → (a143 p : ℝ)^2 ≤ 4*(p:ℝ) := by
