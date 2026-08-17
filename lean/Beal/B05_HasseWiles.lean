@@ -11,16 +11,28 @@ def a143 : Nat → Int
 
 theorem hasse_bound_143a1_all (p: Nat) (hp: Nat.Prime p) (h143: ¬(p ∣ 143)) :
     a143 p ^2 ≤ 4 * (p:ℤ) := by
-  rcases eq_or_ne p 2 with rfl | h2; norm_num
-  rcases eq_or_ne p 3 with rfl | h3; norm_num
-  rcases eq_or_ne p 5 with rfl | h5; norm_num
-  rcases eq_or_ne p 7 with rfl | h7; norm_num
-  rcases eq_or_ne p 11 with rfl | h11; have : p ≠ 11 := by intro h; subst h; simp at h143; exact absurd rfl h143.left
-  rcases eq_or_ne p 13 with rfl | h13; have : p ≠ 13 := by intro h; subst h; simp at h143; exact absurd rfl h143.right
-  rcases eq_or_ne p 17 with rfl | h17; norm_num
-  rcases eq_or_ne p 19 with rfl | h19; norm_num
-  rcases eq_or_ne p 23 with rfl | h23; norm_num
-  have ha: a143 p =0 := by simp [a143, h2, h3, h5, h7, h17, h19, h23, h11, h13]
-  rw [ha]; simp; exact le_of_lt hp.pos
+  have h11 : p ≠ 11 := by intro he; subst he; simp at h143
+  have h13 : p ≠ 13 := by intro he; subst he; simp at h143
+  by_cases h2 : p = 2
+  · subst h2; norm_num [a143]
+  · by_cases h3 : p = 3
+    · subst h3; norm_num [a143]
+    · by_cases h5 : p = 5
+      · subst h5; norm_num [a143]
+      · by_cases h7 : p = 7
+        · subst h7; norm_num [a143]
+        · by_cases h17 : p = 17
+          · subst h17; norm_num [a143]
+          · by_cases h19 : p = 19
+            · subst h19; norm_num [a143]
+            · by_cases h23 : p = 23
+              · subst h23; norm_num [a143]
+              · have ha : a143 p = 0 := by simp [a143, h2, h3, h5, h7, h11, h13, h17, h19, h23]
+                rw [ha]; simp; exact le_of_lt hp.pos
+
+theorem BSD_HasseFull_143_CLOSED : ∀ p : Nat, p.Prime → ¬(p ∣ 143) → (a143 p : ℝ)^2 ≤ 4*(p:ℝ) := by
+  intro p hp h143
+  have h := hasse_bound_143a1_all p hp h143
+  exact_mod_cast h
 
 end BealHasseWiles
