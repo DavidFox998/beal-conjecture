@@ -20,6 +20,6 @@ theorem beal_conductor_at_least_2 (A B C x y z : Nat) (h : IsBealSolution A B C 
   obtain ⟨_, _, _, _, _, _, hgcd, _⟩ := h
   exact hgcd
 
-theorem conductor_le_A (A B C : Nat) : Frey_conductor_divisor A B C ≤ A := by
+theorem conductor_le_A (A B C : Nat) (_hA : 0 < A) : Frey_conductor_divisor A B C ≤ A := by
   unfold Frey_conductor_divisor
-  exact Nat.le_of_dvd (Nat.zero_lt_of_ne_zero (by intro h; simp [h] at *)) (conductor_dvd_A A B C)
+  exact Nat.le_of_dvd (Nat.zero_lt_of_ne_zero (by intro h; simp [Frey_conductor_divisor, h])) (conductor_dvd_A A B C)
