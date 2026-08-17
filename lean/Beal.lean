@@ -3,3 +3,4 @@ import Beal.B02_Frey
 import Beal.B03_Conductor
 import Beal.B04_Modular
 import Beal.B05_HasseWiles
+import Beal.B06_Final
