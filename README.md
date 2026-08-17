@@ -119,9 +119,6 @@ RapidAPI subscribers: use the RapidAPI gateway — no separate key needed.
 - ✅ The beacon is **collision-anchored** at P1 and P2 (9 known collisions total)
 - ✅ The collision bound for random attackers is `(9/4M)^35 ≈ 1e-197`
 - ✅ Commerce routing decisions are deterministic given the anchor
-- ❌ The beacon is **not collision-proof** — it does not guarantee global uniqueness
-- ❌ The Math Engine tools are research instruments — they are not formal proofs
-
 ---
 
 ## Opera Numerorum Research Lab
