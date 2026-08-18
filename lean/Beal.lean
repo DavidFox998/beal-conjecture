@@ -4,3 +4,6 @@ import Beal.B03_Conductor
 import Beal.B04_Modular
 import Beal.B05_HasseWiles
 import Beal.B06_Final
+import Beal.B07_Galois
+import Beal.B08_LevelLowering
+import Beal.B09_FinalContradiction
