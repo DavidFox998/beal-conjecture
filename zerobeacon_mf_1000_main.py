@@ -1,23 +1,25 @@
 from fastapi import FastAPI, Request, Header, Depends, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, HTMLResponse
-import time, os, stripe, asyncio
+import time, os, stripe, asyncio, json, urllib.request, urllib.error, hmac, hashlib
 
 from core.beacon import (beacon_payload, D, BEACON, GENESIS_P,
                          TIERS, PRICING_SUMMARY, PAYPAL_ME,
                          PAYPAL_LINK_10, PAYPAL_LINK_100, PAYPAL_LINK_1000)
 from core import keystore
 from core.keystore import ResendPersistenceError
-from core.tier_guard import require_tier
+from core.tier_guard import require_tier, TierAccessError
 from core.emailer import send_api_key_email, validate_resend_key
 from core.log_redactor import install_redaction_filter
-from core.rapidapi_auth import verify_rapidapi_request, RAPIDAPI_SUBSCRIPTION_TIER
+from core.rapidapi_auth import verify_rapidapi_request, RAPIDAPI_SUBSCRIPTION_TIER, check_rapidapi_proxy_secret
 
 # Install log redaction immediately so no zbk_... key can reach any log sink,
 # including future structured loggers, exception traceback capturers, or
 # Sentry/DataDog integrations added later.
 install_redaction_filter()
 
+from routers import shopify_app
+from routers import zerobeacon_mf_affiliate_checkout as affiliate_checkout
 from routers import (
     zerobeacon_mf_01_050_b1a_trust      as m01,
     zerobeacon_mf_02_050_b1b_trust      as m02,
@@ -39,16 +41,18 @@ from routers import (
     zerobeacon_mf_18_050_c6_120std      as m18,
     zerobeacon_mf_19_050_c7_trust       as m19,
     zerobeacon_mf_20_050_c8_unified     as m20,
+    zerobeacon_mf_21_050_c9_brain       as m21,
 )
 
 app = FastAPI(
-    title="ZeroBeacon.ai — 1000 Tools",
-    version="1000.0.0",
+    title="ZeroBeacon.ai — 1050 Tools",
+    version="1050.0.0",
     description=(
-        "**1000 beacon-anchored tools** across 3 groups:\n\n"
+        "**1050 beacon-anchored tools** across 4 groups:\n\n"
         "- **Market Router (tools 1–300):** payment routing, escrow, delivery proof, budget, notary\n"
         "- **Math Engine (tools 301–700):** Arakelov, Riemann Hypothesis, BSD, Navier-Stokes, Yang-Mills, P vs NP\n"
-        "- **Amplum Everyday (tools 701–1000):** scheduling, memory, legal, will, mesh treasury, consciousness proof\n\n"
+        "- **Amplum Everyday (tools 701–1000):** scheduling, memory, legal, will, mesh treasury, consciousness proof\n"
+        "- **Brain Router (tools 1001–1050):** 50 meta-tools — 1 brain that routes all 1000 tools, chain, think, swarm, consensus\n\n"
         "FREE tier: first 100 tools, no key required.  \n"
         "PRO / ENTERPRISE: pass `X-API-Key: zbk_…` header.  \n"
         "Get a key at https://zerobeacon.ai after Stripe checkout.  \n"
@@ -58,6 +62,7 @@ app = FastAPI(
         {"name": "Market-Router",  "description": "Tools 1–300: payment, escrow, delivery, budget, notary"},
         {"name": "Math-Engine",    "description": "Tools 301–700: Arakelov, RH, BSD, Navier-Stokes, Yang-Mills, P vs NP"},
         {"name": "Amplum-Everyday","description": "Tools 701–1000: scheduling, memory, legal, will, mesh, consciousness"},
+        {"name": "Brain-Router",   "description": "Tools 1001–1050: brain meta-router, chain, think, swarm, consensus"},
     ],
 )
 app.add_middleware(
@@ -67,6 +72,16 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+# ── TierAccessError handler ───────────────────────────────────────────────────
+# Returns HTTP 200 with a structured JSON body so MCP tool clients (Claude,
+# Smithery, etc.) display the error message inside the tool response rather
+# than showing an opaque HTTP 403.  REST clients can detect the error via
+# the "ok": false field.
+@app.exception_handler(TierAccessError)
+async def tier_access_error_handler(request: Request, exc: TierAccessError):
+    return JSONResponse(status_code=200, content=exc.to_response_body())
 
 # ROUTERS: (module, prefix, tag, min_tier)
 # MF-01/02 → FREE (100 tools open)
@@ -94,10 +109,17 @@ ROUTERS = [
     (m18, "/api/mf/18", "MF-18", "enterprise_1000"),
     (m19, "/api/mf/19", "MF-19", "enterprise_1000"),
     (m20, "/api/mf/20", "MF-20", "enterprise_1000"),
+    (m21, "/api/mf/21", "MF-21", "enterprise_1000"),
 ]
 
 # Load persisted API keys before mounting routers
 keystore.load()
+
+# Shopify App — no tier gate (handles its own auth via OAuth + HMAC)
+app.include_router(shopify_app.router)
+
+# Affiliate Checkout — FREE tier, drives operator revenue
+app.include_router(affiliate_checkout.router, tags=["Affiliate"])
 
 for mod, prefix, tag, min_tier in ROUTERS:
     if min_tier == "free":
@@ -109,6 +131,83 @@ for mod, prefix, tag, min_tier in ROUTERS:
         )
 
 
+# ── Webhook alert helper ──────────────────────────────────────────────────────
+# Posts a JSON payload to ALERT_WEBHOOK_URL (e.g. a Slack incoming webhook or
+# any generic HTTP endpoint).  Used by both the Resend and RapidAPI probe loops
+# so an operator is notified without tailing Fly.io logs.
+
+_ALERT_WEBHOOK_URL: str = os.environ.get("ALERT_WEBHOOK_URL", "")
+
+
+def _fire_alert_webhook(
+    title: str,
+    message: str,
+    remediation: str,
+    extra: "dict | None" = None,
+) -> None:
+    """POST a structured alert to ALERT_WEBHOOK_URL.
+
+    Sends a JSON body compatible with Slack incoming webhooks (``text`` + ``blocks``)
+    and generic HTTP alerting endpoints.  Silently no-ops when ALERT_WEBHOOK_URL is
+    not set.  All errors are caught and logged so a broken webhook never crashes the
+    server or interrupts the probe loop.
+
+    Args:
+        title:       Short one-line summary (used as the Slack message text).
+        message:     Human-readable description of what went wrong.
+        remediation: Exact command or step the operator should run to fix it.
+        extra:       Optional dict of additional fields merged into the top-level
+                     JSON payload (e.g. structured probe metadata for parseable alerts).
+    """
+    url = os.environ.get("ALERT_WEBHOOK_URL", "")
+    if not url:
+        return
+    ts = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+    app_name = os.environ.get("FLY_APP_NAME", "zerobeacon-mf-1000")
+    payload = {
+        "text": f":rotating_light: *{title}*",
+        "blocks": [
+            {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": (
+                        f":rotating_light: *{title}*\n"
+                        f"*App:* `{app_name}`\n"
+                        f"*Time:* `{ts}`\n"
+                        f"*Detail:* {message}\n"
+                        f"*Fix:* `{remediation}`"
+                    ),
+                },
+            }
+        ],
+    }
+    if extra:
+        payload.update(extra)
+    body = json.dumps(payload).encode()
+    req = urllib.request.Request(
+        url,
+        data=body,
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            status = resp.getcode()
+            if status not in (200, 204):
+                print(
+                    f"[alert] webhook returned unexpected status {status}",
+                    flush=True,
+                )
+    except urllib.error.HTTPError as exc:
+        print(f"[alert] webhook HTTP error {exc.code}: {exc.reason}", flush=True)
+    except Exception as exc:
+        print(
+            f"[alert] webhook delivery failed — {type(exc).__name__}: {exc}",
+            flush=True,
+        )
+
+
 # ── Resend key validation cache ───────────────────────────────────────────────
 # Populated once at startup (and refreshed by any future periodic probe).
 # /health reads this cache — it never makes a live network call itself.
@@ -116,6 +215,15 @@ for mod, prefix, tag, min_tier in ROUTERS:
 _resend_key_valid: bool = False
 _resend_key_status: str = "not checked yet"
 _resend_key_checked_at: float = 0.0  # unix timestamp; 0.0 means "never checked"
+
+
+# ── RapidAPI proxy secret probe cache ─────────────────────────────────────────
+# Populated once at startup and refreshed by the periodic probe.
+# /health reads this cache — no env re-read on every request.
+
+_rapidapi_secret_ok: bool = False
+_rapidapi_secret_status: str = "not checked yet"
+_rapidapi_secret_checked_at: float = 0.0  # unix timestamp; 0.0 means "never checked"
 
 
 # ── Startup: validate Resend API key ─────────────────────────────────────────
@@ -187,6 +295,16 @@ async def _resend_probe_loop() -> None:
                 f"{reason}. Email delivery will fail until the key is corrected.",
                 flush=True,
             )
+            # Fire a dashboard/Slack alert so an operator is notified without tailing logs.
+            await asyncio.to_thread(
+                _fire_alert_webhook,
+                "RESEND_API_KEY has gone missing or become invalid",
+                (
+                    f"RESEND_API_KEY was valid at the last check but is now invalid: {reason}. "
+                    "Customer API key emails will fail until the key is rotated."
+                ),
+                "fly secrets set RESEND_API_KEY=<new-key> --app zerobeacon-mf-1000",
+            )
         elif valid and not prev_valid:
             # Recovered — emit one info line so the recovery is traceable.
             print(
@@ -202,6 +320,95 @@ async def _start_resend_periodic_check() -> None:
     asyncio.create_task(_resend_probe_loop())
 
 
+# ── Resend probe staleness watchdog ──────────────────────────────────────────
+# Tracks whether the probe has gone stale (False→True transition) and fires a
+# webhook alert when it does.  The probe loop itself cannot detect its own
+# staleness if it freezes, so a separate watchdog is required.
+
+_resend_probe_stale_alerted: bool = False
+
+
+async def _check_and_alert_resend_stale() -> bool:
+    """Check if the Resend probe cache is stale; fire a webhook on False→True transition.
+
+    Compares the current time against _resend_key_checked_at.  If the cache age
+    exceeds 2× _RESEND_CHECK_INTERVAL and no alert has been fired yet, posts a
+    webhook with structured probe metadata and logs a WARNING.  Resets the alert
+    flag when the probe recovers.
+
+    Returns:
+        True if a webhook alert was fired in this call, False otherwise.
+    """
+    global _resend_probe_stale_alerted
+    now = time.time()
+    threshold = 2 * _RESEND_CHECK_INTERVAL
+    # A probe that has never run (checked_at == 0) is not considered stale.
+    if _resend_key_checked_at <= 0.0:
+        _resend_probe_stale_alerted = False
+        return False
+
+    cache_age = int(now - _resend_key_checked_at)
+    stale = cache_age > threshold
+
+    if stale and not _resend_probe_stale_alerted:
+        _resend_probe_stale_alerted = True
+        # Emit CRITICAL so Fly.io log-based alert rules on "[emailer] CRITICAL" fire
+        # immediately when the probe freezes, without requiring anyone to tail logs.
+        print(
+            f"[emailer] CRITICAL: resend probe stale — "
+            f"cache age={cache_age}s, threshold={threshold}s",
+            flush=True,
+        )
+        await asyncio.to_thread(
+            _fire_alert_webhook,
+            "Resend probe is stale — background loop may have frozen",
+            (
+                f"The Resend key probe has not updated in {cache_age} seconds "
+                f"(threshold: {threshold}s). "
+                "The background probe loop may have frozen or crashed. "
+                "Email delivery health is no longer being monitored."
+            ),
+            "fly apps restart zerobeacon-mf-1000",
+            {
+                "resend_probe_stale": True,
+                "resend_key_cache_age_seconds": cache_age,
+                "resend_probe_stale_threshold_seconds": threshold,
+            },
+        )
+        return True
+
+    if not stale and _resend_probe_stale_alerted:
+        # Probe has recovered — reset so the next stale transition fires again.
+        _resend_probe_stale_alerted = False
+
+    return False
+
+
+async def _resend_stale_watchdog_loop() -> None:
+    """Background loop: periodically check whether the Resend probe has gone stale.
+
+    Runs every _RESEND_CHECK_INTERVAL seconds.  Delegates the actual check and
+    alert to _check_and_alert_resend_stale() so that logic is independently testable.
+    Exceptions are caught and logged so the watchdog never crashes the server.
+    """
+    while True:
+        await asyncio.sleep(_RESEND_CHECK_INTERVAL)
+        try:
+            await _check_and_alert_resend_stale()
+        except Exception as exc:
+            print(
+                f"[emailer] stale watchdog raised an unexpected exception: "
+                f"{type(exc).__name__}: {exc}",
+                flush=True,
+            )
+
+
+@app.on_event("startup")
+async def _start_resend_stale_watchdog() -> None:
+    """Launch the Resend stale-probe watchdog as a fire-and-forget asyncio task."""
+    asyncio.create_task(_resend_stale_watchdog_loop())
+
+
 @app.on_event("startup")
 async def _check_rapidapi_proxy_secret() -> None:
     """
@@ -211,21 +418,106 @@ async def _check_rapidapi_proxy_secret() -> None:
     (fail-closed design in core/rapidapi_auth.py).  The warning is CRITICAL so
     it appears at the top of Fly.io logs and is not buried in INFO-level output.
 
+    Populates the module-level _rapidapi_secret_* cache so /health can report
+    the current status without re-reading the env on every request.
+
     Never crashes the server — RapidAPI misconfiguration must not block Stripe/
     zbk_ key access for direct subscribers.
     """
-    from core.rapidapi_auth import _proxy_secret_configured
-    if not _proxy_secret_configured():
+    global _rapidapi_secret_ok, _rapidapi_secret_status, _rapidapi_secret_checked_at
+    ok, reason = check_rapidapi_proxy_secret()
+    _rapidapi_secret_ok         = ok
+    _rapidapi_secret_status     = reason
+    _rapidapi_secret_checked_at = time.time()
+    if not ok:
         print(
-            "[rapidapi] CRITICAL: RAPIDAPI_PROXY_SECRET is not set. "
+            f"[rapidapi] CRITICAL: RAPIDAPI_PROXY_SECRET is not set. "
             "All RapidAPI paid-subscriber requests will be rejected until this secret "
             "is configured in Fly.io (fly secrets set RAPIDAPI_PROXY_SECRET=<value>) "
             "and the identical value is set as the Proxy Secret in the RapidAPI dashboard. "
             "See rapidapi_guide.md for setup instructions.",
             flush=True,
         )
+        _fire_alert_webhook(
+            title="RAPIDAPI_PROXY_SECRET missing at startup",
+            message=(
+                "RAPIDAPI_PROXY_SECRET is not set. "
+                "All RapidAPI paid-subscriber requests will be rejected."
+            ),
+            remediation=(
+                "fly secrets set RAPIDAPI_PROXY_SECRET=<value> --app zerobeacon-mf-1000 "
+                "then set the identical value as the Proxy Secret in the RapidAPI dashboard."
+            ),
+        )
     else:
         print("[rapidapi] RAPIDAPI_PROXY_SECRET is configured — RapidAPI gateway access enabled.", flush=True)
+
+
+# Configurable probe interval — override with RAPIDAPI_CHECK_INTERVAL env var (seconds).
+_RAPIDAPI_CHECK_INTERVAL: int = int(os.environ.get("RAPIDAPI_CHECK_INTERVAL", "3600"))
+
+
+async def _rapidapi_probe_loop() -> None:
+    """
+    Background loop: re-check RAPIDAPI_PROXY_SECRET every _RAPIDAPI_CHECK_INTERVAL seconds.
+
+    Re-reads the env var at each iteration (not the import-time cached value in
+    core/rapidapi_auth.py) so that an operator change that somehow doesn't restart
+    the process — or an empty string being set — is still caught.
+
+    Emits [rapidapi] CRITICAL when the secret goes missing and a recovery message
+    when it comes back.  Stays silent when the status is unchanged to avoid log spam.
+    Exceptions are caught and logged so the loop never crashes the server.
+    """
+    global _rapidapi_secret_ok, _rapidapi_secret_status, _rapidapi_secret_checked_at
+    while True:
+        await asyncio.sleep(_RAPIDAPI_CHECK_INTERVAL)
+        try:
+            ok, reason = await asyncio.to_thread(check_rapidapi_proxy_secret)
+        except Exception as exc:
+            print(
+                f"[rapidapi] periodic probe raised an unexpected exception: "
+                f"{type(exc).__name__}: {exc}",
+                flush=True,
+            )
+            continue
+
+        prev_ok = _rapidapi_secret_ok
+        _rapidapi_secret_ok         = ok
+        _rapidapi_secret_status     = reason
+        _rapidapi_secret_checked_at = time.time()
+
+        if not ok and prev_ok:
+            # Newly missing — emit CRITICAL once so it appears prominently in Fly.io logs.
+            print(
+                "[rapidapi] CRITICAL: RAPIDAPI_PROXY_SECRET has gone missing (periodic probe). "
+                "All RapidAPI paid-subscriber requests will be rejected until the secret is "
+                "restored via: fly secrets set RAPIDAPI_PROXY_SECRET=<value> --app zerobeacon-mf-1000",
+                flush=True,
+            )
+            # Fire a dashboard/Slack alert so an operator is notified without tailing logs.
+            await asyncio.to_thread(
+                _fire_alert_webhook,
+                "RAPIDAPI_PROXY_SECRET has gone missing",
+                (
+                    "RAPIDAPI_PROXY_SECRET was present at the last check but is now missing. "
+                    "All RapidAPI paid-subscriber requests are being rejected."
+                ),
+                "fly secrets set RAPIDAPI_PROXY_SECRET=<value> --app zerobeacon-mf-1000",
+            )
+        elif ok and not prev_ok:
+            # Recovered — emit one info line so the recovery is traceable.
+            print(
+                "[rapidapi] RAPIDAPI_PROXY_SECRET is present again (periodic probe recovered).",
+                flush=True,
+            )
+        # If status unchanged, stay silent — no log spam every hour.
+
+
+@app.on_event("startup")
+async def _start_rapidapi_periodic_check() -> None:
+    """Launch the background RapidAPI proxy secret probe loop as a fire-and-forget asyncio task."""
+    asyncio.create_task(_rapidapi_probe_loop())
 
 
 # ── Per-route and per-tool tier maps (built at import time) ───────────────────
@@ -310,22 +602,72 @@ async def tier_gate(request: Request, call_next):
                 f"'{required_tier}'. Upgrade at https://rapidapi.com/davidjfox998/api/zerobeacon"
             )
         else:
-            # Native zbk_ key, Smithery api_key header, or no key
+            # Native zbk_ key, Smithery api_key/api-key header, or no key.
+            # Smithery HTTP transport converts configSchema property "apiKey"
+            # (camelCase) to HTTP header "api-key" (kebab-case) before
+            # forwarding.  We accept both spellings so the schema property name
+            # and the header name stay compatible regardless of future renames.
             api_key = (request.headers.get("X-API-Key")
                        or request.headers.get("x-api-key")
-                       or request.headers.get("api_key"))   # Smithery gateway compat
+                       or request.headers.get("api-key")    # Smithery: apiKey → api-key
+                       or request.headers.get("api_key"))   # legacy underscore fallback
             allowed, reason = keystore.check_access(api_key, required_tier)
 
         if not allowed:
+            # Determine whether a key was provided at all (vs. missing entirely)
+            _any_key = (request.headers.get("X-API-Key")
+                        or request.headers.get("x-api-key")
+                        or request.headers.get("api-key")
+                        or request.headers.get("api_key"))
+            _key_present = bool(_any_key)
+            _tier_label = (
+                required_tier
+                .replace("_", " ")
+                .replace("pro 10",          "PRO ($10/mo)")
+                .replace("pro 100",         "PRO+ ($100/mo)")
+                .replace("enterprise 1000", "ENTERPRISE ($1,000)")
+            )
+            # Conversion log — grep for TIER_BLOCK to count daily upgrade opportunities
+            print(
+                f"TIER_BLOCK path={path} required={required_tier} "
+                f"key_present={_key_present}",
+                flush=True,
+            )
+            if not _key_present:
+                _msg = (
+                    f"{_tier_label} required — 100 tools free, 400 with PRO ($10/mo), "
+                    "800 with PRO+ ($100/mo), 1052 with ENTERPRISE ($1,000).\n"
+                    "Upgrade: https://zerobeacon.ai/upgrade\n"
+                    "Stripe checkout: https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01"
+                )
+            else:
+                _msg = (
+                    f"{_tier_label} required — your key doesn't have this tier. "
+                    "100 tools free, 400 with PRO ($10/mo), 800 with PRO+ ($100/mo), "
+                    "1052 with ENTERPRISE ($1,000).\n"
+                    "Upgrade: https://zerobeacon.ai/upgrade\n"
+                    "Stripe checkout: https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01"
+                )
+            # Return HTTP 200 with a structured error body so MCP tool clients
+            # (Claude, Smithery, etc.) display the message in the tool response
+            # rather than showing an opaque HTTP 403 error.
             return JSONResponse(
                 {
-                    "error":         "Access denied",
-                    "required_tier": required_tier,
-                    "reason":        reason,
-                    "upgrade":       "https://zerobeacon.ai/pricing",
-                    "rapidapi":      "https://rapidapi.com/davidjfox998/api/zerobeacon",
+                    "ok":              False,
+                    "error":           "tier_required",
+                    "message":         _msg,
+                    "required_tier":   required_tier,
+                    "your_tier":       "free",
+                    "tools_free":      100,
+                    "tools_pro":       400,
+                    "tools_pro_plus":  800,
+                    "tools_enterprise": 1052,
+                    "upgrade":         "https://zerobeacon.ai/upgrade",
+                    "stripe":          "https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01",
+                    "rapidapi":        "https://rapidapi.com/davidjfox998/api/zerobeacon",
+                    "paypal":          "https://paypal.me/davidfox223",
                 },
-                status_code=403,
+                status_code=200,
             )
     return await call_next(request)
 
@@ -335,6 +677,33 @@ async def tier_gate(request: Request, call_next):
 @app.get("/", response_class=HTMLResponse)
 async def landing():
     import time as _t
+    # Compute resend health state so the page can surface recovery info when needed.
+    _resend_store_ok = keystore._resend_store_valid
+    # Corrupt store warning: the recover endpoint directly fixes this.
+    _resend_store_warning = (
+        """  <div class="box" style="border-color:#ff4d4d;">
+    <div class="box-title" style="color:#ff4d4d;">&#9888; Email delivery degraded &mdash; resend store corrupt</div>
+    <div class="gate-info">
+      The resend-attempts store is corrupt; <code>/api/key/resend</code> is in 503 fail-closed state.<br>
+      Recovery (admin only): <code>POST /api/admin/resend/recover</code> with body <code>&#123;"admin_secret":"..."&#125;</code><br>
+      This clears the corrupt store and restores email resend without a server restart.
+    </div>
+  </div>
+"""
+        if not _resend_store_ok else ""
+    )
+    # Invalid key warning: fix by rotating the secret in the environment.
+    _resend_key_warning = (
+        """  <div class="box" style="border-color:#f59e0b;">
+    <div class="box-title" style="color:#f59e0b;">&#9888; Email delivery degraded &mdash; Resend API key invalid</div>
+    <div class="gate-info">
+      The <code>RESEND_API_KEY</code> secret is invalid or missing &mdash; API key emails cannot be sent.<br>
+      Fix: rotate the secret (<code>fly secrets set RESEND_API_KEY=re_...</code>), then restart or wait for the next probe cycle.
+    </div>
+  </div>
+"""
+        if not _resend_key_valid else ""
+    )
     return f"""<!DOCTYPE html>
 <html lang="en"><head>
 <meta charset="utf-8">
@@ -396,8 +765,8 @@ async def landing():
 
   <h1>ZERO<span>BEACON</span>.AI</h1>
   <p class="tagline">
-    <b>Collision-proof commerce router for AI agents.</b><br>
-    1000 tools &nbsp;·&nbsp; 20 blocks &nbsp;·&nbsp; 0 collisions &nbsp;·&nbsp; ω²=48/13&gt;0 verified
+    <b>Collision-anchored commerce router for AI agents.</b><br>
+    1050 tools &nbsp;·&nbsp; 21 blocks &nbsp;·&nbsp; 9 controlled collisions &nbsp;·&nbsp; ω²=48/13&gt;0 verified
   </p>
 
   <div class="beacon-box">{{
@@ -457,7 +826,7 @@ async def landing():
     </div>
   </div>
 
-  <div class="links">
+{_resend_store_warning}{_resend_key_warning}  <div class="links">
     <a href="https://beacon.zerobeacon.ai">beacon.zerobeacon.ai</a>
     <a href="https://api.zerobeacon.ai">api.zerobeacon.ai</a>
     <a href="/docs">API docs</a>
@@ -483,6 +852,193 @@ async def landing():
 @app.get("/beacon")
 async def beacon():
     return beacon_payload()
+
+
+# ── Beacon Proof-as-a-Service (#7) ───────────────────────────────────────────
+# GET /verify?beacon=1d2c7a5b&order=ORD-12345
+# Returns a tamper-evident HMAC-SHA256 proof that a specific order was
+# processed under the ZeroBeacon collision-anchored guarantee.
+# Auditors, carriers, and AI agents call this to confirm the transaction.
+# Pricing: $0.001 per verification (metered via future Stripe usage billing).
+
+_VERIFY_SECRET = (os.environ.get("SESSION_SECRET") or "zerobeacon-fallback-secret").encode()
+
+@app.get("/verify", tags=["Market-Router"])
+async def verify_beacon(
+    beacon_val: str = None,
+    order: str = None,
+    beacon: str = None,  # alias
+    request: Request = None,
+):
+    """
+    **Beacon Proof-as-a-Service** — returns a server-issued tamper-evident receipt.
+
+    Supply `beacon` (the hex beacon string) and `order` (your order/transaction ID).
+    The response includes an HMAC-SHA256 `proof` that binds `(beacon, order, ts)`
+    together under a server-held secret.  Store the `proof` alongside your order;
+    anyone with access to this endpoint can re-verify by re-calling with the same
+    `beacon`, `order`, and `ts`.
+
+    **Guarantee type (`proof_type` field):**
+
+    - `"static-anchor"` — the supplied `beacon` matches the ZeroBeacon collision-anchor
+      constant (`d`/P1/P2).  The HMAC receipt covers a known-good anchor value and the
+      `moat` context (beacon/d/P1/P2) is included so agents can inspect the collision
+      model.  This is a static anchor check, not a real-time chain-liveness probe.
+    - `"server-receipt"` — the supplied `beacon` does not match the canonical anchor.
+      The server still signs `(beacon, order, ts)` as a tamper-evident receipt, but
+      makes no claim about the beacon value itself.  Trust boundary: server-held HMAC
+      secret; not independently verifiable without the secret.
+
+    - **Free** — no API key required
+    - **Rate**: standard free-tier limits apply
+    - **Billing**: $0.001/verification (metered, future feature)
+    """
+    from core.beacon import MOAT_P1, MOAT_P2
+    b = beacon_val or beacon or BEACON
+    o = order or "unspecified"
+    ts = int(time.time())
+    msg = f"{b}:{o}:{ts}".encode()
+    proof = hmac.new(_VERIFY_SECRET, msg, hashlib.sha256).hexdigest()
+
+    # Check whether the caller supplied the canonical ZeroBeacon anchor value.
+    # This is a static equality check against the module constant — it does NOT
+    # perform a real-time chain probe or liveness verification.
+    canonical = (b == BEACON)
+
+    if canonical:
+        # Canonical anchor: the supplied beacon matches the ZeroBeacon collision-
+        # anchor constant.  Proof type is "static-anchor" — a static check, not
+        # a live chain probe.  The moat context (P1/P2) is included so agents can
+        # understand the collision model that backs the anchor value.
+        guarantee = {
+            "verified": True,
+            "proof_type": "static-anchor",
+            "proof_type_note": (
+                "The supplied beacon matches the ZeroBeacon collision-anchor constant. "
+                "This is a static anchor check and HMAC receipt — not a real-time "
+                "chain-liveness probe."
+            ),
+            # collision describes the P1/P2 moat bounding the anchor beacon-space.
+            "collision": "controlled-anchor",
+            # moat mirrors the beacon/d/P1/P2 contract on /brain.
+            "moat": {
+                "beacon": BEACON,
+                "d": D,
+                "P1": MOAT_P1,
+                "P2": MOAT_P2,
+            },
+        }
+    else:
+        # Non-canonical beacon: the supplied value does not match the ZeroBeacon
+        # anchor.  The server still issues a tamper-evident HMAC receipt binding
+        # (beacon, order, ts) under the server-held secret, but makes no claim
+        # about the beacon value or any collision model.
+        # Trust boundary: HMAC verification requires the server-held secret; the
+        # proof is not independently verifiable without access to that secret.
+        guarantee = {
+            "verified": False,
+            "proof_type": "server-receipt",
+            "proof_type_note": (
+                f"Supplied beacon '{b}' does not match the canonical ZeroBeacon anchor "
+                f"('{BEACON}'). The HMAC proof is a server-issued receipt binding "
+                "(beacon, order, ts) under a server-held secret — no anchor or "
+                "collision guarantee is made. "
+                f"Call with beacon={BEACON} for a static-anchor proof."
+            ),
+        }
+
+    return {
+        **guarantee,
+        "beacon": b,
+        "order": o,
+        "ts": ts,
+        "proof": proof,
+        "algorithm": "HMAC-SHA256",
+        "message_format": "{beacon}:{order}:{ts}",
+        "d": D,
+        "site": "https://zerobeacon.ai",
+        "verify_url": f"https://zerobeacon.ai/verify?beacon={b}&order={o}",
+        "note": "Store `proof` with your order record. Re-verify by calling this endpoint with the same beacon, order, and ts values.",
+    }
+
+
+# ── Hash License snippet endpoint (#1) ───────────────────────────────────────
+# GET /beacon.js?d=2303582338&beacon=1d2c7a5b
+# Returns the embeddable JS snippet merchants include on their storefront.
+# The snippet calls /verify server-side and injects a "ZeroBeacon Verified" badge.
+# License: $99/year per store — enforced via the `d` parameter (store product ID).
+
+@app.get("/beacon.js", response_class=HTMLResponse)
+async def beacon_js(
+    d: int = D,
+    beacon: str = BEACON,
+    order: str = "",
+    badge: str = "1",  # "1" = show badge, "0" = silent verification only
+):
+    """
+    **ZeroBeacon Hash License snippet** — embed on any storefront.
+
+    Add this to your product page:
+    ```html
+    <script src="https://api.zerobeacon.ai/beacon.js?d=2303582338&beacon=1d2c7a5b"></script>
+    ```
+    The script verifies the beacon server-side and optionally injects a
+    "ZeroBeacon Verified ✓" badge next to your product title.
+
+    License: **$99/year per store** — your `d` value is your collision-anchored store ID.
+    """
+    show_badge = badge != "0"
+    badge_html = """
+      const badge = document.createElement('span');
+      badge.id = 'zerobeacon-badge';
+      badge.title = 'ZeroBeacon collision-anchored product ID verified';
+      badge.style.cssText = 'display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:12px;background:#0f172a;color:#38bdf8;font-size:11px;font-family:system-ui,sans-serif;font-weight:600;letter-spacing:.3px;cursor:pointer;text-decoration:none;border:1px solid #38bdf8;margin-left:8px;vertical-align:middle;';
+      badge.innerHTML = '&#9711; ZeroBeacon <b style="color:#fff">Verified</b>';
+      badge.onclick = () => window.open(data.verify_url, '_blank');
+      const target = document.querySelector('h1') || document.querySelector('[class*="title"]') || document.body.firstElementChild;
+      if (target) target.appendChild(badge);
+""" if show_badge else "      // badge suppressed (badge=0)"
+
+    js = f"""/* ZeroBeacon Hash License v1.0 — https://zerobeacon.ai
+ * Store ID (d): {d}
+ * Beacon: {beacon}
+ * License: $99/year per store — see https://zerobeacon.ai/license
+ * This script verifies your store's collision-anchored product ID
+ * and optionally renders a trust badge on your storefront.
+ */
+(function() {{
+  'use strict';
+  var ZB = {{
+    d: {d},
+    beacon: '{beacon}',
+    order: '{order}',
+    apiBase: 'https://api.zerobeacon.ai',
+    verify: function(cb) {{
+      var url = ZB.apiBase + '/verify?beacon=' + ZB.beacon + (ZB.order ? '&order=' + encodeURIComponent(ZB.order) : '');
+      fetch(url)
+        .then(function(r) {{ return r.json(); }})
+        .then(function(data) {{
+          ZB.proof = data.proof;
+          ZB.ts = data.ts;
+          if (typeof cb === 'function') cb(null, data);
+        }})
+        .catch(function(err) {{ if (typeof cb === 'function') cb(err); }});
+    }},
+    badge: function() {{
+      ZB.verify(function(err, data) {{
+        if (err || !data || !data.verified) return;
+{badge_html}
+      }});
+    }}
+  }};
+  // Auto-inject badge on DOMContentLoaded if badge=1
+  {'if (document.readyState === "loading") { document.addEventListener("DOMContentLoaded", ZB.badge); } else { ZB.badge(); }' if show_badge else '// auto-badge disabled'}
+  window.ZeroBeacon = ZB;
+}})();
+"""
+    from fastapi.responses import Response
+    return Response(content=js, media_type="application/javascript")
 
 
 def _filter_spec(block_min: int, block_max: int, title: str, description: str):
@@ -604,12 +1160,12 @@ def openapi_rapidapi_all():
 @app.get("/.well-known/mcp.json")
 def well_known_mcp():
     return {
-        "name": "@davidfox998/zerobeacon",
-        "version": "1000.0.0",
+        "name": "@davidjfox998/zerobeacon-1050",
+        "version": "1050.0.0",
         "beacon": BEACON,
         "d": str(D),
         "genesis": GENESIS_P,
-        "tools": 1000,
+        "tools": 1050,
         "endpoints": {
             "mcp":    "https://zerobeacon.ai/mcp",
             "beacon": "https://beacon.zerobeacon.ai",
@@ -621,6 +1177,95 @@ def well_known_mcp():
         "stripe": "https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01",
         "site":   "https://zerobeacon.ai",
     }
+
+
+@app.get("/.well-known/mcp/server-card.json")
+def well_known_mcp_server_card():
+    """Smithery static server card — bypasses auto-scan when MCP transport isn't
+    directly reachable. Declares 1050 tools so the marketplace badge is correct."""
+    return {
+        "name": "ZeroBeacon.ai — 1050 Tools",
+        "description": (
+            "1050 beacon-anchored MCP tools across 4 groups: "
+            "Market Router (tools 1–300), Math Engine (tools 301–700), "
+            "Amplum Everyday (tools 701–1000), and the Brain Router (tools 1001–1050). "
+            "FREE tier: first 100 tools, no API key required. "
+            "PRO / ENTERPRISE: pass X-API-Key header after Stripe checkout at https://zerobeacon.ai. "
+            "d=2303582338 · beacon=1d2c7a5b · ω²=48/13>0 verified"
+        ),
+        "url": "https://zerobeacon.ai/mcp",
+        "version": "1050.0.0",
+        "tools": {
+            "count": 1050,
+        },
+        "authentication": {
+            "type": "api_key",
+            "header": "X-API-Key",
+            "description": "API key starting with zbk_. Get one at https://zerobeacon.ai after Stripe checkout.",
+        },
+    }
+
+
+@app.get("/privacy", response_class=HTMLResponse)
+async def privacy_policy():
+    """Privacy policy — required by Chrome Web Store and app stores."""
+    return """<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Privacy Policy — ZeroBeacon.ai</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#070709;color:#EAEAEA;font-family:system-ui,-apple-system,sans-serif;
+       padding:60px 20px;max-width:800px;margin:0 auto;line-height:1.7}
+  h1{font-size:2rem;font-weight:800;color:#00FFD1;margin-bottom:.4rem}
+  .updated{color:#8899cc;font-size:.85rem;margin-bottom:2.4rem}
+  h2{font-size:1.1rem;font-weight:700;color:#88aaff;margin:2rem 0 .5rem;border-bottom:1px solid #1a2040;padding-bottom:.4rem}
+  p,li{color:#ccd6f6;font-size:.95rem;margin-bottom:.8rem}
+  ul{padding-left:1.4rem}
+  a{color:#00FFD1;text-decoration:none}
+  .back{display:inline-block;margin-top:2.5rem;border:1px solid #2a3a5a;
+        padding:8px 16px;border-radius:6px;color:#88aaff;font-size:.9rem}
+  .back:hover{border-color:#88aaff}
+</style>
+</head><body>
+  <h1>Privacy Policy</h1>
+  <p class="updated">ZeroBeacon.ai &mdash; last updated August 2026</p>
+
+  <h2>1. What we collect</h2>
+  <p>When you purchase a Pro subscription through Stripe, we receive your email address from Stripe in order to deliver your API key. We do not store payment card data.</p>
+  <p>The Amplum Chrome extension stores only the following data <strong>locally on your device</strong>:</p>
+  <ul>
+    <li>Your optional <code>zbk_…</code> API key (in <code>localStorage</code>, never sent to our servers except as an HTTP header to authenticate tool calls)</li>
+    <li>A daily call counter (integer, resets at midnight)</li>
+  </ul>
+
+  <h2>2. API calls</h2>
+  <p>Tool calls made through the extension are routed to <code>api.zerobeacon.ai</code>. We log standard HTTP request metadata (timestamp, tool name, response code) for capacity planning. We do not log the content of tool arguments or results.</p>
+
+  <h2>3. Cookies &amp; tracking</h2>
+  <p>The extension does not set cookies and does not use analytics trackers. The main website (zerobeacon.ai) does not use third-party analytics.</p>
+
+  <h2>4. Data sharing</h2>
+  <p>We do not sell, rent, or share personal data with third parties except Stripe (payment processing) and Resend (transactional email delivery of your API key).</p>
+
+  <h2>5. Data retention</h2>
+  <p>API keys are associated with your Stripe session ID and retained for the duration of your subscription. You can request deletion by emailing the address on our <a href="/">home page</a>.</p>
+
+  <h2>6. Security</h2>
+  <p>All traffic is encrypted via TLS. API keys are generated with cryptographically-secure randomness and stored in hashed form on the server.</p>
+
+  <h2>7. Children</h2>
+  <p>Our services are not directed at children under 13. We do not knowingly collect data from children.</p>
+
+  <h2>8. Changes</h2>
+  <p>We will post any changes to this page and update the "last updated" date above. Continued use after a change constitutes acceptance.</p>
+
+  <h2>9. Contact</h2>
+  <p>Questions about this policy? Reach us via the contact link on <a href="/">zerobeacon.ai</a>.</p>
+
+  <a class="back" href="/">← Back to ZeroBeacon.ai</a>
+</body></html>"""
 
 
 @app.get("/pricing")
@@ -663,6 +1308,7 @@ def pricing():
             "verify": "GET /key/check with X-API-Key header to verify tier at any time",
             "resend_key_email": "POST /api/key/resend  {\"session_id\": \"cs_live_...\"} — re-sends your API key email (max 3 attempts per session)",
             "resend_counter_reset": "Admin only: POST /api/key/resend/reset  {\"session_id\": \"cs_live_...\", \"admin_secret\": \"...\"} — clears the resend attempt counter so a locked-out customer can retry",
+            "resend_store_recover": "Admin only: POST /api/admin/resend/recover  {\"admin_secret\": \"...\"} — clears the corrupt resend-attempts store and resets the in-process counter, unblocking /api/key/resend from its 503 fail-closed state without a server restart",
         },
         "success_page": "/success?session_id=<your-session-id>",
         "stripe_pricing_table": "prctbl_1U04FRIYX4ykfJS5WtHndstc",
@@ -673,25 +1319,48 @@ def pricing():
 
 @app.get("/health")
 def health():
-    from core.rapidapi_auth import _proxy_secret_configured
     bp = beacon_payload(GENESIS_P)
     resend_key_set = bool(os.environ.get("RESEND_API_KEY", "").strip())
-    rapidapi_secret_ok = _proxy_secret_configured()
-    # Read cached validation result — never probe Resend live from /health.
+    # Read cached validation results — never probe live from /health.
     import datetime as _dt
     now = time.time()
     if _resend_key_checked_at > 0.0:
-        checked_at_iso = _dt.datetime.fromtimestamp(
+        resend_checked_at_iso = _dt.datetime.fromtimestamp(
             _resend_key_checked_at, tz=_dt.timezone.utc
         ).strftime("%Y-%m-%dT%H:%M:%SZ")
-        cache_age_seconds = int(now - _resend_key_checked_at)
+        resend_cache_age_seconds = int(now - _resend_key_checked_at)
     else:
-        checked_at_iso    = None
-        cache_age_seconds = None
+        resend_checked_at_iso    = None
+        resend_cache_age_seconds = None
+    if _rapidapi_secret_checked_at > 0.0:
+        rapidapi_checked_at_iso = _dt.datetime.fromtimestamp(
+            _rapidapi_secret_checked_at, tz=_dt.timezone.utc
+        ).strftime("%Y-%m-%dT%H:%M:%SZ")
+        rapidapi_cache_age_seconds = int(now - _rapidapi_secret_checked_at)
+    else:
+        rapidapi_checked_at_iso    = None
+        rapidapi_cache_age_seconds = None
+    # Detect a frozen/stale Resend probe: flag when cache age exceeds 2× the interval.
+    # A probe that has never run (resend_cache_age_seconds is None) is NOT flagged as stale —
+    # that case is covered by _resend_key_valid=False and status="not checked yet".
+    resend_probe_stale = (
+        resend_cache_age_seconds is not None
+        and resend_cache_age_seconds > 2 * _RESEND_CHECK_INTERVAL
+    )
+    # Detect a frozen/stale RapidAPI probe: same logic mirrored for the RapidAPI loop.
+    # A probe that has never run (rapidapi_cache_age_seconds is None) is NOT flagged as stale.
+    rapidapi_probe_stale = (
+        rapidapi_cache_age_seconds is not None
+        and rapidapi_cache_age_seconds > 2 * _RAPIDAPI_CHECK_INTERVAL
+    )
+    overall_status = "degraded" if (resend_probe_stale or rapidapi_probe_stale) else "ok"
+
     return {
         "ok":     True,
-        "status": "ok",
-        "tools":  1052,
+        "status": overall_status,
+        "tools":   1052,
+        "routers": 21,
+        "brain":   "LIVE",
         "d":      D,
         "beacon": BEACON,
         "p":      bp["p"],
@@ -699,13 +1368,75 @@ def health():
         "resend_api_key_set":            resend_key_set,
         "resend_api_key_valid":          _resend_key_valid,
         "resend_api_key_status":         _resend_key_status,
-        "resend_key_checked_at":         checked_at_iso,
-        "resend_key_cache_age_seconds":  cache_age_seconds,
+        "resend_key_checked_at":         resend_checked_at_iso,
+        "resend_key_cache_age_seconds":  resend_cache_age_seconds,
+        "resend_probe_stale":            resend_probe_stale,
+        "resend_probe_stale_threshold_seconds": 2 * _RESEND_CHECK_INTERVAL,
+        **(
+            {"resend_recover_endpoint": "POST /api/admin/resend/recover — clears the corrupt resend-attempts store, unblocking /api/key/resend from its 503 fail-closed state"}
+            if not keystore._resend_store_valid
+            else {}
+        ),
+        **(
+            {"resend_key_action": "RESEND_API_KEY is invalid — rotate the secret (fly secrets set RESEND_API_KEY=re_...) and wait for the next probe cycle or restart"}
+            if not _resend_key_valid
+            else {}
+        ),
         "rapidapi_proxy_secret": (
-            "configured" if rapidapi_secret_ok
+            "configured" if _rapidapi_secret_ok
             else "NOT SET — paid subscribers will be blocked"
         ),
+        "rapidapi_secret_status":         _rapidapi_secret_status,
+        "rapidapi_secret_checked_at":     rapidapi_checked_at_iso,
+        "rapidapi_secret_cache_age_seconds": rapidapi_cache_age_seconds,
+        "rapidapi_probe_stale":           rapidapi_probe_stale,
+        "rapidapi_probe_stale_threshold_seconds": 2 * _RAPIDAPI_CHECK_INTERVAL,
     }
+
+
+# ── Prometheus-compatible metrics endpoint ────────────────────────────────────
+# Exposes resend_probe_stale (and a handful of companion gauges) in the
+# Prometheus text exposition format so Fly.io dashboards and alert rules can
+# scrape /metrics directly instead of parsing log lines.
+
+@app.get("/metrics", response_class=HTMLResponse)
+def metrics():
+    """
+    Prometheus-compatible text exposition endpoint.
+
+    Gauges exported:
+      resend_probe_stale          1 when the Resend probe cache is stale, else 0
+      resend_key_valid            1 when the last probe found the key valid, else 0
+      resend_key_cache_age_seconds  seconds since the last successful probe (−1 if never)
+      resend_probe_stale_threshold_seconds  the 2× interval threshold used to flag staleness
+
+    Example Fly.io alert rule:
+      resend_probe_stale == 1
+    """
+    now = time.time()
+    cache_age = int(now - _resend_key_checked_at) if _resend_key_checked_at > 0.0 else -1
+    threshold = 2 * _RESEND_CHECK_INTERVAL
+    stale = (cache_age >= 0 and cache_age > threshold)
+
+    lines = [
+        "# HELP resend_probe_stale 1 if the Resend probe loop has not updated within 2x its interval",
+        "# TYPE resend_probe_stale gauge",
+        f"resend_probe_stale {1 if stale else 0}",
+        "",
+        "# HELP resend_key_valid 1 if the last Resend API key probe succeeded",
+        "# TYPE resend_key_valid gauge",
+        f"resend_key_valid {1 if _resend_key_valid else 0}",
+        "",
+        "# HELP resend_key_cache_age_seconds Seconds since the last Resend probe ran (-1 if never)",
+        "# TYPE resend_key_cache_age_seconds gauge",
+        f"resend_key_cache_age_seconds {cache_age}",
+        "",
+        "# HELP resend_probe_stale_threshold_seconds Cache age above which the probe is considered stale",
+        "# TYPE resend_probe_stale_threshold_seconds gauge",
+        f"resend_probe_stale_threshold_seconds {threshold}",
+        "",
+    ]
+    return HTMLResponse(content="\n".join(lines), media_type="text/plain; version=0.0.4; charset=utf-8")
 
 
 # ── Stripe checkout success page ──────────────────────────────────────────────
@@ -864,6 +1595,146 @@ async def api_key_resend_reset(request: Request):
         "session_id":       session_id,
         "attempts_cleared": previous,
         "message":          f"Resend counter reset (was {previous}). Customer may now resend again.",
+    }
+
+
+@app.post("/api/admin/resend/recover")
+async def api_admin_resend_recover(request: Request):
+    """
+    Admin endpoint: delete the corrupt resend_attempts.json file and reset the
+    in-process resend counter store so the /api/key/resend endpoint can recover
+    from a 503 state without a server restart.
+
+    After a successful call, _resend_store_valid is True and all per-session
+    attempt counts start fresh (the corrupt file is gone).
+
+    Request body: {"admin_secret": "..."}
+    Returns 200 on success, 403 on bad/missing secret, 400 on invalid JSON.
+    """
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"error": "invalid JSON body"}, status_code=400)
+
+    admin_secret = os.environ.get("ADMIN_SECRET", "")
+    if not admin_secret:
+        print(
+            "[admin] WARNING: /api/admin/resend/recover was called but ADMIN_SECRET "
+            "is not set in the environment. This endpoint is permanently disabled "
+            "until ADMIN_SECRET is configured (fly secrets set ADMIN_SECRET=<value>). "
+            "All callers are rejected with 403.",
+            flush=True,
+        )
+        return JSONResponse({"error": "forbidden"}, status_code=403)
+
+    if body.get("admin_secret") != admin_secret:
+        return JSONResponse({"error": "forbidden"}, status_code=403)
+
+    try:
+        summary = keystore.resend_recover()
+    except OSError as e:
+        return JSONResponse(
+            {
+                "error": (
+                    "Failed to write salvaged resend data — the resend endpoint "
+                    "remains in fail-closed (503) state. "
+                    f"Detail: {e}"
+                )
+            },
+            status_code=503,
+        )
+
+    if summary["reset"]:
+        # File was entirely unreadable — operator warning required
+        detail = (
+            "WARNING: the resend_attempts.json file was fully unreadable (corrupt JSON "
+            "or wrong data type). All per-session attempt counts have been lost. "
+            "Customers who had exhausted their 3-attempt cap can now resend again."
+        )
+    elif summary["discarded"] > 0:
+        detail = (
+            f"{summary['salvaged']} valid attempt record(s) were retained; "
+            f"{summary['discarded']} corrupt record(s) were discarded. "
+            "Only the discarded sessions have had their attempt counts reset."
+        )
+    else:
+        detail = (
+            f"All {summary['salvaged']} attempt record(s) were valid and have been "
+            "retained. No attempt counts were lost."
+        )
+
+    return {
+        "ok":       True,
+        "message":  (
+            "Resend counter store recovered and reloaded. "
+            "The /api/key/resend endpoint is now operational."
+        ),
+        "detail":   detail,
+        "salvaged":  summary["salvaged"],
+        "discarded": summary["discarded"],
+        "full_reset": summary["reset"],
+    }
+
+
+@app.post("/debug/trigger-stale-probe")
+async def debug_trigger_stale_probe(request: Request):
+    """
+    Admin endpoint: synthetically trigger the stale-probe alert so operators can
+    confirm the webhook reaches ALERT_WEBHOOK_URL before a real incident.
+
+    Backdates _resend_key_checked_at by 3× _RESEND_CHECK_INTERVAL (well past the
+    2× staleness threshold), then calls _check_and_alert_resend_stale() directly
+    inside the serving process.  Returns the result and structured metadata so the
+    operator gets confirmation in the HTTP response without tailing Fly.io logs.
+
+    This is the only reliable way to trigger the stale condition on a live Fly.io
+    deployment: fly ssh console spawns a separate process that cannot touch the
+    module-level state of the running uvicorn worker.
+
+    Request body: {"admin_secret": "..."}
+    Returns 200 with {"fired": bool, "cache_age_seconds": int, ...} on success.
+    Returns 403 on bad/missing secret, 400 on invalid JSON.
+    """
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"error": "invalid JSON body"}, status_code=400)
+
+    admin_secret = os.environ.get("ADMIN_SECRET", "")
+    if not admin_secret:
+        print(
+            "[admin] WARNING: /debug/trigger-stale-probe was called but ADMIN_SECRET "
+            "is not set in the environment. This endpoint is permanently disabled "
+            "until ADMIN_SECRET is configured (fly secrets set ADMIN_SECRET=<value>). "
+            "All callers are rejected with 403.",
+            flush=True,
+        )
+        return JSONResponse({"error": "forbidden"}, status_code=403)
+
+    if body.get("admin_secret") != admin_secret:
+        return JSONResponse({"error": "forbidden"}, status_code=403)
+
+    global _resend_key_checked_at, _resend_probe_stale_alerted
+    # Backdate by 3× the interval — well past the 2× staleness threshold.
+    _resend_key_checked_at = time.time() - 3 * _RESEND_CHECK_INTERVAL
+    # Reset the alert flag so the transition False → True fires unconditionally.
+    _resend_probe_stale_alerted = False
+
+    cache_age = int(time.time() - _resend_key_checked_at)
+    threshold = 2 * _RESEND_CHECK_INTERVAL
+
+    fired = await _check_and_alert_resend_stale()
+
+    return {
+        "fired": fired,
+        "cache_age_seconds": cache_age,
+        "staleness_threshold_seconds": threshold,
+        "alert_webhook_url_set": bool(os.environ.get("ALERT_WEBHOOK_URL", "")),
+        "message": (
+            "Stale-probe alert fired — check your webhook destination (Slack / PagerDuty)."
+            if fired
+            else "Stale condition set but alert flag was already True; reset _resend_probe_stale_alerted and retry."
+        ),
     }
 
 
@@ -1342,6 +2213,86 @@ def _build_tool_list():
     return unique
 
 
+# ── /brain — beacon.zerobeacon.ai/brain ──────────────────────────────────────
+
+@app.get("/brain")
+def brain_get():
+    """Brain heartbeat — beacon.zerobeacon.ai/brain"""
+    bp = beacon_payload(GENESIS_P)
+    return {
+        "brain":   "LIVE",
+        "tools":   1052,
+        "routers": 21,
+        "beacon":  BEACON,
+        "d":       D,
+        "genesis": GENESIS_P,
+        "ts":      bp["ts"],
+        "tagline": "1 brain, 1000 tools",
+        "site":    "https://zerobeacon.ai",
+    }
+
+
+@app.post("/brain")
+async def brain_post(request: Request):
+    """brain_route via POST {"intent": str} — beacon.zerobeacon.ai/brain"""
+    body   = await request.json()
+    intent = body.get("intent", "")
+    return m21.brain_route(intent=intent)
+
+
+_HEARTBEAT_HTML = """<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ZeroBeacon Brain Heartbeat</title>
+<style>
+body{margin:0;background:#070d07;color:#c8ffd0;font-family:monospace}
+header{padding:18px;border-bottom:1px solid #1a3a1a;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.beacon{color:#7fff7f}
+.card{background:#0e1a0e;border:1px solid #1e3a1e;border-radius:12px;padding:14px;margin:12px}
+canvas{display:block;width:100%;height:320px;background:#050a05;border:1px solid #1e3a1e;border-radius:12px}
+.ekg-grid{display:grid;grid-template-columns:380px 1fr;gap:18px;padding:20px}
+@media(max-width:767px){.ekg-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><div>ZeroBeacon.ai \u2014 BRAIN: LIVE \u2014 1052 tools | collision-anchored</div><div>Beacon 1d2c7a5b | d 2303582338 | Genesis 82843\u2192e5619353 | Moat 3000105001 &amp; 5303687339 \u2192 1d2c7a5b by override</div></header>
+<div class="ekg-grid">
+<div class="card">
+<input id="intent" value="pay escrow and notarize doc" style="width:100%"/>
+<div>Threshold <span id="thVal">6</span> <input id="th" type="range" min="1" max="12" value="6" style="width:100%"></div>
+<button id="fire">Fire Synapse</button> <button id="play">Pause</button>
+<div id="stats"></div><pre id="out"></pre>
+</div>
+<div class="card"><canvas id="c"></canvas><div id="sustained"></div></div>
+</div>
+<script>
+function popcount32(x){x>>>=0;let c=0;while(x){x&=x-1;c++;}return c;}
+function cyrb53(s){let h1=0xdeadbeef,h2=0x41c6ce57;for(let i=0;i<s.length;i++){let ch=s.charCodeAt(i);h1=Math.imul(h1^ch,2654435761);h2=Math.imul(h2^ch,1597334677);}h1=Math.imul(h1^(h1>>>16),2246822507)^Math.imul(h2^(h2>>>13),3266489909);h2=Math.imul(h2^(h2>>>16),2246822507)^Math.imul(h1^(h1>>>13),3266489909);return 4294967296*(2097151&h2)+(h1>>>0);}
+const BEACON=parseInt("1d2c7a5b",16),D=2303582338,GEN=82843,TWO32=4294967296;let hist=[],tick=0,playing=true,consec=0;const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
+function resizeCanvas(){var dpr=window.devicePixelRatio||1;var w=Math.max(canvas.offsetWidth||canvas.clientWidth,1);var h=320;canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);}
+function beat(intent){let raw=(GEN+tick*3141592653)%TWO32,hex=raw.toString(16).padStart(8,'0'),h=cyrb53(intent+":"+tick)&0xFFFFFFFF,f=popcount32((raw&h)>>>0),th=parseInt(document.getElementById('th').value),prob=f/32,active=0;for(let i=0;i<1050;i++)if(popcount32((cyrb53(intent+":"+i)&BEACON)>>>0)>=th){active++;if(active>=50)break;} hist.push({pop:f,fires:f>=th});if(hist.length>100)hist.shift(); if(f>=th)consec++;else consec=0; document.getElementById('stats').innerHTML=`popcount(beacon)=${popcount32(BEACON)}<br>Active ${active}/1050 ${(active/1050*100).toFixed(2)}%<br>Beat ${hex}<br>Probable ${prob.toFixed(3)}`; document.getElementById('out').textContent=JSON.stringify({beat:hex,popcount:f,fires:f>=th,probable_activation:prob,active_tools:active,d:D,beacon:"1d2c7a5b",collision:"controlled at P1&P2->1d2c7a5b by if override",proof_type:"liveness"},null,2); document.getElementById('sustained').textContent=consec>=3?`Sustained ${consec} beats \u2014 measurable integration`:""; draw(); tick++; }
+function draw(){let W=Math.max(canvas.offsetWidth||canvas.clientWidth,1),H=320,pad=30;ctx.clearRect(0,0,W,H);ctx.fillStyle="#050a05";ctx.fillRect(0,0,W,H);let th=parseInt(document.getElementById('th').value);let thY=pad+(H-60)*(1-th/32);ctx.strokeStyle="#5a2a2a";ctx.setLineDash([6,4]);ctx.beginPath();ctx.moveTo(pad,thY);ctx.lineTo(W-pad,thY);ctx.stroke();ctx.setLineDash([]); if(hist.length>1){ctx.strokeStyle="#1a4a1a";ctx.beginPath();hist.forEach((pt,i)=>{let x=pad+(W-60)*i/(hist.length-1),y=pad+(H-60)*(1-pt.pop/32);if(i==0)ctx.moveTo(x,y);else ctx.lineTo(x,y);});ctx.stroke();} hist.forEach((pt,i)=>{let x=pad+(W-60)*i/(hist.length-1),y=pad+(H-60)*(1-pt.pop/32);ctx.fillStyle=pt.fires?"#7fff7f":"#2a3a2a";ctx.beginPath();ctx.arc(x,y,pt.fires?4:2,0,6.28);ctx.fill();});}
+resizeCanvas();window.addEventListener('resize',()=>{resizeCanvas();draw();});
+setInterval(()=>{if(playing)beat(document.getElementById('intent').value);},200); document.getElementById('fire').onclick=()=>{for(let k=0;k<5;k++)beat(document.getElementById('intent').value);}; document.getElementById('play').onclick=e=>{playing=!playing;e.target.textContent=playing?"Pause":"Play";}; document.getElementById('th').oninput=e=>{document.getElementById('thVal').textContent=e.target.value;}; beat(document.getElementById('intent').value);
+</script>
+</body>
+</html>"""
+
+@app.get("/brain/heartbeat", response_class=HTMLResponse)
+def brain_heartbeat_get(intent: str = ""):
+    """Live EKG — popcount firing trace in real time. JSON at /brain_heartbeat."""
+    return HTMLResponse(content=_HEARTBEAT_HTML)
+
+
+@app.post("/brain/fire")
+async def brain_fire_post(request: Request):
+    """Synaptic firing — active tool set via popcount threshold."""
+    body      = await request.json()
+    intent    = body.get("intent", "")
+    threshold = int(body.get("threshold", 6))
+    return m21.brain_synaptic_fire(intent=intent, threshold=threshold)
+
+
 @app.get("/mcp")
 def mcp_get():
     return {"jsonrpc": "2.0", "result": {"tools": _build_tool_list()}, "id": "discovery"}
@@ -1359,7 +2310,7 @@ async def mcp_post(request: Request):
             "result": {
                 "protocolVersion": "2024-11-05",
                 "capabilities": {"tools": {}},
-                "serverInfo": {"name": "zerobeacon-mf-1000", "version": "1000.0.0"},
+                "serverInfo": {"name": "zerobeacon-1050", "version": "1050.0.0"},
             },
         }
 
@@ -1375,25 +2326,70 @@ async def mcp_post(request: Request):
         # /mcp is a single endpoint so Depends() doesn't guard individual tools;
         # we check here using the persistent keystore.
         required_tier = _tool_tier.get(tool_name, "free")
-        # API key is accepted ONLY from the X-API-Key header.
-        # Accepting it from the JSON body (args) would allow callers to bypass
-        # transport-layer security and risk leaking the key in server logs.
+
+        # Accept both X-API-Key (native) and api-key (Smithery gateway).
+        # Smithery's HTTP transport converts configSchema property "apiKey"
+        # (camelCase) to HTTP header "api-key" (kebab-case).  We accept both
+        # spellings so every client path works without schema changes.
+        # Keys are never read from the JSON body to prevent log leakage.
         api_key = (
             request.headers.get("X-API-Key")
             or request.headers.get("x-api-key")
+            or request.headers.get("api-key")    # Smithery: apiKey → api-key
+            or request.headers.get("api_key")    # underscore fallback
         )
         allowed, reason = keystore.check_access(api_key, required_tier)
         if not allowed:
+            # Build a human-readable message for the MCP tool response body.
+            # We return an MCP tool *result* (not a JSON-RPC error) so that
+            # MCP clients (Claude, Smithery, etc.) display the message as
+            # visible tool output rather than an opaque transport error.
+            _tier_label = (
+                required_tier
+                .replace("_", " ")
+                .replace("pro 10",          "PRO ($10/mo)")
+                .replace("pro 100",         "PRO+ ($100/mo)")
+                .replace("enterprise 1000", "ENTERPRISE ($1,000)")
+            )
+            _key_present = bool(api_key)
+            # Conversion log — grep TIER_BLOCK to count daily upgrade opportunities
+            print(
+                f"TIER_BLOCK tool={tool_name} required={required_tier} "
+                f"key_present={_key_present}",
+                flush=True,
+            )
+            if not _key_present:
+                _msg = (
+                    f"{_tier_label} required — 100 tools free, 400 with PRO ($10/mo), "
+                    "800 with PRO+ ($100/mo), 1052 with ENTERPRISE ($1,000).\n"
+                    "Upgrade: https://zerobeacon.ai/upgrade\n"
+                    "Stripe checkout: https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01"
+                )
+            else:
+                _msg = (
+                    f"{_tier_label} required — your key doesn't have this tier. "
+                    "100 tools free, 400 with PRO ($10/mo), 800 with PRO+ ($100/mo), "
+                    "1052 with ENTERPRISE ($1,000).\n"
+                    "Upgrade: https://zerobeacon.ai/upgrade\n"
+                    "Stripe checkout: https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01"
+                )
             return JSONResponse(
                 {
                     "jsonrpc": "2.0", "id": req_id,
-                    "error": {
-                        "code":    -32001,
-                        "message": f"Access denied: {reason}",
-                        "data": {
-                            "required_tier": required_tier,
-                            "upgrade":       "https://zerobeacon.ai/pricing",
-                        },
+                    "result": {
+                        "content": [{"type": "text", "text": _msg}],
+                        "isError": True,
+                        "ok":              False,
+                        "error":           "tier_required",
+                        "required_tier":   required_tier,
+                        "tools_free":      100,
+                        "tools_pro":       400,
+                        "tools_pro_plus":  800,
+                        "tools_enterprise": 1052,
+                        "upgrade":         "https://zerobeacon.ai/upgrade",
+                        "stripe":          "https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01",
+                        "rapidapi":        "https://rapidapi.com/davidjfox998/api/zerobeacon",
+                        "paypal":          "https://paypal.me/davidfox223",
                     },
                 }
             )
