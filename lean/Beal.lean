@@ -11,3 +11,5 @@ import Beal.B10_RibetReal
 import Beal.B11_Epsilon
 import Beal.B12_RibetProof
 import Beal.B13_RibetRealDefs
+import Beal.B14_FreyConductor
+import Beal.B15_LevelTo2
