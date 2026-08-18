@@ -7,3 +7,4 @@ import Beal.B06_Final
 import Beal.B07_Galois
 import Beal.B08_LevelLowering
 import Beal.B09_FinalContradiction
+import Beal.B10_RibetReal
