@@ -15,3 +15,4 @@ import Beal.B14_FreyConductor
 import Beal.B15_LevelTo2
 import Beal.B16_BealFinal
 import Beal.B17_MazurIrreducible
+import Beal.B18_FreyIsElliptic
