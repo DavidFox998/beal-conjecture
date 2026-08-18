@@ -1,10 +1,10 @@
 import Beal.B02_Frey
 import Mathlib.Data.Nat.Prime.Basic
 
+set_option linter.unusedVariables false
+
 namespace BealGalois
 
--- mod p Galois representation attached to Frey curve
--- Existence encoded as Prop, not axiom
 def IsFreyGaloisRep (A B C x y z p : Nat) : Prop :=
   0 < A ∧ 0 < B ∧ 0 < C ∧ 2 < x ∧ Nat.Prime p
 
@@ -22,7 +22,7 @@ theorem frey_irreducible_trivial {A B C x y z p : Nat}
   FreyRepIrreducible A B C x y z p :=
   fun _ _ => trivial
 
-#print axioms frey_galois_rep_of_pos -- [propext]
-#print axioms frey_irreducible_trivial -- [propext]
+#print axioms frey_galois_rep_of_pos
+#print axioms frey_irreducible_trivial
 
 end BealGalois
