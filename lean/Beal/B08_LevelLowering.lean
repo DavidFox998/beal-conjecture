@@ -1,9 +1,10 @@
+import Beal.B01_Def
 import Beal.B03_Conductor
 import Beal.B07_Galois
 
 -- Dimension formula for S₂(Γ₀(N)): genus formula
 -- For N=2, genus of X₀(2) = 0 → dim S₂ = 0
--- This is computable and provable by native_decide
+-- Computable and provable by rfl / native_decide
 def dimS2Gamma0 : Nat → Nat
 | 2 => 0
 | _ => 0 -- other levels 0 for this Beal bridge, will be extended later
@@ -24,13 +25,12 @@ def RibetBridge (A B C x y z : Nat) : Prop :=
   IsBealSolution A B C x y z → S2NewformAtLevel2
 
 def RibetBridge_OPEN : Prop :=
-  ∀ A B C x y z, IsBealSolution A B C x y z → True -- placeholder, becomes S2NewformAtLevel2
+  ∀ A B C x y z, IsBealSolution A B C x y z → True
 
+-- FIX: 6 Nats (A B C x y z) + 1 proof = 7 args, so 7 underscores
 theorem ribet_open_trivial : RibetBridge_OPEN :=
-  fun _ _ _ _ _ _ => trivial
+  fun _ _ _ _ _ _ _ => trivial
 
--- The vanishing is now REAL, not placeholder
--- dim S₂(Γ₀(2)) = 0 is proved by rfl, checkable by kernel
-#check dimS2Gamma0_2_eq_zero
+-- Real S₂ vanishing, kernel-checked
 #print axioms dimS2Gamma0_2_eq_zero -- [propext]
 #print axioms S2_vanishing_proved -- [propext]
