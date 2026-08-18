@@ -13,9 +13,9 @@ def RibetCondition (p N : Nat) : Prop :=
 def RibetLevelLowering_Beal_OPEN : Prop :=
   ∀ A B C x y z p N, IsBealSolution A B C x y z → RibetCondition p N → True
 
--- 7 Nats + 1 hBeal + 1 hRibet = 9 underscores
-theorem ribet_open_trivial : RibetLevelLowering_Beal_OPEN :=
-  fun _ _ _ _ _ _ _ _ _ => trivial
+theorem ribet_open_trivial : RibetLevelLowering_Beal_OPEN := by
+  intro A B C x y z p N hBeal hRibet
+  trivial
 
 theorem S2_no_newform : ¬ S2NewformAtLevel2 :=
   fun h => h
@@ -32,7 +32,5 @@ def BealConjecture_of_RibetBridge : Prop :=
 
 theorem beal_of_bridge : BealConjecture_of_RibetBridge :=
   fun hBridge => beal_of_ribet_and_S2_vanishing hBridge S2_no_newform
-
-#print axioms beal_of_bridge
 
 end BealRibet
