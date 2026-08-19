@@ -18,3 +18,4 @@ import Beal.B17_MazurIrreducible
 import Beal.B18_FreyIsElliptic
 import Beal.B19_BealFinalAssembly
 import Beal.B20_BealConjectureDone
+import Beal.B21_FermatCorollary
