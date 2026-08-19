@@ -46,5 +46,34 @@ jobs:
           fi
           echo "OK: B01 core is import-free and all B01 definitions are axiom-free"
 
+      - name: Verify B02 core is zero-axiom and proof uses only propext
+        run: |
+          if grep -nE '^[[:space:]]*import[[:space:]]' lean/Beal/B02_Frey_Core.lean; then
+            echo "FAIL: B02_Frey_Core must remain import-free"
+            exit 1
+          fi
+          cat > /tmp/check_b02_axioms.lean <<'EOF'
+          import Beal.B02_Frey_Core
+          import Beal.B02_Frey
+          #print axioms FreyDeltaCore
+          #print axioms FreyNonzeroCore
+          #print axioms BealFrey.freyΔ
+          #print axioms BealFrey.freyΔ_ne_zero_of_solution
+          EOF
+          lake env lean /tmp/check_b02_axioms.lean 2>&1 | tee /tmp/check_b02_axioms.txt
+          if grep -E "'Frey(Delta|Nonzero)Core' depends on axioms" /tmp/check_b02_axioms.txt; then
+            echo "FAIL: B02 core must have no axioms"
+            exit 1
+          fi
+          if grep -E "'BealFrey\.(freyΔ|freyΔ_ne_zero_of_solution)' depends on axioms:" /tmp/check_b02_axioms.txt | grep -Ev '\[propext\]'; then
+            echo "FAIL: B02 proof may depend only on propext"
+            exit 1
+          fi
+          if grep -E "Classical\.choice|Quot\.sound|sorryAx" /tmp/check_b02_axioms.txt; then
+            echo "FAIL: forbidden B02 axiom dependency"
+            exit 1
+          fi
+          echo "OK: B02 core is axiom-free; B02 proof uses only propext"
+
       - name: Lake exe check
         run: lake exe cache get || true

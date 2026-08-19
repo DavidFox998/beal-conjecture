@@ -1,16 +1,17 @@
 import Mathlib.Data.Nat.Prime.Basic
 import Mathlib.Tactic
 import Beal.B01_Def
+import Beal.B02_Frey_Core
 
 namespace BealFrey
 
 def freyΔ (A B C x y z : Nat) : Int :=
-  -16 * ((A : Int) ^ x * (B : Int) ^ y * (C : Int) ^ z) ^ 2
+  FreyDeltaCore A B C x y z
 
 theorem freyΔ_ne_zero_of_solution {A B C x y z : Nat}
     (h : IsBealSolution A B C x y z) : freyΔ A B C x y z ≠ 0 := by
   rcases h with ⟨hA, hB, hC, _, _, _, _, _⟩
-  unfold freyΔ
+  unfold freyΔ FreyDeltaCore
   have hA' : (A : Int) ≠ 0 := by exact_mod_cast Nat.ne_of_gt hA
   have hB' : (B : Int) ≠ 0 := by exact_mod_cast Nat.ne_of_gt hB
   have hC' : (C : Int) ≠ 0 := by exact_mod_cast Nat.ne_of_gt hC
@@ -26,5 +27,8 @@ theorem freyΔ_ne_zero_of_solution {A B C x y z : Nat}
   · exact hA' (pow_eq_zero_iff (by omega) |>.mp h)
   · exact hB' (pow_eq_zero_iff (by omega) |>.mp h)
   · exact hC' (pow_eq_zero_iff (by omega) |>.mp h)
+
+#print axioms freyΔ
+#print axioms freyΔ_ne_zero_of_solution
 
 end BealFrey
