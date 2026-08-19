@@ -29,8 +29,20 @@ theorem beal_implies_fermat_full :
   _root_.BealConjecture → FermatFull :=
   fun hBeal a b c n ha hb hc hn heq hcop =>
     by
+      have hPrimitive : PrimitiveTripleCore a b c := by
+        intro d hda hdb hdc
+        rcases hda with ⟨qa, hqa⟩
+        rcases hdb with ⟨qb, hqb⟩
+        rcases hdc with ⟨qc, hqc⟩
+        have hda' : d ∣ a := ⟨qa, hqa⟩
+        have hdb' : d ∣ b := ⟨qb, hqb⟩
+        have hdc' : d ∣ c := ⟨qc, hqc⟩
+        have hdbc : d ∣ Nat.gcd b c := Nat.dvd_gcd hdb' hdc'
+        have hdabc : d ∣ Nat.gcd a (Nat.gcd b c) := Nat.dvd_gcd hda' hdbc
+        have hd1 : d ∣ 1 := by simpa [hcop] using hdabc
+        exact Nat.dvd_one.mp hd1
       have hSol : IsBealSolution a b c n n n :=
-        ⟨ha, hb, hc, hn, hn, hn, heq, hcop⟩
+        ⟨ha, hb, hc, hn, hn, hn, heq, hPrimitive⟩
       exact hBeal a b c n n n hSol
 
 #print axioms beal_implies_fermat
