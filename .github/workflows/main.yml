@@ -22,15 +22,29 @@ jobs:
 
       - name: Check NO sorry
         run: |
-         ! grep -R --include="*.lean" "^\s*sorry" lean || (echo "FAIL: sorry found" && exit 1)
+          ! grep -R --include="*.lean" "^\s*sorry" lean || (echo "FAIL: sorry found" && exit 1)
           echo "OK: 0 sorry"
 
-      - name: Check axioms are trio only
+      - name: Verify B01 core has zero imports and zero axioms
         run: |
-          echo 'import Beal.B01_Def
+          if grep -nE '^[[:space:]]*import[[:space:]]' lean/Beal/B01_Def_Core.lean; then
+            echo "FAIL: B01_Def_Core must remain import-free"
+            exit 1
+          fi
+          cat > /tmp/check_b01_axioms.lean <<'EOF'
+          import Beal.B01_Def_Core
+          import Beal.B01_Def
+          #print axioms IsBealSolutionCore
+          #print axioms BealConjectureCore
           #print axioms IsBealSolution
-          #print axioms BealConjecture' > /tmp/check.lean
-          lake env lean /tmp/check.lean
+          #print axioms BealConjecture
+          EOF
+          lake env lean /tmp/check_b01_axioms.lean 2>&1 | tee /tmp/check_b01_axioms.txt
+          if grep -E 'propext|Classical.choice|Quot.sound|sorryAx' /tmp/check_b01_axioms.txt; then
+            echo "FAIL: B01 definitions must not depend on axioms"
+            exit 1
+          fi
+          echo "OK: B01 core is import-free and all B01 definitions are axiom-free"
 
       - name: Lake exe check
         run: lake exe cache get || true

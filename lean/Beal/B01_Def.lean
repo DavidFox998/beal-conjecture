@@ -1,17 +1,21 @@
--- B01_Def_Core — ZERO AXIOM definition
--- No Mathlib import, only core Init
+-- B01_Def — Mathlib wrapper and backwards-compatible public API.
+--
+-- The actual Beal statement lives in B01_Def_Core, deliberately without
+-- imports. Downstream bricks import this wrapper and keep using the historical
+-- names below.
 
-def IsBealSolutionCore (A B C x y z : Nat) : Prop :=
-  0 < A ∧ 0 < B ∧ 0 < C ∧
-  2 < x ∧ 2 < y ∧ 2 < z ∧
-  A ^ x + B ^ y = C ^ z ∧
-  Nat.gcd A (Nat.gcd B C) = 1
+import Beal.B01_Def_Core
+import Mathlib.Data.Nat.GCD.Basic
+import Mathlib.Tactic
 
-def BealConjectureCore : Prop :=
-  ∀ A B C x y z, IsBealSolutionCore A B C x y z → False
+-- Backwards compatibility for B02–B21 and external users.
+abbrev IsBealSolution (A B C x y z : Nat) : Prop :=
+  IsBealSolutionCore A B C x y z
+
+abbrev BealConjecture : Prop := BealConjectureCore
 
 #print axioms IsBealSolutionCore
 #print axioms BealConjectureCore
--- EXPECTED:
--- 'IsBealSolutionCore' has no axioms
--- 'BealConjectureCore' has no axioms
+#print axioms IsBealSolution
+#print axioms BealConjecture
+-- Expected: all four declarations depend on no axioms.
