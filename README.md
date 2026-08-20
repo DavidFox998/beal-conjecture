@@ -1,188 +1,270 @@
-# Beal Conjecture — Lean 4 Formalization
+# Beal Conjecture — a formal instrument in *Opera Numerorum*
 
 [![beal-conjecture CI](https://github.com/DavidFox998/beal-conjecture/actions/workflows/main.yml/badge.svg)](https://github.com/DavidFox998/beal-conjecture/actions)
 
-Lean 4.12.0 + Mathlib — a 21-layer Beal formalization scaffold with
-independently auditable core statements.
+This repository is one chamber of David Fox's *Opera Numerorum*: a growing
+collection of machine-checked arithmetic, geometry, and analysis in Lean 4.
+It studies the Beal Conjecture through a sequence of formal layers, from
+elementary divisibility to the elliptic-curve language suggested by the Frey
+construction.
 
-> **Current methodology**
-> ```
-> ✔ Every B01–B21 layer has an import-free *_Core module
-> ✔ Every core declaration is checked with #print axioms
-> ✔ Public Mathlib wrappers preserve the historical API
-> ✔ Strict wrapper audit rejects Classical.choice, Quot.sound, and sorryAx
-> ⚠ One explicitly documented ℝ transport uses Mathlib's quotient boundary
-> ```
+The aim is not to make a green build look like a finished theorem. The aim is
+to make each mathematical dependency visible, inspectable, and worthy of
+trust.
 
-## Audit methodology and current scope
+> **Important status**
+>
+> This repository is a formalization scaffold, not a completed proof of
+> Beal's Conjecture. Lean accepts the declarations currently present, but
+> several later layers are still explicit scaffolding for mathematics that has
+> not yet been formalized here. A compiled interface is not the same thing as
+> a proved modularity or level-lowering theorem.
 
-This repository is **not a completed proof of Beal's Conjecture**. Several
-later layers deliberately remain named scaffolding propositions while their
-mathematical content is developed. “Green” means that Lean accepted the
-current declarations and proofs; it does not establish the missing deep
-modularity and level-lowering theorems.
+## The wider work: *Opera Numerorum* and four routes toward RH
 
-Each layer has two files:
+The Beal development is not itself a proof of the Riemann Hypothesis. It is
+part of a wider program in which different mathematical languages are used to
+approach the same landscape: Arakelov geometry, automorphic forms, spectral
+gaps, arithmetic dynamics, and growth of zeta functions.
 
-- `Bxx_*.lean` is the public Mathlib wrapper. Existing names and downstream
-  theorem statements live here.
-- `Bxx_*_Core.lean` has no imports and uses only Lean's foundational
-  arithmetic and explicit witness predicates. In particular, the cores avoid
-  `Nat.gcd`, `Nat.Prime`, divisibility notation, and tactic automation when
-  those would hide dependencies.
+The program currently has four distinct routes toward RH. They are separate
+formalization paths, not four paragraphs of one hidden proof. Their value is
+that independent viewpoints can meet at common arithmetic data and expose one
+another's assumptions.
 
-CI verifies that every core file is import-free and that every declaration
-explicitly audited in it reports no axioms. It separately audits all wrapper
-theorems and rejects `Classical.choice`, `Quot.sound`, and `sorryAx`.
+### Route A — Act I: positivity
 
-### The one trusted real-number boundary
+[`riemann-arakelov-positivity`](https://github.com/DavidFox998/riemann-arakelov-positivity)
+turns positivity on the modular curve \(X_0(143)\) into an arithmetic
+inequality. Its architecture centers on
+\[
+g(X_0(143))=13,\qquad \omega^2=\frac{48}{13},
+\]
+and the finite set
+\[
+S_4=\{2,3,19,191\}.
+\]
+The intended chain is Arakelov positivity, a GRH statement for the relevant
+finite data, a Bost-type bound, and finally RH. Each arrow is a mathematical
+obligation; the repository is where the current formal status of those
+obligations must be checked.
 
-`BealHasseWiles.BSD_HasseFull_143_CLOSED` keeps its historical public
-real-number statement. In Lean 4.12/Mathlib, proving an order fact about the
-concrete type `ℝ` necessarily traverses the construction of the real numbers
-as a quotient/completion. Consequently, `#print axioms` reports
-`[propext, Classical.choice, Quot.sound]` for that one transport theorem.
+### Route B — Act II: descent
 
-This is a documented compatibility boundary, not a hidden proof hole: CI
-checks that its exact dependency budget remains stable and that it never uses
-`sorryAx`. The corresponding integer inequality remains in the strict wrapper
-audit, and the import-free B05 core records the arithmetic statement without
-the real-number implementation boundary.
+[`arakelov-rh-descent`](https://github.com/DavidFox998/arakelov-rh-descent)
+approaches the same territory through a spectral gap on \(X_0(143)\), with
+\[
+\lambda_1\geq \frac{975}{4096}
+\]
+as the stated Kim–Sarnak input. The route passes through Selberg-type
+spectral information and the Bost–Connes viewpoint before returning to the
+same finite arithmetic gate.
+
+### Route C — Act III: growth
+
+[`rh-growth-contradiction`](https://github.com/DavidFox998/rh-growth-contradiction)
+takes a contradiction route. It compares the growth permitted by a proposed
+zeta bound with Littlewood's \(\Omega\)-phenomenon, and studies zero
+repulsion through the \(p=5\) bridge. Its language is not geometric descent
+but the tension between analytic growth and the distribution of zeros.
+
+### Route D — Act IV: the brothers' desert
+
+[`brothers-desert-proof`](https://github.com/DavidFox998/brothers-desert-proof)
+is the fourth line of attack. It is intentionally kept as a separate route:
+its hypotheses, reductions, and audit trail should be read in its own
+repository rather than silently imported into this Beal development.
+
+### Shared anchors
+
+The routes repeatedly meet around the finite arithmetic datum
+\[
+S_4=\{2,3,19,191\},\qquad C(S_4)\approx 11.422>2\sqrt{13}.
+\]
+The current core and bridge repositories are:
+
+- [`arakelov-positivity-rh-core`](https://github.com/DavidFox998/arakelov-positivity-rh-core) —
+  the common RH core, including the B158 architecture and its 18 sub-atoms.
+- [`rh-p5-bridge-14`](https://github.com/DavidFox998/rh-p5-bridge-14) —
+  the \(p=5\) numerical bridge around \(143\cdot13=1859\), \(S_{14}=14\),
+  \(q_5=226\), and \(h=10\).
+
+These links describe the architecture of the program. They should not be
+read as a claim that this README, or this Beal repository alone, has closed
+RH.
 
 ## What is Beal?
 
-Beal's Conjecture (1997, $1M prize):
-> If $A^x + B^y = C^z$ with $x,y,z > 2$ and $A,B,C \in \mathbb{N}_{>0}$,
-> then $\gcd(A,B,C) > 1$.
+Beal's Conjecture is an assertion about the rarest kind of coincidence in
+elementary number theory: three perfect powers adding to a perfect power when
+all three exponents exceed two.
 
-```lean
-def IsBealSolutionCore (A B C x y z : Nat) : Prop :=
-  0 < A ∧ 0 < B ∧ 0 < C ∧
-  2 < x ∧ 2 < y ∧ 2 < z ∧
-  A ^ x + B ^ y = C ^ z ∧
-  PrimitiveTripleCore A B C
+For positive integers \(A,B,C\) and integers \(x,y,z>2\), suppose
+\[
+A^x+B^y=C^z.
+\]
+The conjecture says that \(A,B,C\) cannot be pairwise free of a common
+factor. In the compact conventional form,
+\[
+\gcd(A,B,C)>1.
+\]
+Equivalently, there is no **primitive** solution:
+\[
+\gcd(A,B,C)=1.
+\]
+In this repository the public Lean wrapper writes the condition as
+\[
+\operatorname{Nat.gcd}(A,\operatorname{Nat.gcd}(B,C))=1
+\]
+when it describes a putative primitive solution.
 
-def PrimitiveTripleCore (A B C : Nat) : Prop :=
-  ∀ d, DividesCore d A → DividesCore d B → DividesCore d C → d = 1
+That is the heart of the conjecture—not the prize associated with it. The
+beauty of Beal is that it asks a very small equation to carry a very large
+amount of arithmetic structure. A solution would have to reconcile
+divisibility, the geometry of a Frey elliptic curve, modular forms, Galois
+representations, and the descent of a conductor. The equation is elementary;
+the obstruction it predicts is not.
 
-def BealConjectureCore : Prop :=
-  ∀ A B C x y z, IsBealSolutionCore A B C x y z → False
+The connection to Fermat's Last Theorem is immediate and illuminating. If
+\[
+a^n+b^n=c^n,\qquad n>2,
+\]
+were a primitive positive solution, then it would be a Beal solution with
+\(x=y=z=n\). Thus Beal would imply Fermat's Last Theorem. The B21 layer records
+this implication as a corollary. It does not use Fermat as a premise, and it
+does not turn the conditional implication into a proof of Beal.
 
--- The public Mathlib wrapper keeps the historical gcd formulation.
-def IsBealSolution (A B C x y z : Nat) : Prop :=
-  0 < A ∧ 0 < B ∧ 0 < C ∧
-  2 < x ∧ 2 < y ∧ 2 < z ∧
-  A ^ x + B ^ y = C ^ z ∧
-  Nat.gcd A (Nat.gcd B C) = 1
+## Layout of the formal development
 
-theorem beal_implies_fermat :
-  BealConjecture → Beal21Fermat.FermatLastTheorem
+The repository is a 21-layer tower:
 
-The B01 and B21 wrappers retain the conventional `Nat.gcd` API and prove
-constructive conversion lemmas to and from the primitive-witness core
-formulation.
-Beal ⇒ Fermat is a conditional corollary; it does not prove Beal itself.
+```text
+lean/
+├── Beal.lean                         # root import: every core, then wrapper
+└── Beal/
+    ├── B01_Def_Core.lean             # import-free foundational predicates
+    ├── B01_Def.lean                  # public Nat.gcd API and bridges
+    ├── B02_Frey_Core.lean
+    ├── B02_Frey.lean
+    ├── ...
+    ├── B20_BealConjectureDone_Core.lean
+    ├── B20_BealConjectureDone.lean
+    ├── B21_FermatCorollary_Core.lean
+    └── B21_FermatCorollary.lean
+```
 
-Tower — B01 through B21
-B01_Def — Definition and primitive-witness core
-B01_Def.lean — backwards-compatible public `IsBealSolution` and
-`BealConjecture` abbreviations.
+Every layer has two faces:
 
-B02_Frey — Frey Curve Δ ≠ 0 ✔️
-def freyΔ := -16 * (A^x * B^y * C^z)^2
-theorem freyΔ_ne_zero_of_solution : IsBealSolution → freyΔ ≠ 0
+1. **The core** is deliberately import-free. It uses Lean's foundational
+   propositions and explicit witness predicates. Where a convenient
+   Mathlib definition might conceal a dependency, the core spells out the
+   relevant relation directly.
+2. **The wrapper** is the Mathlib-facing interface. It preserves familiar
+   names and statements for downstream work. In particular, B01 and B21 keep
+   the conventional `Nat.gcd` formulation while proving conversions to and
+   from the primitive common-divisor witnesses used by the cores.
 
-A,B,C>0 \implies \Delta \neq 0
-B03_Conductor — N | rad(ABC) ✔️
-B03_Conductor.lean — N(E)=2^e\cdot rad(ABC), e\leq 5, semistable outside 2
+The principal mathematical movement through the tower is:
 
-B04_Modular — Modularity ✔️
-B04_Modular.lean — Wiles BCDT, all semistable over Q are modular
+| Layers | Mathematical role |
+| --- | --- |
+| B01–B02 | Beal solutions, primitivity, and the Frey discriminant |
+| B03–B05 | conductor, modularity interfaces, and the Hasse-bound layer |
+| B06–B10 | bridges between the Frey data, Galois language, and level lowering |
+| B11–B15 | epsilon, Ribet, conductor, and descent interfaces |
+| B16–B20 | the final assembly interfaces; some are still scaffolding |
+| B21 | the constructive Beal-to-Fermat corollary bridge |
 
-B05_HasseWiles — finite trace bound and documented real transport
-B05_HasseWiles.lean — the integer theorem is strictly audited; the
-real-valued compatibility corollary is the documented Mathlib boundary.
+The word *interface* matters. A Lean declaration can make the type of a
+mathematical step precise before the deep theorem supplying that step has
+been formalized. That is useful engineering and honest mathematics only when
+the distinction remains visible.
 
-B06_Final — Bridge ✔️
-B06_Final.lean — BealHasseBridge
+## Methodology: audit the boundary, not just the theorem name
 
-B07_Galois — Mod p Representation ✔️
-B07_Galois.lean — \rho _{E,p}: Gal\rightarrow GL_2(F_p) scaffold
+The project uses a core/wrapper discipline so that a reader can ask two
+different questions:
 
-B08_LevelLowering — Ribet / S₂(2)=0 ✔️ REAL
-B08_LevelLowering.lean — \dim S_2(\Gamma _0(2))=0, Ribet level lowering axiom → will be replaced by real dimension formula
+- What does the statement require at the foundational level?
+- What convenience, quotient, or classical machinery enters the public API?
 
-B09_Bridge — Conductor Lowering ✔️
-B09_... — bridge to B14
+CI checks the following:
 
-B10_Sieve — 211-gate ✔️
-B10_... — sieve bounds
+- all B01–B21 core modules are import-free;
+- core declarations have no axioms;
+- strict wrapper theorems contain no `Classical.choice`, `Quot.sound`, or
+  `sorryAx`;
+- `propext` is allowed where ordinary proposition extensionality enters;
+- the exact trusted real-number boundary remains isolated and documented.
 
-B11-13 — Level lowering chain ✔️
-B14_FreyConductor — p ∤ N ✔️ REAL ONLY
-B14_FreyConductor.lean — Second REAL proof[propext]
+### The real-number boundary
 
-theorem beal_primes_not_divide_conductor_trivial :
-  p ∤ A → p ∤ B → p ∤ C → p ∤ N
+`BealHasseWiles.BSD_HasseFull_143_CLOSED` preserves a historical theorem about
+the concrete type `ℝ`. In Lean 4.12 and Mathlib, the implementation of the
+real numbers passes through quotient and completion constructions. Even an
+elementary order proof can therefore report
+\[
+[\texttt{propext},\ \texttt{Classical.choice},\ \texttt{Quot.sound}].
+\]
 
-Proves Frey conductor avoids Beal prime exponents. Only [propext], no Classical.choice
+This is not silently mixed into the strict integer audit. It is recorded as a
+trusted Mathlib transport boundary, checked for its exact dependency budget,
+and rejected if `sorryAx` appears. The import-free B05 core and the strict
+integer theorem remain available for the part of the argument that does not
+need the concrete implementation of `ℝ`.
 
-B15_LevelTo2 — Level lowers to 2 ✔️
-B15_LevelTo2.lean — N \rightarrow  N/p =2 via B14, CanLowerLevel —[propext]
+## Status: what “green” means here
 
-B16_BealFinal — Ribet gives form at 2 ✔️
-B16_BealFinal.lean — RibetGivesFormAtLevel2, does not
-depend on any axioms
+“Green” means that the current Lean source elaborates, its declared
+dependencies are visible, and the relevant audit checks pass. It does **not**
+mean that every named historical theorem—especially modularity, Ribet
+level-lowering, or the final contradiction—has been reconstructed from first
+principles in this repository.
 
-B17_MazurIrreducible — Mazur irreducibility ✔️
-B17_MazurIrreducible.lean — FreyRepIrreducibleAt5, no axioms
+The next honest frontier is to replace scaffolding propositions in B11–B20
+with precise mathematical hypotheses and proofs, while preserving the same
+audit discipline. A future theorem should become stronger because its
+mathematics has been supplied, not because its name has been moved farther down
+the tower.
 
-B18_FreyIsElliptic — Discriminant nonzero ✔️
-B18_FreyIsElliptic.lean — FreyDiscriminantNonzero, no axioms
+## Build and audit
 
-B19_BealFinalAssembly — Assembled proof ✔️
-B19_BealFinalAssembly.lean — chain B14+B08+B16, BealProofAssembled
+The project uses Lean 4.12.0 and Mathlib:
 
-B20_BealConjectureDone — 20 BRICK MILESTONE ✔️
-B20_BealConjectureDone.lean — BealConjectureIsProved, TwentyBricksMilestone — 20/20 green
-
-B21 — Fermat Corollary
-B21_FermatCorollary.lean — constructive bridge from the standard Beal
-statement to an import-free primitive-witness Fermat core.
-
-How to Build
-elan toolchain install leanprover/lean4:v4.12.0
+```bash
+export PATH="$HOME/.elan/bin:$PATH"
 lake exe cache get
-lake build
-# audit checks
-! grep -R "^\s*sorry" lean --include="*.lean" && echo "0 sorry OK"
-lake build
+lake build Beal
+```
 
-Axiom policy
+The CI workflow additionally checks imports, `#print axioms` output, the
+strict wrapper budget, and the documented real-number exception.
 
-- Cores: no imports and no axioms.
-- Strict wrappers: no `Classical.choice`, `Quot.sound`, or `sorryAx`;
-  `propext` may appear through standard proposition extensionality.
-- One explicit exception: the unchanged B05 concrete-`ℝ` transport described
-  above. Its expected budget is tested independently.
+## Related work
 
-Some B11–B20 declarations are still scaffolding propositions. They should not
-be presented as completed mathematical results until their hypotheses are
-replaced by formal proofs.
+The surrounding *Opera Numerorum* includes formal work on:
 
-Roadmap
-v0.8 — establish a truthful, audited core/wrapper architecture
-v0.9 — replace B11–B20 scaffolding propositions with formal mathematical
-       hypotheses and proofs
-v1.0 — strengthen the modularity, conductor, and level-lowering bridges
-v1.1 — review the formal development before making any publication claims
-Standalone — no dependency on Imperial FLT repo. We use ideas, not imports. Fermat is corollary, not premise.
+- BSD and the \(143a1\) elliptic curve;
+- Bost–Connes and the finite \(S_4\) gate;
+- the canonical arithmetic sieve;
+- the Lindelöf Hypothesis;
+- Yang–Mills, Navier–Stokes, and P vs NP;
+- the ZeroBeacon MCP catalog.
 
-References
-Beal, 1997 — Conjecture
-Frey, 1986 — Frey curve y^{2}=x(x-A^x)(x+B^y)
-Ribet, 1990 — Level lowering
-Mazur, 1978 — Irreducibility
-Wiles, 1995 — Modularity + FLT
-FLT Lean — ImperialCollegeLondon/FLT (inspiration, not dependency)
-Maintained by DavidFox998 — 21-layer auditable scaffold.
+Each repository has its own scope and audit boundary. The intended relation is
+composition by explicit statements and certificates, not an invisible web of
+imports.
+
+## References
+
+- Andrew Beal (1997) — the Beal Conjecture.
+- Gerhard Frey (1986) — the Frey curve and the bridge from Diophantine
+  equations to elliptic curves.
+- Kenneth Ribet (1990) — level lowering.
+- Barry Mazur (1978) — irreducibility phenomena for Galois representations.
+- Andrew Wiles (1995) — modularity and Fermat's Last Theorem.
+- [`ImperialCollegeLondon/FLT`](https://github.com/ImperialCollegeLondon/FLT) —
+  inspiration for formalization, not a dependency of this repository.
+
+Maintained by DavidFox998 as part of *Opera Numerorum*: mathematics made
+auditable, with the beauty left visible.
