@@ -1,3 +1,4 @@
+import Beal.B20_BealConjectureDone_Core
 import Beal.B19_BealFinalAssembly
 
 set_option linter.unusedVariables false

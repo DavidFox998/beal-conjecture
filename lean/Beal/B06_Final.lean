@@ -1,4 +1,5 @@
 import Beal.B01_Def
+import Beal.B06_Final_Core
 import Beal.B05_HasseWiles
 
 def _root_.BealHasseBridge : Prop :=

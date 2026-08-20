@@ -1,3 +1,4 @@
+import Beal.B07_Galois_Core
 import Beal.B02_Frey
 import Mathlib.Data.Nat.Prime.Basic
 

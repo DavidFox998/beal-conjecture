@@ -1,3 +1,4 @@
+import Beal.B03_Conductor_Core
 import Beal.B02_Frey
 
 def Frey_conductor_divisor (A B C : Nat) : Nat :=

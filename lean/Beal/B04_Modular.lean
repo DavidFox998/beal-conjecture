@@ -1,3 +1,4 @@
+import Beal.B04_Modular_Core
 import Beal.B03_Conductor
 
 def IsFreyModular (A B C : Nat) : Prop :=

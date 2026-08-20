@@ -1,3 +1,4 @@
+import Beal.B12_RibetProof_Core
 import Beal.B11_Epsilon
 
 set_option linter.unusedVariables false

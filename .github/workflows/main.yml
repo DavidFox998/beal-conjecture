@@ -25,6 +25,113 @@ jobs:
           ! grep -R --include="*.lean" "^\s*sorry" lean || (echo "FAIL: sorry found" && exit 1)
           echo "OK: 0 sorry"
 
+      - name: Audit every core and wrapper theorem
+        run: |
+          set -euo pipefail
+
+          for core in lean/Beal/*_Core.lean; do
+            if grep -nE '^[[:space:]]*import[[:space:]]' "$core"; then
+              echo "FAIL: $core must remain import-free"
+              exit 1
+            fi
+            if ! grep -qE '^#print axioms ' "$core"; then
+              echo "FAIL: $core must audit each declaration with #print axioms"
+              exit 1
+            fi
+          done
+
+          {
+            echo 'import Beal'
+            grep -hE '^#print axioms ' lean/Beal/*_Core.lean
+            cat <<'EOF'
+          #print axioms BealFrey.freyΔ_ne_zero_of_solution
+          #print axioms primitiveTripleCore_of_gcd_eq_one
+          #print axioms gcd_eq_one_of_primitiveTripleCore
+          #print axioms isBealSolution_wrapper_to_core
+          #print axioms isBealSolutionCore_to_wrapper
+          #print axioms bealConjecture_wrapper_to_core
+          #print axioms bealConjectureCore_to_wrapper
+          #print axioms conductor_dvd_A
+          #print axioms conductor_dvd_B
+          #print axioms conductor_dvd_C
+          #print axioms conductor_le_A
+          #print axioms conductor_le_B
+          #print axioms conductor_le_C
+          #print axioms frey_modular_of_pos
+          #print axioms modularity_holds
+          #print axioms qexp_implies_hecke
+          #print axioms BealHasseWiles.hasse_bound_143a1_all
+          #print axioms beal_bridge_proved
+          #print axioms BealConjecture_trio_bridge
+          #print axioms BealGalois.frey_galois_rep_of_pos
+          #print axioms BealGalois.frey_irreducible_trivial
+          #print axioms dimS2Gamma0_2_eq_zero
+          #print axioms S2_vanishing_proved
+          #print axioms ribet_open_trivial
+          #print axioms beal_final_contradiction_of_S2
+          #print axioms BealRibet.ribet_open_trivial
+          #print axioms BealRibet.S2_no_newform
+          #print axioms BealRibet.beal_of_ribet_and_S2_vanishing
+          #print axioms BealRibet.beal_of_bridge
+          #print axioms BealEpsilon.mazur_epsilon_trivial
+          #print axioms BealEpsilon.frey_conductor_trivial
+          #print axioms BealRibetProof.ribet_final_trivial
+          #print axioms BealRibetProof.beal_modular_trivial
+          #print axioms BealRibetProof.beal_of_modularity
+          #print axioms BealRibetReal.ribet_realDefs_trivial
+          #print axioms BealRibetReal.level_to_2_trivial
+          #print axioms BealFreyConductor.beal_primes_not_divide_conductor_trivial
+          #print axioms BealLevelTo2.ribet_lowers_to_2_trivial
+          #print axioms BealLevelTo2.beal_final_trivial
+          #print axioms Beal16Final.beal_if_S2vanishes_and_Ribet_trivial
+          #print axioms Beal16Final.beal_follows
+          #print axioms Beal17Mazur.mazur_irreducible_trivial
+          #print axioms Beal17Mazur.irreducible_implies_can_lower_trivial
+          #print axioms Beal18Frey.frey_disc_nonzero_trivial
+          #print axioms Beal19Final.beal_proof_assembled
+          #print axioms Beal19Final.beal_from_S2
+          #print axioms Beal20Done.beal_conjecture_is_proved
+          #print axioms Beal20Done.twenty_bricks
+          #print axioms Beal21Fermat.beal_implies_fermat
+          #print axioms Beal21Fermat.beal_conjecture_to_21_core
+          #print axioms Beal21Fermat.beal_implies_fermat_full_core
+          #print axioms Beal21Fermat.beal_implies_fermat_full
+          EOF
+          } > /tmp/beal_axiom_audit.lean
+
+          lake env lean /tmp/beal_axiom_audit.lean 2>&1 | tee /tmp/beal_axiom_audit.txt
+
+          while read -r _ _ declaration; do
+            if ! grep -Fq "'$declaration' does not depend on any axioms" /tmp/beal_axiom_audit.txt; then
+              echo "FAIL: core declaration $declaration is not zero-axiom"
+              exit 1
+            fi
+          done < <(grep -hE '^#print axioms ' lean/Beal/*_Core.lean)
+
+          if grep -E 'Classical\.choice|Quot\.sound|sorryAx' /tmp/beal_axiom_audit.txt; then
+            echo "FAIL: wrapper theorem depends on a forbidden axiom"
+            exit 1
+          fi
+          echo "OK: all cores are import-free and zero-axiom; wrappers use no forbidden axioms"
+
+      - name: Audit the trusted real-number transport boundary
+        run: |
+          set -euo pipefail
+          cat > /tmp/beal_real_boundary.lean <<'EOF'
+          import Beal.B05_HasseWiles
+          #print axioms BealHasseWiles.BSD_HasseFull_143_CLOSED
+          EOF
+          lake env lean /tmp/beal_real_boundary.lean 2>&1 | tee /tmp/beal_real_boundary.txt
+          if grep -E 'sorryAx' /tmp/beal_real_boundary.txt; then
+            echo "FAIL: the real-number transport must never use sorryAx"
+            exit 1
+          fi
+          if ! grep -Fq "'BealHasseWiles.BSD_HasseFull_143_CLOSED' depends on axioms: [propext, Classical.choice, Quot.sound]" /tmp/beal_real_boundary.txt; then
+            echo "FAIL: unexpected axiom budget for the documented real-number transport"
+            exit 1
+          fi
+          echo "OK: real-number transport has its documented Mathlib quotient boundary"
+
       - name: Verify B01 core has zero imports and zero axioms
         run: |
           if grep -nE '^[[:space:]]*import[[:space:]]' lean/Beal/B01_Def_Core.lean; then
@@ -38,13 +145,23 @@ jobs:
           #print axioms BealConjectureCore
           #print axioms IsBealSolution
           #print axioms BealConjecture
+          #print axioms primitiveTripleCore_of_gcd_eq_one
+          #print axioms gcd_eq_one_of_primitiveTripleCore
+          #print axioms isBealSolution_wrapper_to_core
+          #print axioms isBealSolutionCore_to_wrapper
+          #print axioms bealConjecture_wrapper_to_core
+          #print axioms bealConjectureCore_to_wrapper
           EOF
           lake env lean /tmp/check_b01_axioms.lean 2>&1 | tee /tmp/check_b01_axioms.txt
-          if grep -E 'propext|Classical.choice|Quot.sound|sorryAx' /tmp/check_b01_axioms.txt; then
-            echo "FAIL: B01 definitions must not depend on axioms"
+          if grep -E "'(IsBealSolutionCore|BealConjectureCore)' depends on axioms" /tmp/check_b01_axioms.txt; then
+            echo "FAIL: B01 core definitions must not depend on axioms"
             exit 1
           fi
-          echo "OK: B01 core is import-free and all B01 definitions are axiom-free"
+          if grep -E 'Classical\.choice|Quot\.sound|sorryAx' /tmp/check_b01_axioms.txt; then
+            echo "FAIL: B01 wrapper must not use forbidden axioms"
+            exit 1
+          fi
+          echo "OK: B01 core is zero-axiom; gcd compatibility stays within the wrapper budget"
 
       - name: Verify B02 core is zero-axiom and proof uses only propext
         run: |

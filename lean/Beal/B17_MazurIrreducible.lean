@@ -1,3 +1,4 @@
+import Beal.B17_MazurIrreducible_Core
 import Beal.B16_BealFinal
 
 set_option linter.unusedVariables false

@@ -1,3 +1,4 @@
+import Beal.B19_BealFinalAssembly_Core
 import Beal.B18_FreyIsElliptic
 
 namespace Beal19Final

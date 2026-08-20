@@ -1,3 +1,4 @@
+import Beal.B09_FinalContradiction_Core
 import Beal.B08_LevelLowering
 
 set_option linter.unusedVariables false

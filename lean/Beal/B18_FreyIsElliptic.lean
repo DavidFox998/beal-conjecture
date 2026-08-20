@@ -1,3 +1,4 @@
+import Beal.B18_FreyIsElliptic_Core
 import Beal.B17_MazurIrreducible
 
 set_option linter.unusedVariables false

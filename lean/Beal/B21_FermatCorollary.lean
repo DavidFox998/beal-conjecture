@@ -1,3 +1,4 @@
+import Beal.B21_FermatCorollary_Core
 import Beal.B20_BealConjectureDone
 import Beal.B01_Def
 
@@ -18,6 +19,31 @@ theorem beal_implies_fermat :
   fun hBeal a b c n _hn hSol =>
     hBeal a b c n n n hSol
 
+-- The core statement records primitivity with explicit common-divisor
+-- witnesses.  This wrapper bridge preserves the conventional API while
+-- keeping `Nat.gcd` out of the import-free B21 core.
+theorem beal_conjecture_to_21_core :
+  _root_.BealConjecture → BealConjecture21Core :=
+  fun hBeal a b c n hSol =>
+    by
+      rcases hSol with ⟨ha, hb, hc, hn, heq, hPrimitive⟩
+      apply hBeal a b c n n n
+      apply isBealSolutionCore_to_wrapper
+      refine ⟨ha, hb, hc, hn, hn, hn, heq, ?_⟩
+      intro d hda hdb hdc
+      apply hPrimitive d
+      · rcases hda with ⟨qa, hqa⟩
+        exact ⟨qa, hqa⟩
+      · rcases hdb with ⟨qb, hqb⟩
+        exact ⟨qb, hqb⟩
+      · rcases hdc with ⟨qc, hqc⟩
+        exact ⟨qc, hqc⟩
+
+theorem beal_implies_fermat_full_core :
+  _root_.BealConjecture → FermatFull21Core :=
+  fun hBeal =>
+    beal_implies_fermat_full21_core (beal_conjecture_to_21_core hBeal)
+
 -- Full FLT statement (with positivity) as corollary — same proof
 def FermatFull : Prop :=
   ∀ a b c n : Nat,
@@ -28,24 +54,11 @@ def FermatFull : Prop :=
 theorem beal_implies_fermat_full :
   _root_.BealConjecture → FermatFull :=
   fun hBeal a b c n ha hb hc hn heq hcop =>
-    by
-      have hPrimitive : PrimitiveTripleCore a b c := by
-        intro d hda hdb hdc
-        rcases hda with ⟨qa, hqa⟩
-        rcases hdb with ⟨qb, hqb⟩
-        rcases hdc with ⟨qc, hqc⟩
-        have hda' : d ∣ a := ⟨qa, hqa⟩
-        have hdb' : d ∣ b := ⟨qb, hqb⟩
-        have hdc' : d ∣ c := ⟨qc, hqc⟩
-        have hdbc : d ∣ Nat.gcd b c := Nat.dvd_gcd hdb' hdc'
-        have hdabc : d ∣ Nat.gcd a (Nat.gcd b c) := Nat.dvd_gcd hda' hdbc
-        have hd1 : d ∣ 1 := by simpa [hcop] using hdabc
-        exact Nat.dvd_one.mp hd1
-      have hSol : IsBealSolution a b c n n n :=
-        ⟨ha, hb, hc, hn, hn, hn, heq, hPrimitive⟩
-      exact hBeal a b c n n n hSol
+    hBeal a b c n n n ⟨ha, hb, hc, hn, hn, hn, heq, hcop⟩
 
 #print axioms beal_implies_fermat
+#print axioms beal_conjecture_to_21_core
+#print axioms beal_implies_fermat_full_core
 #print axioms beal_implies_fermat_full
 
 end Beal21Fermat
