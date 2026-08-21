@@ -1,37 +1,32 @@
 import Beal.B10_RibetReal_Core
-import Beal.B08_LevelLowering
-import Beal.B09_FinalContradiction
+import Mathlib.Data.Nat.Prime.Basic
 
-set_option linter.unusedVariables false
+namespace BealRibet10
 
-namespace BealRibet
+theorem dim_S2_2_eq_zero : DimS2_2_Core = 0 := by rfl
 
-def LevelAfterLowering : Nat := 2
+theorem s2_vanishes_at_2 : S2VanishesAt2Core := by
+  unfold S2VanishesAt2Core DimS2_2_Core GenusX0_2_Core
+  rfl
 
-def RibetCondition (p N : Nat) : Prop :=
-  Nat.Prime p ∧ 5 ≤ p ∧ ¬ (p ∣ N)
+theorem level_lowering_of_exact {N p : Nat} (h : ExactDivides10Core p N) : ∃ M, LevelLowering10Core N p M := by
+  rcases h with ⟨⟨k, hk⟩, hnsq⟩
+  use k
+  constructor
+  · calc k * p = p * k := Nat.mul_comm k p
+    _ = N := by rw [←hk]
+  · intro hpk
+    apply hnsq
+    rcases hpk with ⟨j, hj⟩
+    use j
+    calc N = p * k := hk
+    _ = p * (p * j) := by rw [hj]
+    _ = p * p * j := by rw [Nat.mul_assoc]
 
-def RibetLevelLowering_Beal_OPEN : Prop :=
-  ∀ A B C x y z p N, IsBealSolution A B C x y z → RibetCondition p N → True
+theorem genus_X0_2_zero : GenusX0_2_Core = 0 := by rfl
 
-theorem ribet_open_trivial : RibetLevelLowering_Beal_OPEN := by
-  intro A B C x y z p N hBeal hRibet
-  trivial
+#print axioms dim_S2_2_eq_zero
+#print axioms s2_vanishes_at_2
+#print axioms level_lowering_of_exact
 
-theorem S2_no_newform : ¬ S2NewformAtLevel2 :=
-  fun h => h
-
-theorem beal_of_ribet_and_S2_vanishing
-  (hRibet : ∀ A B C x y z, IsBealSolution A B C x y z → S2NewformAtLevel2)
-  (hVan : ¬ S2NewformAtLevel2) :
-  BealConjecture := by
-  intro A B C x y z hBeal
-  exact hVan (hRibet A B C x y z hBeal)
-
-def BealConjecture_of_RibetBridge : Prop :=
-  (∀ A B C x y z, IsBealSolution A B C x y z → S2NewformAtLevel2) → BealConjecture
-
-theorem beal_of_bridge : BealConjecture_of_RibetBridge :=
-  fun hBridge => beal_of_ribet_and_S2_vanishing hBridge S2_no_newform
-
-end BealRibet
+end BealRibet10

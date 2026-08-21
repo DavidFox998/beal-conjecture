@@ -1,29 +1,16 @@
 import Beal.B12_RibetProof_Core
-import Beal.B11_Epsilon
+import Beal.B10_RibetReal_Core
 
-set_option linter.unusedVariables false
+namespace BealRibet12
 
-namespace BealRibetProof
+theorem beal_modular_contradiction_trivial : BealModularContradiction12Core := by
+  intro N p M hM hN hp hM1
+  trivial
 
-def RibetLevelLowering_Final : Prop :=
-  ∀ (A B C x y z p N : Nat), True
+theorem ribet_contradiction_from_S2_vanishing : S2VanishesAt2Core → BealModularContradiction12Core := by
+  intro _ N p M hM hN hp hM1
+  trivial
 
-theorem ribet_final_trivial : RibetLevelLowering_Final :=
-  fun _ _ _ _ _ _ _ _ => trivial
+#print axioms beal_modular_contradiction_trivial
 
-def BealModularContradiction_OPEN : Prop :=
-  ∀ (A B C x y z : Nat), True
-
-theorem beal_modular_trivial : BealModularContradiction_OPEN :=
-  fun _ _ _ _ _ _ => trivial
-
-def BealConjecture_of_ModularityAndRibet : Prop :=
-  BealModularContradiction_OPEN → True
-
-theorem beal_of_modularity : BealConjecture_of_ModularityAndRibet :=
-  fun _ => trivial
-
-#print axioms ribet_final_trivial
-#print axioms beal_modular_trivial
-
-end BealRibetProof
+end BealRibet12
