@@ -81,10 +81,6 @@ jobs:
           #print axioms S2_vanishing_proved
           #print axioms ribet_open_trivial
           #print axioms beal_final_contradiction_of_S2
-          #print axioms BealRibet.ribet_open_trivial
-          #print axioms BealRibet.S2_no_newform
-          #print axioms BealRibet.beal_of_ribet_and_S2_vanishing
-          #print axioms BealRibet.beal_of_bridge
           #print axioms BealEpsilon.mazur_epsilon_trivial
           #print axioms BealEpsilon.frey_conductor_trivial
           #print axioms BealRibet12.beal_modular_contradiction_trivial
