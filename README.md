@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21926563.svg)](https://doi.org/10.5281/zenodo.21926563) [![CI](https://github.com/DavidFox998/zerobeacon/actions/workflows/main.yml/badge.svg)](https://github.com/DavidFox998/zerobeacon/actions/workflows/main.yml)
+
 # ZeroBeacon.ai — Collision-Anchored Commerce Router
 
 **1050 beacon-anchored tools** for agent commerce, legal sealing, and math research.  
