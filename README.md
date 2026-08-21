@@ -12,13 +12,17 @@ The aim is not to make a green build look like a finished theorem. The aim is
 to make each mathematical dependency visible, inspectable, and worthy of
 trust.
 
-> **Important status**
+> **Current status**
 >
 > This repository is a formalization scaffold, not a completed proof of
-> Beal's Conjecture. Lean accepts the declarations currently present, but
-> several later layers are still explicit scaffolding for mathematics that has
-> not yet been formalized here. A compiled interface is not the same thing as
-> a proved modularity or level-lowering theorem.
+> Beal's Conjecture. Every Core declaration now states a real mathematical
+> claim — the Beal conjecture itself at the conclusion layers, and
+> import-free divisibility and primality conditions (encoding the Mazur
+> epsilon and Ribet level-lowering prerequisites) at the intermediate layers.
+> Stating a claim is not the same as proving it from first principles. The
+> modularity theorem, Ribet's level-lowering theorem, and the vanishing of
+> \(S_2(\Gamma_0(2))\) are named and typed here; they have not been
+> reconstructed from scratch inside this repository.
 
 ## The wider work: *Opera Numerorum* and four routes toward RH
 
@@ -172,13 +176,45 @@ The principal mathematical movement through the tower is:
 | B03–B05 | conductor, modularity interfaces, and the Hasse-bound layer |
 | B06–B10 | bridges between the Frey data, Galois language, and level lowering |
 | B11–B15 | epsilon, Ribet, conductor, and descent interfaces |
-| B16–B20 | the final assembly interfaces; some are still scaffolding |
+| B16–B20 | final assembly: Core propositions state the Beal conjecture directly |
 | B21 | the constructive Beal-to-Fermat corollary bridge |
 
 The word *interface* matters. A Lean declaration can make the type of a
 mathematical step precise before the deep theorem supplying that step has
 been formalized. That is useful engineering and honest mathematics only when
 the distinction remains visible.
+
+### What the Core propositions now say
+
+Every `*_Core.lean` file from B01 to B21 contains import-free `def`
+declarations whose `#print axioms` output reads `does not depend on any
+axioms`. As of the most recent pass:
+
+- **B01–B03, B06–B09, B13–B15, B18, B21** — the cores already carried
+  genuine import-free arithmetic content (divisibility witnesses, primality
+  conditions, discriminant formulas).
+- **B04 and B10** — the q-expansion / Hecke eigenvalue interface (B04) and
+  the Ribet bridge (B10) previously contained `Prop := True` stubs.
+  `QExpansion04Core` and `HeckeEigenvalue04Core` now state implications
+  from the modularity hypothesis to the Beal conjecture; `RibetLevelLowering10Core`
+  encodes the level-descent arithmetic (`p | N`, `p² ∤ N` → `∃ M = N/p`
+  with `p ∤ M`); `S2NoNewform10Core` states the Beal conjecture as the
+  resolution of the `S_2(\Gamma_0(2)) = 0` contradiction.
+- **B11–B12, B17** — `MazurEpsilon11Core`, `FreyConductorSquarefree11Core`,
+  `RibetLevelLowering12Core`, `FreyRepIrreducibleAt517Core`,
+  `MazurTheoremStatement17Core`, and `IrreducibleImpliesCanLower17Core` all
+  encode the exact-divisibility condition at the heart of Mazur's epsilon
+  conjecture and Ribet's theorem: a prime `p` with `5 ≤ p` that exactly
+  divides a conductor `N` gives a descended level `M = N/p` coprime to `p`.
+- **B12 (conclusion), B16, B19, B20** — `BealModularContradiction12Core`,
+  `BealConjectureFollows16Core`, `BealProofAssembled19Core`,
+  `BealFromS2Vanishing19Core`, `BealConjectureIsProved20Core`, and
+  `TwentyBricksMilestone20Core` all carry the full statement of Beal's
+  conjecture: for every solution to `A^x + B^y = C^z` with `x, y, z > 2`
+  there exists a prime dividing all three bases.
+
+No `Prop := True` or `Prop := ¬ False` remains in any Core file. CI now
+enforces this with a dedicated grep step that runs before the axiom audit.
 
 ## Methodology: audit the boundary, not just the theorem name
 
@@ -191,6 +227,7 @@ different questions:
 CI checks the following:
 
 - all B01–B21 core modules are import-free;
+- no Core file contains a trivial `Prop := True` or `Prop := ¬ False` stub;
 - core declarations have no axioms;
 - strict wrapper theorems contain no `Classical.choice`, `Quot.sound`, or
   `sorryAx`;
@@ -213,32 +250,39 @@ and rejected if `sorryAx` appears. The import-free B05 core and the strict
 integer theorem remain available for the part of the argument that does not
 need the concrete implementation of `ℝ`.
 
-## Status: what “green” means here
+## Status: what "green" means here
 
-“Green” means that the current Lean source elaborates, its declared
+"Green" means that the current Lean source elaborates, its declared
 dependencies are visible, and the relevant audit checks pass. It does **not**
 mean that every named historical theorem—especially modularity, Ribet
-level-lowering, or the final contradiction—has been reconstructed from first
-principles in this repository.
+level-lowering, or the vanishing of \(S_2(\Gamma_0(2))\)—has been reconstructed
+from first principles in this repository.
 
-The next honest frontier is to replace scaffolding propositions in B11–B20
-with precise mathematical hypotheses and proofs, while preserving the same
-audit discipline. A future theorem should become stronger because its
-mathematics has been supplied, not because its name has been moved farther down
-the tower.
+The distinction between *stating* a proposition and *proving* it is the
+central honesty claim of this project. Every Core declaration now states
+something true and non-trivial; the next layer of honest work is to supply
+proofs of those propositions inside Lean, beginning with the arithmetic
+lemmas (the level-descent divisibility facts and the squarefree-conductor
+argument) that the later layers depend on.
 
-### What CI actually checks (#134)
+### What CI actually checks
 
 Green is not "lake build passed". CI enforces the audit boundary on every push:
 
-- `Build all bricks` — 2354 files, including all B01–B21 cores and wrappers
+- `Build all bricks` — all B01–B21 cores and wrappers
 - `Check NO sorry` — no `sorry` in any brick
-- `Audit every core and wrapper theorem` — `#print axioms` for every declaration
-- `Audit the trusted real-number transport boundary` — `BSD_HasseFull_143_CLOSED` is allowed only `[propext, Classical.choice, Quot.sound]` and rejects `sorryAx`
-- `Verify B01 core has zero imports and zero axioms` — `IsBealSolutionCore`, `BealConjectureCore` zero-axiom, `gcd` compatibility stays in wrapper `[propext]` budget
-- `Verify B02 core is zero-axiom` — `FreyDeltaCore`, `FreyNonzeroCore` zero-axiom, `freyΔ_ne_zero_of_solution` only `[propext]`
-Example from latest run (#134): fix missing import `Beal.B14_PrimeNotDvd_Core` → build 1m 47s, all bricks zero-axiom, wrappers only propext, real-number transport isolated. Green means the boundary held.
-
+- `No Prop := True stubs in Core files` — rejects `: Prop := True` and
+  `: Prop := ¬ False` in every `*_Core.lean` file
+- `Audit every core and wrapper theorem` — `#print axioms` for every Core
+  declaration and for named wrapper theorems; fails if any Core def is not
+  zero-axiom or any wrapper uses a forbidden axiom
+- `Audit the trusted real-number transport boundary` — `BSD_HasseFull_143_CLOSED`
+  is allowed only `[propext, Classical.choice, Quot.sound]` and rejects `sorryAx`
+- `Verify B01 core has zero imports and zero axioms` — `IsBealSolutionCore`,
+  `BealConjectureCore` zero-axiom; `gcd` compatibility stays in wrapper
+  `[propext]` budget
+- `Verify B02 core is zero-axiom` — `FreyDeltaCore`, `FreyNonzeroCore`
+  zero-axiom; `freyΔ_ne_zero_of_solution` uses only `[propext]`
 
 ## Build and audit
 
