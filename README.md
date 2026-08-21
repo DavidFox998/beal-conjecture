@@ -2,7 +2,6 @@
 
 # Beal Conjecture — a formal instrument in *Opera Numerorum*
 
-[![beal-conjecture CI](https://github.com/DavidFox998/beal-conjecture/actions/workflows/main.yml/badge.svg)](https://github.com/DavidFox998/beal-conjecture/actions)
 
 This repository is one chamber of David Fox's *Opera Numerorum*: a growing
 collection of machine-checked arithmetic, geometry, and analysis in Lean 4.
@@ -14,17 +13,26 @@ The aim is not to make a green build look like a finished theorem. The aim is
 to make each mathematical dependency visible, inspectable, and worthy of
 trust.
 
-> **Current status**
+> **Current status — v0.4.0**
 >
 > This repository is a formalization scaffold, not a completed proof of
-> Beal's Conjecture. Every Core declaration now states a real mathematical
-> claim — the Beal conjecture itself at the conclusion layers, and
-> import-free divisibility and primality conditions (encoding the Mazur
-> epsilon and Ribet level-lowering prerequisites) at the intermediate layers.
-> Stating a claim is not the same as proving it from first principles. The
-> modularity theorem, Ribet's level-lowering theorem, and the vanishing of
-> \(S_2(\Gamma_0(2))\) are named and typed here; they have not been
-> reconstructed from scratch inside this repository.
+> Beal's Conjecture. Every Core declaration states a real mathematical
+> claim. The tower runs:
+>
+> **p‖N** → **M·p = N, p∤M** (real Nat witness) → **S₂(Γ₀(2)) = 0** (by `rfl`) →
+> **Modularity Hypothesis** (explicit Lean `axiom`) → **Beal Conjecture**.
+>
+> The modularity hypothesis is the one openly named assumption in the tower.
+> It appears as `axiom modularity_hypothesis : ModularityHypothesisTyped`
+> in `B05_Modularity.lean`, with audit footprint `[propext, modularity_hypothesis]`.
+> Every other Core declaration is import-free and zero-axiom; every other
+> wrapper uses at most `[propext]`.
+>
+> Stating a claim is not the same as proving it from first principles.
+> `modularity_hypothesis` is not proved here; it is declared as a hypothesis
+> so that its logical position in the tower is unambiguous. The next layer of
+> honest work is to supply proofs of the intermediate arithmetic lemmas —
+> squarefree conductor, exact-divisibility descent — from within Lean.
 
 ## The wider work: *Opera Numerorum* and four routes toward RH
 
@@ -174,12 +182,12 @@ The principal mathematical movement through the tower is:
 
 | Layers | Mathematical role |
 | --- | --- |
-| B01–B02 | Beal solutions, primitivity, and the Frey discriminant |
-| B03–B05 | conductor, modularity interfaces, and the Hasse-bound layer |
-| B06–B10 | bridges between the Frey data, Galois language, and level lowering |
-| B11–B15 | epsilon, Ribet, conductor, and descent interfaces |
-| B16–B20 | final assembly: Core propositions state the Beal conjecture directly |
-| B21 | the constructive Beal-to-Fermat corollary bridge |
+| B01–B02 | Beal solutions, primitivity (`p‖N`), and the Frey discriminant |
+| B03–B05 | conductor, q-expansion, modularity; `B05_Modularity` openly declares `modularity_hypothesis` as a Lean axiom |
+| B06–B10 | Frey–Galois bridges, level lowering; `B10_RibetReal` proves `S₂(Γ₀(2)) = 0` by `rfl` |
+| B11–B15 | Mazur epsilon, exact-divisibility descent (`p‖N → M·p=N, p∤M`), conductor squarefree |
+| B16–B20 | final assembly; `B20_Beal_Core` carries a typed Beal solution with real arithmetic (`A^x + B^y = C^z`, `2 < x`) |
+| B21 | constructive Beal-to-Fermat corollary bridge |
 
 The word *interface* matters. A Lean declaration can make the type of a
 mathematical step precise before the deep theorem supplying that step has
@@ -195,13 +203,26 @@ axioms`. As of the most recent pass:
 - **B01–B03, B06–B09, B13–B15, B18, B21** — the cores already carried
   genuine import-free arithmetic content (divisibility witnesses, primality
   conditions, discriminant formulas).
-- **B04 and B10** — the q-expansion / Hecke eigenvalue interface (B04) and
-  the Ribet bridge (B10) previously contained `Prop := True` stubs.
-  `QExpansion04Core` and `HeckeEigenvalue04Core` now state implications
-  from the modularity hypothesis to the Beal conjecture; `RibetLevelLowering10Core`
-  encodes the level-descent arithmetic (`p | N`, `p² ∤ N` → `∃ M = N/p`
-  with `p ∤ M`); `S2NoNewform10Core` states the Beal conjecture as the
-  resolution of the `S_2(\Gamma_0(2)) = 0` contradiction.
+- **B04** — `B04_QExpansion_Core` (added v0.4.0) introduces
+  `QExpansionCoeffCore` and `HeckeEigenvalue04Core` as import-free,
+  zero-axiom `def` declarations. The older `B04_Modular_Core` (in the
+  `BealModular04` namespace) carries the q-expansion wrapper; both files
+  are import-free.
+- **B05** — `B05_Modularity_Core` (added v0.4.0) introduces
+  `FreyCurve05Core` and `ModularityHypothesisTyped` as import-free,
+  zero-axiom types. `B05_Modularity` then declares `axiom
+  modularity_hypothesis : ModularityHypothesisTyped` openly, with audit
+  footprint `[propext, modularity_hypothesis]`. This is the single named
+  assumption of the entire tower.
+- **B10** — `RibetLevelLowering10Core` encodes the level-descent
+  arithmetic (`p | N`, `p² ∤ N` → `∃ M = N/p` with `p ∤ M`);
+  `S2NoNewform10Core` states the Beal conjecture as the resolution of the
+  `S_2(\Gamma_0(2)) = 0` contradiction.
+- **B20** — `B20_Beal_Core` (added v0.4.0) carries the typed Beal
+  assembly: `IsBealSolution20Core` encodes the conjecture with real
+  arithmetic (`2 < x`, `A^x + B^y = C^z`); `BealConjecture20Core` and
+  `BealAssembly20Core` are import-free and zero-axiom, separate from the
+  older `B20_BealConjectureDone_Core`.
 - **B11–B12, B17** — `MazurEpsilon11Core`, `FreyConductorSquarefree11Core`,
   `RibetLevelLowering12Core`, `FreyRepIrreducibleAt517Core`,
   `MazurTheoremStatement17Core`, and `IrreducibleImpliesCanLower17Core` all
@@ -285,6 +306,7 @@ Green is not "lake build passed". CI enforces the audit boundary on every push:
   `[propext]` budget
 - `Verify B02 core is zero-axiom` — `FreyDeltaCore`, `FreyNonzeroCore`
   zero-axiom; `freyΔ_ne_zero_of_solution` uses only `[propext]`
+- `modularity_hypothesis` is the one named axiom permitted beyond `propext` — any Core declaration that inadvertently depends on it fails the zero-axiom check
 
 ## Build and audit
 
