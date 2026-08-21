@@ -63,7 +63,7 @@ jobs:
           python-version: "3.11"
 
       - name: Install test dependencies
-        run: pip install requests pytest
+        run: pip install -r requirements.txt
 
       - name: Wait for Fly.io deploy to go live
         run: sleep 15
