@@ -66,12 +66,9 @@ jobs:
           #print axioms isBealSolutionCore_to_wrapper
           #print axioms bealConjecture_wrapper_to_core
           #print axioms bealConjectureCore_to_wrapper
-          #print axioms conductor_dvd_A
-          #print axioms conductor_dvd_B
-          #print axioms conductor_dvd_C
-          #print axioms conductor_le_A
-          #print axioms conductor_le_B
-          #print axioms conductor_le_C
+          #print axioms BealConductor.exactDivides_of_dvd_not_sq
+          #print axioms BealConductor.divideOut_of_exact
+          #print axioms BealConductor.squarefree_of_primitive_gcd
           #print axioms frey_modular_of_pos
           #print axioms modularity_holds
           #print axioms qexp_implies_hecke
@@ -90,14 +87,12 @@ jobs:
           #print axioms BealRibet.beal_of_bridge
           #print axioms BealEpsilon.mazur_epsilon_trivial
           #print axioms BealEpsilon.frey_conductor_trivial
-          #print axioms BealRibetProof.ribet_final_trivial
-          #print axioms BealRibetProof.beal_modular_trivial
-          #print axioms BealRibetProof.beal_of_modularity
+          #print axioms BealRibet12.beal_modular_contradiction_trivial
+          #print axioms BealRibet12.ribet_contradiction_from_S2_vanishing
           #print axioms BealRibetReal.ribet_realDefs_trivial
           #print axioms BealRibetReal.level_to_2_trivial
           #print axioms BealFreyConductor.beal_primes_not_divide_conductor_trivial
           #print axioms BealLevelTo2.ribet_lowers_to_2_trivial
-          #print axioms BealLevelTo2.beal_final_trivial
           #print axioms Beal16Final.beal_if_S2vanishes_and_Ribet_trivial
           #print axioms Beal16Final.beal_follows
           #print axioms Beal17Mazur.mazur_irreducible_trivial
