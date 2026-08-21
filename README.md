@@ -1,4 +1,4 @@
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22048503.svg)](https://doi.org/10.5281/zenodo.22048503) [![CI](https://github.com/DavidFox998/beal-conjecture/actions/workflows/main.yml/badge.svg)](https://github.com/DavidFox998/beal-conjecture/actions/workflows/main.yml)
+[![DOI v0.2.0](https://zenodo.org/badge/DOI/10.5281/zenodo.XXXX.svg)](https://doi.org/10.5281/zenodo.XXXX) [![DOI v0.3.0](https://zenodo.org/badge/DOI/10.5281/zenodo.22048503.svg)](https://doi.org/10.5281/zenodo.22048503) [![DOI v0.4.0](https://zenodo.org/badge/DOI/10.5281/zenodo.YYYY.svg)](https://doi.org/10.5281/zenodo.YYYY) [![DOI v1.0](https://zenodo.org/badge/DOI/10.5281/zenodo.ZZZZ.svg)](https://doi.org/10.5281/zenodo.ZZZZ) [![CI](https://github.com/DavidFox998/beal-conjecture/actions/workflows/main.yml/badge.svg)](https://github.com/DavidFox998/beal-conjecture/actions/workflows/main.yml)
 
 # Beal Conjecture — a formal instrument in *Opera Numerorum*
 

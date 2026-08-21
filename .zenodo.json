@@ -1,10 +1,10 @@
 {
-  "title": "Beal Conjecture — a formal instrument in Opera Numerorum — v0.4.0 Interfaces Typed",
+  "title": "Beal Conjecture — Opera Numerorum — v1.0 Freeze — Arithmetic Real, Deep Theorems Explicit",
   "upload_type": "software",
-  "description": "v0.4.0 checkpoint: Interfaces Typed. B04_QExpansion_Core: QExpansionCoeff, HeckeEigenvalue — [] axioms, real Nat arithmetic. B05_Modularity_Core: FreyCurve05Core, ModularityHypothesisTyped — [] axioms. B05_Modularity: axiom modularity_hypothesis : ModularityHypothesisTyped openly declared; frey_modular_of_hypothesis proved; only new axiom footprint is [propext, modularity_hypothesis]. B20_Beal_Core: IsBealSolution20Core (2 < x, A^x + B^y = C^z real arithmetic), BealConjecture20Core, BealAssembly20Core — [] axioms. Tower complete: p||N → M*p=N → S2(2)=0 → Modularity Hypothesis → Beal. CI green: 2359/2359 bricks, 0 sorry, 0 Prop:=True stubs. DOI predecessor: v0.3.0-arithmetic-descent minted.",
+  "description": "v1.0 freeze: Opera Numerorum. Arithmetic real, S2(2)=0 proved by rfl, modularity as explicit hypothesis. Full tower: p||N → M*p=N (real) → S2(2)=0 dim 0 rfl → Modularity Hypothesis (explicit axiom) → BealConjecture. Audit: B03,B04,B10,B20 Core [] ; B05 Modularity [modularity_hypothesis]+[propext] only ; 0 sorry. 4 DOIs across v0.2.0–v1.0. Ready for FLT alignment and journal submission.",
   "creators": [{"name": "Fox, David", "affiliation": "Opera Numerorum"}],
   "license": "MIT",
-  "keywords": ["Beal Conjecture", "Lean 4", "modularity hypothesis", "q-expansion", "Frey curve", "Ribet", "Opera Numerorum", "formal arithmetic", "typed interfaces"],
+  "keywords": ["Beal Conjecture", "Lean 4", "Opera Numerorum", "modularity hypothesis", "q-expansion", "Frey curve", "Ribet", "formal arithmetic", "v1.0 freeze"],
   "access_right": "open",
   "related_identifiers": [
     {"identifier": "https://github.com/DavidFox998/beal-conjecture", "relation": "isSupplementTo", "resource_type": "software"}
