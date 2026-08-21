@@ -25,6 +25,21 @@ jobs:
           ! grep -R --include="*.lean" "^\s*sorry" lean || (echo "FAIL: sorry found" && exit 1)
           echo "OK: 0 sorry"
 
+      - name: No Prop := True stubs in Core files
+        run: |
+          set -euo pipefail
+          fail=0
+          if grep -rnE ':\s*Prop\s*:=\s*True\b' lean/Beal/*_Core.lean; then
+            echo "FAIL: Core file contains a trivial 'Prop := True' stub"
+            fail=1
+          fi
+          if grep -rnE ':\s*Prop\s*:=\s*¬\s*False\b' lean/Beal/*_Core.lean; then
+            echo "FAIL: Core file contains 'Prop := ¬ False' (equivalent to True)"
+            fail=1
+          fi
+          if [ $fail -ne 0 ]; then exit 1; fi
+          echo "OK: no trivial Prop stubs in Core files"
+
       - name: Audit every core and wrapper theorem
         run: |
           set -euo pipefail
