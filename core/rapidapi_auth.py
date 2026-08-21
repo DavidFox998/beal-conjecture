@@ -41,6 +41,28 @@ def _proxy_secret_configured() -> bool:
     return bool(_PROXY_SECRET)
 
 
+
+def check_rapidapi_proxy_secret() -> tuple[bool, str]:
+    """Check whether RAPIDAPI_PROXY_SECRET is configured on this server.
+
+    Returns:
+        (ok, reason) — ok is True if the secret is present and non-empty,
+                       False otherwise.  reason is a human-readable status
+                       string suitable for logging and /health responses.
+
+    Called once at startup by the FastAPI on_event("startup") handler in
+    zerobeacon_mf_1000_main.py to populate the module-level health-cache
+    without re-reading the environment on every request.
+    """
+    if not _proxy_secret_configured():
+        return False, (
+            "RAPIDAPI_PROXY_SECRET is not configured — "
+            "all RapidAPI paid-subscriber requests will be rejected (fail closed). "
+            "Set the secret in Fly.io (fly secrets set RAPIDAPI_PROXY_SECRET=<value>) "
+            "and the identical value in the RapidAPI dashboard \u2192 Security \u2192 Proxy Secret."
+        )
+    return True, "RAPIDAPI_PROXY_SECRET is configured"
+
 def verify_rapidapi_request(
     x_rapidapi_key: str | None,
     x_rapidapi_proxy_secret: str | None,
