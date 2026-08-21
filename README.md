@@ -336,6 +336,17 @@ Each repository has its own scope and audit boundary. The intended relation is
 composition by explicit statements and certificates, not an invisible web of
 imports.
 
+## DOI / Citation
+
+This repository mints a DOI per release via Zenodo (CERN).
+
+- v0.2.0-zero-axiom — first scaffold
+- v0.3.0-arithmetic-descent — S₂(Γ₀(2))=0 dim 0 proved by `rfl`
+- v0.4.0-interfaces-typed (Latest) — Modularity hypothesis as explicit axiom
+- v1.0-opera-numerorum — final freeze (next)
+
+Each DOI is citable. See Releases → Zenodo link.
+
 ## References
 
 - Andrew Beal (1997) — the Beal Conjecture.
