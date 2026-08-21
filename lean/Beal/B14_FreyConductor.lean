@@ -1,5 +1,6 @@
 import Beal.B14_FreyConductor_Core
 import Beal.B13_RibetRealDefs
+import Beal.B01_Def
 
 set_option linter.unusedVariables false
 

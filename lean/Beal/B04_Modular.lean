@@ -1,6 +1,8 @@
 import Beal.B04_Modular_Core
 import Beal.B03_Conductor
 
+
+def Frey_conductor_divisor (A B C : Nat) : Nat := Nat.gcd A (Nat.gcd B C)
 def IsFreyModular (A B C : Nat) : Prop :=
   ∃ N, N = Frey_conductor_divisor A B C ∧ 0 < N
 
