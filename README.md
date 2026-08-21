@@ -227,6 +227,19 @@ audit discipline. A future theorem should become stronger because its
 mathematics has been supplied, not because its name has been moved farther down
 the tower.
 
+### What CI actually checks (#134)
+
+Green is not "lake build passed". CI enforces the audit boundary on every push:
+
+- `Build all bricks` — 2354 files, including all B01–B21 cores and wrappers
+- `Check NO sorry` — no `sorry` in any brick
+- `Audit every core and wrapper theorem` — `#print axioms` for every declaration
+- `Audit the trusted real-number transport boundary` — `BSD_HasseFull_143_CLOSED` is allowed only `[propext, Classical.choice, Quot.sound]` and rejects `sorryAx`
+- `Verify B01 core has zero imports and zero axioms` — `IsBealSolutionCore`, `BealConjectureCore` zero-axiom, `gcd` compatibility stays in wrapper `[propext]` budget
+- `Verify B02 core is zero-axiom` — `FreyDeltaCore`, `FreyNonzeroCore` zero-axiom, `freyΔ_ne_zero_of_solution` only `[propext]`
+Example from latest run (#134): fix missing import `Beal.B14_PrimeNotDvd_Core` → build 1m 47s, all bricks zero-axiom, wrappers only propext, real-number transport isolated. Green means the boundary held.
+
+
 ## Build and audit
 
 The project uses Lean 4.12.0 and Mathlib:
