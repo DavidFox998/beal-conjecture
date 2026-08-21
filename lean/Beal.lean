@@ -6,8 +6,11 @@ import Beal.B03_Conductor_Core
 import Beal.B03_Conductor
 import Beal.B04_Modular_Core
 import Beal.B04_Modular
+import Beal.B04_QExpansion_Core
 import Beal.B05_HasseWiles_Core
 import Beal.B05_HasseWiles
+import Beal.B05_Modularity_Core
+import Beal.B05_Modularity
 import Beal.B06_Final_Core
 import Beal.B06_Final
 import Beal.B07_Galois_Core
@@ -39,5 +42,6 @@ import Beal.B19_BealFinalAssembly_Core
 import Beal.B19_BealFinalAssembly
 import Beal.B20_BealConjectureDone_Core
 import Beal.B20_BealConjectureDone
+import Beal.B20_Beal_Core
 import Beal.B21_FermatCorollary_Core
 import Beal.B21_FermatCorollary
