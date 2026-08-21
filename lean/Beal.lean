@@ -1,4 +1,3 @@
-import Beal.B00_OperaNumerorum
 import Beal.B01_Def_Core
 import Beal.B01_Def
 import Beal.B02_Frey_Core

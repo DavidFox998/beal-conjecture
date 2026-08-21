@@ -1,12 +1,12 @@
 cff-version: 1.2.0
-title: "Beal Conjecture — Opera Numerorum — v1.0 Freeze"
+title: "Beal Conjecture — a formal instrument in Opera Numerorum"
 message: "If you use this software, please cite it as below."
 type: software
 authors:
   - family-names: Fox
     given-names: David
     affiliation: "Opera Numerorum"
-version: "v1.0-opera-numerorum"
+version: "v0.4.0-interfaces-typed"
 date-released: 2026-08-21
 license: MIT
 repository-code: "https://github.com/DavidFox998/beal-conjecture"
@@ -17,5 +17,4 @@ keywords:
   - Frey Curve
   - Ribet Level Lowering
   - Modularity Hypothesis
-  - Opera Numerorum
-abstract: "v1.0 freeze: Opera Numerorum. Full tower typed and audit-clean. Tower: p||N → M*p=N (real) → S2(2)=0 dim 0 rfl → Modularity Hypothesis (explicit axiom) → BealConjecture. Audit: B03,B04,B10,B20 Core [] axioms; B05 Modularity [modularity_hypothesis]+[propext] only; 0 sorry; 0 Prop:=True stubs. 4 DOIs across v0.2.0–v1.0. Ready for FLT alignment and journal submission."
+abstract: "21-layer Lean 4 tower formalizing Beal Conjecture dependencies. v0.4.0 checkpoint: Interfaces Typed. B04_QExpansion_Core: QExpansionCoeff, HeckeEigenvalue — [] axioms. B05_Modularity_Core: FreyCurve05Core, ModularityHypothesisTyped — [] axioms. B05_Modularity: modularity_hypothesis openly axiomatized; only new footprint is [propext, modularity_hypothesis]. B20_Beal_Core: IsBealSolution20Core with real arithmetic (2 < x, A^x + B^y = C^z), BealAssembly20Core — [] axioms. Tower complete: p||N → M*p=N → S2(2)=0 → Modularity Hypothesis → Beal. CI green: 2359/2359 bricks, 0 sorry, 0 Prop:=True stubs."
