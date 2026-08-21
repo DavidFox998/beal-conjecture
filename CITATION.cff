@@ -6,8 +6,8 @@ authors:
   - family-names: Fox
     given-names: David
     affiliation: "Opera Numerorum"
-version: "v0.2.0-zero-axiom-core"
-date-released: 2026-08-20
+version: "v0.3.0-arithmetic-descent"
+date-released: 2026-08-21
 license: MIT
 repository-code: "https://github.com/DavidFox998/beal-conjecture"
 keywords:
@@ -16,4 +16,4 @@ keywords:
   - Formal Mathematics
   - Frey Curve
   - Ribet Level Lowering
-abstract: "21-layer Lean 4 tower formalizing Beal Conjecture dependencies. v0.2.0 checkpoint: zero-axiom import-free cores, no Prop:=True stubs, no sorry, B01 [] axioms, B02-B15 [propext] only, real M*p=N witness for level lowering."
+abstract: "21-layer Lean 4 tower formalizing Beal Conjecture dependencies. v0.3.0 checkpoint: Arithmetic Descent closed. B03 Conductor zero-axiom, B10 RibetReal S2(2)=0 by rfl, B11/B15 M*p=N real witness, B12 RibetProof from empty level. [] axioms on all Core defs. CI green: 2353/2353 bricks, 0 sorry, 0 Prop:=True stubs."

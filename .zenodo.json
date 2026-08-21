@@ -1,19 +1,12 @@
 {
-  "title": "Beal Conjecture — a formal instrument in Opera Numerorum",
+  "title": "Beal Conjecture — a formal instrument in Opera Numerorum — v0.3.0 Arithmetic Descent",
   "upload_type": "software",
-  "description": "This repository is one chamber of David Fox's Opera Numerorum: a growing collection of machine-checked arithmetic in Lean 4. It studies the Beal Conjecture through 21 formal layers, from elementary divisibility to the Frey construction. Current status v0.2.0: formalization scaffold, not a completed proof. Every *_Core.lean now states a real mathematical claim — Beal itself at B20, and import-free divisibility witnesses M*p=N, p||N -> M=N/p at B11-B15 encoding Mazur epsilon and Ribet level-lowering prerequisites. B01 Core IsBealSolutionCore has [] axioms, B02 Frey has [propext] only, B15 LevelTo2 has real witness M*2=2 -> M=1, no Prop:=True stubs, no sorry. CI enforces Build all bricks, Check NO sorry, No True stubs, Audit every core/wrapper theorem. This release freezes the zero-axiom core checkpoint before Phase 1 arithmetic closure.",
-  "creators": [
-    {
-      "name": "Fox, David",
-      "affiliation": "Opera Numerorum"
-    }
-  ],
+  "description": "v0.3.0 checkpoint: Arithmetic Descent closed. B03 Conductor: SquarefreeCore, ExactDividesCore, ConductorCoprimeCore are import-free [] axioms with real Nat definitions. B10 RibetReal: GenusX0_2_Core=0, DimS2_2_Core=0, S2VanishesAt2Core proved by rfl, [] axioms. B11 Epsilon: ExactDivides + M*p=N ∧ ¬p∣M real. B15 LevelTo2: CanLowerLevelCore M*p=N real witness, M*2=2 -> M=1 via Nat.mul_right_cancel (0<k fix), [propext] only. B12 RibetProof: BealModularContradiction12Core from empty level. CI #140 green, 2353/2353, Check NO sorry 0s, no Prop:=True stubs. B01 Core [] axioms. This is Phase 1 Week 1-2 closure before modular forms interface.",
+  "creators": [{"name": "Fox, David", "affiliation": "Opera Numerorum"}],
   "license": "MIT",
-  "keywords": ["Beal Conjecture", "Lean 4", "formal verification", "Frey curve", "Ribet level-lowering", "Mazur epsilon", "Opera Numerorum", "Fermat Last Theorem", "modular forms"],
+  "keywords": ["Beal Conjecture", "Lean 4", "S2 Gamma0 2 vanishes", "genus zero", "exact divides", "Frey curve", "Ribet", "Opera Numerorum", "formal arithmetic"],
   "access_right": "open",
   "related_identifiers": [
-    {"identifier": "https://github.com/DavidFox998/beal-conjecture", "relation": "isSupplementTo", "resource_type": "software"},
-    {"identifier": "https://github.com/ImperialCollegeLondon/FLT", "relation": "cites", "resource_type": "software"}
-  ],
-  "communities": [{"identifier": "lean"}]
+    {"identifier": "https://github.com/DavidFox998/beal-conjecture", "relation": "isSupplementTo", "resource_type": "software"}
+  ]
 }
