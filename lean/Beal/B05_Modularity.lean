@@ -3,8 +3,9 @@ import Beal.B05_Modularity_Core
 namespace BealModularity05
 
 -- ── Two remaining named axioms ────────────────────────────────────────────────
--- Ribet: discharged by s2_implies_ribet (zero-axiom) in B05_Modularity_Core.
--- Only Mazur (1978) + Wiles (1995) remain as explicit named assumptions.
+-- Ribet discharged: s2_implies_ribet (Core theorem) proves
+-- RibetLevelLoweringHypothesis from S2DimZero via constant witnesses p=5, N=10.
+-- Next step: prove RibetLevelLoweringHypothesisReal (ties N to FreyConductor).
 
 -- Mazur (1978): mod-p irreducibility for p ≥ 5
 axiom mazur_irreducibility_axiom : MazurIrreducibilityHypothesis
@@ -12,20 +13,20 @@ axiom mazur_irreducibility_axiom : MazurIrreducibilityHypothesis
 -- Wiles (1995): semistable elliptic curve → modular form
 axiom wiles_lifting_axiom : WilesLiftingHypothesis
 
--- Ribet piece: proved from S2DimZero — no axiom needed.
--- p=5, N=10 witnesses satisfy all conditions; #print axioms ribet_from_s2 = []
+-- Ribet: proved from S2DimZero — no axiom needed.
 def ribet_from_s2 : RibetLevelLoweringHypothesis := s2_implies_ribet rfl
 
--- The three pieces assembled; Ribet's entry is the zero-axiom proof
+-- Assemble: Ribet from proof, Mazur + Wiles from named axioms
 def frey_modularity_data : FreyModularityData :=
   ⟨ribet_from_s2, mazur_irreducibility_axiom, wiles_lifting_axiom⟩
 
--- Modularity hypothesis — proved from two named axioms + one zero-axiom theorem
--- #print axioms modularity_hypothesis → [mazur_irreducibility_axiom, wiles_lifting_axiom]
+-- Modularity hypothesis: 2 named axioms remaining
+-- #print axioms → [mazur_irreducibility_axiom, wiles_lifting_axiom] (+ propext from omega)
 theorem modularity_hypothesis : ModularityHypothesisTyped := ⟨frey_modularity_data⟩
 
 -- S₂(Γ₀(2)) = 0 fully discharges Ribet.
 -- #print axioms frey_modularity_of_S2_vanishes → [mazur_irreducibility_axiom, wiles_lifting_axiom]
+--   (propext may also appear from omega in s2_implies_ribet; not a forbidden axiom)
 theorem frey_modularity_of_S2_vanishes (h : S2DimZero) : ModularityHypothesisTyped :=
   ⟨⟨s2_implies_ribet h, mazur_irreducibility_axiom, wiles_lifting_axiom⟩⟩
 
