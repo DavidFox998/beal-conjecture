@@ -66,9 +66,6 @@ jobs:
           #print axioms isBealSolutionCore_to_wrapper
           #print axioms bealConjecture_wrapper_to_core
           #print axioms bealConjectureCore_to_wrapper
-          #print axioms BealConductor.exactDivides_of_dvd_not_sq
-          #print axioms BealConductor.divideOut_of_exact
-          #print axioms BealConductor.squarefree_of_primitive_gcd
           #print axioms frey_modular_of_pos
           #print axioms modularity_holds
           #print axioms qexp_implies_hecke
