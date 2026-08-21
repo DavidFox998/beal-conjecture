@@ -75,13 +75,13 @@ app.add_middleware(
 
 
 # ── TierAccessError handler ───────────────────────────────────────────────────
-# Returns HTTP 200 with a structured JSON body so MCP tool clients (Claude,
-# Smithery, etc.) display the error message inside the tool response rather
-# than showing an opaque HTTP 403.  REST clients can detect the error via
-# the "ok": false field.
+# REST endpoints use HTTP 403 when a subscription tier is required.  The MCP
+# endpoint converts its own denials to JSON-RPC error -32001 below and does not
+# raise TierAccessError, so MCP clients continue to receive HTTP 200 transport
+# responses with a protocol-level error body.
 @app.exception_handler(TierAccessError)
 async def tier_access_error_handler(request: Request, exc: TierAccessError):
-    return JSONResponse(status_code=200, content=exc.to_response_body())
+    return JSONResponse(status_code=403, content=exc.to_response_body())
 
 # ROUTERS: (module, prefix, tag, min_tier)
 # MF-01/02 → FREE (100 tools open)
@@ -2373,23 +2373,28 @@ async def mcp_post(request: Request):
                     "Upgrade: https://zerobeacon.ai/upgrade\n"
                     "Stripe checkout: https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01"
                 )
+            # JSON-RPC error -32001 is the documented tier-gate response.
+            # Keep HTTP 200: MCP clients treat a non-2xx transport response as
+            # a connection failure and hide the useful upgrade message.
             return JSONResponse(
                 {
-                    "jsonrpc": "2.0", "id": req_id,
-                    "result": {
-                        "content": [{"type": "text", "text": _msg}],
-                        "isError": True,
-                        "ok":              False,
-                        "error":           "tier_required",
-                        "required_tier":   required_tier,
-                        "tools_free":      100,
-                        "tools_pro":       400,
-                        "tools_pro_plus":  800,
-                        "tools_enterprise": 1052,
-                        "upgrade":         "https://zerobeacon.ai/upgrade",
-                        "stripe":          "https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01",
-                        "rapidapi":        "https://rapidapi.com/davidjfox998/api/zerobeacon",
-                        "paypal":          "https://paypal.me/davidfox223",
+                    "jsonrpc": "2.0",
+                    "id": req_id,
+                    "error": {
+                        "code": -32001,
+                        "message": _msg,
+                        "data": {
+                            "error": "tier_required",
+                            "required_tier": required_tier,
+                            "tools_free": 100,
+                            "tools_pro": 400,
+                            "tools_pro_plus": 800,
+                            "tools_enterprise": 1052,
+                            "upgrade": "https://zerobeacon.ai/upgrade",
+                            "stripe": "https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01",
+                            "rapidapi": "https://rapidapi.com/davidjfox998/api/zerobeacon",
+                            "paypal": "https://paypal.me/davidfox223",
+                        },
                     },
                 }
             )
