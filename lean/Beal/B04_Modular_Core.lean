@@ -33,9 +33,9 @@ def HeckeEigenvalue04Core : Prop :=
     ∃ p : Nat, 1 < p ∧
       (∃ k, A = p * k) ∧ (∃ k, B = p * k) ∧ (∃ k, C = p * k)
 
-#print axioms IsFreyModular04Core
-#print axioms ModularityTheoremHolds04Core
-#print axioms QExpansion04Core
-#print axioms HeckeEigenvalue04Core
-
 end BealModular04
+
+#print axioms BealModular04.IsFreyModular04Core
+#print axioms BealModular04.ModularityTheoremHolds04Core
+#print axioms BealModular04.QExpansion04Core
+#print axioms BealModular04.HeckeEigenvalue04Core
