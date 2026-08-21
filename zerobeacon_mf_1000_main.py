@@ -648,9 +648,9 @@ async def tier_gate(request: Request, call_next):
                     "Upgrade: https://zerobeacon.ai/upgrade\n"
                     "Stripe checkout: https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01"
                 )
-            # Return HTTP 200 with a structured error body so MCP tool clients
-            # (Claude, Smithery, etc.) display the message in the tool response
-            # rather than showing an opaque HTTP 403 error.
+            # HTTP 403 for REST routes. MCP denials are handled separately
+            # in the /mcp handler using JSON-RPC error code -32001 (HTTP 200)
+            # so MCP clients see the error inside the tool response.
             return JSONResponse(
                 {
                     "ok":              False,
@@ -667,7 +667,7 @@ async def tier_gate(request: Request, call_next):
                     "rapidapi":        "https://rapidapi.com/davidjfox998/api/zerobeacon",
                     "paypal":          "https://paypal.me/davidfox223",
                 },
-                status_code=200,
+                status_code=403,
             )
     return await call_next(request)
 
