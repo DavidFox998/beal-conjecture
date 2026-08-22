@@ -22,3 +22,14 @@ build/
 attached_assets/
 scripts/
 test_*.py
+
+# Lean / math proof files — not needed in the API image
+.lake/
+beal-conjecture/
+Siegel/
+Towers/
+*.lean
+lakefile.toml
+lean-toolchain
+openapi-math.yaml
+zerobeacon/
