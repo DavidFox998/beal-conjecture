@@ -836,6 +836,7 @@ async def landing():
     <a href="https://paypal.me/davidfox223" class="paypal">PayPal — davidfox223</a>
     <a href="https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01" class="stripe">Stripe Checkout</a>
     <a href="https://rapidapi.com/davidjfox998/api/zerobeacon" class="rapidapi" target="_blank" rel="noopener">RapidAPI Marketplace</a>
+    <a href="https://smithery.ai/servers/davidjfox998/zerobeacon-1050" target="_blank" rel="noopener" style="color:#a78bfa;border-color:#2d1f4a;">Smithery MCP</a>
   </div>
 
   <p class="moat">
