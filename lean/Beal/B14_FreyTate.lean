@@ -5,8 +5,8 @@
       CLOSED (machine-checked, 0 sorry):
       · c₄ = b₂² − 24 b₄ formula                         ring
       · (A^x : ZMod p) = 0 when p | A, x > 0             simp + ZMod
-      · Singular point at origin when p | A               simp
-      · Tangent cone anisotropic (abstract field lemma)   Field
+      · Singular point at origin when p | A               cast arithmetic
+      · Tangent cone anisotropic (abstract field lemma)   Field div/pow
 
       NAMED AXIOMS (deep results not yet formalised in Mathlib):
       · wiles_modularity            Wiles 1995
@@ -36,7 +36,7 @@
       def b4_Frey : ℤ := -(2 * A ^ x * B ^ y)
 
       /-- c₄ of the Frey curve: 16((A^x)² + A^x·B^y + (B^y)²).
-      Explicit (A^x)² avoids Lean's right-assoc ^ pitfall. -/
+          Explicit (A^x)² avoids Lean's right-assoc ^ pitfall. -/
       def c4_Frey : ℤ := 16 * ((A ^ x) ^ 2 + A ^ x * B ^ y + (B ^ y) ^ 2)
 
       /-- c₄ = b₂² − 24·b₄  — CLOSED by ring. -/
@@ -73,7 +73,10 @@
           {p : ℕ} (hp : Nat.Prime p) {A B : ℤ} {x y : ℕ} (hx : 0 < x)
           (hA : (p : ℤ) ∣ A) :
           ((-(A ^ x) * B ^ y : ℤ) : ZMod p) = 0 := by
-        push_cast; rw [intPow_cast_zero_of_dvd hp hx hA]; ring
+        have hAx : ((A ^ x : ℤ) : ZMod p) = 0 := intPow_cast_zero_of_dvd hp hx hA
+        have hcast : ((-(A ^ x) * B ^ y : ℤ) : ZMod p) =
+            -((A ^ x : ℤ) : ZMod p) * ((B ^ y : ℤ) : ZMod p) := by push_cast; ring
+        rw [hcast, hAx, neg_zero, zero_mul]
 
       /-- When p | B: f(A^x) = 0. -/
       theorem singular_dvdB_fval_zero
@@ -93,15 +96,22 @@
 
       section TangentCone
 
-      /-- The quadratic form bU² − V² is anisotropic when b is not a square.
-      Used abstractly; the legendreSym connection is a TODO once Mathlib API is confirmed. -/
+      /-- The quadratic form bU² − V² is anisotropic when b is not a square in F.
+          From h : v² = b·u², if u ≠ 0 then (v/u)² = b, contradicting ¬IsSquare b. -/
       theorem anisotropic_cone {F : Type*} [Field F] {b : F}
           (hb : ¬IsSquare b) (u v : F) (h : v ^ 2 = b * u ^ 2) : u = 0 ∧ v = 0 := by
         have hu : u = 0 := by
-          by_contra hne; apply hb
-          exact ⟨v / u, by
-            rw [eq_comm, ← sq, ← div_pow, eq_comm, div_eq_iff (pow_ne_zero 2 hne)]; exact h⟩
-        exact ⟨hu, sq_eq_zero_iff.mp (by rw [h, hu]; ring)⟩
+          by_contra hne
+          apply hb
+          refine ⟨v / u, ?_⟩
+          have hu2 : u ^ 2 ≠ 0 := pow_ne_zero 2 hne
+          have key : (v / u) ^ 2 = b := by
+            rw [div_pow, h, mul_div_assoc, div_self hu2, mul_one]
+          rw [show v / u * (v / u) = (v / u) ^ 2 from by ring]
+          exact key.symm
+        refine ⟨hu, ?_⟩
+        have hv2 : v ^ 2 = 0 := by simp [h, hu]
+        exact pow_eq_zero_iff (by norm_num : 2 ≠ 0) |>.mp hv2
 
       end TangentCone
 
