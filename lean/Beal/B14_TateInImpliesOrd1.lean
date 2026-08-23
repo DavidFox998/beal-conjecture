@@ -6,8 +6,8 @@
         · c4_nonzero_of_dvd_{A,B,C}   (0 sorry — B14_TateC4Nonzero)
         · tate_step2_I_n_conductor_one (1 small axiom)
 
-      Sorry count: 1 (conductor prime-support, third conjunct only).
-      All cast, arithmetic, and coprimality sorries filled.
+      Sorry count: 0.
+      All sorries including conductor prime-support are now filled.
 
       Author: David Fox + Claude, Aug 2026
       -/
@@ -55,10 +55,29 @@
         · exact absurd h (by exact_mod_cast hp.one_lt.ne')
         · linarith [show (0 : ℤ) < p from by exact_mod_cast hp.pos]
 
-      -- ── §4. Derived theorem — 1 sorry (conductor prime-support) ─────────────────
+      /-- Prime divides a Finset ℕ product → divides some member.
+        Proved by Finset induction using only Nat.Prime.dvd_mul; no uncertain API. -/
+      private theorem prime_dvd_finset_prod {q : ℕ} (hq : q.Prime) :
+          ∀ (T : Finset ℕ), q ∣ T.prod id → ∃ x ∈ T, q ∣ x := by
+        intro T
+        apply Finset.induction_on T
+        · -- empty product is 1; q | 1 contradicts q.Prime
+          intro h
+          have hq1 : q = 1 := Nat.dvd_one.mp (by simpa using h)
+          exact absurd (hq1 ▸ hq) Nat.not_prime_one
+        · -- inductive step
+          intro a T' ha ih hprod
+          rw [Finset.prod_insert ha] at hprod
+          simp only [id] at hprod
+          rcases hq.dvd_mul.mp hprod with ha' | hT'
+          · exact ⟨a, Finset.mem_insert_self a T', ha'⟩
+          · obtain ⟨x, hx, hxd⟩ := ih hT'
+            exact ⟨x, Finset.mem_insert_of_mem hx, hxd⟩
+
+      -- ── §4. Derived theorem — 0 sorry ────────────────────────────────────────────
 
       /-- tate_frey_multiplicative derived from tate_step2_I_n_conductor_one.
-        Fills all arithmetic and cast gaps; 1 sorry remains (conductor prime-support). -/
+        Sorry count: 0. All sorries including conductor prime-support are filled. -/
       theorem tate_frey_multiplicative_derived
         {A B C : ℤ} {x y z : ℕ}
         (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
@@ -82,20 +101,17 @@
       have h_c4 : ((c4_Frey A B x y : ℤ) : ZMod p) ≠ 0 := by
         simp only [c4_Frey]
         rcases h_or with hAdiv | hBdiv | hCdiv
-        · -- p | A
-          have hpA := dvd_int_of_dvd_natAbs hA hAdiv
+        · have hpA := dvd_int_of_dvd_natAbs hA hAdiv
           have hnotB : ¬ p ∣ B.natAbs := fun hBd =>
             absurd_prime_unit hp (hCop.isUnit_of_dvd' hpA
               (dvd_mul_of_dvd_left (dvd_int_of_dvd_natAbs hB hBd) C))
           exact c4_nonzero_of_dvd_A hp hp2 hx hy hpA hnotB
-        · -- p | B
-          have hpB := dvd_int_of_dvd_natAbs hB hBdiv
+        · have hpB := dvd_int_of_dvd_natAbs hB hBdiv
           have hnotA : ¬ p ∣ A.natAbs := fun hAd =>
             absurd_prime_unit hp (hCop.isUnit_of_dvd'
               (dvd_int_of_dvd_natAbs hA hAd) (dvd_mul_of_dvd_left hpB C))
           exact c4_nonzero_of_dvd_B hp hp2 hx hy hpB hnotA
-        · -- p | C: derive p ∤ B from hEq + coprimality
-          have hpC := dvd_int_of_dvd_natAbs hC hCdiv
+        · have hpC := dvd_int_of_dvd_natAbs hC hCdiv
           have hnotB : ¬ p ∣ B.natAbs := fun hBd => by
             have hpB := dvd_int_of_dvd_natAbs hB hBd
             have hpAx : (p : ℤ) ∣ A ^ x := by
@@ -107,8 +123,7 @@
               rwa [Int.natAbs_pow] at h1
               exact hp.dvd_of_dvd_pow h1
             exact absurd_prime_unit hp (hCop.isUnit_of_dvd'
-              (dvd_int_of_dvd_natAbs hA hpA_nat)
-              (dvd_mul_of_dvd_left hpB C))
+              (dvd_int_of_dvd_natAbs hA hpA_nat) (dvd_mul_of_dvd_left hpB C))
           exact c4_nonzero_of_dvd_C hp hp2 hx hy hz hEq hpC hnotB
       -- 3. p | disc_Frey.natAbs
       have h_disc : p ∣ (disc_Frey A B C x y z).natAbs := by
@@ -124,13 +139,39 @@
       have h_disc_int : (p : ℤ) ∣ disc_Frey A B C x y z :=
         Int.natAbs_dvd.mpr (by simpa [Int.natAbs_ofNat] using h_disc)
       have h_tate := tate_step2_ZMod (N := conductor_Frey A B C x y) hp h_c4 h_disc_int
-      -- 5. Witness: conductor_Frey
-      exact ⟨conductor_Frey A B C x y, h_tate.1, h_tate.2, fun q _ _ => by
-        -- conductor prime-support: every q | conductor_Frey is 2 or odd-prime of ABC
-        sorry⟩
+      -- 5. Witness: conductor_Frey; prove the prime-support third conjunct
+      refine ⟨conductor_Frey A B C x y, h_tate.1, h_tate.2, fun q hq_prime hq_dvd => ?_⟩
+      -- conductor_Frey = 2 * ∏(odd prime factors of A·B·C)
+      simp only [conductor_Frey] at hq_dvd
+      -- q | 2 * ∏{odd primes of ABC}
+      rcases hq_prime.dvd_mul.mp hq_dvd with h2 | hprod
+      · -- q | 2 and q prime → q = 2
+        right
+        exact Nat.le_antisymm (Nat.le_of_dvd two_pos h2) hq_prime.two_le
+      · -- q | ∏{odd primes of ABC} → q | ABC
+        left
+        -- S = {odd prime factors of ABC}
+        set S := (A.natAbs * B.natAbs * C.natAbs).factors.toFinset.filter (· ≠ 2) with hS_def
+        -- q divides some member x of S
+        obtain ⟨x, hx_S, hx_dvd⟩ := prime_dvd_finset_prod hq_prime S hprod
+        -- x ∈ S means x is a factor of ABC (via factors.toFinset membership)
+        have hx_filter := Finset.mem_filter.mp hx_S
+        have hx_in_factors : x ∈ (A.natAbs * B.natAbs * C.natAbs).factors :=
+          Finset.mem_toFinset.mp hx_filter.1
+        -- x is prime (all elements of Nat.factors are prime)
+        have hx_prime : x.Prime := Nat.prime_of_mem_factors hx_in_factors
+        -- q | x and x prime → q = x
+        have hqx : q = x := by
+          rcases hx_prime.eq_one_or_self_of_dvd q hx_dvd with h1 | hqx
+          · exact absurd (h1 ▸ hq_prime) Nat.not_prime_one
+          · exact hqx
+        -- x | ABC (all elements of Nat.factors divide the number)
+        rw [hqx]
+        exact Nat.dvd_of_mem_factors hx_in_factors
 
       #print axioms tate_step2_I_n_conductor_one
       #print axioms tate_frey_multiplicative_derived
+      -- Expected: tate_step2_I_n_conductor_one only (no sorryAx)
 
       end Beal.FreyTate.TateStep2
     
