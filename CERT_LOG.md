@@ -131,7 +131,7 @@ If the SHA differs, the source tree has changed since this log was generated.
 
 ## Chain SHA verification
 
-The chain SHA256 (`c79c94e7...`) is computed from the 12 locked HEAD SHAs in alphabetical
+The chain SHA256 (`f39ed9a9...`) is computed from the 19 locked HEAD SHAs in alphabetical
 repo order. See [CHAIN.md](CHAIN.md) for the verification script.
 
 ---
