@@ -1,1 +1,2 @@
 - [PayPal and Stripe links](paypal-stripe-links.md) — canonical payment links; PayPal is davidfox223 (not davidfox223 — previously wrong)
+- [ZeroBeacon API git remote](zerobeacon-git-remote.md) — origin must point to github.com/DavidFox998/zerobeacon (not brothers-desert-proof)

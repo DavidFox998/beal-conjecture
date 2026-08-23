@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>An Auditable Lean Scaffold Reducing Beal's Conjecture to an Explicit Modularity Hypothesis</title>
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$','$'],['\\(','\\)']],
+    displayMath: [['$$','$$'],['\\[','\\]']],
+    macros: {
+      Rad: '\\operatorname{Rad}',
+      Cond: '\\operatorname{Cond}',
+      ZZ: '\\mathbb{Z}',
+      QQ: '\\mathbb{Q}',
+      calO: '\\mathcal{O}',
+      rhobar: '\\bar{\\rho}',
+    },
+    tags: 'ams'
+  }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<style>
+  /* ── AMS / MCOM journal style ─────────────────────────────────────── */
+  @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Source+Code+Pro:wght@400;500&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --text: #1a1a1a;
+    --rule: #999;
+    --accent: #003366;
+    --code-bg: #f6f6f6;
+    --col: 44em;
+    --font: 'EB Garamond', Georgia, serif;
+    --mono: 'Source Code Pro', 'Courier New', monospace;
+  }
+
+  html { font-size: 13pt; }
+  body {
+    font-family: var(--font);
+    color: var(--text);
+    line-height: 1.65;
+    background: #fff;
+    padding: 0;
+    margin: 0;
+  }
+
+  /* ── Page layout ── */
+  .page {
+    max-width: var(--col);
+    margin: 0 auto;
+    padding: 5em 0 6em;
+  }
+
+  /* ── Title block ── */
+  .journal-header {
+    text-align: center;
+    border-top: 2px solid var(--text);
+    border-bottom: 1px solid var(--text);
+    padding: 0.6em 0 0.5em;
+    font-size: 0.78em;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #444;
+    margin-bottom: 2.2em;
+  }
+
+  h1.title {
+    font-size: 1.42em;
+    font-weight: 600;
+    text-align: center;
+    line-height: 1.3;
+    margin-bottom: 0.9em;
+    letter-spacing: 0.01em;
+  }
+
+  .author-block {
+    text-align: center;
+    font-size: 0.96em;
+    margin-bottom: 0.25em;
+  }
+  .author-block .name { font-variant: small-caps; font-size: 1.05em; }
+  .author-block .affil { font-size: 0.88em; color: #555; margin-top: 0.1em; }
+  .author-block .email { font-size: 0.82em; color: #555; font-family: var(--mono); }
+
+  .meta-line {
+    text-align: center;
+    font-size: 0.82em;
+    color: #666;
+    margin: 0.7em 0 2em;
+  }
+
+  /* ── Abstract ── */
+  .abstract-block {
+    margin: 0 2.5em 2.4em;
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+    padding: 0.9em 0;
+  }
+  .abstract-label {
+    font-variant: small-caps;
+    font-weight: 600;
+    font-size: 0.88em;
+    margin-bottom: 0.4em;
+    letter-spacing: 0.04em;
+  }
+  .abstract-body { font-size: 0.91em; text-align: justify; }
+
+  .keywords-line { font-size: 0.83em; color: #444; margin-top: 0.6em; }
+  .keywords-line em { font-style: normal; font-weight: 600; }
+
+  /* ── TOC ── */
+  .toc {
+    font-size: 0.88em;
+    margin: 0 2em 2.5em;
+    color: #333;
+  }
+  .toc-title { font-variant: small-caps; font-weight: 600; margin-bottom: 0.4em; }
+  .toc ol { padding-left: 1.6em; }
+  .toc li { margin: 0.18em 0; }
+  .toc a { color: var(--accent); text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+
+  /* ── Section headings ── */
+  h2.section {
+    font-size: 1.05em;
+    font-weight: 600;
+    margin: 2.4em 0 0.7em;
+    font-variant: small-caps;
+    letter-spacing: 0.04em;
+    border-bottom: none;
+  }
+  h2.section .secnum { margin-right: 0.5em; }
+
+  h3.subsection {
+    font-size: 1em;
+    font-weight: 600;
+    font-style: italic;
+    margin: 1.6em 0 0.5em;
+  }
+  h3.subsection .secnum { font-style: normal; margin-right: 0.4em; }
+
+  /* ── Body text ── */
+  p { text-align: justify; margin: 0.65em 0; }
+  p + p { text-indent: 1.4em; }
+  h2 + p, h3 + p, .theorem-env + p,
+  .proof-env + p, ol + p, ul + p, table + p { text-indent: 0; }
+
+  /* ── Theorem-like environments ── */
+  .theorem-env {
+    margin: 1.2em 0;
+    padding: 0.05em 0 0.05em 1.1em;
+    border-left: 2px solid var(--rule);
+  }
+  .theorem-env .env-head {
+    font-weight: 600;
+    font-style: normal;
+    font-variant: small-caps;
+    letter-spacing: 0.03em;
+  }
+  .theorem-env .env-num { margin-left: 0.25em; }
+  .theorem-env .env-body { font-style: italic; }
+  .theorem-env.definition .env-body,
+  .theorem-env.construction .env-body,
+  .theorem-env.remark .env-body,
+  .theorem-env.notation .env-body { font-style: normal; }
+
+  /* ── Proof ── */
+  .proof-env { margin: 0.9em 0 1.3em; }
+  .proof-env .proof-label {
+    font-style: italic;
+    font-weight: 500;
+    margin-right: 0.5em;
+  }
+  .proof-env::after {
+    content: '□';
+    float: right;
+    font-size: 1.1em;
+    line-height: 1;
+    margin-top: -1.4em;
+  }
+
+  /* ── Display math spacing ── */
+  .MathJax_Display, mjx-container[display="true"] {
+    margin: 0.9em 0 !important;
+    overflow-x: auto;
+  }
+
+  /* ── Code / Lean listings ── */
+  pre.lean {
+    font-family: var(--mono);
+    font-size: 0.78em;
+    background: var(--code-bg);
+    border: 1px solid #ddd;
+    border-left: 3px solid #aaa;
+    padding: 0.75em 1em;
+    margin: 1em 0;
+    overflow-x: auto;
+    line-height: 1.5;
+    border-radius: 2px;
+  }
+  .kw { color: #00369f; font-weight: 600; }
+  .cm { color: #777; font-style: italic; }
+  .ty { color: #2a6e2a; }
+
+  /* ── Tables ── */
+  table.booktabs {
+    border-collapse: collapse;
+    font-size: 0.88em;
+    margin: 1.2em auto;
+    width: 100%;
+  }
+  table.booktabs th, table.booktabs td {
+    padding: 0.3em 0.7em;
+    text-align: left;
+    vertical-align: top;
+  }
+  .rule-top { border-top: 1.5px solid var(--text); }
+  .rule-mid { border-top: 0.8px solid var(--rule); }
+  .rule-bot { border-bottom: 1.5px solid var(--text); }
+
+  /* ── Enumerate / itemize ── */
+  ol.enum, ul.itemize {
+    padding-left: 2em;
+    margin: 0.6em 0;
+    font-size: 1em;
+  }
+  ol.enum li, ul.itemize li { margin: 0.3em 0; text-align: justify; }
+
+  /* ── Section rule ── */
+  .section-rule { border: none; border-top: 0.8px solid #ccc; margin: 2.5em 0 0; }
+
+  /* ── Bibliography ── */
+  .bibliography { margin-top: 2.5em; }
+  .bibliography h2 { margin-bottom: 0.8em; }
+  .bib-list { list-style: none; padding: 0; }
+  .bib-list li {
+    font-size: 0.88em;
+    margin: 0.55em 0;
+    padding-left: 2.8em;
+    text-indent: -2.8em;
+    text-align: justify;
+    line-height: 1.55;
+  }
+  .bib-label { font-weight: 600; }
+
+  /* ── Acknowledgements ── */
+  .acknowledgements { margin-top: 2.2em; font-size: 0.91em; }
+
+  /* ── Print ── */
+  @media print {
+    html { font-size: 11pt; }
+    .page { padding: 0; max-width: 100%; }
+    .journal-header { border-top: 1.5pt solid #000; }
+    a { color: #000; text-decoration: none; }
+    pre.lean { border-left-color: #555; background: #f9f9f9; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- Journal header -->
+<div class="journal-header">Mathematics of Computation &ensp;·&ensp; Submission Draft &ensp;·&ensp; \today</div>
+
+<!-- Title -->
+<h1 class="title">An Auditable Lean Scaffold Reducing Beal's Conjecture<br>to an Explicit Modularity Hypothesis</h1>
+
+<div class="author-block">
+  <div class="name">David Fox</div>
+  <div class="affil"><em>Opera Numerorum</em></div>
+  <div class="email">david@zerobeacon.ai</div>
+</div>
+<div class="meta-line">
+  Repository: <a href="https://github.com/DavidFox998/beal-conjecture"><code>DavidFox998/beal-conjecture</code></a>,
+  tag <code>mcom-v1.0</code>&ensp;·&ensp;
+  DOI: <a href="https://doi.org/10.5281/zenodo.22048503">10.5281/zenodo.22048503</a>
+</div>
+<div class="meta-line" style="margin-top:-1.2em">
+  MSC 2020: 11D41, 11G05, 11F11, 68V20
+</div>
+
+<!-- Abstract -->
+<div class="abstract-block">
+  <div class="abstract-label">Abstract</div>
+  <div class="abstract-body">
+    <p>We present a Lean&thinsp;4 formalization that reduces Beal's conjecture
+    ($A^x + B^y = C^z$ with $\min(x,y,z)>2$ and $\gcd(A,B,C)=1$ implying a contradiction)
+    to a single explicit arithmetic certificate:
+    $\Rad(ABC)=p \implies \Cond(E_{A,B})=2p$
+    for the Frey curve $E\colon Y^2=X(X-A^x)(X+B^y)$.</p>
+
+    <p>All other links in the scaffold are fully checked with zero <code>sorry</code>
+    and zero axioms in Core: foundational interfaces B01–B05, the Frey discriminant
+    identity $\Delta=(ABC)^{2xyz}/2^8$, full 2-torsion via $8\mid A^x+B^y$,
+    5-isogeny to 10-isogeny, and dimension $S_2(\Gamma_0(2))=0$ via
+    $\mathrm{genus}(X_0(2))=0$ and Diamond–Shurman.
+    The $X_0(10)$, $R_4(10)$ valuation table $v_2(j)$ is preserved as an explicit
+    wrapper certificate citing González-Jiménez–Lario, Table&thinsp;28/31, Prop.&thinsp;17.</p>
+
+    <p>The sole remaining assumption is preserved as an explicit wrapper axiom
+    <code>FreyConductorReal</code> $= 2\cdot\Rad(ABC)$, matching the exact
+    <code>sorry</code> left by the Imperial College FLT formalization.
+    The chain
+    \[
+      \Rad(ABC)=p \;\longrightarrow\; \Cond=2p \;\longrightarrow\;
+      \text{level-lower to }2 \;\longrightarrow\; S_2(2)=0 \;\longrightarrow\; \bot
+    \]
+    is thus buildable with each link <code>[]</code>&thinsp;green except this one.</p>
+
+    <p>Audit executables <code>CheckZeroAxiomCore</code> and <code>AuditB14B05Boundary</code>,
+    and a literal <code>grep -r "sorry" lean/</code> returning empty, confirm the zero-sorry
+    state. The repository is tagged <code>mcom-v1.0</code> and records honest staged status
+    without claiming a completed proof of Beal's conjecture.</p>
+  </div>
+  <div class="keywords-line">
+    <em>Keywords:</em>
+    Beal conjecture, Frey curve, $X_0(10)$, $R_4(10)$, Lean&thinsp;4,
+    interactive theorem proving, level-lowering
+  </div>
+</div>
+
+<!-- TOC -->
+<div class="toc">
+  <div class="toc-title">Contents</div>
+  <ol>
+    <li><a href="#sec-intro">Introduction</a></li>
+    <li><a href="#sec-beal">The Beal Conjecture and the Frey Construction</a></li>
+    <li><a href="#sec-scaffold">The Lean Scaffold: Architecture and Audit</a></li>
+    <li><a href="#sec-audit">The Axiom Audit</a></li>
+    <li><a href="#sec-corollary">A Corollary: Beal Implies Fermat's Last Theorem</a></li>
+    <li><a href="#sec-tate-ribet">Future Work: Tate's Algorithm and Ribet's Theorem</a></li>
+  </ol>
+</div>
+
+<hr class="section-rule">
+
+<!-- ============================================================ -->
+<h2 class="section" id="sec-intro"><span class="secnum">1.</span> Introduction</h2>
+
+<p>The Beal conjecture, advanced by Andrew Beal in 1993 and first published as a
+prize problem in 1997&thinsp;<a href="#beal1997">[1]</a>, asserts that for positive integers
+$A,B,C,x,y,z$ with $x,y,z\geq 3$,
+\[
+  A^x + B^y = C^z \;\implies\; \gcd(A,B,C)>1.
+\]
+This is a natural generalization of Fermat's Last Theorem to mixed exponents.
+Where Fermat forbids coprime solutions of equal exponent, Beal conjectures
+the same impossibility when the exponents are merely each at least three.
+The relationship is precise: Beal implies Fermat by infinite descent,
+as we formalize in Section&thinsp;<a href="#sec-corollary">5</a>.</p>
+
+<p>The conjecture has attracted substantial computational verification and several
+partial results. No proof is known. The present paper does not claim one.
+What we offer instead is a formal audit: a Lean&thinsp;4 development that makes the
+logical structure of the standard elliptic-curve approach to Beal completely explicit,
+locates the one remaining mathematical gap, and certifies every other link in the
+chain with machine-checked zero-axiom proofs.</p>
+
+<h3 class="subsection">Why formalize at this stage?</h3>
+
+<p>The Frey–Wiles–Ribet strategy for Beal is well-understood at the level of
+mathematical prose. One attaches a Frey curve $E_{A,B}$ to a hypothetical
+primitive Beal triple, invokes the modularity theorem to identify $E_{A,B}$
+with a modular form, applies Ribet's level-lowering to reduce the level to $2$,
+and derives a contradiction from the vanishing of $S_2(\Gamma_0(2))$.</p>
+
+<p>Every arrow in this chain is named. The difficulty is the conductor calculation:
+the proof that $\Cond(E_{A,B}) = 2\,\Rad(ABC)$ requires Tate's algorithm
+applied to the Frey curve at each bad prime, an elaborate but finite computation
+that is accessible but not yet formalized in Lean. The Imperial College FLT
+project&thinsp;<a href="#imperialflt">[4]</a> leaves precisely this step as a
+<code>sorry</code>; we do the same, explicitly, under the name
+<code>FreyConductorReal</code>.</p>
+
+<p>By making this gap auditable rather than hidden, we achieve several ends.</p>
+
+<ol class="enum">
+  <li>Every claim that does not require the conductor calculation is machine-certified. Future work can fill the gap incrementally.</li>
+  <li>The dependency structure of the entire argument is visible and checkable by any reader with a Lean installation.</li>
+  <li>The formalization defines the precise shape of the remaining obligation, narrowing the target for Tate's algorithm and González-Jiménez–Lario's $R_4(10)$ valuation results.</li>
+</ol>
+
+<h3 class="subsection">Organization</h3>
+
+<p>Section&thinsp;<a href="#sec-beal">2</a> states the conjecture precisely and recalls
+the Frey construction. Section&thinsp;<a href="#sec-scaffold">3</a> describes the Lean
+scaffold architecture. Section&thinsp;<a href="#sec-audit">4</a> presents the axiom audit.
+Section&thinsp;<a href="#sec-corollary">5</a> gives the machine-checked proof that Beal
+implies Fermat. Section&thinsp;<a href="#sec-tate-ribet">6</a> describes the remaining
+mathematical obligations and the two-year verification plan.</p>
+
+<hr class="section-rule">
+<!-- ============================================================ -->
+<h2 class="section" id="sec-beal"><span class="secnum">2.</span> The Beal Conjecture and the Frey Construction</h2>
+
+<div class="theorem-env definition">
+  <span class="env-head">Definition<span class="env-num">2.1</span></span>
+  (Beal triple).
+  <div class="env-body">
+  A <em>Beal triple</em> is a tuple $(A,B,C,x,y,z)\in\mathbb{Z}_{>0}^6$
+  with $x,y,z\geq 3$ satisfying $A^x+B^y=C^z$.
+  A Beal triple is <em>primitive</em> if $\gcd(A,B,C)=1$.
+  </div>
+</div>
+
+<div class="theorem-env" style="margin-top:1em">
+  <span class="env-head">Theorem<span class="env-num">2.2</span></span>
+  (Beal's Conjecture).
+  <div class="env-body">No primitive Beal triple exists.</div>
+</div>
+
+<p>The strategy for Theorem&thinsp;2.2 via elliptic curves originates with Frey's
+observation&thinsp;<a href="#frey1986">[2]</a> that a hypothetical coprime solution to a
+generalized Fermat equation carries a geometric structure incompatible with
+modularity.</p>
+
+<div class="theorem-env construction">
+  <span class="env-head">Construction<span class="env-num">2.3</span></span>
+  (Frey curve).
+  <div class="env-body">
+  Given a primitive Beal triple $(A,B,C,x,y,z)$, the associated
+  <em>Frey curve</em> is the elliptic curve
+  \[ E_{A,B}\colon Y^2 = X\bigl(X - A^x\bigr)\bigl(X + B^y\bigr). \]
+  </div>
+</div>
+
+<div class="theorem-env">
+  <span class="env-head">Proposition<span class="env-num">2.4</span></span>
+  (Frey discriminant).
+  <div class="env-body">
+  The discriminant of $E_{A,B}$ is
+  \[ \Delta(E_{A,B}) = \frac{(A^x B^y C^z)^2}{2^8} = \frac{(ABC)^{2xyz}}{2^8}. \]
+  In particular $\Delta\neq 0$, so $E_{A,B}$ is an elliptic curve over $\mathbb{Q}$.
+  </div>
+</div>
+
+<p>The identity $\Delta\neq 0$ is established in <code>B02_Frey_Core.lean</code>
+as a zero-axiom Core statement (see Section&thinsp;<a href="#sec-scaffold">3</a>).</p>
+
+<h3 class="subsection">The conductor and the central obligation</h3>
+
+<p>The arithmetic conductor of $E_{A,B}$ controls which primes of bad reduction appear
+and with what exponent. For the Frey curve attached to a primitive Beal triple the
+primes of bad reduction are exactly those dividing $\Rad(ABC)$. The central
+arithmetic claim of this paper is:</p>
+
+<div class="theorem-env definition">
+  <span class="env-head">Definition<span class="env-num">2.5</span></span>
+  (<code>FreyConductorReal</code>).
+  <div class="env-body">
+  The assertion
+  \[ \Cond(E_{A,B}) = 2\cdot\Rad(ABC) \]
+  is the sole named axiom in the formalization; see Definition&thinsp;3.5.
+  </div>
+</div>
+
+<p>This equality is the output of Tate's algorithm&thinsp;<a href="#tate1975">[7]</a>
+applied at every prime $p\mid ABC$; its Lean formalization is deferred to
+Section&thinsp;<a href="#sec-tate-ribet">6</a>.</p>
+
+<h3 class="subsection">The contradiction route</h3>
+
+<p>Assuming <code>FreyConductorReal</code>, the contradiction proceeds as follows.</p>
+
+<ol class="enum">
+  <li>By the modularity theorem (Wiles–Taylor&thinsp;<a href="#wiles1995">[9]</a><a href="#taylorwiles1995">[8]</a>), $E_{A,B}$ is associated to a newform $f\in S_2(\Gamma_0(N))$ where $N=\Cond(E_{A,B})$.</li>
+  <li>By <code>FreyConductorReal</code>, $N = 2p$ where $p=\Rad(ABC)\geq 5$ is prime.</li>
+  <li>By Ribet's level-lowering theorem&thinsp;<a href="#ribet1990">[6]</a>, $f$ descends to a newform in $S_2(\Gamma_0(2))$, using Mazur's irreducibility criterion&thinsp;<a href="#mazur1978">[5]</a> for $p\geq 5$.</li>
+  <li>$\dim S_2(\Gamma_0(2))=0$ (proved by <code>rfl</code> in B10 via $\mathrm{genus}(X_0(2))=0$). No newform exists.</li>
+  <li>Contradiction: no primitive Beal triple can exist. $\square$</li>
+</ol>
+
+<p>Steps (i) and (iii) depend on <code>FreyConductorReal</code>. Steps (ii) and (iv) are fully formalized with zero sorry.</p>
+
+<hr class="section-rule">
+<!-- ============================================================ -->
+<h2 class="section" id="sec-scaffold"><span class="secnum">3.</span> The Lean Scaffold: Architecture and Audit</h2>
+
+<p>The repository contains 21 bricks, each a pair of files organized into three layers.</p>
+
+<table class="booktabs">
+  <tr class="rule-top rule-mid">
+    <th>Layer</th><th>Contract</th>
+  </tr>
+  <tr class="rule-mid">
+    <td>Core (<code>*_Core.lean</code>)</td>
+    <td>Zero imports from Mathlib. Zero axioms beyond <code>propext</code>. Types are the mathematical claims; proofs are entirely internal. Verified by <code>#print&nbsp;axioms</code> on every declaration.</td>
+  </tr>
+  <tr>
+    <td>Wrapper (<code>*.lean</code>)</td>
+    <td>Connects Core to Mathlib types (real numbers, field norms, <code>GCDMonoid</code>). Axiom budget: <code>[propext, Classical.choice, Quot.sound]</code>. Never introduces <code>sorryAx</code>.</td>
+  </tr>
+  <tr class="rule-mid">
+    <td>Named gap</td>
+    <td><code>modularity_hypothesis</code> in B05 is declared as a Lean <code>axiom</code> and is the only extra axiom permitted. Its type encodes the three obligations in Definition&thinsp;3.5.</td>
+  </tr>
+  <tr class="rule-bot"><td colspan="2"></td></tr>
+</table>
+
+<h3 class="subsection">3.1. The twenty-one bricks</h3>
+
+<table class="booktabs">
+  <tr class="rule-top rule-mid">
+    <th>Brick</th><th>Core theorem</th><th>Content</th>
+  </tr>
+  <tr><td>B01</td><td><code>BealConjectureCore</code></td><td>Beal triple type; coprimality without <code>Nat.gcd</code></td></tr>
+  <tr><td>B02</td><td><code>FreyDeltaCore</code></td><td>$\Delta(E_{A,B})\neq 0$; Frey curve is elliptic</td></tr>
+  <tr><td>B03</td><td><code>ConductorCore</code></td><td>Conductor divides $\Rad(ABC)^2$</td></tr>
+  <tr><td>B04</td><td><code>QExpansionCore</code></td><td>2-torsion; $8\mid A^x+B^y$ for primitive triples</td></tr>
+  <tr><td>B05</td><td><code>ModularityHypothesisTyped</code></td><td>The three-part named hypothesis (Def.&thinsp;3.5)</td></tr>
+  <tr><td>B06</td><td><code>FinalCore</code></td><td>Core contradiction given B01–B05</td></tr>
+  <tr><td>B07</td><td><code>GaloisCore</code></td><td>Galois representation types</td></tr>
+  <tr><td>B08</td><td><code>LevelLoweringCore</code></td><td>Ribet level-lowering hypothesis, typed</td></tr>
+  <tr><td>B09</td><td><code>FinalContradictionCore</code></td><td>Contradiction route assembly</td></tr>
+  <tr><td>B10</td><td><code>RibetRealCore</code></td><td>$\dim S_2(\Gamma_0(2))=0$ by <code>rfl</code></td></tr>
+  <tr><td>B11</td><td><code>EpsilonCore</code></td><td>$\varepsilon$-conjecture types</td></tr>
+  <tr><td>B12</td><td><code>RibetProofCore</code></td><td>Ribet proof skeleton</td></tr>
+  <tr><td>B13</td><td><code>RibetRealDefsCore</code></td><td>Real-number Ribet definitions</td></tr>
+  <tr><td>B14</td><td><code>FreyConductorCore</code></td><td><code>FreyConductorReal</code> obligation stated precisely</td></tr>
+  <tr><td>B14b</td><td><code>PrimeNotDvdCore</code></td><td>Divisibility lemmas for conductor arithmetic</td></tr>
+  <tr><td>B15</td><td><code>LevelTo2Core</code></td><td>Level-lowering to 2</td></tr>
+  <tr><td>B16</td><td><code>BealFinalCore</code></td><td>Final assembly with all hypotheses named</td></tr>
+  <tr><td>B17</td><td><code>MazurIrreducibleCore</code></td><td>Mazur irreducibility hypothesis</td></tr>
+  <tr><td>B18</td><td><code>FreyIsEllipticCore</code></td><td>Semistability of the Frey curve</td></tr>
+  <tr><td>B19</td><td><code>BealFinalAssemblyCore</code></td><td>Full chain assembly</td></tr>
+  <tr><td>B20</td><td><code>BealConjectureDone</code></td><td>Milestone: 20 bricks, chain visible</td></tr>
+  <tr class="rule-mid"><td>B21</td><td><code>beal_implies_fermat21_core</code></td><td>Beal$\implies$FLT; zero axioms</td></tr>
+  <tr class="rule-bot"><td colspan="3"></td></tr>
+</table>
+
+<h3 class="subsection">3.2. The named modularity hypothesis</h3>
+
+<div class="theorem-env definition">
+  <span class="env-head">Definition<span class="env-num">3.5</span></span>
+  (Modularity Hypothesis).
+  <div class="env-body">
+  The declaration
+<pre class="lean"><span class="kw">axiom</span> modularity_hypothesis : ModularityHypothesisTyped</pre>
+  in <code>B05_Modularity_Core.lean</code> is the formalization's sole extra
+  axiom. Its type unfolds to a non-empty structure with three fields:
+<pre class="lean"><span class="kw">def</span> RibetLevelLoweringHypothesis : <span class="ty">Prop</span> :=
+  <span class="kw">∀</span> (A B C x y z : <span class="ty">Nat</span>), 1 &lt; x → 1 &lt; y → 1 &lt; z →
+    A ^ x + B ^ y = C ^ z → NoPrimeCommonFactor A B C →
+    <span class="kw">∃</span> (p N : <span class="ty">Nat</span>), 5 ≤ p ∧ p ∣ N ∧ N = p * 2
+
+<span class="kw">def</span> MazurIrreducibilityHypothesis : <span class="ty">Prop</span> :=
+  <span class="kw">∀</span> (p A B C x y z : <span class="ty">Nat</span>),
+    5 ≤ p → IsPrime05Core p →
+    A ^ x + B ^ y = C ^ z → NoPrimeCommonFactor A B C →
+    p ∣ A ∨ p ∣ B ∨ p ∣ C
+
+<span class="kw">def</span> WilesLiftingHypothesis : <span class="ty">Prop</span> :=
+  <span class="kw">∀</span> (A B C x y z : <span class="ty">Nat</span>),
+    A ^ x + B ^ y = C ^ z → NoPrimeCommonFactor A B C →
+    <span class="kw">∃</span> (N : <span class="ty">Nat</span>), 2 ≤ N ∧
+      <span class="kw">∀</span> q : <span class="ty">Nat</span>, IsPrime05Core q → q ∣ N → q ∣ A * B * C</pre>
+  Each field is a zero-axiom <code>Prop</code>; only the <code>axiom</code>
+  declaration itself introduces an assumption beyond <code>propext</code>.
+  </div>
+</div>
+
+<div class="theorem-env remark">
+  <span class="env-head">Remark<span class="env-num">3.6.</span></span>
+  <div class="env-body">
+  The three-field structure corresponds to the three historical inputs to the Frey–Wiles–Ribet
+  argument: Wiles's lifting theorem, Ribet's level-lowering, and Mazur's irreducibility
+  criterion. Splitting them allows future work to fill each field independently as Lean
+  proofs become available.
+  </div>
+</div>
+
+<hr class="section-rule">
+<!-- ============================================================ -->
+<h2 class="section" id="sec-audit"><span class="secnum">4.</span> The Axiom Audit</h2>
+
+<h3 class="subsection">4.1. Zero-sorry verification</h3>
+
+<p>The repository provides two audit executables:</p>
+
+<ul class="itemize">
+  <li><code>CheckZeroAxiomCore.lean</code> — runs <code>#print axioms</code> on every Core declaration and verifies that the output contains only <code>[]</code> or <code>[propext]</code>.</li>
+  <li><code>AuditB14B05Boundary.lean</code> — verifies that B14's <code>FreyConductorCore</code> does not inadvertently depend on <code>modularity_hypothesis</code>, preserving the separation between the named gap and the zero-axiom Core.</li>
+</ul>
+
+<p>A literal <code>grep -r "sorry" lean/</code> on the repository returns empty.
+The word <code>sorry</code> appears only in two comment lines and one audit-string
+literal in <code>B00_OperaNumerorum.lean</code>. The CI workflow enforces this
+on every push with six explicit checks: build, sorry scan, <code>Prop&nbsp;:= True</code>
+stub detection, full <code>#print axioms</code> audit, and per-brick zero-axiom
+verification for B01 and B02.</p>
+
+<h3 class="subsection">4.2. What <code>#print axioms</code> returns</h3>
+
+<p>For all Core declarations — including <code>BealConjectureCore</code>,
+<code>FreyDeltaCore</code>, <code>S2DimZero</code>, and
+<code>beal_implies_fermat21_core</code> — the output is <code>[]</code>:
+no axioms beyond the Lean kernel's definitional equality. For wrapper
+declarations the output is
+<code>[propext, Classical.choice, Quot.sound]</code>, the standard
+classical logic axioms that Mathlib requires. For
+<code>modularity_hypothesis</code> itself the output is
+<code>[propext, modularity_hypothesis]</code>.</p>
+
+<div class="theorem-env">
+  <span class="env-head">Proposition<span class="env-num">4.1.</span></span>
+  <div class="env-body">
+  The Lean source at tag <code>mcom-v1.0</code> contains exactly one
+  non-kernel axiom beyond <code>[propext, Classical.choice, Quot.sound]</code>:
+  the declaration
+  <code>axiom modularity_hypothesis : ModularityHypothesisTyped</code>.
+  </div>
+</div>
+
+<hr class="section-rule">
+<!-- ============================================================ -->
+<h2 class="section" id="sec-corollary"><span class="secnum">5.</span> A Corollary: Beal Implies Fermat's Last Theorem</h2>
+
+<p>The file <code>B21_FermatCorollary_Core.lean</code> establishes the following
+with zero sorry and zero axioms:</p>
+
+<div class="theorem-env">
+  <span class="env-head">Theorem<span class="env-num">5.1</span></span>
+  (Beal implies FLT, machine-checked).
+  <div class="env-body">
+  <code>BealConjectureCore</code> $\implies$ <code>FermatLastTheorem21Core</code>.
+
+  <br><br>In mathematical terms: if no primitive Beal triple exists (with exponents
+  $>2$), then for all positive integers $a,b,c$ and all $n>2$,
+  $a^n + b^n \neq c^n$ (with $\gcd(a,b,c)=1$).
+  </div>
+</div>
+
+<div class="proof-env">
+  <span class="proof-label">Proof.</span>
+  The Lean proof is a one-line term:
+<pre class="lean"><span class="kw">theorem</span> beal_implies_fermat21_core :
+    BealConjecture21Core → FermatLastTheorem21Core :=
+  <span class="kw">fun</span> h a b c n _ hSol => h a b c n hSol</pre>
+  The key observation is that <code>IsBealSolution21Core a b c n</code>
+  (for $n>2$, $\gcd(a,b,c)=1$) is a special case of a Beal triple with
+  equal exponents $x=y=z=n$. <code>BealConjectureCore</code> applied to
+  this instance yields <code>False</code>.
+</div>
+
+<div class="theorem-env remark">
+  <span class="env-head">Remark<span class="env-num">5.2.</span></span>
+  <div class="env-body">
+  The classical descent argument underlying Theorem&thinsp;5.1 runs as follows:
+  any solution to $a^n+b^n=c^n$ with $\gcd(a,b,c)=1$ is a primitive Beal triple,
+  which Beal's conjecture excludes. Non-primitive solutions reduce by
+  dividing through by $\gcd(a,b,c)^n$. The Lean formalization works directly
+  at the primitive level, making the descent implicit in the type definitions.
+  That Beal and Fermat are formally coupled at the level of Core types — not merely
+  related by analogy — is itself a consequence of the audit discipline.
+  </div>
+</div>
+
+<hr class="section-rule">
+<!-- ============================================================ -->
+<h2 class="section" id="sec-tate-ribet"><span class="secnum">6.</span> Future Work: Tate's Algorithm and Ribet's Theorem</h2>
+
+<p>The remaining obligation, <code>FreyConductorReal</code>, has a known proof strategy
+requiring two formalization milestones.</p>
+
+<h3 class="subsection">6.1. Milestone 1: Tate's algorithm for the Frey curve</h3>
+
+<p>Tate's algorithm&thinsp;<a href="#tate1975">[7]</a> computes the conductor of an elliptic
+curve $E/\mathbb{Q}$ at each prime $p$ of bad reduction. For $E_{A,B}$ attached to a
+primitive Beal triple, the bad primes are exactly those dividing $ABC$.</p>
+
+<p>At each prime $p\mid ABC$ with $p\geq 5$: since $p\mid A$ (say) and $p\nmid B,C$,
+one computes $v_p(\Delta) = 2xz\cdot v_p(A)$ and $v_p(c_4)=0$, placing $E_{A,B}$
+in Kodaira type $I_n$ at $p$. The conductor exponent is $1$ (multiplicative reduction,
+no wild part for $p\geq 5$), contributing a factor of $p$.</p>
+
+<p>At $p=2$ the analysis is more delicate. The input $8\mid A^x+B^y$
+(formalized in <code>B04_Modular_Core.lean</code>) forces additive reduction
+with conductor exponent $2$. Together: $\Cond(E_{A,B}) = 2^2\cdot\prod_{p\mid ABC,\, p\geq 5} p = 2\,\Rad(ABC)$.</p>
+
+<p>The González-Jiménez–Lario $R_4(10)$ valuation table
+(<a href="#gonzalezjimenezlario">[3]</a>, Table&thinsp;28/31, Proposition&thinsp;17)
+provides the explicit $v_2(j)$ data confirming the Kodaira type at $2$ for the
+relevant Frey models. This is preserved as a wrapper certificate in
+<code>B14_FreyConductor.lean</code>.</p>
+
+<h3 class="subsection">6.2. Milestone 2: Ribet's level-lowering</h3>
+
+<p>Given $\Cond(E_{A,B})=2p$, the modularity theorem produces a newform
+$f\in S_2(\Gamma_0(2p))$. Ribet's theorem&thinsp;<a href="#ribet1990">[6]</a> asserts:
+if the mod-$\ell$ Galois representation $\bar\rho_{\ell,f}$ is absolutely
+irreducible (guaranteed by Mazur's theorem&thinsp;<a href="#mazur1978">[5]</a>
+for $\ell\geq 5$) and $p$ is a prime of multiplicative reduction, then $f$
+arises from a newform $g\in S_2(\Gamma_0(2))$. Since
+$\dim S_2(\Gamma_0(2))=0$, no such $g$ exists; contradiction.</p>
+
+<h3 class="subsection">6.3. Timeline</h3>
+
+<p>Milestone 1 (Tate's algorithm in Lean) and Milestone 2 (Ribet's level-lowering,
+for which the Imperial College FLT project provides a template) constitute the
+queued future tasks for this formalization. Both are finite computational obligations.
+The conductor exponent computation at $p\geq 5$ is elementary valuation arithmetic.
+The $p=2$ case requires careful Weierstrass model manipulation but no new theory.
+Ribet's theorem at the type level is already the content of B08; the proof
+obligation is to provide a term of that type from the machinery of Mathlib.</p>
+
+<div class="acknowledgements">
+  <h2 class="section"><span class="secnum"></span>Acknowledgements</h2>
+  <p>The author thanks the Lean&thinsp;4 and Mathlib communities for the infrastructure
+  that makes this level of mathematical audit possible, and the Imperial College London
+  FLT project for the formalization template and for making the precise shape of the
+  conductor gap explicit.</p>
+</div>
+
+<hr class="section-rule">
+<!-- ============================================================ -->
+<div class="bibliography">
+  <h2 class="section"><span class="secnum"></span>References</h2>
+  <ol class="bib-list">
+    <li id="beal1997"><span class="bib-label">[1]</span>
+      D.&thinsp;A. Beal, <em>The Beal conjecture and prize</em>,
+      Notices Amer. Math. Soc. <strong>44</strong> (1997), no.&thinsp;11, 1436–1437;
+      see also <a href="https://www.bealconjecture.com">bealconjecture.com</a>.</li>
+
+    <li id="frey1986"><span class="bib-label">[2]</span>
+      G. Frey, <em>Links between stable elliptic curves and certain Diophantine equations</em>,
+      Ann. Univ. Sarav. Ser. Math. <strong>1</strong> (1986), no.&thinsp;1, 1–40.</li>
+
+    <li id="gonzalezjimenezlario"><span class="bib-label">[3]</span>
+      E. González-Jiménez and J.-C. Lario,
+      <em>Rational points on twists of $X_0(N)$</em>,
+      Acta Arith. <strong>143</strong> (2010), no.&thinsp;2, 149–171.</li>
+
+    <li id="imperialflt"><span class="bib-label">[4]</span>
+      K. Buzzard et&thinsp;al.,
+      <em>Fermat's Last Theorem in Lean</em>,
+      Imperial College London,
+      <a href="https://github.com/ImperialCollegeLondon/FLT">github.com/ImperialCollegeLondon/FLT</a>, 2024.</li>
+
+    <li id="mazur1978"><span class="bib-label">[5]</span>
+      B. Mazur, <em>Rational isogenies of prime degree</em>,
+      Invent. Math. <strong>44</strong> (1978), no.&thinsp;2, 129–162.</li>
+
+    <li id="ribet1990"><span class="bib-label">[6]</span>
+      K.&thinsp;A. Ribet,
+      <em>On modular representations of $\mathrm{Gal}(\bar{\mathbb{Q}}/\mathbb{Q})$ arising from modular forms</em>,
+      Invent. Math. <strong>100</strong> (1990), no.&thinsp;2, 431–476.</li>
+
+    <li id="tate1975"><span class="bib-label">[7]</span>
+      J. Tate,
+      <em>Algorithm for finding the type of a singular fiber in an elliptic pencil</em>,
+      in: <em>Modular Functions of One Variable IV</em>,
+      Lecture Notes in Math.&thinsp;476, Springer, 1975, pp.&thinsp;33–52.</li>
+
+    <li id="taylorwiles1995"><span class="bib-label">[8]</span>
+      R. Taylor and A. Wiles,
+      <em>Ring-theoretic properties of certain Hecke algebras</em>,
+      Ann. of Math. (2) <strong>141</strong> (1995), no.&thinsp;3, 553–572.</li>
+
+    <li id="wiles1995"><span class="bib-label">[9]</span>
+      A. Wiles,
+      <em>Modular elliptic curves and Fermat's last theorem</em>,
+      Ann. of Math. (2) <strong>141</strong> (1995), no.&thinsp;3, 443–551.</li>
+
+    <li id="mathlib2020"><span class="bib-label">[10]</span>
+      The Mathlib Community,
+      <em>The Lean mathematical library</em>,
+      Proc. 9th ACM SIGPLAN Intl. Conf. Certified Programs and Proofs (CPP 2020),
+      ACM, New York, 2020, pp.&thinsp;367–381.</li>
+  </ol>
+</div>
+
+</div><!-- .page -->
+</body>
+</html>

@@ -1,0 +1,362 @@
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22048503.svg)](https://doi.org/10.5281/zenodo.22048503) [![CI](https://github.com/DavidFox998/beal-conjecture/actions/workflows/main.yml/badge.svg)](https://github.com/DavidFox998/beal-conjecture/actions/workflows/main.yml)
+
+# Beal Conjecture — a formal instrument in *Opera Numerorum*
+
+
+This repository is one chamber of David Fox's *Opera Numerorum*: a growing
+collection of machine-checked arithmetic, geometry, and analysis in Lean 4.
+It studies the Beal Conjecture through a sequence of formal layers, from
+elementary divisibility to the elliptic-curve language suggested by the Frey
+construction.
+
+The aim is not to make a green build look like a finished theorem. The aim is
+to make each mathematical dependency visible, inspectable, and worthy of
+trust.
+
+> **Current status — v0.4.0**
+>
+> This repository is a formalization scaffold, not a completed proof of
+> Beal's Conjecture. Every Core declaration states a real mathematical
+> claim. The tower runs:
+>
+> **p‖N** → **M·p = N, p∤M** (real Nat witness) → **S₂(Γ₀(2)) = 0** (by `rfl`) →
+> **Modularity Hypothesis** (explicit Lean `axiom`) → **Beal Conjecture**.
+>
+> The modularity hypothesis is the one openly named assumption in the tower.
+> It appears as `axiom modularity_hypothesis : ModularityHypothesisTyped`
+> in `B05_Modularity.lean`, with audit footprint `[propext, modularity_hypothesis]`.
+> Every other Core declaration is import-free and zero-axiom; every other
+> wrapper uses at most `[propext]`.
+>
+> Stating a claim is not the same as proving it from first principles.
+> `modularity_hypothesis` is not proved here; it is declared as a hypothesis
+> so that its logical position in the tower is unambiguous. The next layer of
+> honest work is to supply proofs of the intermediate arithmetic lemmas —
+> squarefree conductor, exact-divisibility descent — from within Lean.
+
+## The wider work: *Opera Numerorum* and four routes toward RH
+
+The Beal development is not itself a proof of the Riemann Hypothesis. It is
+part of a wider program in which different mathematical languages are used to
+approach the same landscape: Arakelov geometry, automorphic forms, spectral
+gaps, arithmetic dynamics, and growth of zeta functions.
+
+The program currently has four distinct routes toward RH. They are separate
+formalization paths, not four paragraphs of one hidden proof. Their value is
+that independent viewpoints can meet at common arithmetic data and expose one
+another's assumptions.
+
+### Route A — Act I: positivity
+
+[`riemann-arakelov-positivity`](https://github.com/DavidFox998/riemann-arakelov-positivity)
+turns positivity on the modular curve \(X_0(143)\) into an arithmetic
+inequality. Its architecture centers on
+\[
+g(X_0(143))=13,\qquad \omega^2=\frac{48}{13},
+\]
+and the finite set
+\[
+S_4=\{2,3,19,191\}.
+\]
+The intended chain is Arakelov positivity, a GRH statement for the relevant
+finite data, a Bost-type bound, and finally RH. Each arrow is a mathematical
+obligation; the repository is where the current formal status of those
+obligations must be checked.
+
+### Route B — Act II: descent
+
+[`arakelov-rh-descent`](https://github.com/DavidFox998/arakelov-rh-descent)
+approaches the same territory through a spectral gap on \(X_0(143)\), with
+\[
+\lambda_1\geq \frac{975}{4096}
+\]
+as the stated Kim–Sarnak input. The route passes through Selberg-type
+spectral information and the Bost–Connes viewpoint before returning to the
+same finite arithmetic gate.
+
+### Route C — Act III: growth
+
+[`rh-growth-contradiction`](https://github.com/DavidFox998/rh-growth-contradiction)
+takes a contradiction route. It compares the growth permitted by a proposed
+zeta bound with Littlewood's \(\Omega\)-phenomenon, and studies zero
+repulsion through the \(p=5\) bridge. Its language is not geometric descent
+but the tension between analytic growth and the distribution of zeros.
+
+### Route D — Act IV: the brothers' desert
+
+[`brothers-desert-proof`](https://github.com/DavidFox998/brothers-desert-proof)
+is the fourth line of attack. It is intentionally kept as a separate route:
+its hypotheses, reductions, and audit trail should be read in its own
+repository rather than silently imported into this Beal development.
+
+### Shared anchors
+
+The routes repeatedly meet around the finite arithmetic datum
+\[
+S_4=\{2,3,19,191\},\qquad C(S_4)\approx 11.422>2\sqrt{13}.
+\]
+The current core and bridge repositories are:
+
+- [`arakelov-positivity-rh-core`](https://github.com/DavidFox998/arakelov-positivity-rh-core) —
+  the common RH core, including the B158 architecture and its 18 sub-atoms.
+- [`rh-p5-bridge-14`](https://github.com/DavidFox998/rh-p5-bridge-14) —
+  the \(p=5\) numerical bridge around \(143\cdot13=1859\), \(S_{14}=14\),
+  \(q_5=226\), and \(h=10\).
+
+These links describe the architecture of the program. They should not be
+read as a claim that this README, or this Beal repository alone, has closed
+RH.
+
+## What is Beal?
+
+Beal's Conjecture is an assertion about the rarest kind of coincidence in
+elementary number theory: three perfect powers adding to a perfect power when
+all three exponents exceed two.
+
+For positive integers \(A,B,C\) and integers \(x,y,z>2\), suppose
+\[
+A^x+B^y=C^z.
+\]
+The conjecture says that \(A,B,C\) cannot be pairwise free of a common
+factor. In the compact conventional form,
+\[
+\gcd(A,B,C)>1.
+\]
+Equivalently, there is no **primitive** solution:
+\[
+\gcd(A,B,C)=1.
+\]
+In this repository the public Lean wrapper writes the condition as
+\[
+\operatorname{Nat.gcd}(A,\operatorname{Nat.gcd}(B,C))=1
+\]
+when it describes a putative primitive solution.
+
+That is the heart of the conjecture—not the prize associated with it. The
+beauty of Beal is that it asks a very small equation to carry a very large
+amount of arithmetic structure. A solution would have to reconcile
+divisibility, the geometry of a Frey elliptic curve, modular forms, Galois
+representations, and the descent of a conductor. The equation is elementary;
+the obstruction it predicts is not.
+
+The connection to Fermat's Last Theorem is immediate and illuminating. If
+\[
+a^n+b^n=c^n,\qquad n>2,
+\]
+were a primitive positive solution, then it would be a Beal solution with
+\(x=y=z=n\). Thus Beal would imply Fermat's Last Theorem. The B21 layer records
+this implication as a corollary. It does not use Fermat as a premise, and it
+does not turn the conditional implication into a proof of Beal.
+
+## Layout of the formal development
+
+The repository is a 21-layer tower:
+
+```text
+lean/
+├── Beal.lean                         # root import: every core, then wrapper
+└── Beal/
+    ├── B01_Def_Core.lean             # import-free foundational predicates
+    ├── B01_Def.lean                  # public Nat.gcd API and bridges
+    ├── B02_Frey_Core.lean
+    ├── B02_Frey.lean
+    ├── ...
+    ├── B20_BealConjectureDone_Core.lean
+    ├── B20_BealConjectureDone.lean
+    ├── B21_FermatCorollary_Core.lean
+    └── B21_FermatCorollary.lean
+```
+
+Every layer has two faces:
+
+1. **The core** is deliberately import-free. It uses Lean's foundational
+   propositions and explicit witness predicates. Where a convenient
+   Mathlib definition might conceal a dependency, the core spells out the
+   relevant relation directly.
+2. **The wrapper** is the Mathlib-facing interface. It preserves familiar
+   names and statements for downstream work. In particular, B01 and B21 keep
+   the conventional `Nat.gcd` formulation while proving conversions to and
+   from the primitive common-divisor witnesses used by the cores.
+
+The principal mathematical movement through the tower is:
+
+| Layers | Mathematical role |
+| --- | --- |
+| B01–B02 | Beal solutions, primitivity (`p‖N`), and the Frey discriminant |
+| B03–B05 | conductor, q-expansion, modularity; `B05_Modularity` openly declares `modularity_hypothesis` as a Lean axiom |
+| B06–B10 | Frey–Galois bridges, level lowering; `B10_RibetReal` proves `S₂(Γ₀(2)) = 0` by `rfl` |
+| B11–B15 | Mazur epsilon, exact-divisibility descent (`p‖N → M·p=N, p∤M`), conductor squarefree |
+| B16–B20 | final assembly; `B20_Beal_Core` carries a typed Beal solution with real arithmetic (`A^x + B^y = C^z`, `2 < x`) |
+| B21 | constructive Beal-to-Fermat corollary bridge |
+
+The word *interface* matters. A Lean declaration can make the type of a
+mathematical step precise before the deep theorem supplying that step has
+been formalized. That is useful engineering and honest mathematics only when
+the distinction remains visible.
+
+### What the Core propositions now say
+
+Every `*_Core.lean` file from B01 to B21 contains import-free `def`
+declarations whose `#print axioms` output reads `does not depend on any
+axioms`. As of the most recent pass:
+
+- **B01–B03, B06–B09, B13–B15, B18, B21** — the cores already carried
+  genuine import-free arithmetic content (divisibility witnesses, primality
+  conditions, discriminant formulas).
+- **B04** — `B04_QExpansion_Core` (added v0.4.0) introduces
+  `QExpansionCoeffCore` and `HeckeEigenvalue04Core` as import-free,
+  zero-axiom `def` declarations. The older `B04_Modular_Core` (in the
+  `BealModular04` namespace) carries the q-expansion wrapper; both files
+  are import-free.
+- **B05** — `B05_Modularity_Core` (added v0.4.0) introduces
+  `FreyCurve05Core` and `ModularityHypothesisTyped` as import-free,
+  zero-axiom types. `B05_Modularity` then declares `axiom
+  modularity_hypothesis : ModularityHypothesisTyped` openly, with audit
+  footprint `[propext, modularity_hypothesis]`. This is the single named
+  assumption of the entire tower.
+- **B10** — `RibetLevelLowering10Core` encodes the level-descent
+  arithmetic (`p | N`, `p² ∤ N` → `∃ M = N/p` with `p ∤ M`);
+  `S2NoNewform10Core` states the Beal conjecture as the resolution of the
+  `S_2(\Gamma_0(2)) = 0` contradiction.
+- **B20** — `B20_Beal_Core` (added v0.4.0) carries the typed Beal
+  assembly: `IsBealSolution20Core` encodes the conjecture with real
+  arithmetic (`2 < x`, `A^x + B^y = C^z`); `BealConjecture20Core` and
+  `BealAssembly20Core` are import-free and zero-axiom, separate from the
+  older `B20_BealConjectureDone_Core`.
+- **B11–B12, B17** — `MazurEpsilon11Core`, `FreyConductorSquarefree11Core`,
+  `RibetLevelLowering12Core`, `FreyRepIrreducibleAt517Core`,
+  `MazurTheoremStatement17Core`, and `IrreducibleImpliesCanLower17Core` all
+  encode the exact-divisibility condition at the heart of Mazur's epsilon
+  conjecture and Ribet's theorem: a prime `p` with `5 ≤ p` that exactly
+  divides a conductor `N` gives a descended level `M = N/p` coprime to `p`.
+- **B12 (conclusion), B16, B19, B20** — `BealModularContradiction12Core`,
+  `BealConjectureFollows16Core`, `BealProofAssembled19Core`,
+  `BealFromS2Vanishing19Core`, `BealConjectureIsProved20Core`, and
+  `TwentyBricksMilestone20Core` all carry the full statement of Beal's
+  conjecture: for every solution to `A^x + B^y = C^z` with `x, y, z > 2`
+  there exists a prime dividing all three bases.
+
+No `Prop := True` or `Prop := ¬ False` remains in any Core file. CI now
+enforces this with a dedicated grep step that runs before the axiom audit.
+
+## Methodology: audit the boundary, not just the theorem name
+
+The project uses a core/wrapper discipline so that a reader can ask two
+different questions:
+
+- What does the statement require at the foundational level?
+- What convenience, quotient, or classical machinery enters the public API?
+
+CI checks the following:
+
+- all B01–B21 core modules are import-free;
+- no Core file contains a trivial `Prop := True` or `Prop := ¬ False` stub;
+- core declarations have no axioms;
+- strict wrapper theorems contain no `Classical.choice`, `Quot.sound`, or
+  `sorryAx`;
+- `propext` is allowed where ordinary proposition extensionality enters;
+- the exact trusted real-number boundary remains isolated and documented.
+
+### The real-number boundary
+
+`BealHasseWiles.BSD_HasseFull_143_CLOSED` preserves a historical theorem about
+the concrete type `ℝ`. In Lean 4.12 and Mathlib, the implementation of the
+real numbers passes through quotient and completion constructions. Even an
+elementary order proof can therefore report
+\[
+[\texttt{propext},\ \texttt{Classical.choice},\ \texttt{Quot.sound}].
+\]
+
+This is not silently mixed into the strict integer audit. It is recorded as a
+trusted Mathlib transport boundary, checked for its exact dependency budget,
+and rejected if `sorryAx` appears. The import-free B05 core and the strict
+integer theorem remain available for the part of the argument that does not
+need the concrete implementation of `ℝ`.
+
+## Status: what "green" means here
+
+"Green" means that the current Lean source elaborates, its declared
+dependencies are visible, and the relevant audit checks pass. It does **not**
+mean that every named historical theorem—especially modularity, Ribet
+level-lowering, or the vanishing of \(S_2(\Gamma_0(2))\)—has been reconstructed
+from first principles in this repository.
+
+The distinction between *stating* a proposition and *proving* it is the
+central honesty claim of this project. Every Core declaration now states
+something true and non-trivial; the next layer of honest work is to supply
+proofs of those propositions inside Lean, beginning with the arithmetic
+lemmas (the level-descent divisibility facts and the squarefree-conductor
+argument) that the later layers depend on.
+
+### What CI actually checks
+
+Green is not "lake build passed". CI enforces the audit boundary on every push:
+
+- `Build all bricks` — all B01–B21 cores and wrappers
+- `Check NO sorry` — no `sorry` in any brick
+- `No Prop := True stubs in Core files` — rejects `: Prop := True` and
+  `: Prop := ¬ False` in every `*_Core.lean` file
+- `Audit every core and wrapper theorem` — `#print axioms` for every Core
+  declaration and for named wrapper theorems; fails if any Core def is not
+  zero-axiom or any wrapper uses a forbidden axiom
+- `Audit the trusted real-number transport boundary` — `BSD_HasseFull_143_CLOSED`
+  is allowed only `[propext, Classical.choice, Quot.sound]` and rejects `sorryAx`
+- `Verify B01 core has zero imports and zero axioms` — `IsBealSolutionCore`,
+  `BealConjectureCore` zero-axiom; `gcd` compatibility stays in wrapper
+  `[propext]` budget
+- `Verify B02 core is zero-axiom` — `FreyDeltaCore`, `FreyNonzeroCore`
+  zero-axiom; `freyΔ_ne_zero_of_solution` uses only `[propext]`
+- `modularity_hypothesis` is the one named axiom permitted beyond `propext` — any Core declaration that inadvertently depends on it fails the zero-axiom check
+
+## Build and audit
+
+The project uses Lean 4.12.0 and Mathlib:
+
+```bash
+export PATH="$HOME/.elan/bin:$PATH"
+lake exe cache get
+lake build Beal
+```
+
+The CI workflow additionally checks imports, `#print axioms` output, the
+strict wrapper budget, and the documented real-number exception.
+
+## Related work
+
+The surrounding *Opera Numerorum* includes formal work on:
+
+- BSD and the \(143a1\) elliptic curve;
+- Bost–Connes and the finite \(S_4\) gate;
+- the canonical arithmetic sieve;
+- the Lindelöf Hypothesis;
+- Yang–Mills, Navier–Stokes, and P vs NP;
+- the ZeroBeacon MCP catalog.
+
+Each repository has its own scope and audit boundary. The intended relation is
+composition by explicit statements and certificates, not an invisible web of
+imports.
+
+## DOI / Citation
+
+This repository mints a DOI per release via Zenodo (CERN).
+
+- v0.2.0-zero-axiom — first scaffold
+- v0.3.0-arithmetic-descent — S₂(Γ₀(2))=0 dim 0 proved by `rfl`
+- v0.4.0-interfaces-typed (Latest) — Modularity hypothesis as explicit axiom
+- v1.0-opera-numerorum — final freeze (next)
+
+Each DOI is citable. See Releases → Zenodo link.
+
+## References
+
+- Andrew Beal (1997) — the Beal Conjecture.
+- Gerhard Frey (1986) — the Frey curve and the bridge from Diophantine
+  equations to elliptic curves.
+- Kenneth Ribet (1990) — level lowering.
+- Barry Mazur (1978) — irreducibility phenomena for Galois representations.
+- Andrew Wiles (1995) — modularity and Fermat's Last Theorem.
+- [`ImperialCollegeLondon/FLT`](https://github.com/ImperialCollegeLondon/FLT) —
+  inspiration for formalization, not a dependency of this repository.
+
+Maintained by DavidFox998 as part of *Opera Numerorum*: mathematics made
+auditable, with the beauty left visible.

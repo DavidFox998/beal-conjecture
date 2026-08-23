@@ -1,4 +1,4 @@
-modules = ["python-base-3.13"]
+modules = ["python-base-3.13", "nodejs-24"]
 
 [nix]
 channel = "stable-25_05"
@@ -7,3 +7,76 @@ packages = ["libxcrypt"]
 [postMerge]
 path = "scripts/post-merge.sh"
 timeoutMs = 120000
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "zerobeacon-api"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "lean-build"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "lean-compat"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "lean-compat-test"
+
+[[workflows.workflow]]
+name = "zerobeacon-api"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd /home/runner/workspace && python3 -m uvicorn zerobeacon_mf_1000_main:app --host 0.0.0.0 --port 5000"
+waitForPort = 5000
+
+[workflows.workflow.metadata]
+outputType = "webview"
+
+[[workflows.workflow]]
+name = "lean-build"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd /home/runner/workspace && export PATH=\"$HOME/.elan/bin:$PATH\" && flock /tmp/lean-lake-build.lock bash -c 'export PATH=\"$HOME/.elan/bin:$PATH\"; (lake exe cache get 2>&1 || echo \"Cache fetch skipped — building from source\") && lake build Siegel.SiegelZeroFreeElementary Siegel.SiegelZeroFreeRe1 Siegel.SiegelZeroFree 2>&1'"
+
+[workflows.workflow.metadata]
+outputType = "console"
+
+[[workflows.workflow]]
+name = "lean-compat"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd /home/runner/workspace && bash scripts/lean-compat-check.sh"
+
+[workflows.workflow.metadata]
+outputType = "console"
+
+[[workflows.workflow]]
+name = "lean-compat-test"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd /home/runner/workspace && bash scripts/test-lean-compat-check.sh"
+
+[workflows.workflow.metadata]
+outputType = "console"
+
+[[ports]]
+localPort = 5000
+externalPort = 80

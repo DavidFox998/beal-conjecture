@@ -7,3 +7,17 @@ uri = "file://zerobeacon-mf-1000.zip"
 type = "unspecified"
 title = "Zerobeacon MF 1000 — Full Project"
 description = "All 1000 tools (20 routers × 50), generate_routers.py, Dockerfile, fly.toml, GitHub Actions, core beacon, mcp.json, smithery.json, README, MARKETING."
+
+[[outputs]]
+id = "E_78Mvb4WHB7lCoFWTtmp"
+uri = "file://attached_assets/beal_mcom_draft.html"
+type = "text"
+title = "MCOM Submission Draft — Beal Conjecture"
+description = "Print-ready journal paper in AMS/MCOM style. Open → File → Print → Save as PDF for the final document."
+
+[[outputs]]
+id = "fpxzT5vr-YKcctrZH5iJf"
+uri = "file://attached_assets/beal_mcom_draft.pdf"
+type = "pdf"
+title = "Beal Conjecture — MCOM Draft"
+description = "An Auditable Lean Scaffold Reducing Beal's Conjecture to an Explicit Modularity Hypothesis. Compiled from LaTeX source via tectonic."
