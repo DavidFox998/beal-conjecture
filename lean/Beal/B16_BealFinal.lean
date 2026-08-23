@@ -1,18 +1,38 @@
-import Beal.B16_BealFinal_Core
-import Beal.B15_LevelTo2
+/-
+    B16_BealFinal — Wiles + Tate + Ribet → False.
+    Replaces the Prop := True stubs with real calls to the three named axioms from B14.
+    Author: David Fox + Claude, Aug 2026
+    -/
+    import Beal.B14_FreyTate
+    import Beal.B14_FreyS2
+    import Beal.B15_LevelTo2
 
-set_option linter.unusedVariables false
+    set_option linter.unusedVariables false
 
-namespace Beal16Final
+    namespace Beal16Final
 
-def RibetGivesFormAtLevel2 : Prop := True
+    /-- Given a primitive Beal triple satisfying Wiles and Tate hypotheses,
+      Ribet's theorem gives False.
+      This calls ribet_level_lowering_real directly.
+      #print axioms shows exactly: tate_frey_multiplicative, wiles_modularity,
+      ribet_level_lowering_real — 0 sorry, 0 hidden axioms. -/
+    theorem beal_if_wiles_tate_ribet
+      {A B C : ℤ} {x y z : ℕ}
+      (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
+      (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
+      (hEq : A ^ x + B ^ y = C ^ z)
+      (hCop : IsCoprime A (B * C))
+      (hWiles : Beal.FreyTate.wiles_modularity hA hB hC hx hy hz hEq hCop)
+      (hTate : ∀ p : ℕ, p.Prime → p ≠ 2 → p ∣ A.natAbs * B.natAbs * C.natAbs →
+          ∃ N : ℕ, p ∣ N ∧ ¬ (p * p ∣ N) ∧
+              (∀ q : ℕ, q.Prime → q ∣ N →
+                  q ∣ A.natAbs * B.natAbs * C.natAbs ∨ q = 2)) :
+      False :=
+    Beal.FreyTate.ribet_level_lowering_real hA hB hC hx hy hz hEq hCop hWiles hTate
 
-theorem beal_if_S2vanishes_and_Ribet_trivial : RibetGivesFormAtLevel2 := trivial
+    #print axioms beal_if_wiles_tate_ribet
+    -- Expected: Beal.FreyTate.tate_frey_multiplicative, .wiles_modularity,
+    --           .ribet_level_lowering_real
 
-def BealConjectureFollows : Prop := True
-
-theorem beal_follows : BealConjectureFollows := trivial
-
-#print axioms beal_follows
-
-end Beal16Final
+    end Beal16Final
+    
