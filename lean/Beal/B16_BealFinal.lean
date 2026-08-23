@@ -22,7 +22,9 @@
       (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
       (hEq : A ^ x + B ^ y = C ^ z)
       (hCop : IsCoprime A (B * C))
-      (hWiles : Beal.FreyTate.wiles_modularity hA hB hC hx hy hz hEq hCop)
+      (hWiles : ∃ ℓ N : ℕ, 5 ≤ ℓ ∧ ℓ.Prime ∧ 2 ≤ N ∧
+          ℓ ∣ A.natAbs * B.natAbs * C.natAbs ∧
+          (∀ q : ℕ, q.Prime → q ∣ N → q ∣ A.natAbs * B.natAbs * C.natAbs ∨ q = 2))
       (hTate : ∀ p : ℕ, p.Prime → p ≠ 2 → p ∣ A.natAbs * B.natAbs * C.natAbs →
           ∃ N : ℕ, p ∣ N ∧ ¬ (p * p ∣ N) ∧
               (∀ q : ℕ, q.Prime → q ∣ N →
