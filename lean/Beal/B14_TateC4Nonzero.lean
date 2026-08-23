@@ -85,14 +85,17 @@
     haveI : Fact (Nat.Prime p) := ⟨hp⟩
     have hCz0 : ((C ^ z : ℤ) : ZMod p) = 0 := intPow_cast_zero_of_dvd hp hz hC
     have hsum0 : ((A ^ x : ℤ) : ZMod p) + ((B ^ y : ℤ) : ZMod p) = 0 := by
-      have h : ((A ^ x + B ^ y : ℤ) : ZMod p) = 0 := by push_cast; rw [hEq]; exact hCz0
-      push_cast at h; exact h
+      have h : ((A ^ x + B ^ y : ℤ) : ZMod p) = 0 := by
+        rw [show (A ^ x + B ^ y : ℤ) = C ^ z from hEq]; exact hCz0
+      rwa [map_add] at h
     have hBy_ne : ((B ^ y : ℤ) : ZMod p) ≠ 0 := pow_ne_zero_of_not_dvd hp hp2 hy hB
     have hAx_neg : ((A ^ x : ℤ) : ZMod p) = -((B ^ y : ℤ) : ZMod p) :=
       eq_neg_of_add_eq_zero_left hsum0
     have h_eq : ((16 * ((A ^ x) ^ 2 + A ^ x * B ^ y + (B ^ y) ^ 2) : ℤ) : ZMod p) =
         (16 : ZMod p) * ((B ^ y : ℤ) : ZMod p) ^ 2 := by
-      push_cast; rw [hAx_neg]; ring
+      have key : (A : ZMod p) ^ x = -(B : ZMod p) ^ y := by
+        have := hAx_neg; push_cast at this; exact this
+      push_cast; rw [key]; ring
     rw [h_eq]
     exact mul_ne_zero (sixteen_ne_zero_ZMod hp hp2) (pow_ne_zero 2 hBy_ne)
 
