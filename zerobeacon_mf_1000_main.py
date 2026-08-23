@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Request, Header, Depends, BackgroundTasks
+from tool_schemas import TOOL_SCHEMAS
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, HTMLResponse
 import time, os, stripe, asyncio, json, urllib.request, urllib.error, hmac, hashlib
@@ -2180,6 +2181,16 @@ async def stripe_webhook(
 
 # ── MCP protocol ──────────────────────────────────────────────────────────────
 
+_GENERIC_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "p":        {"type": "integer", "default": 82843},
+        "agent_id": {"type": "string",  "default": "agent"},
+        "payload":  {"type": "string",  "default": ""},
+        "amount":   {"type": "number",  "default": 0},
+    },
+}
+
 def _build_tool_list():
     tools = []
     for mod, prefix, _tag, min_tier in ROUTERS:
@@ -2191,20 +2202,17 @@ def _build_tool_list():
             route_tags = list(getattr(route, "tags", []) or [])
             tool_key   = f"mf_{block}_{name}"
             req_tier   = _tool_tier.get(tool_key, min_tier)
+            schema     = TOOL_SCHEMAS.get(tool_key, {})
             tools.append({
-                "name": f"mf_{block}_{name}",
-                "description": getattr(route, "description", "") or f"block={block} tool={name} d={D}",
-                "tags": route_tags,
-                "inputSchema": {
-                    "type": "object",
-                    "properties": {
-                        "p":        {"type": "integer", "default": 82843},
-                        "agent_id": {"type": "string",  "default": "agent"},
-                        "payload":  {"type": "string",  "default": ""},
-                        "amount":   {"type": "number",  "default": 0},
-                    },
-                },
-                "tier": req_tier,
+                "name":        tool_key,
+                "description": (
+                    schema.get("description")
+                    or getattr(route, "description", "")
+                    or f"block={block} tool={name} d={D}"
+                ),
+                "tags":        route_tags,
+                "inputSchema": schema.get("inputSchema", _GENERIC_SCHEMA),
+                "tier":        req_tier,
             })
     seen, unique = set(), []
     for t in tools:
