@@ -56,8 +56,8 @@
     theorem s2_level_2_witness : S2Level2Witness := by
     intro N p M hM hN hp
     subst hN; subst hp
-    -- hM : M * 2 = 2
-    omega
+    -- hM : CanLowerLevelCore 2 2 M, unfolds to M * 2 = 2
+    simp only [CanLowerLevelCore] at hM; omega
 
     /-- Full Ribet chain: Wiles + Tate → ribet_level_lowering_real → False.
       #print axioms shows exactly three named axioms, 0 sorry. -/
@@ -67,7 +67,9 @@
       (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
       (hEq : A ^ x + B ^ y = C ^ z)
       (hCop : IsCoprime A (B * C))
-      (hWiles : Beal.FreyTate.wiles_modularity hA hB hC hx hy hz hEq hCop)
+      (hWiles : ∃ ℓ N : ℕ, 5 ≤ ℓ ∧ ℓ.Prime ∧ 2 ≤ N ∧
+          ℓ ∣ A.natAbs * B.natAbs * C.natAbs ∧
+          (∀ q : ℕ, q.Prime → q ∣ N → q ∣ A.natAbs * B.natAbs * C.natAbs ∨ q = 2))
       (hTate : ∀ p : ℕ, p.Prime → p ≠ 2 → p ∣ A.natAbs * B.natAbs * C.natAbs →
           ∃ N : ℕ, p ∣ N ∧ ¬ (p * p ∣ N) ∧
               (∀ q : ℕ, q.Prime → q ∣ N →
