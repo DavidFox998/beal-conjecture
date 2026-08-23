@@ -164,7 +164,21 @@ theorem anisotropic_cone_of_neg_legendreSym
 #print axioms anisotropic_cone_of_neg_legendreSym
 -- Expected: same + whatever legendreSym imports (no sorry).
 
-end TangentCone
+    /-- Named alias matching the user's c_p_eq_1_of_nonQR sketch.
+      legendreSym p (B^y) = −1 → the tangent cone v² = (B^y)·u² is anisotropic,
+      meaning the singularity is non-split multiplicative (c_p = 1).
+
+      Three fixes applied vs. the original sketch:
+      (1) Lemma name: legendreSym.eq_one_iff_isSquare (not legendreSym_eq_one_iff)
+      (2) hBne derived explicitly before calling the iff (takes ha : cast ≠ 0)
+      (3) IsSquare witness uses div_eq_iff (not field_simp [hu] + h.symm) -/
+    theorem c_p_eq_1_of_nonQR
+      {p : ℕ} (hp : Nat.Prime p) {B : ℤ} {y : ℕ}
+      (hQR : legendreSym p (B ^ y) = -1) :
+      ∀ u v : ZMod p, v ^ 2 = ((B ^ y : ℤ) : ZMod p) * u ^ 2 → u = 0 ∧ v = 0 :=
+    fun u v h => anisotropic_cone_of_neg_legendreSym hp hQR u v h
+
+    end TangentCone
 
 -- ── §4. Named mathematical axioms ───────────────────────────────────────────
 --
