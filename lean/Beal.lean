@@ -33,8 +33,10 @@ import Beal.B00_OperaNumerorum
     import Beal.B14_PrimeNotDvd_Core
     import Beal.B14_FreyTate
 import Beal.B14_FreyS2
+import Beal.B14_TateC4Nonzero
     import Beal.B15_LevelTo2_Core
     import Beal.B15_LevelTo2
+import Beal.B15_RibetIterate
     import Beal.B16_BealFinal_Core
     import Beal.B16_BealFinal
     import Beal.B17_MazurIrreducible_Core
