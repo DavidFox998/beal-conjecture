@@ -67,7 +67,11 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         run: |
-          curl -sf -X POST "$SLACK_WEBHOOK_URL" \
+          if [[ -z "${SLACK_WEBHOOK_URL:-}" ]]; then
+            echo "::error::SLACK_WEBHOOK_URL secret is not set — Slack alert cannot fire."
+            exit 1
+          fi
+          curl --fail-with-body -X POST "$SLACK_WEBHOOK_URL" \
             -H "Content-Type: application/json" \
             -d '{
               "text": ":warning: *Chain re-lock smoke-test failed* on push to `main`.\nThe `scripts/relock-chain.sh --dry-run` step failed — GITHUB_TOKEN may lack `repo` scope, or the GitHub API is unreachable.\n<'"$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"'|View run>"
@@ -99,7 +103,11 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         run: |
-          curl -sf -X POST "$SLACK_WEBHOOK_URL" \
+          if [[ -z "${SLACK_WEBHOOK_URL:-}" ]]; then
+            echo "::error::SLACK_WEBHOOK_URL secret is not set — Slack alert cannot fire."
+            exit 1
+          fi
+          curl --fail-with-body -X POST "$SLACK_WEBHOOK_URL" \
             -H "Content-Type: application/json" \
             -d '{
               "text": ":rotating_light: *Chain re-lock API-failure test failed* on push to `main`.\n`scripts/test-relock-api-failure.sh` reported that `relock-chain.sh` does NOT exit non-zero when the GitHub API fails — the silent-skip guard is broken.\n<'"$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"'|View run>"
@@ -143,7 +151,11 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         run: |
-          curl -sf -X POST "$SLACK_WEBHOOK_URL" \
+          if [[ -z "${SLACK_WEBHOOK_URL:-}" ]]; then
+            echo "::error::SLACK_WEBHOOK_URL secret is not set — Slack alert cannot fire."
+            exit 1
+          fi
+          curl --fail-with-body -X POST "$SLACK_WEBHOOK_URL" \
             -H "Content-Type: application/json" \
             -d '{
               "text": ":rotating_light: *Chain re-lock workflow FAILED*\nThe weekly `relock-chain` job did not complete. This may mean:\n• GITHUB_TOKEN lacks `repo` scope or has expired\n• The GitHub API was unavailable during the run\n• A PR could not be opened for a detected chain drift\n\nThe chain SHA has *not* been updated. Manual intervention required.\n<'"$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"'|View failed run>"
