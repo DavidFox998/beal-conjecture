@@ -1,0 +1,231 @@
+name: Docker build-context size check
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  check-context-size:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check Docker build context is under 10 MB
+        run: |
+          # Write a no-op Dockerfile so the build exits immediately after
+          # transferring the context — we only care about the context size, not
+          # the actual image build.
+          echo "FROM scratch" > /tmp/Dockerfile.noop
+
+          # The legacy builder (DOCKER_BUILDKIT=0) prints:
+          #   "Sending build context to Docker daemon  X.XXXMB"
+          # before running any instructions, so we can grab the size cheaply.
+          raw=$(DOCKER_BUILDKIT=0 docker build \
+                  --no-cache \
+                  -f /tmp/Dockerfile.noop \
+                  . 2>&1 | head -10)
+          echo "$raw"
+
+          size_line=$(echo "$raw" | grep -i "Sending build context" || true)
+          echo "Context line: $size_line"
+
+          if [ -z "$size_line" ]; then
+            echo "ERROR: Could not find 'Sending build context' line in Docker output."
+            exit 1
+          fi
+
+          # Extract value and unit (handles B, kB, MB, GB)
+          value=$(echo "$size_line" | grep -oP '[\d.]+(?=\s*(GB|MB|kB|B)\b)')
+          unit=$(echo "$size_line"  | grep -oP '(?<=[\d.])\s*(GB|MB|kB|B)\b' | tr -d ' ')
+
+          echo "Parsed: ${value} ${unit}"
+
+          python3 - <<EOF
+          value = float("$value")
+          unit  = "$unit"
+
+          to_mb = {"B": 1/1024/1024, "kB": 1/1024, "MB": 1, "GB": 1024}
+          mb = value * to_mb[unit]
+
+          limit_mb = 10
+          print(f"Build context size: {mb:.3f} MB  (limit: {limit_mb} MB)")
+
+          if mb > limit_mb:
+              print(f"FAIL: context is {mb:.2f} MB — exceeds {limit_mb} MB limit.")
+              print("Check .dockerignore and add any large new directories.")
+              raise SystemExit(1)
+          else:
+              print("PASS: context is within the size limit.")
+          EOF
+
+      - name: Check Docker build context top-level allowlist
+        run: |
+          python3 - <<'EOF'
+          import fnmatch, os, sys
+
+          # Every top-level name that is EXPECTED in the build context.
+          # Dockerfile and .dockerignore are always forwarded to the daemon by
+          # Docker regardless of .dockerignore rules; the rest are explicitly
+          # re-included via !-patterns in .dockerignore.
+          ALLOWLIST = {
+              "Dockerfile",
+              ".dockerignore",
+              "core",
+              "routers",
+              "requirements.txt",
+              "zerobeacon_mf_1000_main.py",
+          }
+
+          # Docker always sends these two files even if .dockerignore matches them.
+          ALWAYS_SENT = {"Dockerfile", ".dockerignore"}
+
+          # Parse .dockerignore to simulate what Docker would include/exclude.
+          excludes = []
+          includes = []
+          with open(".dockerignore") as fh:
+              for raw in fh:
+                  line = raw.strip()
+                  if not line or line.startswith("#"):
+                      continue
+                  if line.startswith("!"):
+                      includes.append(line[1:].rstrip("/"))
+                  else:
+                      excludes.append(line.rstrip("/"))
+
+          def in_build_context(name):
+              """Return True if Docker would include this top-level entry."""
+              if name in ALWAYS_SENT:
+                  return True
+              # A name is excluded when it matches any exclude pattern ...
+              excluded = any(fnmatch.fnmatch(name, pat) for pat in excludes)
+              if excluded:
+                  # ... unless a later !-pattern re-includes it.
+                  return any(fnmatch.fnmatch(name, pat) for pat in includes)
+              return True  # no exclude matched → in context
+
+          top_level = sorted(
+              e for e in os.listdir(".") if e not in (".", "..")
+          )
+          in_context = [n for n in top_level if in_build_context(n)]
+
+          unexpected = [n for n in in_context if n not in ALLOWLIST]
+
+          if unexpected:
+              noun = "entry" if len(unexpected) == 1 else "entries"
+              print(f"FAIL: {len(unexpected)} unexpected top-level {noun} "
+                    f"would be sent to the Docker build context:")
+              for name in sorted(unexpected):
+                  print(f"  {name}")
+              print()
+              print("To exclude from the image: add a line to .dockerignore.")
+              print("If the addition is intentional: update the ALLOWLIST in")
+              print("  .github/workflows/docker-context-size.yml (this step).")
+              sys.exit(1)
+          else:
+              print("PASS: Docker build context top-level entries match the allowlist.")
+              for name in sorted(in_context):
+                  print(f"  {name}")
+          EOF
+
+      - name: Build image and verify required files exist inside container
+        run: |
+          docker build -t zerobeacon-verify-test .
+
+          # Auto-derive the expected container paths by parsing every COPY
+          # instruction in the Dockerfile.  This means a new COPY is never
+          # silently skipped — adding one to the Dockerfile automatically adds
+          # its destination to the verification check without any manual update.
+          mapfile -t REQUIRED_PATHS < <(python3 - <<'PYEOF'
+          import os.path, re, sys
+
+          workdir = "/"
+          paths   = []
+
+          with open("Dockerfile") as fh:
+              for raw in fh:
+                  line = raw.strip()
+
+                  # Track WORKDIR so relative destinations resolve correctly.
+                  m = re.match(r'^WORKDIR\s+(\S+)', line, re.IGNORECASE)
+                  if m:
+                      wd = m.group(1)
+                      workdir = wd if wd.startswith("/") else workdir.rstrip("/") + "/" + wd
+                      continue
+
+                  # Only process COPY instructions; skip RUN, ADD, etc.
+                  if not re.match(r'^COPY\b', line, re.IGNORECASE):
+                      continue
+
+                  # Remove "COPY" keyword then strip option flags (--from=, --chown=, …).
+                  rest = line[4:].strip()
+                  rest = re.sub(r'--[\w-]+(?:=\S*)?\s*', '', rest).strip()
+
+                  tokens = rest.split()
+                  if len(tokens) < 2:
+                      continue  # malformed; skip
+
+                  sources = tokens[:-1]
+                  dest    = tokens[-1]
+
+                  if dest in (".", "./"):
+                      # Each source lands at WORKDIR/<basename(source)>.
+                      for src in sources:
+                          basename = os.path.basename(src.rstrip("/"))
+                          if basename:
+                              paths.append(os.path.normpath(workdir.rstrip("/") + "/" + basename))
+                  else:
+                      # Explicit destination: resolve relative paths against WORKDIR.
+                      if dest.startswith("/"):
+                          abs_dest = dest
+                      else:
+                          # Strip leading ./ or / characters before joining.
+                          rel = dest.lstrip("./").lstrip("/")
+                          abs_dest = workdir.rstrip("/") + "/" + rel
+                      paths.append(os.path.normpath(abs_dest.rstrip("/")))
+
+          for p in sorted(set(paths)):
+              print(p)
+          PYEOF
+          )
+
+          echo "Paths derived from Dockerfile COPY instructions:"
+          for path in "${REQUIRED_PATHS[@]}"; do
+            echo "  $path"
+          done
+
+          MISSING=()
+          for path in "${REQUIRED_PATHS[@]}"; do
+            if ! docker run --rm zerobeacon-verify-test test -e "$path"; then
+              MISSING+=("$path")
+            fi
+          done
+
+          if [ ${#MISSING[@]} -gt 0 ]; then
+            echo "FAIL: the following Dockerfile COPY destinations are absent from the image:"
+            for m in "${MISSING[@]}"; do
+              echo "  $m"
+            done
+            echo ""
+            echo "If a new COPY was added to the Dockerfile, ensure .dockerignore"
+            echo "re-includes the source path so it reaches the image."
+            exit 1
+          else
+            echo "PASS: all Dockerfile COPY destinations are present inside the image."
+          fi
+
+      - name: Verify app module imports without errors
+        run: |
+          # Confirm the entrypoint module loads cleanly inside the built image.
+          # A missing transitive import, a syntax error, or a bad __init__ will
+          # cause this step to fail loudly here rather than crash-looping on Fly.io.
+          docker run --rm \
+            -e DATABASE_URL=placeholder \
+            -e ADMIN_SECRET=placeholder \
+            -e RESEND_API_KEY=placeholder \
+            -e STRIPE_SECRET_KEY=placeholder \
+            -e STRIPE_WEBHOOK_SECRET=placeholder \
+            zerobeacon-verify-test \
+            python -c "import zerobeacon_mf_1000_main; print('PASS: module imported successfully.')"

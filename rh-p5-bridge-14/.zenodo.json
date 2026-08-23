@@ -1,0 +1,46 @@
+{
+  "title": "P5-Bridge-14 — Keystone — q5=226, q6=165849, cf_bound=82829 — BSD_143_PROVED → RiemannHypothesis — Lean 4",
+  "description": "Keystone of Opera Numerorum. Reduces infinite Hasse prime set S_α0 to finite S_14 (|S_14|=14). Provides explicit witnesses q5=226, q6=165849, cf_bound=82829, p5=67645 for the four approaches to RH and for BSD 143a1. P5_BSD_RH_closure_CLOSED: BSD_143_PROVED → RiemannHypothesis via grh_to_rh_descent + LanglandsTransfer_14_CLOSED. Axioms: propext, Classical.choice, Quot.sound. DOI: 10.5281/zenodo.20670857.",
+  "keywords": [
+    "riemann-hypothesis",
+    "BSD",
+    "keystone",
+    "S14",
+    "q5=226",
+    "q6=165849",
+    "cf_bound=82829",
+    "lean4",
+    "mathlib",
+    "p5-bridge",
+    "opera-numerorum",
+    "langlands",
+    "formal-proof",
+    "ORCID:0009-0008-1290-6105"
+  ],
+  "license": "MIT",
+  "upload_type": "software",
+  "access_right": "open",
+  "language": "en",
+  "version": "v1.0.0-P5-keystone-CLOSED",
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/DavidFox998/arakelov-positivity-rh-core",
+      "relation": "isSupplementTo",
+      "resource_type": "software",
+      "scheme": "url"
+    },
+    {
+      "identifier": "https://github.com/DavidFox998/bost-connes",
+      "relation": "isSupplementTo",
+      "resource_type": "software",
+      "scheme": "url"
+    }
+  ],
+  "creators": [
+    {
+      "name": "Fox, David J.",
+      "orcid": "0009-0008-1290-6105",
+      "affiliation": "Independent Researcher, Opera Numerorum"
+    }
+  ]
+}

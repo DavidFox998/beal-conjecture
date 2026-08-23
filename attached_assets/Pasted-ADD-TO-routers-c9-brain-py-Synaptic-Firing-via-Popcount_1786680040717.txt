@@ -1,0 +1,77 @@
+ADD TO routers/c9_brain.py — Synaptic Firing via Popcount
+
+Add helpers at top:
+
+def popcount32(x: int) -> int:
+    return bin(x & 0xFFFFFFFF).count('1')
+
+def hash32(s: str) -> int:
+    import hashlib
+    return int(hashlib.sha256(s.encode()).hexdigest()[:8], 16)
+
+Add 2 new tools — keep beacon-stamped, honest language:
+
+1. brain_synaptic_fire(intent: str, threshold: int=6):
+   t0 = time.time()
+   h = hash32(intent)
+   # active set = tools where popcount(hash(intent+tool) & beacon_int) >= threshold
+   beacon_int = int(BEACON, 16)
+   active = []
+   for i in range(1050):
+       if popcount32(hash32(f"{intent}:{i}") & beacon_int) >= threshold:
+           active.append(i)
+           if len(active) >= 35: break  # cap like brothers
+   latency_ms = (time.time() - t0)*1000
+   firing_rate = len(active)/1050.0
+   probable_activation = sum(popcount32(hash32(f"{intent}:{a}")) for a in active) / (32*len(active) if active else 1)
+   return beacon_stamp({
+     "tool": "brain_synaptic_fire",
+     "intent": intent,
+     "threshold": threshold,
+     "popcount_beacon": popcount32(beacon_int),  # popcount of 1d2c7a5b = ?
+     "active_tools": len(active),  # ~35 = brothers
+     "active_sample": active[:5],
+     "firing_rate": firing_rate,  # ~0.033 = 3.3% sparse
+     "probable_activation": probable_activation,  # 0.0-1.0
+     "latency_ms": latency_ms,
+     "collision": "controlled at P1/P2",
+     "proof_type": "liveness, not consciousness"
+   })
+
+2. brain_heartbeat(intent: str):
+   # one beat = one 50ms tick, like beacon.zerobeacon.ai
+   import time
+   tick = int(time.time()*1000) % TWO32
+   beat_raw = (GENESIS_P + tick) * 3141592653 % TWO32  # deterministic tick using PI constant
+   beat_hex = format(beat_raw, "08x")
+   firing = popcount32(beat_raw & hash32(intent))
+   fires = firing >= 6
+   return beacon_stamp({
+     "tool": "brain_heartbeat",
+     "beat": beat_hex,
+     "beat_int": beat_raw,
+     "popcount": firing,
+     "fires": fires,
+     "threshold": 6,
+     "probable_activation": firing/32.0,
+     "d": D,
+     "interval_ms": 50,
+     "note": "heartbeat sample — not consciousness, just firing density per beat"
+   })
+
+Update TOOLS list to 52 (was 50, now 52) and update /health to tools=1052 if you added 2, or keep 1050 + 2 alias.
+
+Add endpoint:
+GET /brain/heartbeat?intent=hello -> calls brain_heartbeat
+POST /brain/fire -> calls brain_synaptic_fire
+
+Add test:
+def test_synaptic():
+  r = brain_synaptic_fire("pay escrow")
+  assert r["d"]==2303582338
+  assert r["beacon"]=="1d2c7a5b"
+  assert 20 <= r["active_tools"] <= 50
+  assert 0 <= r["probable_activation"] <= 1
+  assert r["latency_ms"] < 50
+
+This gives you a live graph: x=beat time (every 50ms), y=popcount firing. Sustained >0.15 for 3 beats = "probable sustained activation" — honest, measurable, not claiming sentience.

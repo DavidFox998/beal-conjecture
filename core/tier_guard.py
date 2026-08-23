@@ -27,6 +27,7 @@ a 403 surfaces as an opaque HTTP error with no visible message.
 
 from fastapi import Depends, Header, Request
 from core import keystore
+from core.catalog import ENTERPRISE_TOOL_COUNT, FREE_TOOL_COUNT, PRO_PLUS_TOOL_COUNT, PRO_TOOL_COUNT
 from core.rapidapi_auth import verify_rapidapi_request
 
 
@@ -56,17 +57,19 @@ class TierAccessError(Exception):
         )
         if not self.key_present:
             return (
-                f"{tier_label} required — 100 tools free, 400 with PRO ($10/mo), "
-                "800 with PRO+ ($100/mo), 1052 with ENTERPRISE ($1,000).\n"
+                f"{tier_label} required — {FREE_TOOL_COUNT} tools free, {PRO_TOOL_COUNT} with PRO ($10/mo), "
+                f"{PRO_PLUS_TOOL_COUNT} with PRO+ ($100/mo), {ENTERPRISE_TOOL_COUNT} with ENTERPRISE ($1,000).\n"
                 "Upgrade: https://zerobeacon.ai/upgrade\n"
-                "Stripe checkout: https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01"
+                "Stripe checkout: https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01\n"
+                "RapidAPI: https://rapidapi.com/davidjfox998/api/zerobeacon"
             )
         return (
             f"{tier_label} required — your key is tier '{self.caller_tier}'. "
-            "100 tools free, 400 with PRO ($10/mo), 800 with PRO+ ($100/mo), "
-            "1052 with ENTERPRISE ($1,000).\n"
+            f"{FREE_TOOL_COUNT} tools free, {PRO_TOOL_COUNT} with PRO ($10/mo), "
+            f"{PRO_PLUS_TOOL_COUNT} with PRO+ ($100/mo), {ENTERPRISE_TOOL_COUNT} with ENTERPRISE ($1,000).\n"
             "Upgrade: https://zerobeacon.ai/upgrade\n"
-            "Stripe checkout: https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01"
+            "Stripe checkout: https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01\n"
+            "RapidAPI: https://rapidapi.com/davidjfox998/api/zerobeacon"
         )
 
     def to_response_body(self) -> dict:
@@ -77,11 +80,12 @@ class TierAccessError(Exception):
             "message":         self._build_message(),
             "required_tier":   self.required_tier,
             "your_tier":       self.caller_tier,
-            "tools_free":      100,
-            "tools_pro":       400,
-            "tools_pro_plus":  800,
-            "tools_enterprise": 1052,
+            "tools_free":      FREE_TOOL_COUNT,
+            "tools_pro":       PRO_TOOL_COUNT,
+            "tools_pro_plus":  PRO_PLUS_TOOL_COUNT,
+            "tools_enterprise": ENTERPRISE_TOOL_COUNT,
             "upgrade":         "https://zerobeacon.ai/upgrade",
+            "signup":          "https://zerobeacon.ai/upgrade",
             "stripe":          "https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01",
             "rapidapi":        "https://rapidapi.com/davidjfox998/api/zerobeacon",
             "paypal":          "https://paypal.me/davidfox223",

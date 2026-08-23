@@ -520,13 +520,42 @@ async def _start_rapidapi_periodic_check() -> None:
     """Launch the background RapidAPI proxy secret probe loop as a fire-and-forget asyncio task."""
     asyncio.create_task(_rapidapi_probe_loop())
 
+def _check_stripe_api_key() -> tuple[bool, str]:
+    """
+    Validate STRIPE_SECRET_KEY with a read-only Stripe API call (Balance.retrieve).
 
-# ── Per-route and per-tool tier maps (built at import time) ───────────────────
-# Used by the HTTP middleware (belt-and-suspenders) and MCP tier gate.
+    Sets stripe.api_key as a side effect so all subsequent Stripe SDK calls
+    (Customer.retrieve in the webhook handler, etc.) use the correct key.
 
-_route_tier: dict[str, str] = {}
-_tool_tier:  dict[str, str] = {}
-
+    Returns (ok, status_message).
+    Never raises — all Stripe and network errors are caught and returned as status.
+    """
+    key = os.environ.get("STRIPE_SECRET_KEY", "").strip()
+    if not key:
+        return False, "STRIPE_SECRET_KEY is not set"
+    if key.startswith("whsec_"):
+        return (
+            False,
+            "STRIPE_SECRET_KEY looks like a webhook signing secret (whsec_…) — "
+            "must be a Stripe API key (sk_live_… or sk_test_…)",
+        )
+    if not (key.startswith("sk_live_") or key.startswith("sk_test_") or key.startswith("rk_")):
+        return (
+            False,
+            f"STRIPE_SECRET_KEY has an unexpected prefix — "
+            f"expected sk_live_…, sk_test_…, or rk_… (got {key[:8]}…)",
+        )
+    # Assign the key so the SDK uses it globally from this point on.
+    stripe.api_key = key
+    try:
+        stripe.Balance.retrieve()
+        return True, f"ok (prefix: {key[:12]}…)"
+    except stripe.error.AuthenticationError as exc:
+        return False, f"authentication failed — {exc.user_message or exc}"
+    except stripe.error.StripeError as exc:
+        return False, f"Stripe API error — {exc}"
+    except Exception as exc:
+        return False, f"unexpected error — {type(exc).__name__}: {exc}"
 def _build_tier_maps() -> None:
     """Populate _route_tier and _tool_tier from router metadata.
 
@@ -1065,6 +1094,7 @@ def _filter_spec(block_min: int, block_max: int, title: str, description: str):
     trimmed["paths"] = kept
     trimmed["info"]["title"] = title
     trimmed["info"]["description"] = description
+    trimmed["servers"] = [{"url": "https://zerobeacon.ai", "description": "ZeroBeacon production API"}]
     return trimmed
 
 
@@ -1393,6 +1423,24 @@ def health():
         "rapidapi_secret_cache_age_seconds": rapidapi_cache_age_seconds,
         "rapidapi_probe_stale":           rapidapi_probe_stale,
         "rapidapi_probe_stale_threshold_seconds": 2 * _RAPIDAPI_CHECK_INTERVAL,
+        # ── Stripe API key health ──────────────────────────────────────────────
+        "stripe_api_key_set":    _stripe_key_set,
+        "stripe_api_key_valid":  _stripe_key_valid,
+        "stripe_api_key_status": _stripe_key_status,
+        "stripe_key_checked_at": (
+            __import__("datetime").datetime.fromtimestamp(
+                _stripe_key_checked_at, tz=__import__("datetime").timezone.utc
+            ).strftime("%Y-%m-%dT%H:%M:%SZ")
+            if _stripe_key_checked_at > 0.0 else None
+        ),
+        **(
+            {"stripe_api_key_action": (
+                "STRIPE_SECRET_KEY is invalid or misconfigured — "
+                "set it to a Stripe API key (sk_live_… or sk_test_…): "
+                "fly secrets set STRIPE_SECRET_KEY=sk_live_… --app zerobeacon-mf-1000"
+            )}
+            if not _stripe_key_valid else {}
+        ),
     }
 
 
@@ -2440,3 +2488,33 @@ async def on_startup():
         f"| keystore: {len(keystore._store)} keys loaded",
         flush=True,
     )
+
+@app.on_event("startup")
+async def _validate_stripe_key_on_startup() -> None:
+    """
+    Validate STRIPE_SECRET_KEY at startup via a read-only Stripe API call.
+
+    Stores the result in module-level cache variables so /health can report it
+    without making a live network call on every request.
+    Emits CRITICAL if the key is missing, invalid, or is a webhook signing secret.
+    Never crashes the server — Stripe misconfiguration must not block startup.
+    """
+    global _stripe_key_set, _stripe_key_valid, _stripe_key_status, _stripe_key_checked_at
+    _stripe_key_set = bool(os.environ.get("STRIPE_SECRET_KEY", "").strip())
+    try:
+        ok, reason = await asyncio.to_thread(_check_stripe_api_key)
+    except Exception as exc:
+        ok, reason = False, f"startup probe raised {type(exc).__name__}: {exc}"
+    _stripe_key_valid      = ok
+    _stripe_key_status     = reason
+    _stripe_key_checked_at = time.time()
+    if not ok:
+        print(
+            f"[stripe] CRITICAL: STRIPE_SECRET_KEY validation failed on startup — {reason}. "
+            "Direct Stripe API calls (Customer.retrieve, etc.) will fail until "
+            "the key is set correctly: fly secrets set STRIPE_SECRET_KEY=sk_live_… "
+            "--app zerobeacon-mf-1000",
+            flush=True,
+        )
+    else:
+        print(f"[stripe] STRIPE_SECRET_KEY validated successfully on startup ({reason}).", flush=True)

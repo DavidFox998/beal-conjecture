@@ -1,0 +1,49 @@
+# FOR_BRIDGE.txt — P5-Bridge-14 SHA-256 manifest
+# Morning Star Project / Theorema Aureum 143
+# Axiom footprint: {propext, Classical.choice, Quot.sound}
+# Lean 4.12.0 / Mathlib v4.12.0 / 0 sorry
+# 
+# Unconditional bricks — proved outright — trio only:
+#   P5_HeckeTransfer_14_CLOSED, P5_conductor_times_genus,
+#   arakelov_positivity_X0_143, bost_connes_threshold,
+#   N_times_g=1859, phi_143=120, N=11*13
+#
+# RH status: OPEN — one named gap: P5_LanglandsDescent_2pi7_OPEN
+# Conditional: C10 MainTheorem — Given OPEN → RiemannHypothesis
+#
+# COPY #1 — Theorema Aureum 143 — Common Conductor
+# N=143,g=13,h=10,p5=3993746143633,phi=120,S14=14
+# This file SHA must match across:
+#   bsd-143 COPY #2, rh-route-a COPY #3, rh-route-b COPY #4,
+#   rh-route-c COPY #5, p-vs-np COPY #6, eutheos-property COPY #7
+# Verify: sha256sum Towers/Common/Conductor.lean
+
+# --- Common — Theorema Aureum 143 — SOURCE OF TRUTH ---
+# SHA below will be updated after commit via: sha256sum Towers/Common/Conductor.lean
+# Placeholder — replace with actual SHA after first push
+0000000000000000000000000000000000000000000000000000000000000000  Towers/Common/Conductor.lean
+
+# --- RH Chain — Unconditional Bricks ---
+2e833152c3ade33033af31315b115e855ac2fa08179f1ffde32ea757783d0f58  Towers/RH/Chain/C01_Arakelov.lean
+e772feeaa3c1a923087894179a514b42bba9e736eacae90e602ed5899f946850  Towers/RH/Chain/C02_Modularity.lean
+295a634864dcec5fd9e0752c87b4fea902cd265c127f815f8f01c0c54a35c1e6  Towers/RH/Chain/C03_Positivity.lean
+f88d7457fb596a3ffa7387b3792b9ca0e043bf66fdf44c436938285d951757a8  Towers/RH/Chain/C04_HeightBound.lean
+44993ff39786d6a83163c6d2a88943b97cff963ec3548cc58aa77af0e0d1a8fe  Towers/RH/Chain/C05_Discriminant.lean
+de5489d7268bcb1ad3a08da73ee437ef8fd5c59dad9f72b84011c598d1a54e4c  Towers/RH/Chain/C06_ZetaControl.lean
+73bf535c079332c83b28a3598cf2b4136f28e1d013a706d77dbcd374afd1b8b3  Towers/RH/Chain/C07_RH.lean
+336c0ec27a4091d3471f84957c881e3aa777e2810ff3b25f823b634087b1e90b  Towers/RH/Chain/C08_M4WeilBridge.lean
+4130441c14fe66875ad5a7a3403c3cb0bf46baf69055117ab67553f9522cf309  Towers/RH/Chain/C09_P5Bridge.lean
+40209b53521eb27c447d376d7f6cb6cf8d0d7c94ddcba42f082fd16a201ba1b7  Towers/RH/Chain/C10_MainTheorem.lean
+
+# --- RH — Additional — Attempts / Scaffolds (OPEN) ---
+28ff8d9d5341f926ce33344b3ef09b40a760bf6d8f98ca78bec455e91cea8a4a  Towers/RH/GrowthContradiction.lean
+f66febd36b24e6e8b1f98e294ac68d3a931c98e643346fb2aed4132df7fd98b4  Towers/RH/Chain/C22_RouteACert.lean
+
+# --- Provenance ---
+# N_143=143=11*13 — conductor X0(143) — LMFDB 143.a1
+# g_X0_143=13 — genus X0(143) — dim J0(143)
+# h_neg143=10 — class number Q(sqrt(-143)) — BSD repo Towers/BSD/ClassNumberK143.lean
+# p5_BDP=3993746143633 — BDP anticyclotomic prime — BSD repo
+# phi_143=120 — totient 143 — 120-cell — native_decide
+# S14_card=14 — exceptional set S14 — 14 primes
+# N*g=1859 — Hecke dimension — norm_num — unconditional brick

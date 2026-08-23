@@ -1,0 +1,17 @@
+{"log":
+ [{"message":
+   ".> LEAN_PATH=././.lake/packages/batteries/.lake/build/lib:././.lake/packages/Qq/.lake/build/lib:././.lake/packages/aesop/.lake/build/lib:././.lake/packages/proofwidgets/.lake/build/lib:././.lake/packages/Cli/.lake/build/lib:././.lake/packages/importGraph/.lake/build/lib:././.lake/packages/LeanSearchClient/.lake/build/lib:././.lake/packages/mathlib/.lake/build/lib:././.lake/build/lib LD_LIBRARY_PATH= /home/runner/.elan/toolchains/leanprover--lean4---v4.12.0/bin/lean ./././lean/Beal/B03_Conductor.lean -R ./././lean -o ././.lake/build/lib/Beal/B03_Conductor.olean -i ././.lake/build/lib/Beal/B03_Conductor.ilean -c ././.lake/build/ir/Beal/B03_Conductor.c --json",
+   "level": "trace"},
+  {"message":
+   "./././lean/Beal/B03_Conductor.lean:6:48: unused variable `hp`\nnote: this linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "./././lean/Beal/B03_Conductor.lean:33:0: 'BealConductor.exactDivides_of_dvd_not_sq' depends on axioms: [propext]",
+   "level": "info"},
+  {"message":
+   "./././lean/Beal/B03_Conductor.lean:34:0: 'BealConductor.divideOut_of_exact' depends on axioms: [propext]",
+   "level": "info"},
+  {"message":
+   "./././lean/Beal/B03_Conductor.lean:35:0: 'BealConductor.squarefree_of_primitive_gcd' depends on axioms: [propext, Quot.sound]",
+   "level": "info"}],
+ "depHash": "12472108949110614634"}

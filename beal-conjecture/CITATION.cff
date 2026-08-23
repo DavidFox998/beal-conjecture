@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+title: "Beal Conjecture — a formal instrument in Opera Numerorum"
+message: "If you use this software, please cite it as below."
+type: software
+authors:
+  - family-names: Fox
+    given-names: David
+    affiliation: "Opera Numerorum"
+version: "v0.2.0-zero-axiom-core"
+date-released: 2026-08-20
+license: MIT
+repository-code: "https://github.com/DavidFox998/beal-conjecture"
+keywords:
+  - Beal Conjecture
+  - Lean 4
+  - Formal Mathematics
+  - Frey Curve
+  - Ribet Level Lowering
+abstract: "21-layer Lean 4 tower formalizing Beal Conjecture dependencies. v0.2.0 checkpoint: zero-axiom import-free cores, no Prop:=True stubs, no sorry, B01 [] axioms, B02-B15 [propext] only, real M*p=N witness for level lowering."

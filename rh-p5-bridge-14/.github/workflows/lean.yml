@@ -1,0 +1,52 @@
+name: Lean CI (P5-Bridge-14)
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: "lake build (Mathlib v4.12.0)"
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install elan
+        run: |
+          curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh \
+            -sSf | sh -s -- -y --default-toolchain leanprover/lean4:v4.12.0
+          echo "$HOME/.elan/bin" >> $GITHUB_PATH
+
+      - name: Cache Lean toolchain
+        uses: actions/cache@v4
+        with:
+          path: ~/.elan
+          key: elan-${{ runner.os }}-v4.12.0-${{ hashFiles('lean-toolchain') }}
+          restore-keys: elan-${{ runner.os }}-v4.12.0-
+
+      - name: lake update
+        run: lake update
+
+      - name: Get Mathlib olean cache
+        run: lake exe cache get || true
+
+      - name: lake build
+        run: lake build
+
+      - name: Check zero sorry
+        run: |
+          FOUND=$(grep -rn --include='*.lean' 'sorry' Towers/RH/Chain/ 2>/dev/null \
+            | grep -vE '^[^:]+:[0-9]+:[[:space:]]*(--|/[-!*])' \
+            | grep -E ':[[:space:]]*(sorry[[:space:]]*$|:= *sorry|by +sorry|<;> *sorry|exact +sorry|apply +sorry|refine.*sorry)' \
+            || true)
+          if [ -n "$FOUND" ]; then
+            echo "FAIL: sorry tactic found:"
+            echo "$FOUND"
+            exit 1
+          fi
+          echo "PASS: no sorry tactic in proof code"
+

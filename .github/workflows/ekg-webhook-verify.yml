@@ -1,0 +1,75 @@
+name: Verify EKG Alert Webhooks
+
+# Sends explicit, manual-only test notifications and fails unless each configured
+# EKG alert destination acknowledges the request. This workflow never prints a
+# webhook URL or response body.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-primary-slack-alert:
+    name: Verify primary EKG Slack alert
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send primary Slack webhook verification
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          REPOSITORY: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "$SLACK_WEBHOOK_URL" ]; then
+            echo "SLACK_WEBHOOK_URL is not configured."
+            exit 1
+          fi
+
+          RUN_URL="https://github.com/${REPOSITORY}/actions/runs/${RUN_ID}"
+          PAYLOAD=$(jq -nc --arg url "$RUN_URL" \
+            '{"text": ("✅ *EKG alert webhook verified* — the primary heartbeat smoke-test alert can reach this channel.\n• Verification run: " + $url)}')
+
+          HTTP_STATUS=$(curl --silent --show-error --output /dev/null \
+            --write-out "%{http_code}" --max-time 20 \
+            -X POST -H "Content-Type: application/json" \
+            -d "$PAYLOAD" "$SLACK_WEBHOOK_URL")
+
+          echo "Primary Slack webhook response status: $HTTP_STATUS"
+          if [ "$HTTP_STATUS" != "200" ]; then
+            echo "Primary Slack webhook verification failed."
+            exit 1
+          fi
+
+  verify-cold-start-alert:
+    name: Verify cold-start EKG alert
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send cold-start webhook verification
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          REPOSITORY: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "$SLACK_WEBHOOK_URL" ]; then
+            echo "SLACK_WEBHOOK_URL is not configured."
+            exit 1
+          fi
+
+          RUN_URL="https://github.com/${REPOSITORY}/actions/runs/${RUN_ID}"
+          PAYLOAD=$(jq -nc --arg url "$RUN_URL" \
+            '{"text": ("✅ *EKG cold-start alert webhook verified* — the beat-rate failure alert can reach this destination.\n• Verification run: " + $url)}')
+
+          HTTP_STATUS=$(curl --silent --show-error --output /dev/null \
+            --write-out "%{http_code}" --max-time 20 \
+            -X POST -H "Content-Type: application/json" \
+            -d "$PAYLOAD" "$SLACK_WEBHOOK_URL")
+
+          echo "Cold-start Slack webhook response status: $HTTP_STATUS"
+          if [ "$HTTP_STATUS" != "200" ]; then
+            echo "Cold-start Slack webhook verification failed."
+            exit 1
+          fi

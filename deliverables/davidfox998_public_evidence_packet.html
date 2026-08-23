@@ -1,0 +1,497 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>David J. Fox — Public Research Evidence Packet</title>
+  <style>
+    :root {
+      --ink: #15211d;
+      --muted: #52635b;
+      --paper: #f7f6f0;
+      --panel: #ffffff;
+      --rule: #d7ddd3;
+      --sage: #dce9df;
+      --forest: #1f5a43;
+      --gold: #b57d1b;
+      --blue: #244a68;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+      font-family: Georgia, "Times New Roman", serif;
+      line-height: 1.56;
+    }
+    main { max-width: 980px; margin: 0 auto; padding: 64px 52px 88px; }
+    .cover {
+      border-top: 8px solid var(--forest);
+      padding: 44px 0 30px;
+      border-bottom: 1px solid var(--rule);
+    }
+    .eyebrow {
+      color: var(--forest);
+      font-family: Arial, sans-serif;
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+    h1, h2, h3 { line-height: 1.14; color: #112d22; }
+    h1 { font-size: clamp(2.2rem, 6vw, 4.4rem); margin: .35rem 0 .5rem; font-weight: 500; }
+    h2 { font-size: 1.75rem; margin: 2.8rem 0 .8rem; border-bottom: 1px solid var(--rule); padding-bottom: .42rem; }
+    h3 { font-size: 1.08rem; margin: 1.45rem 0 .4rem; }
+    p { margin: .65rem 0; }
+    .subtitle { max-width: 760px; font-size: 1.25rem; color: var(--muted); }
+    .meta {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px 28px;
+      margin-top: 30px;
+      color: var(--muted);
+      font-family: Arial, sans-serif;
+      font-size: .86rem;
+    }
+    .box {
+      background: var(--panel);
+      border-left: 5px solid var(--forest);
+      border-radius: 2px;
+      padding: 20px 24px;
+      margin: 22px 0;
+    }
+    .box.caution { border-left-color: var(--gold); }
+    .box strong { color: var(--forest); }
+    blockquote {
+      margin: 18px 0;
+      padding: 10px 23px;
+      border-left: 3px solid var(--gold);
+      color: #37463f;
+      font-size: 1.08rem;
+    }
+    table { width: 100%; border-collapse: collapse; margin: 18px 0 28px; font-size: .91rem; }
+    th {
+      background: var(--sage);
+      color: #173a2c;
+      font-family: Arial, sans-serif;
+      font-size: .71rem;
+      letter-spacing: .055em;
+      text-align: left;
+      text-transform: uppercase;
+    }
+    th, td { border: 1px solid var(--rule); padding: 11px 12px; vertical-align: top; }
+    td:first-child { min-width: 175px; font-weight: 700; }
+    a { color: var(--blue); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+    ul { padding-left: 1.25rem; }
+    li { margin: .36rem 0; }
+    .tag {
+      display: inline-block;
+      font-family: Arial, sans-serif;
+      font-size: .68rem;
+      font-weight: 700;
+      letter-spacing: .045em;
+      text-transform: uppercase;
+      padding: 3px 7px;
+      color: #1f5a43;
+      background: #e4efe6;
+      border-radius: 12px;
+      white-space: nowrap;
+    }
+    .tag.software { color: #285471; background: #e4edf4; }
+    .tag.program { color: #7a5515; background: #fbf0d9; }
+    .small { color: var(--muted); font-size: .89rem; }
+    .statement {
+      background: #eef4ef;
+      border: 1px solid #c9d9cd;
+      padding: 23px 26px;
+      font-size: 1.04rem;
+    }
+    footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--rule); color: var(--muted); font-size: .84rem; }
+    @media print {
+      body { background: #fff; }
+      main { max-width: none; padding: 28px 35px; }
+      a { color: inherit; }
+      h2, h3 { break-after: avoid; }
+      tr, .box { break-inside: avoid; }
+    }
+    @media (max-width: 700px) {
+      main { padding: 36px 20px 60px; }
+      .meta { grid-template-columns: 1fr; }
+      table { display: block; overflow-x: auto; }
+    }
+  </style>
+</head>
+<body>
+<main>
+  <header class="cover">
+    <div class="eyebrow">Public research record · evidence packet</div>
+    <h1>David J. Fox</h1>
+    <p class="subtitle">Lean 4 formalization, arithmetic research, and the public program called <em>Opera Numerorum</em>.</p>
+    <div class="meta">
+      <div><strong>GitHub:</strong> <a href="https://github.com/DavidFox998">github.com/DavidFox998</a></div>
+      <div><strong>ORCID:</strong> <a href="https://orcid.org/0009-0008-1290-6105">0009-0008-1290-6105</a></div>
+      <div><strong>Prepared:</strong> August 20, 2026</div>
+      <div><strong>Public repositories inventoried:</strong> 21</div>
+    </div>
+  </header>
+
+  <section>
+    <h2>Abstract</h2>
+    <p>
+      This packet documents the public research and software record of David J.
+      Fox, using the live GitHub inventory for <code>DavidFox998</code>, public
+      repository metadata, selected repository READMEs, and public arXiv
+      guidance. The record shows an independent program of Lean 4 / Mathlib
+      formalization spanning Diophantine equations, arithmetic geometry,
+      analytic number theory, spectral questions, mathematical physics,
+      complexity, and software infrastructure.
+    </p>
+    <p>
+      The principal evidence is reproducible source: Lean developments, build
+      instructions, CI workflows, theorem-dependency discussions, public
+      commit histories, and repository-level mathematical documentation. This
+      packet distinguishes three things that should not be conflated:
+      machine-checked statements in a stated formal environment; research
+      architectures and conditional bridges; and broad mathematical claims
+      requiring ordinary expert review. It is offered as a concise factual
+      record for arXiv sponsorship or editorial consideration, not as a request
+      that a sponsor or editor certify a major open-problem claim.
+    </p>
+  </section>
+
+  <section>
+    <h2>Author statement for sponsorship and editorial review</h2>
+    <div class="statement">
+      <p>
+        David J. Fox is an independent researcher developing public Lean 4 /
+        Mathlib formalizations in number theory, arithmetic geometry, analysis,
+        and mathematical physics. His work is organized under the name
+        <em>Opera Numerorum</em>: a collection of repositories intended to make
+        definitions, dependencies, computations, and proof obligations open to
+        inspection.
+      </p>
+      <p>
+        The author submits individual manuscripts on their precise mathematical
+        content. Associated code is supplied as a reproducible formal artifact.
+        Where a repository contains a scaffold, hypothesis, imported theorem,
+        or real-number transport boundary, that status is to be stated
+        explicitly. The presence of Lean code, a green build, or the absence of
+        <code>sorry</code> is not offered as a substitute for mathematical
+        exposition or independent peer review.
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Evidence at a glance</h2>
+    <table>
+      <thead><tr><th>Item</th><th>Public evidence</th><th>Appropriate representation</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Identity and public record</td>
+          <td>Public GitHub profile, public repositories, and linked ORCID.</td>
+          <td>Independent researcher with an inspectable public technical record.</td>
+        </tr>
+        <tr>
+          <td>Formal-methods practice</td>
+          <td>Lean is the primary language in most mathematical repositories; project documentation commonly includes Lake builds, CI, and axiom/dependency discussion.</td>
+          <td>Public Lean 4 / Mathlib formalization work with reproducibility-oriented tooling.</td>
+        </tr>
+        <tr>
+          <td>Opera Numerorum</td>
+          <td>Shared naming and cross-links connect the repositories around arithmetic, geometry, spectral analysis, and related topics.</td>
+          <td>A coordinated research and formalization program; not an independent certification body.</td>
+        </tr>
+        <tr>
+          <td>Mathematical status</td>
+          <td>Repository descriptions include strong conclusions as well as explicit scaffolding and conditional work. The Beal README, for example, explicitly identifies incomplete later layers.</td>
+          <td>State the exact theorem, hypotheses, imported results, and proof scope for each manuscript.</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="box caution">
+      <strong>Reading rule for this packet.</strong> “Publicly stated” means
+      that the author’s GitHub metadata or README says it. “Formally
+      checkable” means source can in principle be built and audited in the
+      named environment. Neither phrase means that this packet independently
+      validates a theorem, priority claim, or solution of an open problem.
+    </div>
+  </section>
+
+  <section>
+    <h2>Public repository inventory</h2>
+    <p class="small">
+      The following table covers all 21 public repositories returned by the
+      GitHub public API on the preparation date. The middle column records the
+      publicly described role. The final column gives language suitable for a
+      sponsor or editor: precise, substantive, and no broader than the
+      evidence summarized here.
+    </p>
+
+    <h3>Arithmetic, geometry, and RH-related formalization</h3>
+    <table>
+      <thead><tr><th>Repository</th><th>Publicly described work</th><th>Presentation sentence</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><a href="https://github.com/DavidFox998/beal-conjecture">beal-conjecture</a><br><span class="tag">Lean</span></td>
+          <td>Twenty-one-layer Beal development with import-free core modules, Mathlib wrappers, axiom audits, and a Beal-to-Fermat bridge.</td>
+          <td>A Lean formalization scaffold for Beal’s Conjecture, with auditable foundational cores and a conditional Beal-to-Fermat corollary. The README explicitly states that later layers remain incomplete scaffolding.</td>
+        </tr>
+        <tr>
+          <td><a href="https://github.com/DavidFox998/brothers-desert-proof">brothers-desert-proof</a><br><span class="tag">Lean</span></td>
+          <td>Route D in the author’s four-route RH architecture; describes a symmetry, “35 Brothers,” and Dirichlet-jitter construction.</td>
+          <td>A Lean development of a proposed symmetry-based route connected to the author’s RH program; its exact theorem scope should be taken from the source and manuscript.</td>
+        </tr>
+        <tr>
+          <td><a href="https://github.com/DavidFox998/poincare-spectral">poincare-spectral</a><br><span class="tag">Lean</span></td>
+          <td>Formal spectral-gap work for the Poincaré homology sphere \(S^3/I^*\), described through a specified finite/tail calculation.</td>
+          <td>A formal spectral calculation for a specified Poincaré-sphere model, rather than a general solution of an undecidable spectral-gap problem.</td>
+        </tr>
+        <tr>
+          <td><a href="https://github.com/DavidFox998/lindelof-hypothesis-143">lindelof-hypothesis-143</a><br><span class="tag">Lean</span></td>
+          <td>Lean project centered on \(X_0(143)\), \(S_4=\{2,3,19,191\}\), a stated GRH implication, and a Lindelöf conclusion.</td>
+          <td>A Lean formalization project studying a stated \(X_0(143)\)-based route to a Lindelöf-type conclusion; all antecedents must be given in the manuscript.</td>
+        </tr>
+        <tr>
+          <td><a href="https://github.com/DavidFox998/birch-swinnerton-dyer-143a1">birch-swinnerton-dyer-143a1</a><br><span class="tag">Lean</span></td>
+          <td>Formal work on the elliptic curve 143a1, including a claimed analytic/algebraic rank comparison and related Hasse/Bost material.</td>
+          <td>A formalization of specified BSD-related data for elliptic curve 143a1. Any BSD theorem should be stated curve-specifically with all imported inputs visible.</td>
+        </tr>
+        <tr>
+          <td><a href="https://github.com/DavidFox998/rh-growth-contradiction">rh-growth-contradiction</a><br><span class="tag">Lean</span></td>
+          <td>Route C: a growth-contradiction architecture invoking Littlewood \(\Omega\)-behavior, zero repulsion, \(S_4\), and a stated RH conclusion.</td>
+          <td>A Lean formalization of a proposed analytic route toward RH through growth and zero-repulsion mechanisms; do not abbreviate this as a completed RH proof.</td>
+        </tr>
+        <tr>
+          <td><a href="https://github.com/DavidFox998/arakelov-rh-descent">arakelov-rh-descent</a><br><span class="tag">Lean</span></td>
+          <td>Route B: a descent architecture using the stated Kim–Sarnak spectral gap, Selberg/Bost–Connes language, \(S_4\), and GRH/RH implications.</td>
+          <td>A formalization project for a spectral and Arakelov descent route toward RH, with theorem-level status to be assessed from a specific manuscript and buildable release.</td>
+        </tr>
+        <tr>
+          <td><a href="https://github.com/DavidFox998/riemann-arakelov-positivity">riemann-arakelov-positivity</a><br><span class="tag">Lean</span></td>
+          <td>Route A: Arakelov positivity on \(X_0(143)\), genus \(13\), \(\omega^2=48/13\), and a finite \(S_4\) arithmetic gate.</td>
+          <td>A Lean project formalizing an Arakelov-positivity architecture related to RH. Its individual positivity and implication statements should be cited exactly.</td>
+        </tr>
+        <tr>
+          <td><a href="https://github.com/DavidFox998/arakelov-positivity-rh-core">arakelov-positivity-rh-core</a><br><span class="tag">Lean</span></td>
+          <td>Central Lean core for the author’s RH program, described publicly as B158 with eighteen sub-atoms and a stated classical-trio axiom footprint.</td>
+          <td>The common Lean core of the author’s RH research architecture, containing named formal sub-results and declared foundational dependencies.</td>
+        </tr>
+        <tr>
+          <td><a href="https://github.com/DavidFox998/birch-swinnerton-dyer-143">birch-swinnerton-dyer-143</a><br><span class="tag">Lean</span></td>
+          <td>BSD-related formalization for 143a1, including class number \(h(\mathbb{Q}(\sqrt{-143}))=10\) and a claimed rank/\(L\)-order relation.</td>
+          <td>A Lean development concerning explicitly named BSD data for curve 143a1; present the exact formal theorem rather than a general BSD claim.</td>
+        </tr>
+        <tr>
+          <td><a href="https://github.com/DavidFox998/rh-p5-bridge-14">rh-p5-bridge-14</a><br><span class="tag">Lean</span></td>
+          <td>A finite numerical bridge built around \(143\cdot13=1859\), \(S_{14}=14\), \(q_5=226\), \(C(S_4)\), and \(h=10\).</td>
+          <td>A finite arithmetic bridge in the author’s RH/BSD program, suitable as supporting evidence only after its exact statements and dependencies are specified.</td>
+        </tr>
+        <tr>
+          <td><a href="https://github.com/DavidFox998/bost-connes">bost-connes</a><br><span class="tag">Lean</span></td>
+          <td>Bost–Connes spectral analysis for \(X_0(143)\), with a stated finite \(S_4\) inequality and a sixteen-brick Lean structure.</td>
+          <td>A Lean formalization of selected Bost–Connes and finite-arithmetic components used elsewhere in the program.</td>
+        </tr>
+        <tr>
+          <td><a href="https://github.com/DavidFox998/morningstar-project">morningstar-project</a><br><span class="tag">Lean</span></td>
+          <td>“Morning Star” certification project for stated GRH(\(X_0(143)\)) and BSD(\(J_0(143)\)) work, described with 476 equations.</td>
+          <td>A machine-certification and documentation project for the author’s \(X_0(143)\) and BSD research program; equation counts are supplementary evidence, not a theorem statement.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Complexity, algebraic geometry, and mathematical physics</h3>
+    <table>
+      <thead><tr><th>Repository</th><th>Publicly described work</th><th>Presentation sentence</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><a href="https://github.com/DavidFox998/eutheos-property">eutheos-property</a><br><span class="tag">Lean</span></td>
+          <td>Formal/computational work around the witness \(1419=3\cdot11\cdot43\), residue conditions, barriers, and a companion complexity project.</td>
+          <td>A Lean and computational study of a specified finite witness construction used in the author’s complexity research.</td>
+        </tr>
+        <tr>
+          <td><a href="https://github.com/DavidFox998/p-vs-np">p-vs-np</a><br><span class="tag">Lean</span></td>
+          <td>Public description states a conditional result: “if SAT is not in P, then P is not equal to NP,” with a Zenodo DOI and formal “bricks.”</td>
+          <td>A formalization of a conditional complexity statement and associated mechanisms. It should not be presented as an unconditional proof that P differs from NP.</td>
+        </tr>
+        <tr>
+          <td><a href="https://github.com/DavidFox998/hodge-abelian-boundaries">hodge-abelian-boundaries</a><br><span class="tag">Lean</span></td>
+          <td>Work on measured Hodge \((2,2)\)-class obstructions on CM abelian varieties, including stated numerical rank/bound comparisons for dimensions \(3,4,5\).</td>
+          <td>A Lean formalization of specified obstruction and rank-bound computations for CM abelian varieties; not a general proof of the Hodge Conjecture.</td>
+        </tr>
+        <tr>
+          <td><a href="https://github.com/DavidFox998/yang-mills-gap">yang-mills-gap</a><br><span class="tag">Lean</span></td>
+          <td>Lean work on an SU(3) lattice Yang–Mills mass-gap construction at a specified coupling, using stated Bessel and Gross–Witten ingredients.</td>
+          <td>A formalization of a specified lattice gauge-theory mass-gap argument. It should be distinguished from the full Clay Yang–Mills existence-and-mass-gap problem.</td>
+        </tr>
+        <tr>
+          <td><a href="https://github.com/DavidFox998/navier-stokes">navier-stokes</a><br><span class="tag">Lean</span></td>
+          <td>Lean repository describing a global-regularity route through ESS backward uniqueness, alongside mass-gap language and a 664-lemma count.</td>
+          <td>A Lean formalization project concerning named Navier–Stokes regularity mechanisms. Any complete global-regularity claim requires a paper stating the exact PDE setting and all analytic inputs.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Program support, computation, certification, and software</h3>
+    <table>
+      <thead><tr><th>Repository</th><th>Publicly described work</th><th>Presentation sentence</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><a href="https://github.com/DavidFox998/Certifications">Certifications</a><br><span class="tag program">Index</span></td>
+          <td>Repository for machine-checked Lean 4 audit certificates in the Morning Star Project.</td>
+          <td>A public certificate ledger and audit-support repository for the wider formalization program.</td>
+        </tr>
+        <tr>
+          <td><a href="https://github.com/DavidFox998/opera-sieve">opera-sieve</a><br><span class="tag program">TypeScript / Lean</span></td>
+          <td>Canonical sieve for \(S(\alpha_0=299+\pi/10)\), combining computation with Lean verification.</td>
+          <td>A computational and Lean-verification support project for a canonical sieve used in the wider program.</td>
+        </tr>
+        <tr>
+          <td><a href="https://github.com/DavidFox998/zerobeacon">zerobeacon</a><br><span class="tag software">Python</span></td>
+          <td>ZeroBeacon.ai: a collision-anchored commerce router for AI agents, publicly described as an MCP server with 1,052 tools.</td>
+          <td>A separate AI-agent and commerce software project demonstrating production-oriented systems work; it is not evidence for a mathematical theorem.</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>Formal-methods evidence and limits</h2>
+    <p>
+      The program’s methodological value lies in its attempt to make a proof
+      obligation inspectable. Across the Lean repositories, the public record
+      commonly refers to source builds, theorem declarations, no-<code>sorry</code>
+      checks, and axiom footprints. The Beal repository is a useful model: it
+      separates import-free cores from Mathlib-facing wrappers, preserves the
+      conventional \(\mathrm{gcd}\) interface, and documents one explicit
+      real-number quotient boundary.
+    </p>
+    <p>
+      The appropriate scholarly interpretation is narrow: an audited Lean
+      theorem establishes its stated proposition relative to its definitions,
+      imported declarations, and declared axioms. It does not automatically
+      establish that those definitions capture a famous conjecture in its
+      standard full form, or that a network of conditional bridges supplies
+      every unformalized mathematical implication.
+    </p>
+    <div class="box">
+      <strong>Evidence package to accompany any manuscript.</strong>
+      <ul>
+        <li>a frozen repository release or commit hash;</li>
+        <li>the exact Lean and Mathlib versions;</li>
+        <li>one-command build instructions;</li>
+        <li>a list of the principal theorem names;</li>
+        <li>the imported theorems, assumptions, and axiom footprint;</li>
+        <li>a conventional mathematical proof narrative and literature review;</li>
+        <li>a statement of what remains open.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <h2>Editorial abstract for a specific submission</h2>
+    <p>
+      The following abstract is suitable for a manuscript that reports the
+      <em>formal-methods contribution</em> of the program, rather than claiming
+      that every associated open problem has been resolved.
+    </p>
+    <blockquote>
+      We present a public Lean 4 / Mathlib formalization program for selected
+      structures in arithmetic geometry, analytic number theory, and related
+      mathematical physics. The work is organized as explicit, reproducible
+      theorem developments with versioned source, build instructions, and
+      dependency audits. Its methodology separates import-free foundational
+      cores, public interfaces, standard imported results, finite
+      computational certificates, and remaining formal assumptions. We
+      illustrate the approach through formal developments involving primitive
+      exponential Diophantine equations, modular-curve arithmetic at
+      \(X_0(143)\), spectral and Arakelov constructions, selected BSD data,
+      and auxiliary computational structures. The contribution is a
+      transparent formal research architecture: each theorem is to be read
+      with its exact hypotheses, definitions, and axiom footprint, rather than
+      as a blanket claim of resolution of a named open problem.
+    </blockquote>
+  </section>
+
+  <section>
+    <h2>Statement of suitability for arXiv sponsorship</h2>
+    <p>
+      The public record supports submitting an individual, well-scoped paper
+      in a relevant category when that paper is topical, mathematically
+      readable, and linked to a reproducible artifact. The author’s public
+      Lean work provides evidence of sustained engagement with formal
+      mathematics and research software. A sponsor is not asked to certify
+      the correctness of broad RH, BSD, Clay, or physics claims; the sponsor
+      is asked to assess whether the particular submission is a serious,
+      category-appropriate scholarly contribution.
+    </p>
+    <p>
+      arXiv’s public guidance says that first submissions or new-category
+      submissions may require endorsement, that endorsers should support
+      authors they expect will submit high-quality research, and that
+      submissions should be topical and refereeable. This packet is designed
+      to document the public record behind that request while leaving the
+      paper itself responsible for its mathematical claim.
+    </p>
+  </section>
+
+  <section>
+    <h2>Complete repository URL index</h2>
+    <p class="small">
+      This index is included so that the PDF remains a usable evidence
+      document even when a reader does not have the HTML source. Every URL
+      below is an active hyperlink in the original public inventory.
+    </p>
+    <ul>
+      <li><a href="https://github.com/DavidFox998/beal-conjecture">https://github.com/DavidFox998/beal-conjecture</a></li>
+      <li><a href="https://github.com/DavidFox998/brothers-desert-proof">https://github.com/DavidFox998/brothers-desert-proof</a></li>
+      <li><a href="https://github.com/DavidFox998/zerobeacon">https://github.com/DavidFox998/zerobeacon</a></li>
+      <li><a href="https://github.com/DavidFox998/poincare-spectral">https://github.com/DavidFox998/poincare-spectral</a></li>
+      <li><a href="https://github.com/DavidFox998/lindelof-hypothesis-143">https://github.com/DavidFox998/lindelof-hypothesis-143</a></li>
+      <li><a href="https://github.com/DavidFox998/birch-swinnerton-dyer-143a1">https://github.com/DavidFox998/birch-swinnerton-dyer-143a1</a></li>
+      <li><a href="https://github.com/DavidFox998/eutheos-property">https://github.com/DavidFox998/eutheos-property</a></li>
+      <li><a href="https://github.com/DavidFox998/rh-growth-contradiction">https://github.com/DavidFox998/rh-growth-contradiction</a></li>
+      <li><a href="https://github.com/DavidFox998/arakelov-rh-descent">https://github.com/DavidFox998/arakelov-rh-descent</a></li>
+      <li><a href="https://github.com/DavidFox998/riemann-arakelov-positivity">https://github.com/DavidFox998/riemann-arakelov-positivity</a></li>
+      <li><a href="https://github.com/DavidFox998/arakelov-positivity-rh-core">https://github.com/DavidFox998/arakelov-positivity-rh-core</a></li>
+      <li><a href="https://github.com/DavidFox998/birch-swinnerton-dyer-143">https://github.com/DavidFox998/birch-swinnerton-dyer-143</a></li>
+      <li><a href="https://github.com/DavidFox998/rh-p5-bridge-14">https://github.com/DavidFox998/rh-p5-bridge-14</a></li>
+      <li><a href="https://github.com/DavidFox998/p-vs-np">https://github.com/DavidFox998/p-vs-np</a></li>
+      <li><a href="https://github.com/DavidFox998/bost-connes">https://github.com/DavidFox998/bost-connes</a></li>
+      <li><a href="https://github.com/DavidFox998/yang-mills-gap">https://github.com/DavidFox998/yang-mills-gap</a></li>
+      <li><a href="https://github.com/DavidFox998/hodge-abelian-boundaries">https://github.com/DavidFox998/hodge-abelian-boundaries</a></li>
+      <li><a href="https://github.com/DavidFox998/Certifications">https://github.com/DavidFox998/Certifications</a></li>
+      <li><a href="https://github.com/DavidFox998/navier-stokes">https://github.com/DavidFox998/navier-stokes</a></li>
+      <li><a href="https://github.com/DavidFox998/opera-sieve">https://github.com/DavidFox998/opera-sieve</a></li>
+      <li><a href="https://github.com/DavidFox998/morningstar-project">https://github.com/DavidFox998/morningstar-project</a></li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Sources and method</h2>
+    <ul>
+      <li><a href="https://api.github.com/users/DavidFox998/repos?per_page=100&amp;sort=created">GitHub public repository API inventory</a>, consulted August 20, 2026.</li>
+      <li><a href="https://github.com/DavidFox998">DavidFox998 public GitHub profile</a>.</li>
+      <li>Public repository metadata and README material linked in the inventory above.</li>
+      <li><a href="https://info.arxiv.org/help/endorsement.html">arXiv endorsement guidance</a>.</li>
+      <li><a href="https://info.arxiv.org/help/submit/index.html">arXiv submission guidance</a>.</li>
+      <li><a href="https://info.arxiv.org/help/policies/identity_and_affiliation.html">arXiv identity and affiliation policy</a>.</li>
+    </ul>
+    <p class="small">
+      Scope note: this is a public-evidence document, not a peer review,
+      theorem audit, legal certification, or bibliometric assessment. It
+      reports public descriptions faithfully while recommending that every
+      mathematical conclusion be evaluated from its exact statement and
+      reproducible source.
+    </p>
+  </section>
+
+  <footer>
+    Prepared as a public evidence packet for David J. Fox / DavidFox998.
+    The document is intentionally claim-specific: the mathematical force of a
+    project lies in its exact theorem and proof obligations, not in the
+    grandeur of its title.
+  </footer>
+</main>
+</body>
+</html>

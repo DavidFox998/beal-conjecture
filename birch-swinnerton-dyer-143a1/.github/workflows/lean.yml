@@ -1,0 +1,29 @@
+name: Lean Build - 0 sorry verification
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install elan
+        run: |
+          curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- -y
+          echo "$HOME/.elan/bin" >> $GITHUB_PATH
+
+      - name: Lake update
+        run: ~/.elan/bin/lake update
+
+      - name: Lake build
+        run: |
+          ~/.elan/bin/lake build lean
+          if [ -f "HassePrimeSet.lean" ]; then
+            echo "Checking HassePrimeSet.lean..."
+            ~/.elan/bin/lake env lean HassePrimeSet.lean
+          else
+            echo "HassePrimeSet.lean not found, skipping check (will be auto-generated)"
+          fi

@@ -1,0 +1,5 @@
+{"log":
+ [{"message":
+   ".> LEAN_PATH=././.lake/packages/batteries/.lake/build/lib:././.lake/build/lib LD_LIBRARY_PATH= /home/runner/.elan/toolchains/leanprover--lean4---v4.12.0-rc1/bin/lean ././././ProofWidgets/Demos/LazyComputation.lean -R ./././. -o ././.lake/build/lib/ProofWidgets/Demos/LazyComputation.olean -i ././.lake/build/lib/ProofWidgets/Demos/LazyComputation.ilean -c ././.lake/build/ir/ProofWidgets/Demos/LazyComputation.c --json",
+   "level": "trace"}],
+ "depHash": "5910582719672782580"}

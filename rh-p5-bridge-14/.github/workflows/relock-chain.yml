@@ -1,0 +1,150 @@
+name: Chain Re-lock (Opera Numerorum)
+
+# Runs weekly on Monday at 06:00 UTC, and on demand.
+# When one or more ensemble repos have received new commits since the last
+# lock, the workflow patches CHAIN.md / REPOS.md and opens a pull request.
+#
+# A lightweight smoke-test (--dry-run) also runs on every push to main so
+# GITHUB_TOKEN scope problems or API failures surface immediately in CI
+# rather than silently on the weekly schedule.
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"   # every Monday 06:00 UTC
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run (print new SHA but do not create a PR)"
+        required: false
+        default: "false"
+        type: choice
+        options: ["false", "true"]
+  repository_dispatch:
+    types: [ensemble-push]   # fired by notify-bridge.yml in every ensemble repo
+  push:
+    branches:
+      - main
+    paths:
+      - "scripts/relock-chain.sh"
+      - "scripts/test-relock-api-failure.sh"
+      - ".github/workflows/relock-chain.yml"
+
+permissions:
+  contents: write      # push the relock branch
+  pull-requests: write # open the PR
+
+jobs:
+  # ────────────────────────────────────────────────────────────────────────────
+  # smoke-test: runs on every push to main — dry-run only, never opens a PR.
+  # Catches missing GITHUB_TOKEN scope and GitHub API outages before the weekly
+  # schedule has a chance to fail silently.
+  # ────────────────────────────────────────────────────────────────────────────
+  smoke-test:
+    name: "Smoke-test relock script (dry-run)"
+    runs-on: ubuntu-latest
+    # Only run on push events; skip for scheduled / manual triggers.
+    if: github.event_name == 'push'
+
+    steps:
+      - name: Checkout rh-p5-bridge-14
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Dry-run relock script (token & API check)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          chmod +x scripts/relock-chain.sh
+          bash scripts/relock-chain.sh --dry-run
+
+      - name: Notify Slack on smoke-test failure
+        if: failure()
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          curl -sf -X POST "$SLACK_WEBHOOK_URL" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "text": ":warning: *Chain re-lock smoke-test failed* on push to `main`.\nThe `scripts/relock-chain.sh --dry-run` step failed — GITHUB_TOKEN may lack `repo` scope, or the GitHub API is unreachable.\n<'"$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"'|View run>"
+            }'
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # api-failure-test: runs on every push to main.
+  # Injects a mock curl that exits 22 (HTTP error) for one repo mid-run and
+  # asserts the script exits non-zero — proving it cannot silently succeed
+  # with a partial hash when the GitHub API is down or rate-limited.
+  # ────────────────────────────────────────────────────────────────────────────
+  api-failure-test:
+    name: "Test: API failure causes non-zero exit"
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+
+    steps:
+      - name: Checkout rh-p5-bridge-14
+        uses: actions/checkout@v4
+
+      - name: Run API-failure test
+        run: |
+          chmod +x scripts/relock-chain.sh
+          chmod +x scripts/test-relock-api-failure.sh
+          bash scripts/test-relock-api-failure.sh
+
+      - name: Notify Slack on test failure
+        if: failure()
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          curl -sf -X POST "$SLACK_WEBHOOK_URL" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "text": ":rotating_light: *Chain re-lock API-failure test failed* on push to `main`.\n`scripts/test-relock-api-failure.sh` reported that `relock-chain.sh` does NOT exit non-zero when the GitHub API fails — the silent-skip guard is broken.\n<'"$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"'|View run>"
+            }'
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # relock: weekly schedule (and manual dispatch) — patches files, opens PR.
+  # ────────────────────────────────────────────────────────────────────────────
+  relock:
+    name: "Recompute & re-lock ensemble chain"
+    runs-on: ubuntu-latest
+    # Skip on push events — that's what smoke-test is for.
+    if: github.event_name != 'push'
+
+    steps:
+      - name: Checkout rh-p5-bridge-14
+        uses: actions/checkout@v4
+        with:
+          # Full history so we can push a branch and open a PR
+          fetch-depth: 0
+
+      - name: Set up Python (for SHA recomputation)
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run relock script
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          chmod +x scripts/relock-chain.sh
+          if [[ "${{ github.event.inputs.dry_run }}" == "true" ]]; then
+            bash scripts/relock-chain.sh --dry-run
+          else
+            bash scripts/relock-chain.sh
+          fi
+
+      - name: Notify Slack on relock failure
+        if: failure()
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          curl -sf -X POST "$SLACK_WEBHOOK_URL" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "text": ":rotating_light: *Chain re-lock workflow FAILED*\nThe weekly `relock-chain` job did not complete. This may mean:\n• GITHUB_TOKEN lacks `repo` scope or has expired\n• The GitHub API was unavailable during the run\n• A PR could not be opened for a detected chain drift\n\nThe chain SHA has *not* been updated. Manual intervention required.\n<'"$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"'|View failed run>"
+            }'

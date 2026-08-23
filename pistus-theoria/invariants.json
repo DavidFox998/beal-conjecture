@@ -1,0 +1,48 @@
+{
+  "schema_version": "1.0",
+  "description": "Pistus-Theoria certificate archive: H4 Coxeter invariants for the Opera Numerorum ensemble. Three distinct H4-related quantities are recorded here with unambiguous labels to prevent future regeneration from conflating them.",
+  "H4_invariants": {
+    "Mstar_ratio": {
+      "label": "Mstar_ratio",
+      "value": "12/11",
+      "decimal": 1.09090909090909,
+      "decimal_tolerance": 0.02,
+      "description": "M* normalization ratio: a theoretical reference value labeled 12/11. The measured ratio M*_raw/H4_base (observed range 1.098–1.100 across three T-22 sequences) is empirically close to 12/11 ≈ 1.0909, but the two are not equal; the label records the reference target, not a verified mathematical limit. Caution: if M*_raw were exactly 12, the exact quotient 12/(120/11) would equal 11/10 = 1.1, not 12/11; the measured M*_raw values (11.976–12.003) are approximate, making the ratio approximate as well. This quantity is NOT the H4 base (120/11) and NOT the group order (14400).",
+      "measured_range": {
+        "min_ratio": 1.09778,
+        "max_ratio": 1.10028,
+        "note": "Observed values of M*_raw/H4_base across three T-22 sequence measurements"
+      },
+      "appears_in": ["M21", "M22", "M23", "EEQC_Layer6"]
+    },
+    "H4_base": {
+      "label": "H4_base",
+      "value": "120/11",
+      "decimal": 10.909090909090908,
+      "decimal_tolerance": 1e-6,
+      "description": "H4 base normalization constant: the divisor used to convert M*_raw (approximately 12) into the dimensionless M* ratio. Equal to 120/11 exactly. This is NOT the M* ratio 12/11 and NOT the group order 14400.",
+      "formula": "H4_base = 120/11 = 10.90909...",
+      "appears_in": ["M21", "M22", "M23_BSD"]
+    },
+    "H4_coxeter_group_order": {
+      "label": "H4_coxeter_group_order",
+      "value": 14400,
+      "description": "Order of the H4 Coxeter reflection group |W(H4)| = 14400. Distinct from the M* ratio (12/11) and from the H4 base (120/11). Appears in the layer-ratio identity |W(H4)|/|W(H3)| = 14400/120 = 120.",
+      "layer_ratio_identity": "|W(H4)| / |W(H3)| = 14400 / 120 = 120 = M8G layers",
+      "appears_in": ["M8G", "Section8_Coxeter_Unification"]
+    }
+  },
+  "label_integrity_rules": [
+    "The key 'H4_base' MUST hold the value 120/11, never 12/11.",
+    "The key 'Mstar_ratio' MUST hold the value 12/11 (the theoretical limit); its decimal is 1.09090909...",
+    "The key 'H4_coxeter_group_order' MUST hold the integer 14400.",
+    "No entry may use a bare 'H4' key to mean any of these three quantities: require the qualified label.",
+    "A claim string containing a bare 'H4' key with value '12/11' is forbidden; use Mstar_ratio.",
+    "The formula 12/(120/11) = 11/10 (not 12/11); Mstar_ratio = 12/11 is a numerical target, not an exact algebraic quotient of exactly-12 divided by H4_base."
+  ],
+  "forbidden_patterns": [
+    "bare JSON key 'H4' with value '12/11' (use Mstar_ratio instead)",
+    "bare JSON key 'H4' with value '120/11' (use H4_base instead)",
+    "bare denominator '11' as a standalone label for H4_base (the full fraction 120/11 is required)"
+  ]
+}

@@ -1,0 +1,162 @@
+name: Verify Ensemble Chain (daily)
+
+# Runs every day at 08:00 UTC and on demand.
+# Recomputes the SHA256 chain digest from live HEAD commits and compares it
+# against the value committed in CHAIN.md.
+#
+# On drift:
+#   - The job exits non-zero  →  GitHub Actions marks the check as failed.
+#   - A Slack message is posted via the SLACK_WEBHOOK_URL repository secret.
+#
+# This workflow is read-only.  When drift is detected, the weekly re-lock
+# workflow (relock-chain.yml) or a manual `workflow_dispatch` of it will
+# create the PR that updates CHAIN.md / REPOS.md.
+#
+# Required repository secret:
+#   SLACK_WEBHOOK_URL  — incoming-webhook URL for your Slack workspace.
+#                        If absent, the Slack step is skipped gracefully.
+
+on:
+  schedule:
+    - cron: "0 8 * * *"    # every day at 08:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read            # read-only; no writes needed
+
+jobs:
+  verify:
+    name: "Verify chain SHA against live HEADs"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout rh-p5-bridge-14
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Recompute chain SHA and compare
+        id: verify
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python3 - << 'PYEOF'
+          import hashlib, json, re, sys, os, urllib.request
+
+          # ── canonical repo list (alphabetical — must match CHAIN.md) ─────────
+          repos = [
+              "arakelov-positivity-rh-core",
+              "arakelov-rh-descent",
+              "birch-swinnerton-dyer-143",
+              "birch-swinnerton-dyer-143a1",
+              "bost-connes",
+              "brothers-desert-proof",
+              "Certifications",
+              "eutheos-property",
+              "hodge-abelian-boundaries",
+              "lindelof-hypothesis-143",
+              "morningstar-project",
+              "navier-stokes",
+              "opera-sieve",
+              "p-vs-np",
+              "poincare-spectral",
+              "rh-growth-contradiction",
+              "rh-p5-bridge-14",
+              "riemann-arakelov-positivity",
+              "yang-mills-gap",
+          ]
+
+          # ── read expected SHA from CHAIN.md ───────────────────────────────────
+          with open("CHAIN.md") as f:
+              text = f.read()
+          m = re.search(r'\*\*Chain SHA256:\*\*\s*`([0-9a-f]{64})`', text)
+          if not m:
+              print("ERROR: could not parse expected chain SHA from CHAIN.md", file=sys.stderr)
+              sys.exit(1)
+          expected = m.group(1)
+
+          # ── fetch live HEADs from GitHub API ──────────────────────────────────
+          tok = os.environ["GITHUB_TOKEN"]
+          owner = "DavidFox998"
+          lines = []
+
+          print("Fetching HEAD commits from GitHub API …")
+          for repo in repos:
+              url = f"https://api.github.com/repos/{owner}/{repo}/commits/main"
+              req = urllib.request.Request(url, headers={
+                  "Authorization": f"token {tok}",
+                  "Accept": "application/vnd.github.v3+json",
+              })
+              try:
+                  sha = json.loads(urllib.request.urlopen(req).read())["sha"]
+              except Exception as e:
+                  print(f"ERROR: failed to fetch {repo}: {e}", file=sys.stderr)
+                  sys.exit(1)
+              lines.append(f"{repo}:{sha}")
+              print(f"  {repo:<45} {sha[:12]}")
+
+          # ── recompute ─────────────────────────────────────────────────────────
+          actual = hashlib.sha256(("\n".join(lines) + "\n").encode()).hexdigest()
+
+          print()
+          print(f"Expected SHA : {expected}")
+          print(f"Actual SHA   : {actual}")
+
+          # ── write step outputs ────────────────────────────────────────────────
+          gho = os.environ.get("GITHUB_OUTPUT", "")
+          if gho:
+              with open(gho, "a") as f:
+                  f.write(f"expected_sha={expected}\n")
+                  f.write(f"actual_sha={actual}\n")
+                  drifted = "true" if actual != expected else "false"
+                  f.write(f"drifted={drifted}\n")
+
+          if actual == expected:
+              print("\n✓ Chain is current — no drift detected.")
+          else:
+              print("\n✗ DRIFT DETECTED — chain SHA has changed.", file=sys.stderr)
+              print("  One or more ensemble repos has received a new commit since", file=sys.stderr)
+              print("  the last re-lock.  Run the re-lock workflow to update CHAIN.md.", file=sys.stderr)
+              sys.exit(1)
+          PYEOF
+
+      - name: Post Slack alert on drift
+        if: failure() && steps.verify.conclusion == 'failure'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          EXPECTED: ${{ steps.verify.outputs.expected_sha }}
+          ACTUAL:   ${{ steps.verify.outputs.actual_sha }}
+        run: |
+          if [[ -z "${SLACK_WEBHOOK_URL:-}" ]]; then
+            echo "SLACK_WEBHOOK_URL secret not set — skipping Slack alert (job still fails)."
+            exit 0
+          fi
+
+          RUN_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+
+          curl -sf -X POST "${SLACK_WEBHOOK_URL}" \
+            -H "Content-Type: application/json" \
+            --data "$(python3 -c "
+          import json, os
+          expected = os.environ.get('EXPECTED', '(unknown)')
+          actual   = os.environ.get('ACTUAL',   '(unknown)')
+          run_url  = '${RUN_URL}'
+          payload  = {
+            'text': (
+              '\u26a0\ufe0f *Opera Numerorum — ensemble chain drift detected*\n'
+              'The chain SHA in \`rh-p5-bridge-14/CHAIN.md\` no longer matches '
+              'the live HEAD commits.  One or more of the 19 member repos has '
+              'received a new commit since the last re-lock.\n\n'
+              f'  \u2022 *Stored SHA:* \`{expected[:16]}\u2026\`\n'
+              f'  \u2022 *Live SHA:*   \`{actual[:16]}\u2026\`\n\n'
+              f'<{run_url}|View failed run> \u2022 '
+              'Trigger the *Chain Re-lock* workflow or run '
+              '\`bash scripts/relock-chain.sh\` locally to create an update PR.'
+            )
+          }
+          print(json.dumps(payload))
+          ")"
+          echo "Slack alert sent."

@@ -151,7 +151,7 @@ def send_api_key_email(
     <p>Useful links:</p>
     <ul style="line-height:2">
       <li><a href="{check_url}">Verify your key — GET /key/check</a></li>
-      <li><a href="{docs_url}">Full API docs (1000 tools)</a></li>
+      <li><a href="{docs_url}">Full API docs (1052 tools)</a></li>
       <li><a href="{pricing_url}">Pricing &amp; tier comparison</a></li>
     </ul>
   </div>

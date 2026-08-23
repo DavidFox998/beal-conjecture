@@ -480,3 +480,83 @@ def resend_reset(session_id: str) -> int:
     if entry is not None:
         _save_resend()
     return previous
+
+def resend_recover() -> dict:
+    """Attempt to salvage valid entries from RESEND_PATH before resetting.
+
+    Instead of blindly deleting the file, this function:
+    1. Reads the raw file content (if it exists).
+    2. Validates each entry — expected shape is ``[int_count, numeric_ts]``.
+    3. Retains valid entries; silently drops malformed ones.
+    4. Writes the salvaged data back to RESEND_PATH atomically.
+    5. Sets ``_resend_store_valid = True`` so the resend endpoint is unblocked.
+
+    This preserves legitimate rate-limit records for sessions that were not
+    involved in the corruption, preventing customers from bypassing the
+    3-attempt cap when only a subset of entries were bad.
+
+    Returns a summary dict with keys:
+        ``salvaged``  — number of entries retained from the file.
+        ``discarded`` — number of entries dropped (bad shape).
+        ``reset``     — ``True`` if the whole file was unreadable (JSON parse
+                        failure or non-dict top level); all counts were lost in
+                        that case and the operator should be aware.
+
+    Raises ``OSError`` if the salvaged data cannot be written to disk.  In
+    that case *neither* ``_resend_store`` nor ``_resend_store_valid`` are
+    modified — the fail-closed safeguard remains active.
+    """
+    global _resend_store, _resend_store_valid
+
+    salvaged: dict[str, list] = {}
+    discarded = 0
+    full_reset = False
+
+    if RESEND_PATH.exists():
+        try:
+            with RESEND_PATH.open() as f:
+                raw = json.load(f)
+            if isinstance(raw, dict):
+                for sid, entry in raw.items():
+                    # Valid shape: [non-negative int count, numeric timestamp]
+                    if (
+                        isinstance(entry, list)
+                        and len(entry) == 2
+                        and isinstance(entry[0], int)
+                        and isinstance(entry[1], (int, float))
+                        and entry[0] >= 0
+                    ):
+                        salvaged[sid] = entry
+                    else:
+                        discarded += 1
+            else:
+                # Parseable JSON but wrong top-level type — all data lost
+                full_reset = True
+        except Exception:
+            # File was not parseable JSON at all — all data lost
+            full_reset = True
+
+    # Write salvaged (or empty) data atomically.  Raise without mutating state
+    # if the write fails, so the fail-closed safeguard stays active.
+    try:
+        _atomic_write(RESEND_PATH, salvaged)
+    except Exception as e:
+        raise OSError(
+            f"resend_recover: could not write salvaged data to {RESEND_PATH}: {e}"
+        ) from e
+
+    _resend_store = salvaged
+    _resend_store_valid = True
+
+    summary = {
+        "salvaged":  len(salvaged),
+        "discarded": discarded,
+        "reset":     full_reset,
+    }
+    print(
+        f"[keystore] resend_recover: salvaged={len(salvaged)} entries retained, "
+        f"discarded={discarded} corrupt entries, full_reset={full_reset}. "
+        "Store is now valid.",
+        flush=True,
+    )
+    return summary

@@ -1,0 +1,145 @@
+\documentclass[12pt]{article}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{hyperref}
+
+\title{BSD Certificate for $J_0(143)$:\\
+  H4 Invariant Labels and M* Normalization}
+\author{Opera Numerorum Archive}
+\date{2026}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This certificate records the three distinct H4-related quantities
+that appear in the BSD verification for $J_0(143)$, and insists on
+unambiguous labels for each.  The M*~normalization ratio $\approx 12/11$,
+the H4 base $120/11$, and the H4 Coxeter-group order $14400$ are
+mathematically independent; conflating their labels corrupts the
+argument.
+\end{abstract}
+
+\section{Three Distinct H4 Quantities}
+
+The BSD certificate for $J_0(143)$ involves three quantities that
+each carry the prefix ``H4'' in informal usage.  They must not be
+merged.
+
+\begin{definition}[M* normalization ratio]\label{def:mstar-ratio}
+The \emph{M*~normalization ratio} is the theoretical target
+\[
+  r_{M^*} \;=\; \frac{12}{11} \;\approx\; 1.0909\ldots
+\]
+It is the theoretical value that the computed ratio
+$M^*_{\mathrm{raw}}/B_{H4}$ is claimed to approximate across T-22
+sequences.  Measured values of $M^*_{\mathrm{raw}}$ range from
+approximately $11.976$ to $12.003$, giving
+\[
+  \frac{M^*_{\mathrm{raw}}}{B_{H4}}
+  \;=\;
+  \frac{11.98\text{ (approx)}}{120/11}
+  \;=\;
+  \frac{11.98 \times 11}{120}
+  \;\approx\; 1.098.
+\]
+This lies within roughly $0.8\text{--}1\%$ of $12/11\approx 1.0909$;
+the two are numerically close but not equal.
+
+\textbf{Caution:} $M^*_{\mathrm{raw}}$ is \emph{not} exactly $12$.
+If it were, the exact quotient would be $12/(120/11)=11/10=1.1$, not
+$12/11\approx 1.0909$.  The label $r_{M^*}=12/11$ records a
+theoretical target, not a consequence of an exact algebraic identity.
+
+This quantity is \emph{not} the H4 base and \emph{not} the group order.
+\end{definition}
+
+\begin{definition}[H4 base]\label{def:h4-base}
+The \emph{H4 base} is
+\[
+  B_{H4} \;=\; \frac{120}{11} \;\approx\; 10.9091\ldots
+\]
+It is the normalization divisor used to form the dimensionless ratio
+$r_{M^*} \approx 12/11$.  The label \texttt{H4\_base} is reserved
+exclusively for $120/11$.  It is \emph{not} the M*~ratio $12/11$ and
+\emph{not} the group order $14400$.
+\end{definition}
+
+\begin{definition}[H4 Coxeter-group order]\label{def:h4-order}
+The \emph{H4 Coxeter-group order} is
+\[
+  |W(H4)| \;=\; 14400.
+\]
+This is the order of the finite reflection group $W(H4)$ acting on
+$\mathbb{R}^4$.  It satisfies the layer-ratio identity
+\[
+  \frac{|W(H4)|}{|W(H3)|} \;=\; \frac{14400}{120} \;=\; 120,
+\]
+which equals the number of M8G layers.  This quantity is \emph{not}
+the ratio $12/11$ and \emph{not} the base $120/11$.
+\end{definition}
+
+\section{Label Integrity for Archive Regeneration}
+
+\begin{remark}[Forbidden shorthands]\label{rem:forbidden}
+A bare, unqualified label that assigns the value $12/11$ to the key
+\texttt{H4}---without a qualifier suffix---is forbidden in this archive
+because it is ambiguous: it could denote the (approximate) M*~ratio,
+a mis-stated H4 base, or a shorthand for the group order.  Any
+regenerated certificate must use:
+\begin{itemize}
+  \item \texttt{Mstar\_ratio} for $r_{M^*} \approx 12/11$,
+  \item \texttt{H4\_base} for $B_{H4} = 120/11$ exactly,
+  \item \texttt{H4\_coxeter\_group\_order} for $|W(H4)| = 14400$.
+\end{itemize}
+A bare denominator label (e.g.\ ``$11$'' standing alone as an H4
+label) is likewise rejected; the full fraction $120/11$ must appear.
+\end{remark}
+
+\section{BSD Anchor: $\Delta_{DS}^{(4)} / B_{H4}$}
+
+The key BSD match for $J_0(143)$ is
+
+\[
+  \frac{\Delta_{DS}^{(4)}}{B_{H4}}
+  \;=\; 2.1812
+  \;\approx\; 2 \cdot r_{M^*}
+  \;=\; 2 \cdot \frac{12}{11}
+  \;=\; \frac{24}{11}
+  \;\approx\; 2.1818,
+  \qquad \text{error } 0.027\%.
+\]
+
+Here the \emph{M*~normalization} $r_{M^*} \approx 12/11$ appears
+explicitly as a factor on the right-hand side, separated from the
+H4 base $B_{H4} = 120/11$ that appears as the divisor on the left.
+The two roles are structurally distinct and must be labeled as such in
+any automated certificate.
+
+\section{Coxeter Unification Summary}
+
+The H4 Coxeter group unifies five certified constants:
+\begin{center}
+\begin{tabular}{lll}
+\hline
+Constant & Value & Source \\
+\hline
+$r_{M^*}$ (M*~ratio, approx.) & $\approx 12/11$ & M21, M22, M23 \\
+$B_{H4}$ (H4 base, exact)     & $120/11 \approx 10.9091$ & M21, M22, M23\_BSD \\
+$|W(H4)|$ (group order, exact) & $14400$ & M8G, Section~8 \\
+$\Omega/R$                     & $11.929 \approx 12$ (err $0.59\%$) & M23 \\
+$h_2$                          & $10$ & M6 \\
+\hline
+\end{tabular}
+\end{center}
+
+\noindent
+None of these five entries is interchangeable with another.  The
+archive check script \texttt{pistus-theoria/check\_h4\_labels.py}
+enforces these distinctions automatically.
+
+\end{document}

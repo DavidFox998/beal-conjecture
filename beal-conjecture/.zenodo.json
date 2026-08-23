@@ -1,0 +1,19 @@
+{
+  "title": "Beal Conjecture — a formal instrument in Opera Numerorum",
+  "upload_type": "software",
+  "description": "This repository is one chamber of David Fox's Opera Numerorum: a growing collection of machine-checked arithmetic in Lean 4. It studies the Beal Conjecture through 21 formal layers, from elementary divisibility to the Frey construction. Current status v0.2.0: formalization scaffold, not a completed proof. Every *_Core.lean now states a real mathematical claim — Beal itself at B20, and import-free divisibility witnesses M*p=N, p||N -> M=N/p at B11-B15 encoding Mazur epsilon and Ribet level-lowering prerequisites. B01 Core IsBealSolutionCore has [] axioms, B02 Frey has [propext] only, B15 LevelTo2 has real witness M*2=2 -> M=1, no Prop:=True stubs, no sorry. CI enforces Build all bricks, Check NO sorry, No True stubs, Audit every core/wrapper theorem. This release freezes the zero-axiom core checkpoint before Phase 1 arithmetic closure.",
+  "creators": [
+    {
+      "name": "Fox, David",
+      "affiliation": "Opera Numerorum"
+    }
+  ],
+  "license": "MIT",
+  "keywords": ["Beal Conjecture", "Lean 4", "formal verification", "Frey curve", "Ribet level-lowering", "Mazur epsilon", "Opera Numerorum", "Fermat Last Theorem", "modular forms"],
+  "access_right": "open",
+  "related_identifiers": [
+    {"identifier": "https://github.com/DavidFox998/beal-conjecture", "relation": "isSupplementTo", "resource_type": "software"},
+    {"identifier": "https://github.com/ImperialCollegeLondon/FLT", "relation": "cites", "resource_type": "software"}
+  ],
+  "communities": [{"identifier": "lean"}]
+}

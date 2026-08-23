@@ -1,0 +1,5 @@
+{"log":
+ [{"message":
+   ".> LEAN_PATH=././.lake/packages/batteries/.lake/build/lib:././.lake/packages/Qq/.lake/build/lib:././.lake/packages/aesop/.lake/build/lib:././.lake/packages/proofwidgets/.lake/build/lib:././.lake/packages/Cli/.lake/build/lib:././.lake/packages/importGraph/.lake/build/lib:././.lake/packages/LeanSearchClient/.lake/build/lib:././.lake/packages/mathlib/.lake/build/lib:././.lake/build/lib LD_LIBRARY_PATH= /home/runner/.elan/toolchains/leanprover--lean4---v4.12.0/bin/lean ././.lake/packages/LeanSearchClient/././LeanSearchClient/Syntax.lean -R ././.lake/packages/LeanSearchClient/./. -o ././.lake/packages/LeanSearchClient/.lake/build/lib/LeanSearchClient/Syntax.olean -i ././.lake/packages/LeanSearchClient/.lake/build/lib/LeanSearchClient/Syntax.ilean -c ././.lake/packages/LeanSearchClient/.lake/build/ir/LeanSearchClient/Syntax.c --json",
+   "level": "trace"}],
+ "depHash": "5061544050901704393"}

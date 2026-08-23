@@ -1,0 +1,62 @@
+{"log":
+ [{"message":
+   ".> LEAN_PATH=././.lake/packages/batteries/.lake/build/lib:././.lake/packages/Qq/.lake/build/lib:././.lake/packages/aesop/.lake/build/lib:././.lake/packages/proofwidgets/.lake/build/lib:././.lake/packages/Cli/.lake/build/lib:././.lake/packages/importGraph/.lake/build/lib:././.lake/packages/LeanSearchClient/.lake/build/lib:././.lake/packages/mathlib/.lake/build/lib:././.lake/build/lib LD_LIBRARY_PATH= /home/runner/.elan/toolchains/leanprover--lean4---v4.12.0/bin/lean -Dpp.unicode.fun=true -DautoImplicit=false -Dweak.linter.docPrime=true -Dweak.linter.hashCommand=true -Dweak.linter.oldObtain=true -Dweak.linter.refine=true -Dweak.linter.style.cdot=true -Dweak.linter.style.dollarSyntax=true -Dweak.linter.style.lambdaSyntax=true -Dweak.linter.style.longLine=true -Dweak.linter.style.longFile=1500 -Dweak.linter.style.missingEnd=true -Dweak.linter.style.setOption=true ././.lake/packages/mathlib/././Mathlib/Algebra/Group/Basic.lean -R ././.lake/packages/mathlib/./. -o ././.lake/packages/mathlib/.lake/build/lib/Mathlib/Algebra/Group/Basic.olean -i ././.lake/packages/mathlib/.lake/build/lib/Mathlib/Algebra/Group/Basic.ilean -c ././.lake/packages/mathlib/.lake/build/ir/Mathlib/Algebra/Group/Basic.c --json",
+   "level": "trace"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Group/Basic.lean:167:8: `mul_rotate'` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Group/Basic.lean:333:8: `mul_div_assoc'` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Group/Basic.lean:447:6: `inv_zpow'` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Group/Basic.lean:492:6: `zpow_mul'` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Group/Basic.lean:518:8: `inv_div'` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Group/Basic.lean:529:8: `inv_mul'` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Group/Basic.lean:709:8: `div_self'` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Group/Basic.lean:723:8: `eq_div_of_mul_eq'` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Group/Basic.lean:726:8: `div_eq_of_eq_mul''` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Group/Basic.lean:769:8: `eq_div_iff_mul_eq'` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Group/Basic.lean:871:8: `zpow_eq_zpow_emod'` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Group/Basic.lean:917:8: `div_eq_of_eq_mul'` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Group/Basic.lean:926:8: `eq_div_of_mul_eq''` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Group/Basic.lean:929:8: `eq_mul_of_div_eq'` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Group/Basic.lean:932:8: `mul_eq_of_eq_div'` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Group/Basic.lean:936:8: `div_div_self'` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Group/Basic.lean:949:8: `eq_div_iff_mul_eq''` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Group/Basic.lean:952:8: `div_eq_iff_eq_mul'` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Group/Basic.lean:980:8: `div_mul_div_cancel'` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"}],
+ "depHash": "10401249287731686172"}

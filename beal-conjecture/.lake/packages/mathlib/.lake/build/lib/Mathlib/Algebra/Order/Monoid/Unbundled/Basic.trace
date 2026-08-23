@@ -1,0 +1,158 @@
+{"log":
+ [{"message":
+   ".> LEAN_PATH=././.lake/packages/batteries/.lake/build/lib:././.lake/packages/Qq/.lake/build/lib:././.lake/packages/aesop/.lake/build/lib:././.lake/packages/proofwidgets/.lake/build/lib:././.lake/packages/Cli/.lake/build/lib:././.lake/packages/importGraph/.lake/build/lib:././.lake/packages/LeanSearchClient/.lake/build/lib:././.lake/packages/mathlib/.lake/build/lib:././.lake/build/lib LD_LIBRARY_PATH= /home/runner/.elan/toolchains/leanprover--lean4---v4.12.0/bin/lean -Dpp.unicode.fun=true -DautoImplicit=false -Dweak.linter.docPrime=true -Dweak.linter.hashCommand=true -Dweak.linter.oldObtain=true -Dweak.linter.refine=true -Dweak.linter.style.cdot=true -Dweak.linter.style.dollarSyntax=true -Dweak.linter.style.lambdaSyntax=true -Dweak.linter.style.longLine=true -Dweak.linter.style.longFile=1500 -Dweak.linter.style.missingEnd=true -Dweak.linter.style.setOption=true ././.lake/packages/mathlib/././Mathlib/Algebra/Order/Monoid/Unbundled/Basic.lean -R ././.lake/packages/mathlib/./. -o ././.lake/packages/mathlib/.lake/build/lib/Mathlib/Algebra/Order/Monoid/Unbundled/Basic.olean -i ././.lake/packages/mathlib/.lake/build/lib/Mathlib/Algebra/Order/Monoid/Unbundled/Basic.ilean -c ././.lake/packages/mathlib/.lake/build/ir/Mathlib/Algebra/Order/Monoid/Unbundled/Basic.c --json",
+   "level": "trace"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Order/Monoid/Unbundled/Basic.lean:63:8: `mul_le_mul_left'` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Order/Monoid/Unbundled/Basic.lean:68:8: `le_of_mul_le_mul_left'` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Order/Monoid/Unbundled/Basic.lean:76:8: `mul_le_mul_right'` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Order/Monoid/Unbundled/Basic.lean:82:8: `le_of_mul_le_mul_right'` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Order/Monoid/Unbundled/Basic.lean:118:8: `mul_lt_mul_left'` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Order/Monoid/Unbundled/Basic.lean:123:8: `lt_of_mul_lt_mul_left'` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Order/Monoid/Unbundled/Basic.lean:129:8: `mul_lt_mul_right'` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Order/Monoid/Unbundled/Basic.lean:135:8: `lt_of_mul_lt_mul_right'` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Order/Monoid/Unbundled/Basic.lean:184:8: `mul_le_mul'` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Order/Monoid/Unbundled/Basic.lean:251:8: `mul_left_cancel''` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Order/Monoid/Unbundled/Basic.lean:256:8: `mul_right_cancel''` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Order/Monoid/Unbundled/Basic.lean:311:8: `max_mul_mul_le_max_mul_max'` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Order/Monoid/Unbundled/Basic.lean:316:8: `min_mul_min_le_min_mul_mul'` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Order/Monoid/Unbundled/Basic.lean:333:8: `le_mul_of_one_le_right'` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Order/Monoid/Unbundled/Basic.lean:340:8: `mul_le_of_le_one_right'` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Order/Monoid/Unbundled/Basic.lean:347:8: `le_mul_of_one_le_left'` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Order/Monoid/Unbundled/Basic.lean:354:8: `mul_le_of_le_one_left'` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Order/Monoid/Unbundled/Basic.lean:383:8: `le_mul_iff_one_le_right'` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Order/Monoid/Unbundled/Basic.lean:389:8: `le_mul_iff_one_le_left'` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Order/Monoid/Unbundled/Basic.lean:395:8: `mul_le_iff_le_one_right'` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Order/Monoid/Unbundled/Basic.lean:401:8: `mul_le_iff_le_one_left'` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Order/Monoid/Unbundled/Basic.lean:413:8: `lt_mul_of_one_lt_right'` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Order/Monoid/Unbundled/Basic.lean:420:8: `mul_lt_of_lt_one_right'` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Order/Monoid/Unbundled/Basic.lean:427:8: `lt_mul_of_one_lt_left'` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Order/Monoid/Unbundled/Basic.lean:435:8: `mul_lt_of_lt_one_left'` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Order/Monoid/Unbundled/Basic.lean:465:8: `lt_mul_iff_one_lt_right'` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Order/Monoid/Unbundled/Basic.lean:471:8: `lt_mul_iff_one_lt_left'` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Order/Monoid/Unbundled/Basic.lean:476:8: `mul_lt_iff_lt_one_left'` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Order/Monoid/Unbundled/Basic.lean:482:8: `mul_lt_iff_lt_one_right'` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Order/Monoid/Unbundled/Basic.lean:533:8: `mul_lt_of_lt_of_lt_one'` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Order/Monoid/Unbundled/Basic.lean:623:8: `lt_mul_of_lt_of_one_lt'` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Order/Monoid/Unbundled/Basic.lean:713:8: `mul_lt_of_lt_one_of_lt'` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Order/Monoid/Unbundled/Basic.lean:806:8: `lt_mul_of_one_lt_of_lt'` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Order/Monoid/Unbundled/Basic.lean:1059:8: `Monotone.const_mul'` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Order/Monoid/Unbundled/Basic.lean:1063:8: `MonotoneOn.const_mul'` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Order/Monoid/Unbundled/Basic.lean:1067:8: `Antitone.const_mul'` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Order/Monoid/Unbundled/Basic.lean:1071:8: `AntitoneOn.const_mul'` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Order/Monoid/Unbundled/Basic.lean:1075:8: `Monotone.mul_const'` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Order/Monoid/Unbundled/Basic.lean:1079:8: `MonotoneOn.mul_const'` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Order/Monoid/Unbundled/Basic.lean:1084:8: `Antitone.mul_const'` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Order/Monoid/Unbundled/Basic.lean:1088:8: `AntitoneOn.mul_const'` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Order/Monoid/Unbundled/Basic.lean:1123:8: `StrictMono.const_mul'` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Order/Monoid/Unbundled/Basic.lean:1127:8: `StrictMonoOn.const_mul'` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Order/Monoid/Unbundled/Basic.lean:1132:8: `StrictAnti.const_mul'` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Order/Monoid/Unbundled/Basic.lean:1136:8: `StrictAntiOn.const_mul'` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Order/Monoid/Unbundled/Basic.lean:1147:8: `StrictMono.mul_const'` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Order/Monoid/Unbundled/Basic.lean:1151:8: `StrictMonoOn.mul_const'` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Order/Monoid/Unbundled/Basic.lean:1156:8: `StrictAnti.mul_const'` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Order/Monoid/Unbundled/Basic.lean:1160:8: `StrictAntiOn.mul_const'` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Order/Monoid/Unbundled/Basic.lean:1260:8: `cmp_mul_left'` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"},
+  {"message":
+   "././.lake/packages/mathlib/././Mathlib/Algebra/Order/Monoid/Unbundled/Basic.lean:1266:8: `cmp_mul_right'` is missing a doc-string, please add one.\nDeclarations whose name ends with a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.\nnote: this linter can be disabled with `set_option linter.docPrime false`",
+   "level": "warning"}],
+ "depHash": "3984693576342659497"}

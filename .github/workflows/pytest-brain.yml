@@ -1,0 +1,92 @@
+name: MCP Forgery-Rejection Tests
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  checks: write
+  pull-requests: write
+  contents: read
+
+jobs:
+  pytest-brain:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11.9"
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest httpx requests
+
+      # ── Unit + integration tests (TestClient — always run, no live service needed) ──
+      - name: Run brain forgery-rejection tests (unit)
+        run: pytest tests/test_brain.py -v -k "not live" --junit-xml=test-results/unit.xml
+
+      # ── Live smoke tests (against https://zerobeacon.ai — require secrets) ──────────
+      #
+      # ZEROBEACON_URL and ZEROBEACON_API_KEY must be added as GitHub Actions
+      # secrets in Settings → Secrets and variables → Actions.
+      # When the secrets are absent (forks, unset) the tests self-skip via the
+      # @_skip_live / @_skip_live_mcp markers in test_brain.py — they will
+      # appear as "skipped" in the CI summary rather than "failed".
+      - name: Run live smoke tests against https://zerobeacon.ai
+        # continue-on-error so a temporarily unavailable endpoint never blocks
+        # merges — the unit tests above always enforce correctness.
+        continue-on-error: true
+        env:
+          ZEROBEACON_URL: ${{ secrets.ZEROBEACON_URL }}
+          ZEROBEACON_API_KEY: ${{ secrets.ZEROBEACON_API_KEY }}
+        run: pytest tests/test_brain.py -v -k "live" --junit-xml=test-results/live.xml
+
+      # ── Publish test results to the GitHub Actions job summary ───────────────
+      - name: Publish unit test results
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: "Unit Tests (brain forgery-rejection)"
+          path: "test-results/unit.xml"
+          reporter: java-junit
+          fail-on-error: false
+
+      - name: Publish live smoke test results
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: "Live Smoke Tests (zerobeacon.ai MCP)"
+          path: "test-results/live.xml"
+          reporter: java-junit
+          fail-on-error: false
+
+      # ── Retain the raw reports so pass/fail rates can be compared across runs ──
+      - name: Upload JUnit XML reports
+        id: upload-junit-reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: junit-xml-reports
+          path: test-results/*.xml
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Link JUnit XML reports in job summary
+        if: always()
+        env:
+          ARTIFACT_URL: ${{ steps.upload-junit-reports.outputs.artifact-url }}
+        run: |
+          {
+            echo "### Download full JUnit XML reports"
+            if [ -n "$ARTIFACT_URL" ]; then
+              echo "[Download JUnit XML artifact]($ARTIFACT_URL)"
+            else
+              echo "The JUnit XML artifact was not created because no report files were available."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"

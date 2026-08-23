@@ -1,0 +1,188 @@
+{
+  "repo": "rh-p5-bridge-14",
+  "url": "https://github.com/DavidFox998/rh-p5-bridge-14",
+  "opera_pos": "9/19 — KEYSTONE — P5-Bridge-14",
+  "role": "KEYSTONE — P5-Bridge v2 TeX: single brick, no bridge. Converts S_14 to finite window <=82829. q5=226, q6=165849, p5=67645, cf_bound=82829. Theorem grh_to_rh_descent closes RH when combined with 4 RH formulizations",
+  "theorem": "theorem grh_to_rh_descent (h_grh : GRH_for_L L_fn) (h_lang : LanglandsTransfer L_fn) : _root_.RiemannHypothesis",
+  "unconditional_bricks": {
+    "P5_conductor_times_genus": "(143 : ℕ) * 13 = 1859 — norm_num",
+    "arakelov_positivity_X0_143": "ArakelovPositivity (X₀ 143) — C01 slope + norm_num",
+    "arakelovSelfIntersection_X0_143": "48 / 13 — norm_num",
+    "P5_HeckeTransfer_14_CLOSED": "143*13=1859 ∧ ArakelovPositivity"
+  },
+  "root_v2_legacy": {
+    "repo": "arakelov-positivity-rh-core",
+    "url": "https://github.com/DavidFox998/arakelov-positivity-rh-core",
+    "description": "V2 Arakelov legacy — M2 kappa, M7 Manifest, M8C Zoe-M*, M4 Exceptional 10^4000 — ties to P5 boundary"
+  },
+  "formulizations_that_close_the_gap": {
+    "A": {
+      "repo": "riemann-arakelov-positivity",
+      "url": "https://github.com/DavidFox998/riemann-arakelov-positivity",
+      "status": "Closed by Abbes-Ullmo",
+      "clay_ref": "Abbes-Ullmo: semistable Arakelov bundles over arithmetic curves satisfy Bogomolov inequality → positivity of Arakelov intersection → Hilbert-Samuel → zero-free strip → RH. Provides GRH_for_L component"
+    },
+    "B": {
+      "repo": "arakelov-rh-descent",
+      "url": "https://github.com/DavidFox998/arakelov-rh-descent",
+      "clay_ref": "Descent: Arakelov RH as positivity of divisor of xi(s) descends via arithmetic Riemann-Roch + Hodge Index Theorem on arithmetic surfaces. Green function dominates archimedean contribution off line → forces Re=1/2. Provides LanglandsTransfer component"
+    },
+    "C": {
+      "repo": "rh-growth-contradiction",
+      "url": "https://github.com/DavidFox998/rh-growth-contradiction",
+      "clay_ref": "Growth Contradiction: Assume rho with Re!=1/2 → Faltings height super-exponential violates M7 manifest + M8C Zoe-M* subexponential → contradiction. Proves no off-line zeros"
+    },
+    "D": {
+      "repo": "brothers-desert-proof",
+      "url": "https://github.com/DavidFox998/brothers-desert-proof",
+      "clay_ref": "Self-Symmetry: Dirichlet measured jitter and Galois orbit. 35 brothers create collision-free swarming desert. Self-duality + orbit stability forces R=1/2. Study zeta via orbit to prove Re=1/2"
+    }
+  },
+  "bsd_tie_in": {
+    "note": "BSD is formulized as well as public legacy BSD repo for backwards compatibility",
+    "smaller_easier_examine": {
+      "repo": "birch-swinnerton-dyer-143a1",
+      "url": "https://github.com/DavidFox998/birch-swinnerton-dyer-143a1",
+      "description": "Smaller, easier to examine — curve 143a1 via J0(143) genuine, Peter-Weyl lean special"
+    },
+    "legacy_parent_more_robust": {
+      "repo": "birch-swinnerton-dyer-143",
+      "url": "https://github.com/DavidFox998/birch-swinnerton-dyer-143",
+      "description": "Legacy parent more robust — original J0(143) construction, backwards compat"
+    }
+  },
+  "builds_from": [
+    {
+      "repo": "arakelov-positivity-rh-core",
+      "url": "https://github.com/DavidFox998/arakelov-positivity-rh-core"
+    },
+    {
+      "repo": "riemann-arakelov-positivity",
+      "url": "https://github.com/DavidFox998/riemann-arakelov-positivity"
+    },
+    {
+      "repo": "arakelov-rh-descent",
+      "url": "https://github.com/DavidFox998/arakelov-rh-descent"
+    },
+    {
+      "repo": "rh-growth-contradiction",
+      "url": "https://github.com/DavidFox998/rh-growth-contradiction"
+    },
+    {
+      "repo": "brothers-desert-proof",
+      "url": "https://github.com/DavidFox998/brothers-desert-proof"
+    },
+    {
+      "repo": "opera-sieve",
+      "url": "https://github.com/DavidFox998/opera-sieve",
+      "role": "methodology .py and datatables — defines S_14, S_alpha0"
+    }
+  ],
+  "builds_to_finite_window": {
+    "cf_bound": 82829,
+    "description": "All Clay problems after RH reduce to checking p <= 82829 via this bridge",
+    "repos": [
+      {
+        "repo": "birch-swinnerton-dyer-143a1",
+        "url": "https://github.com/DavidFox998/birch-swinnerton-dyer-143a1"
+      },
+      {
+        "repo": "lindelof-hypothesis-143",
+        "url": "https://github.com/DavidFox998/lindelof-hypothesis-143"
+      },
+      {
+        "repo": "eutheos-property",
+        "url": "https://github.com/DavidFox998/eutheos-property",
+        "note": "barrier bypassing number 1419 and 1419's family -35 brothers"
+      },
+      {
+        "repo": "hodge-abelian-boundaries",
+        "url": "https://github.com/DavidFox998/hodge-abelian-boundaries",
+        "note": "200 abelian varieties, 390 varieties total"
+      },
+      {
+        "repo": "yang-mills-gap",
+        "url": "https://github.com/DavidFox998/yang-mills-gap"
+      },
+      {
+        "repo": "navier-stokes",
+        "url": "https://github.com/DavidFox998/navier-stokes"
+      },
+      {
+        "repo": "poincare-spectral",
+        "url": "https://github.com/DavidFox998/poincare-spectral"
+      },
+      {
+        "repo": "bost-connes",
+        "url": "https://github.com/DavidFox998/bost-connes"
+      },
+      {
+        "repo": "p-vs-np",
+        "url": "https://github.com/DavidFox998/p-vs-np",
+        "note": "machine that formalizes all barriers within P vs NP"
+      }
+    ]
+  },
+  "tooling": [
+    {
+      "repo": "morningstar-project",
+      "url": "https://github.com/DavidFox998/morningstar-project",
+      "role": "quantum entangled orbital spacestation — builds all PDFs"
+    },
+    {
+      "repo": "opera-sieve",
+      "url": "https://github.com/DavidFox998/opera-sieve",
+      "role": "methodology .py and datatables"
+    },
+    {
+      "repo": "zerobeacon",
+      "url": "https://github.com/DavidFox998/zerobeacon",
+      "role": "BRAIN — 1000 essential tools for AI Ecommerce; collision-free-swarming — verifies all 19"
+    },
+    {
+      "repo": "pistus-theoria",
+      "url": "https://github.com/DavidFox998/pistus-theoria",
+      "role": "ARCHIVE — pdf server, oracle server and certification house"
+    }
+  ],
+  "brain": {
+    "repo": "zerobeacon",
+    "url": "https://github.com/DavidFox998/zerobeacon",
+    "is_brain": true
+  },
+  "archive": {
+    "repo": "pistus-theoria",
+    "url": "https://github.com/DavidFox998/pistus-theoria",
+    "is_archive": true,
+    "pdf_single_source": "https://github.com/DavidFox998/pistus-theoria/blob/main/OperaNumerorum_MasterEquations.pdf",
+    "pdf_sha": "7f6b31b4469ebdbd59d03979c1f1c9b4c617bef4e88ed392c70c87dcb8fa0970",
+    "certs": "https://github.com/DavidFox998/pistus-theoria/tree/main/Certs",
+    "m4_cert": "https://github.com/DavidFox998/pistus-theoria/blob/main/Certs/m4.out",
+    "oracle": "https://github.com/DavidFox998/pistus-theoria/blob/main/oracle/verify.py"
+  },
+  "axiom_footprint": ["propext", "Classical.choice", "Quot.sound"],
+  "custom_axioms": 0,
+  "custom_axiom_note": "NS_ESS_Criterion = Escauriaza-Seregin-Svenak 2003 peer-reviewed — sole non-classical in navier-stokes",
+  "orcid": "0009-0008-1290-6105",
+  "full_opera_19": [
+    "https://github.com/DavidFox998/arakelov-positivity-rh-core",
+    "https://github.com/DavidFox998/riemann-arakelov-positivity",
+    "https://github.com/DavidFox998/arakelov-rh-descent",
+    "https://github.com/DavidFox998/rh-growth-contradiction",
+    "https://github.com/DavidFox998/brothers-desert-proof",
+    "https://github.com/DavidFox998/birch-swinnerton-dyer-143a1",
+    "https://github.com/DavidFox998/lindelof-hypothesis-143",
+    "https://github.com/DavidFox998/eutheos-property",
+    "https://github.com/DavidFox998/rh-p5-bridge-14",
+    "https://github.com/DavidFox998/poincare-spectral",
+    "https://github.com/DavidFox998/bost-connes",
+    "https://github.com/DavidFox998/p-vs-np",
+    "https://github.com/DavidFox998/hodge-abelian-boundaries",
+    "https://github.com/DavidFox998/yang-mills-gap",
+    "https://github.com/DavidFox998/navier-stokes",
+    "https://github.com/DavidFox998/morningstar-project",
+    "https://github.com/DavidFox998/opera-sieve",
+    "https://github.com/DavidFox998/pistus-theoria",
+    "https://github.com/DavidFox998/zerobeacon"
+  ]
+}

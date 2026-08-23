@@ -1,0 +1,75 @@
+name: README Endpoint Smoke Tests
+
+# Confirms the two curl examples in the README stay reachable and return the
+# expected JSON contract:
+#   curl https://zerobeacon.ai/health
+#   curl "https://zerobeacon.ai/api/mf/01/beacon?p=3000105001"
+#
+# The live tests are skipped automatically in forks / PRs where the secret is
+# absent — the unit tests (TestClient) always run to guard the local shape.
+
+on:
+  push:
+  pull_request:
+  schedule:
+    # Run against production every 30 minutes to catch regressions early
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+
+jobs:
+  smoke-readme-endpoints:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest httpx requests
+
+      - name: Run unit smoke tests (TestClient — always runs)
+        run: pytest tests/test_smoke_readme_endpoints.py -v -k "not live"
+
+      - name: Run live smoke tests against https://zerobeacon.ai
+        env:
+          ZEROBEACON_URL: https://zerobeacon.ai
+        run: pytest tests/test_smoke_readme_endpoints.py -v -k "live"
+
+      - name: Alert on failure
+        if: failure()
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          REF_NAME: ${{ github.ref_name }}
+          RUN_ID: ${{ github.run_id }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          # Build a concise payload that names the failing workflow, run URL,
+          # and the two endpoints under test so the on-call responder knows
+          # exactly what to check.
+          RUN_URL="https://github.com/${REPOSITORY}/actions/runs/${RUN_ID}"
+          PAYLOAD=$(jq -nc \
+            --arg ref "$REF_NAME" \
+            --arg url "$RUN_URL" \
+            '{"text": ("*README smoke tests FAILED* on `" + $ref + "`\n• Endpoints under test: `https://zerobeacon.ai/health`, `https://zerobeacon.ai/api/mf/01/beacon`\n• See failing run: " + $url)}')
+
+          if [ -n "$SLACK_WEBHOOK_URL" ]; then
+            HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+              -X POST -H "Content-Type: application/json" \
+              -d "$PAYLOAD" \
+              "$SLACK_WEBHOOK_URL")
+            echo "Slack webhook response status: $HTTP_STATUS"
+            if [ "$HTTP_STATUS" != "200" ]; then
+              echo "WARNING: Slack webhook returned HTTP $HTTP_STATUS — check the SLACK_WEBHOOK_URL secret"
+            fi
+          else
+            echo "SLACK_WEBHOOK_URL secret is not set — skipping webhook notification"
+            echo "To enable alerts, add SLACK_WEBHOOK_URL to your repository secrets."
+            echo "Failing run: $RUN_URL"
+          fi

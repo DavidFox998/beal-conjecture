@@ -1,0 +1,40 @@
+name: Ensemble Link Audit
+
+# Verify that every repo listed in REPOS.md carries a back-link to the
+# keystone (rh-p5-bridge-14).  Fails if any listed repo's README is missing
+# the link, keeping REPOS.md and each member repo in sync.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'REPOS.md'
+      - 'scripts/check_ensemble_links.sh'
+      - '.github/workflows/ensemble-links.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'REPOS.md'
+      - 'scripts/check_ensemble_links.sh'
+      - '.github/workflows/ensemble-links.yml'
+  # Also run weekly so a sibling-repo README edit that removes the link is
+  # caught promptly even when REPOS.md itself hasn't changed.
+  schedule:
+    - cron: '0 6 * * 1'   # every Monday at 06:00 UTC
+  workflow_dispatch:
+
+jobs:
+  check-ensemble-links:
+    name: "Check README back-links (all 19 repos)"
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Make script executable
+        run: chmod +x scripts/check_ensemble_links.sh
+
+      - name: Audit ensemble back-links
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bash scripts/check_ensemble_links.sh REPOS.md

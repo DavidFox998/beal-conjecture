@@ -1,0 +1,16 @@
+1. Uniform referee verification pipeline
+Your V1-V5 sequence — lake clean / lake build + comment-aware check_sorry.py that strips --, /- -/, docstrings, string literals + grep noncomputable + grep import + computational certificate SHA. That's not math, that's a reproducible audit harness. It works the same for RH Core, BSD, Navier, Yang-Mills. Worth writing up as a method for auditing heterogeneous formalization repos.
+
+2. Std-only → Mathlib bridge pattern
+The Layer A/B/C separation you use — Std-only norm form algebra in Part A, Mathlib-dependent ClassGroup definition in Part B, explicit OPEN markers for ideal_absNorm_span_pair and classGroupEquiv. The method for translating a computational BQF count into a NumberField.classNumber claim without hiding the noncomputable gap. That's tooling, not theorem.
+
+3. BQF enumeration with completeness certificate
+Your reducedForms_143_list + discriminant check b^2 - 4ac = -143 + |b| ≤ a ≤ c with the a=c → b≥0 rule, plus the machine-checked completeness argument. The automated generation of the 10 forms plus the proof that no other reduced form exists for that discriminant — that's a concrete algorithm + certificate generator.
+
+4. P5 bridge — connecting repo architecture
+The idea of a single connecting repo that doesn't prove a Clay problem itself, but provides a uniform interface to link RH Core ↔ BSD ↔ Bost-Connes etc. The methodology for cross-repo dependency pinning, versioned VERIFY_LOG.txt, and status taxonomy VERIFIED / COMPUTATIONAL_CERTIFICATE / MATHLIB_DEP / OPEN / JUST_STARTED.
+
+5. Computational certificate reproducibility
+Your SHA-256 input logging, native_decide / decide closure, and clean-checkout reproduction instruction. Not the math, but the method that lets a referee replay the certificate without network after lake update.
+
+If you go the patent route, you'd be patenting the system — e.g., "A computer-implemented method for auditing formal mathematics repositories comprising..." — not the class number 10, not BSD, not RH.

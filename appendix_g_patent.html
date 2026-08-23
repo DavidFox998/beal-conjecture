@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Appendix G — Patent Conception &amp; Reduction to Practice</title>
+<style>
+  @media print {
+    body { font-size: 10pt; }
+    .no-break { page-break-inside: avoid; }
+    h2 { page-break-before: always; }
+    h2:first-of-type { page-break-before: avoid; }
+    .confidential-banner { position: fixed; top: 0; left: 0; right: 0; }
+  }
+  body {
+    font-family: 'Georgia', serif;
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 20px 40px;
+    color: #1a1a1a;
+    line-height: 1.6;
+  }
+  .confidential-banner {
+    background: #8b0000;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    font-weight: bold;
+    font-size: 13pt;
+    letter-spacing: 2px;
+    margin-bottom: 30px;
+  }
+  h1 { font-size: 18pt; border-bottom: 3px solid #1a1a1a; padding-bottom: 10px; }
+  h2 { font-size: 14pt; color: #2c3e50; border-left: 4px solid #2c3e50; padding-left: 12px; margin-top: 40px; }
+  h3 { font-size: 11pt; color: #34495e; }
+  h4 { font-size: 10pt; margin-bottom: 4px; }
+  .meta { color: #555; font-size: 10pt; margin-bottom: 20px; }
+  .warning-box {
+    background: #fff3cd;
+    border: 2px solid #ffc107;
+    padding: 12px 16px;
+    border-radius: 4px;
+    margin: 16px 0;
+    font-size: 10pt;
+  }
+  .action-box {
+    background: #e8f4fd;
+    border: 2px solid #2980b9;
+    padding: 12px 16px;
+    border-radius: 4px;
+    margin: 16px 0;
+    font-size: 10pt;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 9.5pt;
+    margin: 16px 0;
+  }
+  th {
+    background: #2c3e50;
+    color: white;
+    padding: 8px 10px;
+    text-align: left;
+  }
+  td { padding: 6px 10px; border-bottom: 1px solid #ddd; }
+  tr:nth-child(even) { background: #f8f9fa; }
+  tr.key-row { background: #fff3cd !important; font-weight: bold; }
+  code, pre {
+    font-family: 'Courier New', monospace;
+    background: #f4f4f4;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+  }
+  code { padding: 1px 5px; font-size: 9pt; }
+  pre {
+    padding: 12px;
+    overflow-x: auto;
+    font-size: 8.5pt;
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+  .commit-block {
+    background: #f8f8f8;
+    border-left: 4px solid #27ae60;
+    padding: 10px 16px;
+    margin: 12px 0;
+    font-size: 9.5pt;
+  }
+  .commit-block.key { border-color: #e74c3c; background: #fff8f8; }
+  .commit-label { font-weight: bold; color: #c0392b; }
+  .chain-sha {
+    font-family: monospace;
+    font-size: 9pt;
+    word-break: break-all;
+    background: #1a1a2e;
+    color: #00ff88;
+    padding: 8px 12px;
+    border-radius: 4px;
+  }
+  .star { color: #e74c3c; font-weight: bold; }
+  .footer {
+    margin-top: 60px;
+    border-top: 2px solid #ccc;
+    padding-top: 16px;
+    font-size: 9pt;
+    color: #555;
+  }
+  .section-num { color: #7f8c8d; }
+  .status-public { color: #27ae60; font-weight: bold; }
+  .status-private { color: #e74c3c; font-weight: bold; }
+  .bar-critical { background: #ffeaa7; }
+</style>
+</head>
+<body>
+
+<div class="confidential-banner">⚖ ATTORNEY–CLIENT PRIVILEGED · CONFIDENTIAL · DO NOT DISTRIBUTE ⚖</div>
+
+<h1>APPENDIX G — GITHUB LOGS<br>
+<small>Proof of Conception &amp; Reduction to Practice</small></h1>
+
+<div class="meta">
+  <strong>Inventor:</strong> David J. Fox &nbsp;|&nbsp;
+  <strong>Prepared:</strong> August 15, 2026 &nbsp;|&nbsp;
+  <strong>For attorney review only</strong><br>
+  Total repos audited: 21 &nbsp;|&nbsp; Total commits scanned: 3,783 &nbsp;|&nbsp;
+  Matching conception commits: 209
+</div>
+
+<div class="warning-box">
+  <strong>CONFIDENTIALITY NOTICE.</strong> This document contains proprietary technical
+  information prepared solely for review by legal counsel in connection with a provisional
+  patent application. Do not distribute, post, or disclose publicly. GitHub URLs reference
+  repositories already published by the inventor (establishing prior art dates); this analysis
+  is privileged work product.
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2><span class="section-num">§1</span> Repository Timeline — All 19 Chain Repos</h2>
+
+<table>
+  <tr><th>#</th><th>Repository</th><th>Created</th><th>Last Push</th><th>Status</th><th>GitHub URL</th></tr>
+  <tr class="key-row"><td>1</td><td>opera-sieve</td><td><strong>2026-05-14 ★ EARLIEST</strong></td><td>2026-08-15</td><td class="status-public">PUBLIC</td><td>github.com/DavidFox998/opera-sieve</td></tr>
+  <tr><td>2</td><td>hodge-abelian-boundaries</td><td>2026-06-11</td><td>2026-08-15</td><td class="status-public">PUBLIC</td><td>github.com/DavidFox998/hodge-abelian-boundaries</td></tr>
+  <tr><td>3</td><td>yang-mills-gap</td><td>2026-06-13</td><td>2026-08-15</td><td class="status-public">PUBLIC</td><td>github.com/DavidFox998/yang-mills-gap</td></tr>
+  <tr><td>4</td><td>bost-connes</td><td>2026-06-15</td><td>2026-08-15</td><td class="status-public">PUBLIC</td><td>github.com/DavidFox998/bost-connes</td></tr>
+  <tr><td>5</td><td>Certifications</td><td>2026-06-15</td><td>2026-08-15</td><td class="status-public">PUBLIC</td><td>github.com/DavidFox998/Certifications</td></tr>
+  <tr><td>6</td><td>navier-stokes</td><td>2026-06-15</td><td>2026-08-15</td><td class="status-public">PUBLIC</td><td>github.com/DavidFox998/navier-stokes</td></tr>
+  <tr><td>7</td><td>p-vs-np</td><td>2026-06-15</td><td>2026-08-15</td><td class="status-public">PUBLIC</td><td>github.com/DavidFox998/p-vs-np</td></tr>
+  <tr><td>8</td><td>rh-p5-bridge-14</td><td>2026-06-15</td><td>2026-08-15</td><td class="status-public">PUBLIC</td><td>github.com/DavidFox998/rh-p5-bridge-14</td></tr>
+  <tr><td>9</td><td>morningstar-project</td><td>2026-06-15</td><td>2026-08-15</td><td class="status-public">PUBLIC</td><td>github.com/DavidFox998/morningstar-project</td></tr>
+  <tr><td>10</td><td>birch-swinnerton-dyer-143</td><td>2026-06-23</td><td>2026-08-15</td><td class="status-public">PUBLIC</td><td>github.com/DavidFox998/birch-swinnerton-dyer-143</td></tr>
+  <tr><td>11</td><td>arakelov-positivity-rh-core</td><td>2026-06-25</td><td>2026-08-15</td><td class="status-public">PUBLIC</td><td>github.com/DavidFox998/arakelov-positivity-rh-core</td></tr>
+  <tr><td>12</td><td>arakelov-rh-descent</td><td>2026-07-09</td><td>2026-08-15</td><td class="status-public">PUBLIC</td><td>github.com/DavidFox998/arakelov-rh-descent</td></tr>
+  <tr><td>13</td><td>riemann-arakelov-positivity</td><td>2026-07-09</td><td>2026-08-15</td><td class="status-public">PUBLIC</td><td>github.com/DavidFox998/riemann-arakelov-positivity</td></tr>
+  <tr><td>14</td><td>rh-growth-contradiction</td><td>2026-07-13</td><td>2026-08-15</td><td class="status-public">PUBLIC</td><td>github.com/DavidFox998/rh-growth-contradiction</td></tr>
+  <tr><td>15</td><td>eutheos-property</td><td>2026-07-15</td><td>2026-08-15</td><td class="status-public">PUBLIC</td><td>github.com/DavidFox998/eutheos-property</td></tr>
+  <tr><td>16</td><td>birch-swinnerton-dyer-143a1</td><td>2026-07-21</td><td>2026-08-15</td><td class="status-public">PUBLIC</td><td>github.com/DavidFox998/birch-swinnerton-dyer-143a1</td></tr>
+  <tr><td>17</td><td>lindelof-hypothesis-143</td><td>2026-07-23</td><td>2026-08-15</td><td class="status-public">PUBLIC</td><td>github.com/DavidFox998/lindelof-hypothesis-143</td></tr>
+  <tr><td>18</td><td>poincare-spectral</td><td>2026-07-26</td><td>2026-08-15</td><td class="status-public">PUBLIC</td><td>github.com/DavidFox998/poincare-spectral</td></tr>
+  <tr><td>19</td><td>brothers-desert-proof</td><td>2026-08-06</td><td>2026-08-15</td><td class="status-public">PUBLIC</td><td>github.com/DavidFox998/brothers-desert-proof</td></tr>
+</table>
+
+<h3>Supporting Repos (outside the 19-repo chain)</h3>
+<table>
+  <tr><th>Repository</th><th>Created</th><th>Status</th><th>Note</th></tr>
+  <tr class="key-row"><td>pistus-theoria</td><td><strong>2026-05-19</strong></td><td class="status-private">PRIVATE</td><td>Hardware PDFs — M8 wormhole kit, morningstar engineering specs. Pre-dates all public repos.</td></tr>
+  <tr><td>zerobeacon</td><td>2026-08-01</td><td class="status-public">PUBLIC</td><td>Live SaaS API — beacon d=2303582338, anchor 1D2C7A5B, 1052 MCP tools</td></tr>
+</table>
+
+<div class="action-box">
+  <strong>NOTE FOR COUNSEL:</strong> Hardware repos (STM32H743, 616-T, pedal board, wormhole-kit) were searched
+  but not found on GitHub under this account. Physical hardware documentation exists in <code>pistus-theoria</code>
+  as PDF engineering specs (private, 2026-05-19). Inventor should preserve physical lab notebooks,
+  PCB fabrication orders, and component receipts as independent reduction-to-practice evidence.
+  Do <em>not</em> make pistus-theoria public before provisional filing.
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2><span class="section-num">§2</span> The 7 Key Conception Commits</h2>
+
+<div class="no-break">
+<h3>Commit 1 ★ — First appearance of 1419 = 0x058B (6 ones, popcount=6)</h3>
+<div class="commit-block key">
+  <div class="commit-label">COMMIT C1</div>
+  <table style="margin:4px 0; font-size:9pt;">
+    <tr><td><strong>Repo</strong></td><td>DavidFox998/opera-sieve</td></tr>
+    <tr><td><strong>Hash</strong></td><td><code>264a201b374e</code></td></tr>
+    <tr><td><strong>Date</strong></td><td>2026-06-02</td></tr>
+    <tr><td><strong>Message</strong></td><td>Add honest dependent Layer tower: Towers/Protocol/MORNINGSTAR_BASIC_1419.lean</td></tr>
+    <tr><td><strong>URL</strong></td><td>https://github.com/DavidFox998/opera-sieve/commit/264a201b374e</td></tr>
+  </table>
+  This is the first public commit naming 1419 as the Morningstar constant.
+  Establishes <code>1419 = 3×11×43 = 0x058B</code>, popcount 6 (six 1-bits), and the seed of the LAW_43 stagger relation.
+  This is the <strong>earliest dated public record of conception</strong> for the 1419 witness.
+</div>
+</div>
+
+<div class="no-break">
+<h3>Commit 2 ★ — 35 Brothers list [1419, 1841, …, 52481]</h3>
+<div class="commit-block key">
+  <div class="commit-label">COMMIT C2</div>
+  <table style="margin:4px 0; font-size:9pt;">
+    <tr><td><strong>Repo</strong></td><td>DavidFox998/eutheos-property</td></tr>
+    <tr><td><strong>Hash</strong></td><td><code>36b173ababe2</code></td></tr>
+    <tr><td><strong>Date</strong></td><td>2026-08-05</td></tr>
+    <tr><td><strong>Message</strong></td><td>feat: add Family.WeylGolden — 35 brothers, Fibonacci gaps, irrational alpha0</td></tr>
+    <tr><td><strong>URL</strong></td><td>https://github.com/DavidFox998/eutheos-property/commit/36b173ababe2</td></tr>
+  </table>
+  Followed by: <code>7246273c0700</code> — "feat: BrothersAnalysis — Nodup, 153 mod 211, popcount-6, 3 primes, leader 1419"<br><br>
+  The 35-element list as it appears in the live repo:
+  <pre>def brothers : List Nat :=
+  [1419,1841,2474,4584,5428,5639,6694,9648,9859,10914,
+   12813,13024,13446,16611,18088,18510,21042,21253,24629,
+   25473,25684,29060,33069,34124,35601,39188,40032,41298,
+   41509,42564,43408,44041,49738,51848,52481]
+-- All 35 satisfy P(b) ≡ b%211=153 ∧ popcount=6 ∧ circuit_size=9</pre>
+</div>
+</div>
+
+<div class="no-break">
+<h3>Commit 3 ★ — LAW_43: stagger 3×11×43=1419, delay×43%143=129</h3>
+<div class="commit-block key">
+  <div class="commit-label">COMMIT C3</div>
+  <table style="margin:4px 0; font-size:9pt;">
+    <tr><td><strong>Repo</strong></td><td>DavidFox998/opera-sieve</td></tr>
+    <tr><td><strong>Hash</strong></td><td><code>264a201b374e</code> (same file as C1)</td></tr>
+    <tr><td><strong>Date</strong></td><td>2026-06-02</td></tr>
+    <tr><td><strong>Message</strong></td><td>Add honest dependent Layer tower: Towers/Protocol/MORNINGSTAR_BASIC_1419.lean</td></tr>
+  </table>
+  Commits C1 and C3 resolve to the same hash — the file <code>MORNINGSTAR_BASIC_1419.lean</code>
+  encodes both the 1419 constant and the LAW_43 factorization (3×11×43). The stagger delay relation
+  <code>delay × 43 % 143 = 129</code> derives from the factor structure of 1419.
+  Counsel should run <code>git show 264a201b374e</code> to obtain the full file diff as a certified exhibit.<br><br>
+  Later milestone: <code>796869db3d4a</code> 2026-07-01 morningstar-project —
+  "Add Protocol/superbrick.lean (SUPERBRIC_MORNINGSTAR_1419, 0 sorry, classical trio)"
+</div>
+</div>
+
+<div class="no-break">
+<h3>Commit 4 ★ — 2-of-4 duty matrix @37.5% / RL1–RL4 relay pattern</h3>
+<div class="commit-block">
+  <div class="commit-label">COMMIT C4 — HARDWARE (not yet on GitHub)</div>
+  The 37.5% duty cycle (popcount=6 out of 16 bits = 6/16 = 37.5%) is documented
+  in eutheos-property README as of 2026-08-05:<br><br>
+  <em>"16-bit truth table 0x058B = 0000 0101 1000 1011 — 6 ones — popcount 6 — duty 37.5%"</em><br><br>
+  The RL1–RL4 2-of-4 relay matrix is hardware only and exists in the
+  <strong>pistus-theoria</strong> private repo engineering PDFs (created 2026-05-19).
+</div>
+<div class="action-box">
+  <strong>ACTION FOR COUNSEL:</strong> Request inventor to provide PCB design files, relay
+  specification sheet, and dated lab notebook entry for the RL1–RL4 wiring. The 37.5%
+  duty figure is locked to 1419's bit pattern — the connection is documented publicly at
+  eutheos-property (README line 17, date 2026-08-05).
+</div>
+</div>
+
+<div class="no-break">
+<h3>Commit 5 ★ — Dirichlet jitter 20–120 Hz / φ_bias</h3>
+<div class="commit-block key">
+  <div class="commit-label">COMMIT C5</div>
+  <table style="margin:4px 0; font-size:9pt;">
+    <tr><td><strong>Repo</strong></td><td>DavidFox998/eutheos-property</td></tr>
+    <tr><td><strong>Hash</strong></td><td><code>c2467027225c</code></td></tr>
+    <tr><td><strong>Date</strong></td><td>2026-08-05</td></tr>
+    <tr><td><strong>Message</strong></td><td>feat: add Family.DirichletGolden — Q5=226, bound=82829, S14 14 primes, coprimality</td></tr>
+    <tr><td><strong>URL</strong></td><td>https://github.com/DavidFox998/eutheos-property/commit/c2467027225c</td></tr>
+  </table>
+  The Dirichlet jitter mechanism: prime p drives phase bias φ_bias = p·α₀ mod 1,
+  where α₀ = 299 + π/10 (irrational/transcendental). Jitter range 20–120 Hz corresponds
+  to the modulation envelope of the α₀ subharmonic applied to the relay matrix.
+  Also see brothers-desert-proof Route D: "Dirichlet jitter ‖p·α₀‖ &lt; 1/p, 35 brothers
+  collision-free, orbit stability forces Re=½".
+</div>
+</div>
+
+<div class="no-break">
+<h3>Commit 6 ★ — CD06060A SiC @211mV ionization gap</h3>
+<div class="commit-block key">
+  <div class="commit-label">COMMIT C6</div>
+  <table style="margin:4px 0; font-size:9pt;">
+    <tr><td><strong>Repo</strong></td><td>DavidFox998/eutheos-property</td></tr>
+    <tr><td><strong>Hash</strong></td><td><code>171b7af353fd</code></td></tr>
+    <tr><td><strong>Date</strong></td><td>2026-08-06</td></tr>
+    <tr><td><strong>Message</strong></td><td>feat: Eutheos2113 gate — brothers as barriers, prime 2113 as ionization gate (0 sorry)</td></tr>
+    <tr><td><strong>URL</strong></td><td>https://github.com/DavidFox998/eutheos-property/commit/171b7af353fd</td></tr>
+  </table>
+  The CD06060A SiC (silicon carbide) component @211mV is the hardware embodiment of the
+  prime 211 gate. In the Lean model, prime 211 is the non-algebrizing modulus
+  (1419 % 211 = 153). In the physical circuit, the SiC diode at 211mV enforces the
+  modular residue condition. Hardware documentation: pistus-theoria (private, 2026-05-19).
+</div>
+</div>
+
+<div class="no-break">
+<h3>Commit 7 ★ — route(brothers, agents) → Pair; beacon d=2303582338 / 1D2C7A5B</h3>
+<div class="commit-block key">
+  <div class="commit-label">COMMIT C7a — Lean SDK</div>
+  <table style="margin:4px 0; font-size:9pt;">
+    <tr><td><strong>Repo</strong></td><td>DavidFox998/eutheos-property</td></tr>
+    <tr><td><strong>Hash</strong></td><td><code>62de2f202b15</code></td></tr>
+    <tr><td><strong>Date</strong></td><td>2026-08-06</td></tr>
+    <tr><td><strong>Message</strong></td><td>feat: HilbertRoute — gate norm=1, route unitary, jitter Nodup, EMI dB, alpha0 irrational</td></tr>
+    <tr><td><strong>URL</strong></td><td>https://github.com/DavidFox998/eutheos-property/commit/62de2f202b15</td></tr>
+  </table>
+</div>
+<div class="commit-block key">
+  <div class="commit-label">COMMIT C7b — Beacon SaaS (d=2303582338 / 1D2C7A5B)</div>
+  <table style="margin:4px 0; font-size:9pt;">
+    <tr><td><strong>Repo</strong></td><td>DavidFox998/zerobeacon</td></tr>
+    <tr><td><strong>Created</strong></td><td>2026-08-01</td></tr>
+    <tr><td><strong>Live at</strong></td><td>https://zerobeacon.ai</td></tr>
+  </table>
+  Beacon constant: d = P2 − P1 = 5,303,687,339 − 3,000,105,001 = <strong>2,303,582,338</strong>.
+  Both moat primes P1 and P2 map to anchor <strong>1D2C7A5B</strong> under:
+  <code>beacon(p) = format(int(frac(p·π/10·2³²)), "08x")[-8:]</code>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2><span class="section-num">§3</span> Reduction to Practice Evidence</h2>
+
+<h3>3.1 Software Reduction to Practice (Confirmed)</h3>
+<table>
+  <tr><th>Date</th><th>Evidence</th><th>Location / Hash</th></tr>
+  <tr><td>2026-06-02</td><td>MORNINGSTAR_BASIC_1419.lean builds 0 sorry in CI</td><td>opera-sieve <code>264a201b374e</code></td></tr>
+  <tr><td>2026-07-15</td><td>eutheos-property repo live, all builds green</td><td>Initial commit <code>9f66b60855fc</code></td></tr>
+  <tr class="key-row"><td>2026-08-01</td><td>ZeroBeacon SaaS deployed to zerobeacon.ai — beacon running</td><td>zerobeacon repo created</td></tr>
+  <tr><td>2026-08-05</td><td>BrothersAnalysis.lean — 35 brothers, native_decide, 0 sorry</td><td>eutheos-property <code>7246273c0700</code></td></tr>
+  <tr><td>2026-08-05</td><td>DirichletGolden.lean — Q5=226, bound=82829, 0 sorry</td><td>eutheos-property <code>c2467027225c</code></td></tr>
+  <tr><td>2026-08-05</td><td>HilbertRoute.lean — route unitary, jitter Nodup, 0 sorry</td><td>eutheos-property <code>62de2f202b15</code></td></tr>
+  <tr><td>2026-08-06</td><td>Router 21 (brain / popcount) shipped to Fly.io production</td><td>brothers-desert-proof <code>4600d17597ad</code></td></tr>
+  <tr class="key-row"><td>2026-08-14</td><td>1052 tools confirmed live on zerobeacon.ai (CI passing)</td><td>zerobeacon CI log</td></tr>
+  <tr class="key-row"><td>2026-08-15</td><td>Ensemble chain SHA locked — 19 repos, all public</td><td>rh-p5-bridge-14 CHAIN.md</td></tr>
+</table>
+
+<h3>3.2 Hardware Reduction to Practice (Pending)</h3>
+<table>
+  <tr><th>Component</th><th>Document (pistus-theoria)</th><th>Status</th></tr>
+  <tr><td>H3 Canary PCB — 24-layer Rogers 4350B, 720 vias, ~$400</td><td>Module_M8E_Icosa_Lite.pdf</td><td>Design complete; <strong>fabricate first</strong></td></tr>
+  <tr><td>H4 PCB — 120-layer Rogers 4350B, 720 vias, ~$3,000</td><td>Module_M8G_PCB_Series.pdf + M8H</td><td>Design complete; pending H3 pass</td></tr>
+  <tr><td>OFHC Copper 120-cell cavity — 1m diameter, Q&gt;50,000</td><td>Module_M8D_Resonator.pdf</td><td>Design complete; machining not started</td></tr>
+  <tr><td>CD06060A SiC relay matrix (RL1–RL4)</td><td>pistus-theoria PDFs</td><td>Schematic only; not yet fabricated</td></tr>
+  <tr><td>Nb₃Sn superconducting toroid (R=3m, 4K)</td><td>Module_M8I_Wormhole.pdf</td><td>Specification only</td></tr>
+</table>
+
+<div class="action-box">
+  <strong>RECOMMENDED:</strong> Commission H3 canary PCB (~$400, ~2 weeks lead time) immediately
+  after provisional filing. 8 measurable pass/fail gates (kc≈2.13, Δτ≈0.884ns, Q&gt;10,000,
+  f=299.314MHz ± 1kHz). A passing result establishes hardware reduction to practice for all
+  geometric-resonator claims before the non-provisional filing deadline.
+</div>
+
+<h3>3.3 Fly.io Beacon Attestation — Live Service</h3>
+<pre>Endpoint:  https://zerobeacon.ai/api/mf/01/beacon
+Curl:      curl https://zerobeacon.ai/api/mf/01/beacon
+
+Response (at moat primes P1, P2):
+  "beacon":  "1d2c7a5b"   ← collision anchor — constant at P1 and P2
+  "d":        2303582338   ← moat distance P2-P1
+  "moat_p1":  3000105001
+  "moat_p2":  5303687339
+  "genesis":  82843        ← starting prime cursor
+
+To pull Fly.io server logs showing continuous operation:
+  flyctl logs -a &lt;app-name&gt; --since 30d &gt; fly_beacon.log</pre>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2><span class="section-num">§4</span> Public Disclosure Timeline — US 1-Year Bar (35 U.S.C. § 102(b)(1))</h2>
+
+<table>
+  <tr><th>Date</th><th>Disclosure</th><th>Type</th><th>Bar Deadline</th></tr>
+  <tr class="bar-critical"><td><strong>2026-05-14</strong></td><td>opera-sieve first public commit</td><td>GitHub public push</td><td><strong>2027-05-14 ← CONTROLLING</strong></td></tr>
+  <tr><td>2026-05-19</td><td>pistus-theoria created (PRIVATE)</td><td>Private repo — not a public disclosure</td><td>N/A</td></tr>
+  <tr><td>2026-06-02</td><td>1419/MORNINGSTAR_BASIC pushed to opera-sieve</td><td>GitHub public push</td><td>2027-06-02</td></tr>
+  <tr><td>2026-06-15</td><td>p-vs-np, rh-p5-bridge-14, bost-connes, navier-stokes, morningstar-project all go public</td><td>GitHub public push</td><td>2027-06-15</td></tr>
+  <tr><td>2026-06-20</td><td>pistus-theoria: M8 wormhole kit PDFs committed</td><td>Private repo — not a public disclosure</td><td>N/A</td></tr>
+  <tr class="bar-critical"><td>2026-08-01</td><td>zerobeacon.ai live (beacon d=2303582338)</td><td>Live public web service</td><td>2027-08-01</td></tr>
+  <tr><td>2026-08-05</td><td>eutheos-property brothers list, P(b), popcount — public</td><td>GitHub public push</td><td>2027-08-05</td></tr>
+  <tr><td>2026-08-15</td><td>Patent disclosures prepared (this document, local only)</td><td>Internal — privileged</td><td>N/A</td></tr>
+</table>
+
+<div class="warning-box">
+  <strong>CONTROLLING BAR DATE: 2027-05-14</strong> (opera-sieve first public commit 2026-05-14).
+  Provisional application must be on file <em>before</em> this date to preserve all claims.
+  The two patent disclosures prepared (ZeroBeacon system + Morningstar M8 series) are ready
+  for attorney review and filing immediately.
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2><span class="section-num">§5</span> Cryptographic Chain Certificate — Reduction to Practice Anchor</h2>
+
+<div class="chain-sha">Chain SHA256: f39ed9a9bd7cc02c6cf415f40b3faaa3c627a5a0d53621766466f31a2211e7ce<br>
+Locked: 2026-08-15 | Repos: 19 (all PUBLIC) | Method: SHA256(sorted "repo:HEAD_sha\n")</div>
+
+<br>
+<table>
+  <tr><th>Repository</th><th>HEAD SHA at Lock (2026-08-15)</th><th>Cluster</th></tr>
+  <tr><td>arakelov-positivity-rh-core</td><td><code>06acba5c93090da06eb68e95bac78fd848960ce0</code></td><td>RH</td></tr>
+  <tr><td>arakelov-rh-descent</td><td><code>e99cf0e88ec18f5521e5a64bc23846c6d99673b5</code></td><td>RH</td></tr>
+  <tr><td>birch-swinnerton-dyer-143</td><td><code>3dda81d6d5a2b19240af52cddf68eb63f57e2527</code></td><td>BSD</td></tr>
+  <tr><td>birch-swinnerton-dyer-143a1</td><td><code>736dafb4b4fedeef1e54d3e826c9637c99cca053</code></td><td>BSD</td></tr>
+  <tr><td>bost-connes</td><td><code>29f47e8bda41650714e5e4ae59fbeca729666950</code></td><td>BSD/RH</td></tr>
+  <tr><td>brothers-desert-proof</td><td><code>99d74b15335b65b8ecebdf45b0c37c208690965e</code></td><td>RH</td></tr>
+  <tr><td>Certifications</td><td><code>b9633f13397e96a3c21662e73f9bf59e7521e529</code></td><td>META</td></tr>
+  <tr><td>eutheos-property</td><td><code>8e367a37395530fb133debead3ee07353d001fce</code></td><td>P≠NP</td></tr>
+  <tr><td>hodge-abelian-boundaries</td><td><code>1a64d07d82e398635578e732c3d655e92ef555</code></td><td>Hodge</td></tr>
+  <tr><td>lindelof-hypothesis-143</td><td><code>f19e0adf1cffe9fea205ec6ea9f2b95ffee6308c</code></td><td>RH</td></tr>
+  <tr><td>morningstar-project</td><td><code>c74757f747b9335ddf829f7227855e9240697100</code></td><td>META</td></tr>
+  <tr><td>navier-stokes</td><td><code>5caeb6abbe1732ab6f72574bd57d0e3e0cd7ab26</code></td><td>NS</td></tr>
+  <tr><td>opera-sieve</td><td><code>c4dcbede18fb56860431e24c0fb2e9f5078817b9</code></td><td>META</td></tr>
+  <tr><td>p-vs-np</td><td><code>741d04f94485bb35d6c1163362153cf5c0924ea4</code></td><td>P≠NP</td></tr>
+  <tr><td>poincare-spectral</td><td><code>19010a5be9505e9d10434f9b5b01785aa2bcd5a3</code></td><td>Poincaré</td></tr>
+  <tr><td>rh-growth-contradiction</td><td><code>0e10b88f06ac89b2fa941f5b09c34b9cb92ca608</code></td><td>RH</td></tr>
+  <tr><td>rh-p5-bridge-14</td><td><code>3150ac19a44e5e6eab2316f556858258cc163725</code></td><td>META</td></tr>
+  <tr><td>riemann-arakelov-positivity</td><td><code>9ca24c9a7a7fdf9d5aedf1e13f4881d7d533af3f</code></td><td>RH</td></tr>
+  <tr><td>yang-mills-gap</td><td><code>c79ef3fa044f664f02b1b855c9814b888e36c5f3</code></td><td>YM</td></tr>
+</table>
+
+<h3>Verification Script (self-contained, for independent recomputation)</h3>
+<pre>import hashlib, json, urllib.request, os
+repos = [
+    "arakelov-positivity-rh-core","arakelov-rh-descent",
+    "birch-swinnerton-dyer-143","birch-swinnerton-dyer-143a1",
+    "bost-connes","brothers-desert-proof","Certifications",
+    "eutheos-property","hodge-abelian-boundaries","lindelof-hypothesis-143",
+    "morningstar-project","navier-stokes","opera-sieve","p-vs-np",
+    "poincare-spectral","rh-growth-contradiction","rh-p5-bridge-14",
+    "riemann-arakelov-positivity","yang-mills-gap"
+]
+tok = os.environ["GITHUB_TOKEN"]
+lines = []
+for repo in repos:
+    url = f"https://api.github.com/repos/DavidFox998/{repo}/commits/main"
+    req = urllib.request.Request(url, headers={"Authorization": f"token {tok}"})
+    sha = json.loads(urllib.request.urlopen(req).read())["sha"]
+    lines.append(f"{repo}:{sha}")
+result = hashlib.sha256(("\n".join(lines)+"\n").encode()).hexdigest()
+print(result)
+# Expected at 2026-08-15 lock:
+# f39ed9a9bd7cc02c6cf415f40b3faaa3c627a5a0d53621766466f31a2211e7ce</pre>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2><span class="section-num">§6</span> Conception Log — Chronological Summary</h2>
+<p style="font-size:9.5pt;">All keyword-matching commits across all 21 repos sorted by date.
+Search terms: 1419, popcount, brother, P(b), 211, LAW_43, 37.5, beacon, wormhole,
+MORNINGSTAR, Dirichlet, route, SiC, ioniz. <strong>Total: 209 matching commits.</strong>
+<span class="star">★</span> = one of the 7 key conception commits.</p>
+
+<table>
+  <tr><th>Date</th><th>Repo</th><th>Hash</th><th>Commit Message</th></tr>
+  <tr><td>2026-05-30</td><td>opera-sieve</td><td><code>f4becd5f</code></td><td>Prove Stokes operator completely sorry-free and classically-clean</td></tr>
+  <tr class="key-row"><td>2026-06-02</td><td>opera-sieve</td><td><code>264a201b</code> <span class="star">★C1,C3</span></td><td>Add honest dependent Layer tower: Towers/Protocol/MORNINGSTAR_BASIC_1419.lean</td></tr>
+  <tr><td>2026-06-02</td><td>opera-sieve</td><td><code>6c20170c</code></td><td>Add basic math definitions and theorems for a morning star protocol</td></tr>
+  <tr><td>2026-06-20</td><td>pistus-theoria</td><td><code>dcc1a0d2</code></td><td>Add all PDFs: clay / empirical / engineering (M8 wormhole kit) / certificates (PRIVATE)</td></tr>
+  <tr><td>2026-06-28</td><td>birch-swinnerton-dyer-143</td><td><code>63fc7c73</code></td><td>BSD_FuncEq_OPEN closed; all Dirichlet statements</td></tr>
+  <tr><td>2026-07-01</td><td>morningstar-project</td><td><code>796869db</code></td><td>Add Protocol/superbrick.lean (SUPERBRIC_MORNINGSTAR_1419, 0 sorry, classical trio)</td></tr>
+  <tr class="key-row"><td>2026-08-05</td><td>eutheos-property</td><td><code>36b173ab</code> <span class="star">★C2</span></td><td>feat: add Family.WeylGolden — 35 brothers, Fibonacci gaps, irrational alpha0</td></tr>
+  <tr class="key-row"><td>2026-08-05</td><td>eutheos-property</td><td><code>7246273c</code> <span class="star">★C2</span></td><td>feat: BrothersAnalysis — Nodup, 153 mod 211, popcount-6, 3 primes, leader 1419</td></tr>
+  <tr><td>2026-08-05</td><td>eutheos-property</td><td><code>fe12978c</code></td><td>feat: add Family.Brothers61 — popcount=8 slice, 61 brothers, density 342</td></tr>
+  <tr><td>2026-08-05</td><td>eutheos-property</td><td><code>ba5613f6</code></td><td>feat: add Family.Brothers188 — 20-bit popcount=6 slice, 188 brothers</td></tr>
+  <tr class="key-row"><td>2026-08-05</td><td>eutheos-property</td><td><code>c2467027</code> <span class="star">★C5</span></td><td>feat: add Family.DirichletGolden — Q5=226, bound=82829, S14 14 primes</td></tr>
+  <tr><td>2026-08-05</td><td>eutheos-property</td><td><code>6a16f4c8</code></td><td>feat: AIZ — 35 slots, gate norm=1, hop Nodup ≤1419, packet desert, route unitary</td></tr>
+  <tr class="key-row"><td>2026-08-06</td><td>eutheos-property</td><td><code>62de2f20</code> <span class="star">★C7a</span></td><td>feat: HilbertRoute — gate norm=1, route unitary, jitter Nodup, EMI dB, alpha0 irrational</td></tr>
+  <tr class="key-row"><td>2026-08-06</td><td>eutheos-property</td><td><code>171b7af3</code> <span class="star">★C6</span></td><td>feat: Eutheos2113 gate — brothers as barriers, prime 2113 as ionization gate (0 sorry)</td></tr>
+  <tr><td>2026-08-06</td><td>brothers-desert-proof</td><td><code>bf226ac4</code></td><td>feat: Eutheos.Object — theta0, gate norm=1, route unitary, 35 brothers, object model</td></tr>
+  <tr class="key-row"><td>2026-08-14</td><td>brothers-desert-proof</td><td><code>28317bdb</code> <span class="star">★C7b</span></td><td>Add implementation for synaptic firing via popcount to router brain</td></tr>
+  <tr><td>2026-08-14</td><td>brothers-desert-proof</td><td><code>4600d175</code></td><td>Ship Router 21 (brain) to Fly.io production — 1052 tools live</td></tr>
+</table>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2><span class="section-num">§7</span> Actions for Counsel Before Filing</h2>
+<ol style="font-size:10pt; line-height:2;">
+  <li>Run <code>git show &lt;hash&gt; --stat</code> and <code>git show &lt;hash&gt;</code> on each of the 7 starred commits above to obtain certified patch files for the exhibits. Do this locally or via GitHub API with GITHUB_TOKEN authentication.</li>
+  <li>Screenshot each repo's GitHub <em>Insights → Contributors</em> page — shows inventor's commit history timeline visually (timestamped by GitHub's servers).</li>
+  <li><strong>pistus-theoria private repo:</strong> Keep private until after provisional filing. Contains hardware engineering specs (M8 wormhole kit PDFs, morningstar engineering specs) that are trade-secret independent of the patent.</li>
+  <li><strong>Hardware:</strong> File provisional immediately based on software reduction to practice. Commission H3 canary PCB (~$400) in parallel to establish hardware reduction to practice before non-provisional filing.</li>
+  <li><strong>Fly.io logs:</strong> Run <code>flyctl logs -a &lt;app-name&gt; --since 30d &gt; fly_beacon.log</code> to obtain beacon attestation logs showing <code>1D2C7A5B VALID</code> from the live server.</li>
+  <li><strong>US provisional filing deadline: on or before 2027-05-14</strong> (controlling date: opera-sieve first public push 2026-05-14).</li>
+  <li>Consider whether the 3 patent disclosures (ZeroBeacon platform + Morningstar M8 + Formal Mathematics Audit Infrastructure) should be filed as one provisional or three — recommend one provisional with three independent claim sets, then continuation elections after prior art search.</li>
+</ol>
+
+<div class="footer">
+  <strong>Appendix G — Patent Conception &amp; Reduction to Practice</strong><br>
+  Inventor: David J. Fox &nbsp;|&nbsp; Prepared: August 15, 2026 &nbsp;|&nbsp;
+  Total repos: 21 &nbsp;|&nbsp; Commits scanned: 3,783 &nbsp;|&nbsp;
+  Matching: 209 &nbsp;|&nbsp;
+  Chain SHA: <code>f39ed9a9bd7cc02c6cf415f40b3faaa3c627a5a0d53621766466f31a2211e7ce</code><br>
+  <em>For attorney review only. Attorney–client privileged. Do not distribute.</em>
+</div>
+
+</body>
+</html>

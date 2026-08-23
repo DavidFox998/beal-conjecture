@@ -1,0 +1,56 @@
+Do in repo root:
+
+1. UPDATE.zenodo.json — change title and description:
+
+{
+  "title": "Beal Conjecture — a formal instrument in Opera Numerorum — v0.3.0 Arithmetic Descent",
+  "upload_type": "software",
+  "description": "v0.3.0 checkpoint: Arithmetic Descent closed. B03 Conductor: SquarefreeCore, ExactDividesCore, ConductorCoprimeCore are import-free [] axioms with real Nat definitions. B10 RibetReal: GenusX0_2_Core=0, DimS2_2_Core=0, S2VanishesAt2Core proved by rfl, [] axioms. B11 Epsilon: ExactDivides + M*p=N ∧ ¬p∣M real. B15 LevelTo2: CanLowerLevelCore M*p=N real witness, M*2=2 -> M=1 via Nat.mul_right_cancel (0<k fix), [propext] only. B12 RibetProof: BealModularContradiction12Core from empty level. CI #140 green, 2353/2353, Check NO sorry 0s, no Prop:=True stubs. B01 Core [] axioms. This is Phase 1 Week 1-2 closure before modular forms interface.",
+  "creators": [{"name": "Fox, David", "affiliation": "Opera Numerorum"}],
+  "license": "MIT",
+  "keywords": ["Beal Conjecture", "Lean 4", "S2 Gamma0 2 vanishes", "genus zero", "exact divides", "Frey curve", "Ribet", "Opera Numerorum", "formal arithmetic"],
+  "access_right": "open",
+  "related_identifiers": [
+    {"identifier": "https://github.com/DavidFox998/beal-conjecture", "relation": "isSupplementTo", "resource_type": "software"}
+  ]
+}
+
+2. UPDATE CITATION.cff — version: v0.3.0-arithmetic-descent, date-released: 2026-08-21
+
+3. COMMIT + TAG + RELEASE:
+
+git add.zenodo.json CITATION.cff lean/Beal/B10_RibetReal_Core.lean lean/Beal/B10_RibetReal.lean lean/Beal/B12_RibetProof_Core.lean lean/Beal/B12_RibetProof.lean lean/Beal/B03_Conductor_Core.lean lean/Beal/B03_Conductor.lean lean/Beal/B11_Epsilon_Core.lean lean/Beal/B15_LevelTo2.lean
+
+git commit -m "feat: Week 2 arithmetic descent — S2(2)=0 dim=0 genus=0, M*p=N real, zero axioms — v0.3.0" || echo "commit done"
+
+git tag -d v0.3.0-arithmetic-descent || true
+git tag v0.3.0-arithmetic-descent -m "v0.3.0 — Arithmetic Descent: S2(2)=0, M*p=N real, [] axioms"
+git push origin main
+git push origin v0.3.0-arithmetic-descent --force
+
+gh release delete v0.3.0-arithmetic-descent --yes || true
+gh release create v0.3.0-arithmetic-descent \
+  --title "v0.3.0-arithmetic-descent — Arithmetic Descent: S2(2)=0, M*p=N real" \
+  --notes "## v0.3.0 — Arithmetic Descent — GREEN #140
+
+**What changed since v0.2.0:**
+- B03 Conductor_Core: SquarefreeCore, ExactDividesCore, CanDivideOutCore, ConductorCoprimeCore — import-free, [] axioms, no Nat.Prime (local IsPrime03Core)
+- B10 RibetReal_Core: GenusX0_2_Core=0, DimS2_2_Core=0, S2VanishesAt2Core= (Dim=0) — proved by rfl, []
+- B10 RibetReal: dim_S2_2_eq_zero, s2_vanishes_at_2, level_lowering_of_exact (M*p=N ∧ ¬p∣M from p||N) — [propext]
+- B11/B15: M*p=N real witness, calc fix N=p*k direction, mul_right_cancel 0<k fix
+- B12 RibetProof: BealModularContradiction12Core trivial from empty level
+
+**Audit:**
+- Build all bricks: 2353/2353
+- Check NO sorry: 0s
+- No Prop := True stubs
+- B01: [], B02-B15: [] or [propext] only
+
+**CERN:**
+.zenodo.json updated — Zenodo will mint DOI 10.5281/zenodo.yyyyy for this release. Enable hook at zenodo.org/account/link/github/ if not enabled.
+
+Next: v0.4.0 interfaces typed — Modularity Hypothesis, Ribet as axiom, not reconstructed.
+" \
+  --target main
+
+gh release view v0.3.0-arithmetic-descent

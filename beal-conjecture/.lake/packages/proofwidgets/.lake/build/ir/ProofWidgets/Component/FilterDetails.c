@@ -1,0 +1,1099 @@
+// Lean compiler output
+// Module: ProofWidgets.Component.FilterDetails
+// Imports: Init ProofWidgets.Data.Html
+#include <lean/lean.h>
+#if defined(__clang__)
+#pragma clang diagnostic ignored "-Wunused-parameter"
+#pragma clang diagnostic ignored "-Wunused-label"
+#elif defined(__GNUC__) && !defined(__CLANG__)
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+#pragma GCC diagnostic ignored "-Wunused-label"
+#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
+#endif
+#ifdef __cplusplus
+extern "C" {
+#endif
+static lean_object* l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__19;
+static lean_object* l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__36;
+static lean_object* l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__11;
+lean_object* lean_mk_empty_array_with_capacity(lean_object*);
+LEAN_EXPORT lean_object* l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_toJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_322____boxed(lean_object*);
+static lean_object* l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__26;
+static lean_object* l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__15;
+static lean_object* l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__39;
+LEAN_EXPORT lean_object* l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78_(lean_object*);
+lean_object* l_Lean_Json_mkObj(lean_object*);
+static lean_object* l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__29;
+LEAN_EXPORT lean_object* l_FilterDetailsProps_instRpcEncodable_dec____x40_ProofWidgets_Component_FilterDetails___hyg_3_(lean_object*, lean_object*);
+static lean_object* l_FilterDetails___closed__3;
+lean_object* l_Lean_Name_toString(lean_object*, uint8_t);
+LEAN_EXPORT lean_object* l_FilterDetails;
+static lean_object* l_FilterDetails___closed__4;
+static lean_object* l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__3;
+static lean_object* l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__18;
+static lean_object* l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__34;
+static lean_object* l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__2;
+uint64_t lean_string_hash(lean_object*);
+static lean_object* l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__37;
+lean_object* l_Lean_Json_getBool_x3f(lean_object*);
+static lean_object* l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__30;
+LEAN_EXPORT lean_object* l_FilterDetailsProps_instRpcEncodable_dec____x40_ProofWidgets_Component_FilterDetails___hyg_3____boxed(lean_object*, lean_object*);
+static lean_object* l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__32;
+LEAN_EXPORT lean_object* l_FilterDetails___closed__3___boxed__const__1;
+static lean_object* l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__12;
+LEAN_EXPORT lean_object* l_FilterDetailsProps_instRpcEncodable_enc____x40_ProofWidgets_Component_FilterDetails___hyg_3_(lean_object*, lean_object*);
+lean_object* l_Lean_Json_getObjValAs_x3f___at___private_Lean_Data_Lsp_Extra_0__Lean_Lsp_fromJsonRpcCallParams____x40_Lean_Data_Lsp_Extra___hyg_1927____spec__2(lean_object*, lean_object*);
+static lean_object* l_FilterDetails___closed__5;
+static lean_object* l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__21;
+static lean_object* l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__1;
+lean_object* l_ProofWidgets_ProofWidgets_Html_instRpcEncodableHtml_enc____x40_ProofWidgets_Data_Html___hyg_5_(lean_object*, lean_object*);
+static lean_object* l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__4;
+static lean_object* l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__28;
+static uint64_t l_FilterDetails___closed__2;
+lean_object* l_ProofWidgets_ProofWidgets_Html_instRpcEncodableHtml_dec____x40_ProofWidgets_Data_Html___hyg_5_(lean_object*, lean_object*);
+lean_object* l_Lean_Name_num___override(lean_object*, lean_object*);
+static lean_object* l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__17;
+static lean_object* l_FilterDetailsProps_instRpcEncodable___closed__1;
+static lean_object* l_FilterDetailsProps_instFromJsonRpcEncodablePacket___closed__1;
+static lean_object* l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__8;
+lean_object* l_Lean_Name_str___override(lean_object*, lean_object*);
+static lean_object* l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__24;
+lean_object* l_List_bindTR_go___at___private_Lean_Data_Lsp_Basic_0__Lean_Lsp_toJsonCancelParams____x40_Lean_Data_Lsp_Basic___hyg_86____spec__1(lean_object*, lean_object*);
+static lean_object* l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__35;
+lean_object* l_MonadExcept_ofExcept___at_Lean_Widget_Lean_Widget_InteractiveHypothesisBundle_instRpcEncodableInteractiveHypothesisBundle_dec____x40_Lean_Widget_InteractiveGoal___hyg_5____spec__7(lean_object*, lean_object*);
+static lean_object* l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__23;
+static lean_object* l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__9;
+LEAN_EXPORT lean_object* l_FilterDetailsProps_instRpcEncodable;
+static lean_object* l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__31;
+static lean_object* l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__16;
+static lean_object* l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__25;
+static lean_object* l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__20;
+static lean_object* l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__22;
+static lean_object* l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__14;
+LEAN_EXPORT lean_object* l_FilterDetailsProps_instFromJsonRpcEncodablePacket;
+static lean_object* l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__6;
+static lean_object* l_FilterDetailsProps_instRpcEncodable___closed__2;
+static lean_object* l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__7;
+static lean_object* l_FilterDetailsProps_instRpcEncodable___closed__3;
+static lean_object* l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__27;
+static lean_object* l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__38;
+static lean_object* l_FilterDetails___closed__1;
+static lean_object* l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__10;
+static lean_object* l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_toJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_322____closed__1;
+static lean_object* l_FilterDetailsProps_instToJsonRpcEncodablePacket___closed__1;
+LEAN_EXPORT lean_object* l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_toJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_322_(lean_object*);
+lean_object* lean_string_append(lean_object*, lean_object*);
+static lean_object* l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__13;
+static lean_object* l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__33;
+LEAN_EXPORT uint8_t l_FilterDetailsProps_initiallyFiltered___default;
+LEAN_EXPORT lean_object* l_FilterDetailsProps_instToJsonRpcEncodablePacket;
+static lean_object* l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__5;
+static uint8_t _init_l_FilterDetailsProps_initiallyFiltered___default() {
+_start:
+{
+uint8_t x_1; 
+x_1 = 1;
+return x_1;
+}
+}
+static lean_object* _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__1() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("summary", 7, 7);
+return x_1;
+}
+}
+static lean_object* _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__2() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("FilterDetailsProps", 18, 18);
+return x_1;
+}
+}
+static lean_object* _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__3() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; 
+x_1 = lean_box(0);
+x_2 = l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__2;
+x_3 = l_Lean_Name_str___override(x_1, x_2);
+return x_3;
+}
+}
+static lean_object* _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__4() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("RpcEncodablePacket", 18, 18);
+return x_1;
+}
+}
+static lean_object* _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__5() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; 
+x_1 = l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__3;
+x_2 = l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__4;
+x_3 = l_Lean_Name_str___override(x_1, x_2);
+return x_3;
+}
+}
+static lean_object* _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__6() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("_@", 2, 2);
+return x_1;
+}
+}
+static lean_object* _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__7() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; 
+x_1 = l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__5;
+x_2 = l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__6;
+x_3 = l_Lean_Name_str___override(x_1, x_2);
+return x_3;
+}
+}
+static lean_object* _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__8() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("ProofWidgets", 12, 12);
+return x_1;
+}
+}
+static lean_object* _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__9() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; 
+x_1 = l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__7;
+x_2 = l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__8;
+x_3 = l_Lean_Name_str___override(x_1, x_2);
+return x_3;
+}
+}
+static lean_object* _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__10() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("Component", 9, 9);
+return x_1;
+}
+}
+static lean_object* _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__11() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; 
+x_1 = l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__9;
+x_2 = l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__10;
+x_3 = l_Lean_Name_str___override(x_1, x_2);
+return x_3;
+}
+}
+static lean_object* _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__12() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("FilterDetails", 13, 13);
+return x_1;
+}
+}
+static lean_object* _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__13() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; 
+x_1 = l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__11;
+x_2 = l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__12;
+x_3 = l_Lean_Name_str___override(x_1, x_2);
+return x_3;
+}
+}
+static lean_object* _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__14() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("_hyg", 4, 4);
+return x_1;
+}
+}
+static lean_object* _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__15() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; 
+x_1 = l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__13;
+x_2 = l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__14;
+x_3 = l_Lean_Name_str___override(x_1, x_2);
+return x_3;
+}
+}
+static lean_object* _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__16() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; 
+x_1 = l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__15;
+x_2 = lean_unsigned_to_nat(3u);
+x_3 = l_Lean_Name_num___override(x_1, x_2);
+return x_3;
+}
+}
+static lean_object* _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__17() {
+_start:
+{
+lean_object* x_1; uint8_t x_2; lean_object* x_3; 
+x_1 = l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__16;
+x_2 = 1;
+x_3 = l_Lean_Name_toString(x_1, x_2);
+return x_3;
+}
+}
+static lean_object* _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__18() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked(".", 1, 1);
+return x_1;
+}
+}
+static lean_object* _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__19() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; 
+x_1 = l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__17;
+x_2 = l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__18;
+x_3 = lean_string_append(x_1, x_2);
+return x_3;
+}
+}
+static lean_object* _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__20() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; 
+x_1 = lean_box(0);
+x_2 = l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__1;
+x_3 = l_Lean_Name_str___override(x_1, x_2);
+return x_3;
+}
+}
+static lean_object* _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__21() {
+_start:
+{
+lean_object* x_1; uint8_t x_2; lean_object* x_3; 
+x_1 = l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__20;
+x_2 = 1;
+x_3 = l_Lean_Name_toString(x_1, x_2);
+return x_3;
+}
+}
+static lean_object* _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__22() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; 
+x_1 = l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__19;
+x_2 = l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__21;
+x_3 = lean_string_append(x_1, x_2);
+return x_3;
+}
+}
+static lean_object* _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__23() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked(": ", 2, 2);
+return x_1;
+}
+}
+static lean_object* _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__24() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; 
+x_1 = l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__22;
+x_2 = l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__23;
+x_3 = lean_string_append(x_1, x_2);
+return x_3;
+}
+}
+static lean_object* _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__25() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("filtered", 8, 8);
+return x_1;
+}
+}
+static lean_object* _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__26() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; 
+x_1 = lean_box(0);
+x_2 = l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__25;
+x_3 = l_Lean_Name_str___override(x_1, x_2);
+return x_3;
+}
+}
+static lean_object* _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__27() {
+_start:
+{
+lean_object* x_1; uint8_t x_2; lean_object* x_3; 
+x_1 = l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__26;
+x_2 = 1;
+x_3 = l_Lean_Name_toString(x_1, x_2);
+return x_3;
+}
+}
+static lean_object* _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__28() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; 
+x_1 = l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__19;
+x_2 = l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__27;
+x_3 = lean_string_append(x_1, x_2);
+return x_3;
+}
+}
+static lean_object* _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__29() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; 
+x_1 = l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__28;
+x_2 = l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__23;
+x_3 = lean_string_append(x_1, x_2);
+return x_3;
+}
+}
+static lean_object* _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__30() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("all", 3, 3);
+return x_1;
+}
+}
+static lean_object* _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__31() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; 
+x_1 = lean_box(0);
+x_2 = l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__30;
+x_3 = l_Lean_Name_str___override(x_1, x_2);
+return x_3;
+}
+}
+static lean_object* _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__32() {
+_start:
+{
+lean_object* x_1; uint8_t x_2; lean_object* x_3; 
+x_1 = l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__31;
+x_2 = 1;
+x_3 = l_Lean_Name_toString(x_1, x_2);
+return x_3;
+}
+}
+static lean_object* _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__33() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; 
+x_1 = l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__19;
+x_2 = l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__32;
+x_3 = lean_string_append(x_1, x_2);
+return x_3;
+}
+}
+static lean_object* _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__34() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; 
+x_1 = l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__33;
+x_2 = l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__23;
+x_3 = lean_string_append(x_1, x_2);
+return x_3;
+}
+}
+static lean_object* _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__35() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("initiallyFiltered", 17, 17);
+return x_1;
+}
+}
+static lean_object* _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__36() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; 
+x_1 = lean_box(0);
+x_2 = l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__35;
+x_3 = l_Lean_Name_str___override(x_1, x_2);
+return x_3;
+}
+}
+static lean_object* _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__37() {
+_start:
+{
+lean_object* x_1; uint8_t x_2; lean_object* x_3; 
+x_1 = l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__36;
+x_2 = 1;
+x_3 = l_Lean_Name_toString(x_1, x_2);
+return x_3;
+}
+}
+static lean_object* _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__38() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; 
+x_1 = l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__19;
+x_2 = l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__37;
+x_3 = lean_string_append(x_1, x_2);
+return x_3;
+}
+}
+static lean_object* _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__39() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; 
+x_1 = l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__38;
+x_2 = l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__23;
+x_3 = lean_string_append(x_1, x_2);
+return x_3;
+}
+}
+LEAN_EXPORT lean_object* l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78_(lean_object* x_1) {
+_start:
+{
+lean_object* x_2; lean_object* x_3; lean_object* x_4; lean_object* x_5; lean_object* x_6; lean_object* x_7; lean_object* x_8; lean_object* x_9; lean_object* x_10; lean_object* x_11; lean_object* x_12; uint8_t x_13; 
+x_2 = l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__1;
+lean_inc(x_1);
+x_3 = l_Lean_Json_getObjValAs_x3f___at___private_Lean_Data_Lsp_Extra_0__Lean_Lsp_fromJsonRpcCallParams____x40_Lean_Data_Lsp_Extra___hyg_1927____spec__2(x_1, x_2);
+x_4 = lean_ctor_get(x_3, 0);
+lean_inc(x_4);
+lean_dec(x_3);
+x_5 = l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__25;
+lean_inc(x_1);
+x_6 = l_Lean_Json_getObjValAs_x3f___at___private_Lean_Data_Lsp_Extra_0__Lean_Lsp_fromJsonRpcCallParams____x40_Lean_Data_Lsp_Extra___hyg_1927____spec__2(x_1, x_5);
+x_7 = lean_ctor_get(x_6, 0);
+lean_inc(x_7);
+lean_dec(x_6);
+x_8 = l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__30;
+lean_inc(x_1);
+x_9 = l_Lean_Json_getObjValAs_x3f___at___private_Lean_Data_Lsp_Extra_0__Lean_Lsp_fromJsonRpcCallParams____x40_Lean_Data_Lsp_Extra___hyg_1927____spec__2(x_1, x_8);
+x_10 = lean_ctor_get(x_9, 0);
+lean_inc(x_10);
+lean_dec(x_9);
+x_11 = l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__35;
+x_12 = l_Lean_Json_getObjValAs_x3f___at___private_Lean_Data_Lsp_Extra_0__Lean_Lsp_fromJsonRpcCallParams____x40_Lean_Data_Lsp_Extra___hyg_1927____spec__2(x_1, x_11);
+x_13 = !lean_is_exclusive(x_12);
+if (x_13 == 0)
+{
+lean_object* x_14; lean_object* x_15; 
+x_14 = lean_ctor_get(x_12, 0);
+x_15 = lean_alloc_ctor(0, 4, 0);
+lean_ctor_set(x_15, 0, x_4);
+lean_ctor_set(x_15, 1, x_7);
+lean_ctor_set(x_15, 2, x_10);
+lean_ctor_set(x_15, 3, x_14);
+lean_ctor_set(x_12, 0, x_15);
+return x_12;
+}
+else
+{
+lean_object* x_16; lean_object* x_17; lean_object* x_18; 
+x_16 = lean_ctor_get(x_12, 0);
+lean_inc(x_16);
+lean_dec(x_12);
+x_17 = lean_alloc_ctor(0, 4, 0);
+lean_ctor_set(x_17, 0, x_4);
+lean_ctor_set(x_17, 1, x_7);
+lean_ctor_set(x_17, 2, x_10);
+lean_ctor_set(x_17, 3, x_16);
+x_18 = lean_alloc_ctor(1, 1, 0);
+lean_ctor_set(x_18, 0, x_17);
+return x_18;
+}
+}
+}
+static lean_object* _init_l_FilterDetailsProps_instFromJsonRpcEncodablePacket___closed__1() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_alloc_closure((void*)(l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78_), 1, 0);
+return x_1;
+}
+}
+static lean_object* _init_l_FilterDetailsProps_instFromJsonRpcEncodablePacket() {
+_start:
+{
+lean_object* x_1; 
+x_1 = l_FilterDetailsProps_instFromJsonRpcEncodablePacket___closed__1;
+return x_1;
+}
+}
+static lean_object* _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_toJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_322____closed__1() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; 
+x_1 = lean_unsigned_to_nat(0u);
+x_2 = lean_mk_empty_array_with_capacity(x_1);
+return x_2;
+}
+}
+LEAN_EXPORT lean_object* l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_toJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_322_(lean_object* x_1) {
+_start:
+{
+lean_object* x_2; lean_object* x_3; lean_object* x_4; lean_object* x_5; lean_object* x_6; lean_object* x_7; lean_object* x_8; lean_object* x_9; lean_object* x_10; lean_object* x_11; lean_object* x_12; lean_object* x_13; lean_object* x_14; lean_object* x_15; lean_object* x_16; lean_object* x_17; lean_object* x_18; lean_object* x_19; lean_object* x_20; lean_object* x_21; lean_object* x_22; lean_object* x_23; lean_object* x_24; lean_object* x_25; 
+x_2 = lean_ctor_get(x_1, 0);
+x_3 = lean_ctor_get(x_1, 1);
+x_4 = lean_ctor_get(x_1, 2);
+x_5 = lean_ctor_get(x_1, 3);
+x_6 = l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__1;
+lean_inc(x_2);
+x_7 = lean_alloc_ctor(0, 2, 0);
+lean_ctor_set(x_7, 0, x_6);
+lean_ctor_set(x_7, 1, x_2);
+x_8 = lean_box(0);
+x_9 = lean_alloc_ctor(1, 2, 0);
+lean_ctor_set(x_9, 0, x_7);
+lean_ctor_set(x_9, 1, x_8);
+x_10 = l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__25;
+lean_inc(x_3);
+x_11 = lean_alloc_ctor(0, 2, 0);
+lean_ctor_set(x_11, 0, x_10);
+lean_ctor_set(x_11, 1, x_3);
+x_12 = lean_alloc_ctor(1, 2, 0);
+lean_ctor_set(x_12, 0, x_11);
+lean_ctor_set(x_12, 1, x_8);
+x_13 = l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__30;
+lean_inc(x_4);
+x_14 = lean_alloc_ctor(0, 2, 0);
+lean_ctor_set(x_14, 0, x_13);
+lean_ctor_set(x_14, 1, x_4);
+x_15 = lean_alloc_ctor(1, 2, 0);
+lean_ctor_set(x_15, 0, x_14);
+lean_ctor_set(x_15, 1, x_8);
+x_16 = l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__35;
+lean_inc(x_5);
+x_17 = lean_alloc_ctor(0, 2, 0);
+lean_ctor_set(x_17, 0, x_16);
+lean_ctor_set(x_17, 1, x_5);
+x_18 = lean_alloc_ctor(1, 2, 0);
+lean_ctor_set(x_18, 0, x_17);
+lean_ctor_set(x_18, 1, x_8);
+x_19 = lean_alloc_ctor(1, 2, 0);
+lean_ctor_set(x_19, 0, x_18);
+lean_ctor_set(x_19, 1, x_8);
+x_20 = lean_alloc_ctor(1, 2, 0);
+lean_ctor_set(x_20, 0, x_15);
+lean_ctor_set(x_20, 1, x_19);
+x_21 = lean_alloc_ctor(1, 2, 0);
+lean_ctor_set(x_21, 0, x_12);
+lean_ctor_set(x_21, 1, x_20);
+x_22 = lean_alloc_ctor(1, 2, 0);
+lean_ctor_set(x_22, 0, x_9);
+lean_ctor_set(x_22, 1, x_21);
+x_23 = l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_toJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_322____closed__1;
+x_24 = l_List_bindTR_go___at___private_Lean_Data_Lsp_Basic_0__Lean_Lsp_toJsonCancelParams____x40_Lean_Data_Lsp_Basic___hyg_86____spec__1(x_22, x_23);
+x_25 = l_Lean_Json_mkObj(x_24);
+return x_25;
+}
+}
+LEAN_EXPORT lean_object* l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_toJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_322____boxed(lean_object* x_1) {
+_start:
+{
+lean_object* x_2; 
+x_2 = l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_toJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_322_(x_1);
+lean_dec(x_1);
+return x_2;
+}
+}
+static lean_object* _init_l_FilterDetailsProps_instToJsonRpcEncodablePacket___closed__1() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_alloc_closure((void*)(l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_toJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_322____boxed), 1, 0);
+return x_1;
+}
+}
+static lean_object* _init_l_FilterDetailsProps_instToJsonRpcEncodablePacket() {
+_start:
+{
+lean_object* x_1; 
+x_1 = l_FilterDetailsProps_instToJsonRpcEncodablePacket___closed__1;
+return x_1;
+}
+}
+LEAN_EXPORT lean_object* l_FilterDetailsProps_instRpcEncodable_enc____x40_ProofWidgets_Component_FilterDetails___hyg_3_(lean_object* x_1, lean_object* x_2) {
+_start:
+{
+lean_object* x_3; lean_object* x_4; lean_object* x_5; lean_object* x_6; lean_object* x_7; lean_object* x_8; lean_object* x_9; lean_object* x_10; lean_object* x_11; lean_object* x_12; uint8_t x_13; 
+x_3 = lean_ctor_get(x_1, 0);
+lean_inc(x_3);
+x_4 = l_ProofWidgets_ProofWidgets_Html_instRpcEncodableHtml_enc____x40_ProofWidgets_Data_Html___hyg_5_(x_3, x_2);
+x_5 = lean_ctor_get(x_4, 0);
+lean_inc(x_5);
+x_6 = lean_ctor_get(x_4, 1);
+lean_inc(x_6);
+lean_dec(x_4);
+x_7 = lean_ctor_get(x_1, 1);
+lean_inc(x_7);
+x_8 = l_ProofWidgets_ProofWidgets_Html_instRpcEncodableHtml_enc____x40_ProofWidgets_Data_Html___hyg_5_(x_7, x_6);
+x_9 = lean_ctor_get(x_8, 0);
+lean_inc(x_9);
+x_10 = lean_ctor_get(x_8, 1);
+lean_inc(x_10);
+lean_dec(x_8);
+x_11 = lean_ctor_get(x_1, 2);
+lean_inc(x_11);
+x_12 = l_ProofWidgets_ProofWidgets_Html_instRpcEncodableHtml_enc____x40_ProofWidgets_Data_Html___hyg_5_(x_11, x_10);
+x_13 = !lean_is_exclusive(x_12);
+if (x_13 == 0)
+{
+lean_object* x_14; uint8_t x_15; lean_object* x_16; lean_object* x_17; lean_object* x_18; 
+x_14 = lean_ctor_get(x_12, 0);
+x_15 = lean_ctor_get_uint8(x_1, sizeof(void*)*3);
+lean_dec(x_1);
+x_16 = lean_alloc_ctor(1, 0, 1);
+lean_ctor_set_uint8(x_16, 0, x_15);
+x_17 = lean_alloc_ctor(0, 4, 0);
+lean_ctor_set(x_17, 0, x_5);
+lean_ctor_set(x_17, 1, x_9);
+lean_ctor_set(x_17, 2, x_14);
+lean_ctor_set(x_17, 3, x_16);
+x_18 = l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_toJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_322_(x_17);
+lean_dec(x_17);
+lean_ctor_set(x_12, 0, x_18);
+return x_12;
+}
+else
+{
+lean_object* x_19; lean_object* x_20; uint8_t x_21; lean_object* x_22; lean_object* x_23; lean_object* x_24; lean_object* x_25; 
+x_19 = lean_ctor_get(x_12, 0);
+x_20 = lean_ctor_get(x_12, 1);
+lean_inc(x_20);
+lean_inc(x_19);
+lean_dec(x_12);
+x_21 = lean_ctor_get_uint8(x_1, sizeof(void*)*3);
+lean_dec(x_1);
+x_22 = lean_alloc_ctor(1, 0, 1);
+lean_ctor_set_uint8(x_22, 0, x_21);
+x_23 = lean_alloc_ctor(0, 4, 0);
+lean_ctor_set(x_23, 0, x_5);
+lean_ctor_set(x_23, 1, x_9);
+lean_ctor_set(x_23, 2, x_19);
+lean_ctor_set(x_23, 3, x_22);
+x_24 = l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_toJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_322_(x_23);
+lean_dec(x_23);
+x_25 = lean_alloc_ctor(0, 2, 0);
+lean_ctor_set(x_25, 0, x_24);
+lean_ctor_set(x_25, 1, x_20);
+return x_25;
+}
+}
+}
+LEAN_EXPORT lean_object* l_FilterDetailsProps_instRpcEncodable_dec____x40_ProofWidgets_Component_FilterDetails___hyg_3_(lean_object* x_1, lean_object* x_2) {
+_start:
+{
+lean_object* x_3; lean_object* x_4; lean_object* x_5; lean_object* x_6; 
+x_3 = l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78_(x_1);
+x_4 = lean_ctor_get(x_3, 0);
+lean_inc(x_4);
+lean_dec(x_3);
+x_5 = lean_ctor_get(x_4, 0);
+lean_inc(x_5);
+x_6 = l_ProofWidgets_ProofWidgets_Html_instRpcEncodableHtml_dec____x40_ProofWidgets_Data_Html___hyg_5_(x_5, x_2);
+if (lean_obj_tag(x_6) == 0)
+{
+uint8_t x_7; 
+lean_dec(x_4);
+x_7 = !lean_is_exclusive(x_6);
+if (x_7 == 0)
+{
+return x_6;
+}
+else
+{
+lean_object* x_8; lean_object* x_9; 
+x_8 = lean_ctor_get(x_6, 0);
+lean_inc(x_8);
+lean_dec(x_6);
+x_9 = lean_alloc_ctor(0, 1, 0);
+lean_ctor_set(x_9, 0, x_8);
+return x_9;
+}
+}
+else
+{
+lean_object* x_10; lean_object* x_11; lean_object* x_12; 
+x_10 = lean_ctor_get(x_6, 0);
+lean_inc(x_10);
+lean_dec(x_6);
+x_11 = lean_ctor_get(x_4, 1);
+lean_inc(x_11);
+x_12 = l_ProofWidgets_ProofWidgets_Html_instRpcEncodableHtml_dec____x40_ProofWidgets_Data_Html___hyg_5_(x_11, x_2);
+if (lean_obj_tag(x_12) == 0)
+{
+uint8_t x_13; 
+lean_dec(x_10);
+lean_dec(x_4);
+x_13 = !lean_is_exclusive(x_12);
+if (x_13 == 0)
+{
+return x_12;
+}
+else
+{
+lean_object* x_14; lean_object* x_15; 
+x_14 = lean_ctor_get(x_12, 0);
+lean_inc(x_14);
+lean_dec(x_12);
+x_15 = lean_alloc_ctor(0, 1, 0);
+lean_ctor_set(x_15, 0, x_14);
+return x_15;
+}
+}
+else
+{
+lean_object* x_16; lean_object* x_17; lean_object* x_18; 
+x_16 = lean_ctor_get(x_12, 0);
+lean_inc(x_16);
+lean_dec(x_12);
+x_17 = lean_ctor_get(x_4, 2);
+lean_inc(x_17);
+x_18 = l_ProofWidgets_ProofWidgets_Html_instRpcEncodableHtml_dec____x40_ProofWidgets_Data_Html___hyg_5_(x_17, x_2);
+if (lean_obj_tag(x_18) == 0)
+{
+uint8_t x_19; 
+lean_dec(x_16);
+lean_dec(x_10);
+lean_dec(x_4);
+x_19 = !lean_is_exclusive(x_18);
+if (x_19 == 0)
+{
+return x_18;
+}
+else
+{
+lean_object* x_20; lean_object* x_21; 
+x_20 = lean_ctor_get(x_18, 0);
+lean_inc(x_20);
+lean_dec(x_18);
+x_21 = lean_alloc_ctor(0, 1, 0);
+lean_ctor_set(x_21, 0, x_20);
+return x_21;
+}
+}
+else
+{
+lean_object* x_22; lean_object* x_23; lean_object* x_24; lean_object* x_25; 
+x_22 = lean_ctor_get(x_18, 0);
+lean_inc(x_22);
+lean_dec(x_18);
+x_23 = lean_ctor_get(x_4, 3);
+lean_inc(x_23);
+lean_dec(x_4);
+x_24 = l_Lean_Json_getBool_x3f(x_23);
+lean_dec(x_23);
+x_25 = l_MonadExcept_ofExcept___at_Lean_Widget_Lean_Widget_InteractiveHypothesisBundle_instRpcEncodableInteractiveHypothesisBundle_dec____x40_Lean_Widget_InteractiveGoal___hyg_5____spec__7(x_24, x_2);
+if (lean_obj_tag(x_25) == 0)
+{
+uint8_t x_26; 
+lean_dec(x_22);
+lean_dec(x_16);
+lean_dec(x_10);
+x_26 = !lean_is_exclusive(x_25);
+if (x_26 == 0)
+{
+return x_25;
+}
+else
+{
+lean_object* x_27; lean_object* x_28; 
+x_27 = lean_ctor_get(x_25, 0);
+lean_inc(x_27);
+lean_dec(x_25);
+x_28 = lean_alloc_ctor(0, 1, 0);
+lean_ctor_set(x_28, 0, x_27);
+return x_28;
+}
+}
+else
+{
+uint8_t x_29; 
+x_29 = !lean_is_exclusive(x_25);
+if (x_29 == 0)
+{
+lean_object* x_30; lean_object* x_31; uint8_t x_32; 
+x_30 = lean_ctor_get(x_25, 0);
+x_31 = lean_alloc_ctor(0, 3, 1);
+lean_ctor_set(x_31, 0, x_10);
+lean_ctor_set(x_31, 1, x_16);
+lean_ctor_set(x_31, 2, x_22);
+x_32 = lean_unbox(x_30);
+lean_dec(x_30);
+lean_ctor_set_uint8(x_31, sizeof(void*)*3, x_32);
+lean_ctor_set(x_25, 0, x_31);
+return x_25;
+}
+else
+{
+lean_object* x_33; lean_object* x_34; uint8_t x_35; lean_object* x_36; 
+x_33 = lean_ctor_get(x_25, 0);
+lean_inc(x_33);
+lean_dec(x_25);
+x_34 = lean_alloc_ctor(0, 3, 1);
+lean_ctor_set(x_34, 0, x_10);
+lean_ctor_set(x_34, 1, x_16);
+lean_ctor_set(x_34, 2, x_22);
+x_35 = lean_unbox(x_33);
+lean_dec(x_33);
+lean_ctor_set_uint8(x_34, sizeof(void*)*3, x_35);
+x_36 = lean_alloc_ctor(1, 1, 0);
+lean_ctor_set(x_36, 0, x_34);
+return x_36;
+}
+}
+}
+}
+}
+}
+}
+LEAN_EXPORT lean_object* l_FilterDetailsProps_instRpcEncodable_dec____x40_ProofWidgets_Component_FilterDetails___hyg_3____boxed(lean_object* x_1, lean_object* x_2) {
+_start:
+{
+lean_object* x_3; 
+x_3 = l_FilterDetailsProps_instRpcEncodable_dec____x40_ProofWidgets_Component_FilterDetails___hyg_3_(x_1, x_2);
+lean_dec(x_2);
+return x_3;
+}
+}
+static lean_object* _init_l_FilterDetailsProps_instRpcEncodable___closed__1() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_alloc_closure((void*)(l_FilterDetailsProps_instRpcEncodable_enc____x40_ProofWidgets_Component_FilterDetails___hyg_3_), 2, 0);
+return x_1;
+}
+}
+static lean_object* _init_l_FilterDetailsProps_instRpcEncodable___closed__2() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_alloc_closure((void*)(l_FilterDetailsProps_instRpcEncodable_dec____x40_ProofWidgets_Component_FilterDetails___hyg_3____boxed), 2, 0);
+return x_1;
+}
+}
+static lean_object* _init_l_FilterDetailsProps_instRpcEncodable___closed__3() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; 
+x_1 = l_FilterDetailsProps_instRpcEncodable___closed__1;
+x_2 = l_FilterDetailsProps_instRpcEncodable___closed__2;
+x_3 = lean_alloc_ctor(0, 2, 0);
+lean_ctor_set(x_3, 0, x_1);
+lean_ctor_set(x_3, 1, x_2);
+return x_3;
+}
+}
+static lean_object* _init_l_FilterDetailsProps_instRpcEncodable() {
+_start:
+{
+lean_object* x_1; 
+x_1 = l_FilterDetailsProps_instRpcEncodable___closed__3;
+return x_1;
+}
+}
+static lean_object* _init_l_FilterDetails___closed__1() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("window;import{jsxs as e,jsx as t,Fragment as n}from\"react/jsx-runtime\";import*as r from\"react\";import{useRpcSession as o,EnvPosContext as a,useAsyncPersistent as i,mapRpcError as l,importWidgetModule as c}from\"@leanprover/infoview\";async function s(o,a,i){if(\"text\"in i)return t(n,{children:i.text});if(\"element\"in i){const[e,n,l]=i.element,c={};for(const[e,t]of n)c[e]=t;const m=await Promise.all(l.map((async e=>await s(o,a,e))));return\"hr\"===e\?t(\"hr\",{}):0===m.length\?r.createElement(e,c):r.createElement(e,c,m)}if(\"component\"in i){const[e,t,n,l]=i.component,m=await Promise.all(l.map((async e=>await s(o,a,e)))),d={...n,pos:a},f=await c(o,a,e);if(!(t in f))throw new Error(`Module '${e}' does not export '${t}'`);return 0===m.length\?r.createElement(f[t],d):r.createElement(f[t],d,m)}return e(\"span\",{className:\"red\",children:[\"Unknown HTML variant: \",JSON.stringify(i)]})}function m({html:c}){const m=o(),d=r.useContext(a),f=i((()=>s(m,d,c)),[m,d,c]);return\"resolved\"===f.state\?f.value:\"rejected\"===f.state\?e(\"span\",{className:\"red\",children:[\"Error rendering HTML: \",l(f.error).message]}):t(n,{})}function d(n){const[o,a]=r.useState(n.initiallyFiltered);return e(\"details\",{open:!0,children:[e(\"summary\",{className:\"mv2 pointer\",children:[t(m,{html:n.summary}),t(\"span\",{className:\"fr\",onClick:e=>{e.preventDefault()},children:t(\"a\",{className:\"link pointer mh2 dim codicon \"+(o\?\"codicon-filter-filled \":\"codicon-filter \"),title:o\?\"Show more content\":\"Show less content\",onClick:e=>{a((e=>!e))}})})]}),t(m,{html:o\?n.filtered:n.all})]})}export{d as default};", 1562, 1562);
+return x_1;
+}
+}
+static uint64_t _init_l_FilterDetails___closed__2() {
+_start:
+{
+lean_object* x_1; uint64_t x_2; 
+x_1 = l_FilterDetails___closed__1;
+x_2 = lean_string_hash(x_1);
+return x_2;
+}
+}
+static lean_object* _init_l_FilterDetails___closed__3___boxed__const__1() {
+_start:
+{
+uint64_t x_1; lean_object* x_2; 
+x_1 = l_FilterDetails___closed__2;
+x_2 = lean_box_uint64(x_1);
+return x_2;
+}
+}
+static lean_object* _init_l_FilterDetails___closed__3() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; 
+x_1 = l_FilterDetails___closed__1;
+x_2 = l_FilterDetails___closed__3___boxed__const__1;
+x_3 = lean_alloc_ctor(0, 2, 0);
+lean_ctor_set(x_3, 0, x_1);
+lean_ctor_set(x_3, 1, x_2);
+return x_3;
+}
+}
+static lean_object* _init_l_FilterDetails___closed__4() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("default", 7, 7);
+return x_1;
+}
+}
+static lean_object* _init_l_FilterDetails___closed__5() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; 
+x_1 = l_FilterDetails___closed__3;
+x_2 = l_FilterDetails___closed__4;
+x_3 = lean_alloc_ctor(0, 2, 0);
+lean_ctor_set(x_3, 0, x_1);
+lean_ctor_set(x_3, 1, x_2);
+return x_3;
+}
+}
+static lean_object* _init_l_FilterDetails() {
+_start:
+{
+lean_object* x_1; 
+x_1 = l_FilterDetails___closed__5;
+return x_1;
+}
+}
+lean_object* initialize_Init(uint8_t builtin, lean_object*);
+lean_object* initialize_ProofWidgets_Data_Html(uint8_t builtin, lean_object*);
+static bool _G_initialized = false;
+LEAN_EXPORT lean_object* initialize_ProofWidgets_Component_FilterDetails(uint8_t builtin, lean_object* w) {
+lean_object * res;
+if (_G_initialized) return lean_io_result_mk_ok(lean_box(0));
+_G_initialized = true;
+res = initialize_Init(builtin, lean_io_mk_world());
+if (lean_io_result_is_error(res)) return res;
+lean_dec_ref(res);
+res = initialize_ProofWidgets_Data_Html(builtin, lean_io_mk_world());
+if (lean_io_result_is_error(res)) return res;
+lean_dec_ref(res);
+l_FilterDetailsProps_initiallyFiltered___default = _init_l_FilterDetailsProps_initiallyFiltered___default();
+l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__1 = _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__1();
+lean_mark_persistent(l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__1);
+l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__2 = _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__2();
+lean_mark_persistent(l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__2);
+l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__3 = _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__3();
+lean_mark_persistent(l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__3);
+l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__4 = _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__4();
+lean_mark_persistent(l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__4);
+l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__5 = _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__5();
+lean_mark_persistent(l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__5);
+l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__6 = _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__6();
+lean_mark_persistent(l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__6);
+l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__7 = _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__7();
+lean_mark_persistent(l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__7);
+l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__8 = _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__8();
+lean_mark_persistent(l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__8);
+l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__9 = _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__9();
+lean_mark_persistent(l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__9);
+l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__10 = _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__10();
+lean_mark_persistent(l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__10);
+l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__11 = _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__11();
+lean_mark_persistent(l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__11);
+l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__12 = _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__12();
+lean_mark_persistent(l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__12);
+l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__13 = _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__13();
+lean_mark_persistent(l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__13);
+l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__14 = _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__14();
+lean_mark_persistent(l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__14);
+l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__15 = _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__15();
+lean_mark_persistent(l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__15);
+l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__16 = _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__16();
+lean_mark_persistent(l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__16);
+l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__17 = _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__17();
+lean_mark_persistent(l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__17);
+l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__18 = _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__18();
+lean_mark_persistent(l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__18);
+l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__19 = _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__19();
+lean_mark_persistent(l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__19);
+l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__20 = _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__20();
+lean_mark_persistent(l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__20);
+l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__21 = _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__21();
+lean_mark_persistent(l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__21);
+l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__22 = _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__22();
+lean_mark_persistent(l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__22);
+l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__23 = _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__23();
+lean_mark_persistent(l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__23);
+l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__24 = _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__24();
+lean_mark_persistent(l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__24);
+l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__25 = _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__25();
+lean_mark_persistent(l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__25);
+l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__26 = _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__26();
+lean_mark_persistent(l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__26);
+l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__27 = _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__27();
+lean_mark_persistent(l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__27);
+l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__28 = _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__28();
+lean_mark_persistent(l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__28);
+l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__29 = _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__29();
+lean_mark_persistent(l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__29);
+l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__30 = _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__30();
+lean_mark_persistent(l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__30);
+l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__31 = _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__31();
+lean_mark_persistent(l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__31);
+l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__32 = _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__32();
+lean_mark_persistent(l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__32);
+l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__33 = _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__33();
+lean_mark_persistent(l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__33);
+l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__34 = _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__34();
+lean_mark_persistent(l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__34);
+l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__35 = _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__35();
+lean_mark_persistent(l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__35);
+l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__36 = _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__36();
+lean_mark_persistent(l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__36);
+l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__37 = _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__37();
+lean_mark_persistent(l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__37);
+l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__38 = _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__38();
+lean_mark_persistent(l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__38);
+l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__39 = _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__39();
+lean_mark_persistent(l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_78____closed__39);
+l_FilterDetailsProps_instFromJsonRpcEncodablePacket___closed__1 = _init_l_FilterDetailsProps_instFromJsonRpcEncodablePacket___closed__1();
+lean_mark_persistent(l_FilterDetailsProps_instFromJsonRpcEncodablePacket___closed__1);
+l_FilterDetailsProps_instFromJsonRpcEncodablePacket = _init_l_FilterDetailsProps_instFromJsonRpcEncodablePacket();
+lean_mark_persistent(l_FilterDetailsProps_instFromJsonRpcEncodablePacket);
+l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_toJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_322____closed__1 = _init_l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_toJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_322____closed__1();
+lean_mark_persistent(l___private_ProofWidgets_Component_FilterDetails_0__FilterDetailsProps_toJsonRpcEncodablePacket____x40_ProofWidgets_Component_FilterDetails___hyg_322____closed__1);
+l_FilterDetailsProps_instToJsonRpcEncodablePacket___closed__1 = _init_l_FilterDetailsProps_instToJsonRpcEncodablePacket___closed__1();
+lean_mark_persistent(l_FilterDetailsProps_instToJsonRpcEncodablePacket___closed__1);
+l_FilterDetailsProps_instToJsonRpcEncodablePacket = _init_l_FilterDetailsProps_instToJsonRpcEncodablePacket();
+lean_mark_persistent(l_FilterDetailsProps_instToJsonRpcEncodablePacket);
+l_FilterDetailsProps_instRpcEncodable___closed__1 = _init_l_FilterDetailsProps_instRpcEncodable___closed__1();
+lean_mark_persistent(l_FilterDetailsProps_instRpcEncodable___closed__1);
+l_FilterDetailsProps_instRpcEncodable___closed__2 = _init_l_FilterDetailsProps_instRpcEncodable___closed__2();
+lean_mark_persistent(l_FilterDetailsProps_instRpcEncodable___closed__2);
+l_FilterDetailsProps_instRpcEncodable___closed__3 = _init_l_FilterDetailsProps_instRpcEncodable___closed__3();
+lean_mark_persistent(l_FilterDetailsProps_instRpcEncodable___closed__3);
+l_FilterDetailsProps_instRpcEncodable = _init_l_FilterDetailsProps_instRpcEncodable();
+lean_mark_persistent(l_FilterDetailsProps_instRpcEncodable);
+l_FilterDetails___closed__1 = _init_l_FilterDetails___closed__1();
+lean_mark_persistent(l_FilterDetails___closed__1);
+l_FilterDetails___closed__2 = _init_l_FilterDetails___closed__2();
+l_FilterDetails___closed__3___boxed__const__1 = _init_l_FilterDetails___closed__3___boxed__const__1();
+lean_mark_persistent(l_FilterDetails___closed__3___boxed__const__1);
+l_FilterDetails___closed__3 = _init_l_FilterDetails___closed__3();
+lean_mark_persistent(l_FilterDetails___closed__3);
+l_FilterDetails___closed__4 = _init_l_FilterDetails___closed__4();
+lean_mark_persistent(l_FilterDetails___closed__4);
+l_FilterDetails___closed__5 = _init_l_FilterDetails___closed__5();
+lean_mark_persistent(l_FilterDetails___closed__5);
+l_FilterDetails = _init_l_FilterDetails();
+lean_mark_persistent(l_FilterDetails);
+return lean_io_result_mk_ok(lean_box(0));
+}
+#ifdef __cplusplus
+}
+#endif

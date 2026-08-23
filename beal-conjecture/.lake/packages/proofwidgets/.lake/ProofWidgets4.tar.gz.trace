@@ -1,0 +1,8 @@
+{"log":
+ [{"message":
+   "downloading https://github.com/leanprover-community/ProofWidgets4/releases/download/v0.0.42/ProofWidgets4.tar.gz",
+   "level": "trace"},
+  {"message":
+   ".> curl -s -S -f -o ././.lake/packages/proofwidgets/.lake/ProofWidgets4.tar.gz -L https://github.com/leanprover-community/ProofWidgets4/releases/download/v0.0.42/ProofWidgets4.tar.gz",
+   "level": "trace"}],
+ "depHash": "786600554689490775"}

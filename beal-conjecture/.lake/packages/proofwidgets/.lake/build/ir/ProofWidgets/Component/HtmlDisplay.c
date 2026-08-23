@@ -1,0 +1,1910 @@
+// Lean compiler output
+// Module: ProofWidgets.Component.HtmlDisplay
+// Imports: Init Lean.Server.Rpc.Basic Lean.Elab.Command ProofWidgets.Data.Html
+#include <lean/lean.h>
+#if defined(__clang__)
+#pragma clang diagnostic ignored "-Wunused-parameter"
+#pragma clang diagnostic ignored "-Wunused-label"
+#elif defined(__GNUC__) && !defined(__CLANG__)
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+#pragma GCC diagnostic ignored "-Wunused-label"
+#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
+#endif
+#ifdef __cplusplus
+extern "C" {
+#endif
+lean_object* l_Lean_Expr_const___override(lean_object*, lean_object*);
+static lean_object* l_ProofWidgets_HtmlCommand_htmlTac___closed__1;
+static lean_object* l_ProofWidgets_HtmlCommand_htmlCmd___closed__5;
+static lean_object* l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__15;
+static lean_object* l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__14;
+static lean_object* l_ProofWidgets_HtmlDisplay___closed__1;
+static lean_object* l_ProofWidgets_HtmlCommand_htmlCmd___closed__12;
+LEAN_EXPORT lean_object* l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_toJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_113_(lean_object*);
+lean_object* lean_mk_empty_array_with_capacity(lean_object*);
+static lean_object* l_ProofWidgets_HtmlCommand_evalCommandMHtmlUnsafe___closed__2;
+static lean_object* l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__19;
+static lean_object* l_ProofWidgets_HtmlDisplayPanel___closed__3;
+static lean_object* l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__16;
+lean_object* l_Lean_throwError___at___private_Lean_Elab_Command_0__Lean_Elab_Command_elabCommandUsing___spec__1(lean_object*, lean_object*, lean_object*, lean_object*);
+lean_object* l_Lean_Json_mkObj(lean_object*);
+static lean_object* l_ProofWidgets_HtmlCommand_htmlCmd___closed__11;
+lean_object* l_Lean_Elab_Command_getMainModule___rarg(lean_object*, lean_object*);
+static lean_object* l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__2;
+LEAN_EXPORT lean_object* l_ProofWidgets_instHtmlEvalMetaMHtml___lambda__1(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
+static lean_object* l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__3;
+static lean_object* l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__8;
+static lean_object* l_ProofWidgets_HtmlCommand_htmlCmd___closed__2;
+LEAN_EXPORT lean_object* l_ProofWidgets_HtmlCommand_elabHtmlCmd___lambda__1(lean_object*, lean_object*, lean_object*);
+lean_object* l_Lean_Name_toString(lean_object*, uint8_t);
+static lean_object* l_ProofWidgets_ProofWidgets_HtmlDisplayProps_instRpcEncodableHtmlDisplayProps___closed__2;
+static lean_object* l_ProofWidgets_HtmlCommand_htmlCmd___closed__9;
+static lean_object* l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__10;
+static lean_object* l_ProofWidgets_HtmlCommand_evalCommandMHtmlUnsafe___closed__8;
+LEAN_EXPORT lean_object* l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30_(lean_object*);
+static lean_object* l_ProofWidgets_instHtmlEvalTermElabMHtml___closed__1;
+static lean_object* l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__1;
+LEAN_EXPORT lean_object* l_ProofWidgets_instHtmlEvalTermElabMHtml;
+LEAN_EXPORT lean_object* l_Lean_MessageData_ofHtml(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
+static lean_object* l_ProofWidgets_HtmlCommand_htmlTac___closed__3;
+static lean_object* l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__3;
+static lean_object* l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__16;
+lean_object* l_Lean_Elab_Command_liftCoreM___rarg___boxed(lean_object*, lean_object*, lean_object*, lean_object*);
+static lean_object* l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__6;
+static lean_object* l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__6;
+lean_object* l_Lean_Widget_savePanelWidgetInfo___boxed(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
+static lean_object* l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__1;
+LEAN_EXPORT lean_object* l_ProofWidgets_instHtmlEvalHtml(lean_object*, lean_object*, lean_object*, lean_object*);
+uint64_t lean_string_hash(lean_object*);
+uint8_t l_Lean_Syntax_isOfKind(lean_object*, lean_object*);
+lean_object* l_Lean_stringToMessageData(lean_object*);
+static lean_object* l_ProofWidgets_HtmlCommand_htmlTac___closed__6;
+LEAN_EXPORT lean_object* l_ProofWidgets_ProofWidgets_HtmlDisplayProps_instToJsonRpcEncodablePacket;
+static lean_object* l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__10;
+static lean_object* l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__21;
+static lean_object* l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__11;
+LEAN_EXPORT lean_object* l_ProofWidgets_HtmlCommand_evalCommandMHtmlUnsafe(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
+static uint64_t l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__18;
+lean_object* l_Lean_Name_mkStr3(lean_object*, lean_object*, lean_object*);
+static lean_object* l_ProofWidgets_HtmlCommand_evalCommandMHtmlUnsafe___closed__5;
+LEAN_EXPORT lean_object* l_Lean_MessageData_ofComponent___at_Lean_MessageData_ofHtml___spec__1___boxed(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
+static lean_object* l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__7;
+static lean_object* l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__13;
+LEAN_EXPORT lean_object* l_Lean_MessageData_ofComponent___at_Lean_MessageData_ofHtml___spec__1(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
+lean_object* l_Lean_Json_getObjValAs_x3f___at___private_Lean_Data_Lsp_Extra_0__Lean_Lsp_fromJsonRpcCallParams____x40_Lean_Data_Lsp_Extra___hyg_1927____spec__2(lean_object*, lean_object*);
+static lean_object* l_ProofWidgets_ProofWidgets_HtmlDisplayProps_instToJsonRpcEncodablePacket___closed__1;
+static lean_object* l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__17;
+static lean_object* l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__7;
+LEAN_EXPORT lean_object* l_ProofWidgets_HtmlCommand_htmlCmd;
+lean_object* l_Lean_SourceInfo_fromRef(lean_object*, uint8_t);
+lean_object* l_Lean_MessageData_ofSyntax(lean_object*);
+LEAN_EXPORT lean_object* l_Lean_MessageData_ofHtml___boxed(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
+static lean_object* l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__20;
+lean_object* l_ProofWidgets_ProofWidgets_Html_instRpcEncodableHtml_enc____x40_ProofWidgets_Data_Html___hyg_5_(lean_object*, lean_object*);
+LEAN_EXPORT lean_object* l_ProofWidgets_instHtmlEvalMetaMHtml(lean_object*, lean_object*, lean_object*, lean_object*);
+lean_object* l_Lean_Elab_Command_getRef(lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* l_ProofWidgets_instHtmlEvalHtml___boxed(lean_object*, lean_object*, lean_object*, lean_object*);
+static lean_object* l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__26;
+LEAN_EXPORT lean_object* l_StateT_bind___at_ProofWidgets_HtmlCommand_elabHtmlCmd___spec__1(lean_object*, lean_object*);
+LEAN_EXPORT lean_object* l_ProofWidgets_HtmlCommand_elabHtmlCmd___boxed__const__1;
+lean_object* l_Lean_MessageData_ofFormat(lean_object*);
+lean_object* l_Lean_Elab_Command_liftTermElabM___rarg(lean_object*, lean_object*, lean_object*, lean_object*);
+lean_object* l_ProofWidgets_ProofWidgets_Html_instRpcEncodableHtml_dec____x40_ProofWidgets_Data_Html___hyg_5_(lean_object*, lean_object*);
+lean_object* l_Lean_Widget_WidgetInstance_ofHash(uint64_t, lean_object*, lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* l_ProofWidgets_HtmlDisplayPanel;
+lean_object* l_Lean_Name_num___override(lean_object*, lean_object*);
+static lean_object* l_ProofWidgets_HtmlCommand_htmlTac___closed__4;
+LEAN_EXPORT lean_object* l_ProofWidgets_instHtmlEvalMetaMHtml___lambda__1___boxed(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
+lean_object* l_Lean_Elab_Command_getCurrMacroScope(lean_object*, lean_object*, lean_object*);
+static lean_object* l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__4;
+static lean_object* l_ProofWidgets_instHtmlEvalCoreMHtml___closed__1;
+LEAN_EXPORT lean_object* l_ProofWidgets_HtmlDisplay;
+LEAN_EXPORT lean_object* l_ProofWidgets_ProofWidgets_HtmlDisplayProps_instRpcEncodableHtmlDisplayProps_dec____x40_ProofWidgets_Component_HtmlDisplay___hyg_4_(lean_object*, lean_object*);
+static lean_object* l_ProofWidgets_HtmlCommand_htmlCmd___closed__8;
+lean_object* l_Lean_addMacroScope(lean_object*, lean_object*, lean_object*);
+static uint64_t l_ProofWidgets_HtmlDisplayPanel___closed__2;
+static lean_object* l_ProofWidgets_ProofWidgets_HtmlDisplayProps_instRpcEncodableHtmlDisplayProps___closed__1;
+lean_object* l_Lean_Name_str___override(lean_object*, lean_object*);
+static lean_object* l_ProofWidgets_HtmlCommand_evalCommandMHtmlUnsafe___closed__9;
+lean_object* l_Lean_Syntax_node2(lean_object*, lean_object*, lean_object*, lean_object*);
+lean_object* l_Lean_Syntax_getArg(lean_object*, lean_object*);
+static lean_object* l_ProofWidgets_HtmlDisplayPanel___closed__4;
+static lean_object* l_ProofWidgets_HtmlCommand_htmlCmd___closed__4;
+static lean_object* l_ProofWidgets_HtmlCommand_evalCommandMHtmlUnsafe___closed__1;
+static uint64_t l_ProofWidgets_HtmlDisplay___closed__2;
+lean_object* l_List_bindTR_go___at___private_Lean_Data_Lsp_Basic_0__Lean_Lsp_toJsonCancelParams____x40_Lean_Data_Lsp_Basic___hyg_86____spec__1(lean_object*, lean_object*);
+static lean_object* l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__23;
+LEAN_EXPORT lean_object* l_ProofWidgets_instHtmlEvalHtmlOfMonadLiftTCommandElabM___rarg(lean_object*);
+static lean_object* l_ProofWidgets_HtmlCommand_htmlCmd___closed__6;
+static lean_object* l_ProofWidgets_ProofWidgets_HtmlDisplayProps_instFromJsonRpcEncodablePacket___closed__1;
+static lean_object* l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__5;
+static lean_object* l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__12;
+static lean_object* l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_toJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_113____closed__1;
+static lean_object* l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__15;
+LEAN_EXPORT lean_object* l_ProofWidgets_instHtmlEvalHtmlOfMonadLiftTCommandElabM(lean_object*);
+static lean_object* l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__22;
+static lean_object* l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__9;
+static lean_object* l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__24;
+static lean_object* l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__5;
+LEAN_EXPORT lean_object* l_ProofWidgets_ProofWidgets_HtmlDisplayProps_instRpcEncodableHtmlDisplayProps_enc____x40_ProofWidgets_Component_HtmlDisplay___hyg_4_(lean_object*, lean_object*);
+static lean_object* l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__12;
+lean_object* l_Lean_Expr_app___override(lean_object*, lean_object*);
+LEAN_EXPORT lean_object* l_StateT_bind___at_ProofWidgets_HtmlCommand_elabHtmlCmd___spec__1___rarg(lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* l_ProofWidgets_HtmlCommand_elabHtmlCmd(lean_object*, lean_object*, lean_object*, lean_object*);
+lean_object* l_Lean_Name_mkStr2(lean_object*, lean_object*);
+static lean_object* l_ProofWidgets_HtmlCommand_evalCommandMHtmlUnsafe___closed__3;
+LEAN_EXPORT lean_object* l_ProofWidgets_HtmlCommand_htmlTac;
+LEAN_EXPORT lean_object* l_ProofWidgets_HtmlDisplayPanel___closed__3___boxed__const__1;
+LEAN_EXPORT lean_object* l_ProofWidgets_instHtmlEvalMetaMHtml___boxed(lean_object*, lean_object*, lean_object*, lean_object*);
+lean_object* l_Lean_Syntax_node1(lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* l_ProofWidgets_ProofWidgets_HtmlDisplayProps_instRpcEncodableHtmlDisplayProps_dec____x40_ProofWidgets_Component_HtmlDisplay___hyg_4____boxed(lean_object*, lean_object*);
+static lean_object* l_ProofWidgets_HtmlCommand_htmlCmd___closed__3;
+static lean_object* l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__8;
+static lean_object* l_ProofWidgets_HtmlCommand_evalCommandMHtmlUnsafe___closed__4;
+lean_object* l_Lean_Elab_Command_liftCoreM___rarg(lean_object*, lean_object*, lean_object*, lean_object*);
+static lean_object* l_ProofWidgets_HtmlCommand_evalCommandMHtmlUnsafe___closed__7;
+static lean_object* l_ProofWidgets_HtmlDisplay___closed__5;
+static lean_object* l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__17;
+static lean_object* l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__11;
+static lean_object* l_ProofWidgets_HtmlCommand_htmlCmd___closed__7;
+LEAN_EXPORT lean_object* l_ProofWidgets_HtmlDisplay___closed__3___boxed__const__1;
+lean_object* l_Lean_Elab_Term_evalTerm___rarg(lean_object*, lean_object*, uint8_t, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* l_ProofWidgets_HtmlCommand_elabHtmlTac___boxed(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
+static lean_object* l_ProofWidgets_ProofWidgets_HtmlDisplayProps_instRpcEncodableHtmlDisplayProps___closed__3;
+static lean_object* l_ProofWidgets_HtmlCommand_htmlTac___closed__5;
+static lean_object* l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__2;
+static lean_object* l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__18;
+lean_object* l_Lean_Name_mkStr4(lean_object*, lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* l_ProofWidgets_instHtmlEvalCoreMHtml;
+lean_object* lean_string_append(lean_object*, lean_object*);
+static lean_object* l_ProofWidgets_HtmlDisplayPanel___closed__1;
+static lean_object* l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__14;
+static lean_object* l_ProofWidgets_HtmlCommand_evalCommandMHtmlUnsafe___closed__10;
+static lean_object* l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__9;
+static lean_object* l_ProofWidgets_HtmlDisplay___closed__4;
+static lean_object* l_ProofWidgets_HtmlDisplay___closed__3;
+static lean_object* l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__4;
+LEAN_EXPORT lean_object* l_ProofWidgets_HtmlCommand_elabHtmlTac(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
+static lean_object* l_ProofWidgets_HtmlCommand_htmlCmd___closed__10;
+lean_object* l_String_toSubstring_x27(lean_object*);
+static lean_object* l_ProofWidgets_HtmlCommand_htmlTac___closed__2;
+static lean_object* l_ProofWidgets_HtmlCommand_htmlCmd___closed__1;
+LEAN_EXPORT lean_object* l_ProofWidgets_ProofWidgets_HtmlDisplayProps_instRpcEncodableHtmlDisplayProps;
+LEAN_EXPORT lean_object* l_ProofWidgets_HtmlCommand_elabHtmlTac___rarg(lean_object*);
+static lean_object* l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__13;
+LEAN_EXPORT lean_object* l_ProofWidgets_ProofWidgets_HtmlDisplayProps_instFromJsonRpcEncodablePacket;
+static lean_object* l_ProofWidgets_HtmlCommand_evalCommandMHtmlUnsafe___closed__6;
+static lean_object* l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__25;
+lean_object* l_Lean_Elab_Command_liftTermElabM___rarg___boxed(lean_object*, lean_object*, lean_object*, lean_object*);
+static lean_object* _init_l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__1() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("html", 4, 4);
+return x_1;
+}
+}
+static lean_object* _init_l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__2() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("ProofWidgets", 12, 12);
+return x_1;
+}
+}
+static lean_object* _init_l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__3() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; 
+x_1 = lean_box(0);
+x_2 = l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__2;
+x_3 = l_Lean_Name_str___override(x_1, x_2);
+return x_3;
+}
+}
+static lean_object* _init_l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__4() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; 
+x_1 = l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__3;
+x_2 = l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__2;
+x_3 = l_Lean_Name_str___override(x_1, x_2);
+return x_3;
+}
+}
+static lean_object* _init_l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__5() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("HtmlDisplayProps", 16, 16);
+return x_1;
+}
+}
+static lean_object* _init_l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__6() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; 
+x_1 = l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__4;
+x_2 = l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__5;
+x_3 = l_Lean_Name_str___override(x_1, x_2);
+return x_3;
+}
+}
+static lean_object* _init_l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__7() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("RpcEncodablePacket", 18, 18);
+return x_1;
+}
+}
+static lean_object* _init_l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__8() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; 
+x_1 = l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__6;
+x_2 = l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__7;
+x_3 = l_Lean_Name_str___override(x_1, x_2);
+return x_3;
+}
+}
+static lean_object* _init_l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__9() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("_@", 2, 2);
+return x_1;
+}
+}
+static lean_object* _init_l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__10() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; 
+x_1 = l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__8;
+x_2 = l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__9;
+x_3 = l_Lean_Name_str___override(x_1, x_2);
+return x_3;
+}
+}
+static lean_object* _init_l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__11() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; 
+x_1 = l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__10;
+x_2 = l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__2;
+x_3 = l_Lean_Name_str___override(x_1, x_2);
+return x_3;
+}
+}
+static lean_object* _init_l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__12() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("Component", 9, 9);
+return x_1;
+}
+}
+static lean_object* _init_l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__13() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; 
+x_1 = l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__11;
+x_2 = l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__12;
+x_3 = l_Lean_Name_str___override(x_1, x_2);
+return x_3;
+}
+}
+static lean_object* _init_l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__14() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("HtmlDisplay", 11, 11);
+return x_1;
+}
+}
+static lean_object* _init_l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__15() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; 
+x_1 = l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__13;
+x_2 = l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__14;
+x_3 = l_Lean_Name_str___override(x_1, x_2);
+return x_3;
+}
+}
+static lean_object* _init_l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__16() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("_hyg", 4, 4);
+return x_1;
+}
+}
+static lean_object* _init_l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__17() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; 
+x_1 = l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__15;
+x_2 = l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__16;
+x_3 = l_Lean_Name_str___override(x_1, x_2);
+return x_3;
+}
+}
+static lean_object* _init_l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__18() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; 
+x_1 = l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__17;
+x_2 = lean_unsigned_to_nat(4u);
+x_3 = l_Lean_Name_num___override(x_1, x_2);
+return x_3;
+}
+}
+static lean_object* _init_l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__19() {
+_start:
+{
+lean_object* x_1; uint8_t x_2; lean_object* x_3; 
+x_1 = l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__18;
+x_2 = 1;
+x_3 = l_Lean_Name_toString(x_1, x_2);
+return x_3;
+}
+}
+static lean_object* _init_l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__20() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked(".", 1, 1);
+return x_1;
+}
+}
+static lean_object* _init_l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__21() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; 
+x_1 = l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__19;
+x_2 = l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__20;
+x_3 = lean_string_append(x_1, x_2);
+return x_3;
+}
+}
+static lean_object* _init_l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__22() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; 
+x_1 = lean_box(0);
+x_2 = l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__1;
+x_3 = l_Lean_Name_str___override(x_1, x_2);
+return x_3;
+}
+}
+static lean_object* _init_l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__23() {
+_start:
+{
+lean_object* x_1; uint8_t x_2; lean_object* x_3; 
+x_1 = l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__22;
+x_2 = 1;
+x_3 = l_Lean_Name_toString(x_1, x_2);
+return x_3;
+}
+}
+static lean_object* _init_l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__24() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; 
+x_1 = l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__21;
+x_2 = l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__23;
+x_3 = lean_string_append(x_1, x_2);
+return x_3;
+}
+}
+static lean_object* _init_l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__25() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked(": ", 2, 2);
+return x_1;
+}
+}
+static lean_object* _init_l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__26() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; 
+x_1 = l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__24;
+x_2 = l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__25;
+x_3 = lean_string_append(x_1, x_2);
+return x_3;
+}
+}
+LEAN_EXPORT lean_object* l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30_(lean_object* x_1) {
+_start:
+{
+lean_object* x_2; lean_object* x_3; uint8_t x_4; 
+x_2 = l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__1;
+x_3 = l_Lean_Json_getObjValAs_x3f___at___private_Lean_Data_Lsp_Extra_0__Lean_Lsp_fromJsonRpcCallParams____x40_Lean_Data_Lsp_Extra___hyg_1927____spec__2(x_1, x_2);
+x_4 = !lean_is_exclusive(x_3);
+if (x_4 == 0)
+{
+return x_3;
+}
+else
+{
+lean_object* x_5; lean_object* x_6; 
+x_5 = lean_ctor_get(x_3, 0);
+lean_inc(x_5);
+lean_dec(x_3);
+x_6 = lean_alloc_ctor(1, 1, 0);
+lean_ctor_set(x_6, 0, x_5);
+return x_6;
+}
+}
+}
+static lean_object* _init_l_ProofWidgets_ProofWidgets_HtmlDisplayProps_instFromJsonRpcEncodablePacket___closed__1() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_alloc_closure((void*)(l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30_), 1, 0);
+return x_1;
+}
+}
+static lean_object* _init_l_ProofWidgets_ProofWidgets_HtmlDisplayProps_instFromJsonRpcEncodablePacket() {
+_start:
+{
+lean_object* x_1; 
+x_1 = l_ProofWidgets_ProofWidgets_HtmlDisplayProps_instFromJsonRpcEncodablePacket___closed__1;
+return x_1;
+}
+}
+static lean_object* _init_l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_toJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_113____closed__1() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; 
+x_1 = lean_unsigned_to_nat(0u);
+x_2 = lean_mk_empty_array_with_capacity(x_1);
+return x_2;
+}
+}
+LEAN_EXPORT lean_object* l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_toJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_113_(lean_object* x_1) {
+_start:
+{
+lean_object* x_2; lean_object* x_3; lean_object* x_4; lean_object* x_5; lean_object* x_6; lean_object* x_7; lean_object* x_8; lean_object* x_9; 
+x_2 = l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__1;
+x_3 = lean_alloc_ctor(0, 2, 0);
+lean_ctor_set(x_3, 0, x_2);
+lean_ctor_set(x_3, 1, x_1);
+x_4 = lean_box(0);
+x_5 = lean_alloc_ctor(1, 2, 0);
+lean_ctor_set(x_5, 0, x_3);
+lean_ctor_set(x_5, 1, x_4);
+x_6 = lean_alloc_ctor(1, 2, 0);
+lean_ctor_set(x_6, 0, x_5);
+lean_ctor_set(x_6, 1, x_4);
+x_7 = l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_toJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_113____closed__1;
+x_8 = l_List_bindTR_go___at___private_Lean_Data_Lsp_Basic_0__Lean_Lsp_toJsonCancelParams____x40_Lean_Data_Lsp_Basic___hyg_86____spec__1(x_6, x_7);
+x_9 = l_Lean_Json_mkObj(x_8);
+return x_9;
+}
+}
+static lean_object* _init_l_ProofWidgets_ProofWidgets_HtmlDisplayProps_instToJsonRpcEncodablePacket___closed__1() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_alloc_closure((void*)(l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_toJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_113_), 1, 0);
+return x_1;
+}
+}
+static lean_object* _init_l_ProofWidgets_ProofWidgets_HtmlDisplayProps_instToJsonRpcEncodablePacket() {
+_start:
+{
+lean_object* x_1; 
+x_1 = l_ProofWidgets_ProofWidgets_HtmlDisplayProps_instToJsonRpcEncodablePacket___closed__1;
+return x_1;
+}
+}
+LEAN_EXPORT lean_object* l_ProofWidgets_ProofWidgets_HtmlDisplayProps_instRpcEncodableHtmlDisplayProps_enc____x40_ProofWidgets_Component_HtmlDisplay___hyg_4_(lean_object* x_1, lean_object* x_2) {
+_start:
+{
+lean_object* x_3; uint8_t x_4; 
+x_3 = l_ProofWidgets_ProofWidgets_Html_instRpcEncodableHtml_enc____x40_ProofWidgets_Data_Html___hyg_5_(x_1, x_2);
+x_4 = !lean_is_exclusive(x_3);
+if (x_4 == 0)
+{
+lean_object* x_5; lean_object* x_6; 
+x_5 = lean_ctor_get(x_3, 0);
+x_6 = l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_toJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_113_(x_5);
+lean_ctor_set(x_3, 0, x_6);
+return x_3;
+}
+else
+{
+lean_object* x_7; lean_object* x_8; lean_object* x_9; lean_object* x_10; 
+x_7 = lean_ctor_get(x_3, 0);
+x_8 = lean_ctor_get(x_3, 1);
+lean_inc(x_8);
+lean_inc(x_7);
+lean_dec(x_3);
+x_9 = l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_toJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_113_(x_7);
+x_10 = lean_alloc_ctor(0, 2, 0);
+lean_ctor_set(x_10, 0, x_9);
+lean_ctor_set(x_10, 1, x_8);
+return x_10;
+}
+}
+}
+LEAN_EXPORT lean_object* l_ProofWidgets_ProofWidgets_HtmlDisplayProps_instRpcEncodableHtmlDisplayProps_dec____x40_ProofWidgets_Component_HtmlDisplay___hyg_4_(lean_object* x_1, lean_object* x_2) {
+_start:
+{
+lean_object* x_3; lean_object* x_4; lean_object* x_5; 
+x_3 = l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30_(x_1);
+x_4 = lean_ctor_get(x_3, 0);
+lean_inc(x_4);
+lean_dec(x_3);
+x_5 = l_ProofWidgets_ProofWidgets_Html_instRpcEncodableHtml_dec____x40_ProofWidgets_Data_Html___hyg_5_(x_4, x_2);
+if (lean_obj_tag(x_5) == 0)
+{
+uint8_t x_6; 
+x_6 = !lean_is_exclusive(x_5);
+if (x_6 == 0)
+{
+return x_5;
+}
+else
+{
+lean_object* x_7; lean_object* x_8; 
+x_7 = lean_ctor_get(x_5, 0);
+lean_inc(x_7);
+lean_dec(x_5);
+x_8 = lean_alloc_ctor(0, 1, 0);
+lean_ctor_set(x_8, 0, x_7);
+return x_8;
+}
+}
+else
+{
+uint8_t x_9; 
+x_9 = !lean_is_exclusive(x_5);
+if (x_9 == 0)
+{
+return x_5;
+}
+else
+{
+lean_object* x_10; lean_object* x_11; 
+x_10 = lean_ctor_get(x_5, 0);
+lean_inc(x_10);
+lean_dec(x_5);
+x_11 = lean_alloc_ctor(1, 1, 0);
+lean_ctor_set(x_11, 0, x_10);
+return x_11;
+}
+}
+}
+}
+LEAN_EXPORT lean_object* l_ProofWidgets_ProofWidgets_HtmlDisplayProps_instRpcEncodableHtmlDisplayProps_dec____x40_ProofWidgets_Component_HtmlDisplay___hyg_4____boxed(lean_object* x_1, lean_object* x_2) {
+_start:
+{
+lean_object* x_3; 
+x_3 = l_ProofWidgets_ProofWidgets_HtmlDisplayProps_instRpcEncodableHtmlDisplayProps_dec____x40_ProofWidgets_Component_HtmlDisplay___hyg_4_(x_1, x_2);
+lean_dec(x_2);
+return x_3;
+}
+}
+static lean_object* _init_l_ProofWidgets_ProofWidgets_HtmlDisplayProps_instRpcEncodableHtmlDisplayProps___closed__1() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_alloc_closure((void*)(l_ProofWidgets_ProofWidgets_HtmlDisplayProps_instRpcEncodableHtmlDisplayProps_enc____x40_ProofWidgets_Component_HtmlDisplay___hyg_4_), 2, 0);
+return x_1;
+}
+}
+static lean_object* _init_l_ProofWidgets_ProofWidgets_HtmlDisplayProps_instRpcEncodableHtmlDisplayProps___closed__2() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_alloc_closure((void*)(l_ProofWidgets_ProofWidgets_HtmlDisplayProps_instRpcEncodableHtmlDisplayProps_dec____x40_ProofWidgets_Component_HtmlDisplay___hyg_4____boxed), 2, 0);
+return x_1;
+}
+}
+static lean_object* _init_l_ProofWidgets_ProofWidgets_HtmlDisplayProps_instRpcEncodableHtmlDisplayProps___closed__3() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; 
+x_1 = l_ProofWidgets_ProofWidgets_HtmlDisplayProps_instRpcEncodableHtmlDisplayProps___closed__1;
+x_2 = l_ProofWidgets_ProofWidgets_HtmlDisplayProps_instRpcEncodableHtmlDisplayProps___closed__2;
+x_3 = lean_alloc_ctor(0, 2, 0);
+lean_ctor_set(x_3, 0, x_1);
+lean_ctor_set(x_3, 1, x_2);
+return x_3;
+}
+}
+static lean_object* _init_l_ProofWidgets_ProofWidgets_HtmlDisplayProps_instRpcEncodableHtmlDisplayProps() {
+_start:
+{
+lean_object* x_1; 
+x_1 = l_ProofWidgets_ProofWidgets_HtmlDisplayProps_instRpcEncodableHtmlDisplayProps___closed__3;
+return x_1;
+}
+}
+static lean_object* _init_l_ProofWidgets_HtmlDisplay___closed__1() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("window;import{jsxs as e,jsx as t,Fragment as r}from\"react/jsx-runtime\";import*as n from\"react\";import{useRpcSession as a,EnvPosContext as o,useAsyncPersistent as i,mapRpcError as s,importWidgetModule as c}from\"@leanprover/infoview\";async function l(a,o,i){if(\"text\"in i)return t(r,{children:i.text});if(\"element\"in i){const[e,r,s]=i.element,c={};for(const[e,t]of r)c[e]=t;const m=await Promise.all(s.map((async e=>await l(a,o,e))));return\"hr\"===e\?t(\"hr\",{}):0===m.length\?n.createElement(e,c):n.createElement(e,c,m)}if(\"component\"in i){const[e,t,r,s]=i.component,m=await Promise.all(s.map((async e=>await l(a,o,e)))),f={...r,pos:o},p=await c(a,o,e);if(!(t in p))throw new Error(`Module '${e}' does not export '${t}'`);return 0===m.length\?n.createElement(p[t],f):n.createElement(p[t],f,m)}return e(\"span\",{className:\"red\",children:[\"Unknown HTML variant: \",JSON.stringify(i)]})}function m({html:c}){const m=a(),f=n.useContext(o),p=i((()=>l(m,f,c)),[m,f,c]);return\"resolved\"===p.state\?p.value:\"rejected\"===p.state\?e(\"span\",{className:\"red\",children:[\"Error rendering HTML: \",s(p.error).message]}):t(r,{})}export{m as default};", 1123, 1123);
+return x_1;
+}
+}
+static uint64_t _init_l_ProofWidgets_HtmlDisplay___closed__2() {
+_start:
+{
+lean_object* x_1; uint64_t x_2; 
+x_1 = l_ProofWidgets_HtmlDisplay___closed__1;
+x_2 = lean_string_hash(x_1);
+return x_2;
+}
+}
+static lean_object* _init_l_ProofWidgets_HtmlDisplay___closed__3___boxed__const__1() {
+_start:
+{
+uint64_t x_1; lean_object* x_2; 
+x_1 = l_ProofWidgets_HtmlDisplay___closed__2;
+x_2 = lean_box_uint64(x_1);
+return x_2;
+}
+}
+static lean_object* _init_l_ProofWidgets_HtmlDisplay___closed__3() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; 
+x_1 = l_ProofWidgets_HtmlDisplay___closed__1;
+x_2 = l_ProofWidgets_HtmlDisplay___closed__3___boxed__const__1;
+x_3 = lean_alloc_ctor(0, 2, 0);
+lean_ctor_set(x_3, 0, x_1);
+lean_ctor_set(x_3, 1, x_2);
+return x_3;
+}
+}
+static lean_object* _init_l_ProofWidgets_HtmlDisplay___closed__4() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("default", 7, 7);
+return x_1;
+}
+}
+static lean_object* _init_l_ProofWidgets_HtmlDisplay___closed__5() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; 
+x_1 = l_ProofWidgets_HtmlDisplay___closed__3;
+x_2 = l_ProofWidgets_HtmlDisplay___closed__4;
+x_3 = lean_alloc_ctor(0, 2, 0);
+lean_ctor_set(x_3, 0, x_1);
+lean_ctor_set(x_3, 1, x_2);
+return x_3;
+}
+}
+static lean_object* _init_l_ProofWidgets_HtmlDisplay() {
+_start:
+{
+lean_object* x_1; 
+x_1 = l_ProofWidgets_HtmlDisplay___closed__5;
+return x_1;
+}
+}
+static lean_object* _init_l_ProofWidgets_HtmlDisplayPanel___closed__1() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("window;import{jsxs as e,jsx as t,Fragment as n}from\"react/jsx-runtime\";import*as r from\"react\";import{useRpcSession as a,EnvPosContext as o,useAsyncPersistent as i,mapRpcError as s,importWidgetModule as l}from\"@leanprover/infoview\";async function m(a,o,i){if(\"text\"in i)return t(n,{children:i.text});if(\"element\"in i){const[e,n,s]=i.element,l={};for(const[e,t]of n)l[e]=t;const c=await Promise.all(s.map((async e=>await m(a,o,e))));return\"hr\"===e\?t(\"hr\",{}):0===c.length\?r.createElement(e,l):r.createElement(e,l,c)}if(\"component\"in i){const[e,t,n,s]=i.component,c=await Promise.all(s.map((async e=>await m(a,o,e)))),p={...n,pos:o},d=await l(a,o,e);if(!(t in d))throw new Error(`Module '${e}' does not export '${t}'`);return 0===c.length\?r.createElement(d[t],p):r.createElement(d[t],p,c)}return e(\"span\",{className:\"red\",children:[\"Unknown HTML variant: \",JSON.stringify(i)]})}function c({html:l}){const c=a(),p=r.useContext(o),d=i((()=>m(c,p,l)),[c,p,l]);return\"resolved\"===d.state\?d.value:\"rejected\"===d.state\?e(\"span\",{className:\"red\",children:[\"Error rendering HTML: \",s(d.error).message]}):t(n,{})}function p({html:n}){return e(\"details\",{open:!0,children:[t(\"summary\",{className:\"mv2 pointer\",children:\"HTML Display\"}),t(c,{html:n})]})}export{p as default};", 1262, 1262);
+return x_1;
+}
+}
+static uint64_t _init_l_ProofWidgets_HtmlDisplayPanel___closed__2() {
+_start:
+{
+lean_object* x_1; uint64_t x_2; 
+x_1 = l_ProofWidgets_HtmlDisplayPanel___closed__1;
+x_2 = lean_string_hash(x_1);
+return x_2;
+}
+}
+static lean_object* _init_l_ProofWidgets_HtmlDisplayPanel___closed__3___boxed__const__1() {
+_start:
+{
+uint64_t x_1; lean_object* x_2; 
+x_1 = l_ProofWidgets_HtmlDisplayPanel___closed__2;
+x_2 = lean_box_uint64(x_1);
+return x_2;
+}
+}
+static lean_object* _init_l_ProofWidgets_HtmlDisplayPanel___closed__3() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; 
+x_1 = l_ProofWidgets_HtmlDisplayPanel___closed__1;
+x_2 = l_ProofWidgets_HtmlDisplayPanel___closed__3___boxed__const__1;
+x_3 = lean_alloc_ctor(0, 2, 0);
+lean_ctor_set(x_3, 0, x_1);
+lean_ctor_set(x_3, 1, x_2);
+return x_3;
+}
+}
+static lean_object* _init_l_ProofWidgets_HtmlDisplayPanel___closed__4() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; 
+x_1 = l_ProofWidgets_HtmlDisplayPanel___closed__3;
+x_2 = l_ProofWidgets_HtmlDisplay___closed__4;
+x_3 = lean_alloc_ctor(0, 2, 0);
+lean_ctor_set(x_3, 0, x_1);
+lean_ctor_set(x_3, 1, x_2);
+return x_3;
+}
+}
+static lean_object* _init_l_ProofWidgets_HtmlDisplayPanel() {
+_start:
+{
+lean_object* x_1; 
+x_1 = l_ProofWidgets_HtmlDisplayPanel___closed__4;
+return x_1;
+}
+}
+LEAN_EXPORT lean_object* l_ProofWidgets_instHtmlEvalHtml(lean_object* x_1, lean_object* x_2, lean_object* x_3, lean_object* x_4) {
+_start:
+{
+lean_object* x_5; 
+x_5 = lean_alloc_ctor(0, 2, 0);
+lean_ctor_set(x_5, 0, x_1);
+lean_ctor_set(x_5, 1, x_4);
+return x_5;
+}
+}
+LEAN_EXPORT lean_object* l_ProofWidgets_instHtmlEvalHtml___boxed(lean_object* x_1, lean_object* x_2, lean_object* x_3, lean_object* x_4) {
+_start:
+{
+lean_object* x_5; 
+x_5 = l_ProofWidgets_instHtmlEvalHtml(x_1, x_2, x_3, x_4);
+lean_dec(x_3);
+lean_dec(x_2);
+return x_5;
+}
+}
+LEAN_EXPORT lean_object* l_ProofWidgets_instHtmlEvalHtmlOfMonadLiftTCommandElabM___rarg(lean_object* x_1) {
+_start:
+{
+lean_object* x_2; 
+x_2 = lean_apply_1(x_1, lean_box(0));
+return x_2;
+}
+}
+LEAN_EXPORT lean_object* l_ProofWidgets_instHtmlEvalHtmlOfMonadLiftTCommandElabM(lean_object* x_1) {
+_start:
+{
+lean_object* x_2; 
+x_2 = lean_alloc_closure((void*)(l_ProofWidgets_instHtmlEvalHtmlOfMonadLiftTCommandElabM___rarg), 1, 0);
+return x_2;
+}
+}
+static lean_object* _init_l_ProofWidgets_instHtmlEvalCoreMHtml___closed__1() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_alloc_closure((void*)(l_Lean_Elab_Command_liftCoreM___rarg___boxed), 4, 0);
+return x_1;
+}
+}
+static lean_object* _init_l_ProofWidgets_instHtmlEvalCoreMHtml() {
+_start:
+{
+lean_object* x_1; 
+x_1 = l_ProofWidgets_instHtmlEvalCoreMHtml___closed__1;
+return x_1;
+}
+}
+LEAN_EXPORT lean_object* l_ProofWidgets_instHtmlEvalMetaMHtml___lambda__1(lean_object* x_1, lean_object* x_2, lean_object* x_3, lean_object* x_4, lean_object* x_5, lean_object* x_6, lean_object* x_7, lean_object* x_8) {
+_start:
+{
+lean_object* x_9; 
+x_9 = lean_apply_5(x_1, x_4, x_5, x_6, x_7, x_8);
+return x_9;
+}
+}
+LEAN_EXPORT lean_object* l_ProofWidgets_instHtmlEvalMetaMHtml(lean_object* x_1, lean_object* x_2, lean_object* x_3, lean_object* x_4) {
+_start:
+{
+lean_object* x_5; lean_object* x_6; 
+x_5 = lean_alloc_closure((void*)(l_ProofWidgets_instHtmlEvalMetaMHtml___lambda__1___boxed), 8, 1);
+lean_closure_set(x_5, 0, x_1);
+x_6 = l_Lean_Elab_Command_liftTermElabM___rarg(x_5, x_2, x_3, x_4);
+return x_6;
+}
+}
+LEAN_EXPORT lean_object* l_ProofWidgets_instHtmlEvalMetaMHtml___lambda__1___boxed(lean_object* x_1, lean_object* x_2, lean_object* x_3, lean_object* x_4, lean_object* x_5, lean_object* x_6, lean_object* x_7, lean_object* x_8) {
+_start:
+{
+lean_object* x_9; 
+x_9 = l_ProofWidgets_instHtmlEvalMetaMHtml___lambda__1(x_1, x_2, x_3, x_4, x_5, x_6, x_7, x_8);
+lean_dec(x_3);
+lean_dec(x_2);
+return x_9;
+}
+}
+LEAN_EXPORT lean_object* l_ProofWidgets_instHtmlEvalMetaMHtml___boxed(lean_object* x_1, lean_object* x_2, lean_object* x_3, lean_object* x_4) {
+_start:
+{
+lean_object* x_5; 
+x_5 = l_ProofWidgets_instHtmlEvalMetaMHtml(x_1, x_2, x_3, x_4);
+lean_dec(x_3);
+lean_dec(x_2);
+return x_5;
+}
+}
+static lean_object* _init_l_ProofWidgets_instHtmlEvalTermElabMHtml___closed__1() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_alloc_closure((void*)(l_Lean_Elab_Command_liftTermElabM___rarg___boxed), 4, 0);
+return x_1;
+}
+}
+static lean_object* _init_l_ProofWidgets_instHtmlEvalTermElabMHtml() {
+_start:
+{
+lean_object* x_1; 
+x_1 = l_ProofWidgets_instHtmlEvalTermElabMHtml___closed__1;
+return x_1;
+}
+}
+static lean_object* _init_l_ProofWidgets_HtmlCommand_evalCommandMHtmlUnsafe___closed__1() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("Lean", 4, 4);
+return x_1;
+}
+}
+static lean_object* _init_l_ProofWidgets_HtmlCommand_evalCommandMHtmlUnsafe___closed__2() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("Elab", 4, 4);
+return x_1;
+}
+}
+static lean_object* _init_l_ProofWidgets_HtmlCommand_evalCommandMHtmlUnsafe___closed__3() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("Command", 7, 7);
+return x_1;
+}
+}
+static lean_object* _init_l_ProofWidgets_HtmlCommand_evalCommandMHtmlUnsafe___closed__4() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("CommandElabM", 12, 12);
+return x_1;
+}
+}
+static lean_object* _init_l_ProofWidgets_HtmlCommand_evalCommandMHtmlUnsafe___closed__5() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; lean_object* x_4; lean_object* x_5; 
+x_1 = l_ProofWidgets_HtmlCommand_evalCommandMHtmlUnsafe___closed__1;
+x_2 = l_ProofWidgets_HtmlCommand_evalCommandMHtmlUnsafe___closed__2;
+x_3 = l_ProofWidgets_HtmlCommand_evalCommandMHtmlUnsafe___closed__3;
+x_4 = l_ProofWidgets_HtmlCommand_evalCommandMHtmlUnsafe___closed__4;
+x_5 = l_Lean_Name_mkStr4(x_1, x_2, x_3, x_4);
+return x_5;
+}
+}
+static lean_object* _init_l_ProofWidgets_HtmlCommand_evalCommandMHtmlUnsafe___closed__6() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; 
+x_1 = lean_box(0);
+x_2 = l_ProofWidgets_HtmlCommand_evalCommandMHtmlUnsafe___closed__5;
+x_3 = l_Lean_Expr_const___override(x_2, x_1);
+return x_3;
+}
+}
+static lean_object* _init_l_ProofWidgets_HtmlCommand_evalCommandMHtmlUnsafe___closed__7() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("Html", 4, 4);
+return x_1;
+}
+}
+static lean_object* _init_l_ProofWidgets_HtmlCommand_evalCommandMHtmlUnsafe___closed__8() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; 
+x_1 = l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__2;
+x_2 = l_ProofWidgets_HtmlCommand_evalCommandMHtmlUnsafe___closed__7;
+x_3 = l_Lean_Name_mkStr2(x_1, x_2);
+return x_3;
+}
+}
+static lean_object* _init_l_ProofWidgets_HtmlCommand_evalCommandMHtmlUnsafe___closed__9() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; 
+x_1 = lean_box(0);
+x_2 = l_ProofWidgets_HtmlCommand_evalCommandMHtmlUnsafe___closed__8;
+x_3 = l_Lean_Expr_const___override(x_2, x_1);
+return x_3;
+}
+}
+static lean_object* _init_l_ProofWidgets_HtmlCommand_evalCommandMHtmlUnsafe___closed__10() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; 
+x_1 = l_ProofWidgets_HtmlCommand_evalCommandMHtmlUnsafe___closed__6;
+x_2 = l_ProofWidgets_HtmlCommand_evalCommandMHtmlUnsafe___closed__9;
+x_3 = l_Lean_Expr_app___override(x_1, x_2);
+return x_3;
+}
+}
+LEAN_EXPORT lean_object* l_ProofWidgets_HtmlCommand_evalCommandMHtmlUnsafe(lean_object* x_1, lean_object* x_2, lean_object* x_3, lean_object* x_4, lean_object* x_5, lean_object* x_6, lean_object* x_7, lean_object* x_8) {
+_start:
+{
+lean_object* x_9; uint8_t x_10; lean_object* x_11; 
+x_9 = l_ProofWidgets_HtmlCommand_evalCommandMHtmlUnsafe___closed__10;
+x_10 = 1;
+x_11 = l_Lean_Elab_Term_evalTerm___rarg(x_9, x_1, x_10, x_2, x_3, x_4, x_5, x_6, x_7, x_8);
+return x_11;
+}
+}
+static lean_object* _init_l_ProofWidgets_HtmlCommand_htmlCmd___closed__1() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("HtmlCommand", 11, 11);
+return x_1;
+}
+}
+static lean_object* _init_l_ProofWidgets_HtmlCommand_htmlCmd___closed__2() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("htmlCmd", 7, 7);
+return x_1;
+}
+}
+static lean_object* _init_l_ProofWidgets_HtmlCommand_htmlCmd___closed__3() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; lean_object* x_4; 
+x_1 = l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__2;
+x_2 = l_ProofWidgets_HtmlCommand_htmlCmd___closed__1;
+x_3 = l_ProofWidgets_HtmlCommand_htmlCmd___closed__2;
+x_4 = l_Lean_Name_mkStr3(x_1, x_2, x_3);
+return x_4;
+}
+}
+static lean_object* _init_l_ProofWidgets_HtmlCommand_htmlCmd___closed__4() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("andthen", 7, 7);
+return x_1;
+}
+}
+static lean_object* _init_l_ProofWidgets_HtmlCommand_htmlCmd___closed__5() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; 
+x_1 = lean_box(0);
+x_2 = l_ProofWidgets_HtmlCommand_htmlCmd___closed__4;
+x_3 = l_Lean_Name_str___override(x_1, x_2);
+return x_3;
+}
+}
+static lean_object* _init_l_ProofWidgets_HtmlCommand_htmlCmd___closed__6() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("#html ", 6, 6);
+return x_1;
+}
+}
+static lean_object* _init_l_ProofWidgets_HtmlCommand_htmlCmd___closed__7() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; 
+x_1 = l_ProofWidgets_HtmlCommand_htmlCmd___closed__6;
+x_2 = lean_alloc_ctor(5, 1, 0);
+lean_ctor_set(x_2, 0, x_1);
+return x_2;
+}
+}
+static lean_object* _init_l_ProofWidgets_HtmlCommand_htmlCmd___closed__8() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("term", 4, 4);
+return x_1;
+}
+}
+static lean_object* _init_l_ProofWidgets_HtmlCommand_htmlCmd___closed__9() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; 
+x_1 = lean_box(0);
+x_2 = l_ProofWidgets_HtmlCommand_htmlCmd___closed__8;
+x_3 = l_Lean_Name_str___override(x_1, x_2);
+return x_3;
+}
+}
+static lean_object* _init_l_ProofWidgets_HtmlCommand_htmlCmd___closed__10() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; 
+x_1 = l_ProofWidgets_HtmlCommand_htmlCmd___closed__9;
+x_2 = lean_unsigned_to_nat(0u);
+x_3 = lean_alloc_ctor(7, 2, 0);
+lean_ctor_set(x_3, 0, x_1);
+lean_ctor_set(x_3, 1, x_2);
+return x_3;
+}
+}
+static lean_object* _init_l_ProofWidgets_HtmlCommand_htmlCmd___closed__11() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; lean_object* x_4; 
+x_1 = l_ProofWidgets_HtmlCommand_htmlCmd___closed__5;
+x_2 = l_ProofWidgets_HtmlCommand_htmlCmd___closed__7;
+x_3 = l_ProofWidgets_HtmlCommand_htmlCmd___closed__10;
+x_4 = lean_alloc_ctor(2, 3, 0);
+lean_ctor_set(x_4, 0, x_1);
+lean_ctor_set(x_4, 1, x_2);
+lean_ctor_set(x_4, 2, x_3);
+return x_4;
+}
+}
+static lean_object* _init_l_ProofWidgets_HtmlCommand_htmlCmd___closed__12() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; lean_object* x_4; 
+x_1 = l_ProofWidgets_HtmlCommand_htmlCmd___closed__3;
+x_2 = lean_unsigned_to_nat(1022u);
+x_3 = l_ProofWidgets_HtmlCommand_htmlCmd___closed__11;
+x_4 = lean_alloc_ctor(3, 3, 0);
+lean_ctor_set(x_4, 0, x_1);
+lean_ctor_set(x_4, 1, x_2);
+lean_ctor_set(x_4, 2, x_3);
+return x_4;
+}
+}
+static lean_object* _init_l_ProofWidgets_HtmlCommand_htmlCmd() {
+_start:
+{
+lean_object* x_1; 
+x_1 = l_ProofWidgets_HtmlCommand_htmlCmd___closed__12;
+return x_1;
+}
+}
+LEAN_EXPORT lean_object* l_StateT_bind___at_ProofWidgets_HtmlCommand_elabHtmlCmd___spec__1___rarg(lean_object* x_1, lean_object* x_2, lean_object* x_3) {
+_start:
+{
+lean_object* x_4; lean_object* x_5; lean_object* x_6; lean_object* x_7; 
+x_4 = lean_apply_1(x_1, x_3);
+x_5 = lean_ctor_get(x_4, 0);
+lean_inc(x_5);
+x_6 = lean_ctor_get(x_4, 1);
+lean_inc(x_6);
+lean_dec(x_4);
+x_7 = lean_apply_2(x_2, x_5, x_6);
+return x_7;
+}
+}
+LEAN_EXPORT lean_object* l_StateT_bind___at_ProofWidgets_HtmlCommand_elabHtmlCmd___spec__1(lean_object* x_1, lean_object* x_2) {
+_start:
+{
+lean_object* x_3; 
+x_3 = lean_alloc_closure((void*)(l_StateT_bind___at_ProofWidgets_HtmlCommand_elabHtmlCmd___spec__1___rarg), 3, 0);
+return x_3;
+}
+}
+LEAN_EXPORT lean_object* l_ProofWidgets_HtmlCommand_elabHtmlCmd___lambda__1(lean_object* x_1, lean_object* x_2, lean_object* x_3) {
+_start:
+{
+lean_object* x_4; lean_object* x_5; lean_object* x_6; lean_object* x_7; lean_object* x_8; 
+x_4 = l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__1;
+x_5 = lean_alloc_ctor(0, 2, 0);
+lean_ctor_set(x_5, 0, x_4);
+lean_ctor_set(x_5, 1, x_2);
+x_6 = lean_alloc_ctor(1, 2, 0);
+lean_ctor_set(x_6, 0, x_5);
+lean_ctor_set(x_6, 1, x_1);
+x_7 = l_Lean_Json_mkObj(x_6);
+x_8 = lean_alloc_ctor(0, 2, 0);
+lean_ctor_set(x_8, 0, x_7);
+lean_ctor_set(x_8, 1, x_3);
+return x_8;
+}
+}
+static lean_object* _init_l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__1() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("Unexpected syntax ", 18, 18);
+return x_1;
+}
+}
+static lean_object* _init_l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__2() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; 
+x_1 = l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__1;
+x_2 = l_Lean_stringToMessageData(x_1);
+return x_2;
+}
+}
+static lean_object* _init_l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__3() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; 
+x_1 = l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__20;
+x_2 = l_Lean_stringToMessageData(x_1);
+return x_2;
+}
+}
+static lean_object* _init_l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__4() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("Parser", 6, 6);
+return x_1;
+}
+}
+static lean_object* _init_l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__5() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("Term", 4, 4);
+return x_1;
+}
+}
+static lean_object* _init_l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__6() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("app", 3, 3);
+return x_1;
+}
+}
+static lean_object* _init_l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__7() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; lean_object* x_4; lean_object* x_5; 
+x_1 = l_ProofWidgets_HtmlCommand_evalCommandMHtmlUnsafe___closed__1;
+x_2 = l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__4;
+x_3 = l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__5;
+x_4 = l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__6;
+x_5 = l_Lean_Name_mkStr4(x_1, x_2, x_3, x_4);
+return x_5;
+}
+}
+static lean_object* _init_l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__8() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("HtmlEval.eval", 13, 13);
+return x_1;
+}
+}
+static lean_object* _init_l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__9() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; 
+x_1 = l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__8;
+x_2 = l_String_toSubstring_x27(x_1);
+return x_2;
+}
+}
+static lean_object* _init_l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__10() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("HtmlEval", 8, 8);
+return x_1;
+}
+}
+static lean_object* _init_l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__11() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("eval", 4, 4);
+return x_1;
+}
+}
+static lean_object* _init_l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__12() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; 
+x_1 = l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__10;
+x_2 = l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__11;
+x_3 = l_Lean_Name_mkStr2(x_1, x_2);
+return x_3;
+}
+}
+static lean_object* _init_l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__13() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; lean_object* x_4; 
+x_1 = l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__2;
+x_2 = l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__10;
+x_3 = l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__11;
+x_4 = l_Lean_Name_mkStr3(x_1, x_2, x_3);
+return x_4;
+}
+}
+static lean_object* _init_l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__14() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; 
+x_1 = lean_box(0);
+x_2 = l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__13;
+x_3 = lean_alloc_ctor(1, 2, 0);
+lean_ctor_set(x_3, 0, x_2);
+lean_ctor_set(x_3, 1, x_1);
+return x_3;
+}
+}
+static lean_object* _init_l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__15() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; 
+x_1 = lean_box(0);
+x_2 = l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__14;
+x_3 = lean_alloc_ctor(1, 2, 0);
+lean_ctor_set(x_3, 0, x_2);
+lean_ctor_set(x_3, 1, x_1);
+return x_3;
+}
+}
+static lean_object* _init_l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__16() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("null", 4, 4);
+return x_1;
+}
+}
+static lean_object* _init_l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__17() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; 
+x_1 = lean_box(0);
+x_2 = l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__16;
+x_3 = l_Lean_Name_str___override(x_1, x_2);
+return x_3;
+}
+}
+static uint64_t _init_l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__18() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; uint64_t x_4; 
+x_1 = l_ProofWidgets_HtmlDisplayPanel;
+x_2 = lean_ctor_get(x_1, 0);
+lean_inc(x_2);
+x_3 = lean_ctor_get(x_2, 0);
+lean_inc(x_3);
+lean_dec(x_2);
+x_4 = lean_string_hash(x_3);
+lean_dec(x_3);
+return x_4;
+}
+}
+static lean_object* _init_l_ProofWidgets_HtmlCommand_elabHtmlCmd___boxed__const__1() {
+_start:
+{
+uint64_t x_1; lean_object* x_2; 
+x_1 = l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__18;
+x_2 = lean_box_uint64(x_1);
+return x_2;
+}
+}
+LEAN_EXPORT lean_object* l_ProofWidgets_HtmlCommand_elabHtmlCmd(lean_object* x_1, lean_object* x_2, lean_object* x_3, lean_object* x_4) {
+_start:
+{
+lean_object* x_5; uint8_t x_6; 
+x_5 = l_ProofWidgets_HtmlCommand_htmlCmd___closed__3;
+lean_inc(x_1);
+x_6 = l_Lean_Syntax_isOfKind(x_1, x_5);
+if (x_6 == 0)
+{
+lean_object* x_7; lean_object* x_8; lean_object* x_9; lean_object* x_10; lean_object* x_11; lean_object* x_12; 
+x_7 = l_Lean_MessageData_ofSyntax(x_1);
+x_8 = l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__2;
+x_9 = lean_alloc_ctor(7, 2, 0);
+lean_ctor_set(x_9, 0, x_8);
+lean_ctor_set(x_9, 1, x_7);
+x_10 = l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__3;
+x_11 = lean_alloc_ctor(7, 2, 0);
+lean_ctor_set(x_11, 0, x_9);
+lean_ctor_set(x_11, 1, x_10);
+x_12 = l_Lean_throwError___at___private_Lean_Elab_Command_0__Lean_Elab_Command_elabCommandUsing___spec__1(x_11, x_2, x_3, x_4);
+lean_dec(x_3);
+return x_12;
+}
+else
+{
+lean_object* x_13; lean_object* x_14; lean_object* x_15; lean_object* x_16; lean_object* x_17; uint8_t x_18; lean_object* x_19; lean_object* x_20; lean_object* x_21; lean_object* x_22; lean_object* x_23; lean_object* x_24; lean_object* x_25; lean_object* x_26; lean_object* x_27; lean_object* x_28; lean_object* x_29; lean_object* x_30; lean_object* x_31; lean_object* x_32; lean_object* x_33; lean_object* x_34; lean_object* x_35; lean_object* x_36; lean_object* x_37; 
+x_13 = lean_unsigned_to_nat(1u);
+x_14 = l_Lean_Syntax_getArg(x_1, x_13);
+x_15 = l_Lean_Elab_Command_getRef(x_2, x_3, x_4);
+x_16 = lean_ctor_get(x_15, 0);
+lean_inc(x_16);
+x_17 = lean_ctor_get(x_15, 1);
+lean_inc(x_17);
+lean_dec(x_15);
+x_18 = 0;
+x_19 = l_Lean_SourceInfo_fromRef(x_16, x_18);
+lean_dec(x_16);
+x_20 = l_Lean_Elab_Command_getCurrMacroScope(x_2, x_3, x_17);
+x_21 = lean_ctor_get(x_20, 0);
+lean_inc(x_21);
+x_22 = lean_ctor_get(x_20, 1);
+lean_inc(x_22);
+lean_dec(x_20);
+x_23 = l_Lean_Elab_Command_getMainModule___rarg(x_3, x_22);
+x_24 = lean_ctor_get(x_23, 0);
+lean_inc(x_24);
+x_25 = lean_ctor_get(x_23, 1);
+lean_inc(x_25);
+lean_dec(x_23);
+x_26 = l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__12;
+x_27 = l_Lean_addMacroScope(x_24, x_26, x_21);
+x_28 = lean_box(0);
+x_29 = l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__9;
+x_30 = l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__15;
+lean_inc(x_19);
+x_31 = lean_alloc_ctor(3, 4, 0);
+lean_ctor_set(x_31, 0, x_19);
+lean_ctor_set(x_31, 1, x_29);
+lean_ctor_set(x_31, 2, x_27);
+lean_ctor_set(x_31, 3, x_30);
+x_32 = l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__17;
+lean_inc(x_19);
+x_33 = l_Lean_Syntax_node1(x_19, x_32, x_14);
+x_34 = l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__7;
+x_35 = l_Lean_Syntax_node2(x_19, x_34, x_31, x_33);
+x_36 = lean_alloc_closure((void*)(l_ProofWidgets_HtmlCommand_evalCommandMHtmlUnsafe), 8, 1);
+lean_closure_set(x_36, 0, x_35);
+x_37 = l_Lean_Elab_Command_liftTermElabM___rarg(x_36, x_2, x_3, x_25);
+if (lean_obj_tag(x_37) == 0)
+{
+lean_object* x_38; lean_object* x_39; lean_object* x_40; 
+x_38 = lean_ctor_get(x_37, 0);
+lean_inc(x_38);
+x_39 = lean_ctor_get(x_37, 1);
+lean_inc(x_39);
+lean_dec(x_37);
+lean_inc(x_3);
+lean_inc(x_2);
+x_40 = lean_apply_3(x_38, x_2, x_3, x_39);
+if (lean_obj_tag(x_40) == 0)
+{
+lean_object* x_41; lean_object* x_42; lean_object* x_43; lean_object* x_44; lean_object* x_45; lean_object* x_46; lean_object* x_47; lean_object* x_48; 
+x_41 = lean_ctor_get(x_40, 0);
+lean_inc(x_41);
+x_42 = lean_ctor_get(x_40, 1);
+lean_inc(x_42);
+lean_dec(x_40);
+x_43 = lean_alloc_closure((void*)(l_ProofWidgets_ProofWidgets_Html_instRpcEncodableHtml_enc____x40_ProofWidgets_Data_Html___hyg_5_), 2, 1);
+lean_closure_set(x_43, 0, x_41);
+x_44 = lean_alloc_closure((void*)(l_ProofWidgets_HtmlCommand_elabHtmlCmd___lambda__1), 3, 1);
+lean_closure_set(x_44, 0, x_28);
+x_45 = lean_alloc_closure((void*)(l_StateT_bind___at_ProofWidgets_HtmlCommand_elabHtmlCmd___spec__1___rarg), 3, 2);
+lean_closure_set(x_45, 0, x_43);
+lean_closure_set(x_45, 1, x_44);
+x_46 = l_ProofWidgets_HtmlCommand_elabHtmlCmd___boxed__const__1;
+x_47 = lean_alloc_closure((void*)(l_Lean_Widget_savePanelWidgetInfo___boxed), 6, 3);
+lean_closure_set(x_47, 0, x_46);
+lean_closure_set(x_47, 1, x_45);
+lean_closure_set(x_47, 2, x_1);
+x_48 = l_Lean_Elab_Command_liftCoreM___rarg(x_47, x_2, x_3, x_42);
+lean_dec(x_3);
+lean_dec(x_2);
+return x_48;
+}
+else
+{
+uint8_t x_49; 
+lean_dec(x_3);
+lean_dec(x_2);
+lean_dec(x_1);
+x_49 = !lean_is_exclusive(x_40);
+if (x_49 == 0)
+{
+return x_40;
+}
+else
+{
+lean_object* x_50; lean_object* x_51; lean_object* x_52; 
+x_50 = lean_ctor_get(x_40, 0);
+x_51 = lean_ctor_get(x_40, 1);
+lean_inc(x_51);
+lean_inc(x_50);
+lean_dec(x_40);
+x_52 = lean_alloc_ctor(1, 2, 0);
+lean_ctor_set(x_52, 0, x_50);
+lean_ctor_set(x_52, 1, x_51);
+return x_52;
+}
+}
+}
+else
+{
+uint8_t x_53; 
+lean_dec(x_3);
+lean_dec(x_2);
+lean_dec(x_1);
+x_53 = !lean_is_exclusive(x_37);
+if (x_53 == 0)
+{
+return x_37;
+}
+else
+{
+lean_object* x_54; lean_object* x_55; lean_object* x_56; 
+x_54 = lean_ctor_get(x_37, 0);
+x_55 = lean_ctor_get(x_37, 1);
+lean_inc(x_55);
+lean_inc(x_54);
+lean_dec(x_37);
+x_56 = lean_alloc_ctor(1, 2, 0);
+lean_ctor_set(x_56, 0, x_54);
+lean_ctor_set(x_56, 1, x_55);
+return x_56;
+}
+}
+}
+}
+}
+static lean_object* _init_l_ProofWidgets_HtmlCommand_htmlTac___closed__1() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("htmlTac", 7, 7);
+return x_1;
+}
+}
+static lean_object* _init_l_ProofWidgets_HtmlCommand_htmlTac___closed__2() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; lean_object* x_4; 
+x_1 = l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__2;
+x_2 = l_ProofWidgets_HtmlCommand_htmlCmd___closed__1;
+x_3 = l_ProofWidgets_HtmlCommand_htmlTac___closed__1;
+x_4 = l_Lean_Name_mkStr3(x_1, x_2, x_3);
+return x_4;
+}
+}
+static lean_object* _init_l_ProofWidgets_HtmlCommand_htmlTac___closed__3() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_unchecked("html! ", 6, 6);
+return x_1;
+}
+}
+static lean_object* _init_l_ProofWidgets_HtmlCommand_htmlTac___closed__4() {
+_start:
+{
+lean_object* x_1; uint8_t x_2; lean_object* x_3; 
+x_1 = l_ProofWidgets_HtmlCommand_htmlTac___closed__3;
+x_2 = 0;
+x_3 = lean_alloc_ctor(6, 1, 1);
+lean_ctor_set(x_3, 0, x_1);
+lean_ctor_set_uint8(x_3, sizeof(void*)*1, x_2);
+return x_3;
+}
+}
+static lean_object* _init_l_ProofWidgets_HtmlCommand_htmlTac___closed__5() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; lean_object* x_4; 
+x_1 = l_ProofWidgets_HtmlCommand_htmlCmd___closed__5;
+x_2 = l_ProofWidgets_HtmlCommand_htmlTac___closed__4;
+x_3 = l_ProofWidgets_HtmlCommand_htmlCmd___closed__10;
+x_4 = lean_alloc_ctor(2, 3, 0);
+lean_ctor_set(x_4, 0, x_1);
+lean_ctor_set(x_4, 1, x_2);
+lean_ctor_set(x_4, 2, x_3);
+return x_4;
+}
+}
+static lean_object* _init_l_ProofWidgets_HtmlCommand_htmlTac___closed__6() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; lean_object* x_4; 
+x_1 = l_ProofWidgets_HtmlCommand_htmlTac___closed__2;
+x_2 = lean_unsigned_to_nat(1022u);
+x_3 = l_ProofWidgets_HtmlCommand_htmlTac___closed__5;
+x_4 = lean_alloc_ctor(3, 3, 0);
+lean_ctor_set(x_4, 0, x_1);
+lean_ctor_set(x_4, 1, x_2);
+lean_ctor_set(x_4, 2, x_3);
+return x_4;
+}
+}
+static lean_object* _init_l_ProofWidgets_HtmlCommand_htmlTac() {
+_start:
+{
+lean_object* x_1; 
+x_1 = l_ProofWidgets_HtmlCommand_htmlTac___closed__6;
+return x_1;
+}
+}
+LEAN_EXPORT lean_object* l_ProofWidgets_HtmlCommand_elabHtmlTac___rarg(lean_object* x_1) {
+_start:
+{
+lean_object* x_2; lean_object* x_3; 
+x_2 = lean_box(0);
+x_3 = lean_alloc_ctor(0, 2, 0);
+lean_ctor_set(x_3, 0, x_2);
+lean_ctor_set(x_3, 1, x_1);
+return x_3;
+}
+}
+LEAN_EXPORT lean_object* l_ProofWidgets_HtmlCommand_elabHtmlTac(lean_object* x_1, lean_object* x_2, lean_object* x_3, lean_object* x_4, lean_object* x_5, lean_object* x_6, lean_object* x_7, lean_object* x_8, lean_object* x_9) {
+_start:
+{
+lean_object* x_10; 
+x_10 = lean_alloc_closure((void*)(l_ProofWidgets_HtmlCommand_elabHtmlTac___rarg), 1, 0);
+return x_10;
+}
+}
+LEAN_EXPORT lean_object* l_ProofWidgets_HtmlCommand_elabHtmlTac___boxed(lean_object* x_1, lean_object* x_2, lean_object* x_3, lean_object* x_4, lean_object* x_5, lean_object* x_6, lean_object* x_7, lean_object* x_8, lean_object* x_9) {
+_start:
+{
+lean_object* x_10; 
+x_10 = l_ProofWidgets_HtmlCommand_elabHtmlTac(x_1, x_2, x_3, x_4, x_5, x_6, x_7, x_8, x_9);
+lean_dec(x_9);
+lean_dec(x_8);
+lean_dec(x_7);
+lean_dec(x_6);
+lean_dec(x_5);
+lean_dec(x_4);
+lean_dec(x_3);
+lean_dec(x_2);
+lean_dec(x_1);
+return x_10;
+}
+}
+LEAN_EXPORT lean_object* l_Lean_MessageData_ofComponent___at_Lean_MessageData_ofHtml___spec__1(lean_object* x_1, lean_object* x_2, lean_object* x_3, lean_object* x_4, lean_object* x_5, lean_object* x_6) {
+_start:
+{
+lean_object* x_7; lean_object* x_8; lean_object* x_9; uint64_t x_10; lean_object* x_11; 
+x_7 = lean_ctor_get(x_1, 0);
+lean_inc(x_7);
+lean_dec(x_1);
+x_8 = lean_ctor_get(x_7, 1);
+lean_inc(x_8);
+lean_dec(x_7);
+x_9 = lean_alloc_closure((void*)(l_ProofWidgets_ProofWidgets_HtmlDisplayProps_instRpcEncodableHtmlDisplayProps_enc____x40_ProofWidgets_Component_HtmlDisplay___hyg_4_), 2, 1);
+lean_closure_set(x_9, 0, x_2);
+x_10 = lean_unbox_uint64(x_8);
+lean_dec(x_8);
+x_11 = l_Lean_Widget_WidgetInstance_ofHash(x_10, x_9, x_4, x_5, x_6);
+if (lean_obj_tag(x_11) == 0)
+{
+uint8_t x_12; 
+x_12 = !lean_is_exclusive(x_11);
+if (x_12 == 0)
+{
+lean_object* x_13; lean_object* x_14; lean_object* x_15; lean_object* x_16; 
+x_13 = lean_ctor_get(x_11, 0);
+x_14 = lean_alloc_ctor(3, 1, 0);
+lean_ctor_set(x_14, 0, x_3);
+x_15 = l_Lean_MessageData_ofFormat(x_14);
+x_16 = lean_alloc_ctor(2, 2, 0);
+lean_ctor_set(x_16, 0, x_13);
+lean_ctor_set(x_16, 1, x_15);
+lean_ctor_set(x_11, 0, x_16);
+return x_11;
+}
+else
+{
+lean_object* x_17; lean_object* x_18; lean_object* x_19; lean_object* x_20; lean_object* x_21; lean_object* x_22; 
+x_17 = lean_ctor_get(x_11, 0);
+x_18 = lean_ctor_get(x_11, 1);
+lean_inc(x_18);
+lean_inc(x_17);
+lean_dec(x_11);
+x_19 = lean_alloc_ctor(3, 1, 0);
+lean_ctor_set(x_19, 0, x_3);
+x_20 = l_Lean_MessageData_ofFormat(x_19);
+x_21 = lean_alloc_ctor(2, 2, 0);
+lean_ctor_set(x_21, 0, x_17);
+lean_ctor_set(x_21, 1, x_20);
+x_22 = lean_alloc_ctor(0, 2, 0);
+lean_ctor_set(x_22, 0, x_21);
+lean_ctor_set(x_22, 1, x_18);
+return x_22;
+}
+}
+else
+{
+uint8_t x_23; 
+lean_dec(x_3);
+x_23 = !lean_is_exclusive(x_11);
+if (x_23 == 0)
+{
+return x_11;
+}
+else
+{
+lean_object* x_24; lean_object* x_25; lean_object* x_26; 
+x_24 = lean_ctor_get(x_11, 0);
+x_25 = lean_ctor_get(x_11, 1);
+lean_inc(x_25);
+lean_inc(x_24);
+lean_dec(x_11);
+x_26 = lean_alloc_ctor(1, 2, 0);
+lean_ctor_set(x_26, 0, x_24);
+lean_ctor_set(x_26, 1, x_25);
+return x_26;
+}
+}
+}
+}
+LEAN_EXPORT lean_object* l_Lean_MessageData_ofHtml(lean_object* x_1, lean_object* x_2, lean_object* x_3, lean_object* x_4, lean_object* x_5) {
+_start:
+{
+lean_object* x_6; lean_object* x_7; 
+x_6 = l_ProofWidgets_HtmlDisplay;
+x_7 = l_Lean_MessageData_ofComponent___at_Lean_MessageData_ofHtml___spec__1(x_6, x_1, x_2, x_3, x_4, x_5);
+return x_7;
+}
+}
+LEAN_EXPORT lean_object* l_Lean_MessageData_ofComponent___at_Lean_MessageData_ofHtml___spec__1___boxed(lean_object* x_1, lean_object* x_2, lean_object* x_3, lean_object* x_4, lean_object* x_5, lean_object* x_6) {
+_start:
+{
+lean_object* x_7; 
+x_7 = l_Lean_MessageData_ofComponent___at_Lean_MessageData_ofHtml___spec__1(x_1, x_2, x_3, x_4, x_5, x_6);
+lean_dec(x_5);
+lean_dec(x_4);
+return x_7;
+}
+}
+LEAN_EXPORT lean_object* l_Lean_MessageData_ofHtml___boxed(lean_object* x_1, lean_object* x_2, lean_object* x_3, lean_object* x_4, lean_object* x_5) {
+_start:
+{
+lean_object* x_6; 
+x_6 = l_Lean_MessageData_ofHtml(x_1, x_2, x_3, x_4, x_5);
+lean_dec(x_4);
+lean_dec(x_3);
+return x_6;
+}
+}
+lean_object* initialize_Init(uint8_t builtin, lean_object*);
+lean_object* initialize_Lean_Server_Rpc_Basic(uint8_t builtin, lean_object*);
+lean_object* initialize_Lean_Elab_Command(uint8_t builtin, lean_object*);
+lean_object* initialize_ProofWidgets_Data_Html(uint8_t builtin, lean_object*);
+static bool _G_initialized = false;
+LEAN_EXPORT lean_object* initialize_ProofWidgets_Component_HtmlDisplay(uint8_t builtin, lean_object* w) {
+lean_object * res;
+if (_G_initialized) return lean_io_result_mk_ok(lean_box(0));
+_G_initialized = true;
+res = initialize_Init(builtin, lean_io_mk_world());
+if (lean_io_result_is_error(res)) return res;
+lean_dec_ref(res);
+res = initialize_Lean_Server_Rpc_Basic(builtin, lean_io_mk_world());
+if (lean_io_result_is_error(res)) return res;
+lean_dec_ref(res);
+res = initialize_Lean_Elab_Command(builtin, lean_io_mk_world());
+if (lean_io_result_is_error(res)) return res;
+lean_dec_ref(res);
+res = initialize_ProofWidgets_Data_Html(builtin, lean_io_mk_world());
+if (lean_io_result_is_error(res)) return res;
+lean_dec_ref(res);
+l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__1 = _init_l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__1();
+lean_mark_persistent(l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__1);
+l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__2 = _init_l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__2();
+lean_mark_persistent(l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__2);
+l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__3 = _init_l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__3();
+lean_mark_persistent(l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__3);
+l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__4 = _init_l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__4();
+lean_mark_persistent(l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__4);
+l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__5 = _init_l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__5();
+lean_mark_persistent(l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__5);
+l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__6 = _init_l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__6();
+lean_mark_persistent(l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__6);
+l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__7 = _init_l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__7();
+lean_mark_persistent(l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__7);
+l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__8 = _init_l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__8();
+lean_mark_persistent(l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__8);
+l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__9 = _init_l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__9();
+lean_mark_persistent(l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__9);
+l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__10 = _init_l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__10();
+lean_mark_persistent(l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__10);
+l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__11 = _init_l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__11();
+lean_mark_persistent(l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__11);
+l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__12 = _init_l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__12();
+lean_mark_persistent(l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__12);
+l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__13 = _init_l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__13();
+lean_mark_persistent(l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__13);
+l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__14 = _init_l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__14();
+lean_mark_persistent(l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__14);
+l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__15 = _init_l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__15();
+lean_mark_persistent(l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__15);
+l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__16 = _init_l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__16();
+lean_mark_persistent(l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__16);
+l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__17 = _init_l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__17();
+lean_mark_persistent(l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__17);
+l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__18 = _init_l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__18();
+lean_mark_persistent(l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__18);
+l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__19 = _init_l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__19();
+lean_mark_persistent(l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__19);
+l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__20 = _init_l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__20();
+lean_mark_persistent(l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__20);
+l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__21 = _init_l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__21();
+lean_mark_persistent(l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__21);
+l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__22 = _init_l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__22();
+lean_mark_persistent(l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__22);
+l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__23 = _init_l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__23();
+lean_mark_persistent(l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__23);
+l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__24 = _init_l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__24();
+lean_mark_persistent(l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__24);
+l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__25 = _init_l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__25();
+lean_mark_persistent(l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__25);
+l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__26 = _init_l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__26();
+lean_mark_persistent(l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_fromJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_30____closed__26);
+l_ProofWidgets_ProofWidgets_HtmlDisplayProps_instFromJsonRpcEncodablePacket___closed__1 = _init_l_ProofWidgets_ProofWidgets_HtmlDisplayProps_instFromJsonRpcEncodablePacket___closed__1();
+lean_mark_persistent(l_ProofWidgets_ProofWidgets_HtmlDisplayProps_instFromJsonRpcEncodablePacket___closed__1);
+l_ProofWidgets_ProofWidgets_HtmlDisplayProps_instFromJsonRpcEncodablePacket = _init_l_ProofWidgets_ProofWidgets_HtmlDisplayProps_instFromJsonRpcEncodablePacket();
+lean_mark_persistent(l_ProofWidgets_ProofWidgets_HtmlDisplayProps_instFromJsonRpcEncodablePacket);
+l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_toJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_113____closed__1 = _init_l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_toJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_113____closed__1();
+lean_mark_persistent(l___private_ProofWidgets_Component_HtmlDisplay_0__ProofWidgets_ProofWidgets_HtmlDisplayProps_toJsonRpcEncodablePacket____x40_ProofWidgets_Component_HtmlDisplay___hyg_113____closed__1);
+l_ProofWidgets_ProofWidgets_HtmlDisplayProps_instToJsonRpcEncodablePacket___closed__1 = _init_l_ProofWidgets_ProofWidgets_HtmlDisplayProps_instToJsonRpcEncodablePacket___closed__1();
+lean_mark_persistent(l_ProofWidgets_ProofWidgets_HtmlDisplayProps_instToJsonRpcEncodablePacket___closed__1);
+l_ProofWidgets_ProofWidgets_HtmlDisplayProps_instToJsonRpcEncodablePacket = _init_l_ProofWidgets_ProofWidgets_HtmlDisplayProps_instToJsonRpcEncodablePacket();
+lean_mark_persistent(l_ProofWidgets_ProofWidgets_HtmlDisplayProps_instToJsonRpcEncodablePacket);
+l_ProofWidgets_ProofWidgets_HtmlDisplayProps_instRpcEncodableHtmlDisplayProps___closed__1 = _init_l_ProofWidgets_ProofWidgets_HtmlDisplayProps_instRpcEncodableHtmlDisplayProps___closed__1();
+lean_mark_persistent(l_ProofWidgets_ProofWidgets_HtmlDisplayProps_instRpcEncodableHtmlDisplayProps___closed__1);
+l_ProofWidgets_ProofWidgets_HtmlDisplayProps_instRpcEncodableHtmlDisplayProps___closed__2 = _init_l_ProofWidgets_ProofWidgets_HtmlDisplayProps_instRpcEncodableHtmlDisplayProps___closed__2();
+lean_mark_persistent(l_ProofWidgets_ProofWidgets_HtmlDisplayProps_instRpcEncodableHtmlDisplayProps___closed__2);
+l_ProofWidgets_ProofWidgets_HtmlDisplayProps_instRpcEncodableHtmlDisplayProps___closed__3 = _init_l_ProofWidgets_ProofWidgets_HtmlDisplayProps_instRpcEncodableHtmlDisplayProps___closed__3();
+lean_mark_persistent(l_ProofWidgets_ProofWidgets_HtmlDisplayProps_instRpcEncodableHtmlDisplayProps___closed__3);
+l_ProofWidgets_ProofWidgets_HtmlDisplayProps_instRpcEncodableHtmlDisplayProps = _init_l_ProofWidgets_ProofWidgets_HtmlDisplayProps_instRpcEncodableHtmlDisplayProps();
+lean_mark_persistent(l_ProofWidgets_ProofWidgets_HtmlDisplayProps_instRpcEncodableHtmlDisplayProps);
+l_ProofWidgets_HtmlDisplay___closed__1 = _init_l_ProofWidgets_HtmlDisplay___closed__1();
+lean_mark_persistent(l_ProofWidgets_HtmlDisplay___closed__1);
+l_ProofWidgets_HtmlDisplay___closed__2 = _init_l_ProofWidgets_HtmlDisplay___closed__2();
+l_ProofWidgets_HtmlDisplay___closed__3___boxed__const__1 = _init_l_ProofWidgets_HtmlDisplay___closed__3___boxed__const__1();
+lean_mark_persistent(l_ProofWidgets_HtmlDisplay___closed__3___boxed__const__1);
+l_ProofWidgets_HtmlDisplay___closed__3 = _init_l_ProofWidgets_HtmlDisplay___closed__3();
+lean_mark_persistent(l_ProofWidgets_HtmlDisplay___closed__3);
+l_ProofWidgets_HtmlDisplay___closed__4 = _init_l_ProofWidgets_HtmlDisplay___closed__4();
+lean_mark_persistent(l_ProofWidgets_HtmlDisplay___closed__4);
+l_ProofWidgets_HtmlDisplay___closed__5 = _init_l_ProofWidgets_HtmlDisplay___closed__5();
+lean_mark_persistent(l_ProofWidgets_HtmlDisplay___closed__5);
+l_ProofWidgets_HtmlDisplay = _init_l_ProofWidgets_HtmlDisplay();
+lean_mark_persistent(l_ProofWidgets_HtmlDisplay);
+l_ProofWidgets_HtmlDisplayPanel___closed__1 = _init_l_ProofWidgets_HtmlDisplayPanel___closed__1();
+lean_mark_persistent(l_ProofWidgets_HtmlDisplayPanel___closed__1);
+l_ProofWidgets_HtmlDisplayPanel___closed__2 = _init_l_ProofWidgets_HtmlDisplayPanel___closed__2();
+l_ProofWidgets_HtmlDisplayPanel___closed__3___boxed__const__1 = _init_l_ProofWidgets_HtmlDisplayPanel___closed__3___boxed__const__1();
+lean_mark_persistent(l_ProofWidgets_HtmlDisplayPanel___closed__3___boxed__const__1);
+l_ProofWidgets_HtmlDisplayPanel___closed__3 = _init_l_ProofWidgets_HtmlDisplayPanel___closed__3();
+lean_mark_persistent(l_ProofWidgets_HtmlDisplayPanel___closed__3);
+l_ProofWidgets_HtmlDisplayPanel___closed__4 = _init_l_ProofWidgets_HtmlDisplayPanel___closed__4();
+lean_mark_persistent(l_ProofWidgets_HtmlDisplayPanel___closed__4);
+l_ProofWidgets_HtmlDisplayPanel = _init_l_ProofWidgets_HtmlDisplayPanel();
+lean_mark_persistent(l_ProofWidgets_HtmlDisplayPanel);
+l_ProofWidgets_instHtmlEvalCoreMHtml___closed__1 = _init_l_ProofWidgets_instHtmlEvalCoreMHtml___closed__1();
+lean_mark_persistent(l_ProofWidgets_instHtmlEvalCoreMHtml___closed__1);
+l_ProofWidgets_instHtmlEvalCoreMHtml = _init_l_ProofWidgets_instHtmlEvalCoreMHtml();
+lean_mark_persistent(l_ProofWidgets_instHtmlEvalCoreMHtml);
+l_ProofWidgets_instHtmlEvalTermElabMHtml___closed__1 = _init_l_ProofWidgets_instHtmlEvalTermElabMHtml___closed__1();
+lean_mark_persistent(l_ProofWidgets_instHtmlEvalTermElabMHtml___closed__1);
+l_ProofWidgets_instHtmlEvalTermElabMHtml = _init_l_ProofWidgets_instHtmlEvalTermElabMHtml();
+lean_mark_persistent(l_ProofWidgets_instHtmlEvalTermElabMHtml);
+l_ProofWidgets_HtmlCommand_evalCommandMHtmlUnsafe___closed__1 = _init_l_ProofWidgets_HtmlCommand_evalCommandMHtmlUnsafe___closed__1();
+lean_mark_persistent(l_ProofWidgets_HtmlCommand_evalCommandMHtmlUnsafe___closed__1);
+l_ProofWidgets_HtmlCommand_evalCommandMHtmlUnsafe___closed__2 = _init_l_ProofWidgets_HtmlCommand_evalCommandMHtmlUnsafe___closed__2();
+lean_mark_persistent(l_ProofWidgets_HtmlCommand_evalCommandMHtmlUnsafe___closed__2);
+l_ProofWidgets_HtmlCommand_evalCommandMHtmlUnsafe___closed__3 = _init_l_ProofWidgets_HtmlCommand_evalCommandMHtmlUnsafe___closed__3();
+lean_mark_persistent(l_ProofWidgets_HtmlCommand_evalCommandMHtmlUnsafe___closed__3);
+l_ProofWidgets_HtmlCommand_evalCommandMHtmlUnsafe___closed__4 = _init_l_ProofWidgets_HtmlCommand_evalCommandMHtmlUnsafe___closed__4();
+lean_mark_persistent(l_ProofWidgets_HtmlCommand_evalCommandMHtmlUnsafe___closed__4);
+l_ProofWidgets_HtmlCommand_evalCommandMHtmlUnsafe___closed__5 = _init_l_ProofWidgets_HtmlCommand_evalCommandMHtmlUnsafe___closed__5();
+lean_mark_persistent(l_ProofWidgets_HtmlCommand_evalCommandMHtmlUnsafe___closed__5);
+l_ProofWidgets_HtmlCommand_evalCommandMHtmlUnsafe___closed__6 = _init_l_ProofWidgets_HtmlCommand_evalCommandMHtmlUnsafe___closed__6();
+lean_mark_persistent(l_ProofWidgets_HtmlCommand_evalCommandMHtmlUnsafe___closed__6);
+l_ProofWidgets_HtmlCommand_evalCommandMHtmlUnsafe___closed__7 = _init_l_ProofWidgets_HtmlCommand_evalCommandMHtmlUnsafe___closed__7();
+lean_mark_persistent(l_ProofWidgets_HtmlCommand_evalCommandMHtmlUnsafe___closed__7);
+l_ProofWidgets_HtmlCommand_evalCommandMHtmlUnsafe___closed__8 = _init_l_ProofWidgets_HtmlCommand_evalCommandMHtmlUnsafe___closed__8();
+lean_mark_persistent(l_ProofWidgets_HtmlCommand_evalCommandMHtmlUnsafe___closed__8);
+l_ProofWidgets_HtmlCommand_evalCommandMHtmlUnsafe___closed__9 = _init_l_ProofWidgets_HtmlCommand_evalCommandMHtmlUnsafe___closed__9();
+lean_mark_persistent(l_ProofWidgets_HtmlCommand_evalCommandMHtmlUnsafe___closed__9);
+l_ProofWidgets_HtmlCommand_evalCommandMHtmlUnsafe___closed__10 = _init_l_ProofWidgets_HtmlCommand_evalCommandMHtmlUnsafe___closed__10();
+lean_mark_persistent(l_ProofWidgets_HtmlCommand_evalCommandMHtmlUnsafe___closed__10);
+l_ProofWidgets_HtmlCommand_htmlCmd___closed__1 = _init_l_ProofWidgets_HtmlCommand_htmlCmd___closed__1();
+lean_mark_persistent(l_ProofWidgets_HtmlCommand_htmlCmd___closed__1);
+l_ProofWidgets_HtmlCommand_htmlCmd___closed__2 = _init_l_ProofWidgets_HtmlCommand_htmlCmd___closed__2();
+lean_mark_persistent(l_ProofWidgets_HtmlCommand_htmlCmd___closed__2);
+l_ProofWidgets_HtmlCommand_htmlCmd___closed__3 = _init_l_ProofWidgets_HtmlCommand_htmlCmd___closed__3();
+lean_mark_persistent(l_ProofWidgets_HtmlCommand_htmlCmd___closed__3);
+l_ProofWidgets_HtmlCommand_htmlCmd___closed__4 = _init_l_ProofWidgets_HtmlCommand_htmlCmd___closed__4();
+lean_mark_persistent(l_ProofWidgets_HtmlCommand_htmlCmd___closed__4);
+l_ProofWidgets_HtmlCommand_htmlCmd___closed__5 = _init_l_ProofWidgets_HtmlCommand_htmlCmd___closed__5();
+lean_mark_persistent(l_ProofWidgets_HtmlCommand_htmlCmd___closed__5);
+l_ProofWidgets_HtmlCommand_htmlCmd___closed__6 = _init_l_ProofWidgets_HtmlCommand_htmlCmd___closed__6();
+lean_mark_persistent(l_ProofWidgets_HtmlCommand_htmlCmd___closed__6);
+l_ProofWidgets_HtmlCommand_htmlCmd___closed__7 = _init_l_ProofWidgets_HtmlCommand_htmlCmd___closed__7();
+lean_mark_persistent(l_ProofWidgets_HtmlCommand_htmlCmd___closed__7);
+l_ProofWidgets_HtmlCommand_htmlCmd___closed__8 = _init_l_ProofWidgets_HtmlCommand_htmlCmd___closed__8();
+lean_mark_persistent(l_ProofWidgets_HtmlCommand_htmlCmd___closed__8);
+l_ProofWidgets_HtmlCommand_htmlCmd___closed__9 = _init_l_ProofWidgets_HtmlCommand_htmlCmd___closed__9();
+lean_mark_persistent(l_ProofWidgets_HtmlCommand_htmlCmd___closed__9);
+l_ProofWidgets_HtmlCommand_htmlCmd___closed__10 = _init_l_ProofWidgets_HtmlCommand_htmlCmd___closed__10();
+lean_mark_persistent(l_ProofWidgets_HtmlCommand_htmlCmd___closed__10);
+l_ProofWidgets_HtmlCommand_htmlCmd___closed__11 = _init_l_ProofWidgets_HtmlCommand_htmlCmd___closed__11();
+lean_mark_persistent(l_ProofWidgets_HtmlCommand_htmlCmd___closed__11);
+l_ProofWidgets_HtmlCommand_htmlCmd___closed__12 = _init_l_ProofWidgets_HtmlCommand_htmlCmd___closed__12();
+lean_mark_persistent(l_ProofWidgets_HtmlCommand_htmlCmd___closed__12);
+l_ProofWidgets_HtmlCommand_htmlCmd = _init_l_ProofWidgets_HtmlCommand_htmlCmd();
+lean_mark_persistent(l_ProofWidgets_HtmlCommand_htmlCmd);
+l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__1 = _init_l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__1();
+lean_mark_persistent(l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__1);
+l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__2 = _init_l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__2();
+lean_mark_persistent(l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__2);
+l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__3 = _init_l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__3();
+lean_mark_persistent(l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__3);
+l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__4 = _init_l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__4();
+lean_mark_persistent(l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__4);
+l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__5 = _init_l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__5();
+lean_mark_persistent(l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__5);
+l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__6 = _init_l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__6();
+lean_mark_persistent(l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__6);
+l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__7 = _init_l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__7();
+lean_mark_persistent(l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__7);
+l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__8 = _init_l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__8();
+lean_mark_persistent(l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__8);
+l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__9 = _init_l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__9();
+lean_mark_persistent(l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__9);
+l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__10 = _init_l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__10();
+lean_mark_persistent(l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__10);
+l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__11 = _init_l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__11();
+lean_mark_persistent(l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__11);
+l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__12 = _init_l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__12();
+lean_mark_persistent(l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__12);
+l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__13 = _init_l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__13();
+lean_mark_persistent(l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__13);
+l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__14 = _init_l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__14();
+lean_mark_persistent(l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__14);
+l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__15 = _init_l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__15();
+lean_mark_persistent(l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__15);
+l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__16 = _init_l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__16();
+lean_mark_persistent(l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__16);
+l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__17 = _init_l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__17();
+lean_mark_persistent(l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__17);
+l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__18 = _init_l_ProofWidgets_HtmlCommand_elabHtmlCmd___closed__18();
+l_ProofWidgets_HtmlCommand_elabHtmlCmd___boxed__const__1 = _init_l_ProofWidgets_HtmlCommand_elabHtmlCmd___boxed__const__1();
+lean_mark_persistent(l_ProofWidgets_HtmlCommand_elabHtmlCmd___boxed__const__1);
+l_ProofWidgets_HtmlCommand_htmlTac___closed__1 = _init_l_ProofWidgets_HtmlCommand_htmlTac___closed__1();
+lean_mark_persistent(l_ProofWidgets_HtmlCommand_htmlTac___closed__1);
+l_ProofWidgets_HtmlCommand_htmlTac___closed__2 = _init_l_ProofWidgets_HtmlCommand_htmlTac___closed__2();
+lean_mark_persistent(l_ProofWidgets_HtmlCommand_htmlTac___closed__2);
+l_ProofWidgets_HtmlCommand_htmlTac___closed__3 = _init_l_ProofWidgets_HtmlCommand_htmlTac___closed__3();
+lean_mark_persistent(l_ProofWidgets_HtmlCommand_htmlTac___closed__3);
+l_ProofWidgets_HtmlCommand_htmlTac___closed__4 = _init_l_ProofWidgets_HtmlCommand_htmlTac___closed__4();
+lean_mark_persistent(l_ProofWidgets_HtmlCommand_htmlTac___closed__4);
+l_ProofWidgets_HtmlCommand_htmlTac___closed__5 = _init_l_ProofWidgets_HtmlCommand_htmlTac___closed__5();
+lean_mark_persistent(l_ProofWidgets_HtmlCommand_htmlTac___closed__5);
+l_ProofWidgets_HtmlCommand_htmlTac___closed__6 = _init_l_ProofWidgets_HtmlCommand_htmlTac___closed__6();
+lean_mark_persistent(l_ProofWidgets_HtmlCommand_htmlTac___closed__6);
+l_ProofWidgets_HtmlCommand_htmlTac = _init_l_ProofWidgets_HtmlCommand_htmlTac();
+lean_mark_persistent(l_ProofWidgets_HtmlCommand_htmlTac);
+return lean_io_result_mk_ok(lean_box(0));
+}
+#ifdef __cplusplus
+}
+#endif

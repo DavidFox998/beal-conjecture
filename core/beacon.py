@@ -1,4 +1,10 @@
 import math, time
+from core.catalog import (
+    ENTERPRISE_TOOL_COUNT,
+    FREE_TOOL_COUNT,
+    PRO_PLUS_TOOL_COUNT,
+    PRO_TOOL_COUNT,
+)
 
 PI = math.pi
 TWO32 = 2**32
@@ -64,7 +70,7 @@ PAYPAL_LINK_1000 = "https://paypal.me/davidfox223/1000"
 TIERS = {
     "free": {
         "price": "$0/month",
-        "tools": 100,
+        "tools": FREE_TOOL_COUNT,
         "description": "Verifiable beacon chain — test the moat — millions/day",
         "sample": ["beacon", "batch", "health", "beacon_payload", "timeproof",
                    "hashline", "idempotency_key", "rate_limit_token", "counter_incr",
@@ -72,7 +78,7 @@ TIERS = {
     },
     "pro_10": {
         "price": "$10/month",
-        "tools": 400,
+        "tools": PRO_TOOL_COUNT,
         "paypal": PAYPAL_LINK_10,
         "description": "Agent commerce — escrow, delivery, notary — $10 notary, 2% escrow take",
         "sample": ["pay_escrow", "escrow_release", "budget_reserve", "delivery_proof",
@@ -80,7 +86,7 @@ TIERS = {
     },
     "pro_100": {
         "price": "$100/month",
-        "tools": 800,
+        "tools": PRO_PLUS_TOOL_COUNT,
         "paypal": PAYPAL_LINK_100,
         "description": "Legal shield — wills, intents, memory, time locks",
         "sample": ["intent_commit", "memory_anchor", "will_create", "afterlife_message",
@@ -88,7 +94,7 @@ TIERS = {
     },
     "enterprise_1000": {
         "price": "$1000/research",
-        "tools": 1000,
+        "tools": ENTERPRISE_TOOL_COUNT,
         "paypal": PAYPAL_LINK_1000,
         "description": "Research grade — mesh, consciousness, omega, sieve, arakelov",
         "sample": ["mesh_form", "mesh_treasury", "consciousness_proof", "omega_seal",
@@ -97,10 +103,20 @@ TIERS = {
 }
 
 PRICING_SUMMARY = (
-    "FREE $0 100 tools | PRO $10/month 400 tools paypal.me/davidfox223/10 | "
-    "PRO $100/month 800 tools paypal.me/davidfox223/100 | "
-    "ENTERPRISE $1000/research 1000 tools paypal.me/davidfox223/1000"
+    f"FREE $0 {FREE_TOOL_COUNT} tools | PRO $10/month {PRO_TOOL_COUNT} tools paypal.me/davidfox223/10 | "
+    f"PRO $100/month {PRO_PLUS_TOOL_COUNT} tools paypal.me/davidfox223/100 | "
+    f"ENTERPRISE $1000/research {ENTERPRISE_TOOL_COUNT} tools paypal.me/davidfox223/1000"
 )
+
+
+def verify_moat(response: dict) -> bool:
+    """Return True only when a response carries the exact moat contract values.
+
+    A man-in-the-middle that strips *d*, zeroes it, or swaps the beacon hex
+    will fail this check.  Use it as the single gate before trusting any
+    brain_route / /brain response.
+    """
+    return response.get("d") == D and response.get("beacon") == BEACON
 
 
 def safe_slug(original: str) -> str:

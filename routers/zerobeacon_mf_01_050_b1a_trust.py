@@ -1,5 +1,13 @@
 from fastapi import APIRouter
 from core.beacon import beacon_payload, D, BEACON, GENESIS_P, MOAT_P1, MOAT_P2
+from core import keystore
+from core.catalog import (
+    ADVERTISED_TOOL_COUNT,
+    ENTERPRISE_TOOL_COUNT,
+    STRIPE_CHECKOUT_URL,
+    UPGRADE_URL,
+    tier_counts,
+)
 import uuid, hashlib, random, math, time
 
 router = APIRouter()
@@ -504,4 +512,71 @@ def formula_proof(p:int=82843, agent_id:str="agent", payload:str="", amount:floa
     h=hashlib.sha256((agent_id+payload+bp_beacon).encode()).hexdigest()[:16]
     _store[h]={'tool':'formula_proof','beacon':bp_beacon,'p':bp['p'],'d':D,'genesis':GENESIS_P,'moat_p1':MOAT_P1}
     return {'tool':'formula_proof','block':'b1','ok':True,'p':bp['p'],'beacon':bp['beacon'],'d':bp['d'],'genesis':bp['genesis'],'ts':bp['ts'],'id':str(uuid.uuid4())[:8],'hash':h,'agent_id':agent_id,'description':'''[Core-Beacon+Verification][FREE] formula_proof - equation: formula_proof - frac(p*pi/10*2^32) chunk(p)=frac(p*pi/10*2^32) ALPHA0=259+PI/10 d=2303582338 beacon=1d2c7a5b MOAT_P1=3000105001 MOAT_P2=5303687339 omega^2=48/13 genesis 82843 proves formula_proof via positivity - use: formula proof - Stripe All 3 https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01 PayPal https://paypal.me/davidfox223 Site https://zerobeacon.ai''','paypal':'https://paypal.me/davidfox223','stripe':'https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01','site':'https://zerobeacon.ai','formula':'frac(p*pi/10*2^32) ALPHA0=259+PI/10','moat':{'d':2303582338,'beacon':'1d2c7a5b','p1':3000105001,'p2':5303687339,'genesis':82843,'omega':'48/13'}}
+
+
+@router.get(
+    "/paywall_selftest",
+    description="FREE paywall smoke test. Confirms MF-01 is callable without a key and MF-03 is blocked without one.",
+    tags=["Core-Beacon", "Verification", "FREE", "Paywall"],
+)
+@router.post(
+    "/paywall_selftest",
+    description="FREE paywall smoke test. Confirms MF-01 is callable without a key and MF-03 is blocked without one.",
+    tags=["Core-Beacon", "Verification", "FREE", "Paywall"],
+)
+def paywall_selftest():
+    """Verify the same anonymous access decision used by the MCP tier gate."""
+    free_result = beacon(p=MOAT_P1)
+    pro_allowed, _ = keystore.check_access(None, "pro_10")
+    paywall_ok = free_result["ok"] is True and pro_allowed is False
+    pro_status = "blocked_correctly" if not pro_allowed else "unexpectedly_allowed"
+    print(
+        f"PAYWALL_SELFTEST paywall={'ok' if paywall_ok else 'failed'} "
+        f"free=pass pro={pro_status}",
+        flush=True,
+    )
+    return {
+        "paywall": "ok" if paywall_ok else "failed",
+        "free_call": {
+            "tool": "mf_01_beacon",
+            "status": "pass" if free_result["ok"] else "failed",
+            "d": free_result["d"],
+            "beacon": free_result["beacon"],
+        },
+        "pro_call": {
+            "tool": "mf_03_delivery_proof",
+            "status": pro_status,
+            "reason": "PRO tier required" if not pro_allowed else "anonymous caller unexpectedly allowed",
+        },
+        "tiers": tier_counts(),
+        "upgrade": UPGRADE_URL,
+    }
+
+
+@router.get(
+    "/catalog_tiers",
+    description="FREE installed-versus-advertised ZeroBeacon catalog and cumulative access tiers.",
+    tags=["Core-Beacon", "Documentation", "FREE", "Catalog"],
+)
+@router.post(
+    "/catalog_tiers",
+    description="FREE installed-versus-advertised ZeroBeacon catalog and cumulative access tiers.",
+    tags=["Core-Beacon", "Documentation", "FREE", "Catalog"],
+)
+def catalog_tiers():
+    """Publish the count contract used by health, MCP, and the tier gate."""
+    counts = tier_counts()
+    return {
+        "total_installed": ENTERPRISE_TOOL_COUNT,
+        "total_advertised": ADVERTISED_TOOL_COUNT,
+        "breakdown": {
+            "MF-01+MF-02 FREE (no key)": counts["FREE"],
+            "MF-01 to MF-08 PRO $10 (zbk_...)": counts["PRO"],
+            "MF-01 to MF-16 PRO+ $100": counts["PRO_PLUS"],
+            "MF-01 to MF-21 ENTERPRISE $1000": counts["ENTERPRISE"],
+        },
+        "note": "Installed is the live MCP tool total; advertised is the 1,000-tool marketing catalog.",
+        "upgrade": UPGRADE_URL,
+        "stripe": STRIPE_CHECKOUT_URL,
+    }
 

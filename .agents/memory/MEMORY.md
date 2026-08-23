@@ -1,2 +1,14 @@
 - [PayPal and Stripe links](paypal-stripe-links.md) — canonical payment links; PayPal is davidfox223 (not davidfox223 — previously wrong)
 - [ZeroBeacon API git remote](zerobeacon-git-remote.md) — origin must point to github.com/DavidFox998/zerobeacon (not brothers-desert-proof)
+- [Lean tsum even-odd rewriting direction](lean-tsum-even-odd.md) — tsum_even_add_odd rewrites even+odd→full; use ← only when full tsum is in goal
+- [SiegelZeroFreeElementary status](brothers-desert-proof-step-a.md) — eta_pos proves pair-sum tsum > 0 (0 sorry); connecting to ζ<0 needs eta identity (pending); eta_hasSum sorry was removed by restructuring to pair sums only
+- [Lean 4.15 HasSum API quirks](lean-hassum-api-quirks.md) — HasSum.congr_fun direction, zero_add needs explicit f, tendsto_rpow_neg_atTop, simp on partial defs
+- [Lean core axiom audit](lean-core-axiom-audit.md) — in Lean 4.12, Nat.gcd brings propext even without imports; use a relational core predicate when zero axioms matter
+- [Lean Int nonzero audit](lean-int-nonzero-audit.md) — direct Int.mul_eq_zero induction avoids Classical.choice and Quot.sound in arithmetic proof audits
+- [Smithery registry propagation](smithery-registry-propagation.md) — external scans refresh capabilities; patch retained listing metadata and allow the server-summary cache to catch up.
+- [Smithery connection verification](smithery-connection-verification.md) — use the official CLI for temporary gateway checks; direct connection writes can be Cloudflare-blocked.
+- [ZeroBeacon catalog semantics](zerobeacon-catalog-semantics.md) — distinguish live MCP inventory from the 1,000-tool advertised catalog.
+- [Fly live key-store testing](fly-live-key-store-testing.md) — machine-exec key writes need an app restart to be recognized and another to revoke cleanly.
+- [Fly builder registry fallback](fly-builder-registry-fallback.md) — if Depot returns a registry 401 after app auth succeeds, deploy through the non-Depot remote builder.
+- [MCP response compatibility](mcp-response-compatibility.md) — successful tool calls retain dictionary payload fields at top level alongside the standard MCP envelope for Smithery clients.
+- [EKG alert webhook verification](ekg-alert-webhook-verification.md) — primary and cold-start EKG alerts must be verified independently before relying on them.
