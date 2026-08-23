@@ -77,6 +77,35 @@ CLUSTERS=(
 # ── require a token ───────────────────────────────────────────────────────────
 [[ -z "${GITHUB_TOKEN:-}" ]] && die "GITHUB_TOKEN is not set."
 
+# ── preflight: verify token is valid and has repo scope ───────────────────────
+header "Verifying GITHUB_TOKEN"
+_http_code=$(curl -sf -o /dev/null -w "%{http_code}" \
+  -H "Authorization: token $GITHUB_TOKEN" \
+  -H "Accept: application/vnd.github.v3+json" \
+  "https://api.github.com/rate_limit") || true
+
+if [[ "$_http_code" != "200" ]]; then
+  die "GITHUB_TOKEN is invalid or missing repo scope (HTTP $_http_code from /rate_limit). Aborting before per-repo API calls."
+fi
+
+# For personal access tokens, X-OAuth-Scopes lists the granted scopes.
+_scopes=$(curl -sI \
+  -H "Authorization: token $GITHUB_TOKEN" \
+  -H "Accept: application/vnd.github.v3+json" \
+  "https://api.github.com/rate_limit" \
+  | tr -d '\r' \
+  | awk -F': ' 'tolower($1) == "x-oauth-scopes" {print $2}')
+
+if [[ -n "$_scopes" ]]; then
+  echo "  Token OAuth scopes : $_scopes"
+  if ! echo "$_scopes" | grep -qE '(^|,\s*)repo($|,|\s)'; then
+    die "GITHUB_TOKEN is missing the 'repo' scope (found: $_scopes). The relock script needs repo scope to read ensemble repos."
+  fi
+else
+  echo "  Token scopes       : (built-in Actions token or fine-grained PAT — OAuth scope header absent)"
+fi
+ok "GITHUB_TOKEN is valid."
+
 # ── locate CHAIN.md ───────────────────────────────────────────────────────────
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"

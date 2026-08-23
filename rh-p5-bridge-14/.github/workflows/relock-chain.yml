@@ -54,6 +54,40 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Verify token
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [[ -z "${GITHUB_TOKEN:-}" ]]; then
+            echo "::error::GITHUB_TOKEN is not set — cannot verify token."
+            exit 1
+          fi
+          http_code=$(curl -sf -o /dev/null -w "%{http_code}" \
+            -H "Authorization: token $GITHUB_TOKEN" \
+            -H "Accept: application/vnd.github.v3+json" \
+            "https://api.github.com/rate_limit")
+          if [[ "$http_code" != "200" ]]; then
+            echo "::error::GITHUB_TOKEN is invalid or missing repo scope (HTTP $http_code from /rate_limit). Aborting before per-repo API calls."
+            exit 1
+          fi
+          # For personal access tokens, X-OAuth-Scopes header lists granted scopes.
+          scopes=$(curl -sI \
+            -H "Authorization: token $GITHUB_TOKEN" \
+            -H "Accept: application/vnd.github.v3+json" \
+            "https://api.github.com/rate_limit" \
+            | tr -d '\r' \
+            | awk -F': ' 'tolower($1) == "x-oauth-scopes" {print $2}')
+          if [[ -n "$scopes" ]]; then
+            echo "Token OAuth scopes: $scopes"
+            if ! echo "$scopes" | grep -qE '(^|,\s*)repo($|,|\s)'; then
+              echo "::error::GITHUB_TOKEN is missing the 'repo' scope (found: $scopes). The relock script needs repo scope to read ensemble repos."
+              exit 1
+            fi
+          else
+            echo "Token scopes: (built-in Actions token or fine-grained PAT — OAuth scope header absent, continuing)"
+          fi
+          echo "GITHUB_TOKEN verified — token is valid."
+
       - name: Dry-run relock script (token & API check)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -133,6 +167,40 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+
+      - name: Verify token
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [[ -z "${GITHUB_TOKEN:-}" ]]; then
+            echo "::error::GITHUB_TOKEN is not set — cannot verify token."
+            exit 1
+          fi
+          http_code=$(curl -sf -o /dev/null -w "%{http_code}" \
+            -H "Authorization: token $GITHUB_TOKEN" \
+            -H "Accept: application/vnd.github.v3+json" \
+            "https://api.github.com/rate_limit")
+          if [[ "$http_code" != "200" ]]; then
+            echo "::error::GITHUB_TOKEN is invalid or missing repo scope (HTTP $http_code from /rate_limit). Aborting before per-repo API calls."
+            exit 1
+          fi
+          # For personal access tokens, X-OAuth-Scopes header lists granted scopes.
+          scopes=$(curl -sI \
+            -H "Authorization: token $GITHUB_TOKEN" \
+            -H "Accept: application/vnd.github.v3+json" \
+            "https://api.github.com/rate_limit" \
+            | tr -d '\r' \
+            | awk -F': ' 'tolower($1) == "x-oauth-scopes" {print $2}')
+          if [[ -n "$scopes" ]]; then
+            echo "Token OAuth scopes: $scopes"
+            if ! echo "$scopes" | grep -qE '(^|,\s*)repo($|,|\s)'; then
+              echo "::error::GITHUB_TOKEN is invalid or missing repo scope (found: $scopes). The relock script needs repo scope to read ensemble repos."
+              exit 1
+            fi
+          else
+            echo "Token scopes: (built-in Actions token or fine-grained PAT — OAuth scope header absent, continuing)"
+          fi
+          echo "GITHUB_TOKEN verified — token is valid."
 
       - name: Run relock script
         env:
