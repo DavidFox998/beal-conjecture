@@ -1,5 +1,0 @@
-{"log":
- [{"message":
-   ".> LEAN_PATH=././.lake/packages/batteries/.lake/build/lib:././.lake/packages/Qq/.lake/build/lib:././.lake/packages/aesop/.lake/build/lib:././.lake/packages/proofwidgets/.lake/build/lib:././.lake/packages/Cli/.lake/build/lib:././.lake/packages/importGraph/.lake/build/lib:././.lake/packages/LeanSearchClient/.lake/build/lib:././.lake/packages/mathlib/.lake/build/lib:././.lake/build/lib LD_LIBRARY_PATH= /home/runner/.elan/toolchains/leanprover--lean4---v4.12.0/bin/lean -Dlinter.missingDocs=true ././.lake/packages/batteries/././Batteries/Tactic/Lint/TypeClass.lean -R ././.lake/packages/batteries/./. -o ././.lake/packages/batteries/.lake/build/lib/Batteries/Tactic/Lint/TypeClass.olean -i ././.lake/packages/batteries/.lake/build/lib/Batteries/Tactic/Lint/TypeClass.ilean -c ././.lake/packages/batteries/.lake/build/ir/Batteries/Tactic/Lint/TypeClass.c --json",
-   "level": "trace"}],
- "depHash": "16173579639892506015"}

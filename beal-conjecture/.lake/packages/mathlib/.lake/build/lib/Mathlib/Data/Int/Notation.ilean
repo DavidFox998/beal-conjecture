@@ -1,1 +1,0 @@
-{"version":3,"references":{"{\"c\":{\"n\":\"Int\",\"m\":\"Init.Data.Int.Basic\"}}":{"usages":[[11,31,11,34]],"definition":null}},"module":"Mathlib.Data.Int.Notation"}

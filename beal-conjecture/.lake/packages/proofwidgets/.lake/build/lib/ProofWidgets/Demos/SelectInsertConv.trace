@@ -1,5 +1,0 @@
-{"log":
- [{"message":
-   ".> LEAN_PATH=././.lake/packages/batteries/.lake/build/lib:././.lake/build/lib LD_LIBRARY_PATH= /home/runner/.elan/toolchains/leanprover--lean4---v4.12.0-rc1/bin/lean ././././ProofWidgets/Demos/SelectInsertConv.lean -R ./././. -o ././.lake/build/lib/ProofWidgets/Demos/SelectInsertConv.olean -i ././.lake/build/lib/ProofWidgets/Demos/SelectInsertConv.ilean -c ././.lake/build/ir/ProofWidgets/Demos/SelectInsertConv.c --json",
-   "level": "trace"}],
- "depHash": "8418667798060897525"}

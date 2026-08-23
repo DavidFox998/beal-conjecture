@@ -1,5 +1,0 @@
-{"log":
- [{"message":
-   ".> LEAN_PATH=././.lake/packages/batteries/.lake/build/lib:././.lake/build/lib LD_LIBRARY_PATH= /home/runner/.elan/toolchains/leanprover--lean4---v4.12.0-rc1/bin/lean ././././ProofWidgets/Component/Recharts.lean -R ./././. -o ././.lake/build/lib/ProofWidgets/Component/Recharts.olean -i ././.lake/build/lib/ProofWidgets/Component/Recharts.ilean -c ././.lake/build/ir/ProofWidgets/Component/Recharts.c --json",
-   "level": "trace"}],
- "depHash": "6071829920563196226"}

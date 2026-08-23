@@ -1,1 +1,0 @@
-{"version":3,"references":{"{\"c\":{\"n\":\"Nat\",\"m\":\"Init.Prelude\"}}":{"usages":[[10,31,10,34]],"definition":null}},"module":"Mathlib.Data.Nat.Notation"}
