@@ -1,5 +1,6 @@
 name: "@davidjfox998/zerobeacon-1000"
-displayName: "ZeroBeacon.ai — Collision-Proof Commerce Router for AI Agents"
+displayName: "ZeroBeacon.ai — Collision-Anchored Commerce Router for AI Agents"
+logo: "logo.png"
 description: |
   Tools so that AI can purchase goods for humans without collision. A logistical impossibility without this API toolset.
 
@@ -39,6 +40,11 @@ keywords:
   - ai-agents
   - billing
   - escrow
+categories:
+  - commerce
+  - finance
+  - utilities
+  - research
 runtime: "python"
 startCommand: "uvicorn zerobeacon_mf_1000_main:app --host 0.0.0.0 --port 8000 --workers 1"
 configSchema:
