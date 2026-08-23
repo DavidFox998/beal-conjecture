@@ -100,18 +100,24 @@ if [[ "$EXIT_CODE" -eq 0 ]]; then
 fi
 ok "Script exited ${EXIT_CODE} (non-zero) — API failure is NOT silently ignored."
 
-# 2. The output must contain the FATAL error marker.
-if echo "$output" | grep -qiE 'FATAL|API call failed'; then
-  ok "Output contains expected FATAL / 'API call failed' message."
+# 2. The output must contain a recognisable error indicator.
+#    The bash version of the script uses "FATAL" / "API call failed".
+#    The Python version raises urllib.error.HTTPError ("HTTP Error …") or
+#    prints "ERROR: GITHUB_TOKEN …" when the token is invalid.
+#    Any of these proves the script detected the failure rather than
+#    silently swallowing it.
+if echo "$output" | grep -qiE 'FATAL|API call failed|HTTP Error|HTTPError|urllib\.error|ERROR:'; then
+  ok "Output contains expected failure indicator — error was not swallowed."
 else
-  fail "Expected FATAL or 'API call failed' in output, but it was absent." \
-       "The script may have exited for an unexpected reason."
+  fail "Expected FATAL, 'API call failed', 'HTTP Error', or 'ERROR:' in output," \
+       "but none were found. The script may have exited for an unexpected reason."
 fi
 
 # 3. The script must NOT have printed a computed chain SHA256.
-#    If it did, it silently continued past the failure and hashed partial data.
-if echo "$output" | grep -qE 'New SHA256\s*:'; then
-  fail "Script printed a computed 'New SHA256' despite an API failure —" \
+#    Both script versions print the new SHA before patching files.
+#    "New chain SHA256:" (Python) and "New SHA256 :" (bash) both match.
+if echo "$output" | grep -qiE 'new.*sha256|sha256.*:'; then
+  fail "Script printed a computed SHA256 despite an API failure —" \
        "it continued with partial data and must not exit 0 in production."
 fi
 ok "No chain SHA256 was computed — script aborted before hashing partial data."
