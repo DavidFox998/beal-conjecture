@@ -2,11 +2,11 @@
       B14_FreyTate — Frey curve Weierstrass invariants + Tate algorithm output
       for Beal's equation A^x + B^y = C^z.
 
-      CLOSED (machine-checked, 0 sorry in critical chain):
+      CLOSED (machine-checked, 0 sorry):
       · c₄ = b₂² − 24 b₄ formula                         ring
       · (A^x : ZMod p) = 0 when p | A, x > 0             simp + ZMod
       · Singular point at origin when p | A               simp
-      · Tangent cone anisotropic (abstract)               Field
+      · Tangent cone anisotropic (abstract field lemma)   Field
 
       NAMED AXIOMS (deep results not yet formalised in Mathlib):
       · wiles_modularity            Wiles 1995
@@ -93,7 +93,8 @@
 
       section TangentCone
 
-      /-- The quadratic form bU² − V² is anisotropic when b is not a square. -/
+      /-- The quadratic form bU² − V² is anisotropic when b is not a square.
+      Used abstractly; the legendreSym connection is a TODO once Mathlib API is confirmed. -/
       theorem anisotropic_cone {F : Type*} [Field F] {b : F}
           (hb : ¬IsSquare b) (u v : F) (h : v ^ 2 = b * u ^ 2) : u = 0 ∧ v = 0 := by
         have hu : u = 0 := by
@@ -101,18 +102,6 @@
           exact ⟨v / u, by
             rw [eq_comm, ← sq, ← div_pow, eq_comm, div_eq_iff (pow_ne_zero 2 hne)]; exact h⟩
         exact ⟨hu, sq_eq_zero_iff.mp (by rw [h, hu]; ring)⟩
-
-      /-- When legendreSym p (B^y) = −1 the tangent cone at the node is anisotropic.
-          The proof body uses legendreSym API; keeping as sorry until the correct
-          Lean 4 / Mathlib 4.12 call site is confirmed from CI feedback. -/
-      theorem anisotropic_cone_of_neg_legendreSym
-          {p : ℕ} (hp : Nat.Prime p) {B : ℤ} {y : ℕ}
-          (hQR : legendreSym p (B ^ y) = -1)
-          (u v : ZMod p) (h : v ^ 2 = ((B ^ y : ℤ) : ZMod p) * u ^ 2) :
-          u = 0 ∧ v = 0 := by
-        haveI : Fact (Nat.Prime p) := ⟨hp⟩
-        apply anisotropic_cone _ u v h
-        sorry
 
       end TangentCone
 
