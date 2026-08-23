@@ -63,7 +63,7 @@
             (∀ q : ℕ, q.Prime → q ∣ N →
                 q ∣ A.natAbs * B.natAbs * C.natAbs ∨ q = 2) := by
       intro p hp hp2 hpDiv
-      refine ⟨Beal.B03_Conductor_Core.conductor_Frey A B C x y, ?_, ?_, ?_⟩
+      refine ⟨Beal.FreyTate.conductor_Frey A B C x y, ?_, ?_, ?_⟩
       · exact (Beal.FreyTate.TateStep2.tate_frey_multiplicative_derived
             hp hp2 hA hB hC (by linarith) (by linarith) (by linarith)
             hEq hCop hpDiv _ rfl).1
