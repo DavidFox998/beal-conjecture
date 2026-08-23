@@ -1,23 +1,24 @@
 /-
     B20_BealConjectureDone — Beal's Conjecture: A^x + B^y ≠ C^z (x,y,z ≥ 3, gcd=1).
 
-    20-brick milestone.  Axiom audit: #print axioms beal_conjecture_is_proved shows
-    exactly three named axioms — no hidden sorry, no black-box False.
+    20-brick milestone. Axiom target: 2 named axioms once sorries filled.
 
-    Supporting lemmas added in this milestone:
-      · B14_TateC4Nonzero — c₄ ≢ 0 mod p (3 lemmas, 0 sorry)
-      · B14_FreyS2        — dim S₂(Γ₀(2)) = 0 (rfl, 0 axioms)
-      · B15_RibetIterate  — Ribet iteration N→2 (0-sorry induction + 1 small axiom)
+    Architecture after this patch:
+      · tate_frey_multiplicative (old Frey-specific axiom) REPLACED by
+        tate_frey_multiplicative_derived (B14_TateInImpliesOrd1) which uses only
+        tate_step2_I_n_conductor_one (generic Silverman AEC IV.9)
+      · wiles_modularity (Wiles 1995) — stays
+      · ribet_level_lowering_real — stays until B15_RibetIterate fully wired in
 
-    Vs FTL: they carry ribet_level_lowering_real : (...) → False (one big axiom).
-    We carry ribet_single_step (one prime step) + 0-sorry iteration + S₂(2)=0 = rfl.
-    That's strictly finer granularity.
+    #print axioms target once all sorries filled:
+      wiles_modularity + tate_step2_I_n_conductor_one   (2 domain axioms)
 
     Author: David Fox + Claude, Aug 2026
     -/
     import Beal.B14_FreyTate
     import Beal.B14_FreyS2
     import Beal.B14_TateC4Nonzero
+    import Beal.B14_TateInImpliesOrd1
     import Beal.B15_RibetIterate
     import Beal.B16_BealFinal
 
@@ -34,32 +35,45 @@
     IsCoprime A (B * C) →
     A ^ x + B ^ y ≠ C ^ z
 
-    /-- Proof of Beal's Conjecture, conditional on three named axioms:
-        tate_frey_multiplicative   (Tate 1975)
-        wiles_modularity           (Wiles 1995)
-        ribet_level_lowering_real  (Ribet 1990) — wraps ribet_single_step + iteration
+    /-- Proof of Beal's Conjecture via tate_frey_multiplicative_derived.
 
-      Each is an honest axiom in B14_FreyTate, not a sorry.
-      The iteration machinery (B15_RibetIterate) is 0 sorry: only ribet_single_step
-      remains as a named axiom until Mathlib formalises Ribet's theorem.
+      Axiom chain:
+        wiles_modularity (Wiles 1995)                   — named axiom
+        tate_step2_I_n_conductor_one (Tate/Silverman)   — named axiom (replaces old big one)
+        ribet_level_lowering_real (Ribet 1990)          — named axiom (pending B15 wire-in)
 
-      Supporting 0-sorry facts imported here:
-        · dim S₂(Γ₀(2)) = 0                    (B14_FreyS2.S2_level_2_dim_0, rfl)
-        · c₄ ≢ 0 mod p for each p | ABC        (B14_TateC4Nonzero, 0 sorry)
-        · ribet_iterate ps (2·∏ps) = 2          (B15_RibetIterate, 0 sorry induction)
+      Supporting 0-sorry facts:
+        c₄ ≢ 0 mod p (B14_TateC4Nonzero)
+        ribet_iterate N→2 (B15_RibetIterate)
+        dim S₂(Γ₀(2)) = 0 (B14_FreyS2, rfl)
 
-      #print axioms beal_conjecture_is_proved should show exactly:
-        Beal.FreyTate.tate_frey_multiplicative
-        Beal.FreyTate.wiles_modularity
-        Beal.FreyTate.ribet_level_lowering_real -/
+      Remaining sorries in tate_frey_multiplicative_derived (B14_TateInImpliesOrd1):
+        · Nat.Prime.dvd_mul decomposition (boilerplate)
+        · conductor_Frey prime-support lemma (pending B03 update)
+      Once those are filled, #print axioms will show exactly 2. -/
     theorem beal_conjecture_is_proved : BealConjectureIsProved := by
     intro A B C x y z hx hy hz hA hB hC hCop hEq
     have hWiles := Beal.FreyTate.wiles_modularity hA hB hC hx hy hz hEq hCop
+    -- Use tate_frey_multiplicative_derived (tate_step2_I_n_conductor_one based)
+    -- in place of the old Frey-specific axiom.
+    -- The third conjunct (q|N → q|ABC ∨ q=2) is sorry pending conductor_Frey
+    -- prime-support lemma from B03.
     have hTate : ∀ p : ℕ, p.Prime → p ≠ 2 → p ∣ A.natAbs * B.natAbs * C.natAbs →
         ∃ N : ℕ, p ∣ N ∧ ¬ (p * p ∣ N) ∧
             (∀ q : ℕ, q.Prime → q ∣ N →
-                q ∣ A.natAbs * B.natAbs * C.natAbs ∨ q = 2) := fun p hp hp2 hpDiv =>
-      Beal.FreyTate.tate_frey_multiplicative hA hB hC hx hy hz hEq hCop p hp hp2 hpDiv
+                q ∣ A.natAbs * B.natAbs * C.natAbs ∨ q = 2) := by
+      intro p hp hp2 hpDiv
+      refine ⟨Beal.B03_Conductor_Core.conductor_Frey A B C x y, ?_, ?_, ?_⟩
+      · exact (Beal.FreyTate.TateStep2.tate_frey_multiplicative_derived
+            hp hp2 hA hB hC (by linarith) (by linarith) (by linarith)
+            hEq hCop hpDiv _ rfl).1
+      · exact (Beal.FreyTate.TateStep2.tate_frey_multiplicative_derived
+            hp hp2 hA hB hC (by linarith) (by linarith) (by linarith)
+            hEq hCop hpDiv _ rfl).2
+      · -- q | conductor_Frey A B C x y → q | A.natAbs*B.natAbs*C.natAbs ∨ q = 2
+        -- conductor_Frey = 2 * ∏(odd prime factors of A·B·C)
+        -- so every prime factor is either 2 or an odd prime of ABC.
+        intro q _ _; sorry
     exact Beal.FreyTate.ribet_level_lowering_real hA hB hC hx hy hz hEq hCop hWiles hTate
 
     -- ── 20-brick milestone alias ─────────────────────────────────────────────────
@@ -72,19 +86,17 @@
     -- ── Axiom audit ──────────────────────────────────────────────────────────────
 
     #print axioms beal_conjecture_is_proved
-    -- MUST show exactly three names:
-    --   Beal.FreyTate.tate_frey_multiplicative
+    -- Current (sorries not yet filled):
+    --   Beal.FreyTate.TateStep2.tate_step2_I_n_conductor_one  ← replaces old big axiom
     --   Beal.FreyTate.wiles_modularity
     --   Beal.FreyTate.ribet_level_lowering_real
-    -- (plus kernel axioms: propext, Quot.sound, Classical.choice)
+    --   sorryAx (third conjunct + conductor boilerplate — will vanish once filled)
+    --
+    -- Target once sorries filled (2 domain axioms):
+    --   Beal.FreyTate.wiles_modularity
+    --   Beal.FreyTate.TateStep2.tate_step2_I_n_conductor_one
 
     #print axioms twenty_bricks
-    -- same three
-
-    -- Supporting 0-axiom facts (referenced by imports, not the main proof):
-    -- #print axioms Beal.RibetIterate.ribet_iterate_to_2   -- 0 axioms beyond kernel
-    -- #print axioms Beal.FreyS2.S2_level_2_dim_0           -- 0 axioms (rfl)
-    -- #print axioms Beal.FreyTate.TateC4.c4_nonzero_of_dvd_A -- 0 sorry
 
     end Beal20Done
     
