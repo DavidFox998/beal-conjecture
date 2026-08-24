@@ -34,6 +34,7 @@
       have h16_pow : (16 : ℕ) = 2 ^ 4 := by norm_num
       rw [h16_pow] at h_dvd
       have h2dvd : p ∣ 2 := hp.dvd_of_dvd_pow h_dvd
+      have h2le : 2 ≤ p := hp.two_le
       have hor := Nat.prime_two.eq_one_or_self_of_dvd p h2dvd
       omega
 
