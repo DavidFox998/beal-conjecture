@@ -42,7 +42,7 @@
         rw [h_div]; exact ih h_rest
 
       noncomputable def odd_prime_divisors_ABC (A B C : ℤ) : List ℕ :=
-        (A.natAbs * B.natAbs * C.natAbs).factors.toFinset.filter (· ≠ 2) |>.toList
+        (A.natAbs * B.natAbs * C.natAbs).primeFactors.filter (· ≠ 2) |>.toList
 
       theorem iterate_to_level_2 {A B C : ℤ} :
         ribet_iterate (odd_prime_divisors_ABC A B C)
