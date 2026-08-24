@@ -85,9 +85,8 @@ jobs:
           #print axioms BealRibetReal.ribet_realDefs_trivial
           #print axioms BealRibetReal.level_to_2_trivial
           #print axioms BealFreyConductor.beal_primes_not_divide_conductor_trivial
-          #print axioms BealLevelTo2.ribet_lowers_to_2_trivial
-          #print axioms Beal16Final.beal_if_S2vanishes_and_Ribet_trivial
-          #print axioms Beal16Final.beal_follows
+          #print axioms BealLevelTo2.ribet_chain_to_2_gives_False
+          #print axioms Beal16Final.beal_if_wiles_tate_ribet
           #print axioms Beal17Mazur.mazur_irreducible_trivial
           #print axioms Beal17Mazur.irreducible_implies_can_lower_trivial
           #print axioms Beal18Frey.frey_disc_nonzero_trivial
