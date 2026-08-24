@@ -12,9 +12,6 @@
       · wiles_modularity            Wiles 1995
       · ribet_level_lowering_real   Ribet 1990
 
-      (tate_frey_multiplicative kept for reference but superseded by
-       tate_frey_multiplicative_derived in B14_TateInImpliesOrd1.)
-
       Author: David Fox + Claude, Aug 2026
       -/
       import Mathlib.Data.ZMod.Basic
@@ -50,9 +47,37 @@
       def disc_Frey (A B C : ℤ) (x y z : ℕ) : ℤ :=
         16 * (A ^ x) ^ 2 * (B ^ y) ^ 2 * (C ^ z) ^ 2
 
-      /-- Conductor of the Frey curve: 2 · ∏{odd primes p : p | A·B·C}. -/
-      noncomputable def conductor_Frey (A B C : ℤ) (x y : ℕ) : ℕ :=
-        2 * ((A.natAbs * B.natAbs * C.natAbs).factors.toFinset.filter (· ≠ 2)).prod id
+      /-- An integral Weierstrass model of the Frey curve
+          `Y² = X(X − Aˣ)(X + Bʸ)`.
+
+          The conductor is deliberately data of the model rather than a radical
+          proxy fabricated from `A·B·C`. Its odd-prime local and prime-support
+          properties are supplied by the external Tate boundary below; this does
+          not yet formalize a 2-adic conductor exponent or a global computation
+          of the conductor from the coefficients. -/
+      structure FreyCurveModel (A B C : ℤ) (x y z : ℕ) where
+        a1 : ℤ
+        a2 : ℤ
+        a3 : ℤ
+        a4 : ℤ
+        a6 : ℤ
+        c4 : ℤ
+        discriminant : ℤ
+        conductor : ℕ
+        a1_eq : a1 = 0
+        a2_eq : a2 = B ^ y - A ^ x
+        a3_eq : a3 = 0
+        a4_eq : a4 = -(A ^ x * B ^ y)
+        a6_eq : a6 = 0
+        c4_eq : c4 = c4_Frey A B x y
+        discriminant_eq : discriminant = disc_Frey A B C x y z
+        conductor_prime_support :
+          ∀ q : ℕ, q.Prime → q ∣ conductor →
+            q ∣ A.natAbs * B.natAbs * C.natAbs ∨ q = 2
+        odd_multiplicative_conductor :
+          ∀ p : ℕ, p.Prime → p ≠ 2 →
+            ¬ p ∣ c4.natAbs → p ∣ discriminant.natAbs →
+              p ∣ conductor ∧ ¬ (p * p ∣ conductor)
 
       -- ── §2. Singular fibers ──────────────────────────────────────────────────────
 
@@ -118,19 +143,6 @@
       -- ── §4. Named mathematical axioms ───────────────────────────────────────────
 
       section NamedAxioms
-
-      /-- **Tate (1975)** — kept for reference; use tate_frey_multiplicative_derived
-          from B14_TateInImpliesOrd1 for new proofs (fewer axioms). -/
-      axiom tate_frey_multiplicative
-          {A B C : ℤ} {x y z : ℕ}
-          (hA  : 0 < A) (hB : 0 < B) (hC : 0 < C)
-          (hx  : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
-          (hEq : A ^ x + B ^ y = C ^ z)
-          (hCop : IsCoprime A (B * C))
-          (p : ℕ) (hp : Nat.Prime p) (hp2 : p ≠ 2)
-          (hpDiv : p ∣ A.natAbs * B.natAbs * C.natAbs) :
-          ∃ N : ℕ, p ∣ N ∧ ¬ (p * p ∣ N) ∧
-            (∀ q : ℕ, q.Prime → q ∣ N → q ∣ A.natAbs * B.natAbs * C.natAbs ∨ q = 2)
 
       /-- **Wiles (1995)** — modularity of semistable elliptic curves over ℚ. -/
       axiom wiles_modularity

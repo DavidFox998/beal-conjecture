@@ -8,7 +8,8 @@
 
       Architecture:
         · tate_frey_multiplicative_derived (B14_TateInImpliesOrd1) derives the
-          per-prime conductor statement from the generic Tate step 2 axiom.
+          per-prime conductor statement from the local Frey-conductor Tate
+          step 2 interface.
         · ribet_level_lowering_real consumes the Tate output and Wiles output → False.
         · 0 sorry throughout.
 
@@ -37,7 +38,7 @@
 
         Axiom chain (3 named axioms, 0 sorry):
           wiles_modularity (Wiles 1995)
-          tate_step2_I_n_conductor_one (Tate/Silverman, generic)
+          tate_step2_I_n_conductor_one (Tate/Silverman, local Frey conductor)
           ribet_level_lowering_real (Ribet 1990)
 
         The Tate step 2 axiom is consumed via tate_frey_multiplicative_derived,

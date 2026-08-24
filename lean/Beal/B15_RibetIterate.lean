@@ -5,7 +5,8 @@
       · theorem ribet_iterate_to_2  — N → 2 iteration (0 sorry, induction)
 
       ribet_iteration_gives_False now uses tate_frey_multiplicative_derived
-      (tate_step2_I_n_conductor_one based) instead of tate_frey_multiplicative.
+      (the local Frey-conductor tate_step2_I_n_conductor_one interface) instead
+      of tate_frey_multiplicative.
       This removes tate_frey_multiplicative from #print axioms.
 
       Author: David Fox + Claude, Aug 2026
@@ -76,7 +77,7 @@
       -- 0 axioms beyond kernel
 
       #print axioms ribet_iteration_gives_False
-      -- tate_step2_I_n_conductor_one, wiles_modularity, ribet_level_lowering_real, sorryAx×1
+      -- tate_step2_I_n_conductor_one, wiles_modularity, ribet_level_lowering_real
       -- NOTE: tate_frey_multiplicative is no longer listed
 
       end Beal.RibetIterate

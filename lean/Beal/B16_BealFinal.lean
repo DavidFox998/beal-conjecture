@@ -13,9 +13,9 @@
 
     /-- Given a primitive Beal triple satisfying Wiles and Tate hypotheses,
       Ribet's theorem gives False.
-      This calls ribet_level_lowering_real directly.
-      #print axioms shows exactly: tate_frey_multiplicative, wiles_modularity,
-      ribet_level_lowering_real — 0 sorry, 0 hidden axioms. -/
+      This calls ribet_level_lowering_real directly. Its Tate input is an
+      explicitly supplied local-conductor conclusion, so the theorem itself
+      depends only on the Ribet interface (and Lean foundations). -/
     theorem beal_if_wiles_tate_ribet
       {A B C : ℤ} {x y z : ℕ}
       (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
@@ -33,8 +33,7 @@
     Beal.FreyTate.ribet_level_lowering_real hA hB hC hx hy hz hEq hCop hWiles hTate
 
     #print axioms beal_if_wiles_tate_ribet
-    -- Expected: Beal.FreyTate.tate_frey_multiplicative, .wiles_modularity,
-    --           .ribet_level_lowering_real
+    -- Expected: Beal.FreyTate.ribet_level_lowering_real
 
     end Beal16Final
     

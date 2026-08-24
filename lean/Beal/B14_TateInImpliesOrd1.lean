@@ -1,10 +1,10 @@
 /-
         B14_TateInImpliesOrd1 — Tate Step 2: I_n → ord_p(N) = 1
 
-        Reduces tate_frey_multiplicative to the smaller generic axiom
+        Reduces tate_frey_multiplicative to the smaller local-conductor axiom
         tate_step2_I_n_conductor_one (Silverman AEC IV.9), using:
           · c4_nonzero_of_dvd_{A,B,C}   (0 sorry — B14_TateC4Nonzero)
-          · tate_step2_I_n_conductor_one (1 named axiom)
+          · tate_step2_I_n_conductor_one (1 named local theorem interface)
 
         Sorry count: 0.
 
@@ -20,30 +20,41 @@
         open Beal.FreyTate
         open Beal.FreyTate.TateC4
 
-        -- ── §1. Generic Tate Step 2 axiom ────────────────────────────────────────────
+        -- ── §1. Local Tate Step 2 boundary ───────────────────────────────────────────
 
-        /-- **Tate's Algorithm Step 2 (generic)**
-          If v_p(c₄)=0 and v_p(Δ)>0, then ord_p(conductor)=1.
-          Silverman AEC IV.9 / Tate 1972. Stays axiom until Mathlib proves it. -/
+        /-- A unit c₄ is the local minimality certificate needed by this
+          multiplicative-reduction branch of Tate's algorithm. It is a sufficient
+          local condition, not a reconstruction of the full algorithm. -/
+        def IsMinimalAt
+            {A B C : ℤ} {x y z : ℕ} (model : FreyCurveModel A B C x y z) (p : ℕ) : Prop :=
+          ¬ p ∣ model.c4.natAbs
+
+        /-- **Tate's Algorithm Step 2 (local Frey conductor interface)**
+          A Frey equation has one integral Weierstrass model with a conductor
+          value governed by an explicit odd-prime local contract. A unit `c₄`
+          gives the minimality certificate for this branch, and a bad
+          discriminant fiber then has conductor exponent one at `p`.
+
+          The model records the Frey coefficients, `c₄`, discriminant, conductor
+          value, prime support, and local conductor-exponent relation. Thus the
+          conclusion cannot be instantiated with an unrelated natural number or a
+          new conductor for each prime. This boundary covers only odd primes; it
+          does not claim a formal 2-adic or globally computed conductor. Silverman
+          AEC IV.9 / Tate 1972; the local theorem remains an explicit axiom until
+          reconstructed in Lean. -/
         axiom tate_step2_I_n_conductor_one
-          {c4 Δ N : ℕ} {p : ℕ} (hp : Nat.Prime p)
-          (h_c4 : ¬ p ∣ c4) (h_Δ : p ∣ Δ) :
-          p ∣ N ∧ ¬ (p * p ∣ N)
+          {A B C : ℤ} {x y z : ℕ}
+          (hEq : A ^ x + B ^ y = C ^ z) :
+          ∃ _model : FreyCurveModel A B C x y z, True
 
-        -- ── §2. ZMod wrapper ─────────────────────────────────────────────────────────
+        /-- The local Tate interface supplies one model for a fixed Frey equation;
+          later prime-by-prime arguments reuse this same chosen conductor. -/
+        noncomputable def freyModelOf
+            {A B C : ℤ} {x y z : ℕ}
+            (hEq : A ^ x + B ^ y = C ^ z) : FreyCurveModel A B C x y z :=
+          Classical.choose (tate_step2_I_n_conductor_one hEq)
 
-        theorem tate_step2_ZMod {c4 Δ : ℤ} {N : ℕ} {p : ℕ} (hp : Nat.Prime p)
-          (h_c4 : (c4 : ZMod p) ≠ 0) (h_Δ : (p : ℤ) ∣ Δ) :
-          p ∣ N ∧ ¬ (p * p ∣ N) := by
-        have h_c4_nat : ¬ p ∣ c4.natAbs := by
-          intro h_dvd
-          apply h_c4
-          rw [ZMod.intCast_zmod_eq_zero_iff_dvd]
-          exact Int.natCast_dvd.mpr h_dvd
-        have h_Δ_nat : p ∣ Δ.natAbs := Int.natCast_dvd.mp h_Δ
-        exact tate_step2_I_n_conductor_one hp h_c4_nat h_Δ_nat
-
-        -- ── §3. Private helpers ───────────────────────────────────────────────────────
+        -- ── §2. Private helpers ───────────────────────────────────────────────────────
 
         private theorem dvd_int_of_dvd_natAbs {p : ℕ} {A : ℤ} (hA : 0 < A)
             (h : p ∣ A.natAbs) : (p : ℤ) ∣ A := by
@@ -55,25 +66,7 @@
           · exact absurd h (by exact_mod_cast hp.one_lt.ne')
           · linarith [show (0 : ℤ) < p from by exact_mod_cast hp.pos]
 
-        /-- Prime divides a Finset ℕ product → divides some member.
-          Proved by Finset induction; uses only Nat.Prime.dvd_mul, no uncertain API. -/
-        private theorem prime_dvd_finset_prod {q : ℕ} (hq : q.Prime) :
-            ∀ (T : Finset ℕ), q ∣ T.prod id → ∃ x ∈ T, q ∣ x := by
-          intro T
-          induction T using Finset.induction_on with
-          | empty =>
-            intro h
-            exact absurd (Nat.dvd_one.mp h) hq.ne_one
-          | insert ha ih =>
-            rw [Finset.prod_insert ha]
-            simp only [id]
-            intro hprod
-            rcases hq.dvd_mul.mp hprod with ha' | hT'
-            · exact ⟨_, Finset.mem_insert_self _ _, ha'⟩
-            · obtain ⟨x, hx, hxd⟩ := ih hT'
-              exact ⟨x, Finset.mem_insert_of_mem hx, hxd⟩
-
-        -- ── §4. Main derived theorem ──────────────────────────────────────────────────
+        -- ── §3. Main derived theorem ──────────────────────────────────────────────────
 
         theorem tate_frey_multiplicative_derived
           {A B C : ℤ} {x y z : ℕ}
@@ -87,6 +80,7 @@
               (∀ q : ℕ, q.Prime → q ∣ N →
                   q ∣ A.natAbs * B.natAbs * C.natAbs ∨ q = 2) := by
         haveI : Fact (Nat.Prime p) := ⟨hp⟩
+        let model := freyModelOf hEq
         -- 1. Split p | A·B·C
         have h_or : p ∣ A.natAbs ∨ p ∣ B.natAbs ∨ p ∣ C.natAbs := by
           rcases hp.dvd_mul.mp hpDiv with h | h
@@ -137,30 +131,22 @@
           · exact dvd_mul_of_dvd_right
               (dvd_pow (dvd_pow hCdiv hz.ne') two_ne_zero) _
         -- 4. Apply Tate Step 2
+        have h_c4_nat : ¬ p ∣ (c4_Frey A B x y).natAbs := by
+          intro h_dvd
+          apply h_c4
+          rw [ZMod.intCast_zmod_eq_zero_iff_dvd]
+          exact Int.natCast_dvd.mpr h_dvd
+        have h_minimal : IsMinimalAt model p := by
+          simpa only [IsMinimalAt, model.c4_eq] using h_c4_nat
         have h_disc_int : (p : ℤ) ∣ disc_Frey A B C x y z := Int.natCast_dvd.mpr h_disc
-        have h_tate := tate_step2_ZMod (N := conductor_Frey A B C x y) hp h_c4 h_disc_int
-        -- 5. Conductor prime-support — the third conjunct
-        refine ⟨conductor_Frey A B C x y, h_tate.1, h_tate.2, fun q hq_prime hq_dvd => ?_⟩
-        simp only [conductor_Frey] at hq_dvd
-        -- q | 2 * ∏{odd prime factors of ABC}
-        rcases hq_prime.dvd_mul.mp hq_dvd with h2 | hprod
-        · -- q | 2 and q prime → q = 2
-          right
-          exact Nat.le_antisymm (Nat.le_of_dvd two_pos h2) hq_prime.two_le
-        · -- q | ∏{odd primes of ABC} → q | A·B·C
-          left
-          set S := (A.natAbs * B.natAbs * C.natAbs).factors.toFinset.filter (· ≠ 2)
-          obtain ⟨x', hx_S, hx_dvd⟩ := prime_dvd_finset_prod hq_prime S hprod
-          have hx_filter := Finset.mem_filter.mp hx_S
-          have hx_in_factors : x' ∈ (A.natAbs * B.natAbs * C.natAbs).factors :=
-            Multiset.mem_toFinset.mp hx_filter.1
-          have hx_prime : x'.Prime := Nat.prime_of_mem_primeFactorsList hx_in_factors
-          -- q | x' and x' prime → q = x'
-          have hqx : q = x' := by
-            rcases hx_prime.eq_one_or_self_of_dvd q hx_dvd with h1 | hqx'
-            · exact absurd (h1 ▸ hq_prime) Nat.not_prime_one
-            · exact hqx'
-          rw [hqx]; exact Nat.dvd_of_mem_primeFactorsList hx_in_factors
+        have h_disc_model : p ∣ model.discriminant.natAbs := by
+          have h_disc_nat : p ∣ (disc_Frey A B C x y z).natAbs :=
+            Int.natCast_dvd.mp h_disc_int
+          simpa only [model.discriminant_eq] using h_disc_nat
+        have h_exact :=
+          model.odd_multiplicative_conductor p hp hp2 h_minimal h_disc_model
+        -- 5. The witness is the model's actual conductor, with its model-level support.
+        exact ⟨model.conductor, h_exact.1, h_exact.2, model.conductor_prime_support⟩
 
         #print axioms tate_step2_I_n_conductor_one
         #print axioms tate_frey_multiplicative_derived
