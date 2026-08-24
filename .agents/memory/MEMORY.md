@@ -14,3 +14,4 @@
 - [EKG alert webhook verification](ekg-alert-webhook-verification.md) — primary and cold-start EKG alerts must be verified independently before relying on them.
 - [Beal final-proof CI](beal-ci-resume.md) — audit final theorem for exactly three domain axioms; do not confuse Lean foundations with mathematical assumptions.
 - [GitHub Actions PR trend history](github-actions-pr-trend-history.md) — PR merge refs cannot locate prior branch runs; use the source branch for comparable workflow history.
+- [Beal checkout source](beal-checkout-source.md) — the embedded Beal copy is stale; use the fetched beal/main revision for current B14–B20 work.
