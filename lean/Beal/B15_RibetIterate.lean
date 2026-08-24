@@ -50,8 +50,8 @@
       ribet_iterate_to_2 _ (by
         intro p hp
         simp only [odd_prime_divisors_ABC, Finset.mem_toList, Finset.mem_filter,
-                   Finset.mem_toFinset] at hp
-        exact Nat.Prime.pos (Nat.prime_of_mem_factors hp.1))
+                   Multiset.mem_toFinset] at hp
+        exact Nat.Prime.pos (Nat.prime_of_mem_primeFactorsList hp.1))
 
       -- Uses tate_frey_multiplicative_derived instead of tate_frey_multiplicative.
       -- This removes tate_frey_multiplicative from the axiom list.
@@ -61,7 +61,10 @@
         (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
         (hEq : A ^ x + B ^ y = C ^ z)
         (hCop : IsCoprime A (B * C))
-        (hWiles : Beal.FreyTate.wiles_modularity hA hB hC hx hy hz hEq hCop) :
+        (hWiles : ∃ ℓ N : ℕ, 5 ≤ ℓ ∧ ℓ.Prime ∧ 2 ≤ N ∧
+          ℓ ∣ A.natAbs * B.natAbs * C.natAbs ∧
+          (∀ q : ℕ, q.Prime → q ∣ N →
+            q ∣ A.natAbs * B.natAbs * C.natAbs ∨ q = 2)) :
         False :=
       Beal.FreyTate.ribet_level_lowering_real hA hB hC hx hy hz hEq hCop hWiles
         (fun p hp hp2 hpDiv =>
