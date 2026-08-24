@@ -26,17 +26,19 @@
       -- ── §1. Helpers ──────────────────────────────────────────────────────────────
 
       /-- 16 ≠ 0 in ZMod p for any odd prime p.
-        Proof: p | 16 → p ≤ 16, then interval_cases rules out each candidate. -/
+        Proof: p prime, p | 16 = 2^4 → p | 2 → p = 2 (2 prime) → contradicts p ≠ 2. -/
       theorem sixteen_ne_zero_ZMod (hp : Nat.Prime p) (hp2 : p ≠ 2) : (16 : ZMod p) ≠ 0 := by
       intro h16
+      apply hp2
       have h_dvd : p ∣ 16 := (ZMod.natCast_zmod_eq_zero_iff_dvd 16 p).mp h16
-      have h2 : 2 ≤ p := hp.two_le
-      have hp_le : p ≤ 16 := Nat.le_of_dvd (by norm_num) h_dvd
-      interval_cases p <;> simp_all [Nat.Prime] <;> norm_num at *
+      have h16_pow : (16 : ℕ) = 2 ^ 4 := by norm_num
+      rw [h16_pow] at h_dvd
+      have h2dvd : p ∣ 2 := hp.dvd_of_dvd_pow h_dvd
+      have hor := Nat.prime_two.eq_one_or_self_of_dvd p h2dvd
+      omega
 
       /-- If p ∤ B.natAbs and y > 0 then (B^y : ZMod p) ≠ 0.
-        Chain: zero → p | B → p | B.natAbs → contradiction.
-        Proof factors through (B : ZMod p) ≠ 0 then uses pow_ne_zero. -/
+        Proof factors through (B : ZMod p) ≠ 0 then pow_ne_zero. -/
       theorem pow_ne_zero_of_not_dvd (hp : Nat.Prime p) (hp2 : p ≠ 2) {B : ℤ} {y : ℕ} (hy : 0 < y)
         (hB : ¬ p ∣ B.natAbs) : ((B ^ y : ℤ) : ZMod p) ≠ 0 := by
       haveI : Fact (Nat.Prime p) := ⟨hp⟩
