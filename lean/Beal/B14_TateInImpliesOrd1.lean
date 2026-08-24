@@ -39,11 +39,8 @@
           intro h_dvd
           apply h_c4
           rw [ZMod.intCast_zmod_eq_zero_iff_dvd]
-          obtain ⟨k, hk⟩ := h_dvd
-          exact ⟨k, by push_cast [← hk, Int.natAbs_eq_iff]; simp [mul_comm]⟩
-        have h_Δ_nat : p ∣ Δ.natAbs := by
-          obtain ⟨k, hk⟩ := h_Δ
-          exact ⟨k.natAbs, by rw [hk]; simp [Int.natAbs_mul, Int.natAbs_ofNat]⟩
+          exact Int.natCast_dvd.mpr h_dvd
+        have h_Δ_nat : p ∣ Δ.natAbs := Int.natCast_dvd.mp h_Δ
         exact tate_step2_I_n_conductor_one hp h_c4_nat h_Δ_nat
 
         -- ── §3. Private helpers ───────────────────────────────────────────────────────
@@ -140,9 +137,7 @@
           · exact dvd_mul_of_dvd_right
               (dvd_pow (dvd_pow hCdiv hz.ne') two_ne_zero) _
         -- 4. Apply Tate Step 2
-        have h_disc_int : (p : ℤ) ∣ disc_Frey A B C x y z := by
-          obtain ⟨k, hk⟩ := h_disc
-          exact ⟨k, by push_cast [← hk, Int.natAbs_eq_iff]; simp [mul_comm]⟩
+        have h_disc_int : (p : ℤ) ∣ disc_Frey A B C x y z := Int.natCast_dvd.mpr h_disc
         have h_tate := tate_step2_ZMod (N := conductor_Frey A B C x y) hp h_c4 h_disc_int
         -- 5. Conductor prime-support — the third conjunct
         refine ⟨conductor_Frey A B C x y, h_tate.1, h_tate.2, fun q hq_prime hq_dvd => ?_⟩
@@ -151,22 +146,21 @@
         rcases hq_prime.dvd_mul.mp hq_dvd with h2 | hprod
         · -- q | 2 and q prime → q = 2
           right
-          have hq_le_2 : q ≤ 2 := Nat.le_of_dvd two_pos h2
-          omega
+          exact Nat.le_antisymm (Nat.le_of_dvd two_pos h2) hq_prime.two_le
         · -- q | ∏{odd primes of ABC} → q | A·B·C
           left
           set S := (A.natAbs * B.natAbs * C.natAbs).factors.toFinset.filter (· ≠ 2)
           obtain ⟨x', hx_S, hx_dvd⟩ := prime_dvd_finset_prod hq_prime S hprod
           have hx_filter := Finset.mem_filter.mp hx_S
           have hx_in_factors : x' ∈ (A.natAbs * B.natAbs * C.natAbs).factors :=
-            Finset.mem_toFinset.mp hx_filter.1
-          have hx_prime : x'.Prime := Nat.prime_of_mem_factors hx_in_factors
+            Multiset.mem_toFinset.mp hx_filter.1
+          have hx_prime : x'.Prime := Nat.prime_of_mem_primeFactorsList hx_in_factors
           -- q | x' and x' prime → q = x'
           have hqx : q = x' := by
             rcases hx_prime.eq_one_or_self_of_dvd q hx_dvd with h1 | hqx'
             · exact absurd (h1 ▸ hq_prime) Nat.not_prime_one
             · exact hqx'
-          rw [hqx]; exact Nat.dvd_of_mem_factors hx_in_factors
+          rw [hqx]; exact Nat.dvd_of_mem_primeFactorsList hx_in_factors
 
         #print axioms tate_step2_I_n_conductor_one
         #print axioms tate_frey_multiplicative_derived
