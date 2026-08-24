@@ -9,4 +9,13 @@ require mathlib from git
 @[default_target]
 lean_lib HodgeAbelian where
   srcDir := "lean"
-  roots := #[`Consolidated_Abelian_Definitions, `HodgeGenuine, `HodgeCFPrimes]
+  globs := #[
+    .one `C01_Basic,
+    .one `C02_AlgebraicCycles,
+    .one `C03_HodgeStructure,
+    .one `C04_Comparison,
+    .one `C05_Primitive,
+    .one `C06_Polarization,
+    .one `C07_Abelian,
+    .one `C08_HodgeClasses
+  ]
