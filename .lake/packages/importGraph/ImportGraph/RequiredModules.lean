@@ -5,6 +5,29 @@ Authors: Kim Morrison
 -/
 import Lean
 
+
+namespace Lean.NameSet
+
+instance : Singleton Name NameSet where
+  singleton := fun n => (∅ : NameSet).insert n
+
+instance : Union NameSet where
+  union := fun s t => s.fold (fun t n => t.insert n) t
+
+instance : Inter NameSet where
+  inter := fun s t => s.fold (fun r n => if t.contains n then r.insert n else r) {}
+
+instance : SDiff NameSet where
+  sdiff := fun s t => t.fold (fun s n => s.erase n) s
+
+def ofList (l : List Name) : NameSet :=
+  l.foldl (fun s n => s.insert n) {}
+
+def ofArray (a : Array Name) : NameSet :=
+  a.foldl (fun s n => s.insert n) {}
+
+end Lean.NameSet
+
 namespace Lean
 
 /-- Return the name of the module in which a declaration was defined. -/
@@ -36,12 +59,12 @@ def Name.requiredModules (n : Name) : CoreM NameSet := do
   return requiredModules
 
 /--
-Return the names of the constants used in the specified declaration,
+Return the names of the constants used in the specified declarations,
 and the constants they use transitively.
 -/
-def Name.transitivelyUsedConstants (n : Name) : CoreM NameSet := do
+def NameSet.transitivelyUsedConstants (s : NameSet) : CoreM NameSet := do
   let mut usedConstants : NameSet := {}
-  let mut toProcess : NameSet := NameSet.empty.insert n
+  let mut toProcess : NameSet := s
   while !toProcess.isEmpty do
     let current := toProcess.min.get!
     toProcess := toProcess.erase current
@@ -52,32 +75,96 @@ def Name.transitivelyUsedConstants (n : Name) : CoreM NameSet := do
   return usedConstants
 
 /--
+Return the names of the constants used in the specified declaration,
+and the constants they use transitively.
+-/
+def Name.transitivelyUsedConstants (n : Name) : CoreM NameSet :=
+  NameSet.transitivelyUsedConstants {n}
+
+/--
+Return the names of the modules in which constants used transitively
+in the specified declarations were defined.
+
+Note that this will *not* account for tactics and syntax used in the declaration,
+so the results may not suffice as imports.
+-/
+def NameSet.transitivelyRequiredModules (s : NameSet) (env : Environment) : CoreM NameSet := do
+  let mut requiredModules : NameSet := {}
+  for m in (← s.transitivelyUsedConstants) do
+    if let some module := env.getModuleFor? m then
+      requiredModules := requiredModules.insert module
+  return requiredModules
+
+/--
 Return the names of the modules in which constants used transitively
 in the specified declaration were defined.
 
 Note that this will *not* account for tactics and syntax used in the declaration,
 so the results may not suffice as imports.
 -/
-def Name.transitivelyRequiredModules (n : Name) (env : Environment) : CoreM NameSet := do
-  let mut requiredModules : NameSet := {}
-  for m in (← n.transitivelyUsedConstants) do
-    if let some module := env.getModuleFor? m then
-      requiredModules := requiredModules.insert module
-  return requiredModules
+def Name.transitivelyRequiredModules (n : Name) (env : Environment) : CoreM NameSet :=
+  NameSet.transitivelyRequiredModules {n} env
 
 /--
 Finds all constants defined in the specified module,
 and identifies all modules containing constants which are transitively required by those constants.
 -/
 def Environment.transitivelyRequiredModules (env : Environment) (module : Name) : CoreM NameSet := do
-  let mut requiredModules : NameSet := {}
-  for (_, ci) in env.constants.map₁.toList do
-    if !ci.name.isInternal then
-    if let some m := env.getModuleFor? ci.name then
-      if m = module then
-        for r in (← ci.name.transitivelyRequiredModules env) do
-          requiredModules := requiredModules.insert r
-  return requiredModules
+  let constants := env.constants.map₁.values.map (·.name)
+    |>.filter (! ·.isInternal)
+    |>.filter (env.getModuleFor? · = some module)
+  (NameSet.ofList constants).transitivelyRequiredModules env
+
+/--
+Computes all the modules transitively required by the specified modules.
+Should be equivalent to calling `transitivelyRequiredModules` on each module, but shares more of the work.
+-/
+partial def Environment.transitivelyRequiredModules' (env : Environment) (modules : List Name) (verbose : Bool := false) :
+    CoreM (NameMap NameSet) := do
+  let N := env.header.moduleNames.size
+  let mut c2m : NameMap (BitVec N) := {}
+  let mut pushed : NameSet := {}
+  let mut result : NameMap NameSet := {}
+  for m in modules do
+    if verbose then
+      IO.println s!"Processing module {m}"
+    let mut r : BitVec N := 0
+    for n in env.header.moduleData[((env.header.moduleNames.indexOf? m).map Fin.val).getD 0]!.constNames do
+      if ! n.isInternal then
+      -- This is messy: Mathlib is big enough that writing a recursive function causes a stack overflow.
+      -- So we use an explicit stack instead. We visit each constant twice:
+      -- once to record the constants transitively used by it,
+      -- and again to record the modules which defined those constants.
+      let mut stack : List (Name × Option NameSet) := [⟨n, none⟩]
+      pushed := pushed.insert n
+      while !stack.isEmpty do
+        match stack with
+        | [] => panic! "Stack is empty"
+        | (c, used?) :: tail =>
+          stack := tail
+          match used? with
+          | none =>
+            if !c2m.contains c then
+              let used := (← getConstInfo c).getUsedConstantsAsSet
+              stack := ⟨c, some used⟩ :: stack
+              for u in used do
+                if !pushed.contains u then
+                  stack := ⟨u, none⟩ :: stack
+                  pushed := pushed.insert u
+          | some used =>
+            let usedModules : NameSet :=
+              used.fold (init := {}) (fun s u => if let some m := env.getModuleFor? u then s.insert m else s)
+            let transitivelyUsed : BitVec N :=
+              used.fold (init := toBitVec usedModules) (fun s u => s ||| ((c2m.find? u).getD 0))
+            c2m := c2m.insert c transitivelyUsed
+      r := r ||| ((c2m.find? n).getD 0)
+    result := result.insert m (toNameSet r)
+  return result
+where
+  toBitVec {N : Nat} (s : NameSet) : BitVec N :=
+    s.fold (init := 0) (fun b n => b ||| BitVec.twoPow _ (((env.header.moduleNames.indexOf? n).map Fin.val).getD 0))
+  toNameSet {N : Nat} (b : BitVec N) : NameSet :=
+    env.header.moduleNames.zipWithIndex.foldl (init := {}) (fun s (n, i) => if b.getLsbD i then s.insert n else s)
 
 /--
 Return the names of the modules in which constants used in the current file were defined.

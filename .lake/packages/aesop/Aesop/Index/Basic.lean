@@ -14,7 +14,7 @@ namespace Aesop
 
 -- This value controls whether we use 'powerful' reductions, e.g. iota, when
 -- indexing Aesop rules. See the `DiscrTree` docs for details.
-def discrTreeConfig : WhnfCoreConfig := { iota := false }
+def discrTreeConfig : ConfigWithKey := { iota := false : Config}.toConfigWithKey
 
 inductive IndexingMode : Type
   | unindexed
@@ -35,7 +35,7 @@ instance : ToFormat IndexingMode :=
   ⟨IndexingMode.format⟩
 
 def targetMatchingConclusion (type : Expr) : MetaM IndexingMode := do
-  let path ← getConclusionDiscrTreeKeys type discrTreeConfig
+  let path ← getConclusionDiscrTreeKeys type
   return target path
 
 def hypsMatchingConst (decl : Name) : MetaM IndexingMode := do

@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Lean
-import Batteries.Lean.NameMap
 import ImportGraph.RequiredModules
 
 /-!
@@ -131,7 +130,7 @@ partial
 def transitiveFilteredUpstream (node : Name) (graph : NameMap (Array Name))
     (filter : Name → Bool) (replacement : Option Name := none):
     List Name :=
-  (graph.find! node).toList.bind fun source =>
+  (graph.find! node).toList.flatMap fun source =>
     ( if filter source then
         -- Add the transitive edges going through the filtered node `source`.
         -- If there is a replacement node, add an additional edge `repl → node`.
@@ -156,12 +155,12 @@ def filterGraph (graph : NameMap (Array Name)) (filter : Name → Bool)
     (replacement : Option Name := none) : NameMap (Array Name) :=
   -- Create a list of all files imported by any of the filtered files
   -- and remove all imports starting with `Mathlib` to avoid loops.
-  let replImports := graph.toList.bind
+  let replImports := graph.toList.flatMap
     (fun ⟨n, i⟩ => if filter n then i.toList else [])
     |>.eraseDups |>.filter (¬ Name.isPrefixOf `Mathlib ·) |>.toArray
   let graph := graph.filterMap (fun node edges => if filter node then none else some <|
     -- If the node `node` is not filtered, modify the `edges` going into `node`.
-    edges.toList.bind (fun source =>
+    edges.toList.flatMap (fun source =>
       if filter source then
         transitiveFilteredUpstream source graph filter (replacement := replacement)
       else [source]) |>.eraseDups.toArray)
@@ -171,6 +170,25 @@ def filterGraph (graph : NameMap (Array Name)) (filter : Name → Bool)
   | some repl => graph.insert repl replImports
 
 end Lean.NameMap
+
+/--
+Returns a `List (Name × List Name)` with a key for each module `n` in `amongst`,
+whose corresponding value is the list of modules `m` in `amongst` which are transitively imported by `n`,
+but no declaration in `n` makes use of a declaration in `m`.
+-/
+def unusedTransitiveImports (amongst : List Name) (verbose : Bool := false) : CoreM (List (Name × List Name)) := do
+  let env ← getEnv
+  let transitiveImports := env.importGraph.transitiveClosure
+  let transitivelyRequired ← env.transitivelyRequiredModules' amongst verbose
+  amongst.mapM fun n => do return (n,
+    let unused := (transitiveImports.find? n).getD {} \ (transitivelyRequired.find? n |>.getD {})
+    amongst.filter (fun m => unused.contains m))
+
+def Core.withImportModules (modules : Array Name) {α} (f : CoreM α) : IO α := do
+  searchPathRef.set compile_time_search_path%
+  unsafe Lean.withImportModules (modules.map (fun m => {module := m})) {} (trustLevel := 1024)
+    fun env => Prod.fst <$> Core.CoreM.toIO
+        (ctx := { fileName := "<CoreM>", fileMap := default }) (s := { env := env }) do f
 
 /--
 Return the redundant imports (i.e. those transitively implied by another import)
