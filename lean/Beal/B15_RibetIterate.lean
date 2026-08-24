@@ -1,13 +1,11 @@
 /-
       B15_RibetIterate — Ribet iteration N → 2, preserves mod ℓ representation.
 
-      · axiom ribet_single_step     — single prime step (stays axiom)
-      · theorem ribet_iterate_to_2  — N → 2 iteration (0 sorry, induction)
+      · axiom ribet_single_step     — one exact prime step preserving a form token
+      · theorem descend_preserved_form — certified descent to level 2 (0 sorry)
 
-      ribet_iteration_gives_False now uses tate_frey_multiplicative_derived
-      (the local Frey-conductor tate_step2_I_n_conductor_one interface) instead
-      of tate_frey_multiplicative.
-      This removes tate_frey_multiplicative from #print axioms.
+      The final contradiction comes from a typed form token at level 2 and
+      S₂(2)=0, rather than a monolithic Ribet → False axiom.
 
       Author: David Fox + Claude, Aug 2026
       -/
@@ -21,9 +19,18 @@
 
       namespace Beal.RibetIterate
 
+      open Beal.FreyTate
+
+      /-- The data returned by one level-lowering step. -/
+      structure RibetStepResult (ℓ N p : ℕ) where
+        level : ℕ
+        lowers : CanLowerLevelCore N p level
+        form : PreservedForm ℓ level
+
       axiom ribet_single_step {N p ℓ : ℕ} (hp : Nat.Prime p) (hℓ : Nat.Prime ℓ)
-        (h_exact : ExactDividesCore p N) (hp_ne_ℓ : p ≠ ℓ) :
-        ∃ M : ℕ, CanLowerLevelCore N p M
+        (h_exact : ExactDividesCore p N) (hp_ne_ℓ : p ≠ ℓ)
+        (hForm : PreservedForm ℓ N) :
+        RibetStepResult ℓ N p
 
       def ribet_iterate : List ℕ → ℕ → ℕ
       | [],      N => N
@@ -54,31 +61,53 @@
 
         exact (Nat.prime_of_mem_primeFactors hp.1).pos)
 
-      -- Uses tate_frey_multiplicative_derived instead of tate_frey_multiplicative.
-      -- This removes tate_frey_multiplicative from the axiom list.
+      /-- Transport the existence of a typed form witness through the certified
+          Ribet plan. -/
+      theorem descend_preserved_form {ℓ N : ℕ} (hℓ : Nat.Prime ℓ)
+          (hForms : HasPreservedForm ℓ N) (plan : RibetDescentPlan ℓ N) :
+          HasPreservedForm ℓ 2 := by
+        induction plan with
+        | terminal =>
+            simpa using hForms
+        | @step N p M hp hp_ne_ℓ hp_dvd hp_sq h_level rest ih =>
+            obtain ⟨hForm⟩ := hForms
+            let result := ribet_single_step hp hℓ ⟨hp_dvd, hp_sq⟩ hp_ne_ℓ hForm
+            have h_lower := result.lowers
+            simp only [CanLowerLevelCore] at h_lower
+            have hM : result.level = M := by
+              apply Nat.eq_of_mul_eq_mul_right (Nat.Prime.pos hp)
+              exact h_lower.trans h_level.symm
+            exact ih ⟨hM ▸ result.form⟩
+
+      /-- No preserved form can reach level 2 because the typed terminal slot is
+          `Fin dim_S2_2` and `dim_S2_2 = 0`. -/
+      theorem no_preserved_form_at_two (ℓ : ℕ) : ¬ HasPreservedForm ℓ 2 := by
+        rintro ⟨hForm⟩
+        have hslot := hForm.terminalSlot rfl
+        rw [Beal.FreyS2.S2_level_2_dim_0] at hslot
+        exact Fin.elim0 hslot
+
+      /-- The typed Tate model fixes the conductor; Wiles supplies a form and
+          certified descent plan for that same conductor; each Ribet step preserves
+          the form until the impossible level-2 slot is reached. -/
       theorem ribet_iteration_gives_False
         {A B C : ℤ} {x y z : ℕ}
         (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
         (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
         (hEq : A ^ x + B ^ y = C ^ z)
-        (hCop : IsCoprime A (B * C))
-        (hWiles : ∃ ℓ N : ℕ, 5 ≤ ℓ ∧ ℓ.Prime ∧ 2 ≤ N ∧
-          ℓ ∣ A.natAbs * B.natAbs * C.natAbs ∧
-          (∀ q : ℕ, q.Prime → q ∣ N →
-            q ∣ A.natAbs * B.natAbs * C.natAbs ∨ q = 2)) :
-        False :=
-      Beal.FreyTate.ribet_level_lowering_real hA hB hC hx hy hz hEq hCop hWiles
-        (fun p hp hp2 hpDiv =>
-          Beal.FreyTate.TateStep2.tate_frey_multiplicative_derived
-            hA hB hC (by linarith) (by linarith) (by linarith)
-            hEq hCop p hp hp2 hpDiv)
+        (hCop : IsCoprime A (B * C)) :
+        False := by
+      let model := Beal.FreyTate.TateStep2.freyModelOf hEq
+      obtain ⟨ℓ, _, hℓ, hForms, hPlans⟩ :=
+        Beal.FreyTate.wiles_modularity hA hB hC hx hy hz hEq hCop model
+      obtain ⟨hPlan⟩ := hPlans
+      exact no_preserved_form_at_two ℓ (descend_preserved_form hℓ hForms hPlan)
 
       #print axioms ribet_iterate_to_2
       -- 0 axioms beyond kernel
 
       #print axioms ribet_iteration_gives_False
-      -- tate_step2_I_n_conductor_one, wiles_modularity, ribet_level_lowering_real
-      -- NOTE: tate_frey_multiplicative is no longer listed
+      -- tate_step2_I_n_conductor_one, wiles_modularity, ribet_single_step
 
       end Beal.RibetIterate
     

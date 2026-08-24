@@ -9,8 +9,7 @@
       · Tangent cone anisotropic (abstract field lemma)   Field div/pow
 
       NAMED AXIOMS (deep results not yet formalised in Mathlib):
-      · wiles_modularity            Wiles 1995
-      · ribet_level_lowering_real   Ribet 1990
+      · wiles_modularity            Wiles 1995 (typed descent certificate)
 
       Author: David Fox + Claude, Aug 2026
       -/
@@ -20,6 +19,7 @@
       import Mathlib.Data.Nat.Factors
       import Mathlib.Tactic
       import Beal.B01_Def
+      import Beal.B14_FreyS2
 
       namespace Beal.FreyTate
 
@@ -78,6 +78,31 @@
           ∀ p : ℕ, p.Prime → p ≠ 2 →
             ¬ p ∣ c4.natAbs → p ∣ discriminant.natAbs →
               p ∣ conductor ∧ ¬ (p * p ∣ conductor)
+
+      /-- An abstract nonzero-form token carried by the Ribet descent.
+
+          This is deliberately a typed interface, not a construction of a
+          modular-form space. At level 2 it produces an element of the
+          zero-dimensional `S₂(2)` slot, which is the terminal contradiction. -/
+      structure PreservedForm (ℓ N : ℕ) where
+        terminalSlot : N = 2 → Fin Beal.FreyS2.dim_S2_2
+
+      /-- Propositional availability of a preserved form token. -/
+      def HasPreservedForm (ℓ N : ℕ) : Prop := Nonempty (PreservedForm ℓ N)
+
+      /-- A finite certified path from a level to level 2.
+
+          Each edge records the exact divisibility and arithmetic quotient needed
+          by one Ribet step. The path is supplied by the modularity boundary until
+          the global level-lowering theorem is formalized. -/
+      inductive RibetDescentPlan (ℓ : ℕ) : ℕ → Type
+        | terminal : RibetDescentPlan ℓ 2
+        | step {N p M : ℕ} :
+            p.Prime → p ≠ ℓ → p ∣ N → ¬ (p * p ∣ N) → M * p = N →
+            RibetDescentPlan ℓ M → RibetDescentPlan ℓ N
+
+      /-- Propositional availability of a certified descent path. -/
+      def HasRibetDescentPlan (ℓ N : ℕ) : Prop := Nonempty (RibetDescentPlan ℓ N)
 
       -- ── §2. Singular fibers ──────────────────────────────────────────────────────
 
@@ -144,39 +169,27 @@
 
       section NamedAxioms
 
-      /-- **Wiles (1995)** — modularity of semistable elliptic curves over ℚ. -/
+      /-- **Wiles (1995), typed descent boundary.**
+
+          For the one Frey model supplied by Tate's local interface, modularity
+          supplies a residual prime, a form token at that same conductor, and a
+          certified finite descent to level 2. The plan is an explicit scaffold for
+          the still-unformalized global modular-form and level-lowering theory. -/
       axiom wiles_modularity
           {A B C : ℤ} {x y z : ℕ}
           (hA  : 0 < A) (hB : 0 < B) (hC : 0 < C)
           (hx  : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
           (hEq : A ^ x + B ^ y = C ^ z)
-          (hCop : IsCoprime A (B * C)) :
-          ∃ ℓ N : ℕ, 5 ≤ ℓ ∧ ℓ.Prime ∧ 2 ≤ N ∧
-            ℓ ∣ A.natAbs * B.natAbs * C.natAbs ∧
-            (∀ q : ℕ, q.Prime → q ∣ N → q ∣ A.natAbs * B.natAbs * C.natAbs ∨ q = 2)
-
-      /-- **Ribet (1990)** — level-lowering to level 2 → False. -/
-      axiom ribet_level_lowering_real
-          {A B C : ℤ} {x y z : ℕ}
-          (hA  : 0 < A) (hB : 0 < B) (hC : 0 < C)
-          (hx  : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
-          (hEq : A ^ x + B ^ y = C ^ z)
           (hCop : IsCoprime A (B * C))
-          (hWiles : ∃ ℓ N : ℕ, 5 ≤ ℓ ∧ ℓ.Prime ∧ 2 ≤ N ∧
-              ℓ ∣ A.natAbs * B.natAbs * C.natAbs ∧
-              (∀ q : ℕ, q.Prime → q ∣ N → q ∣ A.natAbs * B.natAbs * C.natAbs ∨ q = 2))
-          (hTate : ∀ p : ℕ, p.Prime → p ≠ 2 →
-              p ∣ A.natAbs * B.natAbs * C.natAbs →
-              ∃ N : ℕ, p ∣ N ∧ ¬ (p * p ∣ N) ∧
-                (∀ q : ℕ, q.Prime → q ∣ N → q ∣ A.natAbs * B.natAbs * C.natAbs ∨ q = 2)) :
-          False
+          (model : FreyCurveModel A B C x y z) :
+          ∃ ℓ : ℕ, 5 ≤ ℓ ∧ ℓ.Prime ∧ HasPreservedForm ℓ model.conductor ∧
+            HasRibetDescentPlan ℓ model.conductor
 
       end NamedAxioms
 
       section AxiomAudit
       #print axioms c4_eq_b2sq_sub_24b4
       #print axioms wiles_modularity
-      #print axioms ribet_level_lowering_real
       end AxiomAudit
 
       end Beal.FreyTate

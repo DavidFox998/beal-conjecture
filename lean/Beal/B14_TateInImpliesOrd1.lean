@@ -150,7 +150,7 @@
 
         #print axioms tate_step2_I_n_conductor_one
         #print axioms tate_frey_multiplicative_derived
-        -- Expected: tate_step2_I_n_conductor_one only (no sorryAx)
+        -- Expected: tate_step2_I_n_conductor_one only (no placeholders)
 
         end Beal.FreyTate.TateStep2
     

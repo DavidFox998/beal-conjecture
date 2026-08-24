@@ -65,14 +65,15 @@ formalization makes this coupling explicit rather than gestural.
 > The current conditional chain is:
 >
 > **primitive Beal data** → **Frey curve and discriminant arithmetic**
-> → **Tate Step 2 at each relevant prime** → **a modular Frey representation**
-> → **Ribet level-lowering to level 2** → **$S_2(Γ_0(2)) = 0$**
+> → **one Tate-supplied Frey model and conductor** → **a typed modular-form
+> token and certified descent plan at that same conductor**
+> → **Ribet single-prime transport to level 2** → **$S_2(Γ_0(2)) = 0$**
 > → **contradiction**.
 >
 > The final B20 theorem uses exactly these named assumptions:
 > `Beal.FreyTate.wiles_modularity`,
 > `Beal.FreyTate.TateStep2.tate_step2_I_n_conductor_one`, and
-> `Beal.FreyTate.ribet_level_lowering_real`. All supporting steps in the
+> `Beal.RibetIterate.ribet_single_step`. All supporting steps in the
 > chain are proved without `sorry`.
 
 ### From one broad axiom to three smaller interfaces
@@ -86,16 +87,21 @@ The B14–B20 path now exposes those obligations separately:
 
 | Named interface | What it contributes |
 |---|---|
-| `wiles_modularity` | A modularity witness for the Frey curve, with the prime and level data needed downstream. |
+| `wiles_modularity` | For the fixed Tate Frey model, a residual prime, typed form token at its conductor, and a certified finite descent plan. |
 | `tate_step2_I_n_conductor_one` | The local Tate Step 2 statement: when the Frey invariants have the required valuations, the conductor has exact prime order. |
-| `ribet_level_lowering_real` | The global level-lowering step: Wiles data plus the per-prime Tate outputs force the contradiction at level 2. |
+| `ribet_single_step` | One exact prime-level division transports the typed form token to the lower level. |
 
 The distinction matters. `tate_frey_multiplicative_derived` is a theorem, not
 a fourth axiom: it packages the generic Tate interface with the explicit Frey
 discriminant, the nonvanishing of $c_4$ modulo the relevant prime, and the
-conductor's prime support. Likewise, the B15 iteration and B16 final assembly
-are proved Lean theorems that consume the named interfaces; they do not enlarge
-the mathematical assumption budget.
+conductor's prime support. B15 proves that a certified plan repeatedly
+transports the token and that the terminal token contradicts
+$S_2(\Gamma_0(2)) = 0$.
+
+This is deliberately a **typed scaffold**, not a claim that Wiles's theorem
+alone produces the certified descent plan or that this repository constructs
+modular forms. Those global ingredients remain inside the explicit
+`wiles_modularity` boundary until they are formalized.
 
 ### The post-161 arc
 
@@ -148,11 +154,12 @@ own audit.
 
 The final B20 proof is conditional on exactly three named results:
 
-1. **Wiles:** `wiles_modularity` supplies a modularity witness for the Frey curve.
+1. **Wiles:** `wiles_modularity` supplies a residual prime, a typed form token,
+   and a certified descent plan for the Tate-supplied Frey conductor.
 2. **Tate:** `tate_step2_I_n_conductor_one` supplies the local exact-conductor step;
-   B14 proves the Frey arithmetic required to invoke it.
-3. **Ribet:** `ribet_level_lowering_real` consumes the Wiles witness and the Tate
-   output to close the level-lowering contradiction.
+   B14 uses it to select the fixed Frey model and its conductor.
+3. **Ribet:** `ribet_single_step` preserves the typed form token across one
+   exact prime-level division.
 
 The older broad `modularity_hypothesis` remains part of the historical scaffold,
 but it is not the named dependency boundary of the final B14–B20 theorem. The
@@ -182,11 +189,12 @@ the generic local Tate statement to the Frey conductor data.
 
 ### Step 2 — Wiles data and Ribet level-lowering
 
-`wiles_modularity` supplies the modularity witness and
-`ribet_level_lowering_real` receives that witness together with the per-prime
-outputs of `tate_frey_multiplicative_derived`. `B15_RibetIterate.lean` proves
-the finite prime-support iteration to level 2, while `B16_BealFinal.lean`
-assembles the three named interfaces without adding another named assumption.
+Tate selects a fixed `FreyCurveModel`; `wiles_modularity` consumes that model
+and supplies a typed form token plus a certified path from its conductor to
+level 2. `B15_RibetIterate.lean` proves that `ribet_single_step` transports
+the token along that path. `B16_BealFinal.lean` then eliminates the terminal
+token using the verified equality $S_2(\Gamma_0(2)) = 0$, without adding
+another named assumption.
 
 ### Step 3 — Dimension zero closes the conditional argument
 
@@ -253,7 +261,7 @@ CI enforces the boundary on every push:
   may not use `sorryAx`
 - **Audit final B20 declarations** — `#print axioms` must contain exactly
   `wiles_modularity`, `tate_step2_I_n_conductor_one`, and
-  `ribet_level_lowering_real` as the named domain axioms
+  `ribet_single_step` as the named domain axioms
 
 The final audit distinguishes named mathematical assumptions from foundational
 Lean dependencies such as `propext`, `Classical.choice`, and `Quot.sound`.

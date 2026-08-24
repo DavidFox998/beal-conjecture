@@ -6,7 +6,7 @@
     · exactDivides_of_tate     definitional — ExactDividesCore = ∧     ⟨_,_⟩
     · canLower_from_tate       composes the two above
     · s2_level_2_witness       M*2=2 → M=1                             omega
-    · ribet_chain_to_2_gives_False  passes to ribet_level_lowering_real axiom
+    · ribet_chain_to_2_gives_False  invokes the typed single-step descent
 
     Author: David Fox + Claude, Aug 2026
     -/
@@ -14,6 +14,7 @@
     import Beal.B14_FreyTate
     import Beal.B14_FreyS2
     import Beal.B15_LevelTo2_Core
+    import Beal.B15_RibetIterate
     import Mathlib.Data.Nat.Prime.Basic
 
     namespace BealLevelTo2
@@ -59,23 +60,16 @@
     -- hM : CanLowerLevelCore 2 2 M, unfolds to M * 2 = 2
     simp only [CanLowerLevelCore] at hM; omega
 
-    /-- Full Ribet chain: Wiles + Tate → ribet_level_lowering_real → False.
-      #print axioms shows exactly three named axioms, 0 sorry. -/
+    /-- Full typed Ribet chain: fixed Tate model + Wiles certificate +
+      single-step descent → level-2 contradiction. -/
     theorem ribet_chain_to_2_gives_False
       {A B C : ℤ} {x y z : ℕ}
       (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
       (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
       (hEq : A ^ x + B ^ y = C ^ z)
-      (hCop : IsCoprime A (B * C))
-      (hWiles : ∃ ℓ N : ℕ, 5 ≤ ℓ ∧ ℓ.Prime ∧ 2 ≤ N ∧
-          ℓ ∣ A.natAbs * B.natAbs * C.natAbs ∧
-          (∀ q : ℕ, q.Prime → q ∣ N → q ∣ A.natAbs * B.natAbs * C.natAbs ∨ q = 2))
-      (hTate : ∀ p : ℕ, p.Prime → p ≠ 2 → p ∣ A.natAbs * B.natAbs * C.natAbs →
-          ∃ N : ℕ, p ∣ N ∧ ¬ (p * p ∣ N) ∧
-              (∀ q : ℕ, q.Prime → q ∣ N →
-                  q ∣ A.natAbs * B.natAbs * C.natAbs ∨ q = 2)) :
+      (hCop : IsCoprime A (B * C)) :
       False :=
-    Beal.FreyTate.ribet_level_lowering_real hA hB hC hx hy hz hEq hCop hWiles hTate
+    Beal.RibetIterate.ribet_iteration_gives_False hA hB hC hx hy hz hEq hCop
 
     #print axioms canLowerLevel_of_exact        -- 0 axioms beyond kernel
     #print axioms exactDivides_of_tate          -- 0 axioms

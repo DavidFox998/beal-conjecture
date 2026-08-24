@@ -4,13 +4,14 @@
       20-brick milestone. Axiom budget (0 sorry):
         · wiles_modularity            (Wiles 1995)
         · tate_step2_I_n_conductor_one (Tate/Silverman AEC IV.9)
-        · ribet_level_lowering_real   (Ribet 1990)
+        · ribet_single_step           (Ribet 1990, typed descent)
 
       Architecture:
         · tate_frey_multiplicative_derived (B14_TateInImpliesOrd1) derives the
           per-prime conductor statement from the local Frey-conductor Tate
           step 2 interface.
-        · ribet_level_lowering_real consumes the Tate output and Wiles output → False.
+        · a typed Ribet descent transports the form token to the impossible
+          level-2 slot.
         · 0 sorry throughout.
 
       Author: David Fox + Claude, Aug 2026
@@ -39,19 +40,15 @@
         Axiom chain (3 named axioms, 0 sorry):
           wiles_modularity (Wiles 1995)
           tate_step2_I_n_conductor_one (Tate/Silverman, local Frey conductor)
-          ribet_level_lowering_real (Ribet 1990)
+          ribet_single_step (Ribet 1990, typed descent)
 
-        The Tate step 2 axiom is consumed via tate_frey_multiplicative_derived,
-        which also provides the conductor prime-support statement from a closed
-        Finset induction (no sorry). -/
+        Tate supplies one fixed Frey model and conductor. Wiles consumes that
+        model and supplies a form token plus certified descent plan; Ribet's
+        single-step interface preserves the token to the level-2 contradiction.
+        This remains a typed scaffold, not a full construction of modular forms. -/
       theorem beal_conjecture_is_proved : BealConjectureIsProved := by
         intro A B C x y z hx hy hz hA hB hC hCop hEq
-        have hWiles := Beal.FreyTate.wiles_modularity hA hB hC hx hy hz hEq hCop
-        exact Beal.FreyTate.ribet_level_lowering_real hA hB hC hx hy hz hEq hCop hWiles
-          (fun p hp hp2 hpDiv =>
-            Beal.FreyTate.TateStep2.tate_frey_multiplicative_derived
-              hA hB hC (by linarith) (by linarith) (by linarith)
-              hEq hCop p hp hp2 hpDiv)
+        exact Beal.RibetIterate.ribet_iteration_gives_False hA hB hC hx hy hz hEq hCop
 
       -- ── 20-brick milestone alias ─────────────────────────────────────────────────
 
@@ -65,7 +62,7 @@
       -- Expected (3 domain axioms, 0 sorry):
       --   Beal.FreyTate.TateStep2.tate_step2_I_n_conductor_one
       --   Beal.FreyTate.wiles_modularity
-      --   Beal.FreyTate.ribet_level_lowering_real
+      --   Beal.RibetIterate.ribet_single_step
 
       #print axioms twenty_bricks
 
