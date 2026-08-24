@@ -49,9 +49,9 @@
             (2 * (odd_prime_divisors_ABC A B C).prod) = 2 :=
       ribet_iterate_to_2 _ (by
         intro p hp
-        simp only [odd_prime_divisors_ABC, Finset.mem_toList, Finset.mem_filter,
-                   Multiset.mem_toFinset] at hp
-        exact Nat.Prime.pos (Nat.prime_of_mem_primeFactorsList hp.1))
+        simp only [odd_prime_divisors_ABC, Finset.mem_toList, Finset.mem_filter] at hp
+
+        exact (Nat.prime_of_mem_primeFactors hp.1).pos)
 
       -- Uses tate_frey_multiplicative_derived instead of tate_frey_multiplicative.
       -- This removes tate_frey_multiplicative from the axiom list.
