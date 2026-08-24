@@ -5,7 +5,7 @@ Authors: Jon Eugster
 -/
 import Lake.Load.Manifest
 
-open Lean (Name)
+open Lake
 
 namespace ImportGraph
 

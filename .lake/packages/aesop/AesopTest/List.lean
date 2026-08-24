@@ -94,6 +94,10 @@ theorem mem_none : a ∈ none ↔ False := by
   aesop
 
 @[simp]
+theorem mem_some : a ∈ some b ↔ a = b := by
+  aesop
+
+@[simp]
 def iget [Inhabited α] : Option α → α
   | none => default
   | some a => a
@@ -106,7 +110,7 @@ namespace List
 -- is not particularly helpful for this file.
 attribute [-aesop] Aesop.BuiltinRules.ext
 
-attribute [simp] map List.flatMap
+attribute [simp] map List.bind
 
 instance : Pure List where
   pure x := [x]
@@ -314,43 +318,43 @@ theorem X.forall_mem_map_iff {f : α → β} {l : List α} {P : β → Prop} :
   (∀ i, i ∈ l.map f → P i) ↔ ∀ j, j ∈ l → P (f j) := by
   aesop
 
--- attribute [-simp] map_eq_nil
+attribute [-simp] map_eq_nil
 @[simp] theorem X.map_eq_nil {f : α → β} {l : List α} : map f l = [] ↔ l = [] := by
   aesop (add 1% cases List)
 
-attribute [-simp] mem_flatten
-@[simp] theorem X.mem_flatten {a : α} : ∀ {L : List (List α)}, a ∈ flatten L ↔ ∃ l, l ∈ L ∧ a ∈ l := by
+-- attribute [-simp] mem_join
+@[simp] theorem X.mem_join {a : α} : ∀ {L : List (List α)}, a ∈ join L ↔ ∃ l, l ∈ L ∧ a ∈ l := by
   intro L; induction L <;> aesop
 
--- attribute [-simp] exists_of_mem_flatten
-theorem X.exists_of_mem_flatten {a : α} {L : List (List α)} : a ∈ flatten L → ∃ l, l ∈ L ∧ a ∈ l := by
+-- attribute [-simp] exists_of_mem_join
+theorem X.exists_of_mem_join {a : α} {L : List (List α)} : a ∈ join L → ∃ l, l ∈ L ∧ a ∈ l := by
   aesop
 
--- attribute [-simp] mem_flatten_of_mem
-theorem X.mem_flatten_of_mem {a : α} {L : List (List α)} {l} (lL : l ∈ L) (al : a ∈ l) : a ∈ flatten L := by
+-- attribute [-simp] mem_join_of_mem
+theorem X.mem_join_of_mem {a : α} {L : List (List α)} {l} (lL : l ∈ L) (al : a ∈ l) : a ∈ join L := by
   aesop
 
--- attribute [-simp] mem_flatMap
-@[simp] theorem X.mem_flatMap {b : β} {l : List α} {f : α → List β} : b ∈ l.flatMap f ↔ ∃ a, a ∈ l ∧ b ∈ f a := by
+-- attribute [-simp] mem_bind
+@[simp] theorem X.mem_bind {b : β} {l : List α} {f : α → List β} : b ∈ l.bind f ↔ ∃ a, a ∈ l ∧ b ∈ f a := by
   induction l <;> aesop
 
--- attribute [-simp] exists_of_mem_flatMap
-theorem X.exists_of_mem_flatMap {l : List α} :
-    b ∈ l.flatMap f → ∃ a, a ∈ l ∧ b ∈ f a := by
+-- attribute [-simp] exists_of_mem_bind
+theorem X.exists_of_mem_bind {l : List α} :
+    b ∈ l.bind f → ∃ a, a ∈ l ∧ b ∈ f a := by
   aesop
 
--- attribute [-simp] mem_flatMap_of_mem
-theorem X.mem_flatMap_of_mem {l : List α} :
-    (∃ a, a ∈ l ∧ b ∈ f a) → b ∈ l.flatMap f := by
+-- attribute [-simp] mem_bind_of_mem
+theorem X.mem_bind_of_mem {l : List α} :
+    (∃ a, a ∈ l ∧ b ∈ f a) → b ∈ l.bind f := by
   induction l <;> aesop
 
--- attribute [-simp] flatMap_map
-theorem X.flatMap_map {g : α → List β} {f : β → γ} :
-  ∀ l : List α, map f (l.flatMap g) = l.flatMap (λa => (g a).map f) := by
+-- attribute [-simp] bind_map
+theorem X.bind_map {g : α → List β} {f : β → γ} :
+  ∀ l : List α, map f (l.bind g) = l.bind (λa => (g a).map f) := by
   intro l; induction l <;> aesop
 
-theorem map_flatMap' (g : β → List γ) (f : α → β) :
-  ∀ l : List α, (map f l).flatMap g = l.flatMap (λ a => g (f a)) := by
+theorem map_bind' (g : β → List γ) (f : α → β) :
+  ∀ l : List α, (map f l).bind g = l.bind (λ a => g (f a)) := by
   intro l; induction l <;> aesop
 
 -- theorem range_map (f : α → β) : set.range (map f) = {l | ∀ x ∈ l, x ∈ set.range f} :=
@@ -544,17 +548,14 @@ attribute [-simp] append_eq_nil
 @[simp] theorem X.append_eq_nil {p q : List α} : (p ++ q) = [] ↔ p = [] ∧ q = [] := by
   aesop (add 1% cases List)
 
--- attribute [-simp] nil_eq_append_iff
-@[simp] theorem X.nil_eq_append_iff {a b : List α} : [] = a ++ b ↔ a = [] ∧ b = [] := by
+@[simp] theorem nil_eq_append_iff {a b : List α} : [] = a ++ b ↔ a = [] ∧ b = [] := by
   induction a <;> aesop
 
--- attribute [-simp] append_eq_cons_iff
-theorem X.append_eq_cons_iff {a b c : List α} {x : α} :
+theorem append_eq_cons_iff {a b c : List α} {x : α} :
   a ++ b = x :: c ↔ (a = [] ∧ b = x :: c) ∨ (∃a', a = x :: a' ∧ c = a' ++ b) := by
   aesop (add 1% cases List)
 
--- attribute [-simp] cons_eq_append_iff
-theorem X.cons_eq_append_iff {a b c : List α} {x : α} :
+theorem cons_eq_append_iff {a b c : List α} {x : α} :
     (x :: c : List α) = a ++ b ↔ (a = [] ∧ b = x :: c) ∨ (∃a', a = x :: a' ∧ c = a' ++ b) := by
   aesop (add norm simp [append_eq_cons_iff, eq_comm])
 
@@ -671,8 +672,6 @@ theorem replicate_subset_singleton (a : α) (n) : replicate n a ⊆ [a] := by
 theorem subset_singleton_iff {a : α} {L : List α} : L ⊆ [a] ↔ ∃ n, L = replicate n a :=
   ADMIT -- Nontrivial existential.
 
-attribute [-simp] map_const
--- attribute [-simp] map_const'
 @[simp] theorem map_const'' (l : List α) (b : β) : map (λ _ => b) l = replicate l.length b := by
   induction l <;> aesop
 
@@ -680,16 +679,13 @@ theorem eq_of_mem_map_const {b₁ b₂ : β} {l : List α} (h : b₁ ∈ map (λ
   b₁ = b₂ := by
   aesop
 
-attribute [-simp] map_replicate
 @[simp] theorem map_replicate' (f : α → β) (a : α) (n) : map f (replicate n a) = replicate n (f a) := by
   induction n <;> aesop
 
-attribute [-simp] tail_replicate
 @[simp] theorem tail_replicate' (a : α) (n) : tail (replicate n a) = replicate n.pred a := by
   aesop (add 1% cases Nat)
 
-attribute [-simp] flatten_replicate_nil
-@[simp] theorem flatten_replicate_nil' (n : Nat) : flatten (replicate n []) = @nil α := by
+@[simp] theorem join_replicate_nil' (n : Nat) : join (replicate n []) = @nil α := by
   induction n <;> aesop
 
 theorem replicate_left_injective {n : Nat} (hn : n ≠ 0) :
@@ -711,39 +707,39 @@ theorem replicate_right_injective (a : α) : Injective (λ n => replicate n a) :
 
 /-! ### pure -/
 
-@[simp] theorem mem_pure {α} (x y : α) :
+@[simp]
+theorem mem_pure {α} (x y : α) :
     x ∈ (pure y : List α) ↔ x = y := by
   aesop (add norm simp pure)
 
-/-! ### flatMap -/
+/-! ### bind -/
 
 instance : Bind List where
-  bind l f := List.flatMap l f
+  bind l f := List.bind l f
 
-@[simp] theorem bind_eq_flatMap {α β} (f : α → List β) (l : List α) :
-    l >>= f = l.flatMap f := rfl
+@[simp] theorem bind_eq_bind {α β} (f : α → List β) (l : List α) :
+    l >>= f = l.bind f := rfl
 
-attribute [-simp] flatMap_append
-theorem X.flatMap_append (f : α → List β) (l₁ l₂ : List α) :
-  (l₁ ++ l₂).flatMap f = l₁.flatMap f ++ l₂.flatMap f := by
+attribute [-simp] bind_append
+theorem X.bind_append (f : α → List β) (l₁ l₂ : List α) :
+  (l₁ ++ l₂).bind f = l₁.bind f ++ l₂.bind f := by
   induction l₁ <;> aesop
 
-attribute [-simp] flatMap_singleton'
-@[simp] theorem X.flatMap_singleton' (f : α → List β) (x : α) : [x].flatMap f = f x := by
+@[simp] theorem bind_singleton'' (f : α → List β) (x : α) : [x].bind f = f x := by
   aesop
 
-@[simp] theorem X.flatMap_singleton'' (l : List α) : l.flatMap (λ x => [x]) = l := by
+@[simp] theorem bind_singleton''' (l : List α) : l.bind (λ x => [x]) = l := by
   induction l <;> aesop
 
-theorem map_eq_flatMap' {α β} (f : α → β) (l : List α) : map f l = l.flatMap (λ x => [f x]) := by
+theorem map_eq_bind' {α β} (f : α → β) (l : List α) : map f l = l.bind (λ x => [f x]) := by
   induction l <;> aesop
 
-theorem flatMap_assoc' {α β γ : Type u} (l : List α) (f : α → List β) (g : β → List γ) :
-    (l.flatMap f).flatMap g = l.flatMap (λ x => (f x).flatMap g) :=
+theorem bind_assoc' {α β γ : Type u} (l : List α) (f : α → List β) (g : β → List γ) :
+    (l.bind f).bind g = l.bind (λ x => (f x).bind g) :=
   ADMIT
-  -- have aux {δ : Type u} (xs ys : List (List δ)) : flatten (xs ++ ys) = flatten xs ++ flatten ys := by
+  -- have aux {δ : Type u} (xs ys : List (List δ)) : join (xs ++ ys) = join xs ++ join ys := by
   --   induction xs <;> aesop
-  -- induction l <;> aesop (add norm [simp [flatMap_append], unfold [flatMap]])
+  -- induction l <;> aesop (add norm [simp [bind_append], unfold [bind]])
 
 /-! ### concat -/
 
@@ -775,7 +771,6 @@ attribute [simp] append_assoc
 theorem X.concat_append (a : α) (l₁ l₂ : List α) : concat l₁ a ++ l₂ = l₁ ++ a :: l₂ := by
   aesop
 
--- attribute [-simp] length_concat
 theorem X.length_concat (a : α) (l : List α) : length (concat l a) = .succ (length l) := by
   aesop
 
@@ -796,8 +791,9 @@ attribute [-simp] reverse_cons
   -- aesop (add norm unfold reverse)
 
 -- Note: reverse_core is called reverseAux in Lean 4.
-attribute [-simp] reverseAux_eq
-@[simp] theorem X.reverseAux_eq (l₁ l₂ : List α) : reverseAux l₁ l₂ = reverse l₁ ++ l₂ := by
+-- attribute [-simp] reverseAux_eq
+@[simp]
+theorem reverse_core_eq (l₁ l₂ : List α) : reverseAux l₁ l₂ = reverse l₁ ++ l₂ := by
   induction l₁ generalizing l₂ <;> aesop
 
 theorem reverse_cons' (a : α) (l : List α) : reverse (a::l) = concat (reverse l) a := by
@@ -806,10 +802,9 @@ theorem reverse_cons' (a : α) (l : List α) : reverse (a::l) = concat (reverse 
 @[simp] theorem reverse_singleton (a : α) : reverse [a] = [a] := rfl
 
 -- TODO: after nightly-2024-08-27, `aesop` can not prove this anymore!
-attribute [-simp] reverse_append in
-@[simp] theorem X.reverse_append (s t : List α) : reverse (s ++ t) = (reverse t) ++ (reverse s) :=
-  ADMIT
-  -- induction s <;> aesop
+-- attribute [-simp] reverse_append in
+-- @[simp] theorem X.reverse_append (s t : List α) : reverse (s ++ t) = (reverse t) ++ (reverse s) := by
+--   induction s <;> aesop
 
 -- attribute [-simp] reverse_concat
 theorem X.reverse_concat (l : List α) (a : α) : reverse (concat l a) = a :: reverse l := by
@@ -957,13 +952,12 @@ theorem getLast?_eq_last_of_ne_nil : ∀ {l : List α} (h : l ≠ []), l.getLast
 theorem mem_getLast?_cons {x y : α} : ∀ {l : List α} (_ : x ∈ l.getLast?), x ∈ (y :: l).getLast? := by
   intro l; induction l <;> aesop
 
--- attribute [-simp] mem_of_mem_getLast?
-theorem X.mem_of_mem_getLast? {l : List α} {a : α} (ha : a ∈ l.getLast?) : a ∈ l := by
+theorem mem_of_mem_getLast? {l : List α} {a : α} (ha : a ∈ l.getLast?) : a ∈ l := by
   match l with
   | [] => aesop
   | [_] => aesop
   | x :: y :: zs =>
-    have ih := X.mem_of_mem_getLast? (l := y :: zs) (a := a)
+    have ih := mem_of_mem_getLast? (l := y :: zs) (a := a)
     aesop
 
 theorem init_append_getLast? : ∀ {l : List α} {a}, a ∈ l.getLast? → init l ++ [a] = l

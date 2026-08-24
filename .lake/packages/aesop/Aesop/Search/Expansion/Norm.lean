@@ -230,11 +230,12 @@ def normSimp (goal : MVarId) (goalMVars : Std.HashSet MVarId) :
     NormM (Option NormRuleResult) := do
   profilingRule .normSimp (wasSuccessful := λ _ => true) do
     checkSimp "norm simp" (mayCloseGoal := true) goal do
-      tryCatchRuntimeEx
-        (withNormTraceNode .normSimp do
+      try
+        withNormTraceNode .normSimp do
           withMaxHeartbeats (← read).options.maxSimpHeartbeats do
-            normSimpCore goal goalMVars)
-        (λ e => throwError "aesop: error in norm simp: {e.toMessageData}")
+            normSimpCore goal goalMVars
+      catch e =>
+        throwError "aesop: error in norm simp: {e.toMessageData}"
 
 def normUnfoldCore (goal : MVarId) : NormM (Option NormRuleResult) := do
   let unfoldRules := (← read).ruleSet.unfoldRules
@@ -249,11 +250,12 @@ def normUnfoldCore (goal : MVarId) : NormM (Option NormRuleResult) := do
 def normUnfold (goal : MVarId) : NormM (Option NormRuleResult) := do
   profilingRule .normUnfold (wasSuccessful := λ _ => true) do
     checkSimp "unfold simp" (mayCloseGoal := false) goal do
-      tryCatchRuntimeEx
-        (withNormTraceNode .normUnfold do
+      try
+        withNormTraceNode .normUnfold do
           withMaxHeartbeats (← read).options.maxUnfoldHeartbeats do
-            normUnfoldCore goal)
-        (λ e => throwError "aesop: error in norm unfold: {e.toMessageData}")
+            normUnfoldCore goal
+      catch e =>
+        throwError "aesop: error in norm unfold: {e.toMessageData}"
 
 inductive NormSeqResult where
   | proved (script : Array (DisplayRuleName × Option (Array Script.LazyStep)))

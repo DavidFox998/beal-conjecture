@@ -1,0 +1,1 @@
+{"version":3,"references":{"{\"c\":{\"n\":\"Nat\",\"m\":\"Init.Prelude\"}}":{"usages":[[0,31,0,34,"CanLowerLevelCore",0,0,1,11,0,4,0,21]],"definition":null},"{\"c\":{\"n\":\"CanLowerLevelCore\",\"m\":\"Beal.B15_LevelTo2_Core\"}}":{"usages":[[2,14,2,31]],"definition":[0,4,0,21]}},"module":"Beal.B15_LevelTo2_Core"}

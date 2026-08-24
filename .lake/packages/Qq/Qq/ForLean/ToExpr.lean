@@ -2,6 +2,12 @@ import Lean
 
 open Lean
 
+instance : ToExpr Int where
+  toTypeExpr := .const ``Int []
+  toExpr i := match i with
+    | .ofNat n => mkApp (.const ``Int.ofNat []) (toExpr n)
+    | .negSucc n => mkApp (.const ``Int.negSucc []) (toExpr n)
+
 instance : ToExpr MVarId where
   toTypeExpr := .const ``MVarId []
   toExpr i := mkApp (.const ``MVarId.mk []) (toExpr i.name)

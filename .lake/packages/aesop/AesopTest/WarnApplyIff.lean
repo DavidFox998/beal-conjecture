@@ -9,8 +9,7 @@ import Aesop
 set_option aesop.check.all true
 
 /--
-warning: Apply builder was used for a theorem with conclusion A ↔ B.
-You probably want to use the simp builder or create an alias that applies the theorem in one direction.
+warning: Apply builder was used for a theorem with conclusion A ↔ B. You probably want to use the simp builder.
 Use `set_option aesop.warn.applyIff false` to disable this warning.
 -/
 #guard_msgs in

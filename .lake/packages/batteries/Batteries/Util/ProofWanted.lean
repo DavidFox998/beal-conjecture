@@ -33,10 +33,7 @@ elaboration, but it's then removed from the environment.
 def elabProofWanted : CommandElab
   | `($mods:declModifiers proof_wanted $name $args* : $res) => withoutModifyingEnv do
     -- The helper axiom is used instead of `sorry` to avoid spurious warnings
-    elabCommand <| ← `(
-      section
-      set_option linter.unusedVariables false
-      axiom helper {α : Sort _} : α
-      $mods:declModifiers theorem $name $args* : $res := helper
-      end)
+    elabCommand <| ← `(axiom helper (p : Prop) : p
+                       $mods:declModifiers
+                       theorem $name $args* : $res := helper _)
   | _ => throwUnsupportedSyntax

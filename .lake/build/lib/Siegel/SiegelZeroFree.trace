@@ -1,8 +1,0 @@
-{"log":
- [{"message":
-   ".> LEAN_PATH=././.lake/packages/Cli/.lake/build/lib:././.lake/packages/batteries/.lake/build/lib:././.lake/packages/Qq/.lake/build/lib:././.lake/packages/aesop/.lake/build/lib:././.lake/packages/proofwidgets/.lake/build/lib:././.lake/packages/importGraph/.lake/build/lib:././.lake/packages/LeanSearchClient/.lake/build/lib:././.lake/packages/plausible/.lake/build/lib:././.lake/packages/mathlib/.lake/build/lib:././.lake/build/lib LD_LIBRARY_PATH= /home/runner/.elan/toolchains/leanprover--lean4---v4.15.0/bin/lean ././././Siegel/SiegelZeroFree.lean -R ./././. -o ././.lake/build/lib/Siegel/SiegelZeroFree.olean -i ././.lake/build/lib/Siegel/SiegelZeroFree.ilean -c ././.lake/build/ir/Siegel/SiegelZeroFree.c --json",
-   "level": "trace"},
-  {"message":
-   "././././Siegel/SiegelZeroFree.lean:7:4: The namespace 'SiegelZeroFree' is duplicated in the declaration 'SiegelZeroFree.SiegelZeroFree'\nnote: this linter can be disabled with `set_option linter.dupNamespace false`",
-   "level": "warning"}],
- "depHash": "3926157348575020869"}

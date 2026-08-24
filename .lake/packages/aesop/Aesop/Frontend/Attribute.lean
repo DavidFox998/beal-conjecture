@@ -51,7 +51,7 @@ initialize registerBuiltinAttribute {
   add := λ decl stx attrKind => withRef stx do
     let rules ← runTermElabMAsCoreM do
       let config ← AttrConfig.elab stx
-      config.rules.flatMapM (·.buildAdditionalGlobalRules decl)
+      config.rules.concatMapM (·.buildAdditionalGlobalRules decl)
     for (rule, rsNames) in rules do
       for rsName in rsNames do
         addGlobalRule rsName rule attrKind (checkNotExists := true)

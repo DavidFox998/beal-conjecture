@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2022 Kim Morrison. All rights reserved.
+Copyright (c) 2022 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Morrison, Gabriel Ebner, Floris van Doorn
+Authors: Scott Morrison, Gabriel Ebner, Floris van Doorn
 -/
 import Lean.Elab.Tactic.Simp
 import Batteries.Tactic.OpenPrivate
@@ -55,8 +55,10 @@ def mkSimpContext' (simpTheorems : SimpTheorems) (stx : Syntax) (eraseLocal : Bo
     pure simpTheorems
   let simprocs ← if simpOnly then pure {} else Simp.getSimprocs
   let congrTheorems ← Meta.getSimpCongrTheorems
-  let ctx ← Simp.mkContext (← elabSimpConfig stx[1] (kind := kind)) #[simpTheorems] congrTheorems
-  let r ← elabSimpArgs stx[4] (simprocs := #[simprocs]) ctx eraseLocal kind
+  let r ← elabSimpArgs stx[4] (eraseLocal := eraseLocal) (kind := kind) (simprocs := #[simprocs]) {
+    config       := (← elabSimpConfig stx[1] (kind := kind))
+    simpTheorems := #[simpTheorems], congrTheorems
+  }
   if !r.starArg || ignoreStarArg then
     return { r with dischargeWrapper }
   else
@@ -71,7 +73,7 @@ def mkSimpContext' (simpTheorems : SimpTheorems) (stx : Syntax) (eraseLocal : Bo
     for h in hs do
       unless simpTheorems.isErased (.fvar h) do
         simpTheorems ← simpTheorems.addTheorem (.fvar h) (← h.getDecl).toExpr
-    let ctx := ctx.setSimpTheorems simpTheorems
+    let ctx := { ctx with simpTheorems }
     return { ctx, simprocs, dischargeWrapper }
 
 
