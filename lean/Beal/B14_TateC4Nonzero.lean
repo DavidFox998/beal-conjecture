@@ -20,7 +20,7 @@
 
       open Beal.FreyTate
 
-      -- p is implicit throughout (inferred from types); hp and hp2 are explicit on each theorem.
+      -- p is implicit (inferred from types); hp and hp2 are explicit on each theorem.
       variable {p : ℕ}
 
       -- ── §1. Helpers ──────────────────────────────────────────────────────────────
@@ -32,20 +32,22 @@
       have h_dvd : p ∣ 16 := (ZMod.natCast_zmod_eq_zero_iff_dvd 16 p).mp h16
       have h2 : 2 ≤ p := hp.two_le
       have hp_le : p ≤ 16 := Nat.le_of_dvd (by norm_num) h_dvd
-      interval_cases p
-      · exact hp2 rfl
-      all_goals simp_all [Nat.Prime]
+      interval_cases p <;> simp_all [Nat.Prime] <;> norm_num at *
 
       /-- If p ∤ B.natAbs and y > 0 then (B^y : ZMod p) ≠ 0.
-        Chain: zero → p | B^y → p | B.natAbs^y → p | B.natAbs → contradiction. -/
+        Chain: zero → p | B → p | B.natAbs → contradiction.
+        Proof factors through (B : ZMod p) ≠ 0 then uses pow_ne_zero. -/
       theorem pow_ne_zero_of_not_dvd (hp : Nat.Prime p) (hp2 : p ≠ 2) {B : ℤ} {y : ℕ} (hy : 0 < y)
         (hB : ¬ p ∣ B.natAbs) : ((B ^ y : ℤ) : ZMod p) ≠ 0 := by
-      intro h0
-      apply hB
-      have h_dvd : (p : ℤ) ∣ B ^ y :=
-        (ZMod.intCast_zmod_eq_zero_iff_dvd (B ^ y) p).mp h0
-      rw [Int.natAbs_pow]
-      exact hp.dvd_of_dvd_pow (Int.natAbs_dvd.mp h_dvd)
+      haveI : Fact (Nat.Prime p) := ⟨hp⟩
+      have hBne : (B : ZMod p) ≠ 0 := by
+        intro h0
+        apply hB
+        have h : (p : ℤ) ∣ B := (ZMod.intCast_zmod_eq_zero_iff_dvd B p).mp h0
+        obtain ⟨k, hk⟩ := h
+        exact ⟨k.natAbs, by simp [hk, Int.natAbs_mul, Int.natAbs_ofNat]⟩
+      rw [show ((B ^ y : ℤ) : ZMod p) = (B : ZMod p) ^ y from by push_cast; ring]
+      exact pow_ne_zero y hBne
 
       -- ── §2. Three c₄ nonzero lemmas ─────────────────────────────────────────────
       -- Stated with explicit (A^x)^2 to avoid right-assoc ^ ambiguity in c4_Frey.
@@ -91,7 +93,7 @@
       have hsum0 : ((A ^ x : ℤ) : ZMod p) + ((B ^ y : ℤ) : ZMod p) = 0 := by
         have h : ((A ^ x + B ^ y : ℤ) : ZMod p) = 0 := by
           rw [show (A ^ x + B ^ y : ℤ) = C ^ z from hEq]; exact hCz0
-        rwa [map_add] at h
+        rwa [Int.cast_add] at h
       have hBy_ne : ((B ^ y : ℤ) : ZMod p) ≠ 0 := pow_ne_zero_of_not_dvd hp hp2 hy hB
       have hAx_neg : ((A ^ x : ℤ) : ZMod p) = -((B ^ y : ℤ) : ZMod p) :=
         eq_neg_of_add_eq_zero_left hsum0
