@@ -21,7 +21,8 @@ Environment variables (all set automatically by GitHub Actions):
     GITHUB_TOKEN          Actions token (needs actions:read + contents:read)
     GITHUB_REPOSITORY     "owner/repo"
     GITHUB_RUN_ID         numeric ID of this run (excluded from history)
-    GITHUB_REF_NAME       branch name used to restrict the history query
+    GITHUB_HEAD_REF       source branch for pull-request runs (when present)
+    GITHUB_REF_NAME       branch name used to restrict the history query otherwise
 """
 
 import io
@@ -298,7 +299,12 @@ def main():
     token = os.environ.get("GITHUB_TOKEN", "")
     repo = os.environ.get("GITHUB_REPOSITORY", "")
     run_id = os.environ.get("GITHUB_RUN_ID", "")
-    branch = os.environ.get("GITHUB_REF_NAME", "")
+    # pull_request events set GITHUB_REF_NAME to "<number>/merge", which has
+    # no corresponding historical workflow runs. Prefer the source branch so
+    # a PR can compare itself with its preceding push run.
+    branch = os.environ.get("GITHUB_HEAD_REF") or os.environ.get(
+        "GITHUB_REF_NAME", ""
+    )
 
     # Parse current run's XML files (either may be absent — that is fine)
     cur_unit = parse_junit_file("test-results/unit.xml")
