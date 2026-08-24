@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+title: "Beal Conjecture — a formal instrument in Opera Numerorum"
+message: "If you use this software, please cite it as below."
+type: software
+authors:
+  - family-names: Fox
+    given-names: David
+    affiliation: "Opera Numerorum"
+version: "v0.4.0-interfaces-typed"
+date-released: 2026-08-21
+license: MIT
+repository-code: "https://github.com/DavidFox998/beal-conjecture"
+keywords:
+  - Beal Conjecture
+  - Lean 4
+  - Formal Mathematics
+  - Frey Curve
+  - Ribet Level Lowering
+  - Modularity Hypothesis
+abstract: "21-layer Lean 4 tower formalizing Beal Conjecture dependencies. v0.4.0 checkpoint: Interfaces Typed. B04_QExpansion_Core: QExpansionCoeff, HeckeEigenvalue — [] axioms. B05_Modularity_Core: FreyCurve05Core, ModularityHypothesisTyped — [] axioms. B05_Modularity: modularity_hypothesis openly axiomatized; only new footprint is [propext, modularity_hypothesis]. B20_Beal_Core: IsBealSolution20Core with real arithmetic (2 < x, A^x + B^y = C^z), BealAssembly20Core — [] axioms. Tower complete: p||N → M*p=N → S2(2)=0 → Modularity Hypothesis → Beal. CI green: 2359/2359 bricks, 0 sorry, 0 Prop:=True stubs."
