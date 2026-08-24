@@ -54,28 +54,65 @@ formalization makes this coupling explicit rather than gestural.
 
 ## Current formal status
 
-> **v0.4.0 — published scaffold, one named axiom**
+> **Current main — 0 `sorry`, three named domain axioms**
 >
-> This repository is a formalization scaffold, not a completed proof of
-> Beal's Conjecture. Every Core declaration states a genuine mathematical
-> claim. The tower runs:
+> This repository is still a formalization of the Beal argument, not a claim
+> that Lean has reconstructed Wiles, Tate, or Ribet from first principles. The
+> important change since the #161-era scaffold is the shape of the boundary:
+> one broad modularity interface has been separated into three smaller, typed
+> mathematical interfaces that the final theorem names explicitly.
 >
-> **$p \| N$** → **$M \cdot p = N,\; p \nmid M$** (real `Nat` witness)
-> → **$S_2(\Gamma_0(2)) = 0$** (by `rfl`, dimension zero)
-> → **Modularity Hypothesis** (explicit Lean `axiom`)
-> → **Beal Conjecture**.
+> The current conditional chain is:
 >
-> The modularity hypothesis is the one openly named assumption:
-> `axiom modularity_hypothesis : ModularityHypothesisTyped`
-> in `B05_Modularity.lean`, with audit footprint `[propext, modularity_hypothesis]`.
-> Every Core declaration outside that boundary is import-free and zero-axiom.
-> Every wrapper uses at most `[propext]`.
+> **primitive Beal data** → **Frey curve and discriminant arithmetic**
+> → **Tate Step 2 at each relevant prime** → **a modular Frey representation**
+> → **Ribet level-lowering to level 2** → **$S_2(Γ_0(2)) = 0$**
+> → **contradiction**.
 >
-> Stating a claim is not the same as proving it. `modularity_hypothesis` is
-> not proved here; it is declared as a hypothesis so that its logical
-> position in the tower is unambiguous. The next layer of honest work is the
-> conductor calculation — the subject of the next section.
+> The final B20 theorem uses exactly these named assumptions:
+> `Beal.FreyTate.wiles_modularity`,
+> `Beal.FreyTate.TateStep2.tate_step2_I_n_conductor_one`, and
+> `Beal.FreyTate.ribet_level_lowering_real`. All supporting steps in the
+> chain are proved without `sorry`.
 
+### From one broad axiom to three smaller interfaces
+
+At the #161 baseline, the README described the formal boundary as one
+explicit `modularity_hypothesis`: a single typed proposition standing for
+the modularity portion of the argument. That was a useful first boundary,
+but it hid three mathematically different obligations behind one name.
+
+The B14–B20 path now exposes those obligations separately:
+
+| Named interface | What it contributes |
+|---|---|
+| `wiles_modularity` | A modularity witness for the Frey curve, with the prime and level data needed downstream. |
+| `tate_step2_I_n_conductor_one` | The local Tate Step 2 statement: when the Frey invariants have the required valuations, the conductor has exact prime order. |
+| `ribet_level_lowering_real` | The global level-lowering step: Wiles data plus the per-prime Tate outputs force the contradiction at level 2. |
+
+The distinction matters. `tate_frey_multiplicative_derived` is a theorem, not
+a fourth axiom: it packages the generic Tate interface with the explicit Frey
+discriminant, the nonvanishing of $c_4$ modulo the relevant prime, and the
+conductor's prime support. Likewise, the B15 iteration and B16 final assembly
+are proved Lean theorems that consume the named interfaces; they do not enlarge
+the mathematical assumption budget.
+
+### The post-161 arc
+
+- **#161–#165:** the Galois, Frey, Beal, and $S_2(Γ_0(2))$ scaffolding was
+  consolidated into a typed Core/Wrapper architecture.
+- **#165:** the Frey/Tate boundary introduced named Wiles, Tate, and Ribet
+  interfaces instead of leaving modularity as one undifferentiated gap.
+- **#190–#198:** the Frey curve's $c_4$, discriminant, conductor, local
+  nonvanishing, and Tate-derived conductor witness were connected into a
+  machine-checked per-prime statement.
+- **#199–#205:** the Ribet iteration and final B20 assembly were brought onto
+  that smaller boundary; the final CI audit now confirms 0 `sorry` and exactly
+  the three named domain axioms.
+
+This is a stronger formal interface, not a stronger claim of completed
+foundational mathematics. The three deep results remain visible as the three
+places where external mathematical theorems enter the present development.
 ---
 
 ## The architecture: Cores, Wrappers, and one named gap
