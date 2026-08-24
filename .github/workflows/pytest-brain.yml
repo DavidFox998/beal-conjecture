@@ -5,6 +5,7 @@ on:
   pull_request:
 
 permissions:
+  actions: read
   checks: write
   pull-requests: write
   contents: read
@@ -76,6 +77,13 @@ jobs:
           path: test-results/*.xml
           if-no-files-found: warn
           retention-days: 30
+
+      # ── Test pass-rate trend report (unit + live smoke, with decline warning) ─
+      - name: Generate test-trend report
+        if: always()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python scripts/test_trend_report.py
 
       - name: Link JUnit XML reports in job summary
         if: always()

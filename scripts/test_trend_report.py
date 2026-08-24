@@ -178,6 +178,19 @@ def download_junit_artifact(token, repo, run_id):
 # ── Report generation ────────────────────────────────────────────────────────
 
 
+def is_secrets_skip(stats):
+    """Return True when all live tests were skipped due to missing secrets.
+
+    When the ZEROBEACON_URL / ZEROBEACON_API_KEY secrets are absent every live
+    test self-skips — yielding passed == 0 and failed == 0.  That is not a
+    regression; exclude it from decline comparisons.
+    """
+    if stats is None:
+        return False
+    total, passed, failed, skipped = stats
+    return total > 0 and passed == 0 and failed == 0
+
+
 def build_report(cur_unit, cur_live, history):
     """
     Return a Markdown string containing the trend table and optional warning.
@@ -209,36 +222,69 @@ def build_report(cur_unit, cur_live, history):
         row(h["label"], "Unit", h["unit"])
         row(h["label"], "Live smoke", h["live"])
 
-    # ── Decline warning ──────────────────────────────────────────────────────
-    decline = False
-    prev_rate_val = cur_rate_val = None
+    # ── Unit test decline warning ────────────────────────────────────────────
+    unit_decline = False
+    prev_unit_rate = cur_unit_rate = None
 
     if cur_unit is not None and history:
         prev = next((h["unit"] for h in history if h["unit"] is not None), None)
         if prev is not None:
-            cur_rate_val = pass_rate(cur_unit[1], cur_unit[0])
-            prev_rate_val = pass_rate(prev[1], prev[0])
-            if cur_rate_val is not None and prev_rate_val is not None:
-                decline = cur_rate_val < prev_rate_val
+            cur_unit_rate = pass_rate(cur_unit[1], cur_unit[0])
+            prev_unit_rate = pass_rate(prev[1], prev[0])
+            if cur_unit_rate is not None and prev_unit_rate is not None:
+                unit_decline = cur_unit_rate < prev_unit_rate
 
+    # ── Live smoke-test decline warning ─────────────────────────────────────
+    # Runs where all tests were skipped (secrets absent) are excluded from both
+    # the current-run check and the historical baseline search so that a
+    # secrets-missing run never masquerades as a regression.
+    live_decline = False
+    prev_live_rate = cur_live_rate = None
+
+    if cur_live is not None and not is_secrets_skip(cur_live) and history:
+        prev_live = next(
+            (
+                h["live"]
+                for h in history
+                if h["live"] is not None and not is_secrets_skip(h["live"])
+            ),
+            None,
+        )
+        if prev_live is not None:
+            cur_live_rate = pass_rate(cur_live[1], cur_live[0])
+            prev_live_rate = pass_rate(prev_live[1], prev_live[0])
+            if cur_live_rate is not None and prev_live_rate is not None:
+                live_decline = cur_live_rate < prev_live_rate
+
+    # ── Compose the warning / status block ──────────────────────────────────
     lines.append("")
-    if decline:
+
+    if unit_decline:
         lines.append(
-            f"> ⚠️ **Pass rate declined** — unit tests dropped from "
-            f"{prev_rate_val:.0f}% to {cur_rate_val:.0f}% compared with the "
+            f"> ⚠️ **Unit pass rate declined** — unit tests dropped from "
+            f"{prev_unit_rate:.0f}% to {cur_unit_rate:.0f}% compared with the "
             "most recent recorded run. Please investigate before merging."
         )
-    elif cur_unit is not None:
-        _, passed, failed, _ = cur_unit
-        if failed == 0:
-            lines.append(
-                "> ✅ Pass rate is stable — no unit test failures in this run."
-            )
-        else:
-            lines.append(
-                f"> ℹ️ This run has {failed} unit test failure(s). "
-                "No prior run available for trend comparison."
-            )
+
+    if live_decline:
+        lines.append(
+            f"> ⚠️ **Live smoke pass rate declined** — live smoke tests dropped "
+            f"from {prev_live_rate:.0f}% to {cur_live_rate:.0f}% compared with "
+            "the most recent recorded run. The deployed service may have regressed."
+        )
+
+    if not unit_decline and not live_decline:
+        if cur_unit is not None:
+            _, passed, failed, _ = cur_unit
+            if failed == 0:
+                lines.append(
+                    "> ✅ Pass rate is stable — no unit test failures in this run."
+                )
+            else:
+                lines.append(
+                    f"> ℹ️ This run has {failed} unit test failure(s). "
+                    "No prior run available for trend comparison."
+                )
 
     lines.append("")
     return "\n".join(lines)
