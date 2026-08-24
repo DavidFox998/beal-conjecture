@@ -12,4 +12,4 @@
 - [Fly builder registry fallback](fly-builder-registry-fallback.md) — if Depot returns a registry 401 after app auth succeeds, deploy through the non-Depot remote builder.
 - [MCP response compatibility](mcp-response-compatibility.md) — successful tool calls retain dictionary payload fields at top level alongside the standard MCP envelope for Smithery clients.
 - [EKG alert webhook verification](ekg-alert-webhook-verification.md) — primary and cold-start EKG alerts must be verified independently before relying on them.
-- [Beal CI resume point](beal-ci-resume.md) — last-green tag `last-green-165` (b285036/#165); HEAD 477e31f/#190 in queue; resume instructions and 3-axiom target inside.
+- [Beal final-proof CI](beal-ci-resume.md) — audit final theorem for exactly three domain axioms; do not confuse Lean foundations with mathematical assumptions.
