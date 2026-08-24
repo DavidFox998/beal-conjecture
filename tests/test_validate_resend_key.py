@@ -61,6 +61,17 @@ def test_valid_key_authenticates_over_smtp():
     client.login.assert_called_once_with(_SMTP_USER, "re_valid_key")
 
 
+def test_probe_uses_smtp_to_avoid_cloudflare_http_user_agent_blocks():
+    """The probe must stay on SMTP, not an HTTP endpoint that can return 403/1010."""
+    client = _fake_smtp()
+
+    with patch("core.emailer.smtplib.SMTP", return_value=client) as smtp:
+        ok, reason = validate_resend_key(api_key_env="re_valid_key")
+
+    assert (ok, reason) == (True, "ok")
+    smtp.assert_called_once_with(_SMTP_HOST, _SMTP_PORT, timeout=10)
+
+
 def test_authentication_error_returns_false():
     client = _fake_smtp()
     client.login.side_effect = smtplib.SMTPAuthenticationError(535, b"bad credentials")

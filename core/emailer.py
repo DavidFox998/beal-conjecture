@@ -43,6 +43,9 @@ def validate_resend_key(api_key_env: str | None = None) -> tuple[bool, str]:
     Uses SMTP STARTTLS to smtp.resend.com:587.  A successful login (SMTP 235)
     means the key is live.  This avoids the Resend HTTP API endpoint
     (api.resend.com) which Cloudflare blocks for certain cloud-provider IPs.
+    If this probe is ever moved back to HTTP, keep a non-empty User-Agent
+    header: removing it can produce Cloudflare HTTP 403 error 1010, which is
+    an edge block and not an authentication failure.
 
     Returns (True, "ok") on success, or (False, reason) on failure.
     Never raises — safe to call from startup hooks or background tasks.
