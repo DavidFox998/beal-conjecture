@@ -238,7 +238,7 @@ private lemma lfunction_eq_eta_factor (s : ℂ) (hs : 1 < s.re) :
     rw [norm_div, norm_pow, norm_neg, norm_one, one_pow, one_div, one_div,
         show (2 : ℂ) * (k : ℂ) + 1 = ((2 * k + 1 : ℕ) : ℂ) from by push_cast; ring,
         Complex.norm_natCast_cpow_of_pos (by omega)]
-    exact inv_le_inv_of_le (by positivity) (Real.rpow_le_rpow (by positivity)
+    exact inv_anti₀ (by positivity) (Real.rpow_le_rpow (by positivity)
       (by exact_mod_cast (show k + 1 ≤ 2 * k + 1 by omega)) (by linarith))
   -- Summability of odd part: (−1)^(2k+1) / (2k+2:ℂ)^s
   have ho_sum : Summable (fun k : ℕ => (fun n : ℕ =>
@@ -248,7 +248,7 @@ private lemma lfunction_eq_eta_factor (s : ℂ) (hs : 1 < s.re) :
     rw [norm_div, norm_pow, norm_neg, norm_one, one_pow, one_div, one_div,
         show (2 : ℂ) * (k : ℂ) + 1 + 1 = ((2 * k + 2 : ℕ) : ℂ) from by push_cast; ring,
         Complex.norm_natCast_cpow_of_pos (by omega)]
-    exact inv_le_inv_of_le (by positivity) (Real.rpow_le_rpow (by positivity)
+    exact inv_anti₀ (by positivity) (Real.rpow_le_rpow (by positivity)
       (by exact_mod_cast (show k + 1 ≤ 2 * k + 2 by omega)) (by linarith))
   -- Summability of 1/(k+1:ℂ)^s for Re(s) > 1
   have hζ_sum : Summable (fun k : ℕ => (1 : ℂ) / ((k : ℂ) + 1) ^ s) := by
@@ -303,14 +303,14 @@ private lemma lfunction_eq_eta_factor (s : ℂ) (hs : 1 < s.re) :
     rw [norm_div, norm_one, one_div, one_div,
         show (2 : ℂ) * k + 1 = ((2 * k + 1 : ℕ) : ℂ) from by push_cast; ring,
         Complex.norm_natCast_cpow_of_pos (by omega)]
-    exact inv_le_inv_of_le (by positivity) (Real.rpow_le_rpow (by positivity)
+    exact inv_anti₀ (by positivity) (Real.rpow_le_rpow (by positivity)
       (by exact_mod_cast (show k + 1 ≤ 2 * k + 1 by omega)) (by linarith))
   have hζ_odd_sum : Summable (fun k : ℕ => (1 : ℂ) / ((2 * (k : ℂ)) + 2) ^ s) := by
     apply Summable.of_norm_bounded _ hg_sum; intro k
     rw [norm_div, norm_one, one_div, one_div,
         show (2 : ℂ) * k + 2 = ((2 * k + 2 : ℕ) : ℂ) from by push_cast; ring,
         Complex.norm_natCast_cpow_of_pos (by omega)]
-    exact inv_le_inv_of_le (by positivity) (Real.rpow_le_rpow (by positivity)
+    exact inv_anti₀ (by positivity) (Real.rpow_le_rpow (by positivity)
       (by exact_mod_cast (show k + 1 ≤ 2 * k + 2 by omega)) (by linarith))
   -- ζ even-odd split: ∑ 1/(2k+1)^s + ∑ 1/(2k+2)^s = ζ
   -- tsum_even_add_odd rewrites even+odd → full tsum; then align with zeta formula

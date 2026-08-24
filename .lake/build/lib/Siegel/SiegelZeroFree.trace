@@ -5,4 +5,4 @@
   {"message":
    "././././Siegel/SiegelZeroFree.lean:7:4: The namespace 'SiegelZeroFree' is duplicated in the declaration 'SiegelZeroFree.SiegelZeroFree'\nnote: this linter can be disabled with `set_option linter.dupNamespace false`",
    "level": "warning"}],
- "depHash": "13875528126473269329"}
+ "depHash": "3926157348575020869"}

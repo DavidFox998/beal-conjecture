@@ -15,9 +15,11 @@
   └─────────────────────────────────────────┴──────────────────────────────────────────┘
 
   ABSENT from Mathlib v4.15.0 (searched every file):
-    riemannZeta_eta           — eta identity (1−2^{1−s})·ζ(s) = η(s): NOT PRESENT
+    riemannZeta_eta           — no ready-made eta identity; the Siegel module proves
+                                 the needed identity by analytic continuation
     riemannZeta_eulerProduct  — Euler product for ζ by that name: NOT PRESENT
-    ZetaRealSign cannot be closed in v4.15.0. Remains axiom in SiegelZeroFreeElementary.
+    ZetaRealSign is proved in SiegelZeroFreeElementary from the eta identity,
+    pair-sum positivity, and the sign of 1 − 2^(1−σ).
 
   WHAT IS PRESENT for the Euler product:
     summable_neg_log_one_sub_mul_prime_cpow (Nonvanishing.lean, line 265):
