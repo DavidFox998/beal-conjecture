@@ -52,6 +52,8 @@ def validate_resend_key(api_key_env: str | None = None) -> tuple[bool, str]:
     """
     if api_key_env is None:
         api_key_env = os.environ.get("RESEND_API_KEY", "").strip()
+    else:
+        api_key_env = api_key_env.strip()
 
     if not api_key_env:
         return False, "RESEND_API_KEY is not set"
