@@ -9,24 +9,29 @@ on:
 
 jobs:
   build:
-    name: "Clean lake build — Siegel.SiegelZeroFreeElementary (Lean v4.15.0 / Mathlib v4.15.0)"
+    name: "Clean lake build — Siegel.SiegelZeroFreeElementary"
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
 
+      - name: Verify Lean and Mathlib toolchain pins
+        # Fail before elan or Mathlib cache work if the repository metadata drifts.
+        run: bash scripts/check-lean-toolchain.sh
+
       - name: Install elan
         run: |
+          TOOLCHAIN="$(tr -d '[:space:]' < lean-toolchain)"
           curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh \
-            -sSf | sh -s -- -y --default-toolchain leanprover/lean4:v4.15.0
+            -sSf | sh -s -- -y --default-toolchain "$TOOLCHAIN"
           echo "$HOME/.elan/bin" >> $GITHUB_PATH
 
       - name: Cache Lean toolchain
         uses: actions/cache@v4
         with:
           path: ~/.elan
-          key: elan-${{ runner.os }}-v4.15.0-${{ hashFiles('lean-toolchain') }}
-          restore-keys: elan-${{ runner.os }}-v4.15.0-
+          key: elan-${{ runner.os }}-${{ hashFiles('lean-toolchain') }}
+          restore-keys: elan-${{ runner.os }}-
 
       - name: Get Mathlib olean cache
         # Use prebuilt Mathlib oleans (required — building Mathlib from scratch takes hours).
