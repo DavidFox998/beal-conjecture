@@ -115,91 +115,89 @@ foundational mathematics. The three deep results remain visible as the three
 places where external mathematical theorems enter the present development.
 ---
 
-## The architecture: Cores, Wrappers, and one named gap
+## The architecture: Cores, Wrappers, and three named interfaces
 
-The repository is organized into three layers, each with a distinct
-axiom budget and purpose.
+The repository is organized into three layers, with a separate boundary for
+the named mathematical results used by the final theorem.
 
 ### Cores (B01–B21 `*_Core.lean`)
 
 The Cores are the mathematical skeleton. Each states a real proposition
 in pure Lean, with **zero imports from Mathlib** and **zero axioms beyond
-`propext`**. They cannot hide sorry behind a library import. CI enforces
-this with `#print axioms` on every Core declaration; any Core that
-inadvertently depends on `modularity_hypothesis` or `sorryAx` fails
-the build.
-
-Representative Cores:
+`propext`**. They cannot hide `sorry` behind a library import. CI enforces
+this with `#print axioms` on every Core declaration.
 
 | File | Claim |
 |---|---|
 | `B01` | `IsBealSolutionCore` — type-level characterization of a Beal triple |
-| `B02` | `FreyDeltaCore` — the discriminant $\Delta$ of the Frey curve is nonzero |
-| `B04` | `ExactDivCore` — $p^k \| N$ exact-divisibility arithmetic |
-| `B05` | `modularity_hypothesis` — **the one named axiom** |
-| `B14` | `AuditB14B05Boundary` — audit that B14 does not exceed its axiom budget |
+| `B02` | `FreyDeltaCore` — nonvanishing discriminant of the Frey curve |
+| `B04` | `ExactDivCore` — exact-divisibility arithmetic for $p^k \| N$ |
+| `B14` | Frey invariants, local nonvanishing, and the Tate input boundary |
+| `B15` | Prime-by-prime level reduction to 2 |
+| `B16` | Final Wiles + Tate + Ribet assembly |
 
 ### Wrappers (`*_Wrapper.lean`, `*_Interface.lean`)
 
-The wrappers translate Core statements into the concrete Mathlib setting —
-real numbers, field norms, `GCDMonoid`. They are permitted a slightly
-wider axiom budget: `[propext, Classical.choice, Quot.sound]`. They never
-introduce `sorryAx`. The wrapper for BSD (`BSD_HasseFull_143_CLOSED`) has
-its own audited real-number transport boundary, checked on every push.
+Wrappers translate Core statements into the concrete Mathlib setting — real
+numbers, field norms, and `GCDMonoid`. They may carry foundational Lean
+dependencies such as `propext`, `Classical.choice`, and `Quot.sound`; they
+must never introduce `sorryAx`. The real-number BSD/Hasse boundary has its
+own audit.
 
-### The named gap
+### The three named mathematical interfaces
 
-Between the wrappers and a complete proof lies a single named mathematical
-obligation: `modularity_hypothesis`. Everything else in the tower is
-formally closed. The next step is not to write more Lean — it is to supply
-a proof that fills `modularity_hypothesis` from within the language.
-That proof requires the conductor calculation below.
+The final B20 proof is conditional on exactly three named results:
 
+1. **Wiles:** `wiles_modularity` supplies a modularity witness for the Frey curve.
+2. **Tate:** `tate_step2_I_n_conductor_one` supplies the local exact-conductor step;
+   B14 proves the Frey arithmetic required to invoke it.
+3. **Ribet:** `ribet_level_lowering_real` consumes the Wiles witness and the Tate
+   output to close the level-lowering contradiction.
+
+The older broad `modularity_hypothesis` remains part of the historical scaffold,
+but it is not the named dependency boundary of the final B14–B20 theorem. The
+new decomposition makes the three classical inputs visible rather than silently
+packaging them into one opaque proposition.
 ---
 
 ## The path to a complete proof: Tate and Ribet
 
-The formal program ahead has three steps, in order. Each is a
-well-defined mathematical obligation.
+The current development implements the architecture below. The three named
+interfaces mark the remaining classical inputs; the connective arithmetic
+around them is explicit Lean code.
 
-### Step 1 — Conductor calculation via Tate's algorithm
+### Step 1 — Frey invariants and Tate's local conductor step
 
-Given a primitive Beal triple $(A^x, B^y, C^z)$ with $\gcd(A,B,C) = 1$,
-form the Frey curve
+For a primitive Beal triple $(A^x, B^y, C^z)$, the development forms the Frey curve
 $$
 E : y^2 = x(x - A^x)(x + B^y).
 $$
-Tate's algorithm (1975) computes the arithmetic conductor $N(E)$ by
-analyzing the local behavior of $E$ at each prime of bad reduction.
-For a primitive triple, the bad primes are constrained by the exponent
-arithmetic; the key claim is that $N(E)$ divides $2$ (or a small
-explicit set determined by the exponents).
+`B14_FreyTate.lean` defines its $b_2$, $b_4$, $c_4$, discriminant, and conductor.
+`B14_TateC4Nonzero.lean` proves the needed local $c_4$ nonvanishing, and
+`B14_TateInImpliesOrd1.lean` combines that arithmetic with Tate's named
+interface to prove `tate_frey_multiplicative_derived`.
 
-This is the most concrete next obligation: a Lean formalization of Tate's
-algorithm applied to the Frey curve for Beal data. It is arithmetic, not
-analytic — every calculation is an explicit discriminant and valuation
-computation.
+This derived theorem is not another assumption: it is the explicit bridge from
+the generic local Tate statement to the Frey conductor data.
 
-### Step 2 — Ribet's level-lowering
+### Step 2 — Wiles data and Ribet level-lowering
 
-By the modularity theorem (Wiles–Taylor 1995), $E$ corresponds to a
-normalized newform $f$ of weight 2 and level $N(E)$. Kenneth Ribet's
-theorem (1990) on level-lowering says: under the constraint that a
-mod-$\ell$ Galois representation of $E$ is irreducible, $f$ can be
-transported to a newform of level dividing $N(E)/p$ for primes $p$
-of a particular type. Iterated application reaches level 2.
+`wiles_modularity` supplies the modularity witness and
+`ribet_level_lowering_real` receives that witness together with the per-prime
+outputs of `tate_frey_multiplicative_derived`. `B15_RibetIterate.lean` proves
+the finite prime-support iteration to level 2, while `B16_BealFinal.lean`
+assembles the three named interfaces without adding another named assumption.
 
-### Step 3 — Dimension zero closes the argument
+### Step 3 — Dimension zero closes the conditional argument
 
-The space $S_2(\Gamma_0(2))$ has dimension zero — no cusp forms of
-weight 2 and level 2 exist. This is a classical fact already verified
-in this repository by `rfl`. There is no newform to receive Ribet's
-transport; the hypothetical Beal triple cannot exist.
+The space $S_2(Γ_0(2))$ has dimension zero: no cusp forms of weight 2 and
+level 2 exist. This fact is verified in the repository by `rfl`. Once the
+Ribet chain reaches level 2, the hypothetical primitive Beal triple yields a
+contradiction.
 
-These three steps together constitute a proof of Beal's conjecture.
-Steps 1 and 2 are where the remaining formal work lives.
-`modularity_hypothesis` is the axiom that holds their place.
-
+The result is machine-checked as a consequence of the three named classical
+interfaces. Replacing those interfaces with first-principles proofs is a later
+foundational stage; it is not claimed by the green build.
 ---
 
 ## The wider work: *Opera Numerorum* and four routes toward RH
@@ -241,21 +239,25 @@ $p = 5$ bridge and the desert property of exceptional primes.
 
 ## What CI actually checks
 
-"Green" means the current Lean source elaborates, its declared dependencies
-are visible, and the audit checks pass. It does **not** mean that every
-named historical theorem has been reconstructed from first principles.
+"Green" means the Lean source elaborates, its declared dependencies are visible,
+and the audit checks pass. It does **not** mean that Wiles's, Tate's, or Ribet's
+theorems have been reconstructed from first principles.
 
-CI enforces the audit boundary on every push:
+CI enforces the boundary on every push:
 
 - **Build all bricks** — all B01–B21 Cores and Wrappers compile
-- **Check NO sorry** — no `sorry` in any brick
-- **No Prop := True stubs in Core files** — rejects `: Prop := True` and `: Prop := ¬False` in every `*_Core.lean`
-- **Audit every Core and Wrapper theorem** — `#print axioms` for every Core declaration; fails if any Core is not zero-axiom or any Wrapper exceeds its budget
-- **Audit the real-number transport boundary** — `BSD_HasseFull_143_CLOSED` is allowed only `[propext, Classical.choice, Quot.sound]`; rejects `sorryAx`
-- **Verify B01 core is zero-axiom** — `IsBealSolutionCore`, `BealConjectureCore` zero-axiom
-- **Verify B02 core is zero-axiom** — `FreyDeltaCore`, `FreyNonzeroCore` zero-axiom
-- **`modularity_hypothesis` is the one permitted named axiom** — any Core declaration that inadvertently depends on it fails
+- **Check NO sorry** — no `sorry` occurs in any brick
+- **Reject trivial Core stubs** — no `: Prop := True` or equivalent placeholder
+- **Audit every Core declaration** — Cores remain import-free and zero-axiom
+- **Audit the real-number transport boundary** — it may use Lean foundations but
+  may not use `sorryAx`
+- **Audit final B20 declarations** — `#print axioms` must contain exactly
+  `wiles_modularity`, `tate_step2_I_n_conductor_one`, and
+  `ribet_level_lowering_real` as the named domain axioms
 
+The final audit distinguishes named mathematical assumptions from foundational
+Lean dependencies such as `propext`, `Classical.choice`, and `Quot.sound`.
+The current main branch passed the complete audit in CI run **#205**.
 ---
 
 ## Build and audit
