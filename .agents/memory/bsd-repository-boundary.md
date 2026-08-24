@@ -8,3 +8,5 @@ Treat the separate `Birch-and-Swinnerton-Dyer` repository as outside the active 
 **Why:** The user clarified that it is not a repository under active work and requested that it remain untouched after its temporary CI branch was restored.
 
 **How to apply:** Keep current work confined to the requested repository. If unrelated task automation or a branch points to the BSD repository, pause and get explicit direction before modifying it.
+
+If a temporary BSD branch has already been changed by automation, stop or cancel that automation before attempting any rollback; otherwise it can immediately recreate the changes.
