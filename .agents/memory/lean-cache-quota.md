@@ -10,6 +10,8 @@ downloading or compiling Mathlib, even when filesystem-level free space is large
 filesystem capacity, so `df` alone does not predict whether `lake exe cache get`
 or a source rebuild can finish.
 
-**How to apply:** For a first-time Beal worktree, prefer an existing compatible
-Lean cache or the repository CI for the full build. Still run source audits and
-small core checks locally, and report clearly when the full rebuild is blocked.
+**How to apply:** Use a persistent Beal worktree and direct
+`XDG_CACHE_HOME` to a fresh `/tmp` directory before `lake exe cache get`; this
+can avoid a saturated default cache layer. If that still fails, prefer an
+existing compatible cache or repository CI. Remove only generated `.lake`
+artifacts after failed attempts, then report clearly when validation is blocked.
