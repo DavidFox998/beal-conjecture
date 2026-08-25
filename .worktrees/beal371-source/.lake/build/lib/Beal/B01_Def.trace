@@ -1,0 +1,35 @@
+{"log":
+ [{"message":
+   ".> LEAN_PATH=././.lake/packages/batteries/.lake/build/lib:././.lake/packages/Qq/.lake/build/lib:././.lake/packages/aesop/.lake/build/lib:././.lake/packages/proofwidgets/.lake/build/lib:././.lake/packages/Cli/.lake/build/lib:././.lake/packages/importGraph/.lake/build/lib:././.lake/packages/LeanSearchClient/.lake/build/lib:././.lake/packages/mathlib/.lake/build/lib:././.lake/build/lib LD_LIBRARY_PATH= /home/runner/.elan/toolchains/leanprover--lean4---v4.12.0/bin/lean ./././lean/Beal/B01_Def.lean -R ./././lean -o ././.lake/build/lib/Beal/B01_Def.olean -i ././.lake/build/lib/Beal/B01_Def.ilean -c ././.lake/build/ir/Beal/B01_Def.c --json",
+   "level": "trace"},
+  {"message":
+   "./././lean/Beal/B01_Def.lean:67:0: 'IsBealSolutionCore' does not depend on any axioms",
+   "level": "info"},
+  {"message":
+   "./././lean/Beal/B01_Def.lean:68:0: 'BealConjectureCore' does not depend on any axioms",
+   "level": "info"},
+  {"message":
+   "./././lean/Beal/B01_Def.lean:69:0: 'IsBealSolution' depends on axioms: [propext]",
+   "level": "info"},
+  {"message":
+   "./././lean/Beal/B01_Def.lean:70:0: 'BealConjecture' depends on axioms: [propext]",
+   "level": "info"},
+  {"message":
+   "./././lean/Beal/B01_Def.lean:71:0: 'primitiveTripleCore_of_gcd_eq_one' depends on axioms: [propext]",
+   "level": "info"},
+  {"message":
+   "./././lean/Beal/B01_Def.lean:72:0: 'gcd_eq_one_of_primitiveTripleCore' depends on axioms: [propext]",
+   "level": "info"},
+  {"message":
+   "./././lean/Beal/B01_Def.lean:73:0: 'isBealSolution_wrapper_to_core' depends on axioms: [propext]",
+   "level": "info"},
+  {"message":
+   "./././lean/Beal/B01_Def.lean:74:0: 'isBealSolutionCore_to_wrapper' depends on axioms: [propext]",
+   "level": "info"},
+  {"message":
+   "./././lean/Beal/B01_Def.lean:75:0: 'bealConjecture_wrapper_to_core' depends on axioms: [propext]",
+   "level": "info"},
+  {"message":
+   "./././lean/Beal/B01_Def.lean:76:0: 'bealConjectureCore_to_wrapper' depends on axioms: [propext]",
+   "level": "info"}],
+ "depHash": "13163981401428699695"}

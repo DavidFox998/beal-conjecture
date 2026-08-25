@@ -33,3 +33,18 @@ produce that dependency budget.
 strict `propext`-only audit. If API compatibility requires the concrete-real
 corollary, label it as an explicit trusted Mathlib transport, audit its exact
 expected dependency set separately, and still reject `sorryAx`.
+
+## Galois interface foundation boundary
+
+In Lean 4.12, Mathlib's bundled `Subgroup` and matrix-unit
+`Matrix.GeneralLinearGroup (Fin 2) (ZMod ℓ)` introduce `Classical.choice` into
+an axiom audit even when only used as types.
+
+**Why:** Their bundled instance and unit infrastructure carries a stronger
+foundation footprint than the local Galois interface needs.
+
+**How to apply:** For a strict `propext`/`Quot.sound` Galois boundary, use an
+explicit closure-complete subgroup record and represent `GL₂(ZMod ℓ)` as
+linear automorphisms of the concrete two-dimensional residual module. Audit
+the resulting unramifiedness predicate directly before connecting it to Tate
+or level lowering.

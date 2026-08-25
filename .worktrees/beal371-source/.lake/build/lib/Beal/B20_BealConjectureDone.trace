@@ -1,0 +1,11 @@
+{"log":
+ [{"message":
+   ".> LEAN_PATH=././.lake/packages/batteries/.lake/build/lib:././.lake/packages/Qq/.lake/build/lib:././.lake/packages/aesop/.lake/build/lib:././.lake/packages/proofwidgets/.lake/build/lib:././.lake/packages/Cli/.lake/build/lib:././.lake/packages/importGraph/.lake/build/lib:././.lake/packages/LeanSearchClient/.lake/build/lib:././.lake/packages/mathlib/.lake/build/lib:././.lake/build/lib LD_LIBRARY_PATH= /home/runner/.elan/toolchains/leanprover--lean4---v4.12.0/bin/lean ./././lean/Beal/B20_BealConjectureDone.lean -R ./././lean -o ././.lake/build/lib/Beal/B20_BealConjectureDone.olean -i ././.lake/build/lib/Beal/B20_BealConjectureDone.ilean -c ././.lake/build/ir/Beal/B20_BealConjectureDone.c --json",
+   "level": "trace"},
+  {"message":
+   "./././lean/Beal/B20_BealConjectureDone.lean:61:6: 'Beal20Done.beal_conjecture_is_proved' depends on axioms: [propext,\n Classical.choice,\n Beal.FreyTate.wiles_modularity,\n Beal.RibetIterate.ribet_single_step,\n Beal.FreyTate.TateStep2.tate_step2_I_n_conductor_one]",
+   "level": "info"},
+  {"message":
+   "./././lean/Beal/B20_BealConjectureDone.lean:67:6: 'Beal20Done.twenty_bricks' depends on axioms: [propext,\n Classical.choice,\n Beal.FreyTate.wiles_modularity,\n Beal.RibetIterate.ribet_single_step,\n Beal.FreyTate.TateStep2.tate_step2_I_n_conductor_one]",
+   "level": "info"}],
+ "depHash": "15922178843859334821"}

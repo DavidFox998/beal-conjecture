@@ -1,0 +1,11 @@
+{"log":
+ [{"message":
+   ".> LEAN_PATH=././.lake/packages/batteries/.lake/build/lib:././.lake/packages/Qq/.lake/build/lib:././.lake/packages/aesop/.lake/build/lib:././.lake/packages/proofwidgets/.lake/build/lib:././.lake/packages/Cli/.lake/build/lib:././.lake/packages/importGraph/.lake/build/lib:././.lake/packages/LeanSearchClient/.lake/build/lib:././.lake/packages/mathlib/.lake/build/lib:././.lake/build/lib LD_LIBRARY_PATH= /home/runner/.elan/toolchains/leanprover--lean4---v4.12.0/bin/lean ./././lean/Beal/B07_Galois.lean -R ./././lean -o ././.lake/build/lib/Beal/B07_Galois.olean -i ././.lake/build/lib/Beal/B07_Galois.ilean -c ././.lake/build/ir/Beal/B07_Galois.c --json",
+   "level": "trace"},
+  {"message":
+   "./././lean/Beal/B07_Galois.lean:26:0: 'BealGalois.frey_galois_rep_of_pos' depends on axioms: [propext]",
+   "level": "info"},
+  {"message":
+   "./././lean/Beal/B07_Galois.lean:27:0: 'BealGalois.frey_irreducible_trivial' depends on axioms: [propext]",
+   "level": "info"}],
+ "depHash": "9521568282507730437"}
