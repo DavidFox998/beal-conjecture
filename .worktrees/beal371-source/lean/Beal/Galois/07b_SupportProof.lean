@@ -7,7 +7,7 @@
        the relevant Hecke module is old ⊕ new as 𝕋-modules;
   2. q-expansion principle mod ℓ:
        the q-expansion map is injective;
-  3. local Ihara lemma mod ℓ:
+  3. local Ihara lemma mod ℓ (isolated in `07c_Ihara`):
        ker(B₁, B_p) = 0 in characteristic ℓ;
   4. Jacquet–Langlands local transport at p:
        the exact-divisor case transports the residual system to level M;
@@ -30,6 +30,7 @@
 -/
 import Beal.Galois.«07_NewformSupport»
 import Beal.Galois.«05_Hecke»
+import Beal.Galois.«07c_Ihara»
 import Beal.B14_FreyTate
 import Beal.B03_Conductor_Core
 
@@ -63,9 +64,12 @@ def ModLNewformDecomposition
       ModLRealizesRepresentation W R →
         W ∈ OldSubspace (model := model) N M ℓ ∨ IsNewform W
 
-/-- The consequence of the mod-ℓ Ihara argument needed to rule out old
-    support. The implication from residual unramifiedness to this condition is
-    itself part of the missing local theorem. -/
+/-- The downstream residual/form consequence needed to rule out old support.
+
+    `07c_Ihara` isolates the raw coefficient-level `(B₁, Bp)` kernel statement.
+    That statement alone cannot yield this implication on unrestricted
+    coefficient sequences; the missing bridge to the actual level-M form
+    subspace and residual ramification remains explicit here. -/
 def IharaOldExclusion
     {A B C : ℤ} {x y z : ℕ}
     {model : FreyCurveModel A B C x y z} {ℓ : ℕ}
