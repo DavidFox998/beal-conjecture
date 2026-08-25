@@ -13,6 +13,7 @@ Galois/
 ├── 03_ModLForm.lean       finite mod-ℓ weight-two q-expansion boundary
 ├── 04_LevelLowering.lean  exact proposition required for a Ribet step
 ├── 05_Hecke.lean          coefficient Hecke operators and old/new boundary
+├── 06_MaximalIdeal.lean   residual maximal-ideal and new-support boundary
 └── README.md              this guide
 ```
 
@@ -24,11 +25,12 @@ The primary dependency path is:
 02_ResidualRep
       ↓
 03_ModLForm
-      ↓
-04_LevelLowering
+      ├──────────────→ 04_LevelLowering
+      ↓                       ↓
+05_Hecke ─────────────────→ 06_MaximalIdeal
 ```
 
-`05_Hecke` imports `03_ModLForm` directly. It therefore receives the earlier Galois and representation definitions transitively, but does not import `04_LevelLowering`. This keeps the coefficient-level Hecke construction independent of the still-open level-lowering transport proposition.
+`05_Hecke` imports `03_ModLForm` directly. It therefore receives the earlier Galois and representation definitions transitively, but does not import `04_LevelLowering`. This keeps the coefficient-level Hecke construction independent of the still-open level-lowering transport proposition. `06_MaximalIdeal` is the first layer to place the two boundaries alongside one another: it imports both `04_LevelLowering` and `05_Hecke`, but does not prove either boundary.
 
 ## Design principles
 
@@ -221,6 +223,31 @@ The explicit target conductor witness is intentional: `M ∣ N` and `M ∣ condu
 
 The explicit expression syntax is used instead of `Subring.closure`. In this abstract setting, the closure implementation would introduce `Classical.choice` into the axiom audit. The resulting `HeckeAlgebra` is a genuine generated subring of coefficient-sequence endomorphisms, but it does not yet encode a maximal ideal, eigenform decomposition, or a representation theorem.
 
+### `06_MaximalIdeal.lean`
+
+**Imports**
+
+- `Beal.Galois.04_LevelLowering`
+- `Beal.Galois.05_Hecke`
+
+**Purpose**
+
+This file records the Hecke-theoretic data that a genuine replacement for the typed Ribet boundary would need. It does not construct a maximal ideal or prove the Hecke-algebra representation theorem. Instead, it makes the desired attachment to the Frey residual representation and the target support statement explicit.
+
+**Main declarations**
+
+- `HeckeIdealLike` — a two-sided, additive ideal-like subset of `HeckeAlgebra N ℓ`. The interface is explicit because the ambient endomorphism ring need not be commutative.
+- `HeckeIdealLike.IsMaximal` — the predicate that every larger ideal-like object is either equal to the candidate or the whole Hecke algebra.
+- `FreyHeckeAttachment` — the required residual attachment data: maximality, a quotient-style evaluation to `ZMod ℓ`, its kernel, away-from-level Hecke-generator traces, and compatibility with explicit Frobenius representatives.
+- `coefficientSequenceOfForm` — extends the finite q-expansion boundary by zero to the sequence module on which the Hecke algebra acts.
+- `HeckeIdealAnnihilatesForm` — the finite coefficient-level convention that a candidate ideal annihilates a form's extended coefficient sequence.
+- `IsSupportedInNewSubspace` — existence of a new finite mod-ℓ form which realizes the same Frey residual representation and is annihilated by the candidate ideal.
+- `frey_unramified_implies_maximalIdeal_support` — the exact, still-unproved proposition required for one level-lowering step: under the existing exact-divisibility and odd-prime hypotheses, residual unramifiedness would give new-subspace support for an attached candidate maximal ideal at the lower level.
+
+**What is deliberately not proved**
+
+The module does not produce an ideal, show it is maximal, define a genuine Hecke eigenvalue system, prove a newform decomposition, or derive the displayed support implication. In particular, it does not treat Tate's conductor conclusion as a proof of residual unramifiedness. The final implication remains a `Prop` describing the missing Hecke-algebra representation theorem.
+
 ## What this directory establishes
 
 Collectively, the files establish:
@@ -230,7 +257,9 @@ Collectively, the files establish:
 3. a finite mod-ℓ form record and explicit Frobenius-trace compatibility proposition;
 4. the precise hypotheses and conclusion required for a level-lowering transport step;
 5. finite and sequence-level Hecke operations;
-6. a constructive old/new boundary and generated coefficient Hecke algebra.
+6. a constructive old/new boundary and generated coefficient Hecke algebra;
+7. a typed residual-maximal-ideal and new-support interface spelling out the
+   remaining Hecke-theoretic level-lowering obligation.
 
 ## What this directory does not establish
 
@@ -243,27 +272,31 @@ No file here proves:
 - Tate's local conductor-to-inertia implication;
 - Ribet's level-lowering theorem;
 - a newform decomposition;
-- attachment of the maximal ideal `𝔪_ρ̄`;
-- the Hecke-algebra representation theorem needed to transport eigenvalues;
+- construction or maximality proof for an ideal `𝔪_ρ̄`;
+- the Hecke-algebra representation theorem needed to attach `𝔪_ρ̄` and
+  transport its support;
 - Fermat's Last Theorem or Beal's Conjecture.
 
 Those boundaries remain explicit so that the final formal result can name its genuine mathematical assumptions rather than hide them inside a scaffold.
 
 ## Building the modules
 
-From the repository root, build the latest Hecke layer with:
+From the repository root, build the latest Galois boundary layer with:
 
 ```sh
-lake --old build 'Beal.Galois.«05_Hecke»'
+lake --old build 'Beal.Galois.«06_MaximalIdeal»'
 ```
 
-The earlier layers can be built individually by replacing the module name with:
+To build the coefficient-level Hecke layer alone, use
+`Beal.Galois.«05_Hecke»`. The earlier layers can be built individually by
+replacing the module name with:
 
 ```text
 Beal.Galois.«01_Absolute»
 Beal.Galois.«02_ResidualRep»
 Beal.Galois.«03_ModLForm»
 Beal.Galois.«04_LevelLowering»
+Beal.Galois.«06_MaximalIdeal»
 ```
 
 The source uses Lean 4.12. The numbered modules are deliberately small enough that their declarations and axiom reports can be audited directly.
