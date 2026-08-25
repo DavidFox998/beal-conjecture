@@ -1,6 +1,6 @@
 # Beal Conjecture — a formal instrument in *Opera Numerorum*
 
-[![beal-conjecture CI](https://github.com/DavidFox998/beal-conjecture/actions/workflows/main.yml/badge.svg)](https://github.com/DavidFox998/beal-conjecture/actions)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22085104.svg)](https://doi.org/10.5281/zenodo.22085104) [![beal-conjecture CI](https://github.com/DavidFox998/beal-conjecture/actions/workflows/main.yml/badge.svg)](https://github.com/DavidFox998/beal-conjecture/actions)
 
 This repository is one chamber of David Fox's *Opera Numerorum*: a growing
 collection of machine-checked arithmetic, geometry, and analysis in Lean 4.
