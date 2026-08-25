@@ -1,1 +1,0 @@
-{"version":3,"references":{"{\"c\":{\"n\":\"Nat\",\"m\":\"Init.Prelude\"}}":{"usages":[[1,49,1,52,"FreyDiscriminantNonzero18Core",1,0,2,47,1,4,1,33]],"definition":null},"{\"c\":{\"n\":\"FreyDiscriminantNonzero18Core\",\"m\":\"Beal.B18_FreyIsElliptic_Core\"}}":{"usages":[[4,14,4,43]],"definition":[1,4,1,33]}},"module":"Beal.B18_FreyIsElliptic_Core"}
