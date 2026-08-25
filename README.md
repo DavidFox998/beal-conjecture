@@ -291,9 +291,10 @@ Tate, or Ribet from first principles.
 
 | Version | Tag / commit | Version DOI | What the snapshot records |
 |---|---|---|---|
-| v0.2.0 zero-axiom core | `v0.2.0-zero-axiom-core` / `4f425e5` | Not verified in this audit trail | First zero-axiom core scaffold |
+| v0.2.0 zero-axiom core | `v0.2.0-zero-axiom-core` / `4f425e5` | [Zenodo v0.2.0](https://doi.org/10.5281/zenodo.22041832) | First zero-axiom core scaffold |
 | v0.3.0 arithmetic descent | `v0.3.0-arithmetic-descent` / `246fd41` | [Zenodo v0.3.0](https://doi.org/10.5281/zenodo.22048503) | Arithmetic descent, including $S_2(\Gamma_0(2)) = 0$ by `rfl` |
-| v0.4.0 typed interfaces | `v0.4.0-interfaces-typed` / `881b109` | Not verified in this audit trail | A single typed `modularity_hypothesis` boundary |
+| v0.4.0 typed interfaces | `v0.4.0-interfaces-typed` / `881b109` | [Zenodo v0.4.0](https://doi.org/10.5281/zenodo.22050666) | A single typed `modularity_hypothesis` boundary |
+| v1.0 Opera Numerorum freeze | `v1.0-opera-numerorum` | [Zenodo v1.0](https://doi.org/10.5281/zenodo.22050960) | Final freeze of the typed-interface tower |
 | v1.1.0 zero-`sorry` scaffold | `v1.1.0-zero-sorry-scaffold` | Not verified in this audit trail | Predates the present three-axiom audit |
 | **v4.0.0 three-axiom boundary** | `v4.0.0` / `7b5c4a7` | [Zenodo v4.0.0](https://doi.org/10.5281/zenodo.22085104) | **0 executable `sorry`; 3 named boundaries:** `wiles_modularity`, `tate_step2_I_n_conductor_one`, and `ribet_level_lowering_real` |
 | **v4.1.0 Tate local conductor verification** | `v4.1.0` / `ec8f5de` | [Zenodo v4.1.0](https://doi.org/10.5281/zenodo.22091549) | One typed `FreyCurveModel` fixes the coefficients, $c_4$, discriminant, conductor, and odd-prime local contract to the same $(A,B,C,x,y,z)$; the derived theorem returns that model's conductor and the named-axiom count remains three |
