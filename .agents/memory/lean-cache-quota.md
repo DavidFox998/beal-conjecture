@@ -15,3 +15,17 @@ or a source rebuild can finish.
 can avoid a saturated default cache layer. If that still fails, prefer an
 existing compatible cache or repository CI. Remove only generated `.lake`
 artifacts after failed attempts, then report clearly when validation is blocked.
+
+## Targeted Lake build replay
+
+With a restored but freshly traced dependency cache, a plain targeted `lake
+build` can spend longer than the shell time limit replaying every transitive
+Mathlib trace even after the target source has compiled.
+
+**Why:** Lake validates the full dependency graph before declaring the target
+up to date; this is environmental verification overhead, not a Lean error.
+
+**How to apply:** First run the exact target through `lake --old build` after
+restoring the pinned cache, then retain its successful target/audit output.
+Use a direct `lake env lean` compile to expose source-level errors promptly.
+Do not conflate a trace-replay timeout with a failed theorem elaboration.
