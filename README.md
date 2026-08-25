@@ -296,13 +296,15 @@ Tate, or Ribet from first principles.
 | v0.4.0 typed interfaces | `v0.4.0-interfaces-typed` / `881b109` | Not verified in this audit trail | A single typed `modularity_hypothesis` boundary |
 | v1.1.0 zero-`sorry` scaffold | `v1.1.0-zero-sorry-scaffold` | Not verified in this audit trail | Predates the present three-axiom audit |
 | **v4.0.0 three-axiom boundary** | `v4.0.0` / `7b5c4a7` | [Zenodo v4.0.0](https://doi.org/10.5281/zenodo.22085104) | **0 executable `sorry`; 3 named boundaries:** `wiles_modularity`, `tate_step2_I_n_conductor_one`, and `ribet_level_lowering_real` |
-| **v4.1.0 Tate truthful model (planned)** | Not yet tagged; current work follows `e48a875` | Not minted | One typed Frey model fixes the coefficients, $c_4$, discriminant, conductor, and odd-prime local contract to the same $(A,B,C,x,y,z)$; the named-axiom count remains three |
+| **v4.1.0 Tate local conductor verification** | Release tag pending; current work follows `e48a875` | Pending Zenodo ingestion | One typed `FreyCurveModel` fixes the coefficients, $c_4$, discriminant, conductor, and odd-prime local contract to the same $(A,B,C,x,y,z)$; the derived theorem returns that model's conductor and the named-axiom count remains three |
 | **v5.0.0 preserved-form Ribet descent** | `v5.0.0` / `92a165c` | [Zenodo v5.0.0](https://doi.org/10.5281/zenodo.22090900) | `ribet_level_lowering_real` leaves the active path; `ribet_single_step` transports a preserved-form witness one exact division at a time to the level-$2$ contradiction |
 
 The v4.0.0 Zenodo landing page retains an older v0.4-style display title; its
 release tag, archive, and audited boundary are the v4.0.0 row above. The
-planned v4.1.0 model refinement is semantically prior to v5.0.0, but it has no
-tag or DOI yet and should not be cited as a published release.
+The v4.1.0 Tate verification is a documentation-and-boundary release: it
+does not claim a complete Tate algorithm, a 2-adic conductor exponent, or a
+global conductor computation. Its version DOI will be added after Zenodo has
+ingested the GitHub release.
 
 When discussing an audit, cite the specific version DOI rather than the concept
 DOI. For example:
