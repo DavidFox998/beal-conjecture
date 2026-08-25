@@ -1,4 +1,4 @@
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22085104.svg)](https://doi.org/10.5281/zenodo.22085104) [![CI](https://github.com/DavidFox998/beal-conjecture/actions/workflows/main.yml/badge.svg)](https://github.com/DavidFox998/beal-conjecture/actions/workflows/main.yml)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22041831.svg)](https://doi.org/10.5281/zenodo.22041831) [![CI](https://github.com/DavidFox998/beal-conjecture/actions/workflows/main.yml/badge.svg)](https://github.com/DavidFox998/beal-conjecture/actions/workflows/main.yml)
 
 # Beal Conjecture — a formal instrument in *Opera Numerorum*
 
@@ -280,18 +280,34 @@ lake build Beal
 
 ---
 
-## DOI / Citation
+## DOI / Citation — versioned audit trail
 
-This repository mints a DOI per release via Zenodo (CERN).
+Concept DOI (all versions): [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22041831.svg)](https://doi.org/10.5281/zenodo.22041831)
 
-| Release | Description |
-|---|---|
-| v0.2.0-zero-axiom | First scaffold |
-| v0.3.0-arithmetic-descent | $S_2(\Gamma_0(2)) = 0$ proved by `rfl` |
-| v0.4.0-interfaces-typed | Modularity hypothesis as explicit named axiom |
-| v1.0-opera-numerorum | Final freeze (planned) |
+Zenodo version records preserve release snapshots; the Lean axiom report records
+what the snapshot still assumes. Green CI means that these dependencies are
+visible and checked. It does **not** mean that Lean has reconstructed Wiles,
+Tate, or Ribet from first principles.
 
-Each DOI is citable. See Releases → Zenodo link.
+| Version | Tag / commit | Version DOI | What the snapshot records |
+|---|---|---|---|
+| v0.2.0 zero-axiom core | `v0.2.0-zero-axiom-core` / `4f425e5` | Not verified in this audit trail | First zero-axiom core scaffold |
+| v0.3.0 arithmetic descent | `v0.3.0-arithmetic-descent` / `246fd41` | [Zenodo v0.3.0](https://doi.org/10.5281/zenodo.22048503) | Arithmetic descent, including $S_2(\Gamma_0(2)) = 0$ by `rfl` |
+| v0.4.0 typed interfaces | `v0.4.0-interfaces-typed` / `881b109` | Not verified in this audit trail | A single typed `modularity_hypothesis` boundary |
+| v1.1.0 zero-`sorry` scaffold | `v1.1.0-zero-sorry-scaffold` | Not verified in this audit trail | Predates the present three-axiom audit |
+| **v4.0.0 three-axiom boundary** | `v4.0.0` / `7b5c4a7` | [Zenodo v4.0.0](https://doi.org/10.5281/zenodo.22085104) | **0 executable `sorry`; 3 named boundaries:** `wiles_modularity`, `tate_step2_I_n_conductor_one`, and `ribet_level_lowering_real` |
+| **v4.1.0 Tate truthful model (planned)** | Not yet tagged; current work follows `e48a875` | Not minted | One typed Frey model fixes the coefficients, $c_4$, discriminant, conductor, and odd-prime local contract to the same $(A,B,C,x,y,z)$; the named-axiom count remains three |
+| **v5.0.0 preserved-form Ribet descent** | `v5.0.0` / `92a165c` | [Zenodo v5.0.0](https://doi.org/10.5281/zenodo.22090900) | `ribet_level_lowering_real` leaves the active path; `ribet_single_step` transports a preserved-form witness one exact division at a time to the level-$2$ contradiction |
+
+The v4.0.0 Zenodo landing page retains an older v0.4-style display title; its
+release tag, archive, and audited boundary are the v4.0.0 row above. The
+planned v4.1.0 model refinement is semantically prior to v5.0.0, but it has no
+tag or DOI yet and should not be cited as a published release.
+
+When discussing an audit, cite the specific version DOI rather than the concept
+DOI. For example:
+
+> Fox, David. (2026). *Beal Conjecture — Typed Preserved-Form Ribet Descent — v5.0.0*. Zenodo. https://doi.org/10.5281/zenodo.22090900
 
 ---
 
