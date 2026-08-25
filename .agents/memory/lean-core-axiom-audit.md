@@ -61,3 +61,17 @@ principle and obscure the required decomposition/inertia data.
 Frobenius-class, and decomposition-element representative arguments. Add a
 canonical `Frob_n` only after the arithmetic local-data construction itself is
 formalized; do not manufacture one for a scaffolding interface.
+
+## Constructive generated subrings
+
+In Lean 4.12, `Subring.closure` introduces `Classical.choice` into an axiom
+audit, even when the generating set is explicit.
+
+**Why:** The standard closure is implemented through lattice machinery whose
+construction has a stronger foundation footprint than a strict
+`propext`/`Quot.sound` boundary permits.
+
+**How to apply:** When a generated subring must remain within that strict
+budget, define finite formal expressions in the generators, evaluate them into
+the ambient ring, and package the evaluation range with constructive closure
+proofs for zero, one, addition, negation, and multiplication.
