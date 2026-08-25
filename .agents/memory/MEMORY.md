@@ -15,6 +15,7 @@
 - [Beal final-proof CI](beal-ci-resume.md) — audit final theorem for exactly three domain axioms; do not confuse Lean foundations with mathematical assumptions.
 - [Beal release DOIs](beal-release-dois.md) — v4.0.0/#205 already has Zenodo DOI 10.5281/zenodo.22085104; do not mint a duplicate.
 - [GitHub Actions PR trend history](github-actions-pr-trend-history.md) — PR merge refs cannot locate prior branch runs; use the source branch for comparable workflow history.
+- [GitHub EKG report compatibility](github-ekg-report-compatibility.md) — CI serializes pytest properties as one-key objects and current Playwright needs keyword-only `arg`.
 - [Beal checkout source](beal-checkout-source.md) — the embedded Beal copy is stale; use the fetched beal/main revision for current B14–B20 work.
 - [Tate local conductor boundary](tate-local-conductor-boundary.md) — model-based odd-prime conductor contract replaces free-N Tate interfaces; do not overclaim 2-adic coverage.
 - [BSD repository boundary](bsd-repository-boundary.md) — Birch-and-Swinnerton-Dyer is out of scope; do not modify it unless the user explicitly reopens work there.

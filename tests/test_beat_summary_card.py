@@ -461,6 +461,54 @@ class TestBackgroundTabCardPass:
         assert "**Shortfall" not in card
 
 
+class TestPytestJsonReportPropertyEncoding:
+    """The real plugin writes record_property values as one-key objects."""
+
+    def test_object_style_properties_render_numeric_background_ticks(self):
+        report = {
+            "tests": [
+                {
+                    "nodeid": "tests/test_heartbeat_playwright.py::test_beat_fires_at_200ms_rate_cold_start[chromium]",
+                    "outcome": "passed",
+                    "user_properties": [
+                        {"ticks_fired": 10},
+                        {"tick_start": 1},
+                        {"tick_end": 11},
+                        {"observation_window_s": 2},
+                        {"required_ticks": 5},
+                    ],
+                },
+                {
+                    "nodeid": "tests/test_heartbeat_playwright.py::test_beat_survives_background_tab[chromium]",
+                    "outcome": "passed",
+                    "user_properties": [
+                        {"bg_ticks_fired": 10},
+                        {"bg_tick_start": 3},
+                        {"bg_tick_end": 13},
+                        {"bg_observation_window_s": 2},
+                        {"bg_required_ticks": 5},
+                        {"fg_ticks_fired": 5},
+                        {"fg_tick_start": 13},
+                        {"fg_tick_end": 18},
+                        {"fg_observation_window_s": 1},
+                        {"fg_required_ticks": 3},
+                    ],
+                },
+            ]
+        }
+        tmp = tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False)
+        json.dump(report, tmp)
+        tmp.close()
+        try:
+            assert "10 / 5 required" in build_card(tmp.name)
+            card = build_background_tab_card(tmp.name)
+            assert "10 / 5 required" in card
+            assert "5 / 3 required" in card
+            assert "unknown" not in card
+        finally:
+            os.unlink(tmp.name)
+
+
 # ---------------------------------------------------------------------------
 # Background-tab card — failure path (hidden phase shortfall)
 # ---------------------------------------------------------------------------

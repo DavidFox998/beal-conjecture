@@ -30,6 +30,28 @@ import sys
 HEARTBEAT_URL = "https://zerobeacon.ai/brain/heartbeat"
 
 
+def _user_properties_as_dict(raw_properties: object) -> dict:
+    """Normalize pytest-json-report property encodings without raising.
+
+    pytest-json-report serializes ``record_property`` values as a list of
+    one-key dictionaries.  Older fixtures in this project use the equivalent
+    ``[[key, value], ...]`` representation, so accept both forms.
+    """
+    if isinstance(raw_properties, dict):
+        return raw_properties
+    if not isinstance(raw_properties, list):
+        return {}
+
+    properties = {}
+    for item in raw_properties:
+        if isinstance(item, dict):
+            properties.update(item)
+        elif isinstance(item, (list, tuple)) and len(item) == 2:
+            key, value = item
+            properties[key] = value
+    return properties
+
+
 def build_card(report_path: str, heading: str = "Cold-Start Beat-Rate") -> str:
     """Return a Markdown summary card string.  Never raises."""
     try:
@@ -57,7 +79,7 @@ def build_card(report_path: str, heading: str = "Cold-Start Beat-Rate") -> str:
 
     # Structured measurements emitted via record_property().
     # pytest-json-report stores them as [[key, value], ...] in user_properties.
-    props = dict(target.get("user_properties", []))
+    props = _user_properties_as_dict(target.get("user_properties"))
     ticks_fired = props.get("ticks_fired")
     tick_start  = props.get("tick_start")
     tick_end    = props.get("tick_end")
@@ -110,7 +132,7 @@ def build_card(report_path: str, heading: str = "Cold-Start Beat-Rate") -> str:
 def _build_bg_tab_section(test: dict) -> str:
     """Return a Markdown section for the background-tab visibility test."""
     passed = test.get("outcome") == "passed"
-    props = dict(test.get("user_properties", []))
+    props = _user_properties_as_dict(test.get("user_properties"))
 
     bg_ticks   = props.get("bg_ticks_fired")
     bg_start   = props.get("bg_tick_start")
@@ -184,7 +206,7 @@ def _build_bg_tab_section(test: dict) -> str:
 def _build_focus_restore_section(test: dict) -> str:
     """Return a Markdown section for the focus-restore rate test."""
     passed = test.get("outcome") == "passed"
-    props = dict(test.get("user_properties", []))
+    props = _user_properties_as_dict(test.get("user_properties"))
 
     ticks      = props.get("resume_ticks_fired")
     tick_start = props.get("resume_tick_start")

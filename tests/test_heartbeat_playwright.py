@@ -502,7 +502,7 @@ def test_beat_resumes_after_focus_restore(page, record_property):
         page.wait_for_function(
             """tickAtRestore =>
                 typeof tick !== 'undefined' && tick > tickAtRestore""",
-            tick_at_restore,
+            arg=tick_at_restore,
             timeout=500,
         )
     except Exception as exc:
