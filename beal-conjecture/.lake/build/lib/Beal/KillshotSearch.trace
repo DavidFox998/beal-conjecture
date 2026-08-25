@@ -1,0 +1,14 @@
+{"log":
+ [{"message":
+   ".> LEAN_PATH=././.lake/packages/batteries/.lake/build/lib:././.lake/packages/Qq/.lake/build/lib:././.lake/packages/aesop/.lake/build/lib:././.lake/packages/proofwidgets/.lake/build/lib:././.lake/packages/Cli/.lake/build/lib:././.lake/packages/importGraph/.lake/build/lib:././.lake/packages/LeanSearchClient/.lake/build/lib:././.lake/packages/mathlib/.lake/build/lib:././.lake/build/lib LD_LIBRARY_PATH= /home/runner/.elan/toolchains/leanprover--lean4---v4.12.0/bin/lean ./././lean/Beal/KillshotSearch.lean -R ./././lean -o ././.lake/build/lib/Beal/KillshotSearch.olean -i ././.lake/build/lib/Beal/KillshotSearch.ilean -c ././.lake/build/ir/Beal/KillshotSearch.c --json",
+   "level": "trace"},
+  {"message":
+   "./././lean/Beal/KillshotSearch.lean:325:0: 'RadPrimeCase14Core' does not depend on any axioms",
+   "level": "info"},
+  {"message":
+   "./././lean/Beal/KillshotSearch.lean:326:0: 'killshot_rad_prime_branch' does not depend on any axioms",
+   "level": "info"},
+  {"message":
+   "./././lean/Beal/KillshotSearch.lean:327:0: 'killshot_rad_prime_power_contradiction' does not depend on any axioms",
+   "level": "info"}],
+ "depHash": "5511149623285304826"}

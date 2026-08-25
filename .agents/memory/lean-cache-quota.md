@@ -34,3 +34,18 @@ When a detached Beal worktree reports changed Mathlib package URLs and removes
 its local package checkout, run `lake exe cache get` in that same worktree
 before retrying its target build. The root workspace cache does not repair a
 separate worktree's `.lake` state.
+
+## Corrupt local package checkout
+
+If Lake reports that a package cannot resolve `HEAD`, do not retry its manifest
+fetch against that checkout: it can leave the local package source tree with
+many tracked files deleted while still failing before elaboration begins.
+
+**Why:** Lake needs the package Git `HEAD` to resolve the manifest even when
+compatible compiled `.olean` artifacts already exist elsewhere in the
+workspace.
+
+**How to apply:** Restore any accidental package-tree changes first. For a
+focused source check, compile changed modules directly against a known-good
+compatible package artifact cache; use CI or a repaired checkout for the full
+Lake build. Treat this as environment failure, not a theorem failure.
