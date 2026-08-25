@@ -129,8 +129,8 @@ jobs:
           fi
           expected_axioms=$(cat <<'EOF'
           Beal.FreyTate.TateStep2.tate_step2_I_n_conductor_one
-          Beal.FreyTate.ribet_level_lowering_real
           Beal.FreyTate.wiles_modularity
+           Beal.RibetIterate.ribet_single_step
           EOF
           )
           actual_axioms=$(grep -oE 'Beal\.FreyTate(\.TateStep2)?\.[A-Za-z0-9_]+' /tmp/beal_final_axiom_audit.txt | sort -u)
