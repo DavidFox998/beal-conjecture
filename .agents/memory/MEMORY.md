@@ -13,6 +13,7 @@
 - [MCP response compatibility](mcp-response-compatibility.md) — successful tool calls retain dictionary payload fields at top level alongside the standard MCP envelope for Smithery clients.
 - [EKG alert webhook verification](ekg-alert-webhook-verification.md) — primary and cold-start EKG alerts must be verified independently before relying on them.
 - [Beal final-proof CI](beal-ci-resume.md) — audit final theorem for exactly three domain axioms; do not confuse Lean foundations with mathematical assumptions.
+- [Beal release DOIs](beal-release-dois.md) — v4.0.0/#205 already has Zenodo DOI 10.5281/zenodo.22085104; do not mint a duplicate.
 - [GitHub Actions PR trend history](github-actions-pr-trend-history.md) — PR merge refs cannot locate prior branch runs; use the source branch for comparable workflow history.
 - [Beal checkout source](beal-checkout-source.md) — the embedded Beal copy is stale; use the fetched beal/main revision for current B14–B20 work.
 - [Tate local conductor boundary](tate-local-conductor-boundary.md) — model-based odd-prime conductor contract replaces free-N Tate interfaces; do not overclaim 2-adic coverage.

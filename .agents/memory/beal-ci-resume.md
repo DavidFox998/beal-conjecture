@@ -8,7 +8,7 @@ Audit the final Beal theorem for exactly these named domain axioms:
 
 - `Beal.FreyTate.wiles_modularity`
 - `Beal.FreyTate.TateStep2.tate_step2_I_n_conductor_one`
-- `Beal.FreyTate.ribet_level_lowering_real`
+- `Beal.RibetIterate.ribet_single_step`
 
 Reject `sorryAx` everywhere. Treat `propext`, `Classical.choice`, and `Quot.sound` as foundational Lean dependencies rather than additional mathematical assumptions.
 
