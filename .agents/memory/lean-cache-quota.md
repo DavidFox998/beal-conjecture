@@ -29,3 +29,8 @@ up to date; this is environmental verification overhead, not a Lean error.
 restoring the pinned cache, then retain its successful target/audit output.
 Use a direct `lake env lean` compile to expose source-level errors promptly.
 Do not conflate a trace-replay timeout with a failed theorem elaboration.
+
+When a detached Beal worktree reports changed Mathlib package URLs and removes
+its local package checkout, run `lake exe cache get` in that same worktree
+before retrying its target build. The root workspace cache does not repair a
+separate worktree's `.lake` state.

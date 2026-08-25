@@ -13,7 +13,9 @@ Galois/
 ├── 03_ModLForm.lean       finite mod-ℓ weight-two q-expansion boundary
 ├── 04_LevelLowering.lean  exact proposition required for a Ribet step
 ├── 05_Hecke.lean          coefficient Hecke operators and old/new boundary
-├── 06_MaximalIdeal.lean   residual maximal-ideal and new-support boundary
+├── 06_MaximalIdeal.lean   residual maximal-ideal attachment interface
+├── 07_NewformSupport.lean explicit lower-level new-support obligation
+├── 08_RibetProof.lean     conditional transport from support to lowering
 └── README.md              this guide
 ```
 
@@ -27,10 +29,12 @@ The primary dependency path is:
 03_ModLForm
       ├──────────────→ 04_LevelLowering
       ↓                       ↓
-05_Hecke ─────────────────→ 06_MaximalIdeal
+05_Hecke ─────────────────→ 06_MaximalIdeal → 07_NewformSupport
+                                                    ↓
+                                              08_RibetProof
 ```
 
-`05_Hecke` imports `03_ModLForm` directly. It therefore receives the earlier Galois and representation definitions transitively, but does not import `04_LevelLowering`. This keeps the coefficient-level Hecke construction independent of the still-open level-lowering transport proposition. `06_MaximalIdeal` is the first layer to place the two boundaries alongside one another: it imports both `04_LevelLowering` and `05_Hecke`, but does not prove either boundary.
+`05_Hecke` imports `03_ModLForm` directly. It therefore receives the earlier Galois and representation definitions transitively, but does not import `04_LevelLowering`. This keeps the coefficient-level Hecke construction independent of the still-open level-lowering transport proposition. `06_MaximalIdeal` is the first layer to place the two boundaries alongside one another; `07_NewformSupport` states the missing support implication; and `08_RibetProof` proves only the final extraction of a lower-level witness from explicitly supplied support.
 
 ## Design principles
 
@@ -238,7 +242,10 @@ This file records the Hecke-theoretic data that a genuine replacement for the ty
 
 - `HeckeIdealLike` — a two-sided, additive ideal-like subset of `HeckeAlgebra N ℓ`. The interface is explicit because the ambient endomorphism ring need not be commutative.
 - `HeckeIdealLike.IsMaximal` — the predicate that every larger ideal-like object is either equal to the candidate or the whole Hecke algebra.
-- `FreyHeckeAttachment` — the required residual attachment data: maximality, a quotient-style evaluation to `ZMod ℓ`, its kernel, away-from-level Hecke-generator traces, and compatibility with explicit Frobenius representatives.
+- `IsMaximalIdeal` and `MaximalIdeal` — the typed maximality predicate and its candidate-ideal package. They intentionally use the two-sided interface rather than Mathlib's commutative `Ideal`.
+- `ResidueFieldData` and `ResidueFieldIsZMod` — an explicit, supplied identification of the future residue-field carrier with `ZMod ℓ`; no quotient or field construction is claimed.
+- `FreyHeckeAttachment` — the required residual attachment data: maximality, residue-field identification, a quotient-style evaluation to `ZMod ℓ`, its kernel, away-from-level Hecke-generator traces, and compatibility with explicit Frobenius representatives.
+- `MaximalIdealAttachedToRep` — the interface-only assertion that a candidate maximal ideal is attached to `R` and satisfies `T_p mod 𝔪 = trace(R(Frob_p))` for primes away from `N * ℓ`.
 - `coefficientSequenceOfForm` — extends the finite q-expansion boundary by zero to the sequence module on which the Hecke algebra acts.
 - `HeckeIdealAnnihilatesForm` — the finite coefficient-level convention that a candidate ideal annihilates a form's extended coefficient sequence.
 - `IsSupportedInNewSubspace` — existence of a new finite mod-ℓ form which realizes the same Frey residual representation and is annihilated by the candidate ideal.
@@ -247,6 +254,56 @@ This file records the Hecke-theoretic data that a genuine replacement for the ty
 **What is deliberately not proved**
 
 The module does not produce an ideal, show it is maximal, define a genuine Hecke eigenvalue system, prove a newform decomposition, or derive the displayed support implication. In particular, it does not treat Tate's conductor conclusion as a proof of residual unramifiedness. The final implication remains a `Prop` describing the missing Hecke-algebra representation theorem.
+
+### `07_NewformSupport.lean`
+
+**Imports**
+
+- `Beal.Galois.06_MaximalIdeal`
+
+**Purpose**
+
+This file names the support conclusion at the divided level and states the
+unramifiedness-to-support obligation for one exact odd-prime level division.
+
+**Main declarations**
+
+- `SupportInNewSubspace` — a maximal ideal occurs in the finite new boundary
+  when its underlying ideal annihilates a new form that realizes the same
+  residual representation.
+- `frey_unramified_implies_newform_support` — the still-open proposition that
+  exact division, explicit residual unramifiedness, and an attached maximal
+  ideal provide that support.
+
+Neither declaration proves support, constructs a newform, or turns Tate's
+conductor exponent into an unramifiedness theorem.
+
+### `08_RibetProof.lean`
+
+**Imports**
+
+- `Beal.Galois.07_NewformSupport`
+
+**Purpose**
+
+This file proves the formal final transport: an explicitly supplied
+`SupportInNewSubspace` witness contains a level-`M` form realizing the residual
+representation, so it proves the conclusion of
+`frey_level_lowering_of_unramified`.
+
+**Proved result**
+
+- `frey_level_lowering_of_unramified_of_newform_support` — a conditional
+  theorem from typed new-subspace support to the existing level-lowering
+  proposition.
+
+**What remains open**
+
+The support premise still requires a newform decomposition of the relevant
+mod-ℓ Hecke module, a mod-ℓ Jacquet--Langlands/Ihara-lemma analogue, and
+multiplicity one for the localized Hecke algebra. Those are documented as
+explicit missing mathematics, not represented by `sorry`, a global axiom, or a
+claim of an unconditional Ribet theorem.
 
 ## What this directory establishes
 
@@ -260,6 +317,8 @@ Collectively, the files establish:
 6. a constructive old/new boundary and generated coefficient Hecke algebra;
 7. a typed residual-maximal-ideal and new-support interface spelling out the
    remaining Hecke-theoretic level-lowering obligation.
+8. a proved conditional extraction from explicit new-subspace support to the
+   existing one-step level-lowering proposition.
 
 ## What this directory does not establish
 
@@ -275,6 +334,8 @@ No file here proves:
 - construction or maximality proof for an ideal `𝔪_ρ̄`;
 - the Hecke-algebra representation theorem needed to attach `𝔪_ρ̄` and
   transport its support;
+- the newform decomposition, mod-ℓ Ihara/Jacquet--Langlands input, or
+  multiplicity-one theorem needed to prove that support;
 - Fermat's Last Theorem or Beal's Conjecture.
 
 Those boundaries remain explicit so that the final formal result can name its genuine mathematical assumptions rather than hide them inside a scaffold.
@@ -284,7 +345,7 @@ Those boundaries remain explicit so that the final formal result can name its ge
 From the repository root, build the latest Galois boundary layer with:
 
 ```sh
-lake --old build 'Beal.Galois.«06_MaximalIdeal»'
+lake --old build 'Beal.Galois.«08_RibetProof»'
 ```
 
 To build the coefficient-level Hecke layer alone, use
@@ -296,7 +357,10 @@ Beal.Galois.«01_Absolute»
 Beal.Galois.«02_ResidualRep»
 Beal.Galois.«03_ModLForm»
 Beal.Galois.«04_LevelLowering»
+Beal.Galois.«05_Hecke»
 Beal.Galois.«06_MaximalIdeal»
+Beal.Galois.«07_NewformSupport»
+Beal.Galois.«08_RibetProof»
 ```
 
 The source uses Lean 4.12. The numbered modules are deliberately small enough that their declarations and axiom reports can be audited directly.

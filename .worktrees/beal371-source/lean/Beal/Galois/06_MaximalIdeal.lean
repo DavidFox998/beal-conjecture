@@ -1,15 +1,19 @@
 /-
       Galois/06_MaximalIdeal — the residual maximal-ideal boundary
 
-      This module states the data a Hecke-theoretic level-lowering proof would
-      need after the coefficient algebra of Layer 5: an ideal-like object in the
-      (generally noncommutative) coefficient Hecke algebra, an evaluation
-      attached to a Frey residual representation, and newform support.
+       This module states the data a Hecke-theoretic level-lowering proof would
+       need after the coefficient algebra of Layer 5: an ideal-like object in the
+       (generally noncommutative) coefficient Hecke algebra, an evaluation
+       attached to a Frey residual representation, and newform support.
 
       No maximal ideal, newform decomposition, Hecke eigenvalue system, or
       Hecke-algebra representation theorem is constructed here. In particular,
       residual unramifiedness is not proved from Tate's conductor data, and the
       final unramifiedness-to-support statement is a proposition, not a theorem.
+
+       Mathlib's commutative `Ideal` is intentionally not used: the current
+       `HeckeAlgebra` is a subring of endomorphisms, so this layer records the
+       required two-sided ideal interface explicitly.
 -/
 import Beal.Galois.«04_LevelLowering»
 import Beal.Galois.«05_Hecke»
@@ -50,6 +54,36 @@ def HeckeIdealLike.IsMaximal {N ℓ : ℕ} (m : HeckeIdealLike N ℓ) : Prop :=
         (∀ T : HeckeAlgebra N ℓ, T ∈ k → T ∈ m) ∨
           ∀ T : HeckeAlgebra N ℓ, T ∈ k
 
+/-- The maximal-ideal predicate at the present noncommutative boundary.
+
+    The name follows the mathematical role of the object. Its type is the
+    explicit two-sided `HeckeIdealLike` interface rather than Mathlib's
+    commutative `Ideal`, because `HeckeAlgebra` is built from endomorphisms. -/
+def IsMaximalIdeal {N ℓ : ℕ} (I : HeckeIdealLike N ℓ) : Prop :=
+  I.IsMaximal
+
+/-- A candidate maximal ideal of the coefficient Hecke algebra.
+
+    This subtype is only a typed package of an ideal-like object and an explicit
+    maximality witness. It does not construct a maximal ideal. -/
+abbrev MaximalIdeal (N ℓ : ℕ) :=
+  { I : HeckeIdealLike N ℓ // IsMaximalIdeal I }
+
+/-- The residue-field carrier supplied by a future quotient construction.
+
+    This is deliberately only a carrier and an identification condition. It
+    does not construct the quotient of the Hecke algebra by `I`, or claim that
+    such a quotient is a field. The missing quotient construction and field
+    proof remain part of the mathematical interface. -/
+structure ResidueFieldData {N ℓ : ℕ} (I : HeckeIdealLike N ℓ) where
+  carrier : Type
+  identifies_with_ZMod : carrier = ZMod ℓ
+
+/-- The explicit residue-field condition required by the attachment boundary. -/
+def ResidueFieldIsZMod {N ℓ : ℕ} {I : HeckeIdealLike N ℓ}
+    (K : ResidueFieldData I) : Prop :=
+  K.carrier = ZMod ℓ
+
 /-- An attachment of a candidate maximal ideal to a fixed Frey residual
     representation.
 
@@ -63,7 +97,9 @@ structure FreyHeckeAttachment
     {model : FreyCurveModel A B C x y z} {N ℓ : ℕ}
     (R : FreyResidualRepresentation model ℓ)
     (m : HeckeIdealLike N ℓ) where
-  maximal : m.IsMaximal
+  maximal : IsMaximalIdeal m
+  residue : ResidueFieldData m
+  residue_is_ZMod : ResidueFieldIsZMod residue
   eval : HeckeAlgebra N ℓ → ZMod ℓ
   eval_zero : eval 0 = 0
   eval_one : eval 1 = 1
@@ -84,6 +120,38 @@ structure FreyHeckeAttachment
       (g : DecompositionElement I.toDecompositionSubgroup),
       FrobeniusClass.mk I g = F →
         trace p hp hAway = modLTrace ℓ (R.rho g.val)
+
+/-- The proposed maximal ideal attached to a fixed Frey residual
+    representation.
+
+    `N` is explicit because it is not part of the type of `R`. The proposition
+    supplies a candidate ideal in `HeckeAlgebra N ℓ`, its maximality and
+    residue-field identification, and the away-from-`Nℓ` condition
+
+      `T_p mod 𝔪 = trace (R (Frob_p))`.
+
+    The Frobenius class and its decomposition representative are quantified
+    explicitly, so no representative is selected by `Classical.choice`.
+    This is an interface-only existence statement: Layer 6 does not prove that
+    an ideal, residue field, or attachment exists. -/
+def MaximalIdealAttachedToRep
+    {A B C : ℤ} {x y z : ℕ}
+    {model : FreyCurveModel A B C x y z}
+    (R : FreyResidualRepresentation model ℓ) (N : ℕ) : Prop :=
+  ∃ m : HeckeIdealLike N ℓ,
+    ∃ attachment : FreyHeckeAttachment R m,
+      ∀ (p : ℕ) (hp : p.Prime) (hAway : ¬ p ∣ N * ℓ),
+        ∀ I : InertiaSubgroup R.Gabs p,
+        ∀ F : FrobeniusClass I,
+        ∀ g : DecompositionElement I.toDecompositionSubgroup,
+          FrobeniusClass.mk I g = F →
+            attachment.eval
+                ⟨HeckeSequenceOp p ℓ,
+                  heckeSequenceOp_mem_HeckeAlgebra
+                    (N := N) (ℓ := ℓ) hp (by
+                      intro hPN
+                      exact hAway (dvd_mul_of_dvd_left hPN ℓ))⟩ =
+              modLTrace ℓ (R.rho g.val)
 
 /-- Extend a finite q-expansion by zero to the coefficient-sequence module on
     which the coefficient Hecke algebra acts. -/
@@ -149,8 +217,13 @@ def frey_unramified_implies_maximalIdeal_support
                 IsSupportedInNewSubspace R m
 
 #print axioms HeckeIdealLike
+#print axioms IsMaximalIdeal
+#print axioms MaximalIdeal
+#print axioms ResidueFieldData
+#print axioms ResidueFieldIsZMod
 #print axioms HeckeIdealLike.IsMaximal
 #print axioms FreyHeckeAttachment
+#print axioms MaximalIdealAttachedToRep
 #print axioms HeckeIdealAnnihilatesForm
 #print axioms IsSupportedInNewSubspace
 #print axioms frey_unramified_implies_maximalIdeal_support
