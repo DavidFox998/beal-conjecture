@@ -16,3 +16,18 @@ would create a disconnected patch that does not affect the active Beal branch.
 module names with the fetched `beal/main` tree. If they differ, use a temporary
 worktree of that revision for inspection and validation, and do not overwrite
 the unrelated workspace root.
+
+## Publishing boundary
+
+The ensemble workspace's Git `main` is not the public
+`DavidFox998/beal-conjecture` repository, and directories under `.worktrees`
+are ordinary tracked paths here rather than independent Git worktrees.
+
+**Why:** Commits made under a nested source path can appear on the ensemble
+branch while being absent from the public Beal repository and its Actions
+workflow.
+
+**How to apply:** Clone the configured `beal` remote into a dedicated temporary
+checkout, make source changes under its repository-root `lean/` paths, validate
+there, push that checkout's `main`, and verify the remote head plus its newly
+triggered Actions run.
