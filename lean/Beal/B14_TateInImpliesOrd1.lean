@@ -45,14 +45,14 @@
         axiom tate_step2_I_n_conductor_one
           {A B C : ℤ} {x y z : ℕ}
           (hEq : A ^ x + B ^ y = C ^ z) :
-          ∃ _model : FreyCurveModel A B C x y z, True
+          Nonempty (FreyCurveModel A B C x y z)
 
         /-- The local Tate interface supplies one model for a fixed Frey equation;
           later prime-by-prime arguments reuse this same chosen conductor. -/
         noncomputable def freyModelOf
             {A B C : ℤ} {x y z : ℕ}
             (hEq : A ^ x + B ^ y = C ^ z) : FreyCurveModel A B C x y z :=
-          Classical.choose (tate_step2_I_n_conductor_one hEq)
+          Classical.choice (tate_step2_I_n_conductor_one hEq)
 
         -- ── §2. Private helpers ───────────────────────────────────────────────────────
 
