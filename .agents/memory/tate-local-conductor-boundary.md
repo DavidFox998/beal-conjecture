@@ -18,6 +18,19 @@ the full conductor, including the 2-adic exponent, is represented and proved.
 Documentation must call it an axiomatized local contract rather than a global
 conductor computation.
 
+The conductor exponent-one conclusion does not establish that a residual
+Galois representation is unramified at that prime. That step requires an
+actual absolute-Galois/inertia action and a theorem relating the Frey curve's
+local reduction to the action of inertia.
+
+**Why:** Conductor arithmetic describes the selected model's natural-number
+conductor, whereas unramifiedness is a property of a representation restricted
+to an inertia subgroup; neither object nor a bridge between them is currently
+formalized.
+
+**How to apply:** Do not use the Tate contract as an unramifiedness proof or
+as a replacement for the representation-theoretic premise of level lowering.
+
 The final conditional route must pass the Tate-selected model into the modular
 boundary. That boundary may return a typed form token and a certified descent
 plan, while the Ribet interface transports the token one exact division at a
