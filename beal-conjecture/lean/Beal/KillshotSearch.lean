@@ -1,15 +1,26 @@
--- KillshotSearch — Core-only lemmas for the prime-radical branch.
+-- KillshotSearch — elementary searches at the Core boundary.
 --
--- This file deliberately imports the Core interfaces only: the concrete
--- `primeFactors` proof remains at the B14 wrapper boundary.
+-- The prime-radical branch uses Mathlib's finite-factorization interface.
+-- Its audit is intentionally limited to Lean's foundational
+-- `propext`, `Classical.choice`, and `Quot.sound`; it imports no mathematical
+-- theorem axiom.
 
-import Beal.B01_Def_Core
-import Beal.B14_FreyConductor_Core
+import Beal.B05_Modularity_Core
+import Beal.B14_RadicalFactorization
 
-/--
-This local cancellation proof avoids the standard `Nat.add_right_cancel`,
-whose Lean 4.12 declaration has a `propext` dependency.
+/-!
+## Killshot #1: the prime-radical branch
+
+The B14 factorization bridge derives prime-power base witnesses from a
+literal single-prime radical.  The proof here is the remaining elementary
+step: a primitive Beal solution cannot have all three bases equal to powers
+of the same prime.
 -/
+
+def RadPrimeCase14 (A B C p : Nat) : Prop :=
+  BealRadicalFactorization.Rad (A * B * C) = p ∧ Nat.Prime p
+
+/-- A structural, zero-axiom replacement for natural-number cancellation. -/
 theorem add_right_cancel_zero {a b k : Nat} (h : a + k = b + k) : a = b := by
   induction k with
   | zero => exact h
@@ -17,10 +28,6 @@ theorem add_right_cancel_zero {a b k : Nat} (h : a + k = b + k) : a = b := by
     apply ih
     exact Nat.succ.inj h
 
-/--
-Numbers at least two cannot multiply a natural number to give one. The proof
-uses only constructors, so it remains zero-axiom.
--/
 theorem one_ne_mul_of_two_le
     {p v : Nat} (hp : 2 ≤ p) (h : 1 = p * v) : False := by
   cases p with
@@ -38,10 +45,7 @@ theorem one_ne_mul_of_two_le
         have h' : Nat.zero = Nat.succ _ := Nat.succ.inj h
         exact Nat.noConfusion h'
 
-/--
-The elementary divisibility residue argument, expressed without
-`Nat.dvd_sub`: `1 + p * u` cannot itself be a multiple of `p ≥ 2`.
--/
+/-- `1 + p*u` cannot be a multiple of `p ≥ 2`. -/
 theorem one_add_mul_ne_mul
     {p u v : Nat} (hp : 2 ≤ p) (h : 1 + p * u = p * v) : False := by
   induction u generalizing v with
@@ -63,10 +67,6 @@ theorem one_add_mul_ne_mul
         hleft.symm.trans (h.trans hright)
       exact ih (add_right_cancel_zero h')
 
-/--
-An import-free replacement for the unavailable `Nat.dvd_pow_self`: a base
-divides each of its positive powers.
--/
 theorem dvd_pow_self_of_ne_zero {p n : Nat} (hn : n ≠ 0) : p ∣ p ^ n := by
   cases n with
   | zero => exact (hn rfl).elim
@@ -74,10 +74,7 @@ theorem dvd_pow_self_of_ne_zero {p n : Nat} (hn : n ≠ 0) : p ∣ p ^ n := by
     refine ⟨p ^ n, ?_⟩
     exact (Nat.pow_succ p n).trans (Nat.mul_comm _ _)
 
-/--
-The elementary prime-power gap: a positive power of a number at least two
-cannot be one less than another positive power of the same base.
--/
+/-- The no-gap form `1 + p^a = p^c` is impossible for positive exponents. -/
 theorem one_add_p_pow_not_p_pow
     {p a c : Nat} (hp : 2 ≤ p) (ha : 1 ≤ a) (hc : 1 ≤ c)
     (h : 1 + p ^ a = p ^ c) : False := by
@@ -101,6 +98,7 @@ theorem one_add_p_pow_not_p_pow
     _ = p ^ c := h
     _ = p * v := hv
 
+/-- The symmetric no-gap form `p^b + 1 = p^c`. -/
 theorem p_pow_add_one_not_p_pow
     {p b c : Nat} (hp : 2 ≤ p) (hb : 1 ≤ b) (hc : 1 ≤ c)
     (h : p ^ b + 1 = p ^ c) : False := by
@@ -109,10 +107,7 @@ theorem p_pow_add_one_not_p_pow
     1 + p ^ b = p ^ b + 1 := Nat.add_comm _ _
     _ = p ^ c := h
 
-/--
-The standard associativity theorem for `Nat` carries `propext` in Lean 4.12.
-This structural recursion is its strictly zero-axiom replacement.
--/
+/-- A structural replacement for `Nat.mul_assoc`, avoiding `propext`. -/
 theorem mul_assoc_zero (a b c : Nat) : (a * b) * c = a * (b * c) := by
   induction c with
   | zero => rfl
@@ -205,18 +200,20 @@ theorem add_pos_ne_one {u v : Nat} (hu : 0 < u) (hv : 0 < v)
   exact (Nat.not_succ_le_self 1 htwoone).elim
 
 /--
-Once B14 supplies the prime-power certificate, the primitive Beal equation
-contradicts it by elementary natural-number arithmetic alone.
+The prime-radical branch derives `A = p^a`, `B = p^b`, and `C = p^c` from
+the B14 factorization theorem.  The zero-exponent cases reduce to the two
+no-gap forms, while three positive exponents make `p` a common divisor of a
+primitive triple.
 -/
 theorem killshot_rad_prime_branch
     {A B C x y z p : Nat}
-    (hBeal : IsBealSolutionCore A B C x y z)
-    (hRadPrime : RadPrimeCase14Core A B C p)
-    (hPowers : RadPrimePowerCertificate14Core A B C p) :
+    (hBeal : IsBealSolution05Core A B C x y z)
+    (hRadPrime : RadPrimeCase14 A B C p) :
     False := by
-  rcases hBeal with ⟨_, _, _, hx, hy, hz, hEq, hPrimitive⟩
-  rcases hPowers with ⟨a, b, c, hA, hB, hC⟩
-  have hpgt : 1 < p := hRadPrime.2.1
+  rcases hBeal with ⟨hApos, hBpos, hCpos, hx, hy, hz, hEq, hPrimitive⟩
+  rcases BealRadicalFactorization.radical_prime_imp_prime_power hRadPrime.2
+    hApos hBpos hCpos hRadPrime.1 with ⟨a, b, c, hA, hB, hC⟩
+  have hpgt : 1 < p := hRadPrime.2.one_lt
   have hp0 : 0 < p := Nat.lt_trans (Nat.zero_lt_succ 0) hpgt
   cases a with
   | zero =>
@@ -314,14 +311,6 @@ theorem killshot_rad_prime_branch
           (by simpa only [hC] using hCdvd)
         exact (Nat.ne_of_gt hpgt hpone).elim
 
-theorem killshot_rad_prime_power_contradiction
-    {A B C x y z p : Nat}
-    (hBeal : IsBealSolutionCore A B C x y z)
-    (hRadPrime : RadPrimeCase14Core A B C p)
-    (hPowers : RadPrimePowerCertificate14Core A B C p) :
-    False :=
-  killshot_rad_prime_branch hBeal hRadPrime hPowers
-
-#print axioms RadPrimeCase14Core
 #print axioms killshot_rad_prime_branch
-#print axioms killshot_rad_prime_power_contradiction
+#print axioms one_add_p_pow_not_p_pow
+#print axioms p_pow_add_one_not_p_pow

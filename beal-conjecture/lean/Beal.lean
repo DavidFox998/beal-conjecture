@@ -40,3 +40,4 @@ import Beal.B20_BealConjectureDone_Core
 import Beal.B20_BealConjectureDone
 import Beal.B21_FermatCorollary_Core
 import Beal.B21_FermatCorollary
+import Beal.KillshotSearch

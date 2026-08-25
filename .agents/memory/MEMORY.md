@@ -20,3 +20,4 @@
 - [Tate local conductor boundary](tate-local-conductor-boundary.md) — model-based odd-prime conductor contract replaces free-N Tate interfaces; do not overclaim 2-adic coverage.
 - [BSD repository boundary](bsd-repository-boundary.md) — Birch-and-Swinnerton-Dyer is out of scope; do not modify it unless the user explicitly reopens work there.
 - [Lean cache quota](lean-cache-quota.md) — fresh Lean 4.12 Mathlib cache rebuilds can hit environment quota despite free disk; use an existing cache or CI for full verification.
+- [Radical factorization audit](radical-factorization-audit.md) — the literal radical bridge is allowed only Lean’s three standard finite-factorization foundations, never mathematical theorem axioms.
