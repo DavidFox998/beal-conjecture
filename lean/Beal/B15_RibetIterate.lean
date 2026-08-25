@@ -11,6 +11,7 @@
       -/
       import Beal.B14_FreyS2
       import Beal.B14_FreyTate
+       import Beal.B14_FormRepresentation
       import Beal.B14_TateInImpliesOrd1
       import Beal.B15_LevelTo2_Core
       import Beal.B03_Conductor_Core
