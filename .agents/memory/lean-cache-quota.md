@@ -35,6 +35,21 @@ its local package checkout, run `lake exe cache get` in that same worktree
 before retrying its target build. The root workspace cache does not repair a
 separate worktree's `.lake` state.
 
+## Tracked Layer artifacts in detached worktrees
+
+Some Beal worktrees retain tracked `.lake` outputs whose timestamps can be
+newer than edited Lean source while their interfaces are older. Lake may replay
+such an artifact instead of recompiling the source, causing downstream
+``unknown identifier`` or stale API errors.
+
+**Why:** Target freshness can follow the artifact timestamp rather than the
+actual source/interface contents after build-output cleanup.
+
+**How to apply:** For a focused audit, regenerate the exact prerequisite
+module with `lake env lean -R lean` and explicit `-o`/`-i` output paths, then
+compile its consumer. Remove or restore generated outputs before leaving the
+worktree; do not interpret errors from an old `.olean` as source errors.
+
 ## Corrupt local package checkout
 
 If Lake reports that a package cannot resolve `HEAD`, do not retry its manifest
