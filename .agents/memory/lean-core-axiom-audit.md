@@ -48,3 +48,16 @@ explicit closure-complete subgroup record and represent `GL₂(ZMod ℓ)` as
 linear automorphisms of the concrete two-dimensional residual module. Audit
 the resulting unramifiedness predicate directly before connecting it to Tate
 or level lowering.
+
+## Frobenius quotient representatives
+
+A `FrobeniusClass` represented as a quotient modulo inertia has no canonical
+representative that can be applied to a residual representation constructively.
+
+**Why:** Selecting one quotient representative would introduce a hidden choice
+principle and obscure the required decomposition/inertia data.
+
+**How to apply:** State mod-ℓ trace compatibility with explicit inertia,
+Frobenius-class, and decomposition-element representative arguments. Add a
+canonical `Frob_n` only after the arithmetic local-data construction itself is
+formalized; do not manufacture one for a scaffolding interface.
