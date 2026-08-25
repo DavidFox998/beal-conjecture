@@ -233,9 +233,17 @@ The project uses Lean 4.12.0 and Mathlib:
 
 ```bash
 export PATH="$HOME/.elan/bin:$PATH"
+# First build, or after pulling an update: discard any legacy local Lake state.
+rm -rf .lake
 lake exe cache get
 lake build Beal
 ```
+
+The committed `lake-manifest.json` pins the exact Git revision of Mathlib and
+each transitive Lake dependency used by a release. Keep this file under version
+control so a checkout of the same release rebuilds against the same dependency
+snapshot, even if an upstream branch later moves. Lake's downloaded packages
+and build output under `.lake/` are local generated files and are ignored.
 
 The CI workflow additionally checks imports, `#print axioms` output, the
 strict wrapper budget, and the documented real-number exception.
