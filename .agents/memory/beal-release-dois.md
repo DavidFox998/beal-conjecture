@@ -19,6 +19,13 @@ The Zenodo concept DOI is `10.5281/zenodo.22041831`. Record
 landing page retains an older v0.4-style title, so identify that release by its
 v4 tag, archived commit, and DOI together.
 
+For the earlier release lineage, use `10.5281/zenodo.22041832` for the
+v0.2.0 zero-axiom core, `10.5281/zenodo.22050666` for the v0.4.0 typed
+interfaces snapshot, and `10.5281/zenodo.22050960` for the v1.0 Opera
+Numerorum freeze. The first two Zenodo display-metadata fields can be stale or
+generic, so map them by the GitHub release webhook chronology and archived tag,
+not title text alone.
+
 **Why:** DOI minting is intended to mark changes in the audited mathematical axiom footprint, not every commit.
 
 **How to apply:** Keep the release sequence as `v4.0.0` three-axiom lock, then `v4.1.0` Tate truthful model after its build, then `v5.0.0` for the typed preserved-form `ribet_single_step` boundary after the corresponding work lands. Verify a tag, release, and `#print axioms` footprint before minting each new DOI.
