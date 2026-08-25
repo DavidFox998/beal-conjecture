@@ -8,6 +8,7 @@ authors:
     affiliation: "Opera Numerorum"
 version: "v4.1.0"
 date-released: 2026-08-24
+doi: "10.5281/zenodo.22091549"
 license: MIT
 repository-code: "https://github.com/DavidFox998/beal-conjecture"
 keywords:
