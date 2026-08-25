@@ -301,9 +301,22 @@ Tate, or Ribet from first principles.
 
 The v4.0.0 Zenodo landing page retains an older v0.4-style display title; its
 release tag, archive, and audited boundary are the v4.0.0 row above. The
-The v4.1.0 Tate verification is a documentation-and-boundary release: it
-does not claim a complete Tate algorithm, a 2-adic conductor exponent, or a
-global conductor computation. Its version DOI is
+
+**v4.1.0 — Tate truthful.** The Tate boundary now carries one fixed
+`FreyCurveModel` for each fixed solution tuple `(A, B, C, x, y, z)`. That model
+ties the Frey coefficients, `c₄`, discriminant, prime support, and conductor
+together, so the conductor `N` is no longer an unrelated or freely chosen
+natural number. The closed B14 arithmetic establishes the Frey `c₄` identity
+and the divisibility facts used by the local argument without introducing
+another named mathematical axiom. For an odd prime `p` at which the model is
+minimal and the discriminant is bad,
+`p ∤ c₄`, `p ∣ Δ`, the model contract yields `p ∣ N`, `p² ∤ N`. Thus the
+derived conductor statement reuses the conductor of that same fixed Frey model
+and records local conductor exponent one at `p`.
+
+This release formalizes a typed odd-prime local Tate boundary. It does not
+claim a complete Tate algorithm, a formal 2-adic conductor calculation, or a
+global computation of `N` from the Frey coefficients. Its version DOI is
 [10.5281/zenodo.22091549](https://doi.org/10.5281/zenodo.22091549).
 
 When discussing an audit, cite the specific version DOI rather than the concept
