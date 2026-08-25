@@ -258,8 +258,9 @@ def _build_focus_restore_section(test: dict) -> str:
 def build_background_tab_card(report_path: str) -> str:
     """Return Markdown summary sections for background-tab / focus-restore tests.
 
-    Returns an empty string when neither test is present in the report (e.g.
-    a selective cold-start-only run).  Never raises.
+    Returns a coverage note when the cold-start test is present but neither
+    background-tab test is in the report, and an empty string when no
+    recognized heartbeat tests are present.  Never raises.
     """
     try:
         with open(report_path) as f:
@@ -277,9 +278,18 @@ def build_background_tab_card(report_path: str) -> str:
     resume_test = next(
         (t for t in tests if "focus_restore" in t.get("nodeid", "")), None
     )
+    cold_start_test = next(
+        (t for t in tests if "cold_start" in t.get("nodeid", "")), None
+    )
 
-    # Neither test present — not an error; just nothing to emit.
+    # A cold-start-only selective run is valid, but must not silently imply
+    # that background-tab coverage was exercised.
     if bg_test is None and resume_test is None:
+        if cold_start_test is not None:
+            return (
+                "## ℹ️ Background-Tab Coverage\n\n"
+                "> ℹ️ Background-tab tests were not included in this run.\n"
+            )
         return ""
 
     sections = []

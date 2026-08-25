@@ -398,19 +398,31 @@ def _make_focus_restore_report(
 
 
 # ---------------------------------------------------------------------------
-# Background-tab card — tests absent (no section emitted)
+# Background-tab card — tests absent from a selective cold-start run
 # ---------------------------------------------------------------------------
 
 class TestBackgroundTabCardAbsent:
-    """build_background_tab_card returns empty string when neither test is present."""
+    """A selective cold-start run clearly reports missing background coverage."""
 
-    def test_returns_empty_when_no_bg_tests(self):
+    def test_reports_background_tests_not_included(self):
         report = _make_report(outcome="passed", ticks_fired=9)
         try:
             card = build_background_tab_card(report)
-            assert card == ""
+            assert "ℹ️ Background-tab tests were not included in this run" in card
         finally:
             os.unlink(report)
+
+    def test_returns_empty_when_no_recognized_tests_are_present(self):
+        report = {
+            "tests": [{"nodeid": "tests/other_test.py::test_something", "outcome": "passed"}]
+        }
+        tmp = tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False)
+        json.dump(report, tmp)
+        tmp.close()
+        try:
+            assert build_background_tab_card(tmp.name) == ""
+        finally:
+            os.unlink(tmp.name)
 
 
 # ---------------------------------------------------------------------------
