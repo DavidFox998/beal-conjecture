@@ -4,6 +4,7 @@
 - [SiegelZeroFreeElementary status](brothers-desert-proof-step-a.md) — eta_pos proves pair-sum tsum > 0 (0 sorry); connecting to ζ<0 needs eta identity (pending); eta_hasSum sorry was removed by restructuring to pair sums only
 - [Lean 4.15 HasSum API quirks](lean-hassum-api-quirks.md) — HasSum.congr_fun direction, zero_add needs explicit f, tendsto_rpow_neg_atTop, simp on partial defs
 - [Lean core axiom audit](lean-core-axiom-audit.md) — in Lean 4.12, Nat.gcd brings propext even without imports; use a relational core predicate when zero axioms matter
+- [Constructive principal submodules](lean-principal-submodule-audit.md) — Lean 4.12 `Submodule.span` adds `Classical.choice`; use an explicit one-generator carrier when the audit forbids it.
 - [Lean Int nonzero audit](lean-int-nonzero-audit.md) — direct Int.mul_eq_zero induction avoids Classical.choice and Quot.sound in arithmetic proof audits
 - [Smithery registry propagation](smithery-registry-propagation.md) — external scans refresh capabilities; patch retained listing metadata and allow the server-summary cache to catch up.
 - [Smithery connection verification](smithery-connection-verification.md) — use the official CLI for temporary gateway checks; direct connection writes can be Cloudflare-blocked.
