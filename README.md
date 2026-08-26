@@ -227,6 +227,43 @@ The Hecke algebra uses an explicit expression language instead of
 claims that the underlying Hecke localization or multiplicity-one theorem is
 available. The full directory guide is in
 [`lean/Beal/Galois/README.md`](lean/Beal/Galois/README.md).
+
+### v6.0.0 — Galois boundary explicit
+
+The v6 boundary makes the remaining support argument more precise without
+adding another domain axiom:
+
+- **`07c_Ihara`** proves that the naive Ihara map is not injective on the raw
+  coefficient sequence space. With `v = (-Bp 1, 1)`, the theorem proves
+  `B₁ (-Bp 1) + Bp 1 = 0` and `v ≠ 0`. This is a theorem about the ambient
+  sequence space, not a missing result. Its audited footprint is
+  `[propext, Quot.sound]`, with no `Classical.choice`.
+- **`07d_OldNew`** defines the structure needed before Ihara can be applied to
+  modular forms: `IsModularFormAtLevel M ℓ V` says that the submodule `V` is
+  stable under every level-`M` Hecke operator, and `IsInternalDirectSum`
+  states the old/new decomposition elementwise. `OldNewDecomp M p ℓ` remains
+  an explicit `Prop`-valued missing interface rather than a fabricated
+  decomposition. Its audited footprints are `[propext, Quot.sound]` for
+  `IsModularFormAtLevel`, no axioms for `IsInternalDirectSum`, and
+  `[propext, Quot.sound]` for `OldNewDecomp`.
+- **`07e_MultOne`** names `MultiplicityOne` as an explicit missing theorem
+  about the localized new Hecke module. Its typed localization carriers and
+  choice-free `IsFreeRankOne` formulation preserve the same foundational
+  boundary; multiplicity one is not smuggled in as a fourth axiom.
+- **`07b_SupportProof` and `08_RibetProof`** remain conditional. The former
+  assembles explicit residual unramifiedness, maximal-ideal attachment,
+  q-expansion, old/new, Ihara, local transport, quotient/evaluation, and
+  multiplicity-one premises into `SupportInNewSubspace`. The latter transports
+  an explicit support witness to the existing level-lowering proposition.
+  The support theorem still needs the actual `OldNewDecomp`, the Ihara kernel
+  statement on the correct modular-form subspace, and `MultiplicityOne`.
+
+The v6 release therefore preserves exactly the three B20 domain axioms:
+`wiles_modularity`, `tate_step2_I_n_conductor_one`, and
+`ribet_single_step`. The Galois tree replaces one opaque Ribet-step interior
+with explicit propositions; it does not add a fourth domain axiom. The next
+foundational stage is v7: replacing those support interfaces with the actual
+`hNewformSupport` argument. That work remains open and is not claimed by v6.
 ---
 
 ## The path to a complete proof: Tate and Ribet
@@ -370,7 +407,7 @@ Tate, or Ribet from first principles.
 | **v4.0.0 three-axiom boundary** | `v4.0.0` / `7b5c4a7` | [Zenodo v4.0.0](https://doi.org/10.5281/zenodo.22085104) | **0 executable `sorry`; 3 named boundaries:** `wiles_modularity`, `tate_step2_I_n_conductor_one`, and `ribet_level_lowering_real` |
 | **v4.1.0 Tate local conductor verification** | `v4.1.0` / `ec8f5de` | [Zenodo v4.1.0](https://doi.org/10.5281/zenodo.22091549) | One typed `FreyCurveModel` fixes the coefficients, $c_4$, discriminant, conductor, and odd-prime local contract to the same $(A,B,C,x,y,z)$; the derived theorem returns that model's conductor and the named-axiom count remains three |
 | **v5.0.0 preserved-form Ribet descent** | `v5.0.0` / `92a165c` | [Zenodo v5.0.0](https://doi.org/10.5281/zenodo.22090900) | `ribet_level_lowering_real` leaves the active path; `ribet_single_step` transports a preserved-form witness one exact division at a time to the level-$2$ contradiction |
-| **Current main — post-v5 Galois boundary development** | `main` | Not yet released | Adds the typed `lean/Beal/Galois/` Hecke, support, Ihara, old/new, localized multiplicity-one, and conditional Ribet-transport layers; it does not add a fourth named domain axiom |
+| **v6.0.0 Galois explicit boundary** | `v6.0.0-galois-explicit` | Zenodo DOI pending | **0 executable `sorry`; 3 named boundaries preserved:** `wiles_modularity`, `tate_step2_I_n_conductor_one`, and `ribet_single_step`; adds the `07c` counterexample, `07d` `OldNew` predicate, and `07e` `MultiplicityOne` as explicit missing mathematics with no fourth domain axiom |
 
 The v4.0.0 Zenodo landing page retains an older v0.4-style display title; its
 release tag, archive, and audited boundary are the v4.0.0 row above. The
