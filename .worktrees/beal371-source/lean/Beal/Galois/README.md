@@ -4,6 +4,37 @@ This directory contains the typed Galois-representation, mod-ℓ form, level-low
 
 It is intentionally a **boundary layer**, not an unconditional proof of Beal's Conjecture. The files provide data structures, propositions, coefficient operations, and small transport lemmas. They do not silently turn the classical theorems of Wiles, Tate, or Ribet into Lean theorems.
 
+## v7.0.0 genuine-provider status
+
+The v7 genuine-provider boundary is explicit and data-valued:
+
+- The old B15 declaration `ribet_single_step : Prop` has been deleted from
+  the active source path.
+- `SupportedNewformToTokenProvider` is an explicit missing function returning
+  `PreservedForm` data from a residual representation, maximal ideal, genuine
+  coefficient submodule, and `SupportInNewSubspace`. It is inspectable and
+  introduces no choice; because the residual representation carries a
+  universe-polymorphic group carrier, Lean reports its type as `Type 1`.
+- `RibetSingleStepProviders` is the explicit family consumed by the recursive
+  B15 descent: `∀ ℓ, RibetSingleStepProvider ℓ`. Each member returns a complete
+  `RibetStepResult`. The one-edge constructor
+  `ribet_single_step_from_genuine` shows how a 07k token provider supplies the
+  form field without `Classical.choice`.
+- `#print axioms ribet_single_step_from_genuine` reports
+  `[propext, Quot.sound]`.
+- The remaining named mathematical inputs on the final path are
+  `wiles_modularity`, `tate_step2_I_n_conductor_one`, and the explicit step
+  provider family. The provider family is a conditional data boundary, not a
+  theorem silently derived from the Galois files.
+- `Classical.choice` still appears in the B20 audit through the existing
+  `TateStep2.freyModelOf` construction. It is not introduced by 07k or by the
+  B15 genuine-provider bridge.
+- 07f proves that genuine form data excludes the raw 07c counterexample
+  `(-Bp, 1, 1)`.
+- The B15 descent plan still carries arithmetic edge data only. It cannot yet
+  instantiate `hIhara`, `hOldNew`, or `hRank` for every edge without extending
+  the plan interface with Galois witnesses.
+
 ## Directory structure
 
 ```text
@@ -14,6 +45,12 @@ Galois/
 ├── 04_LevelLowering.lean  exact proposition required for a Ribet step
 ├── 05_Hecke.lean          coefficient Hecke operators and old/new boundary
 ├── 06_MaximalIdeal.lean   residual maximal-ideal attachment interface
+├── 07f_GenuineSubmodule.lean  genuine-form submodule boundary
+├── 07g_IharaOnV.lean      restricted Ihara boundary on a genuine submodule
+├── 07h_OldNewOnV.lean     old/new transport boundary on a genuine submodule
+├── 07i_MultOneOnV.lean    localized rank-one boundary
+├── 07j_SupportProofGenuine.lean genuine support assembly
+├── 07k_TokenBridge.lean   data-valued support-to-token boundary
 ├── 07_NewformSupport.lean explicit lower-level new-support obligation
 ├── 08_RibetProof.lean     conditional transport from support to lowering
 └── README.md              this guide
@@ -175,7 +212,7 @@ This file states the exact proposition needed for one honest Ribet level-lowerin
 
 Its conclusion is that there exists a form `W'` at level `M` realizing the same residual representation.
 
-The declaration is a `def` of a proposition, not a proof of that proposition. A future proof must supply the missing Hecke-algebra, newform, and transport arguments. In particular, defining this proposition does not replace the separate Ribet assumption used by the final Beal proof.
+The declaration is a `def` of a proposition, not a proof of that proposition. A future proof must supply the missing Hecke-algebra, newform, and transport arguments. In particular, defining this proposition does not construct the explicit provider family consumed by the final Beal proof.
 
 ### `05_Hecke.lean`
 
