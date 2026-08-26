@@ -23,4 +23,4 @@
   {"message":
    "./././lean/Beal/Galois/05_Hecke.lean:232:0: 'Beal.Galois.HeckeAlgebra' depends on axioms: [propext, Quot.sound]",
    "level": "info"}],
- "depHash": "10483641692438677365"}
+ "depHash": "14888296590634231343"}

@@ -42,6 +42,14 @@ The v7 genuine-provider boundary is explicit and data-valued:
   `QExpansionPrincipleOnV` premise. Constructing that geometric premise for
   the actual modular-form submodule remains **MISSING**; 07f's single raw
   witness exclusion is not presented as a proof of all oldform relations.
+- 07h now owns the unchanged `OldNewDecompHyp` proposition and proves
+  `old_new_decomp_from_ihara` from restricted Ihara kernel-zero plus the
+  explicit `AtkinLehnerProjectorOnV` complement premise.
+  `old_new_decomp_from_genuine` obtains the Ihara input from 07g's
+  `QExpansionPrincipleOnV` theorem and performs the same transport without
+  choice. Constructing the actual old subspace, projector, and new complement
+  remains **MISSING**; Ihara kernel-zero alone is not presented as an
+  Atkin–Lehner decomposition theorem.
 - B14's Wiles boundary still returns the arithmetic plan only. The B15
   supplier makes the additional `hQ`, `hOldNew`, `hRank`, support bridge, and
   token-provider data explicit on every edge without a B14 → Galois import
@@ -59,7 +67,7 @@ Galois/
 ├── 06_MaximalIdeal.lean   residual maximal-ideal attachment interface
 ├── 07f_GenuineSubmodule.lean  genuine-form submodule boundary
 ├── 07g_IharaOnV.lean      restricted Ihara boundary on a genuine submodule
-├── 07h_OldNewOnV.lean     old/new transport boundary on a genuine submodule
+├── 07h_OldNewOnV.lean     conditional old/new transport on a genuine submodule
 ├── 07i_MultOneOnV.lean    localized rank-one boundary
 ├── 07j_SupportProofGenuine.lean genuine support assembly
 ├── 07k_TokenBridge.lean   data-valued support-to-token boundary
@@ -349,10 +357,10 @@ representation, so it proves the conclusion of
 **What remains open**
 
 The support premise still requires `QExpansionPrincipleOnV` for the relevant
-mod-ℓ Hecke module, a newform decomposition, and multiplicity one for the
-localized Hecke algebra. Those are documented as explicit missing mathematics,
-not represented by `sorry`, a global axiom, or a claim of an unconditional
-Ribet theorem.
+mod-ℓ Hecke module, `AtkinLehnerProjectorOnV` for the actual old/new
+complement, and multiplicity one for the localized Hecke algebra. Those are
+documented as explicit missing mathematics, not represented by `sorry`, a
+global axiom, or a claim of an unconditional Ribet theorem.
 
 ## What this directory establishes
 
@@ -368,6 +376,9 @@ Collectively, the files establish:
    remaining Hecke-theoretic level-lowering obligation.
 8. a proved conditional extraction from explicit new-subspace support to the
    existing one-step level-lowering proposition.
+9. a proved conditional 07h transport from restricted Ihara kernel-zero and
+   an explicit old/new complement premise to the V-specific decomposition
+   hypothesis.
 
 ## What this directory does not establish
 

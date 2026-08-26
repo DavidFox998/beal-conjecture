@@ -1,6 +1,6 @@
 ---
 name: Genuine Ihara boundary
-description: Why the finite genuine-form predicate cannot by itself prove restricted Ihara injectivity.
+description: Why genuine-form and restricted Ihara inputs do not by themselves prove the old/new complement.
 ---
 
 Finite support, Hecke stability, and exclusion of the raw infinite-support
@@ -17,3 +17,16 @@ single-witness exclusion to full injectivity would be false.
 proposition excluding all nonzero `a + Bp b = 0` relations in the supplied
 genuine submodule. Derive the restricted Ihara hypothesis at the use site
 without choice; do not claim the geometric proposition has been proved.
+
+Restricted Ihara kernel-zero also does not identify the geometric old
+subspace, prove genuine-form generation, or construct a Hecke-stable new
+complement. Keep the Atkin–Lehner/old-new complement input explicit when
+transporting to the V-specific decomposition proposition.
+
+**Why:** Injectivity of the restricted degeneracy-pair map rules out kernel
+relations, but an internal direct-sum decomposition additionally needs named
+old and new submodules, stability, generation, and a complement witness.
+
+**How to apply:** Use the q-expansion premise to derive restricted Ihara, then
+consume a separate complement/projector premise to obtain old/new data. Do not
+present Ihara alone as a newform decomposition theorem.

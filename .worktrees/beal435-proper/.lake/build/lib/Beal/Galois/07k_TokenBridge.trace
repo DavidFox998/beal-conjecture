@@ -20,4 +20,4 @@
   {"message":
    "./././lean/Beal/Galois/07k_TokenBridge.lean:114:0: 'Beal.Galois.galois_support_to_token_bridge_proof' depends on axioms: [propext, Quot.sound]",
    "level": "info"}],
- "depHash": "12350638308712488878"}
+ "depHash": "10697498552326909007"}

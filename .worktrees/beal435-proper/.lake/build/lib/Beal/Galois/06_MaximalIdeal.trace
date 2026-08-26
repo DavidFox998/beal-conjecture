@@ -35,4 +35,4 @@
   {"message":
    "./././lean/Beal/Galois/06_MaximalIdeal.lean:229:0: 'Beal.Galois.frey_unramified_implies_maximalIdeal_support' depends on axioms: [propext, Quot.sound]",
    "level": "info"}],
- "depHash": "11783602339979923649"}
+ "depHash": "12573803682653306197"}

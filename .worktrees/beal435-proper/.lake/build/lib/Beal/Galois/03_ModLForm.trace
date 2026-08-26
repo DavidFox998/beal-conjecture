@@ -8,4 +8,4 @@
   {"message":
    "./././lean/Beal/Galois/03_ModLForm.lean:87:0: 'Beal.Galois.ModLRealizesRepresentation' depends on axioms: [propext, Quot.sound]",
    "level": "info"}],
- "depHash": "7308419421892537779"}
+ "depHash": "13961829807723766477"}

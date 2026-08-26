@@ -3,9 +3,21 @@
    ".> LEAN_PATH=././.lake/packages/batteries/.lake/build/lib:././.lake/packages/Qq/.lake/build/lib:././.lake/packages/aesop/.lake/build/lib:././.lake/packages/proofwidgets/.lake/build/lib:././.lake/packages/Cli/.lake/build/lib:././.lake/packages/importGraph/.lake/build/lib:././.lake/packages/LeanSearchClient/.lake/build/lib:././.lake/packages/mathlib/.lake/build/lib:././.lake/build/lib LD_LIBRARY_PATH= /home/runner/.elan/toolchains/leanprover--lean4---v4.12.0/bin/lean ./././lean/Beal/Galois/07h_OldNewOnV.lean -R ./././lean -o ././.lake/build/lib/Beal/Galois/07h_OldNewOnV.olean -i ././.lake/build/lib/Beal/Galois/07h_OldNewOnV.ilean -c ././.lake/build/ir/Beal/Galois/07h_OldNewOnV.c --json",
    "level": "trace"},
   {"message":
-   "./././lean/Beal/Galois/07h_OldNewOnV.lean:65:0: 'Beal.Galois.IsGenuineFormGeneratedAtLevel' depends on axioms: [propext, Quot.sound]",
+   "./././lean/Beal/Galois/07h_OldNewOnV.lean:134:0: 'Beal.Galois.IsGenuineFormGeneratedAtLevel' depends on axioms: [propext, Quot.sound]",
    "level": "info"},
   {"message":
-   "./././lean/Beal/Galois/07h_OldNewOnV.lean:66:0: 'Beal.Galois.genuineFormGenerated_oldNew_of_hyp' depends on axioms: [propext, Quot.sound]",
+   "./././lean/Beal/Galois/07h_OldNewOnV.lean:135:0: 'Beal.Galois.OldNewDecompHyp' depends on axioms: [propext, Quot.sound]",
+   "level": "info"},
+  {"message":
+   "./././lean/Beal/Galois/07h_OldNewOnV.lean:136:0: 'Beal.Galois.AtkinLehnerProjectorOnV' depends on axioms: [propext, Quot.sound]",
+   "level": "info"},
+  {"message":
+   "./././lean/Beal/Galois/07h_OldNewOnV.lean:137:0: 'Beal.Galois.old_new_decomp_from_ihara' depends on axioms: [propext, Quot.sound]",
+   "level": "info"},
+  {"message":
+   "./././lean/Beal/Galois/07h_OldNewOnV.lean:138:0: 'Beal.Galois.old_new_decomp_from_genuine' depends on axioms: [propext, Quot.sound]",
+   "level": "info"},
+  {"message":
+   "./././lean/Beal/Galois/07h_OldNewOnV.lean:139:0: 'Beal.Galois.genuineFormGenerated_oldNew_of_hyp' depends on axioms: [propext, Quot.sound]",
    "level": "info"}],
- "depHash": "11445642558805936147"}
+ "depHash": "16074687123294245645"}

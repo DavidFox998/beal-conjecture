@@ -1,6 +1,6 @@
 // Lean compiler output
 // Module: Beal.Galois.«07h_OldNewOnV»
-// Imports: Init Beal.Galois.«07f_GenuineSubmodule» Beal.Galois.«07d_OldNew»
+// Imports: Init Beal.Galois.«07g_IharaOnV» Beal.Galois.«07d_OldNew»
 #include <lean/lean.h>
 #if defined(__clang__)
 #pragma clang diagnostic ignored "-Wunused-parameter"
@@ -14,7 +14,7 @@
 extern "C" {
 #endif
 lean_object* initialize_Init(uint8_t builtin, lean_object*);
-lean_object* initialize_Beal_Galois_07f__GenuineSubmodule(uint8_t builtin, lean_object*);
+lean_object* initialize_Beal_Galois_07g__IharaOnV(uint8_t builtin, lean_object*);
 lean_object* initialize_Beal_Galois_07d__OldNew(uint8_t builtin, lean_object*);
 static bool _G_initialized = false;
 LEAN_EXPORT lean_object* initialize_Beal_Galois_07h__OldNewOnV(uint8_t builtin, lean_object* w) {
@@ -24,7 +24,7 @@ _G_initialized = true;
 res = initialize_Init(builtin, lean_io_mk_world());
 if (lean_io_result_is_error(res)) return res;
 lean_dec_ref(res);
-res = initialize_Beal_Galois_07f__GenuineSubmodule(builtin, lean_io_mk_world());
+res = initialize_Beal_Galois_07g__IharaOnV(builtin, lean_io_mk_world());
 if (lean_io_result_is_error(res)) return res;
 lean_dec_ref(res);
 res = initialize_Beal_Galois_07d__OldNew(builtin, lean_io_mk_world());
