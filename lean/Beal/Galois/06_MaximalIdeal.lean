@@ -10,6 +10,10 @@
       Hecke-algebra representation theorem is constructed here. In particular,
       residual unramifiedness is not proved from Tate's conductor data, and the
       final unramifiedness-to-support statement is a proposition, not a theorem.
+
+       Mathlib's commutative `Ideal` is intentionally not used: the current
+       `HeckeAlgebra` is a subring of endomorphisms, so this layer records the
+       required two-sided ideal interface explicitly.
 -/
 import Beal.Galois.«04_LevelLowering»
 import Beal.Galois.«05_Hecke»
@@ -50,6 +54,24 @@ def HeckeIdealLike.IsMaximal {N ℓ : ℕ} (m : HeckeIdealLike N ℓ) : Prop :=
         (∀ T : HeckeAlgebra N ℓ, T ∈ k → T ∈ m) ∨
           ∀ T : HeckeAlgebra N ℓ, T ∈ k
 
+/-- The maximal-ideal predicate at the present noncommutative boundary. -/
+def IsMaximalIdeal {N ℓ : ℕ} (I : HeckeIdealLike N ℓ) : Prop :=
+  I.IsMaximal
+
+/-- A candidate maximal ideal of the coefficient Hecke algebra. -/
+abbrev MaximalIdeal (N ℓ : ℕ) :=
+  { I : HeckeIdealLike N ℓ // IsMaximalIdeal I }
+
+/-- The residue-field carrier supplied by a future quotient construction. -/
+structure ResidueFieldData {N ℓ : ℕ} (I : HeckeIdealLike N ℓ) where
+  carrier : Type
+  identifies_with_ZMod : carrier = ZMod ℓ
+
+/-- The explicit residue-field condition required by the attachment boundary. -/
+def ResidueFieldIsZMod {N ℓ : ℕ} {I : HeckeIdealLike N ℓ}
+    (K : ResidueFieldData I) : Prop :=
+  K.carrier = ZMod ℓ
+
 /-- An attachment of a candidate maximal ideal to a fixed Frey residual
     representation.
 
@@ -63,7 +85,9 @@ structure FreyHeckeAttachment
     {model : FreyCurveModel A B C x y z} {N ℓ : ℕ}
     (R : FreyResidualRepresentation model ℓ)
     (m : HeckeIdealLike N ℓ) where
-  maximal : m.IsMaximal
+  maximal : IsMaximalIdeal m
+  residue : ResidueFieldData m
+  residue_is_ZMod : ResidueFieldIsZMod residue
   eval : HeckeAlgebra N ℓ → ZMod ℓ
   eval_zero : eval 0 = 0
   eval_one : eval 1 = 1
@@ -149,6 +173,10 @@ def frey_unramified_implies_maximalIdeal_support
                 IsSupportedInNewSubspace R m
 
 #print axioms HeckeIdealLike
+#print axioms IsMaximalIdeal
+#print axioms MaximalIdeal
+#print axioms ResidueFieldData
+#print axioms ResidueFieldIsZMod
 #print axioms HeckeIdealLike.IsMaximal
 #print axioms FreyHeckeAttachment
 #print axioms HeckeIdealAnnihilatesForm

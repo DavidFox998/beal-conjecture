@@ -135,10 +135,8 @@ theorem heckeSequenceCoeff_add
       heckeSequenceCoeff p a n + heckeSequenceCoeff p b n := by
   by_cases hn : n = 0
   · simp [heckeSequenceCoeff, hn]
-  · by_cases hp : p ∣ n
-    · simp [heckeSequenceCoeff, hn, hp, mul_add, add_assoc, add_left_comm,
-        add_comm]
-    · simp [heckeSequenceCoeff, hn, hp, mul_add, add_assoc, add_left_comm,
+  · by_cases hp : p ∣ n <;>
+      simp [heckeSequenceCoeff, hn, hp, mul_add, add_assoc, add_left_comm,
         add_comm]
 
 theorem heckeSequenceCoeff_smul
@@ -218,8 +216,8 @@ def HeckeAlgebra (N ℓ : ℕ) :
       rintro _ _ ⟨left, rfl⟩ ⟨right, rfl⟩
       exact ⟨.mul left right, rfl⟩ }
 
-/-- Every prime-away-from-level coefficient Hecke operator belongs to the
-    generated Hecke algebra. -/
+/-- Every away-from-level coefficient Hecke operator belongs to the generated
+    Hecke algebra. -/
 theorem heckeSequenceOp_mem_HeckeAlgebra
     {N ℓ p : ℕ} (hPrime : p.Prime) (hAway : ¬ p ∣ N) :
     HeckeSequenceOp p ℓ ∈ HeckeAlgebra N ℓ :=
