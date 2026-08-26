@@ -75,3 +75,18 @@ construction has a stronger foundation footprint than a strict
 budget, define finite formal expressions in the generators, evaluate them into
 the ambient ring, and package the evaluation range with constructive closure
 proofs for zero, one, addition, negation, and multiplication.
+
+## Free rank-one module interfaces
+
+In Lean 4.12, stating a boundary literally with Mathlib's free-module and
+module-rank predicates can introduce `Classical.choice` into its audit, even
+when no proof is supplied.
+
+**Why:** The basis/rank API carries a nonconstructive dependency in this
+version, so a proposition that merely references it exceeds a strict
+`propext`/`Quot.sound` foundation budget.
+
+**How to apply:** For a strict rank-one interface, state that the proposed
+module is inhabited by an explicit linear equivalence to its scalar algebra.
+This is constructive free rank one; retain the literal library predicate only
+in a separately audited, choice-permitting bridge.
