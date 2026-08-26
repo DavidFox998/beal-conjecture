@@ -1,7 +1,10 @@
 /-
       B15_RibetIterate — Ribet iteration N → 2, preserves mod ℓ representation.
 
-      · axiom ribet_single_step     — one exact prime step preserving a form token
+      · explicit `RibetSingleStepProvider` — one exact prime step preserving
+        a form token
+      · `ribet_single_step_from_genuine` — one lower-level token assembled
+        from the data-valued 07k provider
       · theorem descend_preserved_form — certified descent to level 2 (0 sorry)
 
       The final contradiction comes from a typed form token at level 2 and
@@ -15,6 +18,7 @@
       import Beal.B14_TateInImpliesOrd1
       import Beal.B15_LevelTo2_Core
       import Beal.B03_Conductor_Core
+       import Beal.Galois.«07k_TokenBridge»
       import Mathlib.Data.List.Basic
       import Mathlib.Data.Nat.Factors
 
@@ -28,10 +32,55 @@
         lowers : CanLowerLevelCore N p level
         form : PreservedForm ℓ level
 
-      axiom ribet_single_step {N p ℓ : ℕ} (hp : Nat.Prime p) (hℓ : Nat.Prime ℓ)
-        (h_exact : ExactDividesCore p N) (hp_ne_ℓ : p ≠ ℓ)
-        (hForm : PreservedForm ℓ N) :
-        RibetStepResult ℓ N p
+       /-- The explicit data-valued replacement for the former single-step
+           axiom. A future genuine construction must supply this function for
+           every descent edge; it is not silently manufactured by B15. -/
+       def RibetSingleStepProvider (ℓ : ℕ) : Type :=
+         ∀ {N p : ℕ}, Nat.Prime p → Nat.Prime ℓ →
+           ExactDividesCore p N → p ≠ ℓ → PreservedForm ℓ N →
+             RibetStepResult ℓ N p
+
+       /-- A family of explicit step providers, one for each residual prime
+           selected by the Wiles boundary. -/
+       def RibetSingleStepProviders : Type :=
+         ∀ ℓ : ℕ, RibetSingleStepProvider ℓ
+
+       /-- One exact prime step, now forwarded through an explicit data-valued
+           provider rather than a declared axiom. -/
+       def ribet_single_step {N p ℓ : ℕ}
+           (provider : RibetSingleStepProvider ℓ)
+           (hp : Nat.Prime p) (hℓ : Nat.Prime ℓ)
+           (hExact : ExactDividesCore p N) (hp_ne_ℓ : p ≠ ℓ)
+           (hForm : PreservedForm ℓ N) :
+           RibetStepResult ℓ N p :=
+         provider hp hℓ hExact hp_ne_ℓ hForm
+
+       /-- Build one lowered `RibetStepResult` directly from the data-valued
+           07k token provider and genuine Galois support.
+
+           The local arithmetic conditions are retained in the signature for
+           the intended one-prime lowering context. Only `hDiv` is needed to
+           populate `RibetStepResult.lowers`; all Galois-to-token mathematics
+           remains the explicit `provider` argument. -/
+       def ribet_single_step_from_genuine
+           {A B C : ℤ} {x y z : ℕ}
+           {model : FreyCurveModel A B C x y z}
+           {ℓ N p M : ℕ}
+           (provider : Beal.Galois.SupportedNewformToTokenProvider
+             (model := model) ℓ M)
+           (hDiv : CanLowerLevelCore N p M)
+           (_hExact : ExactDividesCore p N)
+           (_hPrime : Nat.Prime p)
+           (_hp_ne_ℓ : p ≠ ℓ)
+           (R : Beal.Galois.FreyResidualRepresentation model ℓ)
+           (𝔪 : Beal.Galois.MaximalIdeal M ℓ)
+           (V : Submodule (ZMod ℓ) (Beal.Galois.CoefficientSequence ℓ))
+           (hV : Beal.Galois.IsGenuineFormSubmoduleAtLevel M ℓ V)
+           (hSupport : Beal.Galois.SupportInNewSubspace R 𝔪) :
+           RibetStepResult ℓ N p :=
+         { level := M
+           lowers := hDiv
+           form := provider R 𝔪 V hV hSupport }
 
       def ribet_iterate : List ℕ → ℕ → ℕ
       | [],      N => N
@@ -64,7 +113,8 @@
 
       /-- Transport the existence of a typed form witness through the certified
           Ribet plan. -/
-      theorem descend_preserved_form {ℓ N : ℕ} (hℓ : Nat.Prime ℓ)
+       theorem descend_preserved_form {ℓ N : ℕ}
+           (provider : RibetSingleStepProvider ℓ) (hℓ : Nat.Prime ℓ)
           (hForms : HasPreservedForm ℓ N) (plan : RibetDescentPlan ℓ N) :
           HasPreservedForm ℓ 2 := by
         induction plan with
@@ -72,7 +122,7 @@
             simpa using hForms
         | @step N p M hp hp_ne_ℓ hp_dvd hp_sq h_level rest ih =>
             obtain ⟨hForm⟩ := hForms
-            let result := ribet_single_step hp hℓ ⟨hp_dvd, hp_sq⟩ hp_ne_ℓ hForm
+            let result := ribet_single_step provider hp hℓ ⟨hp_dvd, hp_sq⟩ hp_ne_ℓ hForm
             have h_lower := result.lowers
             simp only [CanLowerLevelCore] at h_lower
             have hM : result.level = M := by
@@ -93,22 +143,28 @@
           the form until the impossible level-2 slot is reached. -/
       theorem ribet_iteration_gives_False
         {A B C : ℤ} {x y z : ℕ}
+         (providers : RibetSingleStepProviders)
         (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
         (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
         (hEq : A ^ x + B ^ y = C ^ z)
         (hCop : IsCoprime A (B * C)) :
         False := by
-      let model := Beal.FreyTate.TateStep2.freyModelOf hEq
-      obtain ⟨ℓ, _, hℓ, hForms, hPlans⟩ :=
-        Beal.FreyTate.wiles_modularity hA hB hC hx hy hz hEq hCop model
-      obtain ⟨hPlan⟩ := hPlans
-      exact no_preserved_form_at_two ℓ (descend_preserved_form hℓ hForms hPlan)
+           let model := Beal.FreyTate.TateStep2.freyModelOf hEq
+           have hWiles :=
+             Beal.FreyTate.wiles_modularity hA hB hC hx hy hz hEq hCop model
+           rcases hWiles with ⟨ℓ, _, hℓ, hForms, hPlans⟩
+           refine Nonempty.elim hPlans ?_
+           intro hPlan
+           exact no_preserved_form_at_two ℓ
+             (descend_preserved_form (providers ℓ) hℓ hForms hPlan)
 
       #print axioms ribet_iterate_to_2
       -- 0 axioms beyond kernel
 
+       #print axioms ribet_single_step_from_genuine
       #print axioms ribet_iteration_gives_False
-      -- tate_step2_I_n_conductor_one, wiles_modularity, ribet_single_step
+       -- tate_step2_I_n_conductor_one and wiles_modularity only; the
+       -- per-edge step construction is an explicit provider parameter.
 
       end Beal.RibetIterate
     

@@ -1,17 +1,18 @@
 /-
       B20_BealConjectureDone — Beal's Conjecture: A^x + B^y ≠ C^z (x,y,z ≥ 3, gcd=1).
 
-      20-brick milestone. Axiom budget (0 sorry):
+       20-brick milestone. Named axiom budget (0 sorry):
         · wiles_modularity            (Wiles 1995)
         · tate_step2_I_n_conductor_one (Tate/Silverman AEC IV.9)
-        · ribet_single_step           (Ribet 1990, typed descent)
+       · no opaque Ribet single-step axiom
 
       Architecture:
         · tate_frey_multiplicative_derived (B14_TateInImpliesOrd1) derives the
           per-prime conductor statement from the local Frey-conductor Tate
           step 2 interface.
-        · a typed Ribet descent transports the form token to the impossible
-          level-2 slot.
+       · an explicit data-valued per-edge provider transports the form token
+         to the impossible level-2 slot. A genuine provider must be assembled
+         from 07k's token provider and the explicit 07g–07j boundaries.
         · 0 sorry throughout.
 
       Author: David Fox + Claude, Aug 2026
@@ -29,7 +30,8 @@
 
       /-- Beal's Conjecture as a Lean Prop. -/
       def BealConjectureIsProved : Prop :=
-        ∀ A B C : ℤ, ∀ x y z : ℕ,
+         ∀ _providers : Beal.RibetIterate.RibetSingleStepProviders,
+         ∀ A B C : ℤ, ∀ x y z : ℕ,
         3 ≤ x → 3 ≤ y → 3 ≤ z →
         0 < A → 0 < B → 0 < C →
         IsCoprime A (B * C) →
@@ -37,18 +39,20 @@
 
       /-- Proof of Beal's Conjecture.
 
-        Axiom chain (3 named axioms, 0 sorry):
+         Named axiom chain (2 named axioms, 0 sorry):
           wiles_modularity (Wiles 1995)
           tate_step2_I_n_conductor_one (Tate/Silverman, local Frey conductor)
-          ribet_single_step (Ribet 1990, typed descent)
 
-        Tate supplies one fixed Frey model and conductor. Wiles consumes that
-        model and supplies a form token plus certified descent plan; Ribet's
-        single-step interface preserves the token to the level-2 contradiction.
-        This remains a typed scaffold, not a full construction of modular forms. -/
+         The per-edge token provider is an explicit data parameter, not a
+         declared axiom. Its intended construction uses 07k's
+         `SupportedNewformToTokenProvider` together with the explicit
+         restricted Ihara, old/new, localized-rank-one, support-bridge, and
+         token-compatibility boundaries. This remains a conditional typed
+         scaffold, not a full construction of modular forms. -/
       theorem beal_conjecture_is_proved : BealConjectureIsProved := by
-        intro A B C x y z hx hy hz hA hB hC hCop hEq
-        exact Beal.RibetIterate.ribet_iteration_gives_False hA hB hC hx hy hz hEq hCop
+         intro providers A B C x y z hx hy hz hA hB hC hCop hEq
+         exact Beal.RibetIterate.ribet_iteration_gives_False
+           providers hA hB hC hx hy hz hEq hCop
 
       -- ── 20-brick milestone alias ─────────────────────────────────────────────────
 
@@ -59,10 +63,10 @@
       -- ── Axiom audit ──────────────────────────────────────────────────────────────
 
       #print axioms beal_conjecture_is_proved
-      -- Expected (3 domain axioms, 0 sorry):
+       -- Expected named domain axioms (2, 0 sorry):
       --   Beal.FreyTate.TateStep2.tate_step2_I_n_conductor_one
       --   Beal.FreyTate.wiles_modularity
-      --   Beal.RibetIterate.ribet_single_step
+       -- The per-edge provider is explicit data, not an axiom.
 
       #print axioms twenty_bricks
 

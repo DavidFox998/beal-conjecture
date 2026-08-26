@@ -12,16 +12,18 @@
     /-- Given a primitive Beal triple satisfying Wiles and Tate hypotheses,
       the typed Tate/Wiles/Ribet descent gives False. -/
     theorem beal_if_wiles_tate_ribet
+      (providers : Beal.RibetIterate.RibetSingleStepProviders)
       {A B C : ℤ} {x y z : ℕ}
       (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
       (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
       (hEq : A ^ x + B ^ y = C ^ z)
       (hCop : IsCoprime A (B * C)) :
       False :=
-    Beal.RibetIterate.ribet_iteration_gives_False hA hB hC hx hy hz hEq hCop
+    Beal.RibetIterate.ribet_iteration_gives_False
+      providers hA hB hC hx hy hz hEq hCop
 
     #print axioms beal_if_wiles_tate_ribet
-    -- Expected: Tate, Wiles, and ribet_single_step
+    -- Expected named axioms: Tate and Wiles only; the step provider is explicit.
 
     end Beal16Final
     

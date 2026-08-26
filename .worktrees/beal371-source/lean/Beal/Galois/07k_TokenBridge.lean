@@ -6,16 +6,36 @@
   `Beal.RibetIterate.ribet_single_step`, once the remaining
   supported-newform-to-token compatibility is supplied explicitly.
 
-  In particular, this file does not construct a `PreservedForm` from Galois
-  data alone, does not call `ribet_single_step`, and does not import B20.
+  The provider introduced below is deliberately data-valued: once the
+  q-expansion/localization compatibility is supplied as a function, it can
+  return a `PreservedForm` without eliminating a proposition into `Type`.
+  This file does not construct that provider from Galois data and does not
+  import B20.
 -/
 import Beal.Galois.«07j_SupportProofGenuine»
 import Beal.B14_FormRepresentation
-import Beal.B15_RibetIterate
 
 namespace Beal.Galois
 
 open Beal.FreyTate
+
+/-- The explicit data-valued compatibility required at one lower level.
+
+    Unlike `SupportedNewformToPreservedToken`, this is intentionally a
+    function type rather than a proposition ending in an existential. It is
+    therefore capable of returning the data-valued `PreservedForm` required by
+    B15 without `Classical.choice`. Its implementation remains a missing
+    q-expansion/localization theorem supplied by future formalization. -/
+def SupportedNewformToTokenProvider
+    {A B C : ℤ} {x y z : ℕ}
+    {model : FreyCurveModel A B C x y z}
+    (ℓ M : ℕ) : Type 1 :=
+  ∀ (R : FreyResidualRepresentation model ℓ)
+    (𝔪 : MaximalIdeal M ℓ)
+    (V : Submodule (ZMod ℓ) (CoefficientSequence ℓ)),
+    IsGenuineFormSubmoduleAtLevel M ℓ V →
+    SupportInNewSubspace R 𝔪 →
+    PreservedForm ℓ M
 
 /-- The missing finite-form compatibility needed to create B15's token.
 
@@ -87,6 +107,7 @@ theorem galois_support_to_token_bridge_proof
   rcases hSupport with ⟨W, hW_new, hW_realizes, hW_annihilated⟩
   exact hToken 𝔪 W hW_new hW_realizes hW_annihilated
 
+#print axioms SupportedNewformToTokenProvider
 #print axioms SupportedNewformToPreservedToken
 #print axioms GaloisToRibetBridge
 #print axioms galois_support_to_token_bridge
