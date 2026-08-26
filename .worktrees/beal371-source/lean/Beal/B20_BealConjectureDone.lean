@@ -30,7 +30,7 @@
 
       /-- Beal's Conjecture as a Lean Prop. -/
       def BealConjectureIsProved : Prop :=
-         ∀ _providers : Beal.RibetIterate.RibetSingleStepProviders,
+         ∀ _supplier : Beal.RibetIterate.EnrichedPlanSupplier,
          ∀ A B C : ℤ, ∀ x y z : ℕ,
         3 ≤ x → 3 ≤ y → 3 ≤ z →
         0 < A → 0 < B → 0 < C →
@@ -43,16 +43,15 @@
           wiles_modularity (Wiles 1995)
           tate_step2_I_n_conductor_one (Tate/Silverman, local Frey conductor)
 
-         The per-edge token provider is an explicit data parameter, not a
-         declared axiom. Its intended construction uses 07k's
-         `SupportedNewformToTokenProvider` together with the explicit
-         restricted Ihara, old/new, localized-rank-one, support-bridge, and
-         token-compatibility boundaries. This remains a conditional typed
-         scaffold, not a full construction of modular forms. -/
+         The enriched-plan supplier is explicit data, not a declared axiom.
+         Each returned edge carries 07k's `SupportedNewformToTokenProvider`
+         together with the restricted Ihara, old/new, localized-rank-one, and
+         support-bridge boundaries. This remains a conditional typed scaffold,
+         not a full construction of modular forms. -/
       theorem beal_conjecture_is_proved : BealConjectureIsProved := by
-         intro providers A B C x y z hx hy hz hA hB hC hCop hEq
+         intro supplier A B C x y z hx hy hz hA hB hC hCop hEq
          exact Beal.RibetIterate.ribet_iteration_gives_False
-           providers hA hB hC hx hy hz hEq hCop
+           supplier hA hB hC hx hy hz hEq hCop
 
       -- ── 20-brick milestone alias ─────────────────────────────────────────────────
 
@@ -66,7 +65,7 @@
        -- Expected named domain axioms (2, 0 sorry):
       --   Beal.FreyTate.TateStep2.tate_step2_I_n_conductor_one
       --   Beal.FreyTate.wiles_modularity
-       -- The per-edge provider is explicit data, not an axiom.
+        -- The enriched-plan supplier is explicit data, not an axiom.
 
       #print axioms twenty_bricks
 

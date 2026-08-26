@@ -54,27 +54,27 @@ formalization makes this coupling explicit rather than gestural.
 
 ## Current formal status
 
-> **v7.0.0-genuine-provider — 0 `sorry`, two named domain axioms plus explicit provider data**
+> **Current main — 0 `sorry`, two named domain axioms plus explicit enriched-plan data**
 >
 > This repository is still a formalization of the Beal argument, not a claim
 > that Lean has reconstructed Wiles, Tate, or Ribet from first principles. The
-> important v7 change is the shape of the Ribet boundary: the former opaque
-> B15 single-step axiom has been deleted from the active source path and
-> replaced by explicit data-valued provider functions.
+> important change is the shape of the Ribet boundary: the former opaque B15
+> single-step axiom has been deleted from the active source path and replaced
+> by an indexed per-edge Galois plan with data-valued provider functions.
 >
 > The current conditional chain is:
 >
 > **primitive Beal data** → **Frey curve and discriminant arithmetic**
 > → **one Tate-supplied Frey model and conductor** → **a typed modular-form
 > token and certified arithmetic descent plan at that same conductor**
-> → **an explicit `RibetSingleStepProviders` family**
+> → **an explicit `EnrichedPlanSupplier` carrying 07g–07k data per edge**
 > → **level 2** → **$S_2(Γ_0(2)) = 0$**
 > → **contradiction**.
 >
 > The final B20 theorem uses these explicit boundaries:
 > `Beal.FreyTate.wiles_modularity`,
 > `Beal.FreyTate.TateStep2.tate_step2_I_n_conductor_one`, and
-> `Beal.RibetIterate.RibetSingleStepProviders`.
+> `Beal.RibetIterate.EnrichedPlanSupplier`.
 > `Beal.Galois.SupportedNewformToTokenProvider` is the one-edge data-valued
 > missing function used by `ribet_single_step_from_genuine`; it is not a
 > hidden proposition or a choice-based extraction.
@@ -98,7 +98,8 @@ The B14–B20 path now exposes the step boundary as data:
 | `wiles_modularity` | For the fixed Tate Frey model, a residual prime, typed form token at its conductor, and a certified finite descent plan. |
 | `tate_step2_I_n_conductor_one` | The local Tate Step 2 statement: when the Frey invariants have the required valuations, the conductor has exact prime order. |
 | `SupportedNewformToTokenProvider` | Data-valued missing compatibility that returns a `PreservedForm` from genuine support at one lower level. |
-| `RibetSingleStepProviders` | Explicit family of complete data-valued B15 step providers, one for each residual prime. |
+| `GaloisEdgeWitness` | One exact edge carrying its residual representation, maximal ideal, genuine submodule, localized Hecke data, 07g–07j hypotheses, and 07k provider. |
+| `EnrichedPlanSupplier` | Data-valued enrichment indexed by the exact unchanged Wiles arithmetic-plan value, so its `N`, `p`, and `M` edges cannot be replaced by a different chain. |
 
 The distinction matters. `tate_frey_multiplicative_derived` is a theorem, not
 a fourth axiom: it packages the generic Tate interface with the explicit Frey
@@ -125,10 +126,13 @@ modular forms. Those global ingredients remain inside the explicit
   deleted from the active source path. B15 now consumes explicit
   `RibetSingleStepProviders`, and `ribet_single_step_from_genuine` audits to
   `[propext, Quot.sound]`.
+- **Current main:** B15 now consumes `EnrichedPlanSupplier`. Its indexed
+  `GaloisDescentPlan` carries `hIhara`, `hOldNew`, `hRank`, the 07j support
+  bridge, and the 07k token provider on each aligned lowering edge.
 
 This is a more inspectable formal interface, not a stronger claim of completed
 foundational mathematics. Wiles and Tate remain named mathematical assumptions;
-the provider family remains an explicit missing data boundary.
+the enriched-plan supplier remains an explicit missing data boundary.
 ---
 
 ## The architecture: Cores, Wrappers, and explicit mathematical boundaries
@@ -163,16 +167,16 @@ own audit.
 ### The named mathematical interfaces and data boundary
 
 The final B20 proof is conditional on two named mathematical results and an
-explicit data-valued provider family:
+explicit data-valued enriched-plan supplier:
 
 1. **Wiles:** `wiles_modularity` supplies a residual prime, a typed form token,
    and a certified descent plan for the Tate-supplied Frey conductor.
 2. **Tate:** `tate_step2_I_n_conductor_one` supplies the local exact-conductor step;
    B14 uses it to select the fixed Frey model and its conductor.
-3. **Genuine provider:** `RibetSingleStepProviders` supplies each complete
-   data-valued B15 step. Its one-edge Galois-facing constructor is
-   `ribet_single_step_from_genuine`, using
-   `SupportedNewformToTokenProvider`.
+3. **Genuine plan:** `EnrichedPlanSupplier` enriches the unchanged Wiles
+   arithmetic plan. Each `GaloisEdgeWitness` carries the 07g–07j propositions
+   and a `SupportedNewformToTokenProvider`; `ribet_single_step_from_genuine`
+   derives support and constructs the lower-level token.
 
 The older broad `modularity_hypothesis` remains part of the historical scaffold,
 but it is not the dependency boundary of the final B14–B20 theorem. The old
@@ -182,7 +186,7 @@ opaque `ribet_single_step` axiom is no longer in the active source path.
 ## The path to a complete proof: Tate and Ribet
 
 The current development implements the architecture below. The two named
-interfaces and explicit provider family mark the remaining classical inputs;
+interfaces and explicit enriched-plan supplier mark the remaining inputs;
 the connective arithmetic around them is explicit Lean code.
 
 ### Step 1 — Frey invariants and Tate's local conductor step
@@ -204,15 +208,13 @@ the generic local Tate statement to the Frey conductor data.
 Tate selects a fixed `FreyCurveModel`; `wiles_modularity` consumes that model
 and supplies a typed form token plus a certified arithmetic path from its
 conductor to level 2. `B15_RibetIterate.lean` receives an explicit
-`RibetSingleStepProviders` family. The 07k one-edge constructor shows how a
-`SupportedNewformToTokenProvider` supplies the target token from genuine
-support. `B16_BealFinal.lean` then eliminates the terminal token using the
-verified equality $S_2(\Gamma_0(2)) = 0$.
-
-The current B15 plan still carries arithmetic edge data only. It cannot
-instantiate `hIhara`, `hOldNew`, or `hRank` per edge until the plan is extended
-with the corresponding Galois witnesses. The explicit provider family keeps
-that missing construction visible rather than hiding it in an axiom.
+`EnrichedPlanSupplier`, whose result is indexed by that exact arithmetic-plan
+value. Every corresponding edge carries `hIhara`, `hOldNew`, `hRank`, its
+localized Hecke data, the 07j support bridge, and a
+`SupportedNewformToTokenProvider`. `ribet_single_step_from_genuine` derives
+support from those fields and constructs the target token. `B16_BealFinal.lean`
+then eliminates the terminal token using the verified equality
+$S_2(\Gamma_0(2)) = 0$.
 
 ### Step 3 — Dimension zero closes the conditional argument
 
@@ -222,7 +224,7 @@ Ribet chain reaches level 2, the hypothetical primitive Beal triple yields a
 contradiction.
 
 The result is machine-checked as a consequence of the two named classical
-interfaces and the explicit provider family. Replacing those boundaries with
+interfaces and the explicit enriched-plan supplier. Replacing those boundaries with
 first-principles proofs is a later foundational stage; it is not claimed by the
 green build.
 ---
@@ -280,7 +282,7 @@ CI enforces the boundary on every push:
   may not use `sorryAx`
 - **Audit final B20 declarations** — `#print axioms` must expose
   `wiles_modularity` and `tate_step2_I_n_conductor_one`; the Ribet step is an
-  explicit `RibetSingleStepProviders` parameter rather than a named axiom
+  explicit `EnrichedPlanSupplier` parameter rather than a named axiom
 
 The final audit distinguishes named mathematical assumptions from foundational
 Lean dependencies such as `propext`, `Classical.choice`, and `Quot.sound`.

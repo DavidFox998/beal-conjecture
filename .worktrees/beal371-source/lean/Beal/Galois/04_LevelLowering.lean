@@ -54,7 +54,7 @@ def frey_level_lowering_of_unramified
   These types are intentionally not declared here: Hecke algebra, newform,
   and complex-analytic cusp-form infrastructure are not present in Mathlib
   v4.12 at this boundary. In particular, this definition is not an axiom and
-  does not remove or replace `ribet_single_step`.
+  does not construct B15's enriched per-edge Galois witness.
 -/
 
 #print axioms frey_level_lowering_of_unramified

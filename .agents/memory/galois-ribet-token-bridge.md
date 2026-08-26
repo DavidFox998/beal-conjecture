@@ -3,34 +3,22 @@ name: Galois-to-Ribet bridge
 description: The missing connection between the genuine Galois support boundary and the separate B15 typed Ribet descent.
 ---
 
-Do not claim that the genuine 07j support assembly or the 07k token transport
-removes the B15 `ribet_single_step` boundary. 07j only produces finite
-new-subspace support for a Frey residual representation from explicit Ihara,
-old/new, rank-one, and bridge hypotheses. 07k mechanically extracts the
-finite supported-newform witness and transports it to a `PreservedForm` token
-only when the explicit `SupportedNewformToPreservedToken` compatibility
-premise is supplied.
+The accepted bridge is data-valued: each lowering edge carries the residual
+representation, maximal ideal, genuine module, localized-data instance,
+07g–07j propositions, support bridge, and 07k token provider needed to return
+the next `PreservedForm` without proposition elimination or
+`Classical.choice`.
 
-**Why:** B15 consumes a `PreservedForm` and produces a `RibetStepResult`;
-neither type carries the Frey residual representation, maximal ideal, Hecke
-attachment, nor new-subspace witness used by 07j. The two descent boundaries
-therefore cannot be composed by Lean without a new typed conversion theorem.
-Additionally, 07k's compatibility is proposition-valued and concludes
-existential token availability. Eliminating that proposition into the
-data-valued `PreservedForm` required by B15 would require choice, which the
-formal audit forbids.
+Any supplier that enriches the Wiles arithmetic plan must return data indexed
+by the exact arithmetic-plan value, not merely by its starting level.
 
-**How to apply:** Keep B15/B20's named Ribet boundary explicit until a theorem
-inhabits the finite-form-to-token compatibility premise and connects its token
-to a `RibetStepResult`. A safe alternative is to redesign the descent theorem
-around `HasPreservedForm` and a universal per-edge Galois data provider, but
-that provider must quantify the model, residual representation, maximal ideal,
-module, and all 07j/07k premises for every plan edge.
+**Why:** A supplier whose result depends only on the initial level can discard
+the certified Wiles plan and substitute a different internally consistent
+chain. Indexing by the exact plan constructor forces every enriched edge to
+share that constructor's source level, lowering prime, target level, and
+recursive tail.
 
-The accepted data-valued route introduces a `Type 1` token-provider boundary:
-given a residual representation, maximal ideal, genuine module, and support
-proof, it returns the B15 token directly. This avoids proposition elimination
-and `Classical.choice` for a single edge. B15 must nevertheless receive a
-family of concrete step providers, because its existing descent plan carries
-only arithmetic edge data—not the Galois objects and 07g–07j witnesses needed
-to invoke the token provider.
+**How to apply:** Preserve proof-relevant exact-plan indexing in future B15
+refactors. Keep 07g–07j hypotheses and the `Type 1` token provider explicit on
+each aligned edge; do not replace them with existential extraction, hidden
+choice, or a level-only provider family.

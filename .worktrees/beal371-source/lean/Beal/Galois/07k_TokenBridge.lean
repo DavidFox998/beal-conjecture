@@ -2,8 +2,8 @@
   Galois/07k_TokenBridge — the Galois-to-Ribet token boundary
 
   This file performs the valid logical transport from genuine Galois
-  new-subspace support to the typed preserved-form token consumed by
-  `Beal.RibetIterate.ribet_single_step`, once the remaining
+  new-subspace support to the typed preserved-form token consumed by B15's
+  enriched descent edge, once the remaining
   supported-newform-to-token compatibility is supplied explicitly.
 
   The provider introduced below is deliberately data-valued: once the
@@ -59,8 +59,8 @@ def SupportedNewformToPreservedToken
 
 /-- The Galois-to-Ribet conversion at one candidate lower level.
 
-    `PreservedForm ℓ M` is exactly the token type expected as the form input
-    by `Beal.RibetIterate.ribet_single_step` when its current level is `M`.
+    `PreservedForm ℓ M` is exactly the token type carried by B15 after an
+    enriched descent edge reaches level `M`.
     The only remaining mathematical premise is the explicit
     `SupportedNewformToPreservedToken` compatibility above. The proof supplied
     below extracts the finite newform from 07j support and applies that
