@@ -36,8 +36,8 @@ open Beal.FreyTate
     at level `M` realizing `R`, which is the conclusion of the existing
     level-lowering proposition.
 
-    This is not an unconditional Ribet theorem and does not alter the separate
-    `ribet_single_step` boundary in the final Beal route. -/
+    This is not an unconditional Ribet theorem and does not itself construct
+    B15's enriched per-edge Galois witness. -/
 theorem frey_level_lowering_of_unramified_of_newform_support
     {A B C : ℤ} {x y z : ℕ}
     (model : FreyCurveModel A B C x y z)

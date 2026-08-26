@@ -4,6 +4,43 @@ This directory contains the typed Galois-representation, mod-ℓ form, level-low
 
 It is intentionally a **boundary layer**, not an unconditional proof of Beal's Conjecture. The files provide data structures, propositions, coefficient operations, and small transport lemmas. They do not silently turn the classical theorems of Wiles, Tate, or Ribet into Lean theorems.
 
+## Current genuine-provider status
+
+The v7 genuine-provider boundary is explicit and data-valued:
+
+- The old B15 declaration `ribet_single_step : Prop` has been deleted from
+  the active source path.
+- `SupportedNewformToTokenProvider` is an explicit missing function returning
+  `PreservedForm` data from a residual representation, maximal ideal, genuine
+  coefficient submodule, and `SupportInNewSubspace`. It is inspectable and
+  introduces no choice; because the residual representation carries a
+  universe-polymorphic group carrier, Lean reports its type as `Type 1`.
+- `GaloisEdgeWitness` carries the residual representation, maximal ideal,
+  genuine coefficient submodule, localized Hecke data, attachment, restricted
+  Ihara, old/new, localized-rank-one, 07j support bridge, and 07k token
+  provider for one exact lowering edge.
+- `GaloisDescentPlan` is indexed by the exact Wiles arithmetic-plan value, so
+  every enriched edge has that constructor's `N`, `p`, and `M`; the supplier
+  cannot discard the certified path and substitute another chain.
+- `EnrichedPlanSupplier` converts the unchanged Wiles arithmetic plan into
+  this per-edge plan. The recursive B15 proof no longer consumes a universal
+  `RibetSingleStepProviders` family.
+- `#print axioms ribet_single_step_from_genuine` reports
+  `[propext, Quot.sound]`.
+- The remaining named mathematical inputs on the final path are
+  `wiles_modularity`, `tate_step2_I_n_conductor_one`, and the explicit
+  enriched-plan supplier. The supplier is a conditional data boundary, not a
+  theorem silently derived from the Galois files.
+- `Classical.choice` still appears in the B20 audit through the existing
+  `TateStep2.freyModelOf` construction. It is not introduced by 07k or by the
+  B15 genuine-provider bridge.
+- 07f proves that genuine form data excludes the raw 07c counterexample
+  `(-Bp, 1, 1)`.
+- B14's Wiles boundary still returns the arithmetic plan only. The B15
+  supplier makes the additional `hIhara`, `hOldNew`, `hRank`, support bridge,
+  and token-provider data explicit on every edge without a B14 → Galois
+  import cycle.
+
 ## Directory structure
 
 ```text
@@ -14,6 +51,12 @@ Galois/
 ├── 04_LevelLowering.lean  exact proposition required for a Ribet step
 ├── 05_Hecke.lean          coefficient Hecke operators and old/new boundary
 ├── 06_MaximalIdeal.lean   residual maximal-ideal attachment interface
+├── 07f_GenuineSubmodule.lean  genuine-form submodule boundary
+├── 07g_IharaOnV.lean      restricted Ihara boundary on a genuine submodule
+├── 07h_OldNewOnV.lean     old/new transport boundary on a genuine submodule
+├── 07i_MultOneOnV.lean    localized rank-one boundary
+├── 07j_SupportProofGenuine.lean genuine support assembly
+├── 07k_TokenBridge.lean   data-valued support-to-token boundary
 ├── 07_NewformSupport.lean explicit lower-level new-support obligation
 ├── 08_RibetProof.lean     conditional transport from support to lowering
 └── README.md              this guide
@@ -175,7 +218,7 @@ This file states the exact proposition needed for one honest Ribet level-lowerin
 
 Its conclusion is that there exists a form `W'` at level `M` realizing the same residual representation.
 
-The declaration is a `def` of a proposition, not a proof of that proposition. A future proof must supply the missing Hecke-algebra, newform, and transport arguments. In particular, defining this proposition does not replace the separate Ribet assumption used by the final Beal proof.
+The declaration is a `def` of a proposition, not a proof of that proposition. A future proof must supply the missing Hecke-algebra, newform, and transport arguments. In particular, defining this proposition does not construct the explicit enriched plan consumed by the final Beal proof.
 
 ### `05_Hecke.lean`
 

@@ -1,8 +1,8 @@
 /-
       B15_RibetIterate — Ribet iteration N → 2, preserves mod ℓ representation.
 
-      · explicit `RibetSingleStepProvider` — one exact prime step preserving
-        a form token
+      · `GaloisEdgeWitness` — per-edge arithmetic and 07g–07k data
+      · `EnrichedPlanSupplier` — enriches the unchanged Wiles arithmetic plan
       · `ribet_single_step_from_genuine` — one lower-level token assembled
         from the data-valued 07k provider
       · theorem descend_preserved_form — certified descent to level 2 (0 sorry)
@@ -32,55 +32,96 @@
         lowers : CanLowerLevelCore N p level
         form : PreservedForm ℓ level
 
-       /-- The explicit data-valued replacement for the former single-step
-           axiom. A future genuine construction must supply this function for
-           every descent edge; it is not silently manufactured by B15. -/
-       def RibetSingleStepProvider (ℓ : ℕ) : Type :=
-         ∀ {N p : ℕ}, Nat.Prime p → Nat.Prime ℓ →
-           ExactDividesCore p N → p ≠ ℓ → PreservedForm ℓ N →
-             RibetStepResult ℓ N p
+       /-- All Galois and Hecke data needed at one exact lowering edge.
 
-       /-- A family of explicit step providers, one for each residual prime
-           selected by the Wiles boundary. -/
-       def RibetSingleStepProviders : Type :=
-         ∀ ℓ : ℕ, RibetSingleStepProvider ℓ
+           The localized-data field is explicit because `LocalizedRankOne`
+           and the 07j bridge are indexed by a typeclass. Keeping it in the
+           edge makes the dependency data-valued and avoids synthesizing it
+           through `Classical.choice`. -/
+       structure GaloisEdgeWitness
+           {A B C : ℤ} {x y z : ℕ}
+           {model : FreyCurveModel A B C x y z}
+           (ℓ N p M : ℕ) where
+         hPrime : Nat.Prime p
+         hPrime_ne_ℓ : p ≠ ℓ
+         hExact : ExactDividesCore p N
+         hDiv : CanLowerLevelCore N p M
+         R : Beal.Galois.FreyResidualRepresentation model ℓ
+         m : Beal.Galois.MaximalIdeal M ℓ
+         V : Submodule (ZMod ℓ) (Beal.Galois.CoefficientSequence ℓ)
+         localized : Beal.Galois.LocalizedHeckeData M ℓ m
+         hV : Beal.Galois.IsGenuineFormSubmoduleAtLevel M ℓ V
+         hAttach : Beal.Galois.FreyHeckeAttachment R m.1
+         hIhara : Beal.Galois.IharaKernelZeroOnV M p ℓ V
+         hOldNew :
+           Beal.Galois.OldNewDecompHyp (M := M) (ℓ := ℓ) V
+         hRank :
+           @Beal.Galois.LocalizedRankOne M ℓ m V localized
+         hSupportBridge :
+           @Beal.Galois.hSupportFromBoundaries
+             A B C x y z model ℓ R M p V m localized
+         provider :
+           Beal.Galois.SupportedNewformToTokenProvider
+             (model := model) ℓ M
 
-       /-- One exact prime step, now forwarded through an explicit data-valued
-           provider rather than a declared axiom. -/
-       def ribet_single_step {N p ℓ : ℕ}
-           (provider : RibetSingleStepProvider ℓ)
-           (hp : Nat.Prime p) (hℓ : Nat.Prime ℓ)
-           (hExact : ExactDividesCore p N) (hp_ne_ℓ : p ≠ ℓ)
-           (hForm : PreservedForm ℓ N) :
-           RibetStepResult ℓ N p :=
-         provider hp hℓ hExact hp_ne_ℓ hForm
+       /-- The arithmetic plan type supplied by the unchanged Wiles boundary.
+           It is named here only to document the supplier's input. -/
+       abbrev GaloisArithmeticPlan (ℓ N : ℕ) :=
+         RibetDescentPlan ℓ N
 
-       /-- Build one lowered `RibetStepResult` directly from the data-valued
-           07k token provider and genuine Galois support.
+       /-- A proof-relevant enrichment of one exact arithmetic descent plan.
 
-           The local arithmetic conditions are retained in the signature for
-           the intended one-prime lowering context. Only `hDiv` is needed to
-           populate `RibetStepResult.lowers`; all Galois-to-token mathematics
-           remains the explicit `provider` argument. -/
+           The final index is the actual `RibetDescentPlan` value supplied by
+           Wiles. Therefore every enriched edge has exactly the `N`, `p`, and
+           `M` of the corresponding arithmetic constructor; the supplier
+           cannot discard that plan and substitute a different chain. -/
+       inductive GaloisDescentPlan
+           {A B C : ℤ} {x y z : ℕ}
+           {model : FreyCurveModel A B C x y z}
+           (ℓ : ℕ) :
+           {N : ℕ} → GaloisArithmeticPlan ℓ N → Type 2
+         | terminal :
+             GaloisDescentPlan (model := model) ℓ
+               RibetDescentPlan.terminal
+         | step {N p M : ℕ}
+             {hp : Nat.Prime p}
+             {hp_ne_ℓ : p ≠ ℓ}
+             {hp_dvd : p ∣ N}
+             {hp_sq : ¬ (p * p ∣ N)}
+             {h_level : M * p = N}
+             {rest : RibetDescentPlan ℓ M}
+             (edge : GaloisEdgeWitness (model := model) ℓ N p M)
+             (tail : GaloisDescentPlan (model := model) ℓ rest) :
+             GaloisDescentPlan (model := model) ℓ
+               (RibetDescentPlan.step
+                 hp hp_ne_ℓ hp_dvd hp_sq h_level rest)
+
+       /-- Explicit construction of a genuine plan from the arithmetic plan.
+
+           The supplier is a data boundary, not a proposition-valued
+           existence statement. Its result contains the per-edge 07g–07k
+           witnesses needed by the recursive B15 proof. -/
+       def EnrichedPlanSupplier : Type 2 :=
+         ∀ {A B C : ℤ} {x y z : ℕ}
+           (model : FreyCurveModel A B C x y z)
+           (ℓ N : ℕ)
+           (plan : GaloisArithmeticPlan ℓ N),
+             GaloisDescentPlan (model := model) ℓ plan
+
+       /-- Build one lowered result from a single enriched edge. -/
        def ribet_single_step_from_genuine
            {A B C : ℤ} {x y z : ℕ}
            {model : FreyCurveModel A B C x y z}
            {ℓ N p M : ℕ}
-           (provider : Beal.Galois.SupportedNewformToTokenProvider
-             (model := model) ℓ M)
-           (hDiv : CanLowerLevelCore N p M)
-           (_hExact : ExactDividesCore p N)
-           (_hPrime : Nat.Prime p)
-           (_hp_ne_ℓ : p ≠ ℓ)
-           (R : Beal.Galois.FreyResidualRepresentation model ℓ)
-           (𝔪 : Beal.Galois.MaximalIdeal M ℓ)
-           (V : Submodule (ZMod ℓ) (Beal.Galois.CoefficientSequence ℓ))
-           (hV : Beal.Galois.IsGenuineFormSubmoduleAtLevel M ℓ V)
-           (hSupport : Beal.Galois.SupportInNewSubspace R 𝔪) :
-           RibetStepResult ℓ N p :=
-         { level := M
-           lowers := hDiv
-           form := provider R 𝔪 V hV hSupport }
+           (edge : GaloisEdgeWitness (model := model) ℓ N p M) :
+           RibetStepResult ℓ N p := by
+         letI := edge.localized
+         have hSupport :=
+           edge.hSupportBridge edge.hV edge.hIhara edge.hOldNew edge.hRank
+         exact
+           { level := M
+             lowers := edge.hDiv
+             form := edge.provider edge.R edge.m edge.V edge.hV hSupport }
 
       def ribet_iterate : List ℕ → ℕ → ℕ
       | [],      N => N
@@ -111,24 +152,24 @@
 
         exact (Nat.prime_of_mem_primeFactors hp.1).pos)
 
-      /-- Transport the existence of a typed form witness through the certified
-          Ribet plan. -/
-       theorem descend_preserved_form {ℓ N : ℕ}
-           (provider : RibetSingleStepProvider ℓ) (hℓ : Nat.Prime ℓ)
-          (hForms : HasPreservedForm ℓ N) (plan : RibetDescentPlan ℓ N) :
-          HasPreservedForm ℓ 2 := by
-        induction plan with
-        | terminal =>
-            simpa using hForms
-        | @step N p M hp hp_ne_ℓ hp_dvd hp_sq h_level rest ih =>
-            obtain ⟨hForm⟩ := hForms
-            let result := ribet_single_step provider hp hℓ ⟨hp_dvd, hp_sq⟩ hp_ne_ℓ hForm
-            have h_lower := result.lowers
-            simp only [CanLowerLevelCore] at h_lower
-            have hM : result.level = M := by
-              apply Nat.eq_of_mul_eq_mul_right (Nat.Prime.pos hp)
-              exact h_lower.trans h_level.symm
-            exact ih ⟨hM ▸ result.form⟩
+      /-- Transport a typed form witness through the enriched genuine plan.
+
+          Each recursive edge constructs its lower-level token from the
+          edge-local 07j support bridge and 07k data-valued provider. -/
+       theorem descend_preserved_form
+           {A B C : ℤ} {x y z : ℕ}
+           {model : FreyCurveModel A B C x y z}
+           {ℓ N : ℕ}
+           (hForms : HasPreservedForm ℓ N)
+           (arithPlan : GaloisArithmeticPlan ℓ N)
+           (plan : GaloisDescentPlan (model := model) ℓ arithPlan) :
+           HasPreservedForm ℓ 2 := by
+         induction plan with
+         | terminal =>
+             simpa using hForms
+         | step edge tail ih =>
+             let result := ribet_single_step_from_genuine edge
+             exact ih ⟨result.form⟩
 
       /-- No preserved form can reach level 2 because the typed terminal slot is
           `Fin dim_S2_2` and `dim_S2_2 = 0`. -/
@@ -143,7 +184,7 @@
           the form until the impossible level-2 slot is reached. -/
       theorem ribet_iteration_gives_False
         {A B C : ℤ} {x y z : ℕ}
-         (providers : RibetSingleStepProviders)
+         (supplier : EnrichedPlanSupplier)
         (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
         (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
         (hEq : A ^ x + B ^ y = C ^ z)
@@ -155,12 +196,17 @@
            rcases hWiles with ⟨ℓ, _, hℓ, hForms, hPlans⟩
            refine Nonempty.elim hPlans ?_
            intro hPlan
+           let galoisPlan :=
+             supplier model ℓ model.conductor hPlan
            exact no_preserved_form_at_two ℓ
-             (descend_preserved_form (providers ℓ) hℓ hForms hPlan)
+             (descend_preserved_form hForms hPlan galoisPlan)
 
       #print axioms ribet_iterate_to_2
       -- 0 axioms beyond kernel
 
+       #print axioms GaloisEdgeWitness
+       #print axioms GaloisDescentPlan
+       #print axioms EnrichedPlanSupplier
        #print axioms ribet_single_step_from_genuine
       #print axioms ribet_iteration_gives_False
        -- tate_step2_I_n_conductor_one and wiles_modularity only; the
