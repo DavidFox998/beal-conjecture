@@ -16,9 +16,10 @@ The v7 genuine-provider boundary is explicit and data-valued:
   introduces no choice; because the residual representation carries a
   universe-polymorphic group carrier, Lean reports its type as `Type 1`.
 - `GaloisEdgeWitness` carries the residual representation, maximal ideal,
-  genuine coefficient submodule, localized Hecke data, attachment, restricted
-  Ihara, old/new, localized-rank-one, 07j support bridge, and 07k token
-  provider for one exact lowering edge.
+  genuine coefficient submodule, localized Hecke data, attachment, the
+  explicit `QExpansionPrincipleOnV`, old/new, localized-rank-one, 07j support
+  bridge, and 07k token provider for one exact lowering edge. Restricted Ihara
+  is derived conditionally from that principle at the B15 use site.
 - `GaloisDescentPlan` is indexed by the exact Wiles arithmetic-plan value, so
   every enriched edge has that constructor's `N`, `p`, and `M`; the supplier
   cannot discard the certified path and substitute another chain.
@@ -36,10 +37,15 @@ The v7 genuine-provider boundary is explicit and data-valued:
   B15 genuine-provider bridge.
 - 07f proves that genuine form data excludes the raw 07c counterexample
   `(-Bp, 1, 1)`.
+- 07g proves `ihara_zero_on_genuine_V_conditional`: the restricted Ihara
+  conclusion follows without choice from the explicit
+  `QExpansionPrincipleOnV` premise. Constructing that geometric premise for
+  the actual modular-form submodule remains **MISSING**; 07f's single raw
+  witness exclusion is not presented as a proof of all oldform relations.
 - B14's Wiles boundary still returns the arithmetic plan only. The B15
-  supplier makes the additional `hIhara`, `hOldNew`, `hRank`, support bridge,
-  and token-provider data explicit on every edge without a B14 → Galois
-  import cycle.
+  supplier makes the additional `hQ`, `hOldNew`, `hRank`, support bridge, and
+  token-provider data explicit on every edge without a B14 → Galois import
+  cycle.
 
 ## Directory structure
 
@@ -342,11 +348,11 @@ representation, so it proves the conclusion of
 
 **What remains open**
 
-The support premise still requires a newform decomposition of the relevant
-mod-ℓ Hecke module, a mod-ℓ Jacquet--Langlands/Ihara-lemma analogue, and
-multiplicity one for the localized Hecke algebra. Those are documented as
-explicit missing mathematics, not represented by `sorry`, a global axiom, or a
-claim of an unconditional Ribet theorem.
+The support premise still requires `QExpansionPrincipleOnV` for the relevant
+mod-ℓ Hecke module, a newform decomposition, and multiplicity one for the
+localized Hecke algebra. Those are documented as explicit missing mathematics,
+not represented by `sorry`, a global axiom, or a claim of an unconditional
+Ribet theorem.
 
 ## What this directory establishes
 

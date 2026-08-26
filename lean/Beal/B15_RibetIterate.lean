@@ -52,7 +52,7 @@
          localized : Beal.Galois.LocalizedHeckeData M ℓ m
          hV : Beal.Galois.IsGenuineFormSubmoduleAtLevel M ℓ V
          hAttach : Beal.Galois.FreyHeckeAttachment R m.1
-         hIhara : Beal.Galois.IharaKernelZeroOnV M p ℓ V
+         hQ : Beal.Galois.QExpansionPrincipleOnV M p ℓ V
          hOldNew :
            Beal.Galois.OldNewDecompHyp (M := M) (ℓ := ℓ) V
          hRank :
@@ -116,8 +116,11 @@
            (edge : GaloisEdgeWitness (model := model) ℓ N p M) :
            RibetStepResult ℓ N p := by
          letI := edge.localized
+         have hIhara :=
+           Beal.Galois.ihara_zero_on_genuine_V_conditional
+             M p ℓ edge.V edge.hV edge.hQ
          have hSupport :=
-           edge.hSupportBridge edge.hV edge.hIhara edge.hOldNew edge.hRank
+           edge.hSupportBridge edge.hV hIhara edge.hOldNew edge.hRank
          exact
            { level := M
              lowers := edge.hDiv
