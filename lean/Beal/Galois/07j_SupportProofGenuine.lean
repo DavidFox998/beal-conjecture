@@ -9,6 +9,7 @@
   The V-level genuine predicate is `IsGenuineFormSubmoduleAtLevel` from 07g.
   The element-level predicate `IsGenuineModularFormAtLevel` from 07f cannot
   take a submodule as its argument, so this file preserves that distinction.
+  The V-specific `OldNewDecompHyp` is supplied by the preceding 07h boundary.
 -/
 import Beal.Galois.«06_MaximalIdeal»
 import Beal.Galois.«07f_GenuineSubmodule»
@@ -32,21 +33,6 @@ def SupportInNewSubspace
     (R : FreyResidualRepresentation model ℓ)
     (m : MaximalIdeal M ℓ) : Prop :=
   IsSupportedInNewSubspace R m.val
-
-/-- The V-specific old/new proposition supplied by the 07h boundary.
-
-    The genuine-form generation condition is retained together with the
-    explicit internal old/new direct-sum data.  This is a proposition to be
-    inhabited by future geometric input, not a decomposition theorem proved
-    from coefficient sequences. -/
-def OldNewDecompHyp
-    {M ℓ : ℕ}
-    (V : Submodule (ZMod ℓ) (CoefficientSequence ℓ)) : Prop :=
-  IsGenuineFormGeneratedAtLevel M ℓ V ∧
-    ∃ Old New : Submodule (ZMod ℓ) (CoefficientSequence ℓ),
-      IsModularFormAtLevel M ℓ Old ∧
-        IsModularFormAtLevel M ℓ New ∧
-          IsInternalDirectSum V Old New
 
 /-- The missing geometric bridge from the genuine boundaries to support.
 
@@ -105,7 +91,6 @@ def hNewformSupport_genuine_proof
     SupportInNewSubspace R 𝔪 := by
   exact h hV_genuine hIharaOnV hOldNewOnV hRankOne
 
-#print axioms OldNewDecompHyp
 #print axioms hSupportFromBoundaries
 #print axioms hNewformSupport_genuine_proof
 -- Expected foundational dependencies: [propext, Quot.sound] only.
