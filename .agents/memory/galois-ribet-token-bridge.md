@@ -15,9 +15,14 @@ premise is supplied.
 neither type carries the Frey residual representation, maximal ideal, Hecke
 attachment, nor new-subspace witness used by 07j. The two descent boundaries
 therefore cannot be composed by Lean without a new typed conversion theorem.
+Additionally, 07k's compatibility is proposition-valued and concludes
+existential token availability. Eliminating that proposition into the
+data-valued `PreservedForm` required by B15 would require choice, which the
+formal audit forbids.
 
 **How to apply:** Keep B15/B20's named Ribet boundary explicit until a theorem
 inhabits the finite-form-to-token compatibility premise and connects its token
-to a `RibetStepResult`. That theorem must also connect the old/new component
-selected by the decomposition to the module used in the localized rank-one
-boundary.
+to a `RibetStepResult`. A safe alternative is to redesign the descent theorem
+around `HasPreservedForm` and a universal per-edge Galois data provider, but
+that provider must quantify the model, residual representation, maximal ideal,
+module, and all 07j/07k premises for every plan edge.
