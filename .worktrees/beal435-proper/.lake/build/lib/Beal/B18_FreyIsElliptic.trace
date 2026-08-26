@@ -1,0 +1,8 @@
+{"log":
+ [{"message":
+   ".> LEAN_PATH=././.lake/packages/batteries/.lake/build/lib:././.lake/packages/Qq/.lake/build/lib:././.lake/packages/aesop/.lake/build/lib:././.lake/packages/proofwidgets/.lake/build/lib:././.lake/packages/Cli/.lake/build/lib:././.lake/packages/importGraph/.lake/build/lib:././.lake/packages/LeanSearchClient/.lake/build/lib:././.lake/packages/mathlib/.lake/build/lib:././.lake/build/lib LD_LIBRARY_PATH= /home/runner/.elan/toolchains/leanprover--lean4---v4.12.0/bin/lean ./././lean/Beal/B18_FreyIsElliptic.lean -R ./././lean -o ././.lake/build/lib/Beal/B18_FreyIsElliptic.olean -i ././.lake/build/lib/Beal/B18_FreyIsElliptic.ilean -c ././.lake/build/ir/Beal/B18_FreyIsElliptic.c --json",
+   "level": "trace"},
+  {"message":
+   "./././lean/Beal/B18_FreyIsElliptic.lean:12:0: 'Beal18Frey.frey_disc_nonzero_trivial' does not depend on any axioms",
+   "level": "info"}],
+ "depHash": "12850119815847795064"}

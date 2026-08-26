@@ -1,0 +1,17 @@
+{"log":
+ [{"message":
+   ".> LEAN_PATH=././.lake/packages/batteries/.lake/build/lib:././.lake/packages/Qq/.lake/build/lib:././.lake/packages/aesop/.lake/build/lib:././.lake/packages/proofwidgets/.lake/build/lib:././.lake/packages/Cli/.lake/build/lib:././.lake/packages/importGraph/.lake/build/lib:././.lake/packages/LeanSearchClient/.lake/build/lib:././.lake/packages/mathlib/.lake/build/lib:././.lake/build/lib LD_LIBRARY_PATH= /home/runner/.elan/toolchains/leanprover--lean4---v4.12.0/bin/lean ./././lean/Beal/B13_RibetRealDefs_Core.lean -R ./././lean -o ././.lake/build/lib/Beal/B13_RibetRealDefs_Core.olean -i ././.lake/build/lib/Beal/B13_RibetRealDefs_Core.ilean -c ././.lake/build/ir/Beal/B13_RibetRealDefs_Core.c --json",
+   "level": "trace"},
+  {"message":
+   "./././lean/Beal/B13_RibetRealDefs_Core.lean:14:0: 'Divides13Core' does not depend on any axioms",
+   "level": "info"},
+  {"message":
+   "./././lean/Beal/B13_RibetRealDefs_Core.lean:15:0: 'Prime13Core' does not depend on any axioms",
+   "level": "info"},
+  {"message":
+   "./././lean/Beal/B13_RibetRealDefs_Core.lean:16:0: 'FreyRep13Core' does not depend on any axioms",
+   "level": "info"},
+  {"message":
+   "./././lean/Beal/B13_RibetRealDefs_Core.lean:17:0: 'CanLowerLevel13Core' does not depend on any axioms",
+   "level": "info"}],
+ "depHash": "15858924023974381062"}

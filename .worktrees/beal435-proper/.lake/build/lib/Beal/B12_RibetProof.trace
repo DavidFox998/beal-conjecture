@@ -1,0 +1,32 @@
+{"log":
+ [{"message":
+   ".> LEAN_PATH=././.lake/packages/batteries/.lake/build/lib:././.lake/packages/Qq/.lake/build/lib:././.lake/packages/aesop/.lake/build/lib:././.lake/packages/proofwidgets/.lake/build/lib:././.lake/packages/Cli/.lake/build/lib:././.lake/packages/importGraph/.lake/build/lib:././.lake/packages/LeanSearchClient/.lake/build/lib:././.lake/packages/mathlib/.lake/build/lib:././.lake/build/lib LD_LIBRARY_PATH= /home/runner/.elan/toolchains/leanprover--lean4---v4.12.0/bin/lean ./././lean/Beal/B12_RibetProof.lean -R ./././lean -o ././.lake/build/lib/Beal/B12_RibetProof.olean -i ././.lake/build/lib/Beal/B12_RibetProof.ilean -c ././.lake/build/ir/Beal/B12_RibetProof.c --json",
+   "level": "trace"},
+  {"message":
+   "./././lean/Beal/B12_RibetProof.lean:7:14: unused variable `hM`\nnote: this linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "./././lean/Beal/B12_RibetProof.lean:7:17: unused variable `hN`\nnote: this linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "./././lean/Beal/B12_RibetProof.lean:7:20: unused variable `hp`\nnote: this linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "./././lean/Beal/B12_RibetProof.lean:7:23: unused variable `hM1`\nnote: this linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "./././lean/Beal/B12_RibetProof.lean:11:16: unused variable `hM`\nnote: this linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "./././lean/Beal/B12_RibetProof.lean:11:19: unused variable `hN`\nnote: this linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "./././lean/Beal/B12_RibetProof.lean:11:22: unused variable `hp`\nnote: this linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "./././lean/Beal/B12_RibetProof.lean:11:25: unused variable `hM1`\nnote: this linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "./././lean/Beal/B12_RibetProof.lean:14:0: 'BealRibet12.beal_modular_contradiction_trivial' does not depend on any axioms",
+   "level": "info"}],
+ "depHash": "117127940472370279"}

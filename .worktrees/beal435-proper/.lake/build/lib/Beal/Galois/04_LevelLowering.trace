@@ -1,0 +1,26 @@
+{"log":
+ [{"message":
+   ".> LEAN_PATH=././.lake/packages/batteries/.lake/build/lib:././.lake/packages/Qq/.lake/build/lib:././.lake/packages/aesop/.lake/build/lib:././.lake/packages/proofwidgets/.lake/build/lib:././.lake/packages/Cli/.lake/build/lib:././.lake/packages/importGraph/.lake/build/lib:././.lake/packages/LeanSearchClient/.lake/build/lib:././.lake/packages/mathlib/.lake/build/lib:././.lake/build/lib LD_LIBRARY_PATH= /home/runner/.elan/toolchains/leanprover--lean4---v4.12.0/bin/lean ./././lean/Beal/Galois/04_LevelLowering.lean -R ./././lean -o ././.lake/build/lib/Beal/Galois/04_LevelLowering.olean -i ././.lake/build/lib/Beal/Galois/04_LevelLowering.ilean -c ././.lake/build/ir/Beal/Galois/04_LevelLowering.c --json",
+   "level": "trace"},
+  {"message":
+   "./././lean/Beal/Galois/04_LevelLowering.lean:32:5: unused variable `hDiv`\nnote: this linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "./././lean/Beal/Galois/04_LevelLowering.lean:33:5: unused variable `hExact`\nnote: this linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "./././lean/Beal/Galois/04_LevelLowering.lean:34:5: unused variable `hPrime`\nnote: this linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "./././lean/Beal/Galois/04_LevelLowering.lean:35:5: unused variable `hOdd`\nnote: this linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "./././lean/Beal/Galois/04_LevelLowering.lean:38:5: unused variable `hUnram`\nnote: this linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "./././lean/Beal/Galois/04_LevelLowering.lean:40:5: unused variable `hReal`\nnote: this linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "./././lean/Beal/Galois/04_LevelLowering.lean:60:0: 'Beal.Galois.frey_level_lowering_of_unramified' depends on axioms: [propext, Quot.sound]",
+   "level": "info"}],
+ "depHash": "18253449263677227014"}
