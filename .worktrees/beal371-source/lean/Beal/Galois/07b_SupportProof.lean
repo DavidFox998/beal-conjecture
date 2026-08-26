@@ -3,30 +3,27 @@
 
   OPEN INGREDIENTS (not supplied by Lean/Mathlib 4.12 at this boundary):
 
-  1. mod-ℓ newform decomposition:
-       the relevant Hecke module is old ⊕ new as 𝕋-modules;
-  2. q-expansion principle mod ℓ:
-       the q-expansion map is injective;
-  3. local Ihara lemma mod ℓ (isolated in `07c_Ihara`):
-       ker(B₁, B_p) = 0 in characteristic ℓ;
-  4. Jacquet–Langlands local transport at p:
-       the exact-divisor case transports the residual system to level M;
-  5. multiplicity one:
-       the localized Hecke algebra 𝕋_𝔪 acts freely with rank one on the
-       new subspace;
-  6. quotient/evaluation compatibility:
-       (𝕋^M)_𝔪 maps to End(new_M) through the explicit ZMod ℓ evaluation.
+  1. `ModLQExpansionInjective` remains a direct missing q-expansion
+     principle.
+  2. `ModLNewformDecomposition` remains missing. `07h_OldNewOnV` gives a
+     parallel coefficient-submodule specification with an explicit
+     `OldNewDecompHyp`, but no bridge to this finite-form interface.
+  3. `IharaOldExclusion` is narrowed by `07f_GenuineSubmodule` and
+     `07g_IharaOnV`: the raw 07c cancellation pair is proved outside the
+     finite genuine boundary, while the geometric restricted-Ihara theorem
+     remains missing.
+  4. `JacquetLanglandsLowering` remains a direct missing local transport
+     theorem at the exact divisor.
+  5. `LocalizedMultiplicityOne` remains missing. `07i_MultOneOnV` states the
+     parallel `LocalizedRankOne` boundary on supplied localized Hecke data,
+     but no bridge to this annihilation conclusion.
+  6. `QuotientEvaluationCompatible` remains the explicit kernel/evaluation
+     compatibility already carried by `FreyHeckeAttachment`.
 
   This file makes those six points explicit as named Prop-valued interfaces.
   The proof below does not claim that any of them is available in Mathlib.
   It deliberately stays inside the finite Galois/Hecke boundary described by
   its imports below.
-
-  The existing finite form record is intentionally weaker than a Hecke module:
-  it has finite q-expansions and predicates, but no old/new direct-sum
-  construction or degeneracy-map kernel. The interfaces below therefore state
-  exactly the transport conclusions needed by this scaffold without fabricating
-  those absent modules.
 -/
 import Beal.Galois.«07_NewformSupport»
 import Beal.Galois.«05_Hecke»
