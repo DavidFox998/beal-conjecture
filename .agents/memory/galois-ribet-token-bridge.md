@@ -3,10 +3,11 @@ name: Galois-to-Ribet bridge
 description: The missing connection between the genuine Galois support boundary and the separate B15 typed Ribet descent.
 ---
 
-Do not claim that the genuine 07j support assembly removes the B15
-`ribet_single_step` boundary. It only produces finite new-subspace support for
-a Frey residual representation from explicit Ihara, old/new, rank-one, and
-bridge hypotheses.
+Do not claim that the genuine 07j support assembly or the 07k token boundary
+removes the B15 `ribet_single_step` boundary. 07j only produces finite
+new-subspace support for a Frey residual representation from explicit Ihara,
+old/new, rank-one, and bridge hypotheses; 07k states the missing existence
+proposition for a `PreservedForm` token but does not inhabit it.
 
 **Why:** B15 consumes a `PreservedForm` and produces a `RibetStepResult`;
 neither type carries the Frey residual representation, maximal ideal, Hecke
