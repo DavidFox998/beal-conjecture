@@ -26,3 +26,11 @@ to a `RibetStepResult`. A safe alternative is to redesign the descent theorem
 around `HasPreservedForm` and a universal per-edge Galois data provider, but
 that provider must quantify the model, residual representation, maximal ideal,
 module, and all 07j/07k premises for every plan edge.
+
+The accepted data-valued route introduces a `Type 1` token-provider boundary:
+given a residual representation, maximal ideal, genuine module, and support
+proof, it returns the B15 token directly. This avoids proposition elimination
+and `Classical.choice` for a single edge. B15 must nevertheless receive a
+family of concrete step providers, because its existing descent plan carries
+only arithmetic edge data—not the Galois objects and 07g–07j witnesses needed
+to invoke the token provider.
