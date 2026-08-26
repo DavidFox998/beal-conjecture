@@ -10,7 +10,7 @@
   The element-level predicate `IsGenuineModularFormAtLevel` from 07f cannot
   take a submodule as its argument, so this file preserves that distinction.
 -/
-import Beal.Galois.«07_NewformSupport»
+import Beal.Galois.«06_MaximalIdeal»
 import Beal.Galois.«07f_GenuineSubmodule»
 import Beal.Galois.«07g_IharaOnV»
 import Beal.Galois.«07h_OldNewOnV»
@@ -19,6 +19,19 @@ import Beal.Galois.«07i_MultOneOnV»
 namespace Beal.Galois
 
 open Beal.FreyTate
+
+/-- A candidate maximal ideal occurs in the finite new-subspace boundary at
+    level `M` when its underlying two-sided ideal annihilates a new finite
+    mod-ℓ form realizing the same residual representation.
+
+    The level is carried by the type of `m`; no geometric support or newform
+    decomposition is asserted. -/
+def SupportInNewSubspace
+    {A B C : ℤ} {x y z : ℕ}
+    {model : FreyCurveModel A B C x y z} {M ℓ : ℕ}
+    (R : FreyResidualRepresentation model ℓ)
+    (m : MaximalIdeal M ℓ) : Prop :=
+  IsSupportedInNewSubspace R m.val
 
 /-- The V-specific old/new proposition supplied by the 07h boundary.
 
@@ -40,7 +53,10 @@ def OldNewDecompHyp
     Each arrow is intentionally a proposition-valued hypothesis.  In
     particular, this definition does not prove restricted Ihara, old/new
     decomposition, localization, multiplicity one, or the final support
-    conclusion. -/
+    conclusion. `OldNewDecompHyp` supplies an existential new component,
+    whereas `LocalizedRankOne` is presently stated on the supplied `V`; the
+    missing compatibility between those two boundary presentations is also
+    part of this final bridge. -/
 def hSupportFromBoundaries
     {A B C : ℤ} {x y z : ℕ}
     {model : FreyCurveModel A B C x y z} {ℓ : ℕ}

@@ -1,31 +1,21 @@
-/- 
-      Galois/07_NewformSupport — the new-subspace support boundary
+/-
+      Galois/07_NewformSupport — the genuine new-subspace support application
 
-      This file gives a typed name to the support conclusion needed in a
-      one-prime Ribet lowering step. It does not prove a newform decomposition,
-      identify geometric support, or derive support from unramifiedness.
+      This file gives a typed application boundary for the genuine support
+      assembly in `07j_SupportProofGenuine`. It does not prove a newform
+      decomposition, identify geometric support, or derive support from
+      unramifiedness.
 
       The local hypothesis remains explicit: Tate's exact conductor
-      divisibility data does not imply residual unramifiedness.
+      divisibility data does not imply residual unramifiedness. The three
+      remaining deep inputs are explicit propositions: restricted Ihara on
+      `V`, old/new decomposition on `V`, and localized rank one on `V`.
 -/
-import Beal.Galois.«06_MaximalIdeal»
+import Beal.Galois.«07j_SupportProofGenuine»
 
 namespace Beal.Galois
 
 open Beal.FreyTate
-
-/-- A candidate maximal ideal occurs in the finite new-subspace boundary at
-    level `M` when its underlying two-sided ideal annihilates a new finite
-    mod-ℓ form realizing the same residual representation.
-
-    The level is carried by the type of `m`; no geometric support or newform
-    decomposition is asserted. -/
-def SupportInNewSubspace
-    {A B C : ℤ} {x y z : ℕ}
-    {model : FreyCurveModel A B C x y z} {M ℓ : ℕ}
-    (R : FreyResidualRepresentation model ℓ)
-    (m : MaximalIdeal M ℓ) : Prop :=
-  IsSupportedInNewSubspace R m.val
 
 /-- The missing support implication for one exact odd-prime division of a
     level.
@@ -52,32 +42,32 @@ def frey_unramified_implies_newform_support
                 SupportInNewSubspace R m
 
 /-!
-  The following lemma is the application boundary for the desired
-  maximal-ideal support statement.
+  The broad `frey_unramified_implies_newform_support` declaration above remains
+  a compatibility-level statement. The lemma below instead applies the 07j
+  assembly with its inspectable hypotheses:
 
-  Mathlib 4.12 does not provide the theorem needed to construct
-  `hNewformSupport`. In a genuine proof, that premise would be assembled from:
+  * `IharaKernelZeroOnV` — restricted Ihara on the genuine coefficient module;
+  * `OldNewDecompHyp V` — old/new decomposition on that module; and
+  * `LocalizedRankOne` — localized rank one for its candidate new component.
 
-  * a mod-ℓ newform decomposition and a q-expansion principle for the finite
-    weight-two Hecke module;
-  * a local Ihara/Jacquet–Langlands-style statement transporting the
-    unramified residual representation through the p-old/new decomposition;
-  * multiplicity one (or an equivalent localized Hecke-algebra theorem) to
-    identify the maximal-ideal component; and
-  * the compatibility between the quotient by the attached maximal ideal and
-    the explicit `ZMod ℓ` evaluation in `FreyHeckeAttachment`.
-
-  None of those results is silently imported or replaced by a global axiom
-  here. The explicit `hNewformSupport` premise is exactly the missing
-  theorem, while the proof below performs only the valid logical transport
-  from that premise to `SupportInNewSubspace`.
+  These propositions remain uninhabited mathematical boundaries. The final
+  `hBridge` is likewise explicit: no missing result is silently imported,
+  replaced by a global axiom, or treated as a theorem of Mathlib. It also
+  carries the still-missing compatibility from the existential new component
+  in old/new decomposition to the rank-one boundary stated on `V`.
 -/
 /-- An attached maximal ideal is supported in the lower-level new subspace
-    once the missing unramified-to-newform-support implication is supplied.
+    once the genuine v7 boundary hypotheses are supplied.
 
     The hypotheses `hPrime` and `hOdd` are explicit because
     `ExactDividesCore` records divisibility and squarefreeness only; it does
-    not contain primality or the odd-prime condition. -/
+    not contain primality or the odd-prime condition.
+
+    The principal coefficient module of `W` is the concrete `V` supplied to
+    07j. Its V-level finite/genuine condition is deliberately an explicit
+    premise: 07f proves that the raw 07c cancellation witness is excluded from
+    any such V, but that exclusion alone cannot construct the required
+    Hecke-stable genuine-form submodule. -/
 lemma maximal_ideal_support_of_unramified
     {A B C : ℤ} {x y z : ℕ}
     {model : FreyCurveModel A B C x y z} {ℓ : ℕ}
@@ -93,11 +83,28 @@ lemma maximal_ideal_support_of_unramified
     (W : ModLWeightTwoForm (model := model) N ℓ)
     (hReal : ModLRealizesRepresentation W R)
     (hAttachment : FreyHeckeAttachment R 𝔪.1)
-    (hNewformSupport :
-      frey_unramified_implies_newform_support
-        model ℓ N p M R I W 𝔪) :
+    [LocalizedHeckeData M ℓ 𝔪]
+    (hV_genuine :
+      IsGenuineFormSubmoduleAtLevel M ℓ
+        (PrincipalCoefficientSubmodule ℓ (coefficientSequenceOfForm W)))
+    (hIharaOnV :
+      IharaKernelZeroOnV M p ℓ
+        (PrincipalCoefficientSubmodule ℓ (coefficientSequenceOfForm W)))
+    (hOldNewOnV :
+      OldNewDecompHyp (M := M) (ℓ := ℓ)
+        (PrincipalCoefficientSubmodule ℓ (coefficientSequenceOfForm W)))
+    (hRankOne :
+      LocalizedRankOne M ℓ 𝔪
+        (PrincipalCoefficientSubmodule ℓ (coefficientSequenceOfForm W)))
+    (hBridge :
+      hSupportFromBoundaries R M p
+        (PrincipalCoefficientSubmodule ℓ (coefficientSequenceOfForm W)) 𝔪) :
     SupportInNewSubspace R 𝔪 := by
-  exact hNewformSupport hDiv hExact hPrime hOdd hReal hUnram hAttachment
+  let V : Submodule (ZMod ℓ) (CoefficientSequence ℓ) :=
+    PrincipalCoefficientSubmodule ℓ (coefficientSequenceOfForm W)
+  simpa [V] using
+    (hNewformSupport_genuine_proof R p M N hDiv hExact hPrime hOdd I hUnram
+      W hReal 𝔪 hAttachment V hV_genuine hIharaOnV hOldNewOnV hRankOne hBridge)
 
 #print axioms SupportInNewSubspace
 #print axioms frey_unramified_implies_newform_support
