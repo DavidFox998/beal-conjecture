@@ -20,6 +20,6 @@
 - [Beal checkout source](beal-checkout-source.md) — the embedded Beal copy is stale; use the fetched beal/main revision for current B14–B20 work.
 - [Tate local conductor boundary](tate-local-conductor-boundary.md) — model-based odd-prime conductor contract replaces free-N Tate interfaces; do not overclaim 2-adic coverage.
 - [BSD repository boundary](bsd-repository-boundary.md) — Birch-and-Swinnerton-Dyer is out of scope; do not modify it unless the user explicitly reopens work there.
-- [Galois-to-Ribet bridge](galois-ribet-token-bridge.md) — 07k states the support-to-token boundary; B15 descent still needs its unproved witness.
+- [Galois-to-Ribet bridge](galois-ribet-token-bridge.md) — 07k proves support extraction conditional on a finite-form-to-token premise B15 still needs.
 - [Lean cache quota](lean-cache-quota.md) — fresh Lean 4.12 Mathlib cache rebuilds can hit environment quota despite free disk; use an existing cache or CI for full verification.
 - [Radical factorization audit](radical-factorization-audit.md) — the literal radical bridge is allowed only Lean’s three standard finite-factorization foundations, never mathematical theorem axioms.
