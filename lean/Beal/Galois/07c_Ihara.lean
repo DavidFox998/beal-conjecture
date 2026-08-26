@@ -1,12 +1,28 @@
-/-
+/- 
   Galois/07c_Ihara — coefficient-level boundary for the mod-ℓ Ihara map
 
-  This file deliberately contains no modular-form imports. Its only ambient
-  space is `CoefficientSequence ℓ = ℕ → ZMod ℓ`.
+  This file deliberately contains no modular-form or `CuspForm` imports.  Its
+  only ambient space is the coefficient-sequence module from `05_Hecke`:
 
-  The raw map `(a, b) ↦ B₁ a + Bp b` has a cancellation kernel on unrestricted
-  coefficient sequences. A genuine Ihara theorem must restrict to the actual
-  level-M modular-form subspace and supply local geometric/Hecke input.
+      CoefficientSequence ℓ = ℕ → ZMod ℓ.
+
+  The two degeneracy maps are represented on q-expansions by
+
+      B₁ a = a
+      Bp b n = if p ∣ n then b (n / p) else 0.
+
+  The combined map has the usual old-space shape
+
+      (a, b) ↦ B₁ a + Bp b.
+
+  OPEN INGREDIENT:
+    `IharaKernelZero` is the characteristic-ℓ kernel statement wanted from
+    Ihara's lemma.  It cannot be proved on the unrestricted coefficient
+    sequence space: the formal cancellation pair
+    `(-Bp 1, 1)` is already in the kernel.  A genuine proof must first
+    restrict to the appropriate level-M modular-form subspace and then use
+    the local geometric/Hecke input.  The cancellation theorem below records
+    this obstruction using only finite coefficient-level algebra.
 -/
 import Beal.Galois.«05_Hecke»
 
@@ -16,8 +32,12 @@ namespace Beal.Galois
 def B₁ (ℓ : ℕ) :
     CoefficientSequence ℓ →ₗ[ZMod ℓ] CoefficientSequence ℓ :=
   { toFun := fun a => a
-    map_add' := by intro a b; rfl
-    map_smul' := by intro c a; rfl }
+    map_add' := by
+      intro a b
+      rfl
+    map_smul' := by
+      intro c a
+      rfl }
 
 /-- The coefficient-level `B_p` degeneracy map. -/
 def BpCoeff (p : ℕ) {ℓ : ℕ} (a : CoefficientSequence ℓ) (n : ℕ) :
@@ -56,7 +76,10 @@ def IharaMap (p ℓ : ℕ) :
 def IharaKernelZero (p ℓ : ℕ) : Prop :=
   LinearMap.ker (IharaMap p ℓ) = ⊥
 
-/-- The raw coefficient-sequence map has a formal cancellation kernel. -/
+/-- The raw coefficient-sequence map has a formal cancellation kernel.
+
+    This is the finite coefficient-level linear-algebra obstruction to proving
+    `IharaKernelZero` from the unrestricted ambient sequence module alone. -/
 theorem iharaMap_has_coefficient_kernel
     {p ℓ : ℕ} [Nontrivial (ZMod ℓ)] :
     ∃ v : CoefficientSequence ℓ × CoefficientSequence ℓ,
@@ -73,13 +96,16 @@ theorem iharaMap_has_coefficient_kernel
   · ext n
     simp [v, IharaMap, B₁, Bp, BpCoeff, add_assoc]
 
--- MISSING: proving `IharaKernelZero` requires the actual level-M form
--- subspace and the local Ihara geometric input.
+-- MISSING Mathlib 4.12 / project boundary:
+-- a proof of `IharaKernelZero` requires the actual level-M form subspace,
+-- its two degeneracy maps, and the local Ihara geometric input.  No
+-- `CuspForm`, modularity, or hidden axiom is introduced here.
 
 #print axioms B₁
 #print axioms Bp
 #print axioms IharaMap
 #print axioms IharaKernelZero
 #print axioms iharaMap_has_coefficient_kernel
+-- Expected foundational dependencies: [propext, Quot.sound] only.
 
 end Beal.Galois

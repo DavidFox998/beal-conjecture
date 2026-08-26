@@ -1,9 +1,18 @@
-/-
+/- 
   Galois/07d_OldNew — the Hecke-module old/new decomposition boundary
 
   The coefficient sequence module from `05_Hecke` is only an ambient module.
-  These Prop-valued interfaces do not assert that arbitrary coefficient
-  sequences are modular forms and do not construct a decomposition.
+  This file names the additional structure needed before a mod-ℓ Ihara
+  statement can be formulated on the correct space:
+
+    * `IsModularFormAtLevel M ℓ V` says that a submodule `V` is stable under
+      the level-M Hecke algebra;
+    * `OldNewDecomp M p ℓ` says that the level-M modular-form submodule is an
+      internal direct sum of old and new Hecke submodules.
+
+  These are Prop-valued interfaces only.  In particular, no claim is made
+  that an arbitrary coefficient sequence is a modular form, and no
+  decomposition is proved from `CoefficientSequence` alone.
 -/
 import Beal.Galois.«05_Hecke»
 
@@ -26,7 +35,13 @@ def IsInternalDirectSum
     (∀ old, old ∈ Old → ∀ new, new ∈ New →
       old + new = 0 → old = 0 ∧ new = 0)
 
-/-- The missing mod-ℓ old/new decomposition at level `M`. -/
+/-- The missing mod-ℓ old/new decomposition at level `M`.
+
+    The primality premise records that `p` is the local prime used to mark the
+    old/new step.  `Old` and `New` are existential submodules because the
+    current project has no modular-form space or degeneracy-map construction
+    from which they could be defined.  The required Hecke stability and
+    internal direct-sum statement are nevertheless explicit. -/
 def OldNewDecomp (M p ℓ : ℕ) : Prop :=
   p.Prime ∧
     ∃ (V Old New : Submodule (ZMod ℓ) (CoefficientSequence ℓ)),
@@ -35,11 +50,15 @@ def OldNewDecomp (M p ℓ : ℕ) : Prop :=
       IsModularFormAtLevel M ℓ New ∧
       IsInternalDirectSum V Old New
 
--- MISSING: an actual modular-form Hecke module, its old and new submodules,
--- and the direct-sum theorem.
+-- MISSING Mathlib 4.12 / project boundary:
+-- proving `OldNewDecomp` requires the actual level-M modular-form Hecke
+-- module, its old submodule from degeneracy maps, its new complement, and the
+-- direct-sum theorem.  It must not be proved by treating all coefficient
+-- sequences as modular forms.
 
 #print axioms IsModularFormAtLevel
 #print axioms IsInternalDirectSum
 #print axioms OldNewDecomp
+-- Expected foundational dependencies: [propext, Quot.sound] only.
 
 end Beal.Galois

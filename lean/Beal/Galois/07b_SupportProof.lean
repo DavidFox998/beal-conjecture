@@ -1,10 +1,29 @@
-/-
+/- 
   Galois/07b_SupportProof — conditional attack on newform support
 
-  This file makes explicit the missing mod-ℓ newform decomposition,
-  q-expansion, Ihara, local transport, multiplicity-one, and
-  quotient/evaluation ingredients. It proves only their valid logical
-  transport to typed newform support.
+  OPEN INGREDIENTS (not supplied by Lean/Mathlib 4.12 at this boundary):
+
+  1. `ModLQExpansionInjective` remains a direct missing q-expansion
+     principle.
+  2. `ModLNewformDecomposition` remains missing. `07h_OldNewOnV` gives a
+     parallel coefficient-submodule specification with an explicit
+     `OldNewDecompHyp`, but no bridge to this finite-form interface.
+  3. `IharaOldExclusion` is narrowed by `07f_GenuineSubmodule` and
+     `07g_IharaOnV`: the raw 07c cancellation pair is proved outside the
+     finite genuine boundary, while the geometric restricted-Ihara theorem
+     remains missing.
+  4. `JacquetLanglandsLowering` remains a direct missing local transport
+     theorem at the exact divisor.
+  5. `LocalizedMultiplicityOne` remains missing. `07i_MultOneOnV` states the
+     parallel `LocalizedRankOne` boundary on supplied localized Hecke data,
+     but no bridge to this annihilation conclusion.
+  6. `QuotientEvaluationCompatible` remains the explicit kernel/evaluation
+     compatibility already carried by `FreyHeckeAttachment`.
+
+  This file makes those six points explicit as named Prop-valued interfaces.
+  The proof below does not claim that any of them is available in Mathlib.
+  It deliberately stays inside the finite Galois/Hecke boundary described by
+  its imports below.
 -/
 import Beal.Galois.«07_NewformSupport»
 import Beal.Galois.«05_Hecke»
@@ -27,7 +46,11 @@ def ModLQExpansionInjective
   ∀ {W₁ W₂ : ModLWeightTwoForm (model := model) N ℓ},
     W₁.f_q = W₂.f_q → W₁ = W₂
 
-/-- The finite-form consequence needed from a mod-ℓ old/new decomposition. -/
+/-- The finite-form consequence needed from a mod-ℓ old/new decomposition.
+
+    This is not itself a direct-sum decomposition of Hecke modules. The
+    current finite-form record has no additive module or Hecke action on its
+    new component, so the genuine decomposition remains a missing ingredient. -/
 def ModLNewformDecomposition
     {A B C : ℤ} {x y z : ℕ}
     {model : FreyCurveModel A B C x y z} {ℓ : ℕ}
@@ -38,7 +61,12 @@ def ModLNewformDecomposition
       ModLRealizesRepresentation W R →
         W ∈ OldSubspace (model := model) N M ℓ ∨ IsNewform W
 
-/-- The downstream residual/form consequence needed to rule out old support. -/
+/-- The downstream residual/form consequence needed to rule out old support.
+
+    `07c_Ihara` isolates the raw coefficient-level `(B₁, Bp)` kernel statement.
+    That statement alone cannot yield this implication on unrestricted
+    coefficient sequences; the missing bridge to the actual level-M form
+    subspace and residual ramification remains explicit here. -/
 def IharaOldExclusion
     {A B C : ℤ} {x y z : ℕ}
     {model : FreyCurveModel A B C x y z} {ℓ : ℕ}
@@ -51,7 +79,11 @@ def IharaOldExclusion
           ModLRealizesRepresentation W R →
             W ∈ OldSubspace (model := model) N M ℓ → False
 
-/-- The exact-divisor Jacquet--Langlands/local transport interface. -/
+/-- The exact-divisor Jacquet--Langlands/local transport interface.
+
+    This is the central missing lower-level existence statement. It is kept
+    separate from the old/new alternative so the proof must use the surviving
+    new component at level `N`. -/
 def JacquetLanglandsLowering
     {A B C : ℤ} {x y z : ℕ}
     {model : FreyCurveModel A B C x y z} {ℓ : ℕ}
@@ -66,7 +98,10 @@ def JacquetLanglandsLowering
               IsNewform W' ∧ ModLRealizesRepresentation W' R
 
 /-- The minimal quotient/evaluation compatibility already present in the
-    attachment record. -/
+    attachment record.
+
+    This is only the kernel/evaluation relation. A genuine quotient,
+    localization, and action on a new subspace are still missing. -/
 def QuotientEvaluationCompatible
     {A B C : ℤ} {x y z : ℕ}
     {model : FreyCurveModel A B C x y z} {ℓ : ℕ}
@@ -75,7 +110,13 @@ def QuotientEvaluationCompatible
     (hAttach : FreyHeckeAttachment R 𝔪.1) : Prop :=
   ∀ T : HeckeAlgebra M ℓ, T ∈ 𝔪.1 ↔ hAttach.eval T = 0
 
-/-- The finite-boundary consequence required from localized multiplicity one. -/
+/-- The finite-boundary consequence required from localized multiplicity one.
+
+    Rather than assuming ideal annihilation directly, this interface exposes
+    the needed bridge: an operator with zero attached evaluation acts by zero
+    on the coefficient sequence of the corresponding lower-level new form.
+    A genuine rank-one localized module theorem is stronger and remains
+    outside the current finite-form API. -/
 def LocalizedMultiplicityOne
     {A B C : ℤ} {x y z : ℕ}
     {model : FreyCurveModel A B C x y z} {ℓ : ℕ}
@@ -106,7 +147,17 @@ lemma not_dvd_lower_level
     _ = (p * p) * k := by
       simp [Nat.mul_assoc, Nat.mul_comm, Nat.mul_left_comm]
 
-/-- Conditional construction of the lower-level newform support. -/
+/-- Conditional construction of the lower-level newform support.
+
+    The current `FreyHeckeAttachment` interface is
+    `FreyHeckeAttachment R 𝔪.1`; `W` is kept as a separate argument because
+    the record does not contain a form parameter. The six named interfaces
+    below are the missing mathematical inputs listed in the file header.
+
+    `hAttach.kernel_eq` supplies the quotient/evaluation compatibility already
+    present in the attachment record. The other interfaces remain explicit:
+    no unavailable theorem is silently treated as an established result.
+-/
 def hNewformSupport_proof
     {A B C : ℤ} {x y z : ℕ}
     {model : FreyCurveModel A B C x y z} {ℓ : ℕ}
@@ -130,15 +181,26 @@ def hNewformSupport_proof
     (hJacquetLanglands : JacquetLanglandsLowering R p M N)
     (hMultiplicityOne : LocalizedMultiplicityOne R 𝔪 hAttach) :
     SupportInNewSubspace R 𝔪 := by
+  -- MISSING Mathlib 4.12: exact-divisor arithmetic is available here only
+  -- because the conductor core exposes p ∣ N and ¬ p² ∣ N explicitly.
   have hNotDivM : ¬ p ∣ M :=
     not_dvd_lower_level hDiv hExact
   have hExactLevel : ExactPrimeLevelData p M N :=
     ⟨hExact.1, hExact.2, hNotDivM⟩
+
+  -- MISSING Mathlib 4.12: the mod-ℓ q-expansion principle and its Hecke
+  -- module formulation are represented by this explicit hypothesis.
   rcases hNewformDecomposition hQExpansion W hReal with hOld | hNewAtN
-  · exact False.elim
+  · -- MISSING Mathlib 4.12: Ihara's kernel argument turns old support into
+    -- residual ramification at p. This is the contradiction branch.
+    exact False.elim
       (hIhara hPrime hOdd hExactLevel hUnram W hReal hOld)
-  · rcases hJacquetLanglands hPrime hOdd hExactLevel W hReal hNewAtN with
+  · -- MISSING Mathlib 4.12: local Jacquet--Langlands/Ihara transport produces
+    -- a lower-level new form from the surviving non-old component.
+    rcases hJacquetLanglands hPrime hOdd hExactLevel W hReal hNewAtN with
       ⟨W', hNew', hReal'⟩
+    -- MISSING Mathlib 4.12: localized multiplicity one identifies the
+    -- attached maximal-ideal component with the lower-level new form.
     have hCompatibility :
         QuotientEvaluationCompatible R 𝔪 hAttach :=
       hAttach.kernel_eq
@@ -159,5 +221,6 @@ def hNewformSupport_proof
 #print axioms LocalizedMultiplicityOne
 #print axioms not_dvd_lower_level
 #print axioms hNewformSupport_proof
+-- Expected foundational dependencies: [propext, Quot.sound] only.
 
 end Beal.Galois

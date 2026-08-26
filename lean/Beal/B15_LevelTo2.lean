@@ -63,18 +63,20 @@
     /-- Full typed Ribet chain: fixed Tate model + Wiles certificate +
       single-step descent → level-2 contradiction. -/
     theorem ribet_chain_to_2_gives_False
+      (providers : Beal.RibetIterate.RibetSingleStepProviders)
       {A B C : ℤ} {x y z : ℕ}
       (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
       (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
       (hEq : A ^ x + B ^ y = C ^ z)
       (hCop : IsCoprime A (B * C)) :
       False :=
-    Beal.RibetIterate.ribet_iteration_gives_False hA hB hC hx hy hz hEq hCop
+    Beal.RibetIterate.ribet_iteration_gives_False
+      providers hA hB hC hx hy hz hEq hCop
 
     #print axioms canLowerLevel_of_exact        -- 0 axioms beyond kernel
     #print axioms exactDivides_of_tate          -- 0 axioms
     #print axioms s2_level_2_witness            -- 0 axioms
-    #print axioms ribet_chain_to_2_gives_False  -- exactly 3 named axioms
+    #print axioms ribet_chain_to_2_gives_False  -- Tate and Wiles only
 
     end BealLevelTo2
     

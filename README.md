@@ -73,14 +73,8 @@ formalization makes this coupling explicit rather than gestural.
 > The final B20 theorem uses exactly these named assumptions:
 > `Beal.FreyTate.wiles_modularity`,
 > `Beal.FreyTate.TateStep2.tate_step2_I_n_conductor_one`, and
-> `Beal.RibetIterate.ribet_single_step`. The implemented connective lemmas
-> in that chain are proved without `sorry`; the missing arithmetic-geometric
-> inputs remain explicit `Prop`-valued boundaries.
->
-> Alongside that final B14–B21 route, the repository now contains a more
-> granular typed Galois/Hecke boundary. It makes the representation,
-> coefficient, old/new, support, and multiplicity-one obligations inspectable
-> without claiming that those classical theorems have already been formalized.
+> `Beal.RibetIterate.ribet_single_step`. All supporting steps in the
+> chain are proved without `sorry`.
 
 ### From one broad axiom to three smaller interfaces
 
@@ -127,11 +121,10 @@ foundational mathematics. The three deep results remain visible as the three
 places where external mathematical theorems enter the present development.
 ---
 
-## The architecture: Cores, Wrappers, Galois boundaries, and three named interfaces
+## The architecture: Cores, Wrappers, and three named interfaces
 
-The repository is organized into the B01–B21 Core/Wrapper tower, a separate
-typed Galois/Hecke boundary tree, and the three named mathematical interfaces
-used by the final theorem.
+The repository is organized into three layers, with a separate boundary for
+the named mathematical results used by the final theorem.
 
 ### Cores (B01–B21 `*_Core.lean`)
 
@@ -157,30 +150,6 @@ dependencies such as `propext`, `Classical.choice`, and `Quot.sound`; they
 must never introduce `sorryAx`. The real-number BSD/Hasse boundary has its
 own audit.
 
-### Galois/Hecke boundary (`lean/Beal/Galois/`)
-
-The Galois tree makes the representation-theoretic route beneath one Ribet
-step explicit:
-
-| Files | Formal role |
-|---|---|
-| `01_Absolute`–`04_LevelLowering` | Abstract absolute-Galois and inertia data, the typed Frey residual representation, finite mod-ℓ forms, and the exact level-lowering proposition |
-| `05_Hecke`–`06_MaximalIdeal` | Coefficient-level Hecke operations, degeneracy maps, a generated Hecke algebra, and typed residual maximal-ideal attachment |
-| `07_NewformSupport` | The lower-level new-subspace support obligation |
-| `07b_SupportProof` | A conditional proof that assembles six explicitly supplied support interfaces |
-| `07c_Ihara` | The coefficient-level `(B₁, Bₚ)` map and its nontrivial cancellation kernel |
-| `07d_OldNew`–`07e_MultOne` | The missing stable old/new Hecke module and localized rank-one boundary |
-| `08_RibetProof` | Conditional transport from explicit new support to the existing level-lowering proposition |
-
-This is a typed scaffold around the B14–B21 route, not a second unconditional
-proof. The files use Mathlib's `ZMod`, linear maps, modules, submodules,
-subrings, quotient types, finite lists, and natural-number divisibility. They
-do not claim that Mathlib supplies the mod-ℓ q-expansion principle, the
-old/new decomposition, Ihara's lemma, Jacquet--Langlands transport, Hecke
-localization, or multiplicity one. See the
-[Galois directory guide](lean/Beal/Galois/README.md) for the file-by-file
-boundaries.
-
 ### The three named mathematical interfaces
 
 The final B20 proof is conditional on exactly three named results:
@@ -196,74 +165,6 @@ The older broad `modularity_hypothesis` remains part of the historical scaffold,
 but it is not the named dependency boundary of the final B14–B20 theorem. The
 new decomposition makes the three classical inputs visible rather than silently
 packaging them into one opaque proposition.
-
-### The typed Galois/Hecke boundary
-
-The `lean/Beal/Galois/` tree is a parallel, typed account of the mathematical
-interfaces beneath one Ribet step. It is deliberately more explicit than the
-three named B14–B21 assumptions:
-
-| Layer | Role |
-|---|---|
-| `01_Absolute`–`04_LevelLowering` | Abstract absolute-Galois, inertia, residual-representation, finite mod-ℓ form, and exact level-lowering boundaries |
-| `05_Hecke`–`06_MaximalIdeal` | Coefficient-level Hecke operators, degeneracy maps, a generated Hecke algebra, and typed residual maximal-ideal attachment |
-| `07_NewformSupport` | The lower-level new-subspace support proposition needed before level lowering |
-| `07b_SupportProof` | A conditional proof assembling q-expansion, old/new, Ihara, local transport, quotient/evaluation, and multiplicity-one interfaces |
-| `07c_Ihara` | The coefficient-level `(B₁, Bₚ)` map and its explicit cancellation-kernel obstruction |
-| `07d_OldNew`–`07e_MultOne` | The missing stable old/new Hecke module and localized rank-one boundary |
-| `08_RibetProof` | A proved conditional extraction from explicit new support to the existing one-step level-lowering proposition |
-
-The tree uses Mathlib's `ZMod`, linear maps, modules, submodules, subrings,
-quotients, finite lists, and natural-number divisibility where those structures
-fit the boundary. It does not use Mathlib's complex-analytic `CuspForm` API as
-a substitute for a mod-ℓ modular-form space. In particular, the raw sequence
-space is too large for Ihara's kernel statement: `07c` proves the formal
-cancellation witness, while the genuine kernel theorem must be applied on the
-correct modular-form subspace.
-
-The Hecke algebra uses an explicit expression language instead of
-`Subring.closure`, and `07e` states rank-one freeness as
-`Nonempty (N ≃ₗ[R] R)`. These are Lean 4.12 foundation-audit choices, not
-claims that the underlying Hecke localization or multiplicity-one theorem is
-available. The full directory guide is in
-[`lean/Beal/Galois/README.md`](lean/Beal/Galois/README.md).
-
-### v6.0.0 — Galois boundary explicit
-
-The v6 boundary makes the remaining support argument more precise without
-adding another domain axiom:
-
-- **`07c_Ihara`** proves that the naive Ihara map is not injective on the raw
-  coefficient sequence space. With `v = (-Bp 1, 1)`, the theorem proves
-  `B₁ (-Bp 1) + Bp 1 = 0` and `v ≠ 0`. This is a theorem about the ambient
-  sequence space, not a missing result. Its audited footprint is
-  `[propext, Quot.sound]`, with no `Classical.choice`.
-- **`07d_OldNew`** defines the structure needed before Ihara can be applied to
-  modular forms: `IsModularFormAtLevel M ℓ V` says that the submodule `V` is
-  stable under every level-`M` Hecke operator, and `IsInternalDirectSum`
-  states the old/new decomposition elementwise. `OldNewDecomp M p ℓ` remains
-  an explicit `Prop`-valued missing interface rather than a fabricated
-  decomposition. Its audited footprints are `[propext, Quot.sound]` for
-  `IsModularFormAtLevel`, no axioms for `IsInternalDirectSum`, and
-  `[propext, Quot.sound]` for `OldNewDecomp`.
-- **`07e_MultOne`** names `MultiplicityOne` as an explicit missing theorem
-  about the localized new Hecke module. Its typed localization carriers and
-  choice-free `IsFreeRankOne` formulation preserve the same foundational
-  boundary; multiplicity one is not smuggled in as a fourth axiom.
-- **`07b_SupportProof` and `08_RibetProof`** remain conditional. The former
-  assembles explicit residual unramifiedness, maximal-ideal attachment,
-  q-expansion, old/new, Ihara, local transport, quotient/evaluation, and
-  multiplicity-one premises into `SupportInNewSubspace`. The latter transports
-  an explicit support witness to the existing level-lowering proposition.
-  The support theorem still needs the actual `OldNewDecomp`, the Ihara kernel
-  statement on the correct modular-form subspace, and `MultiplicityOne`.
-
-The v6 release therefore preserves exactly the three B20 domain axioms:
-`wiles_modularity`, `tate_step2_I_n_conductor_one`, and
-`ribet_single_step`. The Galois tree replaces one opaque Ribet-step interior
-with explicit propositions; it does not add a fourth domain axiom. The next
-foundational stage is v7: replacing those support interfaces with the actual
-`hNewformSupport` argument. That work remains open and is not claimed by v6.
 ---
 
 ## The path to a complete proof: Tate and Ribet
@@ -364,10 +265,7 @@ CI enforces the boundary on every push:
 
 The final audit distinguishes named mathematical assumptions from foundational
 Lean dependencies such as `propext`, `Classical.choice`, and `Quot.sound`.
-The CI badge at the top links to the current audit status. The Galois/Hecke
-tree does not add a fourth named domain axiom: its missing results remain
-explicit propositions and its implemented conditional transport is audited
-separately from the final B20 axiom set.
+The current main branch passed the complete audit in CI run **#205**.
 ---
 
 ## Build and audit
@@ -378,13 +276,7 @@ The project uses Lean 4.12.0 and Mathlib:
 export PATH="$HOME/.elan/bin:$PATH"
 lake exe cache get
 lake build Beal
-lake --old build 'Beal.Galois.«08_RibetProof»'
 ```
-
-The first command builds the main B01–B21 library. The second builds the
-latest typed Galois boundary layer; individual modules can be selected by
-replacing `08_RibetProof` with a module from
-[`lean/Beal/Galois/README.md`](lean/Beal/Galois/README.md).
 
 ---
 
@@ -399,15 +291,13 @@ Tate, or Ribet from first principles.
 
 | Version | Tag / commit | Version DOI | What the snapshot records |
 |---|---|---|---|
-| v0.2.0 zero-axiom core | `v0.2.0-zero-axiom-core` / `4f425e5` | [Zenodo v0.2.0](https://doi.org/10.5281/zenodo.22041832) | First zero-axiom core scaffold |
+| v0.2.0 zero-axiom core | `v0.2.0-zero-axiom-core` / `4f425e5` | Not verified in this audit trail | First zero-axiom core scaffold |
 | v0.3.0 arithmetic descent | `v0.3.0-arithmetic-descent` / `246fd41` | [Zenodo v0.3.0](https://doi.org/10.5281/zenodo.22048503) | Arithmetic descent, including $S_2(\Gamma_0(2)) = 0$ by `rfl` |
-| v0.4.0 typed interfaces | `v0.4.0-interfaces-typed` / `881b109` | [Zenodo v0.4.0](https://doi.org/10.5281/zenodo.22050666) | A single typed `modularity_hypothesis` boundary |
-| v1.0 Opera Numerorum freeze | `v1.0-opera-numerorum` | [Zenodo v1.0](https://doi.org/10.5281/zenodo.22050960) | Final freeze of the typed-interface tower |
+| v0.4.0 typed interfaces | `v0.4.0-interfaces-typed` / `881b109` | Not verified in this audit trail | A single typed `modularity_hypothesis` boundary |
 | v1.1.0 zero-`sorry` scaffold | `v1.1.0-zero-sorry-scaffold` | Not verified in this audit trail | Predates the present three-axiom audit |
 | **v4.0.0 three-axiom boundary** | `v4.0.0` / `7b5c4a7` | [Zenodo v4.0.0](https://doi.org/10.5281/zenodo.22085104) | **0 executable `sorry`; 3 named boundaries:** `wiles_modularity`, `tate_step2_I_n_conductor_one`, and `ribet_level_lowering_real` |
 | **v4.1.0 Tate local conductor verification** | `v4.1.0` / `ec8f5de` | [Zenodo v4.1.0](https://doi.org/10.5281/zenodo.22091549) | One typed `FreyCurveModel` fixes the coefficients, $c_4$, discriminant, conductor, and odd-prime local contract to the same $(A,B,C,x,y,z)$; the derived theorem returns that model's conductor and the named-axiom count remains three |
 | **v5.0.0 preserved-form Ribet descent** | `v5.0.0` / `92a165c` | [Zenodo v5.0.0](https://doi.org/10.5281/zenodo.22090900) | `ribet_level_lowering_real` leaves the active path; `ribet_single_step` transports a preserved-form witness one exact division at a time to the level-$2$ contradiction |
-| **v6.0.0 Galois explicit boundary** | `v6.0.0-galois-explicit` | Zenodo DOI pending | **0 executable `sorry`; 3 named boundaries preserved:** `wiles_modularity`, `tate_step2_I_n_conductor_one`, and `ribet_single_step`; adds the `07c` counterexample, `07d` `OldNew` predicate, and `07e` `MultiplicityOne` as explicit missing mathematics with no fourth domain axiom |
 
 The v4.0.0 Zenodo landing page retains an older v0.4-style display title; its
 release tag, archive, and audited boundary are the v4.0.0 row above. The

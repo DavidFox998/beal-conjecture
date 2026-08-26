@@ -35,10 +35,6 @@ import Beal.B00_OperaNumerorum
 import Beal.B14_FreyS2
 import Beal.B14_TateC4Nonzero
 import Beal.B14_TateInImpliesOrd1
-import Beal.Galois.«01_Absolute»
-import Beal.Galois.«02_ResidualRep»
-import Beal.Galois.«03_ModLForm»
-import Beal.Galois.«04_LevelLowering»
     import Beal.B15_LevelTo2_Core
     import Beal.B15_LevelTo2
 import Beal.B15_RibetIterate
