@@ -191,10 +191,12 @@ The final modules assemble the conditional chain:
 | `B20_BealConjectureDone_*` | final theorem-shaped statement and axiom audit |
 | `B20_Beal_Core.lean` | the corresponding small final Core vocabulary |
 
-`B20_BealConjectureDone.lean` defines `BealConjectureIsProved` as a theorem
-whose first input is an explicit `EnrichedPlanSupplier`. The resulting
-statement is machine-checked conditional mathematics. The supplier is
-data-valued and inspectable; it is not a declared global axiom.
+`B20_BealConjectureDone.lean` defines
+`BealConjectureConditionalOnEnrichedPlan`, whose first input is an explicit
+`EnrichedPlanSupplier`. The resulting statement is machine-checked
+conditional mathematics, not an unconditional proof of Beal's conjecture.
+The supplier is data-valued and inspectable; it is not a declared global
+axiom, and this module does not construct it.
 
 The final path still names the deep inputs that have not been reconstructed
 from first principles:
