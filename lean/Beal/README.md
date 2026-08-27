@@ -171,8 +171,11 @@ level.” Instead it works with:
 Each `GaloisEdgeWitness` carries its own residual representation, maximal
 ideal, genuine coefficient submodule, localized Hecke data, old/new and rank
 boundaries, the explicit pair-level q-expansion premise, the 07j support
-bridge, and the 07k token provider. Restricted Ihara is derived from the
-q-expansion premise at the use site.
+bridge, and data-valued 07k newform support plus representation/Hecke
+transport. Restricted Ihara is derived from the q-expansion premise at the
+use site. The data-valued support is carried directly because the
+proposition-valued support existential cannot be eliminated into a preserved
+form token without choice.
 
 This proof-relevant indexing matters: the enriched supplier cannot discard
 the certified `N`, `p`, and `M` values and silently substitute a different
@@ -244,7 +247,7 @@ EnrichedPlanSupplier
         ├── Galois representation and Hecke data
         ├── genuine submodule and pair-level q-expansion premise
         ├── restricted Ihara, old/new, and localized rank boundaries
-        └── support-to-token provider
+        └── newform support data + representation/Hecke transport
         │
         ▼
 iterated preserved form at level 2
@@ -311,7 +314,7 @@ token obligations, while B15 carries them per edge.
 - abstract absolute-Galois and inertia data;
 - finite mod-ℓ coefficient and Hecke operations;
 - maximal-ideal and newform-support interfaces;
-- the genuine 07f–07k provider boundary;
+- the genuine 07f–07k support and token-transport boundaries;
 - the exact conditional status of the restricted Ihara step.
 
 The short version is that Galois supplies typed boundaries, not a claim that

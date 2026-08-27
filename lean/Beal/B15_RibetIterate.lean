@@ -4,7 +4,7 @@
       · `GaloisEdgeWitness` — per-edge arithmetic and 07g–07k data
       · `EnrichedPlanSupplier` — enriches the unchanged Wiles arithmetic plan
       · `ribet_single_step_from_genuine` — one lower-level token assembled
-        from the data-valued 07k provider
+        from explicit data-valued 07k support and transport
       · theorem descend_preserved_form — certified descent to level 2 (0 sorry)
 
       The final contradiction comes from a typed form token at level 2 and
@@ -60,8 +60,10 @@
          hSupportBridge :
            @Beal.Galois.hSupportFromBoundaries
              A B C x y z model ℓ R M p V m localized
-         provider :
-           Beal.Galois.SupportedNewformToTokenProvider
+         supportData :
+           Beal.Galois.NewSubspaceSupportData R m
+         transport :
+           Beal.Galois.NewformHeckeToPreservedTokenTransport
              (model := model) ℓ M
 
        /-- The arithmetic plan type supplied by the unchanged Wiles boundary.
@@ -119,12 +121,14 @@
          have hIhara :=
            Beal.Galois.ihara_zero_on_genuine_V_conditional
              M p ℓ edge.V edge.hV edge.hQ
-         have hSupport :=
+         have _hSupport :=
            edge.hSupportBridge edge.hV hIhara edge.hOldNew edge.hRank
          exact
            { level := M
              lowers := edge.hDiv
-             form := edge.provider edge.R edge.m edge.V edge.hV hSupport }
+             form :=
+               Beal.Galois.preservedToken_of_supportData
+                 edge.transport edge.supportData }
 
       def ribet_iterate : List ℕ → ℕ → ℕ
       | [],      N => N
@@ -157,8 +161,10 @@
 
       /-- Transport a typed form witness through the enriched genuine plan.
 
-          Each recursive edge constructs its lower-level token from the
-          edge-local 07j support bridge and 07k data-valued provider. -/
+          Each recursive edge constructs its lower-level token from explicit
+          edge-local 07k support data and representation/Hecke/newform
+          transport. The proposition-valued 07j support bridge remains
+          carried as an auditable boundary, but is not eliminated into data. -/
        theorem descend_preserved_form
            {A B C : ℤ} {x y z : ℕ}
            {model : FreyCurveModel A B C x y z}
