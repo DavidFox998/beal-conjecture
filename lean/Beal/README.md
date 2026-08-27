@@ -9,6 +9,25 @@ This README is a map of the directory. It does not replace the file-level
 comments or the more specialized
 [`Galois/README.md`](Galois/README.md).
 
+## v7.2.0 mathematical boundary
+
+On `beal-4.12-v-specific-edge` (v7.1.0 base `76d1dec4a`, integrated Ribet-fix
+snapshot `9ebd9659b`), the B15 edge no longer accepts an opaque or textual
+q-expansion premise. `NormalizedEigenlineData` supplies a normalized
+one-dimensional eigenline, and `QExpansionPrincipleOnV_fromEigenline` derives
+the exact V-specific cancellation theorem used by restricted Ihara.
+
+The two remaining proposition-valued edge obligations are the old/new
+complement `OldNewDecompHyp` and localized rank-one `LocalizedRankOne`.
+Newform support witnesses are retained as `NewSubspaceSupportData`, and
+`NewformHeckeToPreservedTokenTransport` converts them to the preserved-form
+token without choice. No inhabitant of those open data boundaries is claimed.
+
+The Lean 4.12.0 release path contains no executable `sorry`, `admit`,
+`sorryAx`, declared `axiom`, or opaque Ribet shortcut. The focused edge
+footprint is `[propext, Quot.sound]`; the final theorem remains conditional on
+the typed Wiles, Tate, and enriched-plan inputs.
+
 ## The mathematical target
 
 Beal's Conjecture says that a positive-integer solution
@@ -171,8 +190,11 @@ level.” Instead it works with:
 Each `GaloisEdgeWitness` carries its own residual representation, maximal
 ideal, genuine coefficient submodule, localized Hecke data, old/new and rank
 boundaries, the explicit pair-level q-expansion premise, the 07j support
-bridge, and the 07k token provider. Restricted Ihara is derived from the
-q-expansion premise at the use site.
+bridge, and data-valued 07k newform support plus representation/Hecke
+transport. Restricted Ihara is derived from the q-expansion premise at the
+use site. The data-valued support is carried directly because the
+proposition-valued support existential cannot be eliminated into a preserved
+form token without choice.
 
 This proof-relevant indexing matters: the enriched supplier cannot discard
 the certified `N`, `p`, and `M` values and silently substitute a different
@@ -191,10 +213,12 @@ The final modules assemble the conditional chain:
 | `B20_BealConjectureDone_*` | final theorem-shaped statement and axiom audit |
 | `B20_Beal_Core.lean` | the corresponding small final Core vocabulary |
 
-`B20_BealConjectureDone.lean` defines `BealConjectureIsProved` as a theorem
-whose first input is an explicit `EnrichedPlanSupplier`. The resulting
-statement is machine-checked conditional mathematics. The supplier is
-data-valued and inspectable; it is not a declared global axiom.
+`B20_BealConjectureDone.lean` defines
+`BealConjectureConditionalOnEnrichedPlan`, whose first input is an explicit
+`EnrichedPlanSupplier`. The resulting statement is machine-checked
+conditional mathematics, not an unconditional proof of Beal's conjecture.
+The supplier is data-valued and inspectable; it is not a declared global
+axiom, and this module does not construct it.
 
 The final path still names the deep inputs that have not been reconstructed
 from first principles:
@@ -244,7 +268,7 @@ EnrichedPlanSupplier
         ├── Galois representation and Hecke data
         ├── genuine submodule and pair-level q-expansion premise
         ├── restricted Ihara, old/new, and localized rank boundaries
-        └── support-to-token provider
+        └── newform support data + representation/Hecke transport
         │
         ▼
 iterated preserved form at level 2
@@ -290,7 +314,8 @@ therefore checks the import boundary directly.
 ### Name open mathematics instead of weakening it
 
 An open theorem should be represented by an explicit proposition, structure,
-or provider with the hypotheses and conclusion written out. Avoid replacing
+or data-valued interface with the hypotheses and conclusion written out.
+Avoid replacing
 it with:
 
 ```lean
@@ -298,9 +323,10 @@ def OpenTheorem : Prop := True
 ```
 
 or with a broad opaque axiom that hides several independent obligations.
-The current Galois branch demonstrates the preferred alternative: its
-07g–07k interfaces expose separate q-expansion, old/new, rank, support, and
-token obligations, while B15 carries them per edge.
+The current Galois branch demonstrates the preferred alternative: 07n derives
+the q-expansion theorem from explicit eigenline data; 07h and 07i expose the
+old/new and rank propositions; 07k exposes support and token-transport data;
+and B15 carries them on the exact arithmetic edge.
 
 ## The Galois directory
 
@@ -311,7 +337,7 @@ token obligations, while B15 carries them per edge.
 - abstract absolute-Galois and inertia data;
 - finite mod-ℓ coefficient and Hecke operations;
 - maximal-ideal and newform-support interfaces;
-- the genuine 07f–07k provider boundary;
+- the genuine 07f–07k support and token-transport boundaries;
 - the exact conditional status of the restricted Ihara step.
 
 The short version is that Galois supplies typed boundaries, not a claim that

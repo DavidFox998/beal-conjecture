@@ -4,9 +4,11 @@ This directory contains the typed Galois-representation, mod-ℓ form, level-low
 
 It is intentionally a **boundary layer**, not an unconditional proof of Beal's Conjecture. The files provide data structures, propositions, coefficient operations, and small transport lemmas. They do not silently turn the classical theorems of Wiles, Tate, or Ribet into Lean theorems.
 
-## Current genuine-provider status
+## v7.2.0 V-specific edge status
 
-The v7 genuine-provider boundary is explicit and data-valued:
+The release branch is `beal-4.12-v-specific-edge`, based on v7.1.0 commit
+`76d1dec4a`; the integrated Ribet-fix snapshot is `9ebd9659b`. The boundary is
+explicit and data-valued:
 
 - The old B15 declaration `ribet_single_step : Prop` has been deleted from
   the active source path.
@@ -15,11 +17,21 @@ The v7 genuine-provider boundary is explicit and data-valued:
   coefficient submodule, and `SupportInNewSubspace`. It is inspectable and
   introduces no choice; because the residual representation carries a
   universe-polymorphic group carrier, Lean reports its type as `Type 1`.
+- `NewformHeckeToPreservedTokenTransport` isolates the narrower mathematical
+  conversion: a finite newform, its realization of the fixed residual
+  representation, and annihilation by the attached maximal ideal must produce
+  the B15 token. `NewSubspaceSupportData` retains those witnesses in `Type`,
+  and `preservedToken_of_supportData` performs the exact transport without
+  `Classical.choice`. The existing proposition-valued support existential
+  cannot be eliminated into `PreservedForm` constructively; no inhabitant of
+  the data or transport boundary is claimed.
 - `GaloisEdgeWitness` carries the residual representation, maximal ideal,
-  genuine coefficient submodule, localized Hecke data, attachment, the
-  explicit `QExpansionPrincipleOnV`, old/new, localized-rank-one, 07j support
-  bridge, and 07k token provider for one exact lowering edge. Restricted Ihara
-  is derived conditionally from that principle at the B15 use site.
+  genuine coefficient submodule, localized Hecke data, attachment,
+  `NormalizedEigenlineData`, old/new, localized-rank-one, 07j support
+  assembly, `NewSubspaceSupportData`, and
+  `NewformHeckeToPreservedTokenTransport` for one exact lowering edge.
+- B15 derives `QExpansionPrincipleOnV` through
+  `QExpansionPrincipleOnV_fromEigenline`; `hQ` is not a field of the edge.
 - `GaloisDescentPlan` is indexed by the exact Wiles arithmetic-plan value, so
   every enriched edge has that constructor's `N`, `p`, and `M`; the supplier
   cannot discard the certified path and substitute another chain.
@@ -42,6 +54,11 @@ The v7 genuine-provider boundary is explicit and data-valued:
   `QExpansionPrincipleOnV` premise. Constructing that geometric premise for
   the actual modular-form submodule remains **MISSING**; 07f's single raw
   witness exclusion is not presented as a proof of all oldform relations.
+- 07l provides a structured Shimura/q-expansion supplier boundary. It proves
+  the exact 07g coefficient-cancellation premise from explicit geometric
+  source and target form carriers, q-expansion compatibility and injectivity,
+  and a genuine two-degeneracy-map kernel theorem. It does not claim those
+  geometric fields are already constructed.
 - 07h now owns the unchanged `OldNewDecompHyp` proposition and proves
   `old_new_decomp_from_ihara` from restricted Ihara kernel-zero plus the
   explicit `AtkinLehnerProjectorOnV` complement premise.
@@ -51,9 +68,9 @@ The v7 genuine-provider boundary is explicit and data-valued:
   remains **MISSING**; Ihara kernel-zero alone is not presented as an
   Atkin–Lehner decomposition theorem.
 - B14's Wiles boundary still returns the arithmetic plan only. The B15
-  supplier makes the additional `hQ`, `hOldNew`, `hRank`, support bridge, and
-  token-provider data explicit on every edge without a B14 → Galois import
-  cycle.
+  supplier adds normalized eigenline data, `hOldNew`, `hRank`, support
+  assembly, and token-transport data on every edge without a B14 → Galois
+  import cycle.
 
 ## Directory structure
 
@@ -70,7 +87,10 @@ Galois/
 ├── 07h_OldNewOnV.lean     conditional old/new transport on a genuine submodule
 ├── 07i_MultOneOnV.lean    localized rank-one boundary
 ├── 07j_SupportProofGenuine.lean genuine support assembly
-├── 07k_TokenBridge.lean   data-valued support-to-token boundary
+├── 07k_TokenBridge.lean   newform/Hecke transport and support-to-token boundary
+├── 07l_ShimuraQExpansionSupplier.lean structured geometric supplier for 07g
+├── 07m_FourierQExpansion.lean analytic Fourier uniqueness foundation
+├── 07n_NormalizedEigenlineQExpansion.lean normalized eigenline supplier for 07g
 ├── 07_NewformSupport.lean explicit lower-level new-support obligation
 ├── 08_RibetProof.lean     conditional transport from support to lowering
 └── README.md              this guide
@@ -335,6 +355,135 @@ unramifiedness-to-support obligation for one exact odd-prime level division.
 Neither declaration proves support, constructs a newform, or turns Tate's
 conductor exponent into an unramifiedness theorem.
 
+### `07l_ShimuraQExpansionSupplier.lean`
+
+**Imports**
+
+- `Beal.Galois.07g_IharaOnV`
+
+**Purpose**
+
+This file is the organized landing zone for the first Shimura-side premise.
+It does not copy the public Batch148 placeholder propositions into Beal and it
+does not add the Arakelov repository as a Lake dependency. Instead it records
+the exact geometric objects and compatibilities that a genuine supplier must
+construct before 07g can use the result.
+
+`ShimuraQExpansionData M p ℓ V` carries:
+
+- a source-level geometric form type and a target geometric form type;
+- zero forms and source/target q-expansion maps;
+- an explicit realization of every coefficient sequence in `V` as a source
+  form, with coefficient compatibility;
+- a geometric map representing the sum of the two degeneracy images;
+- the expected coefficient formula
+  `q(β₁(a) + βₚ(b)) = q(a) + Bp(q(b))`;
+- injectivity of the target q-expansion map; and
+- the genuine geometric assertion that the degeneracy-pair map has trivial
+  kernel.
+
+From this data, `QExpansionPrincipleOnV_FromShimura` proves the exact
+coefficient-cancellation proposition that the earlier explicit `hQ` edge
+field represented. The active v7.2 edge instead derives this proposition from
+normalized eigenline data.
+`IharaKernelZeroOnV_FromShimura` then composes that adapter with the existing
+07g theorem.
+
+The dependency path is:
+
+```text
+geometric level-M source forms
+      │  realization and q-expansion compatibility
+      ▼
+coefficient submodule V
+      │
+      ├── target q-expansion injectivity
+      └── geometric kernel-zero for (β₁, βₚ)
+                    │
+                    ▼
+       QExpansionPrincipleOnV
+                    │
+                    ▼
+          IharaKernelZeroOnV
+```
+
+**How Batch148 is used**
+
+The public 11,774-byte Batch148 file remains useful as a decomposition
+roadmap, but not as a proof supplier:
+
+| Batch148 component | Proper role in this route |
+|---|---|
+| Hecke eigenvalue system | Identifies the relevant eigenpacket; it does not prove degeneracy injectivity. |
+| Jacobian simple factor | Motivates the geometric source/target realization that a future supplier must construct. |
+| Frobenius/Hecke compatibility | Controls arithmetic traces; it does not imply `QExpansionPrincipleOnV`. |
+| Weight-two normalization | Belongs to the trace/Satake route, not the 07g kernel argument. |
+
+The direct Shimura route is therefore the correct path for `hQ`: formalize
+the modular-curve form spaces, the two degeneracy maps, the target
+q-expansion principle, and their geometric kernel theorem. Batch148 remains a
+source ledger for nearby Hecke/Jacobian work and can later feed those concrete
+constructions without being mistaken for the missing Ihara proof.
+
+### `07m_FourierQExpansion.lean`
+
+**Imports**
+
+- `Mathlib.Analysis.Fourier.AddCircle`
+
+**Purpose**
+
+This file proves one honest analytic uniqueness fact:
+`continuousFourierQExpansion` sends a genuine continuous complex function
+`C(AddCircle T, ℂ)` to its complete `ℤ`-indexed Fourier coefficient sequence,
+and `continuousFourierQExpansion_injective` proves that this map is injective
+when `0 < T`.
+
+The proof uses Mathlib's `fourierCoeff`, `fourierBasis`, and the faithful
+continuous-function-to-`L²` map for normalized Haar measure. It is only a
+q-expansion-style analytic foundation. In particular, it does **not** define
+mod-`ℓ` modular forms, construct a modular-curve q-expansion map, provide a
+`ShimuraQExpansionData` instance, or discharge the `QExpansionPrincipleOnV`
+needed by 07g.
+
+### `07n_NormalizedEigenlineQExpansion.lean`
+
+**Imports**
+
+- `Beal.Galois.07g_IharaOnV`
+
+**Purpose**
+
+This file supplies `QExpansionPrincipleOnV` for the narrower situation
+actually used at a descent edge: `V` is an explicitly supplied
+one-dimensional eigenline whose generator has first coefficient `1`.
+
+`NormalizedEigenlineData` records the generator, its membership in `V`, the
+fact that it spans `V`, and its normalization at `q`. The proof then reads a
+relation
+
+```text
+a(q) + b(q^p) = 0
+```
+
+at `q^1` to prove `a = 0`, and at `q^(p*n)` to prove every coefficient of
+`b` is zero. This yields
+`QExpansionPrincipleOnV_fromEigenline` and the corresponding
+restricted Ihara theorem without a new axiom or a full modular-form Fourier
+library.
+
+The analytic uniqueness theorem in 07m remains a separate background
+foundation. The normalized-eigenline proof does not import it because the
+V-specific argument needs only the `q^1` and `q^(p*n)` coefficients; adding an
+unused analytic dependency would introduce `Classical.choice` without
+strengthening this theorem.
+
+The authentic 11,774-byte Batch148 v1 file is used only as provenance for the
+intended normalized eigenform. Its executable `True` placeholders are not
+imported. Diamond--Shurman Proposition 8.3.2 is the Frobenius identity on
+`Pic^0` after good reduction; it supports Batch148's trace route but is not a
+q-expansion or degeneracy-kernel theorem.
+
 ### `08_RibetProof.lean`
 
 **Imports**
@@ -379,6 +528,8 @@ Collectively, the files establish:
 9. a proved conditional 07h transport from restricted Ihara kernel-zero and
    an explicit old/new complement premise to the V-specific decomposition
    hypothesis.
+10. a data-valued representation/Hecke/newform transport boundary and a
+    choice-free token construction from explicit support data.
 
 ## What this directory does not establish
 
@@ -420,6 +571,8 @@ Beal.Galois.«04_LevelLowering»
 Beal.Galois.«05_Hecke»
 Beal.Galois.«06_MaximalIdeal»
 Beal.Galois.«07_NewformSupport»
+Beal.Galois.«07l_ShimuraQExpansionSupplier»
+Beal.Galois.«07m_FourierQExpansion»
 Beal.Galois.«08_RibetProof»
 ```
 

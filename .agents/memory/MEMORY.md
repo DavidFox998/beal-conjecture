@@ -1,0 +1,1 @@
+- [Prop-to-data support boundary](prop-to-data-support-boundary.md) — keep token-producing newform support witnesses in Type; Prop existentials cannot construct PreservedForm without choice.

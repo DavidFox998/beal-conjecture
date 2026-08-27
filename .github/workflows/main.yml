@@ -92,8 +92,8 @@ jobs:
           #print axioms Beal18Frey.frey_disc_nonzero_trivial
           #print axioms Beal19Final.beal_proof_assembled
           #print axioms Beal19Final.beal_from_S2
-          #print axioms Beal20Done.beal_conjecture_is_proved
-          #print axioms Beal20Done.twenty_bricks
+          #print axioms Beal20Done.beal_conjecture_conditional_on_enriched_plan
+          #print axioms Beal20Done.twenty_bricks_conditional
           #print axioms Beal21Fermat.beal_implies_fermat
           #print axioms Beal21Fermat.beal_conjecture_to_21_core
           #print axioms Beal21Fermat.beal_implies_fermat_full_core
@@ -119,8 +119,8 @@ jobs:
           # not mathematical assumptions. Audit the final theorem's named domain axioms exactly.
           cat > /tmp/beal_final_axiom_audit.lean <<'EOF'
           import Beal
-          #print axioms Beal20Done.beal_conjecture_is_proved
-          #print axioms Beal20Done.twenty_bricks
+          #print axioms Beal20Done.beal_conjecture_conditional_on_enriched_plan
+          #print axioms Beal20Done.twenty_bricks_conditional
           EOF
           lake env lean /tmp/beal_final_axiom_audit.lean 2>&1 | tee /tmp/beal_final_axiom_audit.txt
           if grep -Fq 'sorryAx' /tmp/beal_final_axiom_audit.txt; then

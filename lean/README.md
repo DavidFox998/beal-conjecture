@@ -9,6 +9,22 @@ The project-level [`README.md`](../README.md) explains the mathematical
 motivation and the current formal status. This document explains how the
 source tree is organized and how to read it as a Lean project.
 
+## v7.2.0 source snapshot
+
+The release branch is `beal-4.12-v-specific-edge`, based on v7.1.0 commit
+`76d1dec4a`; the integrated Ribet-fix snapshot is `9ebd9659b`. It targets Lean
+and Mathlib 4.12.0. The active B15 edge carries `NormalizedEigenlineData` and
+derives `QExpansionPrincipleOnV` with
+`QExpansionPrincipleOnV_fromEigenline`; it does not carry a textual `hQ`
+field. The remaining proposition-valued edge boundaries are
+`OldNewDecompHyp` and `LocalizedRankOne`.
+
+The release-path audit finds no executable `sorry`, `admit`, `sorryAx`,
+declared `axiom`, or opaque Ribet shortcut. Its focused foundational footprint
+is `[propext, Quot.sound]`. These are audit-scope statements, not a claim that
+the typed Wiles, Tate, enriched-plan, support, or transport inputs have been
+constructed from first principles.
+
 ## Source-tree map
 
 ```text
@@ -186,7 +202,7 @@ B15 exact descent plan
         ↓
 Galois 01–06 representation and Hecke interfaces
         ↓
-Galois 07f–07k genuine support boundaries
+Galois 07f–07n genuine support and eigenline boundaries
         ↓
 B15 per-edge token transport
         ↓
@@ -241,13 +257,13 @@ When adding a new result:
    file;
 3. import only the preceding interfaces needed by the declaration;
 4. name any unproved mathematics as an explicit proposition, structure, or
-   data-valued provider;
+   data-valued interface;
 5. add the module to `Beal.lean` if it is part of the complete source
    inventory;
 6. document the new boundary in the nearest README.
 
 The most important discipline is semantic honesty: a definition of a
-proposition is not a proof of that proposition, and a supplied provider is
-not a theorem that constructs the provider. The source tree is designed so
+proposition is not a proof of that proposition, and supplied data is not a
+theorem that constructs that data. The source tree is designed so
 that those distinctions remain visible both in the code and in its
 documentation.
