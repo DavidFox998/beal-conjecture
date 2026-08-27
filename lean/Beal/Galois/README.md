@@ -15,6 +15,14 @@ The v7 genuine-provider boundary is explicit and data-valued:
   coefficient submodule, and `SupportInNewSubspace`. It is inspectable and
   introduces no choice; because the residual representation carries a
   universe-polymorphic group carrier, Lean reports its type as `Type 1`.
+- `NewformHeckeToPreservedTokenTransport` isolates the narrower mathematical
+  conversion: a finite newform, its realization of the fixed residual
+  representation, and annihilation by the attached maximal ideal must produce
+  the B15 token. `NewSubspaceSupportData` retains those witnesses in `Type`,
+  and `preservedToken_of_supportData` performs the exact transport without
+  `Classical.choice`. The existing proposition-valued support existential
+  cannot be eliminated into `PreservedForm` constructively; no inhabitant of
+  the data or transport boundary is claimed.
 - `GaloisEdgeWitness` carries the residual representation, maximal ideal,
   genuine coefficient submodule, localized Hecke data, attachment, the
   explicit `QExpansionPrincipleOnV`, old/new, localized-rank-one, 07j support
@@ -75,9 +83,10 @@ Galois/
 ├── 07h_OldNewOnV.lean     conditional old/new transport on a genuine submodule
 ├── 07i_MultOneOnV.lean    localized rank-one boundary
 ├── 07j_SupportProofGenuine.lean genuine support assembly
-├── 07k_TokenBridge.lean   data-valued support-to-token boundary
+├── 07k_TokenBridge.lean   newform/Hecke transport and support-to-token boundary
 ├── 07l_ShimuraQExpansionSupplier.lean structured geometric supplier for 07g
 ├── 07m_FourierQExpansion.lean analytic Fourier uniqueness foundation
+├── 07n_NormalizedEigenlineQExpansion.lean normalized eigenline supplier for 07g
 ├── 07_NewformSupport.lean explicit lower-level new-support obligation
 ├── 08_RibetProof.lean     conditional transport from support to lowering
 └── README.md              this guide
@@ -513,6 +522,8 @@ Collectively, the files establish:
 9. a proved conditional 07h transport from restricted Ihara kernel-zero and
    an explicit old/new complement premise to the V-specific decomposition
    hypothesis.
+10. a data-valued representation/Hecke/newform transport boundary and a
+    choice-free token construction from explicit support data.
 
 ## What this directory does not establish
 
