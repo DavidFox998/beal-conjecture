@@ -18,7 +18,8 @@
       import Beal.B14_TateInImpliesOrd1
       import Beal.B15_LevelTo2_Core
       import Beal.B03_Conductor_Core
-       import Beal.Galois.«07k_TokenBridge»
+        import Beal.Galois.«07k_TokenBridge»
+        import Beal.Galois.«07n_NormalizedEigenlineQExpansion»
       import Mathlib.Data.List.Basic
       import Mathlib.Data.Nat.Factors
 
@@ -52,7 +53,8 @@
          localized : Beal.Galois.LocalizedHeckeData M ℓ m
          hV : Beal.Galois.IsGenuineFormSubmoduleAtLevel M ℓ V
          hAttach : Beal.Galois.FreyHeckeAttachment R m.1
-         hQ : Beal.Galois.QExpansionPrincipleOnV M p ℓ V
+         normalized :
+           Beal.Galois.NormalizedEigenlineData ℓ V
          hOldNew :
            Beal.Galois.OldNewDecompHyp (M := M) (ℓ := ℓ) V
          hRank :
@@ -116,9 +118,12 @@
            (edge : GaloisEdgeWitness (model := model) ℓ N p M) :
            RibetStepResult ℓ N p := by
          letI := edge.localized
+         have hQ :=
+           Beal.Galois.QExpansionPrincipleOnV_FromNormalizedEigenline
+             M p ℓ edge.V edge.hPrime edge.normalized
          have hIhara :=
            Beal.Galois.ihara_zero_on_genuine_V_conditional
-             M p ℓ edge.V edge.hV edge.hQ
+             M p ℓ edge.V edge.hV hQ
          have hSupport :=
            edge.hSupportBridge edge.hV hIhara edge.hOldNew edge.hRank
          exact

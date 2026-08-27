@@ -35,6 +35,9 @@ import Beal.B00_OperaNumerorum
 import Beal.B14_FreyS2
 import Beal.B14_TateC4Nonzero
 import Beal.B14_TateInImpliesOrd1
+import Beal.Galois.«07l_ShimuraQExpansionSupplier»
+import Beal.Galois.«07m_FourierQExpansion»
+import Beal.Galois.«07n_NormalizedEigenlineQExpansion»
     import Beal.B15_LevelTo2_Core
     import Beal.B15_LevelTo2
 import Beal.B15_RibetIterate
