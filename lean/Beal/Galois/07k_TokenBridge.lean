@@ -37,6 +37,79 @@ def SupportedNewformToTokenProvider
     SupportInNewSubspace R 𝔪 →
     PreservedForm ℓ M
 
+/-- The exact representation/Hecke/newform transport still required at level
+    `M`.
+
+    This data-valued interface is narrower than
+    `SupportedNewformToTokenProvider`: its caller must supply the finite
+    newform itself, proof that it realizes the fixed Frey residual
+    representation, and proof that the attached maximal ideal annihilates its
+    coefficient sequence.  A genuine modular-form level-lowering theorem can
+    implement this function directly.
+
+    No inhabitant is constructed here.  In particular, this definition does
+    not identify the finite form record with an integral modular form, build a
+    localized Hecke module, or prove that the B15 token represents that form. -/
+def NewformHeckeToPreservedTokenTransport
+    {A B C : ℤ} {x y z : ℕ}
+    {model : FreyCurveModel A B C x y z}
+    (ℓ M : ℕ) : Type 1 :=
+  ∀ (R : FreyResidualRepresentation model ℓ)
+    (𝔪 : MaximalIdeal M ℓ)
+    (W : ModLWeightTwoForm (model := model) M ℓ),
+    IsNewform W →
+    ModLRealizesRepresentation W R →
+    HeckeIdealAnnihilatesForm 𝔪.val W →
+    PreservedForm ℓ M
+
+/-- A data-valued version of genuine new-subspace support.
+
+    The existing `SupportInNewSubspace` is proposition-valued and hides its
+    form behind an existential. Lean correctly forbids eliminating that
+    existential into the data type `PreservedForm` without choice. This record
+    retains the same finite witnesses in `Type`, so the token transport can
+    consume them constructively. -/
+structure NewSubspaceSupportData
+    {A B C : ℤ} {x y z : ℕ}
+    {model : FreyCurveModel A B C x y z}
+    {ℓ M : ℕ}
+    (R : FreyResidualRepresentation model ℓ)
+    (𝔪 : MaximalIdeal M ℓ) where
+  form : ModLWeightTwoForm (model := model) M ℓ
+  isNewform : IsNewform form
+  realizes : ModLRealizesRepresentation form R
+  annihilated : HeckeIdealAnnihilatesForm 𝔪.val form
+
+/-- Forget the data-valued support witness to the existing proposition. -/
+theorem NewSubspaceSupportData.toSupportInNewSubspace
+    {A B C : ℤ} {x y z : ℕ}
+    {model : FreyCurveModel A B C x y z}
+    {ℓ M : ℕ}
+    {R : FreyResidualRepresentation model ℓ}
+    {𝔪 : MaximalIdeal M ℓ}
+    (support : NewSubspaceSupportData R 𝔪) :
+    SupportInNewSubspace R 𝔪 :=
+  ⟨support.form, support.isNewform, support.realizes, support.annihilated⟩
+
+/-- Construct B15's token from explicit support data and the exact
+    representation/Hecke/newform transport.
+
+    Unlike an attempted elimination of `SupportInNewSubspace`, this definition
+    is constructive: the finite form and all compatibility witnesses remain
+    data fields. -/
+def preservedToken_of_supportData
+    {A B C : ℤ} {x y z : ℕ}
+    {model : FreyCurveModel A B C x y z}
+    {ℓ M : ℕ}
+    {R : FreyResidualRepresentation model ℓ}
+    {𝔪 : MaximalIdeal M ℓ}
+    (transport : NewformHeckeToPreservedTokenTransport
+      (model := model) ℓ M)
+    (support : NewSubspaceSupportData R 𝔪) :
+    PreservedForm ℓ M :=
+  transport R 𝔪 support.form support.isNewform support.realizes
+    support.annihilated
+
 /-- The missing finite-form compatibility needed to create B15's token.
 
     A support witness supplies a finite mod-ℓ newform `W`, its realization of
@@ -108,6 +181,10 @@ theorem galois_support_to_token_bridge_proof
   exact hToken 𝔪 W hW_new hW_realizes hW_annihilated
 
 #print axioms SupportedNewformToTokenProvider
+#print axioms NewformHeckeToPreservedTokenTransport
+#print axioms NewSubspaceSupportData
+#print axioms NewSubspaceSupportData.toSupportInNewSubspace
+#print axioms preservedToken_of_supportData
 #print axioms SupportedNewformToPreservedToken
 #print axioms GaloisToRibetBridge
 #print axioms galois_support_to_token_bridge
