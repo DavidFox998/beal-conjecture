@@ -65,7 +65,7 @@ theorem NormalizedEigenlineData.eq_zero_of_coefficient_one_eq_zero
 
     Thus no full analytic Fourier theory, modular-curve Jacobian, or
     Frobenius/Hecke placeholder is smuggled into the result. -/
-theorem QExpansionPrincipleOnV_FromNormalizedEigenline
+theorem QExpansionPrincipleOnV_fromEigenline
     (M p ℓ : ℕ)
     (V : Submodule (ZMod ℓ) (CoefficientSequence ℓ))
     (hp : p.Prime)
@@ -98,12 +98,27 @@ theorem IharaKernelZeroOnV_FromNormalizedEigenline
     (D : NormalizedEigenlineData ℓ V) :
     IharaKernelZeroOnV M p ℓ V :=
   ihara_zero_on_genuine_V_conditional M p ℓ V hV
-    (QExpansionPrincipleOnV_FromNormalizedEigenline M p ℓ V hp D)
+    (QExpansionPrincipleOnV_fromEigenline M p ℓ V hp D)
 
 #print axioms NormalizedEigenlineData
 #print axioms NormalizedEigenlineData.eq_zero_of_coefficient_one_eq_zero
-#print axioms QExpansionPrincipleOnV_FromNormalizedEigenline
+#print axioms QExpansionPrincipleOnV_fromEigenline
 #print axioms IharaKernelZeroOnV_FromNormalizedEigenline
 -- Expected foundational dependencies: [propext, Quot.sound] only.
 
 end Beal.Galois
+
+namespace Beal.QExpansionSupplier
+
+/-- Public v7.1.0 name for the normalized-eigenline supplier. -/
+theorem QExpansionPrincipleOnV_fromEigenline
+    (M p ℓ : ℕ)
+    (V : Submodule (ZMod ℓ) (Beal.Galois.CoefficientSequence ℓ))
+    (hp : p.Prime)
+    (D : Beal.Galois.NormalizedEigenlineData ℓ V) :
+    Beal.Galois.QExpansionPrincipleOnV M p ℓ V :=
+  Beal.Galois.QExpansionPrincipleOnV_fromEigenline M p ℓ V hp D
+
+#print axioms QExpansionPrincipleOnV_fromEigenline
+
+end Beal.QExpansionSupplier

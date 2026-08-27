@@ -118,12 +118,12 @@
            (edge : GaloisEdgeWitness (model := model) ℓ N p M) :
            RibetStepResult ℓ N p := by
          letI := edge.localized
-         have hQ :=
-           Beal.Galois.QExpansionPrincipleOnV_FromNormalizedEigenline
+         have qExpansion :=
+           Beal.Galois.QExpansionPrincipleOnV_fromEigenline
              M p ℓ edge.V edge.hPrime edge.normalized
          have hIhara :=
            Beal.Galois.ihara_zero_on_genuine_V_conditional
-             M p ℓ edge.V edge.hV hQ
+             M p ℓ edge.V edge.hV qExpansion
          have hSupport :=
            edge.hSupportBridge edge.hV hIhara edge.hOldNew edge.hRank
          exact

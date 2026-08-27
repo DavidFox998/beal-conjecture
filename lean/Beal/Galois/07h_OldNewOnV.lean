@@ -94,11 +94,11 @@ theorem old_new_decomp_from_genuine
     (M p ℓ : ℕ)
     (V : Submodule (ZMod ℓ) (CoefficientSequence ℓ))
     (hV : IsGenuineFormSubmoduleAtLevel M ℓ V)
-    (hQ : QExpansionPrincipleOnV M p ℓ V)
+     (qExpansion : QExpansionPrincipleOnV M p ℓ V)
     (hProjector : AtkinLehnerProjectorOnV M p ℓ V) :
     OldNewDecompHyp (M := M) (ℓ := ℓ) V := by
   apply old_new_decomp_from_ihara M p ℓ V
-    (ihara_zero_on_genuine_V_conditional M p ℓ V hV hQ)
+     (ihara_zero_on_genuine_V_conditional M p ℓ V hV qExpansion)
   exact hProjector
 
 /-- Conditional V-specific old/new decomposition.
