@@ -4,9 +4,11 @@ This directory contains the typed Galois-representation, mod-ℓ form, level-low
 
 It is intentionally a **boundary layer**, not an unconditional proof of Beal's Conjecture. The files provide data structures, propositions, coefficient operations, and small transport lemmas. They do not silently turn the classical theorems of Wiles, Tate, or Ribet into Lean theorems.
 
-## Current genuine-provider status
+## v7.2.0 V-specific edge status
 
-The v7 genuine-provider boundary is explicit and data-valued:
+The release branch is `beal-4.12-v-specific-edge`, based on v7.1.0 commit
+`76d1dec4a`; the integrated Ribet-fix snapshot is `9ebd9659b`. The boundary is
+explicit and data-valued:
 
 - The old B15 declaration `ribet_single_step : Prop` has been deleted from
   the active source path.
@@ -24,11 +26,12 @@ The v7 genuine-provider boundary is explicit and data-valued:
   cannot be eliminated into `PreservedForm` constructively; no inhabitant of
   the data or transport boundary is claimed.
 - `GaloisEdgeWitness` carries the residual representation, maximal ideal,
-  genuine coefficient submodule, localized Hecke data, attachment, the
-  explicit `QExpansionPrincipleOnV`, old/new, localized-rank-one, 07j support
-  bridge, and data-valued 07k newform support plus representation/Hecke
-  transport for one exact lowering edge. Restricted Ihara is derived
-  conditionally from that principle at the B15 use site.
+  genuine coefficient submodule, localized Hecke data, attachment,
+  `NormalizedEigenlineData`, old/new, localized-rank-one, 07j support
+  assembly, `NewSubspaceSupportData`, and
+  `NewformHeckeToPreservedTokenTransport` for one exact lowering edge.
+- B15 derives `QExpansionPrincipleOnV` through
+  `QExpansionPrincipleOnV_fromEigenline`; `hQ` is not a field of the edge.
 - `GaloisDescentPlan` is indexed by the exact Wiles arithmetic-plan value, so
   every enriched edge has that constructor's `N`, `p`, and `M`; the supplier
   cannot discard the certified path and substitute another chain.
@@ -65,9 +68,9 @@ The v7 genuine-provider boundary is explicit and data-valued:
   remains **MISSING**; Ihara kernel-zero alone is not presented as an
   Atkin–Lehner decomposition theorem.
 - B14's Wiles boundary still returns the arithmetic plan only. The B15
-  supplier makes the additional `hQ`, `hOldNew`, `hRank`, support bridge,
-  data-valued newform support, and representation/Hecke transport explicit on
-  every edge without a B14 → Galois import cycle.
+  supplier adds normalized eigenline data, `hOldNew`, `hRank`, support
+  assembly, and token-transport data on every edge without a B14 → Galois
+  import cycle.
 
 ## Directory structure
 
@@ -380,7 +383,9 @@ construct before 07g can use the result.
   kernel.
 
 From this data, `QExpansionPrincipleOnV_FromShimura` proves the exact
-coefficient-cancellation proposition consumed by `GaloisEdgeWitness.hQ`.
+coefficient-cancellation proposition that the earlier explicit `hQ` edge
+field represented. The active v7.2 edge instead derives this proposition from
+normalized eigenline data.
 `IharaKernelZeroOnV_FromShimura` then composes that adapter with the existing
 07g theorem.
 
@@ -463,7 +468,7 @@ a(q) + b(q^p) = 0
 
 at `q^1` to prove `a = 0`, and at `q^(p*n)` to prove every coefficient of
 `b` is zero. This yields
-`QExpansionPrincipleOnV_FromNormalizedEigenline` and the corresponding
+`QExpansionPrincipleOnV_fromEigenline` and the corresponding
 restricted Ihara theorem without a new axiom or a full modular-form Fourier
 library.
 

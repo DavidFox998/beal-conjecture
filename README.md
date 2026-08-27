@@ -54,37 +54,52 @@ formalization makes this coupling explicit rather than gestural.
 
 ## Current formal status
 
-> **Current main — 0 `sorry`, two named domain axioms plus explicit enriched-plan data**
+> **v7.2.0 — 0 declared axioms, 0 opaque boundaries, 2 explicit propositions + eigenline supplier**
 >
 > This repository is still a formalization of the Beal argument, not a claim
 > that Lean has reconstructed Wiles, Tate, or Ribet from first principles. The
-> important change is the shape of the Ribet boundary: the former opaque B15
-> single-step axiom has been deleted from the active source path and replaced
-> by an indexed per-edge Galois plan with data-valued provider functions.
+> release branch is `beal-4.12-v-specific-edge`, based on v7.1.0 commit
+> `76d1dec4a`; the integrated Ribet-fix snapshot is `9ebd9659b`.
+>
+> Here “0 axioms” means no executable `axiom`, `sorry`, `admit`, `sorryAx`, or
+> opaque Ribet shortcut is declared by this release path. It does **not** mean
+> that Wiles, Tate, or the remaining level-lowering mathematics has been
+> reconstructed. Those obligations remain visible as typed interfaces,
+> explicit propositions, and supplied data.
 >
 > The current conditional chain is:
 >
 > **primitive Beal data** → **Frey curve and discriminant arithmetic**
 > → **one Tate-supplied Frey model and conductor** → **a typed modular-form
 > token and certified arithmetic descent plan at that same conductor**
-> → **an explicit `EnrichedPlanSupplier` carrying 07g–07k data per edge**
+> → **an explicit `EnrichedPlanSupplier` carrying normalized eigenline,
+> old/new, localized-rank, support, and token-transport data per edge**
 > → **level 2** → **$S_2(Γ_0(2)) = 0$**
 > → **contradiction**.
 >
-> The final B20 theorem uses these explicit boundaries:
+> The final B20 theorem still depends on the typed Wiles and Tate interfaces
+> and on an explicit `EnrichedPlanSupplier`. At each descent edge,
+> `NormalizedEigenlineData` derives `QExpansionPrincipleOnV` through
+> `QExpansionPrincipleOnV_fromEigenline`; the two remaining proposition-valued
+> boundaries are `OldNewDecompHyp` and `LocalizedRankOne`.
+>
+> The active token path does not use `SupportedNewformToTokenProvider`.
+> `NewSubspaceSupportData` retains a finite newform, representation
+> realization, and Hecke annihilation as data, while
+> `NewformHeckeToPreservedTokenTransport` converts that data to
+> `PreservedForm` without `Classical.choice`.
+>
+> The final named interfaces are:
 > `Beal.FreyTate.wiles_modularity`,
 > `Beal.FreyTate.TateStep2.tate_step2_I_n_conductor_one`, and
 > `Beal.RibetIterate.EnrichedPlanSupplier`.
-> `Beal.Galois.SupportedNewformToTokenProvider` is the one-edge data-valued
-> missing function used by `ribet_single_step_from_genuine`; it is not a
-> hidden proposition or a choice-based extraction.
 >
-> `Classical.choice` still appears in the B20 audit through the existing
-> `TateStep2.freyModelOf` construction. It is not introduced by 07k or by the
-> B15 genuine-provider bridge. The 07f genuine-form boundary also proves that
-> genuine data excludes the raw 07c counterexample `(-Bp, 1, 1)`.
+> `lake build Beal` targets Lean/Mathlib 4.12.0. The focused v7.2 edge audit
+> reports the foundational footprint `{propext, Quot.sound}`. The broader B20
+> audit still exposes `Classical.choice` through the existing
+> `TateStep2.freyModelOf` construction; v7.2 does not hide that distinction.
 
-### From one opaque step axiom to explicit provider data
+### From one opaque step axiom to explicit edge data
 
 At the #161 baseline, the README described the formal boundary as one
 explicit `modularity_hypothesis`: a single typed proposition standing for
@@ -97,8 +112,12 @@ The B14–B20 path now exposes the step boundary as data:
 |---|---|
 | `wiles_modularity` | For the fixed Tate Frey model, a residual prime, typed form token at its conductor, and a certified finite descent plan. |
 | `tate_step2_I_n_conductor_one` | The local Tate Step 2 statement: when the Frey invariants have the required valuations, the conductor has exact prime order. |
-| `SupportedNewformToTokenProvider` | Data-valued missing compatibility that returns a `PreservedForm` from genuine support at one lower level. |
-| `GaloisEdgeWitness` | One exact edge carrying its residual representation, maximal ideal, genuine submodule, localized Hecke data, 07g–07j hypotheses, and 07k provider. |
+| `NormalizedEigenlineData` | Explicit normalized generator and spanning data used to derive the V-specific q-expansion principle. |
+| `OldNewDecompHyp` | Explicit old/new complement proposition. |
+| `LocalizedRankOne` | Explicit localized multiplicity-one/rank proposition. |
+| `NewSubspaceSupportData` | Choice-free finite-newform, representation-realization, and Hecke-annihilation witnesses. |
+| `NewformHeckeToPreservedTokenTransport` | Narrow data-valued conversion from those witnesses to `PreservedForm`. |
+| `GaloisEdgeWitness` | One exact edge carrying the representation, Hecke, eigenline, old/new, rank, support, and token-transport data. |
 | `EnrichedPlanSupplier` | Data-valued enrichment indexed by the exact unchanged Wiles arithmetic-plan value, so its `N`, `p`, and `M` edges cannot be replaced by a different chain. |
 
 The distinction matters. `tate_frey_multiplicative_derived` is a theorem, not
@@ -126,9 +145,10 @@ modular forms. Those global ingredients remain inside the explicit
   deleted from the active source path. B15 now consumes explicit
   `RibetSingleStepProviders`, and `ribet_single_step_from_genuine` audits to
   `[propext, Quot.sound]`.
-- **Current main:** B15 now consumes `EnrichedPlanSupplier`. Its indexed
-  `GaloisDescentPlan` carries `hIhara`, `hOldNew`, `hRank`, the 07j support
-  bridge, and the 07k token provider on each aligned lowering edge.
+- **v7.2.0:** B15 consumes `EnrichedPlanSupplier`. Each indexed edge derives
+  its q-expansion premise from normalized eigenline data and carries explicit
+  old/new, rank, newform-support, and token-transport data. The former broad
+  provider is no longer used by the active descent.
 
 This is a more inspectable formal interface, not a stronger claim of completed
 foundational mathematics. Wiles and Tate remain named mathematical assumptions;
@@ -320,6 +340,7 @@ Tate, or Ribet from first principles.
 | **v4.1.0 Tate local conductor verification** | `v4.1.0` / `ec8f5de` | [Zenodo v4.1.0](https://doi.org/10.5281/zenodo.22091549) | One typed `FreyCurveModel` fixes the coefficients, $c_4$, discriminant, conductor, and odd-prime local contract to the same $(A,B,C,x,y,z)$; the derived theorem returns that model's conductor and the named-axiom count remains three |
 | **v5.0.0 preserved-form Ribet descent** | `v5.0.0` / `92a165c` | [Zenodo v5.0.0](https://doi.org/10.5281/zenodo.22090900) | `ribet_level_lowering_real` leaves the active path; `ribet_single_step` transports a preserved-form witness one exact division at a time to the level-$2$ contradiction |
 | **v7.0.0 genuine provider** | `v7.0.0-genuine-provider` / `380a5f490` | Pending — no Zenodo record yet | The old `ribet_single_step : Prop` is deleted; `RibetSingleStepProviders` and `SupportedNewformToTokenProvider` are explicit data-valued boundaries, and `ribet_single_step_from_genuine` audits to `[propext, Quot.sound]` |
+| **v7.2.0 V-specific eigenline edge** | `beal-4.12-v-specific-edge` / `9ebd9659b` | Pending — no verified Zenodo record | Removes the broad provider from the active B15 path; derives `hQ` from normalized eigenline data; leaves `OldNewDecompHyp` and `LocalizedRankOne` explicit; carries choice-free newform support and Hecke-to-token transport data. Focused footprint: `[propext, Quot.sound]`. |
 
 The v4.0.0 Zenodo landing page retains an older v0.4-style display title; its
 release tag, archive, and audited boundary are the v4.0.0 row above. The
