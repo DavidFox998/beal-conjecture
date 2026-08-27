@@ -1,0 +1,21 @@
+cff-version: 1.2.0
+title: "Beal Conjecture — a formal instrument in Opera Numerorum"
+message: "If you use this software, please cite it as below."
+type: software
+authors:
+  - family-names: Fox
+    given-names: David
+    affiliation: "Opera Numerorum"
+version: "v4.1.0"
+date-released: 2026-08-24
+doi: "10.5281/zenodo.22091549"
+license: MIT
+repository-code: "https://github.com/DavidFox998/beal-conjecture"
+keywords:
+  - Beal Conjecture
+  - Lean 4
+  - Formal Mathematics
+  - Frey Curve
+  - Ribet Level Lowering
+  - Modularity Hypothesis
+abstract: "A Lean 4 formalization scaffold for the Beal Conjecture. v4.1.0 verifies the Tate boundary's data model: closed Frey b₂, b₄, c₄, and discriminant arithmetic; odd-prime c₄ nonvanishing lemmas; and a typed FreyCurveModel that keeps coefficients, c₄, discriminant, conductor, prime support, and local conductor data tied to one fixed (A, B, C, x, y, z). The derived local theorem returns that model's actual conductor. The remaining Tate interface is an explicit odd-prime local axiom; this release does not claim the full Tate algorithm, the 2-adic exponent, or a global conductor computation. The active B14-B20 path has three named mathematical boundaries—Tate, Wiles modularity, and typed preserved-form Ribet descent—with Lean foundation dependencies reported separately. No executable sorry or sorryAx remains in the active path."

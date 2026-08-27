@@ -1,0 +1,20 @@
+{"log":
+ [{"message":
+   ".> LEAN_PATH=././.lake/packages/batteries/.lake/build/lib:././.lake/packages/Qq/.lake/build/lib:././.lake/packages/aesop/.lake/build/lib:././.lake/packages/proofwidgets/.lake/build/lib:././.lake/packages/Cli/.lake/build/lib:././.lake/packages/importGraph/.lake/build/lib:././.lake/packages/LeanSearchClient/.lake/build/lib:././.lake/packages/mathlib/.lake/build/lib:././.lake/build/lib LD_LIBRARY_PATH= /home/runner/.elan/toolchains/leanprover--lean4---v4.12.0/bin/lean ./././lean/Beal/Galois/07c_Ihara.lean -R ./././lean -o ././.lake/build/lib/Beal/Galois/07c_Ihara.olean -i ././.lake/build/lib/Beal/Galois/07c_Ihara.ilean -c ././.lake/build/ir/Beal/Galois/07c_Ihara.c --json",
+   "level": "trace"},
+  {"message":
+   "./././lean/Beal/Galois/07c_Ihara.lean:104:0: 'Beal.Galois.B₁' depends on axioms: [propext, Quot.sound]",
+   "level": "info"},
+  {"message":
+   "./././lean/Beal/Galois/07c_Ihara.lean:105:0: 'Beal.Galois.Bp' depends on axioms: [propext, Quot.sound]",
+   "level": "info"},
+  {"message":
+   "./././lean/Beal/Galois/07c_Ihara.lean:106:0: 'Beal.Galois.IharaMap' depends on axioms: [propext, Quot.sound]",
+   "level": "info"},
+  {"message":
+   "./././lean/Beal/Galois/07c_Ihara.lean:107:0: 'Beal.Galois.IharaKernelZero' depends on axioms: [propext, Quot.sound]",
+   "level": "info"},
+  {"message":
+   "./././lean/Beal/Galois/07c_Ihara.lean:108:0: 'Beal.Galois.iharaMap_has_coefficient_kernel' depends on axioms: [propext, Quot.sound]",
+   "level": "info"}],
+ "depHash": "8128061891239357323"}

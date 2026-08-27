@@ -1,0 +1,14 @@
+{"log":
+ [{"message":
+   ".> LEAN_PATH=././.lake/packages/Cli/.lake/build/lib:././.lake/packages/batteries/.lake/build/lib:././.lake/packages/Qq/.lake/build/lib:././.lake/packages/aesop/.lake/build/lib:././.lake/packages/proofwidgets/.lake/build/lib:././.lake/packages/importGraph/.lake/build/lib:././.lake/packages/LeanSearchClient/.lake/build/lib:././.lake/packages/plausible/.lake/build/lib:././.lake/packages/mathlib/.lake/build/lib:././.lake/build/lib LD_LIBRARY_PATH= /home/runner/.elan/toolchains/leanprover--lean4---v4.15.0/bin/lean ./././lean/Beal/B07_Galois_Core.lean -R ./././lean -o ././.lake/build/lib/Beal/B07_Galois_Core.olean -i ././.lake/build/lib/Beal/B07_Galois_Core.ilean -c ././.lake/build/ir/Beal/B07_Galois_Core.c --json",
+   "level": "trace"},
+  {"message":
+   "./././lean/Beal/B07_Galois_Core.lean:12:0: 'Prime07Core' does not depend on any axioms",
+   "level": "info"},
+  {"message":
+   "./././lean/Beal/B07_Galois_Core.lean:13:0: 'IsFreyGaloisRep07Core' does not depend on any axioms",
+   "level": "info"},
+  {"message":
+   "./././lean/Beal/B07_Galois_Core.lean:14:0: 'FreyRepIrreducible07Core' does not depend on any axioms",
+   "level": "info"}],
+ "depHash": "18048746857432724756"}

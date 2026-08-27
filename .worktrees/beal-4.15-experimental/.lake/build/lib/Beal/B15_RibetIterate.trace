@@ -1,0 +1,23 @@
+{"log":
+ [{"message":
+   ".> LEAN_PATH=././.lake/packages/Cli/.lake/build/lib:././.lake/packages/batteries/.lake/build/lib:././.lake/packages/Qq/.lake/build/lib:././.lake/packages/aesop/.lake/build/lib:././.lake/packages/proofwidgets/.lake/build/lib:././.lake/packages/importGraph/.lake/build/lib:././.lake/packages/LeanSearchClient/.lake/build/lib:././.lake/packages/plausible/.lake/build/lib:././.lake/packages/mathlib/.lake/build/lib:././.lake/build/lib LD_LIBRARY_PATH= /home/runner/.elan/toolchains/leanprover--lean4---v4.15.0/bin/lean ./././lean/Beal/B15_RibetIterate.lean -R ./././lean -o ././.lake/build/lib/Beal/B15_RibetIterate.olean -i ././.lake/build/lib/Beal/B15_RibetIterate.ilean -c ././.lake/build/ir/Beal/B15_RibetIterate.c --json",
+   "level": "trace"},
+  {"message":
+   "./././lean/Beal/B15_RibetIterate.lean:207:6: 'Beal.RibetIterate.ribet_iterate_to_2' depends on axioms: [propext]",
+   "level": "info"},
+  {"message":
+   "./././lean/Beal/B15_RibetIterate.lean:210:7: 'Beal.RibetIterate.GaloisEdgeWitness' depends on axioms: [propext, Quot.sound]",
+   "level": "info"},
+  {"message":
+   "./././lean/Beal/B15_RibetIterate.lean:211:7: 'Beal.RibetIterate.GaloisDescentPlan' depends on axioms: [propext, Quot.sound]",
+   "level": "info"},
+  {"message":
+   "./././lean/Beal/B15_RibetIterate.lean:212:7: 'Beal.RibetIterate.EnrichedPlanSupplier' depends on axioms: [propext, Quot.sound]",
+   "level": "info"},
+  {"message":
+   "./././lean/Beal/B15_RibetIterate.lean:213:7: 'Beal.RibetIterate.ribet_single_step_from_genuine' depends on axioms: [propext, Quot.sound]",
+   "level": "info"},
+  {"message":
+   "./././lean/Beal/B15_RibetIterate.lean:214:6: 'Beal.RibetIterate.ribet_iteration_gives_False' depends on axioms: [propext,\n Classical.choice,\n Quot.sound,\n Beal.FreyTate.wiles_modularity,\n Beal.FreyTate.TateStep2.tate_step2_I_n_conductor_one]",
+   "level": "info"}],
+ "depHash": "16227045303671405008"}

@@ -25,3 +25,4 @@
 - [Lean cache quota](lean-cache-quota.md) — fresh Lean 4.12 Mathlib cache rebuilds can hit environment quota despite free disk; use an existing cache or CI for full verification.
 - [Radical factorization audit](radical-factorization-audit.md) — the literal radical bridge is allowed only Lean’s three standard finite-factorization foundations, never mathematical theorem axioms.
 - [Beal push refs](github-beal-push-refs.md) — push the isolated `refs/heads/beal/main`; workspace `main` also contains unrelated ZeroBeacon history.
+- [Diamond–Shurman q-expansion boundary](diamond-shurman-qexp-boundary.md) — DS 8.3.2 is Frobenius on Pic⁰, not Ihara; Mathlib 4.15 q-expansions remain analytic-only.

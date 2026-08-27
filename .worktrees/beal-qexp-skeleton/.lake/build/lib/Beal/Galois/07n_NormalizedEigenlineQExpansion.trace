@@ -1,0 +1,17 @@
+{"log":
+ [{"message":
+   ".> LEAN_PATH=././.lake/packages/batteries/.lake/build/lib:././.lake/packages/Qq/.lake/build/lib:././.lake/packages/aesop/.lake/build/lib:././.lake/packages/proofwidgets/.lake/build/lib:././.lake/packages/Cli/.lake/build/lib:././.lake/packages/importGraph/.lake/build/lib:././.lake/packages/LeanSearchClient/.lake/build/lib:././.lake/packages/mathlib/.lake/build/lib:././.lake/build/lib LD_LIBRARY_PATH= /home/runner/.elan/toolchains/leanprover--lean4---v4.12.0/bin/lean ./././lean/Beal/Galois/07n_NormalizedEigenlineQExpansion.lean -R ./././lean -o ././.lake/build/lib/Beal/Galois/07n_NormalizedEigenlineQExpansion.olean -i ././.lake/build/lib/Beal/Galois/07n_NormalizedEigenlineQExpansion.ilean -c ././.lake/build/ir/Beal/Galois/07n_NormalizedEigenlineQExpansion.c --json",
+   "level": "trace"},
+  {"message":
+   "./././lean/Beal/Galois/07n_NormalizedEigenlineQExpansion.lean:103:0: 'Beal.Galois.NormalizedEigenlineData' depends on axioms: [propext, Quot.sound]",
+   "level": "info"},
+  {"message":
+   "./././lean/Beal/Galois/07n_NormalizedEigenlineQExpansion.lean:104:0: 'Beal.Galois.NormalizedEigenlineData.eq_zero_of_coefficient_one_eq_zero' depends on axioms: [propext, Quot.sound]",
+   "level": "info"},
+  {"message":
+   "./././lean/Beal/Galois/07n_NormalizedEigenlineQExpansion.lean:105:0: 'Beal.Galois.QExpansionPrincipleOnV_FromNormalizedEigenline' depends on axioms: [propext, Quot.sound]",
+   "level": "info"},
+  {"message":
+   "./././lean/Beal/Galois/07n_NormalizedEigenlineQExpansion.lean:106:0: 'Beal.Galois.IharaKernelZeroOnV_FromNormalizedEigenline' depends on axioms: [propext, Quot.sound]",
+   "level": "info"}],
+ "depHash": "10524206825711309842"}

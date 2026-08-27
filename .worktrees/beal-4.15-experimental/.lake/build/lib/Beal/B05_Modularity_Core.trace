@@ -1,0 +1,56 @@
+{"log":
+ [{"message":
+   ".> LEAN_PATH=././.lake/packages/Cli/.lake/build/lib:././.lake/packages/batteries/.lake/build/lib:././.lake/packages/Qq/.lake/build/lib:././.lake/packages/aesop/.lake/build/lib:././.lake/packages/proofwidgets/.lake/build/lib:././.lake/packages/importGraph/.lake/build/lib:././.lake/packages/LeanSearchClient/.lake/build/lib:././.lake/packages/plausible/.lake/build/lib:././.lake/packages/mathlib/.lake/build/lib:././.lake/build/lib LD_LIBRARY_PATH= /home/runner/.elan/toolchains/leanprover--lean4---v4.15.0/bin/lean ./././lean/Beal/B05_Modularity_Core.lean -R ./././lean -o ././.lake/build/lib/Beal/B05_Modularity_Core.olean -i ././.lake/build/lib/Beal/B05_Modularity_Core.ilean -c ././.lake/build/ir/Beal/B05_Modularity_Core.c --json",
+   "level": "trace"},
+  {"message":
+   "./././lean/Beal/B05_Modularity_Core.lean:8:21: unused variable `A`\nnote: this linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "./././lean/Beal/B05_Modularity_Core.lean:8:23: unused variable `B`\nnote: this linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "./././lean/Beal/B05_Modularity_Core.lean:8:25: unused variable `C`\nnote: this linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "./././lean/Beal/B05_Modularity_Core.lean:72:25: unused variable `x`\nnote: this linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "./././lean/Beal/B05_Modularity_Core.lean:72:27: unused variable `y`\nnote: this linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "./././lean/Beal/B05_Modularity_Core.lean:72:29: unused variable `z`\nnote: this linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "./././lean/Beal/B05_Modularity_Core.lean:91:0: 'IsPrime05Core' does not depend on any axioms",
+   "level": "info"},
+  {"message":
+   "./././lean/Beal/B05_Modularity_Core.lean:92:0: 'FreyCurve05Core' does not depend on any axioms",
+   "level": "info"},
+  {"message":
+   "./././lean/Beal/B05_Modularity_Core.lean:93:0: 'S2DimZero' does not depend on any axioms",
+   "level": "info"},
+  {"message":
+   "./././lean/Beal/B05_Modularity_Core.lean:94:0: 'NoPrimeCommonFactor' does not depend on any axioms",
+   "level": "info"},
+  {"message":
+   "./././lean/Beal/B05_Modularity_Core.lean:95:0: 'RibetLevelLoweringHypothesis' does not depend on any axioms",
+   "level": "info"},
+  {"message":
+   "./././lean/Beal/B05_Modularity_Core.lean:96:0: 'MazurIrreducibilityHypothesis' does not depend on any axioms",
+   "level": "info"},
+  {"message":
+   "./././lean/Beal/B05_Modularity_Core.lean:97:0: 'WilesLiftingHypothesis' does not depend on any axioms",
+   "level": "info"},
+  {"message":
+   "./././lean/Beal/B05_Modularity_Core.lean:98:0: 'FreyModularityData' does not depend on any axioms",
+   "level": "info"},
+  {"message":
+   "./././lean/Beal/B05_Modularity_Core.lean:99:0: 'ModularityHypothesisTyped' does not depend on any axioms",
+   "level": "info"},
+  {"message":
+   "./././lean/Beal/B05_Modularity_Core.lean:100:0: 'FreyConductor' does not depend on any axioms",
+   "level": "info"},
+  {"message":
+   "./././lean/Beal/B05_Modularity_Core.lean:101:0: 'RibetLevelLoweringHypothesisReal' does not depend on any axioms",
+   "level": "info"}],
+ "depHash": "2880651279405077431"}

@@ -1,0 +1,8 @@
+{"log":
+ [{"message":
+   ".> LEAN_PATH=././.lake/packages/Cli/.lake/build/lib:././.lake/packages/batteries/.lake/build/lib:././.lake/packages/Qq/.lake/build/lib:././.lake/packages/aesop/.lake/build/lib:././.lake/packages/proofwidgets/.lake/build/lib:././.lake/packages/importGraph/.lake/build/lib:././.lake/packages/LeanSearchClient/.lake/build/lib:././.lake/packages/plausible/.lake/build/lib:././.lake/packages/mathlib/.lake/build/lib:././.lake/build/lib LD_LIBRARY_PATH= /home/runner/.elan/toolchains/leanprover--lean4---v4.15.0/bin/lean ./././lean/Beal/B19_BealFinalAssembly.lean -R ./././lean -o ././.lake/build/lib/Beal/B19_BealFinalAssembly.olean -i ././.lake/build/lib/Beal/B19_BealFinalAssembly.ilean -c ././.lake/build/ir/Beal/B19_BealFinalAssembly.c --json",
+   "level": "trace"},
+  {"message":
+   "./././lean/Beal/B19_BealFinalAssembly.lean:14:0: 'Beal19Final.beal_proof_assembled' does not depend on any axioms",
+   "level": "info"}],
+ "depHash": "16794863990037688562"}

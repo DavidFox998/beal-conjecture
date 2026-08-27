@@ -1,0 +1,8 @@
+{"log":
+ [{"message":
+   ".> LEAN_PATH=././.lake/packages/Cli/.lake/build/lib:././.lake/packages/batteries/.lake/build/lib:././.lake/packages/Qq/.lake/build/lib:././.lake/packages/aesop/.lake/build/lib:././.lake/packages/proofwidgets/.lake/build/lib:././.lake/packages/importGraph/.lake/build/lib:././.lake/packages/LeanSearchClient/.lake/build/lib:././.lake/packages/plausible/.lake/build/lib:././.lake/packages/mathlib/.lake/build/lib:././.lake/build/lib LD_LIBRARY_PATH= /home/runner/.elan/toolchains/leanprover--lean4---v4.15.0/bin/lean ./././lean/Beal/B04_Modular.lean -R ./././lean -o ././.lake/build/lib/Beal/B04_Modular.olean -i ././.lake/build/lib/Beal/B04_Modular.ilean -c ././.lake/build/ir/Beal/B04_Modular.c --json",
+   "level": "trace"},
+  {"message":
+   "./././lean/Beal/B04_Modular.lean:22:23: unused variable `a_p`\nnote: this linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"}],
+ "depHash": "4406923280412199721"}
