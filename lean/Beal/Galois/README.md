@@ -26,8 +26,9 @@ The v7 genuine-provider boundary is explicit and data-valued:
 - `GaloisEdgeWitness` carries the residual representation, maximal ideal,
   genuine coefficient submodule, localized Hecke data, attachment, the
   explicit `QExpansionPrincipleOnV`, old/new, localized-rank-one, 07j support
-  bridge, and 07k token provider for one exact lowering edge. Restricted Ihara
-  is derived conditionally from that principle at the B15 use site.
+  bridge, and data-valued 07k newform support plus representation/Hecke
+  transport for one exact lowering edge. Restricted Ihara is derived
+  conditionally from that principle at the B15 use site.
 - `GaloisDescentPlan` is indexed by the exact Wiles arithmetic-plan value, so
   every enriched edge has that constructor's `N`, `p`, and `M`; the supplier
   cannot discard the certified path and substitute another chain.
@@ -64,9 +65,9 @@ The v7 genuine-provider boundary is explicit and data-valued:
   remains **MISSING**; Ihara kernel-zero alone is not presented as an
   Atkin–Lehner decomposition theorem.
 - B14's Wiles boundary still returns the arithmetic plan only. The B15
-  supplier makes the additional `hQ`, `hOldNew`, `hRank`, support bridge, and
-  token-provider data explicit on every edge without a B14 → Galois import
-  cycle.
+  supplier makes the additional `hQ`, `hOldNew`, `hRank`, support bridge,
+  data-valued newform support, and representation/Hecke transport explicit on
+  every edge without a B14 → Galois import cycle.
 
 ## Directory structure
 
