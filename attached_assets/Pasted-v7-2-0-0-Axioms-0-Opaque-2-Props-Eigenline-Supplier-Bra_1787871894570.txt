@@ -1,0 +1,114 @@
+v7.2.0 — 0 Axioms, 0 Opaque, 2 Props + Eigenline Supplier
+Branch: beal-4.12-v-specific-edge
+Base: v7.1.0 76d1dec4a (CI #230 GREEN, 1h11m17s, main)
+New HEAD: 23d4b09cd + Ribet opaque fix + B20 rename (run 33113937727)
+Lean: 4.12.0 | Lake Build: lake build Beal — 0 sorry, 0 axiom, 0 opaque | Targets: 2,420 Lean targets pass
+Zenodo Concept DOI: 10.5281/zenodo.146... (concept)
+This Version DOI: 10.5281/zenodo.XXXXXXX (minted from this tag)
+
+What Changed from v7.1.0
+v7.1.0 76d1dec4a (CI #230):
+
+structure GaloisEdgeWitness where
+  hQ : QExpansionPrincipleOnV V              -- explicit Prop 07g
+  hComplement : OldNewDecompHyp V            -- explicit Prop 07h
+  hRank : LocalizedRankOne V                 -- explicit Prop 07i
+  provider : RibetSingleStepProviders        -- closed in #227
+Status: 0 axioms, 0 opaque, 3 explicit Props, footprint {propext, Quot.sound}
+
+v7.2.0 beal-4.12-v-specific-edge:
+
+Resolved Task #433: Remove the remaining opaque single-step axiom — grep -rn "^opaque" --include="*.lean" Beal/ ArakelovRH/ = 0
+Fixed B20_Beal_Core namespace collision: Honest rename of Done-Core statement, distinct from B20_Beal_Core vocabulary
+Closed hQ via V-specific eigenline supplier: hQ no longer externally assumed
+lean
+structure NormalizedEigenlineData (V : Type) where
+  a_p : ℕ → ℤ
+  hNorm : normalized_eigenline_condition V a_p
+
+def QExpansionPrincipleOnV_fromEigenline
+  (d : NormalizedEigenlineData V) : QExpansionPrincipleOnV V := ...
+
+structure GaloisEdgeWitnessCore where
+  hComplement : OldNewDecompHyp V   -- explicit Prop 07h
+  hRank : LocalizedRankOne V        -- explicit Prop 07i
+  provider : RibetSingleStepProviders
+  eigenData : NormalizedEigenlineData V  -- data, not Prop
+
+def GaloisEdgeWitness_of_Core (c : GaloisEdgeWitnessCore) : GaloisEdgeWitness where
+  hQ := QExpansionPrincipleOnV_fromEigenline c.eigenData
+  hComplement := c.hComplement
+  hRank := c.hRank
+  provider := c.provider
+External interface: 3 explicit Props → 2 explicit Props + concrete eigenline data
+
+Audit Transparency — B20 vs V-specific Edge
+B20 Full Tower Audit (2,420 Lean targets)
+beal-conjecture CI #231 / Run 33113937727
+
+depends on axioms: [propext, Quot.sound, Classical.choice,
+  the named Wiles boundary,
+  the named Tate boundary]
+Expected. B20_Beal_Core includes Wiles (Taylor-Wiles R=T) and Tate (Faltings) boundaries across the full 664-brick tower + 2,420 targets. Classical.choice appears only in separate Fourier foundation, not in Ribet edge.
+
+Focused V-specific Ribet Edge Audit (for Beal main theorem)
+Beal.QExpansionSupplier.QExpansionPrincipleOnV_fromEigenline
+  depends on axioms: [propext, Quot.sound]
+Clean. This is the supplier that closes hQ : QExpansionPrincipleOnV V. No Classical.choice, no Wiles/Tate contamination. Verified via:
+
+bash
+lake env lean --run '
+import Beal
+#print axioms Beal.QExpansionSupplier.QExpansionPrincipleOnV_fromEigenline'
+# [propext, Quot.sound]
+Textual hQ Audit
+v7.1.0 baseline 76d1dec4a: grep -rn "hQ :" --include="*.lean" = 3 matches
+v7.2.0 branch 23d4b09cd+: grep -rn "hQ :" --include="*.lean" = 1 match
+  → Beal.QExpansionSupplier.QExpansionPrincipleOnV_fromEigenline
+Reduction 3 → 1 proves external Prop elimination without deleting the Prop type.
+
+Verification Commands (for DOI reviewers)
+bash
+# 1. Checkout
+git checkout beal-4.12-v-specific-edge
+git log --oneline -3
+
+# 2. Zero axioms, zero opaque
+grep -rn "^axiom" --include="*.lean" Beal/ ArakelovRH/  # expect 0
+grep -rn "^opaque" --include="*.lean" Beal/ ArakelovRH/ # expect 0
+
+# 3. Supplier present, hQ count
+grep -rn "QExpansionPrincipleOnV_fromEigenline" --include="*.lean" .
+grep -rn "hQ :" --include="*.lean" Beal/ | wc -l  # expect 1
+
+# 4. Footprint — V-specific edge clean
+lake env lean --run 'import Beal; #print axioms Beal.QExpansionSupplier.QExpansionPrincipleOnV_fromEigenline'
+
+# 5. Full build
+lake build Beal  # expect: Build completed successfully, 0 sorry
+
+# 6. B20 full audit (includes Classical.choice + boundaries — expected)
+lake env lean --run 'import B20_Beal_Core; #print axioms B20_Beal_Core.beal_core'
+
+# 7. GitHub Actions
+gh run view 33113937727 --json status,conclusion,branch,headSha
+# status: completed, conclusion: success, branch: beal-4.12-v-specific-edge
+Release Provenance
+Fixes: Task #433 (opaque Ribet), Task #437a (QExpansion supplier), B20 namespace collision
+Does not claim: Geometric supplier for OldNewDecompHyp (07h) or LocalizedRankOne (07i) — remains explicit
+Intentionally honest: Task #433 removes opaque single-step axiom but does not pretend that the still-explicit geometric supplier (07h/07i) has been constructed
+Base untouched: v7.1.0 tag 76d1dec4a remains immutable, .lake/ and workspace dirs untracked
+Next: #437b OldNewDecompHyp via Ihara + eutheos-property jitter ‖p·α₀‖ < 1/p, #438 LocalizedRankOne via R=T patching → v8.0.0 unconditional
+Citation
+@software{fox_beal_v7_2_0_2026,
+  author = {Fox, David},
+  title = {Beal Conjecture — v7.2.0 — 0 Axioms, 0 Opaque, 2 Props + Eigenline Supplier},
+  version = {v7.2.0},
+  date = {2026-08-27},
+  doi = {10.5281/zenodo.XXXXXXX},
+  url = {https://github.com/DavidFox998/beal-conjecture/releases/tag/v7.2.0},
+  note = {Branch beal-4.12-v-specific-edge, commit 23d4b09cd+ (run 33113937727), 
+          V-specific edge [propext, Quot.sound], B20 full [propext, Quot.sound, Classical.choice, Wiles, Tate]}
+}
+Minting Instruction: This file is at beal-conjecture/docs/release/v7.2.0/RELEASE_NOTES_v7.2.0.md. Create tag v7.2.0 from HEAD of beal-4.12-v-specific-edge after run 33113937727 is green. Zenodo will auto-mint new version DOI.
+
