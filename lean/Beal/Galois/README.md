@@ -4,11 +4,10 @@ This directory contains the typed Galois-representation, mod-ℓ form, level-low
 
 It is intentionally a **boundary layer**, not an unconditional proof of Beal's Conjecture. The files provide data structures, propositions, coefficient operations, and small transport lemmas. They do not silently turn the classical theorems of Wiles, Tate, or Ribet into Lean theorems.
 
-## v7.2.0 V-specific edge status
+## v7.3.0 typed Eutheos edge status
 
-The release branch is `beal-4.12-v-specific-edge`, based on v7.1.0 commit
-`76d1dec4a`; the integrated Ribet-fix snapshot is `9ebd9659b`. The boundary is
-explicit and data-valued:
+The release branch is `beal-4.12-ihra-eutheos`, extending the v7.2
+V-specific eigenline edge. The boundary is explicit and data-valued:
 
 - The old B15 declaration `ribet_single_step : Prop` has been deleted from
   the active source path.
@@ -27,8 +26,8 @@ explicit and data-valued:
   the data or transport boundary is claimed.
 - `GaloisEdgeWitness` carries the residual representation, maximal ideal,
   genuine coefficient submodule, localized Hecke data, attachment,
-  `NormalizedEigenlineData`, old/new, localized-rank-one, 07j support
-  assembly, `NewSubspaceSupportData`, and
+  `NormalizedEigenlineData`, typed Eutheos geometry, localized-rank-one, 07j
+  support assembly, `NewSubspaceSupportData`, and
   `NewformHeckeToPreservedTokenTransport` for one exact lowering edge.
 - B15 derives `QExpansionPrincipleOnV` through
   `QExpansionPrincipleOnV_fromEigenline`; `hQ` is not a field of the edge.

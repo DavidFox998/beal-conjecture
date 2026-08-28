@@ -12,3 +12,9 @@ The [`DesertBrothers`](DesertBrothers/) directory contains the Lean 4.12
 compatibility interface for the 1419 desert-brothers infrastructure. Its
 natural-number certificate remains choice-free, while a separate real bridge
 documents and audits the Lean 4.12 real-field dependency.
+
+The typed `EutheosGeometryInterface` in
+[`Beal/Galois/07h_EutheosGeometry.lean`](../Galois/07h_EutheosGeometry.lean)
+is the downstream geometric supplier. It records the old/new module,
+degeneracy-map, coverage, and jitter-indexed separation data without claiming
+that the arithmetic certificate alone proves modular geometry.

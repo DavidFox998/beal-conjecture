@@ -7,9 +7,10 @@ The upstream
 repository currently targets Lean 4.15. Its `Family.DirichletJitterTime`
 module imports a Mathlib 4.15-only π-irrationality module, while
 `Family.Brothers1419` exhausts the Lean 4.12 CI runner during a large
-`native_decide` popcount proof.
+`native_decide` popcount proof. The vendored Eutheos object module avoids that
+OOM path, whose process exit was 134.
 
-Beal v7.2 is fixed to Lean and Mathlib 4.12.0. This directory therefore vendors
+Beal v7.3 is fixed to Lean and Mathlib 4.12.0. This directory therefore vendors
 only the small data interface required to state the proposed dependency:
 
 - the upstream fixed-point α₀ numerator and denominator;
@@ -31,7 +32,9 @@ distances with the fixed-point residue data, and proves the real inequality
 Lean 4.12's real field implementation contributes `Classical.choice` to these
 real-valued declarations, so their audit is kept separate. The axiom-free
 `EutheosJitter` certificate and the `[propext, Quot.sound]` 07h supplier
-footprint are unchanged. CI checks all three budgets independently so a later
+footprint are unchanged. The typed Eutheos old/new supplier consumes this
+choice-free certificate while keeping the real bridge separate. CI checks all
+three budgets independently so a later
 real-analysis change cannot silently contaminate the choice-free boundary.
 
 Neither arithmetic module proves that a jitter witness constructs an
