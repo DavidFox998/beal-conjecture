@@ -34,7 +34,7 @@ private def forwardIndexingModeCore (type : Expr)
       match args.get? i with
       | some arg =>
         let argT := (← arg.mvarId!.getDecl).type
-        let keys ← DiscrTree.mkPath argT discrTreeConfig
+        let keys ← mkDiscrTreePath argT
         return .hyps keys
       | none => throwError
         "aesop: internal error: immediate arg for forward rule is out of range"
@@ -60,7 +60,7 @@ def getImmediatePremises  (type : Expr) (pat? : Option RulePattern)
       for h : i in [:args.size] do
         if isPatternInstantiated i then
           continue
-        let fvarId := (args[i]'h.2).fvarId!
+        let fvarId := args[i].fvarId!
         let ldecl ← fvarId.getDecl
         let isNondep : MetaM Bool :=
           args.allM (start := i + 1) λ arg => do
