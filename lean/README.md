@@ -9,15 +9,14 @@ The project-level [`README.md`](../README.md) explains the mathematical
 motivation and the current formal status. This document explains how the
 source tree is organized and how to read it as a Lean project.
 
-## v7.2.0 source snapshot
+## v7.3.0 source snapshot
 
-The release branch is `beal-4.12-v-specific-edge`, based on v7.1.0 commit
-`76d1dec4a`; the integrated Ribet-fix snapshot is `9ebd9659b`. It targets Lean
-and Mathlib 4.12.0. The active B15 edge carries `NormalizedEigenlineData` and
-derives `QExpansionPrincipleOnV` with
-`QExpansionPrincipleOnV_fromEigenline`; it does not carry a textual `hQ`
-field. The remaining proposition-valued edge boundaries are
-`OldNewDecompHyp` and `LocalizedRankOne`.
+The v7.3.0 Task #440 branch extends the v7.2 eigenline edge with a typed
+`EutheosGeometryInterface`. It targets Lean and Mathlib 4.12.0. The active B15
+edge carries `NormalizedEigenlineData`, derives `QExpansionPrincipleOnV` with
+`QExpansionPrincipleOnV_fromEigenline`, and derives `OldNewDecompHyp` from
+typed degeneracy-map, coverage, and jitter-indexed separation data. The
+remaining explicit proposition-valued edge boundary is `LocalizedRankOne`.
 
 The release-path audit finds no executable `sorry`, `admit`, `sorryAx`,
 declared `axiom`, or opaque Ribet shortcut. Its focused foundational footprint

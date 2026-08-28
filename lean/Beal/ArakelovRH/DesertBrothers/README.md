@@ -7,9 +7,10 @@ The upstream
 repository currently targets Lean 4.15. Its `Family.DirichletJitterTime`
 module imports a Mathlib 4.15-only π-irrationality module, while
 `Family.Brothers1419` exhausts the Lean 4.12 CI runner during a large
-`native_decide` popcount proof.
+`native_decide` popcount proof. The vendored Eutheos object module avoids that
+OOM path, whose process exit was 134.
 
-Beal v7.2 is fixed to Lean and Mathlib 4.12.0. This directory therefore vendors
+Beal v7.3 is fixed to Lean and Mathlib 4.12.0. This directory therefore vendors
 only the small data interface required to state the proposed dependency:
 
 - the upstream fixed-point α₀ numerator and denominator;
@@ -31,14 +32,20 @@ distances with the fixed-point residue data, and proves the real inequality
 Lean 4.12's real field implementation contributes `Classical.choice` to these
 real-valued declarations, so their audit is kept separate. The axiom-free
 `EutheosJitter` certificate and the `[propext, Quot.sound]` 07h supplier
-footprint are unchanged. CI checks all three budgets independently so a later
+footprint are unchanged. The typed Eutheos old/new supplier consumes this
+choice-free certificate while keeping the real bridge separate. CI checks all
+three budgets independently so a later
 real-analysis change cannot silently contaminate the choice-free boundary.
 
-Neither module proves that a jitter witness constructs an Atkin–Lehner
-complement or `OldNewDecompHyp`. The 07h bridge carries that proposition as a
-separate explicit field and merely projects it. Consequently the active B15
-path is unchanged, and the infrastructure introduces no `sorryAx`, declared
-axiom, or `opaque`.
+Neither arithmetic module proves that a jitter witness constructs an
+Atkin–Lehner complement or `OldNewDecompHyp`. The historical
+`EutheosComplementSketch` still carries that proposition explicitly, while the
+active `EutheosGeometryInterface` replaces it with named old/new modules,
+typed degeneracy maps, coverage, and an old/new intersection theorem indexed
+by the jitter witness. B15 derives `OldNewDecompHyp` from those lower-level
+fields. The geometric intersection theorem remains supplier data rather than
+a false consequence of fixed-point arithmetic alone, and the choice-free path
+introduces no `sorryAx`, declared axiom, or `opaque`.
 
 ## Upstream relationship
 

@@ -54,12 +54,12 @@ formalization makes this coupling explicit rather than gestural.
 
 ## Current formal status
 
-> **v7.2.0 — 0 declared axioms, 0 opaque boundaries, 2 explicit propositions + eigenline supplier**
+> **v7.3.0 — 0 declared axioms, 0 opaque boundaries, 1 explicit proposition + typed Eutheos geometry supplier**
 >
 > This repository is still a formalization of the Beal argument, not a claim
 > that Lean has reconstructed Wiles, Tate, or Ribet from first principles. The
-> release branch is `beal-4.12-v-specific-edge`, based on v7.1.0 commit
-> `76d1dec4a`; the integrated Ribet-fix snapshot is `9ebd9659b`.
+> release branch is `beal-4.12-ihra-eutheos`, extending the v7.2 V-specific
+> eigenline edge.
 >
 > Here “0 axioms” means no executable `axiom`, `sorry`, `admit`, `sorryAx`, or
 > opaque Ribet shortcut is declared by this release path. It does **not** mean
@@ -73,15 +73,16 @@ formalization makes this coupling explicit rather than gestural.
 > → **one Tate-supplied Frey model and conductor** → **a typed modular-form
 > token and certified arithmetic descent plan at that same conductor**
 > → **an explicit `EnrichedPlanSupplier` carrying normalized eigenline,
-> old/new, localized-rank, support, and token-transport data per edge**
+> typed Eutheos geometry, localized-rank, support, and token-transport data per edge**
 > → **level 2** → **$S_2(Γ_0(2)) = 0$**
 > → **contradiction**.
 >
 > The final B20 theorem still depends on the typed Wiles and Tate interfaces
 > and on an explicit `EnrichedPlanSupplier`. At each descent edge,
 > `NormalizedEigenlineData` derives `QExpansionPrincipleOnV` through
-> `QExpansionPrincipleOnV_fromEigenline`; the two remaining proposition-valued
-> boundaries are `OldNewDecompHyp` and `LocalizedRankOne`.
+> `QExpansionPrincipleOnV_fromEigenline`; the old/new proposition is now
+> derived at the theorem boundary from typed Eutheos geometry, leaving
+> `LocalizedRankOne` as the remaining explicit edge proposition.
 >
 > The active token path does not use `SupportedNewformToTokenProvider`.
 > `NewSubspaceSupportData` retains a finite newform, representation
@@ -94,10 +95,42 @@ formalization makes this coupling explicit rather than gestural.
 > `Beal.FreyTate.TateStep2.tate_step2_I_n_conductor_one`, and
 > `Beal.RibetIterate.EnrichedPlanSupplier`.
 >
-> `lake build Beal` targets Lean/Mathlib 4.12.0. The focused v7.2 edge audit
+> `lake build Beal` targets Lean/Mathlib 4.12.0. The focused v7.3 edge audit
 > reports the foundational footprint `{propext, Quot.sound}`. The broader B20
 > audit still exposes `Classical.choice` through the existing
-> `TateStep2.freyModelOf` construction; v7.2 does not hide that distinction.
+> `TateStep2.freyModelOf` construction; v7.3 does not hide that distinction.
+
+### v7.3.0 Task #440: Typed Eutheos old/new geometric bridge
+
+The v7.3.0 bridge makes the old/new boundary more explicit without pretending
+that fixed-point arithmetic has reconstructed modular-form geometry:
+
+- The Eutheos certificate carries the denominator-cleared fixed-point
+  inequality and list anchor as choice-free data.
+- `EutheosGeometryInterface` supplies named old and new submodules, typed
+  degeneracy maps `αₚ` and `βₚ`, their exact joint old-image representation,
+  Hecke stability, genuine-form generation, V-membership, and coverage
+  `V = old + new`.
+- `separation_kernel (j : EutheosJitter)` is the lower-level old/new
+  intersection statement `old ∩ new = ⊥`, explicitly parameterized by the
+  jitter witness and its inequality.
+- `OldNewDecompHyp_from_Eutheos` constructs the existing
+  `OldNewDecompHyp` only at the theorem boundary from those fields. The
+  arithmetic inequality alone is not claimed to prove the geometric kernel.
+- B15 derives its old/new witness at the call site; `hRank` remains the
+  explicit proposition-valued edge boundary.
+
+The new supplier and B15 edge audit to `[propext, Quot.sound]`, with no
+`sorryAx`, opaque declaration, or new mathematical axiom. The real-number
+bridge remains separately audited as
+`[propext, Classical.choice, Quot.sound]`.
+
+#### Audit ladder
+
+| Snapshot | CI / PR | Explicit boundary | What it records |
+|---|---|---|---|
+| v7.2.0-1419-infra | `a457c8b558`, CI `33139424482` | 2 Props | EutheosJitter carrier `[propext, Quot.sound]` |
+| v7.3.0 Task #440 | PR #3, CI `33147207644` (success) | 1 Prop (`hRank`) | Typed Eutheos old/new geometric bridge |
 
 ### From one opaque step axiom to explicit edge data
 
@@ -113,7 +146,7 @@ The B14–B20 path now exposes the step boundary as data:
 | `wiles_modularity` | For the fixed Tate Frey model, a residual prime, typed form token at its conductor, and a certified finite descent plan. |
 | `tate_step2_I_n_conductor_one` | The local Tate Step 2 statement: when the Frey invariants have the required valuations, the conductor has exact prime order. |
 | `NormalizedEigenlineData` | Explicit normalized generator and spanning data used to derive the V-specific q-expansion principle. |
-| `OldNewDecompHyp` | Explicit old/new complement proposition. |
+| `EutheosGeometryInterface` | Typed old/new modules, degeneracy maps, exact old-image representation, coverage, and jitter-indexed separation data; `OldNewDecompHyp` is derived at the theorem boundary. |
 | `LocalizedRankOne` | Explicit localized multiplicity-one/rank proposition. |
 | `NewSubspaceSupportData` | Choice-free finite-newform, representation-realization, and Hecke-annihilation witnesses. |
 | `NewformHeckeToPreservedTokenTransport` | Narrow data-valued conversion from those witnesses to `PreservedForm`. |
@@ -149,6 +182,12 @@ modular forms. Those global ingredients remain inside the explicit
   its q-expansion premise from normalized eigenline data and carries explicit
   old/new, rank, newform-support, and token-transport data. The former broad
   provider is no longer used by the active descent.
+- **v7.3.0 Task #440:** B15 derives `OldNewDecompHyp` from the typed
+  `EutheosGeometryInterface` at the use site. The supplier exposes the
+  degeneracy maps, exact old-image representation, Hecke-stable old/new
+  modules, genuine generation, V-coverage, and the jitter-indexed separation
+  kernel. Only `hRank` remains as the explicit proposition-valued edge
+  boundary; the geometric kernel remains an explicit supplier input.
 
 This is a more inspectable formal interface, not a stronger claim of completed
 foundational mathematics. Wiles and Tate remain named mathematical assumptions;
@@ -229,7 +268,7 @@ Tate selects a fixed `FreyCurveModel`; `wiles_modularity` consumes that model
 and supplies a typed form token plus a certified arithmetic path from its
 conductor to level 2. `B15_RibetIterate.lean` receives an explicit
 `EnrichedPlanSupplier`, whose result is indexed by that exact arithmetic-plan
-value. Every corresponding edge carries `hIhara`, `hOldNew`, `hRank`, its
+value. Every corresponding edge carries `hIhara`, typed Eutheos geometry, `hRank`, its
 localized Hecke data, the 07j support bridge, and a
 `SupportedNewformToTokenProvider`. `ribet_single_step_from_genuine` derives
 support from those fields and constructs the target token. `B16_BealFinal.lean`
@@ -341,6 +380,7 @@ Tate, or Ribet from first principles.
 | **v5.0.0 preserved-form Ribet descent** | `v5.0.0` / `92a165c` | [Zenodo v5.0.0](https://doi.org/10.5281/zenodo.22090900) | `ribet_level_lowering_real` leaves the active path; `ribet_single_step` transports a preserved-form witness one exact division at a time to the level-$2$ contradiction |
 | **v7.0.0 genuine provider** | `v7.0.0-genuine-provider` / `380a5f490` | Pending — no Zenodo record yet | The old `ribet_single_step : Prop` is deleted; `RibetSingleStepProviders` and `SupportedNewformToTokenProvider` are explicit data-valued boundaries, and `ribet_single_step_from_genuine` audits to `[propext, Quot.sound]` |
 | **v7.2.0 V-specific eigenline edge** | `beal-4.12-v-specific-edge` / `9ebd9659b` | Pending — no verified Zenodo record | Removes the broad provider from the active B15 path; derives `hQ` from normalized eigenline data; leaves `OldNewDecompHyp` and `LocalizedRankOne` explicit; carries choice-free newform support and Hecke-to-token transport data. Focused footprint: `[propext, Quot.sound]`. |
+| **v7.3.0 typed Eutheos old/new bridge** | `beal-4.12-ihra-eutheos` / `01bbf4095` | Pending — no verified Zenodo record | Derives `OldNewDecompHyp` at the theorem boundary from typed degeneracy maps, exact old-image representation, Hecke stability, genuine-form generation, V-coverage, and a jitter-indexed separation kernel. Leaves `LocalizedRankOne` explicit. Focused footprint: `[propext, Quot.sound]`. |
 
 The v4.0.0 Zenodo landing page retains an older v0.4-style display title; its
 release tag, archive, and audited boundary are the v4.0.0 row above. The
