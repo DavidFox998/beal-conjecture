@@ -1,0 +1,50 @@
+Beacon — TASK #443 v8.0.0: Close hRank LocalizedRankOne via Taylor-Wiles patching — 1 Prop → 0 Props — MCOM ready
+
+Context:
+- main = 61a7590 v7.3.1 audit clarification, CI #245 1h14m SUCCESS
+    - v7.3.0 code immutable PR #3 CI #239 53m23s Task #440 typed Eutheos bridge
+    - v7.3.1 docs: focused Beal.Galois.OldNewDecompHyp_from_Eutheos [propext, Quot.sound] 0 opaque 0 axiom, repo-wide ^axiom = 2 intentional mazur_irreducibility_axiom + wiles_lifting_axiom = B20 [Wiles][Tate][choice]
+- Current: 1 Prop remaining = hRank : LocalizedRankOne V
+- Skeleton: EutheosGeometry already built as explicit clean data — Ihara (α_p,β_p injectivity + exactRep) + Shimura (HeckeStable + genuineFormGeneration + V-membership) as fields [propext, Quot.sound] — to be filled in #441/#442 future, NOT needed for v8.0.0
+- Goal: Use existing 2 intentional axioms + EutheosJitter ‖p·α₀‖<1/p separation to build patched module M_∞ and close hRank
+
+Branch:
+git checkout main
+git pull origin main --ff-only
+git checkout -b beal-8.0-rT-patching-hRank
+
+Build:
+
+1. Create Beal/Patching/
+      - TaylorWilesPrimes.lean: def Q_n from Brothers1419Data using jitter separation ‖p·α₀‖<1/p → q ≡1 mod p^n, distinct Frob eigenvalues via mazur axiom
+      - PatchedModule.lean: def M_n := V_{Q_n} localized, M_∞ := inverse limit with diamond operators Δ_{Q_n}, prove finite free over W[Δ_{Q_n}] using genuineFormGeneration from EutheosGeometry skeleton
+      - Depth.lean: Lemma depth S_∞ M_∞ ≥ depth S_∞ — S_∞=W[[x₁...x_r]] regular local, M_∞ maximal CM → free via Auslander-Buchsbaum
+
+2. RankOne.lean — main closure:
+   def LocalizedRankOne_from_Patching (j:EutheosJitter) (g:EutheosGeometry) (hwiles:wiles_lifting_axiom) (hmazur:mazur_irreducibility_axiom) : LocalizedRankOne V :=
+     M_∞ free rank1 over S_∞ → M_∞/aM_∞ ≅ V_m, S_∞/aS_∞ ≅ T_m via wiles_lifting → V_m free rank1 over T_m
+   Audit must be: #print axioms LocalizedRankOne_from_Patching = [propext, Quot.sound, mazur..., wiles...] — expected uses 2 intentional, no Classical.choice leak
+   Focused: #print axioms M_∞_free = [propext, Quot.sound]
+
+3. In Beal/MainTheorem.lean replace:
+   hRank : LocalizedRankOne V := explicit Prop
+   with hRank := LocalizedRankOne_from_Patching jitter eutheosGeometry wiles_axiom mazur_axiom
+
+4. Verify:
+   lake build Beal -- expect 2,424+ targets (adds Patching modules)
+   grep -r "^opaque" Beal/ --include="*.lean" => 0
+   grep -r "^axiom" Beal/ --include="*.lean" => 2 intentional only
+   lake env lean --run 'import Beal.Patching.RankOne; #print axioms...'
+   gh workflow run or push to trigger CI #246
+
+5. Update 6 READMEs in SAME branch (do NOT separate PR):
+   root README.md add row: v8.0.0 Task #443 1 Prop→0 Props R=T patching M_∞ free uses 2 intentional axioms
+   Beal/README.md, Beal/DesertBrothers/README.md, Beal/Patching/README.md (new), Beal/B15_Modular/README.md, Beal/Galois/README.md, Beal/ArakelovRH/README.md — document patching method + how ‖p·α₀‖<1/p gives TW primes + skeleton Ihara/Shimura remain explicit clean data for #441/#442
+
+6. Push:
+   git add Beal/Patching/ Beal/**/README.md README.md
+   git commit -m "v8.0.0 Task #443: Close hRank LocalizedRankOne via Taylor-Wiles patching M_∞ free over S_∞ — 1 Prop→0 Props — uses mazur+wiles intentional — Ihara/Shimura remain explicit clean data"
+   git push origin beal-8.0-rT-patching-hRank -f
+   gh pr create --base main --head beal-8.0-rT-patching-hRank --title "v8.0.0: Close hRank via R=T patching — 1 Prop→0 Props — MCOM ready" --body "Closes final Prop LocalizedRankOne V using TW patching. Uses EutheosJitter separation for Q_n, genuineFormGeneration from EutheosGeometry skeleton, 2 intentional B20 axioms. Focused [propext, Quot.sound] 0 opaque. Skeleton Ihara/Shimura remain explicit for #441/#442. After merge: 0 Props main theorem, MCOM-ready. CI must be green like #245."
+
+Wait for CI #246 SUCCESS (~1h15m like #244/#245), then merge to main, tag v8.0.0, mint Zenodo DOI, prep MCOM resubmission from v4.0 draft.
