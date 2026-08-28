@@ -79,6 +79,7 @@ structure EutheosGeometryInterface
         ∃ new : CoefficientSequence ℓ, new ∈ New ∧ old + new = v
   kernel_of_jitter :
     ∀ j : EutheosJitter p,
+      p * scaledNearestIntegerDistance p < alpha0Denominator →
       ∀ x : CoefficientSequence ℓ, x ∈ Old → x ∈ New → x = 0
 
 /-- The lower-level separation theorem selected by the supplied Eutheos
@@ -87,9 +88,10 @@ structure EutheosGeometryInterface
 theorem separation_kernel
     {M p ℓ : ℕ}
     {V : Submodule (ZMod ℓ) (CoefficientSequence ℓ)}
-    (D : EutheosGeometryInterface M p ℓ V) :
+    (D : EutheosGeometryInterface M p ℓ V)
+    (j : EutheosJitter p) :
     ∀ x : CoefficientSequence ℓ, x ∈ D.Old → x ∈ D.New → x = 0 :=
-  D.kernel_of_jitter D.jitter
+  D.kernel_of_jitter j j.jitter_lt_reciprocal
 
 /-- Coverage plus the Eutheos-indexed intersection kernel constructs the
     internal direct sum required by the existing boundary. -/
@@ -111,7 +113,7 @@ theorem internalDirectSum_of_Eutheos
     rw [hOldEq]
     exact D.New.neg_mem hNew
   have hOldZero : old = 0 :=
-    separation_kernel D old hOld hOldInNew
+    separation_kernel D D.jitter old hOld hOldInNew
   have hNewZero : new = 0 := by
     simpa [hOldZero] using hSum
   exact ⟨hOldZero, hNewZero⟩
