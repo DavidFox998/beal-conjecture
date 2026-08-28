@@ -38,11 +38,11 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "cd /home/runner/workspace && python3 -m uvicorn zerobeacon_mf_1000_main:app --host 0.0.0.0 --port 5000"
-waitForPort = 5000
+args = "cd /home/runner/workspace && python3 -m uvicorn zerobeacon_mf_1000_main:app --host 0.0.0.0 --port 8080"
+waitForPort = 8080
 
 [workflows.workflow.metadata]
-outputType = "webview"
+outputType = "console"
 
 [[workflows.workflow]]
 name = "lean-build"
@@ -78,5 +78,5 @@ args = "cd /home/runner/workspace && bash scripts/test-lean-compat-check.sh"
 outputType = "console"
 
 [[ports]]
-localPort = 5000
+localPort = 8080
 externalPort = 80
