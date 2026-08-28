@@ -129,18 +129,18 @@ jobs:
           fi
           expected_axioms=$(cat <<'EOF'
           Beal.FreyTate.TateStep2.tate_step2_I_n_conductor_one
-          Beal.FreyTate.ribet_level_lowering_real
           Beal.FreyTate.wiles_modularity
+          Beal.RibetIterate.ribet_single_step
           EOF
           )
-          actual_axioms=$(grep -oE 'Beal\.FreyTate(\.TateStep2)?\.[A-Za-z0-9_]+' /tmp/beal_final_axiom_audit.txt | sort -u)
+          actual_axioms=$(grep -oE 'Beal\.(FreyTate(\.TateStep2)?|RibetIterate)\.[A-Za-z0-9_]+' /tmp/beal_final_axiom_audit.txt | sort -u)
           if [ "$actual_axioms" != "$expected_axioms" ]; then
-            echo "FAIL: final theorem must use exactly the three approved domain axioms"
+            echo "FAIL: final theorem must use exactly the documented three domain axioms"
             echo "Actual named axioms:"
             printf '%s\n' "$actual_axioms"
             exit 1
           fi
-          echo "OK: all cores are import-free and zero-axiom; final theorem uses exactly three approved domain axioms"
+          echo "OK: all cores are import-free and zero-axiom; final theorem uses exactly the documented three domain axioms"
 
       - name: Audit the trusted real-number transport boundary
         run: |

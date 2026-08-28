@@ -84,6 +84,12 @@ formalization makes this coupling explicit rather than gestural.
 > B15 genuine-provider bridge. The 07f genuine-form boundary also proves that
 > genuine data excludes the raw 07c counterexample `(-Bp, 1, 1)`.
 
+> **v6.0.0 release gate.** The two-axiom boundary is not yet available.
+> `docs/level-lowering-provenance.md` records the audit of the pinned
+> Lean-compatible sources and the exact evidence required before the Ribet
+> boundary may be removed. No v6 archive or DOI should be made until that
+> gate is satisfied.
+
 ### From one opaque step axiom to explicit provider data
 
 At the #161 baseline, the README described the formal boundary as one
@@ -134,6 +140,12 @@ This is a more inspectable formal interface, not a stronger claim of completed
 foundational mathematics. Wiles and Tate remain named mathematical assumptions;
 the enriched-plan supplier remains an explicit missing data boundary.
 ---
+
+
+## The architecture: Cores, Wrappers, and explicit mathematical boundaries
+
+The repository is organized into three layers, with a separate boundary for
+the named mathematical results used by the final theorem.
 
 ## The architecture: Cores, Wrappers, and explicit mathematical boundaries
 
