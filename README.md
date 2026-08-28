@@ -54,18 +54,20 @@ formalization makes this coupling explicit rather than gestural.
 
 ## Current formal status
 
-> **v7.3.0 — 0 declared axioms, 0 opaque boundaries, 1 explicit proposition + typed Eutheos geometry supplier**
+> **v7.3.0 focused Eutheos bridge — 0 local axioms, 0 opaque boundaries, 1 explicit proposition + typed geometry supplier**
 >
 > This repository is still a formalization of the Beal argument, not a claim
 > that Lean has reconstructed Wiles, Tate, or Ribet from first principles. The
 > release branch is `beal-4.12-ihra-eutheos`, extending the v7.2 V-specific
 > eigenline edge.
 >
-> Here “0 axioms” means no executable `axiom`, `sorry`, `admit`, `sorryAx`, or
-> opaque Ribet shortcut is declared by this release path. It does **not** mean
-> that Wiles, Tate, or the remaining level-lowering mathematics has been
-> reconstructed. Those obligations remain visible as typed interfaces,
-> explicit propositions, and supplied data.
+> Here “0 axioms” is a focused statement about the typed Eutheos bridge:
+> `OldNewDecompHyp_from_Eutheos`, `EutheosJitter`, and the separation kernel
+> introduce no local proposition-valued axiom or opaque declaration and audit to
+> `[propext, Quot.sound]`. It does **not** mean that every declaration in the
+> repository is axiom-free. A literal repository-wide `^axiom` grep returns the
+> two intentional B20 tower boundaries `mazur_irreducibility_axiom` and
+> `wiles_lifting_axiom`; they remain visible and are not part of this bridge.
 >
 > The current conditional chain is:
 >
@@ -380,7 +382,8 @@ Tate, or Ribet from first principles.
 | **v5.0.0 preserved-form Ribet descent** | `v5.0.0` / `92a165c` | [Zenodo v5.0.0](https://doi.org/10.5281/zenodo.22090900) | `ribet_level_lowering_real` leaves the active path; `ribet_single_step` transports a preserved-form witness one exact division at a time to the level-$2$ contradiction |
 | **v7.0.0 genuine provider** | `v7.0.0-genuine-provider` / `380a5f490` | Pending — no Zenodo record yet | The old `ribet_single_step : Prop` is deleted; `RibetSingleStepProviders` and `SupportedNewformToTokenProvider` are explicit data-valued boundaries, and `ribet_single_step_from_genuine` audits to `[propext, Quot.sound]` |
 | **v7.2.0 V-specific eigenline edge** | `beal-4.12-v-specific-edge` / `9ebd9659b` | Pending — no verified Zenodo record | Removes the broad provider from the active B15 path; derives `hQ` from normalized eigenline data; leaves `OldNewDecompHyp` and `LocalizedRankOne` explicit; carries choice-free newform support and Hecke-to-token transport data. Focused footprint: `[propext, Quot.sound]`. |
-| **v7.3.0 typed Eutheos old/new bridge** | `v7.3.0` / `a12c58a` | [Zenodo v7.3.0](https://doi.org/10.5281/zenodo.22148517) | Derives `OldNewDecompHyp` at the theorem boundary from typed degeneracy maps, exact old-image representation, Hecke stability, genuine-form generation, V-coverage, and a jitter-indexed separation kernel. Leaves `LocalizedRankOne` explicit. Focused footprint: `[propext, Quot.sound]`. |
+| **v7.3.0 typed Eutheos old/new bridge** | `v7.3.0` / `a12c58a` | [Zenodo v7.3.0](https://doi.org/10.5281/zenodo.22148517) |
+| **v7.3.1 audit clarification** | `docs/v7.3.1-audit-clarification` / pending | Pending — documentation patch | Makes the focused-vs-repository-wide axiom scope explicit: the typed Eutheos bridge is `[propext, Quot.sound]` with 0 local axioms and 0 opaque declarations, while the repository retains exactly two intentional Mazur/Wiles `axiom` boundaries. | Derives `OldNewDecompHyp` at the theorem boundary from typed degeneracy maps, exact old-image representation, Hecke stability, genuine-form generation, V-coverage, and a jitter-indexed separation kernel. Leaves `LocalizedRankOne` explicit. Focused footprint: `[propext, Quot.sound]`. |
 
 The v4.0.0 Zenodo landing page retains an older v0.4-style display title; its
 release tag, archive, and audited boundary are the v4.0.0 row above. The
@@ -424,3 +427,38 @@ DOI. For example:
 
 Maintained by DavidFox998 as part of *Opera Numerorum*: mathematics made
 auditable, with the beauty left visible.
+
+
+### v7.3.1 release ladder clarification
+
+The audit ladder is intentionally scoped and chronological:
+
+- **v7.2.0-1419-infra** (`a457c8b558`, CI `33139424482`) closed the fixed-point
+  jitter infrastructure and left two proposition-valued edges.
+- **v7.3.0 Task #440** (PR #3, CI #239, 53m23s, SUCCESS) closed the typed
+  Eutheos old/new edge and left one explicit `hRank` proposition.
+- **v7.3.1** is this documentation patch: it archives the distinction between
+  the clean focused bridge and the two intentional repository-wide boundaries.
+
+## v7.3.1 audit clarification
+
+The phrase **“0 axiom” is scoped to the typed Eutheos focused boundary**. It
+means that `Beal.Galois.OldNewDecompHyp_from_Eutheos`, `EutheosJitter`, and
+the jitter-indexed separation kernel introduce no proposition-valued axiom or
+opaque declaration of their own and audit to `[propext, Quot.sound]`. The
+V-specific edge is clean. The Task #440 build covered 2,424 targets and CI
+#239 completed successfully in 53m23s.
+
+This is not a repository-wide claim. A literal `grep -r '^axiom'` over the
+repository returns exactly two intentional mathematical boundaries:
+`mazur_irreducibility_axiom` and `wiles_lifting_axiom`. They belong to the
+existing Mazur/Wiles B20 modularity tower and are not part of the typed
+Eutheos bridge. The repository-wide focused audit therefore distinguishes
+these named boundaries from the clean Eutheos supplier rather than hiding
+them.
+
+The real-number interpretation of the fixed-point inequality
+`‖p·α₀‖ < 1/p` remains isolated in the desert-brothers module and audits to
+`[propext, Classical.choice, Quot.sound]`. That choice-bearing real bridge
+does not leak into the typed Eutheos/Beal path.
+

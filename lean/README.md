@@ -266,3 +266,26 @@ proposition is not a proof of that proposition, and supplied data is not a
 theorem that constructs that data. The source tree is designed so
 that those distinctions remain visible both in the code and in its
 documentation.
+
+## v7.3.1 audit clarification
+
+The phrase **“0 axiom” is scoped to the typed Eutheos focused boundary**. It
+means that `Beal.Galois.OldNewDecompHyp_from_Eutheos`, `EutheosJitter`, and
+the jitter-indexed separation kernel introduce no proposition-valued axiom or
+opaque declaration of their own and audit to `[propext, Quot.sound]`. The
+V-specific edge is clean. The Task #440 build covered 2,424 targets and CI
+#239 completed successfully in 53m23s.
+
+This is not a repository-wide claim. A literal `grep -r '^axiom'` over the
+repository returns exactly two intentional mathematical boundaries:
+`mazur_irreducibility_axiom` and `wiles_lifting_axiom`. They belong to the
+existing Mazur/Wiles B20 modularity tower and are not part of the typed
+Eutheos bridge. The repository-wide focused audit therefore distinguishes
+these named boundaries from the clean Eutheos supplier rather than hiding
+them.
+
+The real-number interpretation of the fixed-point inequality
+`‖p·α₀‖ < 1/p` remains isolated in the desert-brothers module and audits to
+`[propext, Classical.choice, Quot.sound]`. That choice-bearing real bridge
+does not leak into the typed Eutheos/Beal path.
+
