@@ -289,3 +289,15 @@ The real-number interpretation of the fixed-point inequality
 `[propext, Classical.choice, Quot.sound]`. That choice-bearing real bridge
 does not leak into the typed Eutheos/Beal path.
 
+## v8.0.0 patching layer
+
+`Beal/Patching/` replaces B15's proposition-valued `hRank` field with explicit
+Taylor–Wiles prime levels, patched modules, transition maps, diamond actions,
+inverse-limit projections, depth data, and rank-one coordinates.
+`LocalizedRankOne_from_Patching` constructs the equivalence from those
+coordinates and audits to `[propext, Quot.sound]`.
+
+Prime selection and construction of the patched tower remain honest,
+Type-valued boundaries. The jitter inequality indexes the data but does not
+prove their existence.
+

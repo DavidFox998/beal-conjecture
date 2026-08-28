@@ -54,12 +54,11 @@ formalization makes this coupling explicit rather than gestural.
 
 ## Current formal status
 
-> **v7.3.0 focused Eutheos bridge — 0 local axioms, 0 opaque boundaries, 1 explicit proposition + typed geometry supplier**
+> **v8.0.0 patching layer — 0 local axioms, 0 opaque rank propositions, explicit Taylor–Wiles data**
 >
 > This repository is still a formalization of the Beal argument, not a claim
 > that Lean has reconstructed Wiles, Tate, or Ribet from first principles. The
-> release branch is `beal-4.12-ihra-eutheos`, extending the v7.2 V-specific
-> eigenline edge.
+> v8.0.0 extends the v7.3 typed Eutheos edge with an auditable patching layer.
 >
 > Here “0 axioms” is a focused statement about the typed Eutheos bridge:
 > `OldNewDecompHyp_from_Eutheos`, `EutheosJitter`, and the separation kernel
@@ -75,7 +74,7 @@ formalization makes this coupling explicit rather than gestural.
 > → **one Tate-supplied Frey model and conductor** → **a typed modular-form
 > token and certified arithmetic descent plan at that same conductor**
 > → **an explicit `EnrichedPlanSupplier` carrying normalized eigenline,
-> typed Eutheos geometry, localized-rank, support, and token-transport data per edge**
+> typed Eutheos geometry, Taylor–Wiles patching, support, and token-transport data per edge**
 > → **level 2** → **$S_2(Γ_0(2)) = 0$**
 > → **contradiction**.
 >
@@ -83,8 +82,9 @@ formalization makes this coupling explicit rather than gestural.
 > and on an explicit `EnrichedPlanSupplier`. At each descent edge,
 > `NormalizedEigenlineData` derives `QExpansionPrincipleOnV` through
 > `QExpansionPrincipleOnV_fromEigenline`; the old/new proposition is now
-> derived at the theorem boundary from typed Eutheos geometry, leaving
-> `LocalizedRankOne` as the remaining explicit edge proposition.
+> derived at the theorem boundary from typed Eutheos geometry. Localized rank
+> one is now constructed from explicit patched-module generator and coordinate
+> laws rather than accepted as an edge proposition.
 >
 > The active token path does not use `SupportedNewformToTokenProvider`.
 > `NewSubspaceSupportData` retains a finite newform, representation
@@ -119,8 +119,8 @@ that fixed-point arithmetic has reconstructed modular-form geometry:
 - `OldNewDecompHyp_from_Eutheos` constructs the existing
   `OldNewDecompHyp` only at the theorem boundary from those fields. The
   arithmetic inequality alone is not claimed to prove the geometric kernel.
-- B15 derives its old/new witness at the call site; `hRank` remains the
-  explicit proposition-valued edge boundary.
+- B15 derives its old/new witness at the call site. In v8.0.0, the former
+  `hRank` proposition is replaced by transparent `TaylorWilesPatchingData`.
 
 The new supplier and B15 edge audit to `[propext, Quot.sound]`, with no
 `sorryAx`, opaque declaration, or new mathematical axiom. The real-number
@@ -149,10 +149,10 @@ The B14–B20 path now exposes the step boundary as data:
 | `tate_step2_I_n_conductor_one` | The local Tate Step 2 statement: when the Frey invariants have the required valuations, the conductor has exact prime order. |
 | `NormalizedEigenlineData` | Explicit normalized generator and spanning data used to derive the V-specific q-expansion principle. |
 | `EutheosGeometryInterface` | Typed old/new modules, degeneracy maps, exact old-image representation, coverage, and jitter-indexed separation data; `OldNewDecompHyp` is derived at the theorem boundary. |
-| `LocalizedRankOne` | Explicit localized multiplicity-one/rank proposition. |
+| `TaylorWilesPatchingData` | Explicit prime levels, patched tower, depth bookkeeping, and the named R=T/localization specialization boundary used to construct `LocalizedRankOne`. |
 | `NewSubspaceSupportData` | Choice-free finite-newform, representation-realization, and Hecke-annihilation witnesses. |
 | `NewformHeckeToPreservedTokenTransport` | Narrow data-valued conversion from those witnesses to `PreservedForm`. |
-| `GaloisEdgeWitness` | One exact edge carrying the representation, Hecke, eigenline, old/new, rank, support, and token-transport data. |
+| `GaloisEdgeWitness` | One exact edge carrying the representation, Hecke, eigenline, old/new, patching, support, and token-transport data. |
 | `EnrichedPlanSupplier` | Data-valued enrichment indexed by the exact unchanged Wiles arithmetic-plan value, so its `N`, `p`, and `M` edges cannot be replaced by a different chain. |
 
 The distinction matters. `tate_frey_multiplicative_derived` is a theorem, not
@@ -190,6 +190,11 @@ modular forms. Those global ingredients remain inside the explicit
   modules, genuine generation, V-coverage, and the jitter-indexed separation
   kernel. Only `hRank` remains as the explicit proposition-valued edge
   boundary; the geometric kernel remains an explicit supplier input.
+- **v8.0.0:** B15 replaces that `hRank` proposition with
+  `TaylorWilesPatchingData`. Finite generators and coordinates are coherent
+  under transitions; the localized coordinate is derived through the
+  level-zero projection, while the remaining R=T/localization reconstruction
+  law is named explicitly in `PatchingSpecializationData`.
 
 This is a more inspectable formal interface, not a stronger claim of completed
 foundational mathematics. Wiles and Tate remain named mathematical assumptions;
@@ -270,7 +275,7 @@ Tate selects a fixed `FreyCurveModel`; `wiles_modularity` consumes that model
 and supplies a typed form token plus a certified arithmetic path from its
 conductor to level 2. `B15_RibetIterate.lean` receives an explicit
 `EnrichedPlanSupplier`, whose result is indexed by that exact arithmetic-plan
-value. Every corresponding edge carries `hIhara`, typed Eutheos geometry, `hRank`, its
+value. Every corresponding edge carries typed Eutheos geometry, patching data, its
 localized Hecke data, the 07j support bridge, and a
 `SupportedNewformToTokenProvider`. `ribet_single_step_from_genuine` derives
 support from those fields and constructs the target token. `B16_BealFinal.lean`
@@ -436,7 +441,8 @@ The audit ladder is intentionally scoped and chronological:
 - **v7.2.0-1419-infra** (`a457c8b558`, CI `33139424482`) closed the fixed-point
   jitter infrastructure and left two proposition-valued edges.
 - **v7.3.0 Task #440** (PR #3, CI #239, 53m23s, SUCCESS) closed the typed
-  Eutheos old/new edge and left one explicit `hRank` proposition.
+  Eutheos old/new edge and left one explicit `hRank` proposition at that
+  historical snapshot; v8.0.0 replaces it with patching data.
 - **v7.3.1** is this documentation patch: it archives the distinction between
   the clean focused bridge and the two intentional repository-wide boundaries.
 
@@ -461,4 +467,22 @@ The real-number interpretation of the fixed-point inequality
 `‖p·α₀‖ < 1/p` remains isolated in the desert-brothers module and audits to
 `[propext, Classical.choice, Quot.sound]`. That choice-bearing real bridge
 does not leak into the typed Eutheos/Beal path.
+
+## v8.0.0: explicit Taylor–Wiles patching data
+
+B15 no longer stores `hRank : LocalizedRankOne ...`. Each edge instead carries
+finite prime levels `Qₙ`, finite patched modules, coherent transition maps,
+diamond operators, compatible inverse-limit projections, depth equalities,
+and a separately named specialization boundary. The localized coordinate is
+derived through the level-zero projection; it is not stored as a field.
+`LocalizedRankOne_from_Patching` then constructs the linear equivalence and
+audits to `[propext, Quot.sound]`.
+
+This is a refinement of the boundary, not a completed Taylor–Wiles proof.
+The Eutheos jitter inequality does not construct Taylor–Wiles primes, and the
+historical B05 Mazur/Wiles axioms do not state R=T, freeness, localization, or
+multiplicity one. The reconstruction law in `PatchingSpecializationData` names
+that missing R=T/localization step explicitly. Constructing the complete
+`TaylorWilesPatchingData` remains a Type-valued obligation of the enriched
+descent-plan supplier.
 
