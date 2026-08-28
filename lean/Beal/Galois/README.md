@@ -67,18 +67,28 @@ explicit and data-valued:
   choice. Constructing the actual old subspace, projector, and new complement
   remains **MISSING**; Ihara kernel-zero alone is not presented as an
   Atkin–Lehner decomposition theorem.
+- `07h_EutheosGeometry` supplies the choice-free typed layer below that
+  proposition. It records the two coefficient-level degeneracy maps, their
+  exact old-image description, named Hecke-stable old and new modules,
+  genuine-form generation fields, coverage of `V`, and a geometric
+  old/new-intersection kernel parameterized by `EutheosJitter`.
+  `OldNewDecompHyp_from_Eutheos` constructs the existing proposition from
+  those lower-level fields. The kernel field is the explicit place where a
+  future modular-curve proof must connect the jitter inequality to geometry;
+  the arithmetic certificate alone is not presented as proving that theorem.
 - `07h_DesertInfra` connects 07h to the vendored Lean 4.12
   desert-brothers interface. `EutheosJitter` stores the denominator-cleared
   fixed-point inequality as natural-number data, avoiding the upstream 4.15
   import and large `native_decide` proof. A separate real bridge proves the
   intended reciprocal nearest-integer inequality and isolates the real
-  field's `Classical.choice` footprint. `EutheosComplementSketch` still carries
-  `OldNewDecompHyp` explicitly, so this infrastructure does not close
-  hComplement or alter B15.
+  field's `Classical.choice` footprint. The historical
+  `EutheosComplementSketch` still carries `OldNewDecompHyp` explicitly for
+  audit compatibility, but B15 now consumes `EutheosGeometryInterface` and
+  derives its old/new witness at the use site.
 - B14's Wiles boundary still returns the arithmetic plan only. The B15
-  supplier adds normalized eigenline data, `hOldNew`, `hRank`, support
-  assembly, and token-transport data on every edge without a B14 → Galois
-  import cycle.
+  supplier adds normalized eigenline data, typed Eutheos geometry, `hRank`,
+  support assembly, and token-transport data on every edge without a B14 →
+  Galois import cycle.
 
 ## Directory structure
 
@@ -93,7 +103,8 @@ Galois/
 ├── 07f_GenuineSubmodule.lean  genuine-form submodule boundary
 ├── 07g_IharaOnV.lean      restricted Ihara boundary on a genuine submodule
 ├── 07h_OldNewOnV.lean     conditional old/new transport on a genuine submodule
-├── 07h_DesertInfra.lean    1419 jitter dependency graph; complement still explicit
+├── 07h_EutheosGeometry.lean typed jitter/geometric old-new supplier
+├── 07h_DesertInfra.lean    historical v7.2 dependency sketch
 ├── 07i_MultOneOnV.lean    localized rank-one boundary
 ├── 07j_SupportProofGenuine.lean genuine support assembly
 ├── 07k_TokenBridge.lean   newform/Hecke transport and support-to-token boundary

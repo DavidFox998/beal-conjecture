@@ -20,6 +20,7 @@
       import Beal.B03_Conductor_Core
         import Beal.Galois.«07k_TokenBridge»
         import Beal.Galois.«07n_NormalizedEigenlineQExpansion»
+        import Beal.Galois.«07h_EutheosGeometry»
       import Mathlib.Data.List.Basic
       import Mathlib.Data.Nat.Factors
 
@@ -55,8 +56,8 @@
          hAttach : Beal.Galois.FreyHeckeAttachment R m.1
          normalized :
            Beal.Galois.NormalizedEigenlineData ℓ V
-         hOldNew :
-           Beal.Galois.OldNewDecompHyp (M := M) (ℓ := ℓ) V
+         eutheosGeometry :
+           Beal.Galois.EutheosGeometryInterface M p ℓ V
          hRank :
            @Beal.Galois.LocalizedRankOne M ℓ m V localized
          hSupportBridge :
@@ -126,8 +127,11 @@
          have hIhara :=
            Beal.Galois.ihara_zero_on_genuine_V_conditional
              M p ℓ edge.V edge.hV qExpansion
+         have hOldNew :=
+           Beal.Galois.OldNewDecompHyp_from_Eutheos
+             edge.V edge.eutheosGeometry
          have _hSupport :=
-           edge.hSupportBridge edge.hV hIhara edge.hOldNew edge.hRank
+           edge.hSupportBridge edge.hV hIhara hOldNew edge.hRank
          exact
            { level := M
              lowers := edge.hDiv

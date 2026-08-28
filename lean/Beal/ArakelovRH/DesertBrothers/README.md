@@ -34,11 +34,15 @@ real-valued declarations, so their audit is kept separate. The axiom-free
 footprint are unchanged. CI checks all three budgets independently so a later
 real-analysis change cannot silently contaminate the choice-free boundary.
 
-Neither module proves that a jitter witness constructs an Atkin–Lehner
-complement or `OldNewDecompHyp`. The 07h bridge carries that proposition as a
-separate explicit field and merely projects it. Consequently the active B15
-path is unchanged, and the infrastructure introduces no `sorryAx`, declared
-axiom, or `opaque`.
+Neither arithmetic module proves that a jitter witness constructs an
+Atkin–Lehner complement or `OldNewDecompHyp`. The historical
+`EutheosComplementSketch` still carries that proposition explicitly, while the
+active `EutheosGeometryInterface` replaces it with named old/new modules,
+typed degeneracy maps, coverage, and an old/new intersection theorem indexed
+by the jitter witness. B15 derives `OldNewDecompHyp` from those lower-level
+fields. The geometric intersection theorem remains supplier data rather than
+a false consequence of fixed-point arithmetic alone, and the choice-free path
+introduces no `sorryAx`, declared axiom, or `opaque`.
 
 ## Upstream relationship
 

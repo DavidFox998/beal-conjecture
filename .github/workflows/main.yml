@@ -168,6 +168,9 @@ jobs:
           #print axioms Beal.ArakelovRH.DesertBrothers.realJitter_of_fixedPoint
           #print axioms Beal.Galois.EutheosComplementSketch
           #print axioms Beal.Galois.OldNewDecompHyp_from_EutheosSketch
+          #print axioms Beal.Galois.EutheosGeometryInterface
+          #print axioms Beal.Galois.separation_kernel
+          #print axioms Beal.Galois.OldNewDecompHyp_from_Eutheos
           EOF
           lake env lean /tmp/beal_desert_real_bridge.lean 2>&1 |
             tee /tmp/beal_desert_real_bridge.txt
@@ -193,6 +196,21 @@ jobs:
           if ! grep -Fq "'Beal.Galois.OldNewDecompHyp_from_EutheosSketch' depends on axioms: [propext, Quot.sound]" \
               /tmp/beal_desert_real_bridge.txt; then
             echo "FAIL: the 07h supplier must remain choice-free"
+            exit 1
+          fi
+          if ! grep -Fq "'Beal.Galois.EutheosGeometryInterface' depends on axioms: [propext, Quot.sound]" \
+              /tmp/beal_desert_real_bridge.txt; then
+            echo "FAIL: the typed Eutheos geometry interface must remain choice-free"
+            exit 1
+          fi
+          if ! grep -Fq "'Beal.Galois.separation_kernel' depends on axioms: [propext, Quot.sound]" \
+              /tmp/beal_desert_real_bridge.txt; then
+            echo "FAIL: the Eutheos separation kernel must remain choice-free"
+            exit 1
+          fi
+          if ! grep -Fq "'Beal.Galois.OldNewDecompHyp_from_Eutheos' depends on axioms: [propext, Quot.sound]" \
+              /tmp/beal_desert_real_bridge.txt; then
+            echo "FAIL: the Eutheos old/new supplier must remain choice-free"
             exit 1
           fi
           echo "OK: real jitter transport is isolated from the choice-free 07h boundary"
