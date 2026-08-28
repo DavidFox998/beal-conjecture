@@ -7,6 +7,11 @@ The three-axiom `v4.0.0` boundary associated with CI #205 already has the comple
 
 The typed preserved-form `v5.0.0` boundary has the completed Zenodo DOI `10.5281/zenodo.22090900` (Zenodo record 22090900), created from the GitHub release at the #398 audit commit. Its metadata was corrected in place to match the v5.0 boundary; do not mint a duplicate DOI.
 
+The typed Eutheos old/new bridge `v7.3.0` has the completed Zenodo DOI
+`10.5281/zenodo.22148517` (Zenodo record 22148517). It archives the tagged
+source and leaves `LocalizedRankOne` explicit. Do not mint another DOI for
+this release.
+
 The Tate local conductor verification is published as `v4.1.0` with DOI
 `10.5281/zenodo.22091549` (Zenodo record 22091549). Its archival description
 must retain the odd-prime-only boundary: one typed Frey model ties the local
@@ -28,4 +33,9 @@ not title text alone.
 
 **Why:** DOI minting is intended to mark changes in the audited mathematical axiom footprint, not every commit.
 
-**How to apply:** Keep the release sequence as `v4.0.0` three-axiom lock, then `v4.1.0` Tate truthful model after its build, then `v5.0.0` for the typed preserved-form `ribet_single_step` boundary after the corresponding work lands. Verify a tag, release, and `#print axioms` footprint before minting each new DOI.
+Published Zenodo metadata can be corrected without minting a new DOI by
+opening the record through its `edit` action, updating the deposition metadata,
+and republishing it. Use this when the archived file is correct but inherited
+display metadata is stale.
+
+**How to apply:** Keep the release sequence as `v4.0.0` three-axiom lock, then `v4.1.0` Tate truthful model after its build, `v5.0.0` for the typed preserved-form `ribet_single_step` boundary, and `v7.3.0` for the typed Eutheos old/new bridge. Verify a tag, release, and `#print axioms` footprint before minting each new DOI; inspect both the archived file and display metadata before creating another version.
