@@ -12,7 +12,7 @@
   1419 native_decide proof.
 -/
 import Beal.Galois.«07h_OldNewOnV»
-import Beal.ArakelovRH.DesertBrothers.JitterInterface
+import Beal.ArakelovRH.DesertBrothers.JitterRealBridge
 
 namespace Beal.Galois
 
@@ -46,6 +46,7 @@ def OldNewDecompHyp_from_EutheosSketch
   j.hComplement
 
 #check Beal.ArakelovRH.DesertBrothers.EutheosJitter
+#check Beal.ArakelovRH.DesertBrothers.realJitter_of_fixedPoint
 #check Beal.ArakelovRH.DesertBrothers.brothers1419_anchor
 #print axioms EutheosComplementSketch
 #print axioms OldNewDecompHyp_from_EutheosSketch

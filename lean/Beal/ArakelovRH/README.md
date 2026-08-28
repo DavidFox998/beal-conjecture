@@ -9,4 +9,6 @@ explicitly and remain outside the active B15 path until that input is formally
 constructed.
 
 The [`DesertBrothers`](DesertBrothers/) directory contains the Lean 4.12
-compatibility interface for the 1419 desert-brothers infrastructure.
+compatibility interface for the 1419 desert-brothers infrastructure. Its
+natural-number certificate remains choice-free, while a separate real bridge
+documents and audits the Lean 4.12 real-field dependency.

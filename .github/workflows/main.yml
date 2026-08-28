@@ -159,6 +159,44 @@ jobs:
           fi
           echo "OK: real-number transport has its documented Mathlib quotient boundary"
 
+      - name: Audit the desert-brothers real bridge boundary
+        run: |
+          set -euo pipefail
+          cat > /tmp/beal_desert_real_bridge.lean <<'EOF'
+          import Beal.Galois.«07h_DesertInfra»
+          #print axioms Beal.ArakelovRH.DesertBrothers.EutheosJitter
+          #print axioms Beal.ArakelovRH.DesertBrothers.realJitter_of_fixedPoint
+          #print axioms Beal.Galois.EutheosComplementSketch
+          #print axioms Beal.Galois.OldNewDecompHyp_from_EutheosSketch
+          EOF
+          lake env lean /tmp/beal_desert_real_bridge.lean 2>&1 |
+            tee /tmp/beal_desert_real_bridge.txt
+          if grep -E 'sorryAx' /tmp/beal_desert_real_bridge.txt; then
+            echo "FAIL: the desert-brothers bridge must never use sorryAx"
+            exit 1
+          fi
+          if grep -Fq "'Beal.ArakelovRH.DesertBrothers.EutheosJitter' depends on axioms" \
+              /tmp/beal_desert_real_bridge.txt; then
+            echo "FAIL: the fixed-point jitter certificate must remain axiom-free"
+            exit 1
+          fi
+          if ! grep -Fq "'Beal.ArakelovRH.DesertBrothers.realJitter_of_fixedPoint' depends on axioms: [propext, Classical.choice, Quot.sound]" \
+              /tmp/beal_desert_real_bridge.txt; then
+            echo "FAIL: unexpected axiom budget for the real jitter bridge"
+            exit 1
+          fi
+          if ! grep -Fq "'Beal.Galois.EutheosComplementSketch' depends on axioms: [propext, Quot.sound]" \
+              /tmp/beal_desert_real_bridge.txt; then
+            echo "FAIL: the 07h sketch must remain choice-free"
+            exit 1
+          fi
+          if ! grep -Fq "'Beal.Galois.OldNewDecompHyp_from_EutheosSketch' depends on axioms: [propext, Quot.sound]" \
+              /tmp/beal_desert_real_bridge.txt; then
+            echo "FAIL: the 07h supplier must remain choice-free"
+            exit 1
+          fi
+          echo "OK: real jitter transport is isolated from the choice-free 07h boundary"
+
       - name: Verify B01 core has zero imports and zero axioms
         run: |
           if grep -nE '^[[:space:]]*import[[:space:]]' lean/Beal/B01_Def_Core.lean; then

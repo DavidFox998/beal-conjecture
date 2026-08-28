@@ -22,16 +22,27 @@ only the small data interface required to state the proposed dependency:
 `JitterInterface.lean` clears denominators and stores the strict
 reciprocal-distance bound as the natural-number inequality
 `p * scaledDistance < alpha0Denominator`. This needs no real-field inverse,
-floor operation, or `Classical.choice`. It does not prove that a jitter witness constructs an
-Atkin–Lehner complement or `OldNewDecompHyp`. The 07h bridge carries that
-proposition as a separate explicit field and merely projects it. Consequently
-the active B15 path is unchanged, and the infrastructure introduces no
-`sorryAx`, declared axiom, `opaque`, or `Classical.choice`.
+floor operation, or `Classical.choice`.
+
+`JitterRealBridge.lean` defines the chosen real representation
+`alpha0Numerator / alpha0Denominator`, identifies its two adjacent integer
+distances with the fixed-point residue data, and proves the real inequality
+`fixedPointNearestIntegerDistance p < 1 / p` from `EutheosJitter p`.
+Lean 4.12's real field implementation contributes `Classical.choice` to these
+real-valued declarations, so their audit is kept separate. The axiom-free
+`EutheosJitter` certificate and the `[propext, Quot.sound]` 07h supplier
+footprint are unchanged. CI checks all three budgets independently so a later
+real-analysis change cannot silently contaminate the choice-free boundary.
+
+Neither module proves that a jitter witness constructs an Atkin–Lehner
+complement or `OldNewDecompHyp`. The 07h bridge carries that proposition as a
+separate explicit field and merely projects it. Consequently the active B15
+path is unchanged, and the infrastructure introduces no `sorryAx`, declared
+axiom, or `opaque`.
 
 ## Upstream relationship
 
 The definitions are a compatibility interface, not a forked proof. The source
-list and distance convention are mirrored from the upstream Eutheos object.
-When upstream publishes a Lean 4.12-compatible small module for the strict
-`‖p · α₀‖ < 1 / p`-style nearest-integer-distance statement, this local layer
-can be replaced by a direct import.
+list, fixed-point α₀, and distance convention are mirrored from the upstream
+Eutheos object. A future direct upstream import can replace this local layer
+once a small Lean 4.12-compatible module is available.

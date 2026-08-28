@@ -70,8 +70,10 @@ explicit and data-valued:
 - `07h_DesertInfra` connects 07h to the vendored Lean 4.12
   desert-brothers interface. `EutheosJitter` stores the denominator-cleared
   fixed-point inequality as natural-number data, avoiding the upstream 4.15
-  import and large `native_decide` proof. `EutheosComplementSketch` still
-  carries `OldNewDecompHyp` explicitly, so this infrastructure does not close
+  import and large `native_decide` proof. A separate real bridge proves the
+  intended reciprocal nearest-integer inequality and isolates the real
+  field's `Classical.choice` footprint. `EutheosComplementSketch` still carries
+  `OldNewDecompHyp` explicitly, so this infrastructure does not close
   hComplement or alter B15.
 - B14's Wiles boundary still returns the arithmetic plan only. The B15
   supplier adds normalized eigenline data, `hOldNew`, `hRank`, support
