@@ -30,3 +30,20 @@ old and new submodules, stability, generation, and a complement witness.
 **How to apply:** Use the q-expansion premise to derive restricted Ihara, then
 consume a separate complement/projector premise to obtain old/new data. Do not
 present Ihara alone as a newform decomposition theorem.
+
+Prefer a typed lower-level geometry supplier over carrying the final
+old/new proposition directly. The supplier should expose the two degeneracy
+maps and their exact old image, Hecke-stable old/new carriers, coverage of the
+ambient genuine module, and an intersection-zero theorem. Construct the
+internal direct sum only at the theorem boundary.
+
+**Why:** Coverage plus trivial intersection genuinely proves the direct-sum
+interface, while storing that interface directly only renames the missing
+theorem. The fixed-point Eutheos inequality has no standalone route to modular
+geometry; it can index the supplied separation theorem without pretending to
+prove it.
+
+**How to apply:** Keep the arithmetic jitter certificate choice-free and keep
+the geometric intersection theorem explicit. It is acceptable for the latter
+to consume the jitter witness as an input, but documentation must say that a
+future modular-curve argument still has to inhabit that field.
