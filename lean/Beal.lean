@@ -38,6 +38,7 @@ import Beal.B14_TateInImpliesOrd1
 import Beal.Galois.«07l_ShimuraQExpansionSupplier»
 import Beal.Galois.«07m_FourierQExpansion»
 import Beal.Galois.«07n_NormalizedEigenlineQExpansion»
+import Beal.Galois.«07h_DesertInfra»
     import Beal.B15_LevelTo2_Core
     import Beal.B15_LevelTo2
 import Beal.B15_RibetIterate
