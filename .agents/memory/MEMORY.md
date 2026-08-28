@@ -6,6 +6,7 @@
 - [Lean core axiom audit](lean-core-axiom-audit.md) — in Lean 4.12, Nat.gcd brings propext even without imports; use a relational core predicate when zero axioms matter
 - [Constructive principal submodules](lean-principal-submodule-audit.md) — Lean 4.12 `Submodule.span` adds `Classical.choice`; use an explicit one-generator carrier when the audit forbids it.
 - [Lean Int nonzero audit](lean-int-nonzero-audit.md) — direct Int.mul_eq_zero induction avoids Classical.choice and Quot.sound in arithmetic proof audits
+- [Lean zero-axiom parity](lean-zero-axiom-parity.md) — after Mathlib imports, explicit Nat.pow avoids hidden propext from overloaded natural powers
 - [Smithery registry propagation](smithery-registry-propagation.md) — external scans refresh capabilities; patch retained listing metadata and allow the server-summary cache to catch up.
 - [Smithery connection verification](smithery-connection-verification.md) — use the official CLI for temporary gateway checks; direct connection writes can be Cloudflare-blocked.
 - [ZeroBeacon catalog semantics](zerobeacon-catalog-semantics.md) — distinguish live MCP inventory from the 1,000-tool advertised catalog.
