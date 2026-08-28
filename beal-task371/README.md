@@ -54,7 +54,7 @@ formalization makes this coupling explicit rather than gestural.
 
 ## Current formal status
 
-> **v7.2.0 — 0 declared axioms, 0 opaque boundaries, 2 explicit propositions + eigenline supplier**
+> **v7.3.0 — 0 declared axioms, 0 opaque boundaries, 1 explicit proposition + typed Eutheos geometry supplier**
 >
 > This repository is still a formalization of the Beal argument, not a claim
 > that Lean has reconstructed Wiles, Tate, or Ribet from first principles. The
@@ -73,15 +73,16 @@ formalization makes this coupling explicit rather than gestural.
 > → **one Tate-supplied Frey model and conductor** → **a typed modular-form
 > token and certified arithmetic descent plan at that same conductor**
 > → **an explicit `EnrichedPlanSupplier` carrying normalized eigenline,
-> old/new, localized-rank, support, and token-transport data per edge**
+> typed Eutheos geometry, localized-rank, support, and token-transport data per edge**
 > → **level 2** → **$S_2(Γ_0(2)) = 0$**
 > → **contradiction**.
 >
 > The final B20 theorem still depends on the typed Wiles and Tate interfaces
 > and on an explicit `EnrichedPlanSupplier`. At each descent edge,
 > `NormalizedEigenlineData` derives `QExpansionPrincipleOnV` through
-> `QExpansionPrincipleOnV_fromEigenline`; the two remaining proposition-valued
-> boundaries are `OldNewDecompHyp` and `LocalizedRankOne`.
+> `QExpansionPrincipleOnV_fromEigenline`; the old/new proposition is now
+> derived at the theorem boundary from typed Eutheos geometry, leaving
+> `LocalizedRankOne` as the remaining explicit edge proposition.
 >
 > The active token path does not use `SupportedNewformToTokenProvider`.
 > `NewSubspaceSupportData` retains a finite newform, representation
@@ -98,6 +99,38 @@ formalization makes this coupling explicit rather than gestural.
 > reports the foundational footprint `{propext, Quot.sound}`. The broader B20
 > audit still exposes `Classical.choice` through the existing
 > `TateStep2.freyModelOf` construction; v7.2 does not hide that distinction.
+
+### v7.3.0 Task #440: Typed Eutheos old/new geometric bridge
+
+The v7.3.0 bridge makes the old/new boundary more explicit without pretending
+that fixed-point arithmetic has reconstructed modular-form geometry:
+
+- The Eutheos certificate carries the denominator-cleared fixed-point
+  inequality and list anchor as choice-free data.
+- `EutheosGeometryInterface` supplies named old and new submodules, typed
+  degeneracy maps `αₚ` and `βₚ`, their exact joint old-image representation,
+  Hecke stability, genuine-form generation, V-membership, and coverage
+  `V = old + new`.
+- `separation_kernel (j : EutheosJitter)` is the lower-level old/new
+  intersection statement `old ∩ new = ⊥`, explicitly parameterized by the
+  jitter witness and its inequality.
+- `OldNewDecompHyp_from_Eutheos` constructs the existing
+  `OldNewDecompHyp` only at the theorem boundary from those fields. The
+  arithmetic inequality alone is not claimed to prove the geometric kernel.
+- B15 derives its old/new witness at the call site; `hRank` remains the
+  explicit proposition-valued edge boundary.
+
+The new supplier and B15 edge audit to `[propext, Quot.sound]`, with no
+`sorryAx`, opaque declaration, or new mathematical axiom. The real-number
+bridge remains separately audited as
+`[propext, Classical.choice, Quot.sound]`.
+
+#### Audit ladder
+
+| Snapshot | CI / PR | Explicit boundary | What it records |
+|---|---|---|---|
+| v7.2.0-1419-infra | `a457c8b558`, CI `33139424482` | 2 Props | EutheosJitter carrier `[propext, Quot.sound]` |
+| v7.3.0 Task #440 | PR #3, green hosted CI | 1 Prop (`hRank`) | Typed Eutheos old/new geometric bridge |
 
 ### From one opaque step axiom to explicit edge data
 

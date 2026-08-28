@@ -1,0 +1,14 @@
+{"log":
+ [{"message":
+   ".> LEAN_PATH=././.lake/packages/batteries/.lake/build/lib:././.lake/packages/Qq/.lake/build/lib:././.lake/packages/aesop/.lake/build/lib:././.lake/packages/proofwidgets/.lake/build/lib:././.lake/packages/Cli/.lake/build/lib:././.lake/packages/importGraph/.lake/build/lib:././.lake/packages/LeanSearchClient/.lake/build/lib:././.lake/packages/mathlib/.lake/build/lib:././.lake/build/lib LD_LIBRARY_PATH= /home/runner/.elan/toolchains/leanprover--lean4---v4.12.0/bin/lean ./././lean/Beal/B17_MazurIrreducible_Core.lean -R ./././lean -o ././.lake/build/lib/Beal/B17_MazurIrreducible_Core.olean -i ././.lake/build/lib/Beal/B17_MazurIrreducible_Core.ilean -c ././.lake/build/ir/Beal/B17_MazurIrreducible_Core.c --json",
+   "level": "trace"},
+  {"message":
+   "./././lean/Beal/B17_MazurIrreducible_Core.lean:44:0: 'FreyRepIrreducibleAt517Core' does not depend on any axioms",
+   "level": "info"},
+  {"message":
+   "./././lean/Beal/B17_MazurIrreducible_Core.lean:45:0: 'MazurTheoremStatement17Core' does not depend on any axioms",
+   "level": "info"},
+  {"message":
+   "./././lean/Beal/B17_MazurIrreducible_Core.lean:46:0: 'IrreducibleImpliesCanLower17Core' does not depend on any axioms",
+   "level": "info"}],
+ "depHash": "11570353595054740839"}

@@ -26,3 +26,4 @@
 - [Radical factorization audit](radical-factorization-audit.md) — the literal radical bridge is allowed only Lean’s three standard finite-factorization foundations, never mathematical theorem axioms.
 - [Beal push refs](github-beal-push-refs.md) — push the isolated `refs/heads/beal/main`; workspace `main` also contains unrelated ZeroBeacon history.
 - [Diamond–Shurman q-expansion boundary](diamond-shurman-qexp-boundary.md) — DS 8.3.2 is Frobenius on Pic⁰, not Ihara; Mathlib 4.15 q-expansions remain analytic-only.
+- [Release worktree recovery](release-worktree-recovery.md) — verify a named worktree has its own Git metadata after restart; clone the exact remote branch if it is only a snapshot.

@@ -1,0 +1,23 @@
+{"log":
+ [{"message":
+   ".> LEAN_PATH=././.lake/packages/batteries/.lake/build/lib:././.lake/packages/Qq/.lake/build/lib:././.lake/packages/aesop/.lake/build/lib:././.lake/packages/proofwidgets/.lake/build/lib:././.lake/packages/Cli/.lake/build/lib:././.lake/packages/importGraph/.lake/build/lib:././.lake/packages/LeanSearchClient/.lake/build/lib:././.lake/packages/mathlib/.lake/build/lib:././.lake/build/lib LD_LIBRARY_PATH= /home/runner/.elan/toolchains/leanprover--lean4---v4.12.0/bin/lean ./././lean/Beal/B14_TateC4Nonzero.lean -R ./././lean -o ././.lake/build/lib/Beal/B14_TateC4Nonzero.olean -i ././.lake/build/lib/Beal/B14_TateC4Nonzero.ilean -c ././.lake/build/ir/Beal/B14_TateC4Nonzero.c --json",
+   "level": "trace"},
+  {"message":
+   "./././lean/Beal/B14_TateC4Nonzero.lean:43:57: unused variable `hp2`\nnote: this linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "./././lean/Beal/B14_TateC4Nonzero.lean:43:87: unused variable `hy`\nnote: this linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "./././lean/Beal/B14_TateC4Nonzero.lean:90:33: unused variable `hx`\nnote: this linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "./././lean/Beal/B14_TateC4Nonzero.lean:111:6: 'Beal.FreyTate.TateC4.c4_nonzero_of_dvd_A' depends on axioms: [propext, Classical.choice, Quot.sound]",
+   "level": "info"},
+  {"message":
+   "./././lean/Beal/B14_TateC4Nonzero.lean:112:6: 'Beal.FreyTate.TateC4.c4_nonzero_of_dvd_B' depends on axioms: [propext, Classical.choice, Quot.sound]",
+   "level": "info"},
+  {"message":
+   "./././lean/Beal/B14_TateC4Nonzero.lean:113:6: 'Beal.FreyTate.TateC4.c4_nonzero_of_dvd_C' depends on axioms: [propext, Classical.choice, Quot.sound]",
+   "level": "info"}],
+ "depHash": "10854110874242999375"}
