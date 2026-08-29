@@ -173,6 +173,7 @@ jobs:
           python-version: "3.12"
 
       - name: Verify token
+        id: verify_token
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -207,6 +208,7 @@ jobs:
           echo "GITHUB_TOKEN verified — token is valid."
 
       - name: Run relock script
+        id: run_relock
         env:
           # Keep the built-in token for reading the ensemble and pushing the
           # branch, but use the repo PAT for PR creation when configured.
@@ -224,13 +226,22 @@ jobs:
         if: failure()
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          VERIFY_TOKEN_FAILED: ${{ steps.verify_token.outcome == 'failure' }}
+          RUN_RELOCK_FAILED: ${{ steps.run_relock.outcome == 'failure' }}
         run: |
           if [[ -z "${SLACK_WEBHOOK_URL:-}" ]]; then
             echo "::error::SLACK_WEBHOOK_URL secret is not set — Slack alert cannot fire."
             exit 1
           fi
+          if [[ "$VERIFY_TOKEN_FAILED" == "true" ]]; then
+            failed_step_message="Failed step: Verify token — token invalid (likely expired or under-scoped)."
+          elif [[ "$RUN_RELOCK_FAILED" == "true" ]]; then
+            failed_step_message="Failed step: Run relock script — API error during per-repo fetch or PR creation."
+          else
+            failed_step_message="Failed step: Unknown — the specific failing step could not be determined. This may mean GITHUB_TOKEN lacks repo scope or has expired, the GitHub API was unavailable, or a PR could not be opened for a detected chain drift."
+          fi
           curl --fail-with-body -X POST "$SLACK_WEBHOOK_URL" \
             -H "Content-Type: application/json" \
             -d '{
-              "text": ":rotating_light: *Chain re-lock workflow FAILED*\nThe weekly `relock-chain` job did not complete. This may mean:\n• GITHUB_TOKEN lacks `repo` scope or has expired\n• The GitHub API was unavailable during the run\n• A PR could not be opened for a detected chain drift\n\nThe chain SHA has *not* been updated. Manual intervention required.\n<'"$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"'|View failed run>"
+              "text": ":rotating_light: *Chain re-lock workflow FAILED*\nThe weekly `relock-chain` job did not complete.\n'"$failed_step_message"'\n\nThe chain SHA has *not* been updated. Manual intervention required.\n<'"$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"'|View failed run>"
             }'
