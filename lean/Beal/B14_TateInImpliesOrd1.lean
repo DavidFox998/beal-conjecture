@@ -1,10 +1,12 @@
 /-
         B14_TateInImpliesOrd1 — Tate Step 2: I_n → ord_p(N) = 1
 
-        Reduces tate_frey_multiplicative to the smaller local-conductor axiom
-        tate_step2_I_n_conductor_one (Silverman AEC IV.9), using:
+        Separates the fixed Frey model/conductor supplier from the genuine
+        local-conductor theorem `tate_step2_I_n_conductor_one`
+        (Silverman AEC IV.9), using:
           · c4_nonzero_of_dvd_{A,B,C}   (0 sorry — B14_TateC4Nonzero)
-          · tate_step2_I_n_conductor_one (1 named local theorem interface)
+          · frey_conductor_data          (global conductor boundary)
+          · tate_step2_I_n_conductor_one (local Tate theorem interface)
 
         Sorry count: 0.
 
@@ -29,30 +31,41 @@
             {A B C : ℤ} {x y z : ℕ} (model : FreyCurveModel A B C x y z) (p : ℕ) : Prop :=
           ¬ p ∣ model.c4.natAbs
 
-        /-- **Tate's Algorithm Step 2 (local Frey conductor interface)**
-          A Frey equation has one integral Weierstrass model with a conductor
-          value governed by an explicit odd-prime local contract. A unit `c₄`
-          gives the minimality certificate for this branch, and a bad
-          discriminant fiber then has conductor exponent one at `p`.
+        /-- External global-conductor data for the canonical integral Frey model.
 
-          The model records the Frey coefficients, `c₄`, discriminant, conductor
-          value, prime support, and local conductor-exponent relation. Thus the
-          conclusion cannot be instantiated with an unrelated natural number or a
-          new conductor for each prime. This boundary covers only odd primes; it
-          does not claim a formal 2-adic or globally computed conductor. Silverman
-          AEC IV.9 / Tate 1972; the local theorem remains an explicit axiom until
-          reconstructed in Lean. -/
-        axiom tate_step2_I_n_conductor_one
+          This boundary supplies one conductor and its prime support. It does
+          not contain Tate's exact local exponent theorem and cannot be
+          instantiated with a different model at each prime. -/
+        axiom frey_conductor_data
           {A B C : ℤ} {x y z : ℕ}
           (hEq : A ^ x + B ^ y = C ^ z) :
-          Nonempty (FreyCurveModel A B C x y z)
+          FreyConductorData (freyIntegralModel A B C x y z)
 
-        /-- The local Tate interface supplies one model for a fixed Frey equation;
-          later prime-by-prime arguments reuse this same chosen conductor. -/
+        /-- The canonical coefficients and the one supplied conductor are
+          assembled without `Classical.choice`. -/
         noncomputable def freyModelOf
             {A B C : ℤ} {x y z : ℕ}
-            (hEq : A ^ x + B ^ y = C ^ z) : FreyCurveModel A B C x y z :=
-          Classical.choice (tate_step2_I_n_conductor_one hEq)
+            (hEq : A ^ x + B ^ y = C ^ z) : FreyCurveModel A B C x y z := by
+          let D := frey_conductor_data hEq
+          exact
+            { freyIntegralModel A B C x y z with
+              conductor := D.conductor
+              conductor_prime_support := D.conductor_prime_support }
+
+        /-- **Tate's Algorithm Step 2 (odd-prime local theorem).**
+
+          For the fixed integral Frey model and its fixed global conductor, a
+          minimal bad fiber at an odd prime has conductor exponent one. This is
+          the exact remaining local theorem; it is no longer hidden inside the
+          model or conductor-data structures. The boundary does not claim the
+          2-adic conductor computation. -/
+        axiom tate_step2_I_n_conductor_one
+          {A B C : ℤ} {x y z : ℕ}
+          (model : FreyCurveModel A B C x y z)
+          (p : ℕ) (hp : p.Prime) (hp2 : p ≠ 2)
+          (hMinimal : IsMinimalAt model p)
+          (hDisc : p ∣ model.discriminant.natAbs) :
+          p ∣ model.conductor ∧ ¬ (p * p ∣ model.conductor)
 
         -- ── §2. Private helpers ───────────────────────────────────────────────────────
 
@@ -144,13 +157,18 @@
             Int.natCast_dvd.mp h_disc_int
           simpa only [model.discriminant_eq] using h_disc_nat
         have h_exact :=
-          model.odd_multiplicative_conductor p hp hp2 h_minimal h_disc_model
+          tate_step2_I_n_conductor_one model p hp hp2 h_minimal h_disc_model
         -- 5. The witness is the model's actual conductor, with its model-level support.
         exact ⟨model.conductor, h_exact.1, h_exact.2, model.conductor_prime_support⟩
 
+        #print axioms freyIntegralModel
+        #print axioms freyModelOf
         #print axioms tate_step2_I_n_conductor_one
         #print axioms tate_frey_multiplicative_derived
-        -- Expected: tate_step2_I_n_conductor_one only (no placeholders)
+        -- Expected named boundaries:
+        --   frey_conductor_data
+        --   tate_step2_I_n_conductor_one
+        -- No `sorryAx`; the canonical integral model is transparent.
 
         end Beal.FreyTate.TateStep2
     
