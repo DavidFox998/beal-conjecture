@@ -2,15 +2,18 @@
       B20_BealConjectureDone — the final conditional Beal scaffold.
 
        Conditional 20-brick milestone. Named axiom budget (0 sorry):
+        · frey_conductor_data         (global Frey conductor boundary)
         · wiles_modularity            (Wiles 1995)
-        · tate_step2_I_n_conductor_one (Tate/Silverman AEC IV.9)
        · no opaque Ribet single-step axiom
        · one explicit, unconstructed `EnrichedPlanSupplier` input
 
       Architecture:
-        · tate_frey_multiplicative_derived (B14_TateInImpliesOrd1) derives the
-          per-prime conductor statement from the local Frey-conductor Tate
-          step 2 interface.
+        · tate_frey_multiplicative_derived (B14_TateInImpliesOrd1) independently
+          derives the per-prime conductor statement from the local Tate Step 2
+          interface.
+        · the final Wiles plan currently carries its own exact-divisibility
+          edge proofs, so the B20 theorem does not consume that independent
+          local Tate result.
        · explicit data-valued per-edge newform support and representation/
          Hecke transport construct the form token to the impossible level-2
          slot. The support data is carried directly because the proposition-
@@ -47,8 +50,8 @@
       /-- Conditional Beal theorem from an enriched descent-plan supplier.
 
          Named axiom chain (2 named axioms, 0 sorry):
-          wiles_modularity (Wiles 1995)
-          tate_step2_I_n_conductor_one (Tate/Silverman, local Frey conductor)
+           frey_conductor_data (one global conductor for the canonical model)
+           wiles_modularity (Wiles 1995)
 
          The enriched-plan supplier is explicit data, not a declared axiom.
          Each returned edge carries 07k's data-valued
@@ -56,7 +59,10 @@
          `NewformHeckeToPreservedTokenTransport`, together with the restricted
          Ihara, old/new, patching/specialization, and support-bridge boundaries.
          This remains a conditional typed scaffold, not a full construction
-         of modular forms. -/
+         of modular forms. The independently audited
+         `tate_frey_multiplicative_derived` theorem still depends on the local
+         Tate Step 2 boundary, but it is not used by this final chain because
+         exact edge arithmetic is already included in the Wiles plan. -/
        theorem beal_conjecture_conditional_on_enriched_plan :
            BealConjectureConditionalOnEnrichedPlan := by
          intro supplier A B C x y z hx hy hz hA hB hC hCop hEq
@@ -75,7 +81,7 @@
 
       #print axioms beal_conjecture_conditional_on_enriched_plan
        -- Expected named domain axioms (2, 0 sorry):
-      --   Beal.FreyTate.TateStep2.tate_step2_I_n_conductor_one
+       --   Beal.FreyTate.TateStep2.frey_conductor_data
       --   Beal.FreyTate.wiles_modularity
         -- The enriched-plan supplier is explicit data, not an axiom.
 

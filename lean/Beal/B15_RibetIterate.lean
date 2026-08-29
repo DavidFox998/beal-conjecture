@@ -202,9 +202,13 @@
         rw [Beal.FreyS2.S2_level_2_dim_0] at hslot
         exact Fin.elim0 hslot
 
-      /-- The typed Tate model fixes the conductor; Wiles supplies a form and
-          certified descent plan for that same conductor; each Ribet step preserves
-          the form until the impossible level-2 slot is reached. -/
+      /-- The canonical Frey model and global-conductor supplier fix the
+          conductor; Wiles supplies a form and certified descent plan for that
+          same conductor; each Ribet step preserves the form until the
+          impossible level-2 slot is reached.
+
+          The plan already contains its exact-divisibility edge proofs, so this
+          theorem does not invoke the separate local Tate Step 2 theorem. -/
       theorem ribet_iteration_gives_False
         {A B C : ℤ} {x y z : ℕ}
          (supplier : EnrichedPlanSupplier)
@@ -232,8 +236,10 @@
        #print axioms EnrichedPlanSupplier
        #print axioms ribet_single_step_from_genuine
       #print axioms ribet_iteration_gives_False
-       -- tate_step2_I_n_conductor_one and wiles_modularity only; the
-       -- per-edge step construction is an explicit provider parameter.
+       -- frey_conductor_data and wiles_modularity only; the per-edge step
+       -- construction is an explicit provider parameter. The independent
+       -- local theorem tate_step2_I_n_conductor_one is not used here because
+       -- exact-divisibility proofs are already fields of the Wiles plan.
 
       end Beal.RibetIterate
     

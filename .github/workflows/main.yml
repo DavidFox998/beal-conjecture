@@ -17,6 +17,20 @@ jobs:
           curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain none
           echo "$HOME/.elan/bin" >> $GITHUB_PATH
 
+      - name: Restore Lean toolchain and Mathlib cache
+        id: lean-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.elan/toolchains
+            ~/.elan/update-hashes
+            .lake/packages
+          key: lean-${{ runner.os }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}
+
+      - name: Get Mathlib binary cache
+        if: steps.lean-cache.outputs.cache-hit != 'true'
+        run: lake exe cache get
+
       - name: Build all bricks
         run: lake build
 
@@ -127,16 +141,20 @@ jobs:
             echo "FAIL: final theorem depends on sorryAx"
             exit 1
           fi
-          expected_axioms=$(cat <<'EOF'
-          Beal.FreyTate.TateStep2.tate_step2_I_n_conductor_one
-          Beal.FreyTate.wiles_modularity
-          EOF
-          )
-          actual_axioms=$(grep -oE 'Beal\.FreyTate(\.TateStep2)?\.[A-Za-z0-9_]+' /tmp/beal_final_axiom_audit.txt | sort -u)
-          if [ "$actual_axioms" != "$expected_axioms" ]; then
+          printf '%s\n' \
+            'Beal.FreyTate.TateStep2.frey_conductor_data' \
+            'Beal.FreyTate.wiles_modularity' |
+            sort -u > /tmp/beal_expected_domain_axioms.txt
+          grep -oE 'Beal\.FreyTate(\.TateStep2)?\.[A-Za-z0-9_]+' \
+            /tmp/beal_final_axiom_audit.txt |
+            sort -u > /tmp/beal_actual_domain_axioms.txt
+          if ! cmp -s \
+            /tmp/beal_actual_domain_axioms.txt \
+            /tmp/beal_expected_domain_axioms.txt; then
             echo "FAIL: final theorem must use exactly the two approved domain axioms"
-            echo "Actual named axioms:"
-            printf '%s\n' "$actual_axioms"
+            diff -u \
+              /tmp/beal_expected_domain_axioms.txt \
+              /tmp/beal_actual_domain_axioms.txt || true
             exit 1
           fi
           echo "OK: all cores are import-free and zero-axiom; final theorem uses exactly two approved domain axioms"

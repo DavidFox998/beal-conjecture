@@ -1,6 +1,8 @@
 /-
-    B16_BealFinal — Wiles + Tate + Ribet → False.
-    Replaces the Prop := True stubs with real calls to the three named axioms from B14.
+    B16_BealFinal — conditional Wiles/Ribet descent → False.
+    The canonical Frey model uses separately supplied global conductor data.
+    The Wiles plan already carries exact-divisibility edge proofs, so this
+    theorem does not invoke the independent local Tate Step 2 theorem.
     Author: David Fox + Claude, Aug 2026
     -/
     import Beal.B15_RibetIterate
@@ -9,8 +11,8 @@
 
     namespace Beal16Final
 
-    /-- Given a primitive Beal triple satisfying Wiles and Tate hypotheses,
-      the typed Tate/Wiles/Ribet descent gives False. -/
+    /-- Given a primitive Beal triple and an enriched edge supplier, the typed
+      conductor/Wiles/Ribet descent gives False. -/
     theorem beal_if_wiles_tate_ribet
       (supplier : Beal.RibetIterate.EnrichedPlanSupplier)
       {A B C : ℤ} {x y z : ℕ}
@@ -23,7 +25,8 @@
       supplier hA hB hC hx hy hz hEq hCop
 
     #print axioms beal_if_wiles_tate_ribet
-    -- Expected named axioms: Tate and Wiles only; the plan supplier is explicit.
+    -- Expected named axioms: frey_conductor_data and wiles_modularity only;
+    -- the enriched-plan supplier is explicit.
 
     end Beal16Final
     
