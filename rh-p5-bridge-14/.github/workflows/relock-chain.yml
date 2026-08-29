@@ -204,8 +204,10 @@ jobs:
 
       - name: Run relock script
         env:
+          # Keep the built-in token for reading the ensemble and pushing the
+          # branch, but use the repo PAT for PR creation when configured.
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.RELOCK_PAT || secrets.GITHUB_TOKEN }}
         run: |
           chmod +x scripts/relock-chain.sh
           if [[ "${{ github.event.inputs.dry_run }}" == "true" ]]; then
