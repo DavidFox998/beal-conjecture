@@ -30,6 +30,8 @@ import Beal.B15_LevelTo2_Core
 import Beal.B15_LevelTo2
 import Beal.B16_BealFinal_Core
 import Beal.B16_BealFinal
+import Beal.B17_FreyRationalTwoTorsion
+import Beal.B17_FullE2
 import Beal.B17_MazurIrreducible_Core
 import Beal.B17_MazurIrreducible
 import Beal.B18_FreyIsElliptic_Core

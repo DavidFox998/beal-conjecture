@@ -1,19 +1,14 @@
 ---
 name: Frey rational 2-torsion boundary
-description: Honest naming boundary between three explicit rational order-two points and a standard full E[2] theorem.
+description: The proved full rational E[2] boundary and what it does not imply about Mazur irreducibility.
 ---
 
-The rational Frey curve has a formal certificate for three pairwise-distinct
-nonidentity rational points killed by doubling. Describe this result exactly;
-do not call it “full rational 2-torsion” or a standard `E[2]` classification
-until Lean also proves that these points exhaust the nonidentity 2-torsion.
+The rational Frey curve now has an exhaustive formal classification, so it is
+correct to call the result the full rational `E[2]`.
 
-**Why:** Existence of the three points is mathematically enough once the usual
-elliptic-curve cardinality theorem is available, but the current formal API
-does not contain that exhaustiveness bridge. Naming the lower-bound certificate
-“full” would make the public contract stronger than its Lean proposition.
+**Why:** The public name now matches the Lean proposition rather than relying
+on an unstated cardinality theorem.
 
-**How to apply:** Keep the explicit three-point theorem separate from the
-remaining isogeny/residual-representation Mazur boundary. Before upgrading the
-name, add a theorem connecting the certificate to the standard two-torsion
-subgroup or an equivalent exhaustive formulation.
+**How to apply:** Do not infer Mazur irreducibility, a rational p-isogeny
+classification, or a residual Galois representation from full rational
+2-torsion; those remain separate formal boundaries.

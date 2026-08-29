@@ -31,4 +31,4 @@
 - [Release worktree recovery](release-worktree-recovery.md) — verify a named worktree has its own Git metadata after restart; clone the exact remote branch if it is only a snapshot.
 - [Validated .replit updates](dot-replit-validation.md) — replace schema-protected Replit config through the validator, not direct edits.
 - [GitHub workflow scope](github-workflow-scope.md) — repo access may still forbid writes under `.github/workflows`; report the excluded file explicitly.
-- [Frey rational 2-torsion boundary](frey-rational-two-torsion-boundary.md) — three distinct rational order-two points are proved; “full E[2]” still needs an exhaustiveness bridge.
+- [Frey rational 2-torsion boundary](frey-rational-two-torsion-boundary.md) — full four-point rational E[2] is proved; Mazur and residual representations remain separate.
