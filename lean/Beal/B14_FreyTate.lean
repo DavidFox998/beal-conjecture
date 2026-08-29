@@ -124,15 +124,16 @@
       /-- Propositional availability of a preserved form token. -/
       def HasPreservedForm (ℓ N : ℕ) : Prop := Nonempty (PreservedForm ℓ N)
 
-      /-- A finite certified path from a level to level 2.
+      /-- A finite arithmetic path from a level to level 2.
 
-          Each edge records the exact divisibility and arithmetic quotient needed
-          by one Ribet step. The path is supplied by the modularity boundary until
-          the global level-lowering theorem is formalized. -/
+          Wiles supplies the odd prime, its separation from the residual prime,
+          and the arithmetic quotient at each edge. Exact divisibility is not a
+          field of this plan: `B14_TateInImpliesOrd1` derives it from the actual
+          Frey model and Tate's odd-prime local theorem. -/
       inductive RibetDescentPlan (ℓ : ℕ) : ℕ → Type
         | terminal : RibetDescentPlan ℓ 2
         | step {N p M : ℕ} :
-            p.Prime → p ≠ ℓ → p ∣ N → ¬ (p * p ∣ N) → M * p = N →
+            p.Prime → p ≠ ℓ → p ≠ 2 → M * p = N →
             RibetDescentPlan ℓ M → RibetDescentPlan ℓ N
 
       /-- Propositional availability of a certified descent path. -/
@@ -207,8 +208,10 @@
 
           For the one Frey model supplied by Tate's local interface, modularity
           supplies a residual prime, a form token at that same conductor, and a
-          certified finite descent to level 2. The plan is an explicit scaffold for
-          the still-unformalized global modular-form and level-lowering theory. -/
+          finite odd-prime descent skeleton to level 2. The plan is an explicit
+          scaffold for the still-unformalized global modular-form and
+          level-lowering theory; Tate supplies the exact-divisibility certificates
+          separately. -/
       axiom wiles_modularity
           {A B C : ℤ} {x y z : ℕ}
           (hA  : 0 < A) (hB : 0 < B) (hC : 0 < C)

@@ -254,12 +254,13 @@ divisibility alone is never called absolute irreducibility.
 The final path still names the deep inputs that have not been reconstructed
 from first principles:
 
-1. `Beal.FreyTate.wiles_modularity`;
+1. `Beal.FreyTate.TateStep2.frey_conductor_data`;
 2. `Beal.FreyTate.TateStep2.tate_step2_I_n_conductor_one`;
-3. the explicit enriched-plan supplier carrying the Galois/Hecke support
+3. `Beal.FreyTate.wiles_modularity`;
+4. the explicit enriched-plan supplier carrying the Galois/Hecke support
    data.
 
-The first two are named mathematical interfaces. The third is an explicit
+The first three are named mathematical interfaces. The fourth is an explicit
 missing data boundary. This distinction is central to the project.
 
 ### B21 — Beal implies Fermat
@@ -291,7 +292,7 @@ FreyCurveModel and explicit discriminant arithmetic
 Tate-supplied Frey model and conductor statement
         │
         ▼
-Wiles-supplied residual prime, form token, and exact arithmetic plan
+Wiles-supplied residual prime, form token, and odd-prime quotient plan
         │
         ▼
 EnrichedPlanSupplier

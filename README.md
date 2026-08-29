@@ -82,15 +82,15 @@ formalization makes this coupling explicit rather than gestural.
 > **primitive Beal data** → **Frey curve and discriminant arithmetic**
 > → **one canonical Frey model with externally supplied conductor data**
 > → **a typed modular-form
-> token and certified arithmetic descent plan at that same conductor**
+> token and finite odd-prime quotient plan at that same conductor**
 > → **an explicit `EnrichedPlanSupplier` carrying normalized eigenline,
 > typed Eutheos geometry, Taylor–Wiles patching, support, and token-transport data per edge**
 > → **level 2** → **$S_2(Γ_0(2)) = 0$**
 > → **contradiction**.
 >
-> The final B20 theorem still depends on the typed Wiles interface and the
-> global Frey-conductor data boundary
-> and on an explicit `EnrichedPlanSupplier`. At each descent edge,
+> The final B20 theorem still depends on the typed Wiles interface, the
+> global Frey-conductor data boundary, the odd-prime Tate boundary, and an
+> explicit `EnrichedPlanSupplier`. At each descent edge,
 > `NormalizedEigenlineData` derives `QExpansionPrincipleOnV` through
 > `QExpansionPrincipleOnV_fromEigenline`; the old/new proposition is now
 > derived at the theorem boundary from typed Eutheos geometry. Localized rank
@@ -105,13 +105,13 @@ formalization makes this coupling explicit rather than gestural.
 >
 > The final B20 named interfaces are:
 > `Beal.FreyTate.wiles_modularity`,
-> `Beal.FreyTate.TateStep2.frey_conductor_data`, and
+> `Beal.FreyTate.TateStep2.frey_conductor_data`,
+> `Beal.FreyTate.TateStep2.tate_step2_I_n_conductor_one`, and
 > `Beal.RibetIterate.EnrichedPlanSupplier`.
-> The separate theorem
-> `Beal.FreyTate.TateStep2.tate_frey_multiplicative_derived` invokes the
-> explicit local boundary `tate_step2_I_n_conductor_one`; B20 does not yet
-> consume that theorem because the Wiles plan already carries exact-divisibility
-> proofs at each edge.
+> `Beal.FreyTate.TateStep2.tate_frey_multiplicative_at_model` invokes the
+> explicit local boundary to certify exact divisibility at the canonical
+> conductor. B15 transports those certificates to every intermediate level;
+> the Wiles plan no longer carries duplicate exact-divisibility proofs.
 >
 > `lake build Beal` targets Lean/Mathlib 4.12.0. The focused v7.3 edge audit
 > reports the foundational footprint `{propext, Quot.sound}`. The broader B20
@@ -162,7 +162,7 @@ The B14–B20 path now exposes the step boundary as data:
 
 | Named interface | What it contributes |
 |---|---|
-| `wiles_modularity` | For the fixed Tate Frey model, a residual prime, typed form token at its conductor, and a certified finite descent plan. |
+| `wiles_modularity` | For the fixed Tate Frey model, a residual prime, typed form token at its conductor, and a finite odd-prime quotient plan. |
 | `frey_conductor_data` | One global conductor value and prime-support theorem, indexed by the canonical integral Frey model. |
 | `tate_step2_I_n_conductor_one` | The exposed local Tate Step 2 statement: a minimal odd bad fiber has exact conductor exponent one; it is no longer hidden as a structure field. |
 | `NormalizedEigenlineData` | Explicit normalized generator and spanning data used to derive the V-specific q-expansion principle. |
@@ -170,15 +170,16 @@ The B14–B20 path now exposes the step boundary as data:
 | `TaylorWilesPatchingData` | Explicit prime levels, patched tower, depth bookkeeping, and the named R=T/localization specialization boundary used to construct `LocalizedRankOne`. |
 | `NewSubspaceSupportData` | Choice-free finite-newform, representation-realization, and Hecke-annihilation witnesses. |
 | `NewformHeckeToPreservedTokenTransport` | Narrow data-valued conversion from those witnesses to `PreservedForm`. |
-| `GaloisEdgeWitness` | One exact edge carrying the representation, Hecke, eigenline, old/new, patching, support, and token-transport data. |
-| `EnrichedPlanSupplier` | Data-valued enrichment indexed by the exact unchanged Wiles arithmetic-plan value, so its `N`, `p`, and `M` edges cannot be replaced by a different chain. |
+| `GaloisEdgeWitness` | One lowering edge carrying the representation, Hecke, eigenline, old/new, patching, support, and token-transport data. |
+| `EnrichedPlanSupplier` | Data-valued enrichment indexed by the Tate-certified Wiles arithmetic-plan value, so its `N`, `p`, and `M` edges cannot be replaced by a different chain. |
 
 The distinction matters. `tate_frey_multiplicative_derived` is a theorem, not
 another axiom: it packages the generic Tate interface with the explicit Frey
 discriminant, the nonvanishing of $c_4$ modulo the relevant prime, and the
 conductor's prime support. The canonical coefficient model is constructed
 without `Classical.choice`; conductor data and the local Tate theorem are
-separate named boundaries. B15 proves that a certified plan repeatedly
+separate named boundaries. B15 proves that Tate certifies the plan and that
+the enriched plan repeatedly
 transports the token and that the terminal token contradicts
 $S_2(\Gamma_0(2)) = 0$.
 
@@ -219,8 +220,8 @@ modular forms. Those global ingredients remain inside the explicit
 This is a more inspectable formal interface, not a stronger claim of completed
 foundational mathematics. Wiles, the global conductor data, and local Tate
 Step 2 remain named mathematical assumptions; the enriched-plan supplier
-remains an explicit missing data boundary. The final B20 chain currently uses
-the first two but not the independently audited local Tate theorem.
+remains an explicit missing data boundary. The final B20 chain now uses all
+three named mathematical boundaries.
 ---
 
 ## The architecture: Cores, Wrappers, and explicit mathematical boundaries
@@ -254,23 +255,24 @@ own audit.
 
 ### The named mathematical interfaces and data boundary
 
-The final B20 proof is conditional on two named mathematical boundaries and
+The final B20 proof is conditional on three named mathematical boundaries and
 an explicit data-valued enriched-plan supplier:
 
 1. **Global conductor:** `frey_conductor_data` supplies one conductor and its
    prime support for the canonical integral Frey model.
-2. **Wiles:** `wiles_modularity` supplies a residual prime, a typed form token,
-   and a certified descent plan for that fixed conductor.
-3. **Genuine plan:** `EnrichedPlanSupplier` enriches the unchanged Wiles
+2. **Tate:** `tate_step2_I_n_conductor_one` proves exact odd-prime conductor
+   exponent one for the fixed model under the explicit local hypotheses.
+3. **Wiles:** `wiles_modularity` supplies a residual prime, a typed form token,
+   and a finite odd-prime quotient plan for that fixed conductor.
+4. **Genuine plan:** `EnrichedPlanSupplier` enriches the Tate-certified Wiles
    arithmetic plan. Each `GaloisEdgeWitness` carries the 07g–07j propositions
    and a `SupportedNewformToTokenProvider`; `ribet_single_step_from_genuine`
    derives support and constructs the lower-level token.
 
-Separately, `tate_frey_multiplicative_derived` invokes
+`tate_frey_multiplicative_at_model` invokes
 `tate_step2_I_n_conductor_one` to derive the odd-prime exact-conductor result
-from the explicit Frey invariants. The final B20 chain does not yet consume
-that theorem because exact-divisibility proofs are already fields of the
-conditional Wiles plan.
+from the explicit Frey invariants. B15 recursively transports that result from
+the original conductor to each intermediate level in the Wiles quotient plan.
 
 The older broad `modularity_hypothesis` remains part of the historical scaffold,
 but it is not the dependency boundary of the final B14–B20 theorem. The old
@@ -279,7 +281,7 @@ opaque `ribet_single_step` axiom is no longer in the active source path.
 
 ## The path to a complete proof: Tate and Ribet
 
-The current development implements the architecture below. The two named
+The current development implements the architecture below. The three named
 interfaces and explicit enriched-plan supplier mark the remaining inputs;
 the connective arithmetic around them is explicit Lean code.
 
@@ -300,10 +302,11 @@ the generic local Tate statement to the Frey conductor data.
 ### Step 2 — Wiles data and Ribet level-lowering
 
 Tate selects a fixed `FreyCurveModel`; `wiles_modularity` consumes that model
-and supplies a typed form token plus a certified arithmetic path from its
-conductor to level 2. `B15_RibetIterate.lean` receives an explicit
-`EnrichedPlanSupplier`, whose result is indexed by that exact arithmetic-plan
-value. Every corresponding edge carries typed Eutheos geometry, patching data, its
+and supplies a typed form token plus a finite odd-prime quotient path from its
+conductor to level 2. `B15_RibetIterate.lean` certifies every exact edge from
+Tate, then passes that certificate to an explicit `EnrichedPlanSupplier`,
+whose result is indexed by that same arithmetic-plan value. Every
+corresponding edge carries typed Eutheos geometry, patching data, its
 localized Hecke data, the 07j support bridge, and a
 `SupportedNewformToTokenProvider`. `ribet_single_step_from_genuine` derives
 support from those fields and constructs the target token. `B16_BealFinal.lean`
@@ -317,7 +320,7 @@ level 2 exist. This fact is verified in the repository by `rfl`. Once the
 Ribet chain reaches level 2, the hypothetical primitive Beal triple yields a
 contradiction.
 
-The result is machine-checked as a consequence of the two named classical
+The result is machine-checked as a consequence of the three named classical
 interfaces and the explicit enriched-plan supplier. Replacing those boundaries with
 first-principles proofs is a later foundational stage; it is not claimed by the
 green build.
@@ -375,7 +378,8 @@ CI enforces the boundary on every push:
 - **Audit the real-number transport boundary** — it may use Lean foundations but
   may not use `sorryAx`
 - **Audit final B20 declarations** — `#print axioms` must expose
-  `wiles_modularity` and `frey_conductor_data`; the Ribet step is an
+  `wiles_modularity`, `frey_conductor_data`, and
+  `tate_step2_I_n_conductor_one`; the Ribet step is an
   explicit `EnrichedPlanSupplier` parameter rather than a named axiom
 
 The final audit distinguishes named mathematical assumptions from foundational
