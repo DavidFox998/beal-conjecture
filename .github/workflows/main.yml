@@ -17,6 +17,20 @@ jobs:
           curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain none
           echo "$HOME/.elan/bin" >> $GITHUB_PATH
 
+      - name: Restore Lean toolchain and Mathlib cache
+        id: lean-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.elan/toolchains
+            ~/.elan/update-hashes
+            .lake/packages
+          key: lean-${{ runner.os }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}
+
+      - name: Get Mathlib binary cache
+        if: steps.lean-cache.outputs.cache-hit != 'true'
+        run: lake exe cache get
+
       - name: Build all bricks
         run: lake build
 
@@ -128,7 +142,7 @@ jobs:
             exit 1
           fi
           expected_axioms=$(cat <<'EOF'
-          Beal.FreyTate.TateStep2.tate_step2_I_n_conductor_one
+          Beal.FreyTate.TateStep2.frey_conductor_data
           Beal.FreyTate.wiles_modularity
           EOF
           )
