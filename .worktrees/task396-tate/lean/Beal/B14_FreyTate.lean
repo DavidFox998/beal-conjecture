@@ -47,6 +47,18 @@
       def disc_Frey (A B C : ℤ) (x y z : ℕ) : ℤ :=
         16 * (A ^ x) ^ 2 * (B ^ y) ^ 2 * (C ^ z) ^ 2
 
+      /-- The discriminant expression obtained directly from the three roots
+          `0`, `Aˣ`, and `-Bʸ` of the cubic Frey equation. -/
+      def disc_Frey_from_coefficients (A B : ℤ) (x y : ℕ) : ℤ :=
+        16 * (A ^ x) ^ 2 * (B ^ y) ^ 2 * (A ^ x + B ^ y) ^ 2
+
+      /-- On a Beal solution, the `Cᶻ` discriminant formula is exactly the
+          discriminant computed from the Weierstrass coefficients. -/
+      theorem disc_Frey_eq_from_coefficients
+          {A B C : ℤ} {x y z : ℕ} (hEq : A ^ x + B ^ y = C ^ z) :
+          disc_Frey A B C x y z = disc_Frey_from_coefficients A B x y := by
+        simp only [disc_Frey, disc_Frey_from_coefficients, hEq]
+
       /-- The canonical integral Weierstrass data for
           `Y² = X(X − Aˣ)(X + Bʸ)`.
 
@@ -105,9 +117,12 @@
 
       /-- The fixed integral model together with separately supplied global
           conductor data. The hard local Tate implication is intentionally not
-          a field of this structure. -/
+          a field of this structure. The Beal equation is stored so the
+          discriminant field is certified to be the one computed from the
+          displayed Weierstrass coefficients. -/
       structure FreyCurveModel (A B C : ℤ) (x y z : ℕ)
           extends FreyIntegralModel A B C x y z where
+        equation : A ^ x + B ^ y = C ^ z
         conductor : ℕ
         conductor_prime_support :
           ∀ q : ℕ, q.Prime → q ∣ conductor →
@@ -223,6 +238,7 @@
 
       section AxiomAudit
       #print axioms c4_eq_b2sq_sub_24b4
+      #print axioms disc_Frey_eq_from_coefficients
       #print axioms wiles_modularity
       end AxiomAudit
 

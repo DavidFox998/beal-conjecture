@@ -60,8 +60,9 @@
          Ihara, old/new, patching/specialization, and support-bridge boundaries.
          This remains a conditional typed scaffold, not a full construction
          of modular forms. The independently audited
-         `tate_frey_multiplicative_derived` theorem still depends on the local
-         Tate Step 2 boundary, but it is not used by this final chain because
+         `tate_frey_multiplicative_derived` theorem still depends on the narrow
+         `tate_step2_odd_prime_external` Tate boundary, but it is not used by
+         this final chain because
          exact edge arithmetic is already included in the Wiles plan. -/
        theorem beal_conjecture_conditional_on_enriched_plan :
            BealConjectureConditionalOnEnrichedPlan := by

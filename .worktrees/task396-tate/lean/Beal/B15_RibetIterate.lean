@@ -238,7 +238,8 @@
       #print axioms ribet_iteration_gives_False
        -- frey_conductor_data and wiles_modularity only; the per-edge step
        -- construction is an explicit provider parameter. The independent
-       -- local theorem tate_step2_I_n_conductor_one is not used here because
+       -- local theorem tate_step2_I_n_conductor_one (and therefore its
+       -- tate_step2_odd_prime_external dependency) is not used here because
        -- exact-divisibility proofs are already fields of the Wiles plan.
 
       end Beal.RibetIterate

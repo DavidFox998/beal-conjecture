@@ -66,7 +66,8 @@ formalization makes this coupling explicit rather than gestural.
 > `[propext, Quot.sound]`. It does **not** mean that every declaration in the
 > repository is axiom-free. The repository retains several explicit,
 > independently audited mathematical boundaries, including the Mazur/Wiles
-> tower, global Frey-conductor data, and local Tate Step 2. None is part of the
+> tower, global Frey-conductor data, and the narrow external odd-prime Tate
+> theorem. None is part of the
 > focused Eutheos bridge.
 >
 > The current conditional chain is:
@@ -101,7 +102,8 @@ formalization makes this coupling explicit rather than gestural.
 > `Beal.RibetIterate.EnrichedPlanSupplier`.
 > The separate theorem
 > `Beal.FreyTate.TateStep2.tate_frey_multiplicative_derived` invokes the
-> explicit local boundary `tate_step2_I_n_conductor_one`; B20 does not yet
+> proved specialization `tate_step2_I_n_conductor_one`, whose only local
+> mathematical dependency is `tate_step2_odd_prime_external`; B20 does not yet
 > consume that theorem because the Wiles plan already carries exact-divisibility
 > proofs at each edge.
 >
@@ -156,7 +158,8 @@ The B14–B20 path now exposes the step boundary as data:
 |---|---|
 | `wiles_modularity` | For the fixed Tate Frey model, a residual prime, typed form token at its conductor, and a certified finite descent plan. |
 | `frey_conductor_data` | One global conductor value and prime-support theorem, indexed by the canonical integral Frey model. |
-| `tate_step2_I_n_conductor_one` | The exposed local Tate Step 2 statement: a minimal odd bad fiber has exact conductor exponent one; it is no longer hidden as a structure field. |
+| `tate_step2_odd_prime_external` | The one external local Tate input: an odd-prime type-`Iₙ` fiber, expressed by unit `c₄` and bad discriminant on the fixed model, has conductor exponent one. |
+| `tate_step2_I_n_conductor_one` | A proved Lean wrapper assembling the explicit local certificates and applying the external theorem. |
 | `NormalizedEigenlineData` | Explicit normalized generator and spanning data used to derive the V-specific q-expansion principle. |
 | `EutheosGeometryInterface` | Typed old/new modules, degeneracy maps, exact old-image representation, coverage, and jitter-indexed separation data; `OldNewDecompHyp` is derived at the theorem boundary. |
 | `TaylorWilesPatchingData` | Explicit prime levels, patched tower, depth bookkeeping, and the named R=T/localization specialization boundary used to construct `LocalizedRankOne`. |
@@ -166,11 +169,13 @@ The B14–B20 path now exposes the step boundary as data:
 | `EnrichedPlanSupplier` | Data-valued enrichment indexed by the exact unchanged Wiles arithmetic-plan value, so its `N`, `p`, and `M` edges cannot be replaced by a different chain. |
 
 The distinction matters. `tate_frey_multiplicative_derived` is a theorem, not
-another axiom: it packages the generic Tate interface with the explicit Frey
-discriminant, the nonvanishing of $c_4$ modulo the relevant prime, and the
-conductor's prime support. The canonical coefficient model is constructed
-without `Classical.choice`; conductor data and the local Tate theorem are
-separate named boundaries. B15 proves that a certified plan repeatedly
+another axiom: it proves unit $c_4$ and bad discriminant for the canonical
+Frey model, then applies the narrow external Tate theorem through
+`tate_step2_I_n_conductor_one`. The model stores the Beal equation itself, so
+its discriminant is certified to equal the expression computed from the
+displayed Weierstrass coefficients. The canonical coefficient model is
+constructed without `Classical.choice`; global conductor data and the local
+Tate theorem are separate named boundaries. B15 proves that a certified plan repeatedly
 transports the token and that the terminal token contradicts
 $S_2(\Gamma_0(2)) = 0$.
 
@@ -259,8 +264,9 @@ an explicit data-valued enriched-plan supplier:
    derives support and constructs the lower-level token.
 
 Separately, `tate_frey_multiplicative_derived` invokes
-`tate_step2_I_n_conductor_one` to derive the odd-prime exact-conductor result
-from the explicit Frey invariants. The final B20 chain does not yet consume
+the proved wrapper `tate_step2_I_n_conductor_one` to derive the odd-prime
+exact-conductor result from the explicit Frey invariants. The remaining local
+mathematical input is named `tate_step2_odd_prime_external`. The final B20 chain does not yet consume
 that theorem because exact-divisibility proofs are already fields of the
 conditional Wiles plan.
 
@@ -281,13 +287,18 @@ For a primitive Beal triple $(A^x, B^y, C^z)$, the development forms the Frey cu
 $$
 E : y^2 = x(x - A^x)(x + B^y).
 $$
-`B14_FreyTate.lean` defines its $b_2$, $b_4$, $c_4$, discriminant, and conductor.
+`B14_FreyTate.lean` defines its $b_2$, $b_4$, $c_4$, discriminant, and
+model-indexed conductor data. It also proves that, under the stored Beal
+equation, the discriminant formula equals the expression computed directly
+from the Weierstrass coefficients.
 `B14_TateC4Nonzero.lean` proves the needed local $c_4$ nonvanishing, and
-`B14_TateInImpliesOrd1.lean` combines that arithmetic with Tate's named
-interface to prove `tate_frey_multiplicative_derived`.
+`B14_TateInImpliesOrd1.lean` proves the unit-$c_4$ and bad-fiber certificates,
+then combines them with the narrowly named external Tate theorem to prove
+`tate_frey_multiplicative_derived`.
 
 This derived theorem is not another assumption: it is the explicit bridge from
-the generic local Tate statement to the Frey conductor data.
+the generic odd-prime Tate statement to the actual Frey model and its fixed
+conductor data. It does not claim a 2-adic or global conductor computation.
 
 ### Step 2 — Wiles data and Ribet level-lowering
 

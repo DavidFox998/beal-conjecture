@@ -40,12 +40,15 @@ V-specific eigenline edge. The boundary is explicit and data-valued:
 - `#print axioms ribet_single_step_from_genuine` reports
   `[propext, Quot.sound]`.
 - The remaining named mathematical inputs on the final path are
-  `wiles_modularity`, `tate_step2_I_n_conductor_one`, and the explicit
-  enriched-plan supplier. The supplier is a conditional data boundary, not a
-  theorem silently derived from the Galois files.
-- `Classical.choice` still appears in the B20 audit through the existing
-  `TateStep2.freyModelOf` construction. It is not introduced by 07k or by the
-  B15 genuine-provider bridge.
+  `wiles_modularity`, `frey_conductor_data`, and the explicit enriched-plan
+  supplier. The supplier is a conditional data boundary, not a theorem
+  silently derived from the Galois files.
+- The independent proved wrapper `tate_step2_I_n_conductor_one` depends on
+  `tate_step2_odd_prime_external`, but B20 does not consume it because the
+  conditional Wiles plan already carries exact-divisibility edge proofs.
+- `TateStep2.freyModelOf` constructs the coefficient model without
+  `Classical.choice`; the conductor comes from the typed global boundary. It
+  is not introduced by 07k or by the B15 genuine-provider bridge.
 - 07f proves that genuine form data excludes the raw 07c counterexample
   `(-Bp, 1, 1)`.
 - 07g proves `ihara_zero_on_genuine_V_conditional`: the restricted Ihara

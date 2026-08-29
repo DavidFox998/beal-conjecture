@@ -230,12 +230,16 @@ The final path still names the deep inputs that have not been reconstructed
 from first principles:
 
 1. `Beal.FreyTate.wiles_modularity`;
-2. `Beal.FreyTate.TateStep2.tate_step2_I_n_conductor_one`;
+2. `Beal.FreyTate.TateStep2.frey_conductor_data`;
 3. the explicit enriched-plan supplier carrying the Galois/Hecke support
    data.
 
 The first two are named mathematical interfaces. The third is an explicit
-missing data boundary. This distinction is central to the project.
+missing data boundary. Separately, the proved theorem
+`tate_step2_I_n_conductor_one` depends on the narrowly stated
+`tate_step2_odd_prime_external`; that local theorem is not used by the final
+B20 route because the conditional Wiles plan already carries its arithmetic
+edge proofs. This distinction is central to the project.
 
 ### B21 — Beal implies Fermat
 

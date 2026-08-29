@@ -3,20 +3,20 @@ name: Tate local conductor boundary
 description: The formal boundary for Tate Step 2 while a complete conductor computation remains outside Lean.
 ---
 
-Use one integral Frey-model witness per fixed Frey equation. Its odd-prime local
-conductor contract must relate the same model's `c₄`, discriminant, and conductor
-value, and the derived prime-by-prime result must reuse that witness rather than
-receive an arbitrary natural number.
+Use one integral Frey-model witness per fixed Frey equation. The model stores
+the equation as well as its coefficients, `c₄`, discriminant, and one supplied
+global conductor. The odd-prime Tate theorem must consume explicit unit-`c₄`
+and bad-discriminant certificates for that same model; the derived result must
+reuse its conductor rather than receive an arbitrary natural number.
 
 **Why:** A generic Tate axiom with unrelated `c₄`, discriminant, and conductor
-was too weak to express a mathematical local conductor statement. Merely storing
-a conductor field is also insufficient unless the local exponent relation is part
-of the model contract.
+was too weak to express a mathematical local conductor statement. Hiding the
+local exponent relation as a model field was also too permissive: it made the
+supplier provide the theorem instead of exposing the real mathematical boundary.
 
-**How to apply:** Keep the Tate boundary explicit and limited to odd primes until
-the full conductor, including the 2-adic exponent, is represented and proved.
-Documentation must call it an axiomatized local contract rather than a global
-conductor computation.
+**How to apply:** Keep the Tate boundary as one narrow external theorem with
+explicit prime, oddness, unit-`c₄`, and bad-fiber hypotheses. Prove the Frey
+specialization as a wrapper. Do not call it a global or 2-adic computation.
 
 The conductor exponent-one conclusion does not establish that a residual
 Galois representation is unramified at that prime. That step requires an

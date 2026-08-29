@@ -2,11 +2,11 @@
         B14_TateInImpliesOrd1 — Tate Step 2: I_n → ord_p(N) = 1
 
         Separates the fixed Frey model/conductor supplier from the genuine
-        local-conductor theorem `tate_step2_I_n_conductor_one`
+        local-conductor theorem `tate_step2_odd_prime_external`
         (Silverman AEC IV.9), using:
           · c4_nonzero_of_dvd_{A,B,C}   (0 sorry — B14_TateC4Nonzero)
           · frey_conductor_data          (global conductor boundary)
-          · tate_step2_I_n_conductor_one (local Tate theorem interface)
+          · tate_step2_I_n_conductor_one (proved specialization wrapper)
 
         Sorry count: 0.
 
@@ -24,12 +24,53 @@
 
         -- ── §1. Local Tate Step 2 boundary ───────────────────────────────────────────
 
-        /-- A unit c₄ is the local minimality certificate needed by this
-          multiplicative-reduction branch of Tate's algorithm. It is a sufficient
-          local condition, not a reconstruction of the full algorithm. -/
+        /-- The unit condition on the actual Weierstrass invariant `c₄`.
+
+          At an odd prime this is the usual `vₚ(c₄) = 0` condition. It is kept
+          as a proposition about the model's actual `c₄`, rather than as a
+          field that a model supplier can fill independently. -/
+        def IsC4UnitAt
+            {A B C : ℤ} {x y z : ℕ} (model : FreyCurveModel A B C x y z) (p : ℕ) : Prop :=
+          IsUnit (model.c4 : ZMod p)
+
+        /-- A bad discriminant fiber at `p`, stated for the model's actual
+          discriminant. The integral model makes this the concrete condition
+          `p ∣ |Δ|`. -/
+        def IsBadFiberAt
+            {A B C : ℤ} {x y z : ℕ} (model : FreyCurveModel A B C x y z) (p : ℕ) : Prop :=
+          p ∣ model.discriminant.natAbs
+
+        /-- The minimal multiplicative branch of Tate's algorithm.
+
+          For this milestone, the standard type `Iₙ` input is represented by
+          the two explicit local certificates: unit `c₄` and bad
+          discriminant fiber. No conductor or reduction-type fact is hidden in
+          the model structure. -/
         def IsMinimalAt
             {A B C : ℤ} {x y z : ℕ} (model : FreyCurveModel A B C x y z) (p : ℕ) : Prop :=
-          ¬ p ∣ model.c4.natAbs
+          IsC4UnitAt model p
+
+        def HasMultiplicativeTypeI
+            {A B C : ℤ} {x y z : ℕ} (model : FreyCurveModel A B C x y z) (p : ℕ) : Prop :=
+          IsMinimalAt model p ∧ IsBadFiberAt model p
+
+        /-- The unit certificate is exactly the nonvanishing certificate used by
+          the arithmetic Frey lemmas. -/
+        theorem isC4UnitAt_iff_not_dvd
+            {A B C : ℤ} {x y z : ℕ} (model : FreyCurveModel A B C x y z)
+            {p : ℕ} (hp : p.Prime) :
+            IsC4UnitAt model p ↔ ¬ p ∣ model.c4.natAbs := by
+          haveI : Fact (Nat.Prime p) := ⟨hp⟩
+          rw [IsC4UnitAt, isUnit_iff_ne_zero]
+          constructor
+          · intro hUnit hDvd
+            apply hUnit
+            rw [ZMod.intCast_zmod_eq_zero_iff_dvd]
+            exact Int.natCast_dvd.mpr hDvd
+          · intro hDvd hZero
+            apply hDvd
+            exact Int.natCast_dvd.mp
+              ((ZMod.intCast_zmod_eq_zero_iff_dvd model.c4 p).mp hZero)
 
         /-- External global-conductor data for the canonical integral Frey model.
 
@@ -49,23 +90,42 @@
           let D := frey_conductor_data hEq
           exact
             { freyIntegralModel A B C x y z with
+              equation := hEq
               conductor := D.conductor
               conductor_prime_support := D.conductor_prime_support }
 
-        /-- **Tate's Algorithm Step 2 (odd-prime local theorem).**
+        /-- **External Tate input (odd-prime type `Iₙ`).**
 
-          For the fixed integral Frey model and its fixed global conductor, a
-          minimal bad fiber at an odd prime has conductor exponent one. This is
-          the exact remaining local theorem; it is no longer hidden inside the
-          model or conductor-data structures. The boundary does not claim the
-          2-adic conductor computation. -/
-        axiom tate_step2_I_n_conductor_one
+          This is the only unformalized local theorem in this file. It is the
+          standard Tate-algorithm assertion that a minimal bad type-`Iₙ` fiber
+          at an odd prime has conductor exponent one. The prime, oddness, unit
+          `c₄`, and bad discriminant hypotheses are all explicit; the
+          conclusion refers to the conductor stored on this one exact model.
+
+          Mathlib 4.12 does not formalize the Tate algorithm or elliptic-curve
+          conductors, so this remains a deliberately narrow external theorem,
+          not a fabricated conductor field or a claim of a global computation.
+          The 2-adic exponent is outside this boundary. -/
+        axiom tate_step2_odd_prime_external
           {A B C : ℤ} {x y z : ℕ}
           (model : FreyCurveModel A B C x y z)
           (p : ℕ) (hp : p.Prime) (hp2 : p ≠ 2)
-          (hMinimal : IsMinimalAt model p)
-          (hDisc : p ∣ model.discriminant.natAbs) :
+          (hTypeI : HasMultiplicativeTypeI model p) :
           p ∣ model.conductor ∧ ¬ (p * p ∣ model.conductor)
+
+        /-- The checked local theorem exposed to downstream Frey code.
+
+          This wrapper is proved in Lean from the explicit type-`Iₙ`
+          certificates. Its only mathematical dependency is the narrowly
+          stated external Tate theorem above. -/
+        theorem tate_step2_I_n_conductor_one
+            {A B C : ℤ} {x y z : ℕ}
+            (model : FreyCurveModel A B C x y z)
+            (p : ℕ) (hp : p.Prime) (hp2 : p ≠ 2)
+            (hMinimal : IsMinimalAt model p)
+            (hDisc : IsBadFiberAt model p) :
+            p ∣ model.conductor ∧ ¬ (p * p ∣ model.conductor) :=
+          tate_step2_odd_prime_external model p hp hp2 ⟨hMinimal, hDisc⟩
 
         -- ── §2. Private helpers ───────────────────────────────────────────────────────
 
@@ -150,12 +210,14 @@
           rw [ZMod.intCast_zmod_eq_zero_iff_dvd]
           exact Int.natCast_dvd.mpr h_dvd
         have h_minimal : IsMinimalAt model p := by
-          simpa only [IsMinimalAt, model.c4_eq] using h_c4_nat
+          exact (isC4UnitAt_iff_not_dvd model hp).mpr
+            (by simpa only [model.c4_eq] using h_c4_nat)
         have h_disc_int : (p : ℤ) ∣ disc_Frey A B C x y z := Int.natCast_dvd.mpr h_disc
-        have h_disc_model : p ∣ model.discriminant.natAbs := by
+        have h_disc_model : IsBadFiberAt model p := by
           have h_disc_nat : p ∣ (disc_Frey A B C x y z).natAbs :=
             Int.natCast_dvd.mp h_disc_int
-          simpa only [model.discriminant_eq] using h_disc_nat
+          exact (show p ∣ model.discriminant.natAbs by
+            simpa only [model.discriminant_eq] using h_disc_nat)
         have h_exact :=
           tate_step2_I_n_conductor_one model p hp hp2 h_minimal h_disc_model
         -- 5. The witness is the model's actual conductor, with its model-level support.
@@ -163,11 +225,12 @@
 
         #print axioms freyIntegralModel
         #print axioms freyModelOf
+        #print axioms tate_step2_odd_prime_external
         #print axioms tate_step2_I_n_conductor_one
         #print axioms tate_frey_multiplicative_derived
         -- Expected named boundaries:
         --   frey_conductor_data
-        --   tate_step2_I_n_conductor_one
+        --   tate_step2_odd_prime_external
         -- No `sorryAx`; the canonical integral model is transparent.
 
         end Beal.FreyTate.TateStep2
