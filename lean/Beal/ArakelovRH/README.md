@@ -19,7 +19,7 @@ is the downstream geometric supplier. It records the old/new module,
 degeneracy-map, coverage, and jitter-indexed separation data without claiming
 that the arithmetic certificate alone proves modular geometry.
 
-## v7.3.1 audit clarification
+## v7.3.1 historical audit clarification
 
 The phrase **“0 axiom” is scoped to the typed Eutheos focused boundary**. It
 means that `Beal.Galois.OldNewDecompHyp_from_Eutheos`, `EutheosJitter`, and
@@ -52,3 +52,10 @@ multiplicity one.
 Those obligations are exposed in `Beal/Patching/`; their rank-one consequence
 is constructed choice-free from generator and coordinate laws.
 
+## v8.2.0 release status
+
+The Arakelov/RH interfaces remain a separate conditional route in v8.2.0 and
+are not used to overstate the Beal result. The release milestone is the
+independent exhaustive rational `E[2]` classification for the canonical Frey
+curve; the RH interfaces and their stated foundations remain as documented
+here. Main CI **#256** passed the complete audit.

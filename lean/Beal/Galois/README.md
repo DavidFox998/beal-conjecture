@@ -6,7 +6,7 @@ It is intentionally a **boundary layer**, not an unconditional proof of Beal's C
 
 ## v7.3.0 typed Eutheos edge status
 
-The release branch is `beal-4.12-ihra-eutheos`, extending the v7.2
+The historical v7.3 release branch was `beal-4.12-ihra-eutheos`, extending the v7.2
 V-specific eigenline edge. The boundary is explicit and data-valued:
 
 - The old B15 declaration `ribet_single_step : Prop` has been deleted from
@@ -597,7 +597,7 @@ Beal.Galois.«08_RibetProof»
 
 The source uses Lean 4.12. The numbered modules are deliberately small enough that their declarations and axiom reports can be audited directly.
 
-## v7.3.1 audit clarification
+## v7.3.1 historical audit clarification
 
 The phrase **“0 axiom” is scoped to the typed Eutheos focused boundary**. It
 means that `Beal.Galois.OldNewDecompHyp_from_Eutheos`, `EutheosJitter`, and
@@ -631,3 +631,11 @@ The patching certificate is a visible Type-valued mathematical boundary. It is
 not a renamed `LocalizedRankOne` field and it contains no stored linear
 equivalence.
 
+## v8.2.0 release status
+
+The Galois directory remains an explicit interface layer in v8.2.0. Its
+representation, Hecke, old/new, and support data are not being presented as an
+unconditional reconstruction of the corresponding theorems. The release-wide
+B17 milestone proves the canonical Frey curve's full rational `E[2]`, but does
+not instantiate any residual Galois representation or Mazur irreducibility
+boundary described here. Main CI **#256** passed the complete audit.

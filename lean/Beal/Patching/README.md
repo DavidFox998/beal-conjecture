@@ -60,3 +60,11 @@ The active final theorem therefore retains its existing named Wiles and Tate
 boundaries and its explicit enriched-plan supplier.  This change removes one
 opaque proposition from that supplier; it does not make the conditional Beal
 scaffold unconditional.
+
+## v8.2.0 release status
+
+The patching boundary is carried forward unchanged in v8.2.0: Taylor–Wiles
+prime systems, patched modules, and specialization data remain explicit
+supplier data rather than consequences of the surrounding arithmetic. The
+release's new B17 milestone concerns only exhaustive rational 2-torsion on the
+Frey curve. Main CI **#256** passed the complete audit.
