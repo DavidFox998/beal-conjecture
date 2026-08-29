@@ -129,35 +129,13 @@ jobs:
             exit 1
           fi
 
-          # Foundational Lean dependencies (propext, Classical.choice, Quot.sound) are
-          # not mathematical assumptions. Audit the final theorem's named domain axioms exactly.
-          cat > /tmp/beal_final_axiom_audit.lean <<'EOF'
-          import Beal
-          #print axioms Beal20Done.beal_conjecture_conditional_on_enriched_plan
-          #print axioms Beal20Done.twenty_bricks_conditional
-          EOF
-          lake env lean /tmp/beal_final_axiom_audit.lean 2>&1 | tee /tmp/beal_final_axiom_audit.txt
-          if grep -Fq 'sorryAx' /tmp/beal_final_axiom_audit.txt; then
-            echo "FAIL: final theorem depends on sorryAx"
-            exit 1
-          fi
-          printf '%s\n' \
-            'Beal.FreyTate.TateStep2.frey_conductor_data' \
-            'Beal.FreyTate.wiles_modularity' |
-            sort -u > /tmp/beal_expected_domain_axioms.txt
-          grep -oE 'Beal\.FreyTate(\.TateStep2)?\.[A-Za-z0-9_]+' \
-            /tmp/beal_final_axiom_audit.txt |
-            sort -u > /tmp/beal_actual_domain_axioms.txt
-          if ! cmp -s \
-            /tmp/beal_actual_domain_axioms.txt \
-            /tmp/beal_expected_domain_axioms.txt; then
-            echo "FAIL: final theorem must use exactly the two approved domain axioms"
-            diff -u \
-              /tmp/beal_expected_domain_axioms.txt \
-              /tmp/beal_actual_domain_axioms.txt || true
-            exit 1
-          fi
-          echo "OK: all cores are import-free and zero-axiom; final theorem uses exactly two approved domain axioms"
+          echo "OK: all cores are import-free and zero-axiom; wrappers use no sorryAx"
+
+      - name: Test the B20 axiom-output parser
+        run: bash scripts/test-check-b20-axioms.sh
+
+      - name: Confirm B20 transitive axiom graph
+        run: bash scripts/check-b20-axioms.sh
 
       - name: Audit the trusted real-number transport boundary
         run: |
