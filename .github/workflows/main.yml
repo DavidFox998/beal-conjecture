@@ -53,6 +53,7 @@ jobs:
           fi
           if grep -nE ':\s*Prop\s*:=\s*True\b|:=\s*trivial\b|:=\s*by[[:space:]]+trivial\b' \
               lean/Beal/B17_FreyRationalTwoTorsion.lean \
+              lean/Beal/B17_FullE2.lean \
               lean/Beal/B17_MazurIrreducible_Core.lean \
               lean/Beal/B17_MazurIrreducible.lean; then
             echo "FAIL: B17 must not reintroduce True/trivial irreducibility placeholders"
@@ -111,7 +112,12 @@ jobs:
           #print axioms Beal17Mazur.freyRationalCurve_discriminant
           #print axioms Beal17Mazur.freyRationalCurve_discriminant_ne_zero
           #print axioms Beal17Mazur.freyThreeDistinctRationalTwoTorsion
+          #print axioms Beal17Mazur.Frey_E2_exhaustive
+          #print axioms Beal17Mazur.freyTwoTorsion_affine_y_eq_zero
+          #print axioms Beal17Mazur.freyFullE2_exhaustive
+          #print axioms Beal17Mazur.freyFullE2_eq
           #print axioms Beal17Mazur.FreyMazurContext.hasThreeDistinctRationalTwoTorsion
+          #print axioms Beal17Mazur.FreyMazurContext.hasFullRationalTwoTorsion
           #print axioms Beal17Mazur.prime_not_dvd_conductor
           #print axioms Beal17Mazur.remove_exact_divisor
           #print axioms Beal17Mazur.remove_exact_context_conductor_divisor

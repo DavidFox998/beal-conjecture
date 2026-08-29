@@ -213,7 +213,7 @@ The final modules assemble the conditional chain:
 | Files | Role |
 |---|---|
 | `B16_BealFinal_*` | contradiction from the terminal level-2 obstruction |
-| `B17_FreyRationalTwoTorsion.lean`, `B17_MazurIrreducible_*` | genuine rational Frey 2-torsion, constructive exact-factor arithmetic, and the remaining uninhabited Mazur boundary |
+| `B17_FreyRationalTwoTorsion.lean`, `B17_FullE2.lean`, `B17_MazurIrreducible_*` | genuine and exhaustive rational Frey 2-torsion, constructive exact-factor arithmetic, and the remaining uninhabited Mazur boundary |
 | `B18_FreyIsElliptic_*` | ellipticity interface for the Frey model |
 | `B19_BealFinalAssembly_*` | assembly of the major typed bridges |
 | `B20_BealConjectureDone_*` | final theorem-shaped statement and axiom audit |
@@ -230,11 +230,15 @@ axiom, and this module does not construct it.
 `Y² = X(X - Aˣ)(X + Bʸ)` over `ℚ` with Mathlib's elliptic-curve API. It proves
 the discriminant formula, proves nonsingularity for positive bases, constructs
 the three pairwise-distinct nonidentity rational points `(0, 0)`, `(Aˣ, 0)`,
-and `(-Bʸ, 0)`, and proves each point is killed by doubling. Thus B17's
-`HasThreeDistinctRationalTwoTorsion` is now a theorem-backed proposition rather
-than an arbitrary predicate. The API deliberately does not call this “full”
-until an explicit exhaustiveness bridge to the standard `E[2]` formulation is
-formalized.
+and `(-Bʸ, 0)`, and proves each point is killed by doubling.
+
+`B17_FullE2.lean` closes the former naming gap. It proves that every affine
+point with `Y = 0` has x-coordinate `0`, `Aˣ`, or `-Bʸ` by factoring the Frey
+cubic over `ℚ`. It also proves that every nonidentity point killed by doubling
+has `Y = 0`, then identifies the complete rational 2-torsion set as exactly
+`{O, (0,0), (Aˣ,0), (-Bʸ,0)}`. B17's `HasFullRationalTwoTorsion` now carries
+that set equality; the lower-bound `HasThreeDistinctRationalTwoTorsion` remains
+available under its original honest name.
 
 `B17_MazurIrreducible_Core.lean` separately proves the elementary statement
 that an exactly-dividing prime can be removed from a natural-number level while
@@ -426,9 +430,9 @@ repository returns two named declarations. `wiles_lifting_axiom` is a
 mathematical boundary. The separately named `mazur_irreducibility_axiom`
 inhabits only B05's legacy natural-number compatibility predicate: that
 predicate is not residual-representation irreducibility, and B05 is not
-imported by the active B15/B20 path. B17 now proves three distinct rational
-order-two points on the Frey curve with Mathlib points, while retaining an
-uninhabited, parameterized boundary only for the missing
+imported by the active B15/B20 path. B17 now proves the full four-point rational
+2-torsion classification for the Frey curve with Mathlib points, while retaining
+an uninhabited, parameterized boundary only for the missing
 isogeny/residual-representation step. The repository-wide focused audit
 distinguishes all of these from the clean Eutheos supplier rather than hiding
 them.
@@ -437,6 +441,15 @@ The real-number interpretation of the fixed-point inequality
 `‖p·α₀‖ < 1/p` remains isolated in the desert-brothers module and audits to
 `[propext, Classical.choice, Quot.sound]`. That choice-bearing real bridge
 does not leak into the typed Eutheos/Beal path.
+
+## v8.2.0 full rational E[2] exhaustiveness
+
+The full rational 2-torsion name is now theorem-backed. `Frey_E2_exhaustive`
+classifies every zero-y affine root of the Frey cubic;
+`freyTwoTorsion_affine_y_eq_zero` supplies the converse group-law bridge; and
+`freyFullE2_eq` proves the exact four-point set equality including infinity.
+This closes only the rational `E[2]` exhaustiveness gap. It does not formalize
+residual Galois representations, rational p-isogenies, or Mazur's theorem.
 
 ## v8.0.0 patching layer
 
