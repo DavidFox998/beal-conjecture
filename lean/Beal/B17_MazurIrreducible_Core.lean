@@ -24,10 +24,10 @@ rational torsion or a residual Galois representation.
 -/
 def MazurIrreducibilityBoundary17Core
     (Context : Type)
-    (HasFullRationalTwoTorsion ResidualRepresentationReducible :
+    (HasThreeDistinctRationalTwoTorsion ResidualRepresentationReducible :
       Context → Prop) : Prop :=
   ∀ context : Context,
-    HasFullRationalTwoTorsion context →
+    HasThreeDistinctRationalTwoTorsion context →
     ¬ ResidualRepresentationReducible context
 
 /-- Local zero-axiom associativity proof.

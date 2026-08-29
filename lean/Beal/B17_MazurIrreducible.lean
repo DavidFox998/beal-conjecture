@@ -1,4 +1,5 @@
 import Beal.B17_MazurIrreducible_Core
+import Beal.B17_FreyRationalTwoTorsion
 import Beal.B14_FreyTate
 
 namespace Beal17Mazur
@@ -28,14 +29,31 @@ structure FreyMazurContext where
   p_not_dvd_B : ¬ p ∣ B
   p_not_dvd_C : ¬ p ∣ C
 
+/-- The genuine rational 2-torsion proposition for the Frey equation.
+
+This is inhabited only by a certificate containing the three distinct
+nonidentity points in Mathlib's rational-point group, each killed by doubling.
+-/
+def HasThreeDistinctRationalTwoTorsion (context : FreyMazurContext) : Prop :=
+  Nonempty <|
+    FreyThreeDistinctRationalTwoTorsion
+      context.A context.B context.x context.y
+
+/-- Every positive-base Frey context has three distinct rational 2-torsion points. -/
+theorem FreyMazurContext.hasThreeDistinctRationalTwoTorsion
+    (context : FreyMazurContext) :
+    HasThreeDistinctRationalTwoTorsion context := by
+  rcases context.beal with ⟨hA, hB, _⟩
+  exact ⟨freyThreeDistinctRationalTwoTorsion
+    context.A context.B context.x context.y hA hB⟩
+
 /-- Vocabulary that a future elliptic-curve/Galois layer must instantiate.
 
-Mathlib 4.12 does not provide either predicate for rational Frey curves. Keeping
-them explicit prevents an arbitrary arithmetic proposition from being called a
-torsion or reducibility theorem.
+Mathlib 4.12 does not provide residual representations for rational Frey
+curves. Keeping this predicate explicit prevents an arbitrary arithmetic
+proposition from being called reducibility.
 -/
 structure FreyMazurPredicates where
-  hasFullRationalTwoTorsion : FreyMazurContext → Prop
   residualRepresentationReducible : FreyMazurContext → Prop
 
 /-- The one honest Mazur boundary schema. B17 defines but does not assert it.
@@ -46,7 +64,7 @@ elliptic-curve notions and then inhabit this proposition.
 def MazurIrreducibilityBoundary (predicates : FreyMazurPredicates) : Prop :=
   MazurIrreducibilityBoundary17Core
     FreyMazurContext
-    predicates.hasFullRationalTwoTorsion
+    HasThreeDistinctRationalTwoTorsion
     predicates.residualRepresentationReducible
 
 /-- The model-indexed B14 conductor support proves that the fixed odd prime
