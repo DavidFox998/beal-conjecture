@@ -7,6 +7,10 @@ name: Chain Re-lock (Opera Numerorum)
 # A lightweight smoke-test (--dry-run) also runs on every push to main so
 # GITHUB_TOKEN scope problems or API failures surface immediately in CI
 # rather than silently on the weekly schedule.
+#
+# Verified 2026-08-29 in manual run 33267643393: a known-invalid token made
+# "Verify token" fail in under one second, skipped the relock script, and the
+# failure notification reached Slack with a link to the failed run.
 
 on:
   schedule:
