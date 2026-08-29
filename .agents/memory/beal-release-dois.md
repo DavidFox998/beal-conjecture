@@ -26,9 +26,9 @@ Boundary Exposed — v8.0.0”; do not mint a duplicate DOI.
 The v8.1.0 rational Frey 2-torsion milestone has version DOI
 `10.5281/zenodo.22165277` (Zenodo record 22165277). It archives the correct
 `beal-conjecture-v8.1.0.zip`, including the genuine B17 rational-point module.
-The version field is correct, but the display title initially inherited the
-stale v4.1.0 Tate wording; correct that record in place rather than minting a
-duplicate DOI.
+Its inherited v4.1.0 Tate title and description were corrected in place to
+“Beal Conjecture — Frey Rational 2-Torsion — v8.1.0”; do not mint a duplicate
+DOI.
 
 The inherited v4.1.0 titles and descriptions on Zenodo records
 `10.5281/zenodo.22110949` (`v7.0.0-genuine-provider`),
