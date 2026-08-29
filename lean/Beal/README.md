@@ -213,7 +213,7 @@ The final modules assemble the conditional chain:
 | Files | Role |
 |---|---|
 | `B16_BealFinal_*` | contradiction from the terminal level-2 obstruction |
-| `B17_MazurIrreducible_*` | constructive exact-factor arithmetic plus an uninhabited typed Mazur boundary |
+| `B17_FreyRationalTwoTorsion.lean`, `B17_MazurIrreducible_*` | genuine rational Frey 2-torsion, constructive exact-factor arithmetic, and the remaining uninhabited Mazur boundary |
 | `B18_FreyIsElliptic_*` | ellipticity interface for the Frey model |
 | `B19_BealFinalAssembly_*` | assembly of the major typed bridges |
 | `B20_BealConjectureDone_*` | final theorem-shaped statement and axiom audit |
@@ -226,16 +226,26 @@ conditional mathematics, not an unconditional proof of Beal's conjecture.
 The supplier is data-valued and inspectable; it is not a declared global
 axiom, and this module does not construct it.
 
-`B17_MazurIrreducible_Core.lean` proves only the elementary statement that an
-exactly-dividing prime can be removed from a natural-number level while leaving
-a positive cofactor not divisible by that factor. The wrapper fixes an actual
-`FreyIntegralModel`, a prime, and model-indexed B14 `FreyConductorData` in
-`FreyMazurContext`. It defines the parameterized schema of
-the missing Mazur torsion/isogeny-to-irreducibility theorem as
+`B17_FreyRationalTwoTorsion.lean` defines the actual Frey Weierstrass curve
+`Y² = X(X - Aˣ)(X + Bʸ)` over `ℚ` with Mathlib's elliptic-curve API. It proves
+the discriminant formula, proves nonsingularity for positive bases, constructs
+the three pairwise-distinct nonidentity rational points `(0, 0)`, `(Aˣ, 0)`,
+and `(-Bʸ, 0)`, and proves each point is killed by doubling. Thus B17's
+`HasThreeDistinctRationalTwoTorsion` is now a theorem-backed proposition rather
+than an arbitrary predicate. The API deliberately does not call this “full”
+until an explicit exhaustiveness bridge to the standard `E[2]` formulation is
+formalized.
+
+`B17_MazurIrreducible_Core.lean` separately proves the elementary statement
+that an exactly-dividing prime can be removed from a natural-number level while
+leaving a positive cofactor not divisible by that factor. The wrapper fixes an
+actual `FreyIntegralModel`, a prime, and model-indexed B14
+`FreyConductorData` in `FreyMazurContext`. It still defines the parameterized
+schema of the missing isogeny/residual-representation irreducibility theorem as
 `MazurIrreducibilityBoundary`, but does not assert or prove that boundary.
-Lean 4.12/Mathlib does not contain the arithmetic elliptic-curve theory needed
-to instantiate it. In particular, conductor divisibility alone is never called
-absolute irreducibility.
+Lean 4.12/Mathlib does not contain the Galois-representation and Mazur
+classification theory needed to instantiate it. In particular, conductor
+divisibility alone is never called absolute irreducibility.
 
 The final path still names the deep inputs that have not been reconstructed
 from first principles:
@@ -416,10 +426,12 @@ repository returns two named declarations. `wiles_lifting_axiom` is a
 mathematical boundary. The separately named `mazur_irreducibility_axiom`
 inhabits only B05's legacy natural-number compatibility predicate: that
 predicate is not residual-representation irreducibility, and B05 is not
-imported by the active B15/B20 path. B17 instead defines an uninhabited,
-parameterized boundary schema tied to a fixed Frey model and model-indexed
-conductor data. The repository-wide focused audit distinguishes all of these
-from the clean Eutheos supplier rather than hiding them.
+imported by the active B15/B20 path. B17 now proves three distinct rational
+order-two points on the Frey curve with Mathlib points, while retaining an
+uninhabited, parameterized boundary only for the missing
+isogeny/residual-representation step. The repository-wide focused audit
+distinguishes all of these from the clean Eutheos supplier rather than hiding
+them.
 
 The real-number interpretation of the fixed-point inequality
 `‖p·α₀‖ < 1/p` remains isolated in the desert-brothers module and audits to
