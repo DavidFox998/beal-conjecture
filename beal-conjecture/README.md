@@ -129,14 +129,16 @@ The connection to Fermat's Last Theorem is immediate and illuminating. If
 \[
 a^n+b^n=c^n,\qquad n>2,
 \]
-were a primitive positive solution, then it would be a Beal solution with
-\(x=y=z=n\). Thus Beal would imply Fermat's Last Theorem. The B21 layer records
-this implication as a corollary. It does not use Fermat as a premise, and it
-does not turn the conditional implication into a proof of Beal.
+were a positive solution, then repeated division by its nontrivial common gcd
+would produce a strictly smaller solution. Thus Beal would imply Fermat's Last
+Theorem. B22 machine-checks this infinite descent as
+`beal_implies_fermat_core : BealConjectureCore → FermatLastTheoremCore`.
+Its only foundational dependency is `propext`, inherited from Lean 4.12's
+implementation of `Nat.gcd`; it does not use the modularity interfaces.
 
 ## Layout of the formal development
 
-The repository is a 21-layer tower:
+The repository is a 22-layer tower:
 
 ```text
 lean/
@@ -150,7 +152,8 @@ lean/
     ├── B20_BealConjectureDone_Core.lean
     ├── B20_BealConjectureDone.lean
     ├── B21_FermatCorollary_Core.lean
-    └── B21_FermatCorollary.lean
+    ├── B21_FermatCorollary.lean
+    └── B22_BealImpliesFermat.lean
 ```
 
 Every layer has two faces:
@@ -174,6 +177,7 @@ The principal mathematical movement through the tower is:
 | B11–B15 | epsilon, Ribet, conductor, and descent interfaces |
 | B16–B20 | the final assembly interfaces; some are still scaffolding |
 | B21 | the constructive Beal-to-Fermat corollary bridge |
+| B22 | unrestricted Fermat from Beal by infinite descent |
 
 The word *interface* matters. A Lean declaration can make the type of a
 mathematical step precise before the deep theorem supplying that step has
@@ -191,6 +195,7 @@ different questions:
 CI checks the following:
 
 - all B01–B21 core modules are import-free;
+- the B22 Core-facing descent depends only on `propext`;
 - core declarations have no axioms;
 - strict wrapper theorems contain no `Classical.choice`, `Quot.sound`, or
   `sorryAx`;
