@@ -113,6 +113,68 @@
           ∀ q : ℕ, q.Prime → q ∣ conductor →
             q ∣ A.natAbs * B.natAbs * C.natAbs ∨ q = 2
 
+      /-- Literal divisibility cases for the displayed equation's invariants.
+
+          These names make no claim about the curve's reduction type or
+          Kodaira symbol. The pinned Mathlib version has no Tate-algorithm API. -/
+      inductive TwoAdicInvariantCase
+        | discOdd
+        | discEvenC4Odd
+        | discEvenC4Even
+
+      /-- The exact divisibility facts named by a `TwoAdicInvariantCase`. -/
+      def TwoAdicInvariantWitness
+          {A B C : ℤ} {x y z : ℕ}
+          (model : FreyCurveModel A B C x y z)
+          : TwoAdicInvariantCase → Prop
+        | .discOdd => ¬ 2 ∣ model.discriminant.natAbs
+        | .discEvenC4Odd =>
+            2 ∣ model.discriminant.natAbs ∧ ¬ 2 ∣ model.c4.natAbs
+        | .discEvenC4Even =>
+            2 ∣ model.discriminant.natAbs ∧ 2 ∣ model.c4.natAbs
+
+      /-- Explicit minimality test for the displayed integral equation.
+
+          This is the diagonal 2-adic scaling obstruction: no even scale
+          makes all weighted coefficients integral after
+          `X = u² X'`, `Y = u³ Y'`.  It is intentionally named narrowly;
+          it is not a claim to have formalized every admissible
+          Weierstrass change of variables at 2. -/
+      def IsTwoAdicallyScalingMinimal
+          {A B C : ℤ} {x y z : ℕ}
+          (model : FreyCurveModel A B C x y z) : Prop :=
+        ¬ ∃ u : ℕ,
+          2 ∣ u ∧
+          (u : ℤ) ^ 2 ∣ model.a2 ∧
+          (u : ℤ) ^ 4 ∣ model.a4 ∧
+          (u : ℤ) ^ 6 ∣ model.a6
+
+      /-- Explicit local hypotheses for a future 2-adic Tate analysis. -/
+      structure FreyTwoAdicLocalData
+          {A B C : ℤ} {x y z : ℕ}
+          (model : FreyCurveModel A B C x y z) where
+        minimality : IsTwoAdicallyScalingMinimal model
+        invariantCase : TwoAdicInvariantCase
+        invariantWitness : TwoAdicInvariantWitness model invariantCase
+
+      /-- Exact exponent of 2 in the supplied conductor of a fixed model. -/
+      def ExactTwoAdicConductorExponent
+          {A B C : ℤ} {x y z : ℕ}
+          (model : FreyCurveModel A B C x y z) (e : ℕ) : Prop :=
+        2 ^ e ∣ model.conductor ∧ ¬ 2 ^ (e + 1) ∣ model.conductor
+
+      /-- Data-valued boundary for an external 2-adic conductor computation.
+
+          The exponent and its exactness proof are visible fields indexed by
+          the same model. They are not hidden in `FreyCurveModel`, and no
+          theorem in this repository manufactures this certificate. -/
+      structure FreyTwoAdicConductorCertificate
+          {A B C : ℤ} {x y z : ℕ}
+          (model : FreyCurveModel A B C x y z)
+          extends FreyTwoAdicLocalData model where
+        exponent : ℕ
+        exactExponent : ExactTwoAdicConductorExponent model exponent
+
       /-- An abstract nonzero-form token carried by the Ribet descent.
 
           This is deliberately a typed interface, not a construction of a

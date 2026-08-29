@@ -170,8 +170,22 @@ B14 is a family of related modules rather than one file:
 `FreyCurveModel` is deliberately a typed record. Its conductor is data of
 the supplied model, accompanied by the local and prime-support properties
 needed later. It is not a fabricated radical formula for the conductor, and
-the code does not claim to have formalized the full 2-adic or global Tate
-algorithm.
+the code does not claim to have formalized the full global Tate algorithm.
+
+At 2, `TwoAdicInvariantWitness` records only the literal parity split for
+the displayed discriminant and `c₄`; its cases are not reduction types.
+`IsTwoAdicallyScalingMinimal` states the diagonal scaling obstruction for
+the displayed integral equation. `FreyTwoAdicLocalData` keeps those
+hypotheses outside the curve model. The elementary Frey formulas prove that
+both invariants are even and hence establish the `discEvenC4Even` case.
+
+An external analysis must provide a visible
+`FreyTwoAdicConductorCertificate` with a specific exponent and exact
+power-of-two divisibility proof for the same model's supplied conductor.
+No such certificate is constructed here; the repository does not prove full
+minimality under every admissible change, classify Kodaira type, or run
+Tate's algorithm at 2. The global conductor remains opaque supplied data
+with prime support, not an internally constructed Mathlib elliptic conductor.
 
 The elementary formulas in `B14_FreyTate.lean` are proved directly with
 Mathlib arithmetic. The named Wiles and Tate boundaries remain visible as
