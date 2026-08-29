@@ -36,6 +36,7 @@ def _schema(*props):
     return {
         "type": "object",
         "properties": dict(props),
+        "additionalProperties": False,
     }
 
 def _basic(payload_desc="Optional string payload passed through to the beacon record."):
@@ -680,6 +681,22 @@ TOOL_SCHEMAS = {
             "No key required."
         ),
         "inputSchema": _basic("Unused; pass empty string."),
+    },
+
+    "mf_01_paywall_selftest": {
+        "description": (
+            "Run the public paywall smoke test. Confirms an anonymous MF-01 call "
+            "succeeds while a paid MF-03 call is denied. No arguments or API key required."
+        ),
+        "inputSchema": _schema(),
+    },
+
+    "mf_01_catalog_tiers": {
+        "description": (
+            "Return the installed and advertised ZeroBeacon tool counts together with "
+            "the cumulative access totals for each subscription tier. No arguments required."
+        ),
+        "inputSchema": _schema(),
     },
 
     # ── MF-02  (block "02") — Billing / Identity / Commerce ──────────────────
