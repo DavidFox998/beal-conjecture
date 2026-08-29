@@ -64,21 +64,24 @@ formalization makes this coupling explicit rather than gestural.
 > `OldNewDecompHyp_from_Eutheos`, `EutheosJitter`, and the separation kernel
 > introduce no local proposition-valued axiom or opaque declaration and audit to
 > `[propext, Quot.sound]`. It does **not** mean that every declaration in the
-> repository is axiom-free. A literal repository-wide `^axiom` grep returns the
-> two intentional B20 tower boundaries `mazur_irreducibility_axiom` and
-> `wiles_lifting_axiom`; they remain visible and are not part of this bridge.
+> repository is axiom-free. The repository retains several explicit,
+> independently audited mathematical boundaries, including the Mazur/Wiles
+> tower, global Frey-conductor data, and local Tate Step 2. None is part of the
+> focused Eutheos bridge.
 >
 > The current conditional chain is:
 >
 > **primitive Beal data** → **Frey curve and discriminant arithmetic**
-> → **one Tate-supplied Frey model and conductor** → **a typed modular-form
+> → **one canonical Frey model with externally supplied conductor data**
+> → **a typed modular-form
 > token and certified arithmetic descent plan at that same conductor**
 > → **an explicit `EnrichedPlanSupplier` carrying normalized eigenline,
 > typed Eutheos geometry, Taylor–Wiles patching, support, and token-transport data per edge**
 > → **level 2** → **$S_2(Γ_0(2)) = 0$**
 > → **contradiction**.
 >
-> The final B20 theorem still depends on the typed Wiles and Tate interfaces
+> The final B20 theorem still depends on the typed Wiles interface and the
+> global Frey-conductor data boundary
 > and on an explicit `EnrichedPlanSupplier`. At each descent edge,
 > `NormalizedEigenlineData` derives `QExpansionPrincipleOnV` through
 > `QExpansionPrincipleOnV_fromEigenline`; the old/new proposition is now
@@ -92,15 +95,21 @@ formalization makes this coupling explicit rather than gestural.
 > `NewformHeckeToPreservedTokenTransport` converts that data to
 > `PreservedForm` without `Classical.choice`.
 >
-> The final named interfaces are:
+> The final B20 named interfaces are:
 > `Beal.FreyTate.wiles_modularity`,
-> `Beal.FreyTate.TateStep2.tate_step2_I_n_conductor_one`, and
+> `Beal.FreyTate.TateStep2.frey_conductor_data`, and
 > `Beal.RibetIterate.EnrichedPlanSupplier`.
+> The separate theorem
+> `Beal.FreyTate.TateStep2.tate_frey_multiplicative_derived` invokes the
+> explicit local boundary `tate_step2_I_n_conductor_one`; B20 does not yet
+> consume that theorem because the Wiles plan already carries exact-divisibility
+> proofs at each edge.
 >
 > `lake build Beal` targets Lean/Mathlib 4.12.0. The focused v7.3 edge audit
 > reports the foundational footprint `{propext, Quot.sound}`. The broader B20
-> audit still exposes `Classical.choice` through the existing
-> `TateStep2.freyModelOf` construction; v7.3 does not hide that distinction.
+> audit no longer needs `Classical.choice` to construct
+> `TateStep2.freyModelOf`: the canonical coefficients are transparent data and
+> the conductor boundary returns a typed record directly.
 
 ### v7.3.0 Task #440: Typed Eutheos old/new geometric bridge
 
@@ -146,7 +155,8 @@ The B14–B20 path now exposes the step boundary as data:
 | Named interface | What it contributes |
 |---|---|
 | `wiles_modularity` | For the fixed Tate Frey model, a residual prime, typed form token at its conductor, and a certified finite descent plan. |
-| `tate_step2_I_n_conductor_one` | The local Tate Step 2 statement: when the Frey invariants have the required valuations, the conductor has exact prime order. |
+| `frey_conductor_data` | One global conductor value and prime-support theorem, indexed by the canonical integral Frey model. |
+| `tate_step2_I_n_conductor_one` | The exposed local Tate Step 2 statement: a minimal odd bad fiber has exact conductor exponent one; it is no longer hidden as a structure field. |
 | `NormalizedEigenlineData` | Explicit normalized generator and spanning data used to derive the V-specific q-expansion principle. |
 | `EutheosGeometryInterface` | Typed old/new modules, degeneracy maps, exact old-image representation, coverage, and jitter-indexed separation data; `OldNewDecompHyp` is derived at the theorem boundary. |
 | `TaylorWilesPatchingData` | Explicit prime levels, patched tower, depth bookkeeping, and the named R=T/localization specialization boundary used to construct `LocalizedRankOne`. |
@@ -156,9 +166,11 @@ The B14–B20 path now exposes the step boundary as data:
 | `EnrichedPlanSupplier` | Data-valued enrichment indexed by the exact unchanged Wiles arithmetic-plan value, so its `N`, `p`, and `M` edges cannot be replaced by a different chain. |
 
 The distinction matters. `tate_frey_multiplicative_derived` is a theorem, not
-a fourth axiom: it packages the generic Tate interface with the explicit Frey
+another axiom: it packages the generic Tate interface with the explicit Frey
 discriminant, the nonvanishing of $c_4$ modulo the relevant prime, and the
-conductor's prime support. B15 proves that a certified plan repeatedly
+conductor's prime support. The canonical coefficient model is constructed
+without `Classical.choice`; conductor data and the local Tate theorem are
+separate named boundaries. B15 proves that a certified plan repeatedly
 transports the token and that the terminal token contradicts
 $S_2(\Gamma_0(2)) = 0$.
 
@@ -197,8 +209,10 @@ modular forms. Those global ingredients remain inside the explicit
   law is named explicitly in `PatchingSpecializationData`.
 
 This is a more inspectable formal interface, not a stronger claim of completed
-foundational mathematics. Wiles and Tate remain named mathematical assumptions;
-the enriched-plan supplier remains an explicit missing data boundary.
+foundational mathematics. Wiles, the global conductor data, and local Tate
+Step 2 remain named mathematical assumptions; the enriched-plan supplier
+remains an explicit missing data boundary. The final B20 chain currently uses
+the first two but not the independently audited local Tate theorem.
 ---
 
 ## The architecture: Cores, Wrappers, and explicit mathematical boundaries
@@ -232,17 +246,23 @@ own audit.
 
 ### The named mathematical interfaces and data boundary
 
-The final B20 proof is conditional on two named mathematical results and an
-explicit data-valued enriched-plan supplier:
+The final B20 proof is conditional on two named mathematical boundaries and
+an explicit data-valued enriched-plan supplier:
 
-1. **Wiles:** `wiles_modularity` supplies a residual prime, a typed form token,
-   and a certified descent plan for the Tate-supplied Frey conductor.
-2. **Tate:** `tate_step2_I_n_conductor_one` supplies the local exact-conductor step;
-   B14 uses it to select the fixed Frey model and its conductor.
+1. **Global conductor:** `frey_conductor_data` supplies one conductor and its
+   prime support for the canonical integral Frey model.
+2. **Wiles:** `wiles_modularity` supplies a residual prime, a typed form token,
+   and a certified descent plan for that fixed conductor.
 3. **Genuine plan:** `EnrichedPlanSupplier` enriches the unchanged Wiles
    arithmetic plan. Each `GaloisEdgeWitness` carries the 07g–07j propositions
    and a `SupportedNewformToTokenProvider`; `ribet_single_step_from_genuine`
    derives support and constructs the lower-level token.
+
+Separately, `tate_frey_multiplicative_derived` invokes
+`tate_step2_I_n_conductor_one` to derive the odd-prime exact-conductor result
+from the explicit Frey invariants. The final B20 chain does not yet consume
+that theorem because exact-divisibility proofs are already fields of the
+conditional Wiles plan.
 
 The older broad `modularity_hypothesis` remains part of the historical scaffold,
 but it is not the dependency boundary of the final B14–B20 theorem. The old
@@ -347,7 +367,7 @@ CI enforces the boundary on every push:
 - **Audit the real-number transport boundary** — it may use Lean foundations but
   may not use `sorryAx`
 - **Audit final B20 declarations** — `#print axioms` must expose
-  `wiles_modularity` and `tate_step2_I_n_conductor_one`; the Ribet step is an
+  `wiles_modularity` and `frey_conductor_data`; the Ribet step is an
   explicit `EnrichedPlanSupplier` parameter rather than a named axiom
 
 The final audit distinguishes named mathematical assumptions from foundational
@@ -364,6 +384,13 @@ export PATH="$HOME/.elan/bin:$PATH"
 lake exe cache get
 lake build Beal
 ```
+
+Keep the same checkout and its ignored `.lake/` directory between commits.
+Lake then rebuilds only changed project modules. CI caches the Lean toolchain
+and `.lake/packages` under a key derived from `lean-toolchain` and
+`lake-manifest.json`; `lake exe cache get` runs only when that exact dependency
+cache is missing. Avoid `lake clean` unless a genuinely clean rebuild is
+required.
 
 ---
 
