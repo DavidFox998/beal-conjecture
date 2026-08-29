@@ -19,9 +19,9 @@ Do not mint another DOI for this documentation release.
 
 The v8.0.0 Tate-boundary release has version DOI `10.5281/zenodo.22164365`
 (Zenodo record 22164365), with concept DOI `10.5281/zenodo.22041831`. The
-record is complete and archives the GitHub v8.0.0 source ZIP; its inherited
-display title still says v4.1.0 and should be corrected in place rather than
-minting a duplicate DOI.
+record is complete and archives the GitHub v8.0.0 source ZIP. Its inherited
+v4.1.0 display title was corrected in place to “Beal Conjecture — Frey Tate
+Boundary Exposed — v8.0.0”; do not mint a duplicate DOI.
 
 The Tate local conductor verification is published as `v4.1.0` with DOI
 `10.5281/zenodo.22091549` (Zenodo record 22091549). Its archival description
