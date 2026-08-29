@@ -31,11 +31,13 @@ V-specific eigenline edge. The boundary is explicit and data-valued:
   `NewformHeckeToPreservedTokenTransport` for one exact lowering edge.
 - B15 derives `QExpansionPrincipleOnV` through
   `QExpansionPrincipleOnV_fromEigenline`; `hQ` is not a field of the edge.
-- `GaloisDescentPlan` is indexed by the exact Wiles arithmetic-plan value, so
+- `GaloisDescentPlan` is indexed by the same Tate-certified Wiles quotient-plan value, so
   every enriched edge has that constructor's `N`, `p`, and `M`; the supplier
   cannot discard the certified path and substitute another chain.
-- `EnrichedPlanSupplier` converts the unchanged Wiles arithmetic plan into
-  this per-edge plan. The recursive B15 proof no longer consumes a universal
+- Tate recursively certifies exact divisibility along the Wiles odd-prime
+  quotient plan. `EnrichedPlanSupplier` consumes that certificate and converts
+  the same indexed arithmetic plan into this per-edge Galois plan. The
+  recursive B15 proof no longer consumes a universal
   `RibetSingleStepProviders` family.
 - `#print axioms ribet_single_step_from_genuine` reports
   `[propext, Quot.sound]`.

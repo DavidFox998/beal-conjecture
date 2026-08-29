@@ -2,7 +2,8 @@
       B15_RibetIterate — Ribet iteration N → 2, preserves mod ℓ representation.
 
       · `GaloisEdgeWitness` — per-edge arithmetic and 07g–07k data
-      · `EnrichedPlanSupplier` — enriches the unchanged Wiles arithmetic plan
+      · `TateCertifiesArithmeticPlan` — derives every exact edge from Tate
+      · `EnrichedPlanSupplier` — enriches the Tate-certified Wiles plan
       · `ribet_single_step_from_genuine` — one lower-level token assembled
         from explicit data-valued 07k support and transport
       · theorem descend_preserved_form — certified descent to level 2 (0 sorry)
@@ -32,6 +33,7 @@
       /-- The data returned by one level-lowering step. -/
       structure RibetStepResult (ℓ N p : ℕ) where
         level : ℕ
+        exactDivides : ExactDividesCore p N
         lowers : CanLowerLevelCore N p level
         form : PreservedForm ℓ level
 
@@ -47,7 +49,6 @@
            (ℓ N p M : ℕ) where
          hPrime : Nat.Prime p
          hPrime_ne_ℓ : p ≠ ℓ
-         hExact : ExactDividesCore p N
          hDiv : CanLowerLevelCore N p M
          R : Beal.Galois.FreyResidualRepresentation model ℓ
          m : Beal.Galois.MaximalIdeal M ℓ
@@ -71,10 +72,75 @@
            Beal.Galois.NewformHeckeToPreservedTokenTransport
              (model := model) ℓ M
 
-       /-- The arithmetic plan type supplied by the unchanged Wiles boundary.
-           It is named here only to document the supplier's input. -/
+       /-- The arithmetic plan supplied by Wiles. It contains only odd primes,
+           residual-prime separation, and quotient equations; exact
+           divisibility is supplied by Tate below. -/
        abbrev GaloisArithmeticPlan (ℓ N : ℕ) :=
          RibetDescentPlan ℓ N
+
+       /-- Every edge in a Wiles arithmetic plan has the exact-divisibility
+           certificate required by level lowering.
+
+           The predicate follows the plan recursively. It is separate from the
+           Wiles data so the same local fact is not supplied twice. -/
+       def TateCertifiesArithmeticPlan
+           {A B C : ℤ} {x y z : ℕ}
+           (model : FreyCurveModel A B C x y z)
+           (ℓ : ℕ) {N : ℕ}
+           (plan : GaloisArithmeticPlan ℓ N) : Prop :=
+         RibetDescentPlan.rec
+           (motive := fun _ _ => Prop)
+           True
+           (fun {N p M} _ _ _ _ _ tailCertified =>
+             ExactDividesCore p N ∧ tailCertified)
+           plan
+
+       /-- Tate Step 2 certifies every odd-prime edge of a Wiles arithmetic
+           plan for the canonical Frey model.
+
+           At an edge `M * p = N`, the quotient equation gives `p ∣ N`.
+           Since every intermediate level divides the original conductor,
+           Tate's `p² ∤ conductor` conclusion descends to `p² ∤ N`. -/
+       theorem tate_certifies_arithmetic_plan
+           {A B C : ℤ} {x y z : ℕ}
+           (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
+           (hx : 0 < x) (hy : 0 < y) (hz : 0 < z)
+           (hEq : A ^ x + B ^ y = C ^ z)
+           (hCop : IsCoprime A (B * C))
+           {ℓ N : ℕ}
+           (hNDiv : N ∣ (Beal.FreyTate.TateStep2.freyModelOf hEq).conductor)
+           (plan : GaloisArithmeticPlan ℓ N) :
+           TateCertifiesArithmeticPlan
+             (Beal.FreyTate.TateStep2.freyModelOf hEq) ℓ plan := by
+         revert hNDiv
+         induction plan with
+         | terminal =>
+             intro _
+             trivial
+         | @step N p M hp hp_ne_ℓ hp_ne_two h_level rest ih =>
+             intro hNDiv
+             change ExactDividesCore p N ∧
+               TateCertifiesArithmeticPlan
+                 (Beal.FreyTate.TateStep2.freyModelOf hEq) ℓ rest
+             have hpN : p ∣ N := by
+               refine ⟨M, ?_⟩
+               simpa [Nat.mul_comm] using h_level.symm
+             have hpConductor :
+                 p ∣ (Beal.FreyTate.TateStep2.freyModelOf hEq).conductor :=
+               dvd_trans hpN hNDiv
+             have hpABC : p ∣ A.natAbs * B.natAbs * C.natAbs :=
+               ((Beal.FreyTate.TateStep2.freyModelOf hEq).conductor_prime_support
+                 p hp hpConductor).resolve_right hp_ne_two
+             have hTate :=
+               Beal.FreyTate.TateStep2.tate_frey_multiplicative_at_model
+                 hA hB hC hx hy hz hEq hCop p hp hp_ne_two hpABC
+             have hpSqN : ¬ (p * p ∣ N) := by
+               intro hpSq
+               exact hTate.2.1 (dvd_trans hpSq hNDiv)
+             have hMDivN : M ∣ N := ⟨p, h_level.symm⟩
+             exact
+               ⟨⟨hpN, hpSqN⟩,
+                 ih (dvd_trans hMDivN hNDiv)⟩
 
        /-- A proof-relevant enrichment of one exact arithmetic descent plan.
 
@@ -86,24 +152,28 @@
            {A B C : ℤ} {x y z : ℕ}
            {model : FreyCurveModel A B C x y z}
            (ℓ : ℕ) :
-           {N : ℕ} → GaloisArithmeticPlan ℓ N → Type 2
+           {N : ℕ} → (plan : GaloisArithmeticPlan ℓ N) →
+             TateCertifiesArithmeticPlan model ℓ plan → Type 2
          | terminal :
              GaloisDescentPlan (model := model) ℓ
-               RibetDescentPlan.terminal
+                RibetDescentPlan.terminal True.intro
          | step {N p M : ℕ}
              {hp : Nat.Prime p}
              {hp_ne_ℓ : p ≠ ℓ}
-             {hp_dvd : p ∣ N}
-             {hp_sq : ¬ (p * p ∣ N)}
+              {hp_ne_two : p ≠ 2}
              {h_level : M * p = N}
              {rest : RibetDescentPlan ℓ M}
+              {tailCertified : TateCertifiesArithmeticPlan model ℓ rest}
+              (hExact : ExactDividesCore p N)
              (edge : GaloisEdgeWitness (model := model) ℓ N p M)
-             (tail : GaloisDescentPlan (model := model) ℓ rest) :
+              (tail : GaloisDescentPlan (model := model) ℓ rest tailCertified) :
              GaloisDescentPlan (model := model) ℓ
                (RibetDescentPlan.step
-                 hp hp_ne_ℓ hp_dvd hp_sq h_level rest)
+                  hp hp_ne_ℓ hp_ne_two h_level rest)
+                ⟨hExact, tailCertified⟩
 
-       /-- Explicit construction of a genuine plan from the arithmetic plan.
+       /-- Explicit construction of a genuine plan from a Tate-certified
+           arithmetic plan.
 
            The supplier is a data boundary, not a proposition-valued
            existence statement. Its result contains the per-edge 07g–07k
@@ -112,14 +182,16 @@
          ∀ {A B C : ℤ} {x y z : ℕ}
            (model : FreyCurveModel A B C x y z)
            (ℓ N : ℕ)
-           (plan : GaloisArithmeticPlan ℓ N),
-             GaloisDescentPlan (model := model) ℓ plan
+            (plan : GaloisArithmeticPlan ℓ N)
+            (certificate : TateCertifiesArithmeticPlan model ℓ plan),
+              GaloisDescentPlan (model := model) ℓ plan certificate
 
        /-- Build one lowered result from a single enriched edge. -/
        def ribet_single_step_from_genuine
            {A B C : ℤ} {x y z : ℕ}
            {model : FreyCurveModel A B C x y z}
            {ℓ N p M : ℕ}
+           (hExact : ExactDividesCore p N)
            (edge : GaloisEdgeWitness (model := model) ℓ N p M) :
            RibetStepResult ℓ N p := by
          letI := edge.localized
@@ -139,6 +211,7 @@
            edge.hSupportBridge edge.hV hIhara hOldNew hRank
          exact
            { level := M
+             exactDivides := hExact
              lowers := edge.hDiv
              form :=
                Beal.Galois.preservedToken_of_supportData
@@ -185,13 +258,15 @@
            {ℓ N : ℕ}
            (hForms : HasPreservedForm ℓ N)
            (arithPlan : GaloisArithmeticPlan ℓ N)
-           (plan : GaloisDescentPlan (model := model) ℓ arithPlan) :
+           (certificate : TateCertifiesArithmeticPlan model ℓ arithPlan)
+           (plan : GaloisDescentPlan
+             (model := model) ℓ arithPlan certificate) :
            HasPreservedForm ℓ 2 := by
          induction plan with
          | terminal =>
              simpa using hForms
-         | step edge tail ih =>
-             let result := ribet_single_step_from_genuine edge
+         | step hExact edge tail ih =>
+             let result := ribet_single_step_from_genuine hExact edge
              exact ih ⟨result.form⟩
 
       /-- No preserved form can reach level 2 because the typed terminal slot is
@@ -207,8 +282,8 @@
           same conductor; each Ribet step preserves the form until the
           impossible level-2 slot is reached.
 
-          The plan already contains its exact-divisibility edge proofs, so this
-          theorem does not invoke the separate local Tate Step 2 theorem. -/
+          Tate certifies every odd-prime exact-divisibility edge before the
+          enriched supplier adds the Galois, Hecke, and patching data. -/
       theorem ribet_iteration_gives_False
         {A B C : ℤ} {x y z : ℕ}
          (supplier : EnrichedPlanSupplier)
@@ -223,23 +298,30 @@
            rcases hWiles with ⟨ℓ, _, hℓ, hForms, hPlans⟩
            refine Nonempty.elim hPlans ?_
            intro hPlan
+           have hTatePlan :
+               TateCertifiesArithmeticPlan model ℓ hPlan := by
+             exact tate_certifies_arithmetic_plan
+               hA hB hC (by omega) (by omega) (by omega) hEq hCop
+               (dvd_refl model.conductor) hPlan
            let galoisPlan :=
-             supplier model ℓ model.conductor hPlan
+             supplier model ℓ model.conductor hPlan hTatePlan
            exact no_preserved_form_at_two ℓ
-             (descend_preserved_form hForms hPlan galoisPlan)
+             (descend_preserved_form hForms hPlan hTatePlan galoisPlan)
 
       #print axioms ribet_iterate_to_2
       -- 0 axioms beyond kernel
 
        #print axioms GaloisEdgeWitness
+       #print axioms TateCertifiesArithmeticPlan
+       #print axioms tate_certifies_arithmetic_plan
        #print axioms GaloisDescentPlan
        #print axioms EnrichedPlanSupplier
        #print axioms ribet_single_step_from_genuine
       #print axioms ribet_iteration_gives_False
-       -- frey_conductor_data and wiles_modularity only; the per-edge step
-       -- construction is an explicit provider parameter. The independent
-       -- local theorem tate_step2_I_n_conductor_one is not used here because
-       -- exact-divisibility proofs are already fields of the Wiles plan.
+        -- frey_conductor_data, tate_step2_I_n_conductor_one, and
+        -- wiles_modularity only; the per-edge Galois construction is an
+        -- explicit provider parameter. Exact divisibility is derived from
+        -- Tate and is no longer a field of the Wiles plan.
 
       end Beal.RibetIterate
     

@@ -6,6 +6,7 @@ set -euo pipefail
 readonly DECLARATION="Beal20Done.beal_conjecture_conditional_on_enriched_plan"
 readonly -a EXPECTED_DOMAIN_AXIOMS=(
   "Beal.FreyTate.TateStep2.frey_conductor_data"
+  "Beal.FreyTate.TateStep2.tate_step2_I_n_conductor_one"
   "Beal.FreyTate.wiles_modularity"
 )
 readonly -a ALLOWED_FOUNDATIONAL_AXIOMS=(
