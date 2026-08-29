@@ -1,46 +1,73 @@
--- B17_MazurIrreducible_Core — Mazur's irreducibility theorem for the Frey
--- Galois representation, and the implication for Ribet's level-lowering.
--- No imports. All types defined locally.
+-- B17_MazurIrreducible_Core — import-free vocabulary for the Mazur boundary.
 --
--- Mazur's theorem on the torsion subgroup of semistable elliptic curves (1977)
--- implies that for a semistable E/ℚ and prime p ≥ 5, the mod-p Galois
--- representation ρ_{E,p} is absolutely irreducible. This is used (in the
--- 3-5 switch of Wiles and Taylor) to initiate the modularity lifting argument,
--- and separately to ensure Ribet's level-lowering hypothesis is met.
+-- This file deliberately separates two logically different facts:
+--   1. removing an exactly-dividing prime from a natural number, proved below;
+--   2. irreducibility of a Frey residual representation, represented only by
+--      a typed boundary because Mathlib has no Mazur torsion/isogeny theorem.
 
 def Dvd17Core (d n : Nat) : Prop := ∃ k : Nat, n = d * k
 
-def Prime17Core (p : Nat) : Prop :=
-  1 < p ∧ ∀ a b : Nat, p = a * b → a = 1 ∨ b = 1
+/-- `p` divides `N` exactly once, expressed without natural-number division. -/
+def ExactDivisor17Core (p N : Nat) : Prop :=
+  Dvd17Core p N ∧ ¬ Dvd17Core (p * p) N
 
--- FreyRepIrreducibleAt5: for the Frey curve of a Beal triple, the mod-p
--- representation is irreducible when p exactly divides the conductor.
--- Encoded as the level-descent fact: p || N → ∃ M = N/p coprime to p.
-def FreyRepIrreducibleAt517Core : Prop :=
-  ∀ N p : Nat, Prime17Core p → 4 < p →
-    Dvd17Core p N →
-    ¬ Dvd17Core (p * p) N →
-    ∃ M : Nat, 0 < M ∧ M * p = N ∧ ¬ Dvd17Core p M
+/-- The witness obtained after removing one exactly-dividing factor `p`. -/
+def RemovedPrimeFactor17Core (p N M : Nat) : Prop :=
+  0 < M ∧ M * p = N ∧ ¬ Dvd17Core p M
 
--- Mazur's theorem: for a prime p ≥ 5 and a semistable conductor N
--- squarefree at p, the mod-p representation is absolutely irreducible.
--- The irreducibility means: there is no p-isogeny of degree p — equivalently,
--- no sub-representation of order p. Encoded via exact divisibility.
-def MazurTheoremStatement17Core : Prop :=
-  ∀ N p : Nat, Prime17Core p → 4 < p →
-    Dvd17Core p N →
-    ¬ Dvd17Core (p * p) N →
-    ∃ M : Nat, 0 < M ∧ M * p = N ∧ ¬ Dvd17Core p M
+/-- Shape of the unavailable Mazur input.
 
--- Irreducibility implies Ribet's level-lowering can proceed:
--- an irreducible mod-p representation at exactly-p-divisible level N
--- descends to a representation at level N/p, with p removed.
-def IrreducibleImpliesCanLower17Core : Prop :=
-  ∀ N p : Nat, Prime17Core p → 4 < p →
-    Dvd17Core p N →
-    ¬ Dvd17Core (p * p) N →
-    ∃ M : Nat, 0 < M ∧ M * p = N ∧ ¬ Dvd17Core p M
+`Context` is supplied by the Mathlib wrapper and is expected to fix one Frey
+model, one prime, and its conductor data. The two predicates are also supplied
+by the future arithmetic-geometry layer; this core does not pretend to define
+rational torsion or a residual Galois representation.
+-/
+def MazurIrreducibilityBoundary17Core
+    (Context : Type)
+    (HasFullRationalTwoTorsion ResidualRepresentationReducible :
+      Context → Prop) : Prop :=
+  ∀ context : Context,
+    HasFullRationalTwoTorsion context →
+    ¬ ResidualRepresentationReducible context
 
-#print axioms FreyRepIrreducibleAt517Core
-#print axioms MazurTheoremStatement17Core
-#print axioms IrreducibleImpliesCanLower17Core
+/-- Local zero-axiom associativity proof.
+
+Lean 4.12's standard `Nat.mul_assoc` declaration carries `propext`; this
+import-free core keeps the elementary factor-removal proof independent of it.
+-/
+theorem mul_assoc17Core (a b c : Nat) : a * (b * c) = (a * b) * c := by
+  induction c with
+  | zero => rfl
+  | succ c inductionHypothesis =>
+    exact
+      (congrArg (fun value => a * value) (Nat.mul_succ b c)).trans
+        ((Nat.mul_add a (b * c) b).trans
+          ((congrArg (fun value => value + a * b) inductionHypothesis).trans
+            (Nat.mul_succ (a * b) c).symm))
+
+/-- Exact divisibility gives a positive cofactor from which `p` has been
+removed. This is elementary arithmetic, not Mazur irreducibility. -/
+theorem remove_exact_divisor17Core (N p : Nat)
+    (hExact : ExactDivisor17Core p N) :
+    ∃ M : Nat, RemovedPrimeFactor17Core p N M := by
+  rcases hExact.1 with ⟨M, hN⟩
+  cases M with
+  | zero =>
+    exact False.elim (hExact.2 ⟨0, hN⟩)
+  | succ M =>
+    refine ⟨M.succ, Nat.zero_lt_succ M, ?_, ?_⟩
+    · exact (Nat.mul_comm M.succ p).trans hN.symm
+    · intro hpM
+      rcases hpM with ⟨k, hM⟩
+      apply hExact.2
+      refine ⟨k, ?_⟩
+      exact hN.trans
+        ((congrArg (fun factor => p * factor) hM).trans
+          (mul_assoc17Core p p k))
+
+#print axioms Dvd17Core
+#print axioms ExactDivisor17Core
+#print axioms RemovedPrimeFactor17Core
+#print axioms MazurIrreducibilityBoundary17Core
+#print axioms mul_assoc17Core
+#print axioms remove_exact_divisor17Core

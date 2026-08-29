@@ -7,7 +7,9 @@ namespace BealModularity05
 -- RibetLevelLoweringHypothesis from S2DimZero via constant witnesses p=5, N=10.
 -- Next step: prove RibetLevelLoweringHypothesisReal (ties N to FreyConductor).
 
--- Mazur (1978): mod-p irreducibility for p ≥ 5
+-- Legacy compatibility axiom for the natural-number predicate in the Core.
+-- This is not residual-representation irreducibility and is not imported by
+-- the active B15/B20 chain. B17 exposes the honest parameterized schema.
 axiom mazur_irreducibility_axiom : MazurIrreducibilityHypothesis
 
 -- Wiles (1995): semistable elliptic curve → modular form

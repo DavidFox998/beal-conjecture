@@ -33,9 +33,10 @@ def RibetLevelLoweringHypothesis : Prop :=
     NoPrimeCommonFactor A B C →
     ∃ (p N : Nat), 5 ≤ p ∧ p ∣ N ∧ N = p * 2
 
--- Mazur (1978): Irreducibility of the mod-p Galois representation.
--- For any prime p ≥ 5, the mod-p rep of the Frey curve is absolutely irreducible.
--- Encoded: p divides at least one base of the Beal solution.
+-- LEGACY COMPATIBILITY PREDICATE, NOT RESIDUAL IRREDUCIBILITY.
+-- This natural-number statement predates B17 and only says that p divides at
+-- least one base of the Beal solution. It is not a model of a mod-p Galois
+-- representation, is not Mazur's theorem, and is not on B20's active path.
 def MazurIrreducibilityHypothesis : Prop :=
   ∀ (p A B C x y z : Nat),
     5 ≤ p → IsPrime05Core p →
