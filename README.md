@@ -44,6 +44,12 @@ $$
 a strictly smaller solution. Infinite descent forces the conclusion: no
 minimal positive solution can exist, so no solution exists at all. $\square$
 
+This descent is machine-checked in
+`lean/Beal/B22_BealImpliesFermat.lean` as
+`beal_implies_fermat_core : BealConjectureCore → FermatLastTheoremCore`.
+Its only foundational dependency is `propext`, inherited from Lean 4.12's
+implementation of `Nat.gcd`; it does not use the modularity interfaces.
+
 Wiles (1995) proved FLT unconditionally via a different route — the
 modularity of semistable elliptic curves. That Beal's conjecture would give
 an *independent* implication illustrates how closely the two problems are
@@ -140,7 +146,7 @@ the enriched-plan supplier remains an explicit missing data boundary.
 The repository is organized into three layers, with a separate boundary for
 the named mathematical results used by the final theorem.
 
-### Cores (B01–B21 `*_Core.lean`)
+### Cores (B01–B21 `*_Core.lean`, plus the B22 Core-facing descent)
 
 The Cores are the mathematical skeleton. Each states a real proposition
 in pure Lean, with **zero imports from Mathlib** and **zero axioms beyond
@@ -274,7 +280,7 @@ theorems have been reconstructed from first principles.
 
 CI enforces the boundary on every push:
 
-- **Build all bricks** — all B01–B21 Cores and Wrappers compile
+- **Build all bricks** — all B01–B22 Cores, Wrappers, and descent modules compile
 - **Check NO sorry** — no `sorry` occurs in any brick
 - **Reject trivial Core stubs** — no `: Prop := True` or equivalent placeholder
 - **Audit every Core declaration** — Cores remain import-free and zero-axiom

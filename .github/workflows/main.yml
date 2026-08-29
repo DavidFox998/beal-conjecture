@@ -98,6 +98,8 @@ jobs:
           #print axioms Beal21Fermat.beal_conjecture_to_21_core
           #print axioms Beal21Fermat.beal_implies_fermat_full_core
           #print axioms Beal21Fermat.beal_implies_fermat_full
+          #print axioms FermatLastTheoremCore
+          #print axioms beal_implies_fermat_core
           EOF
           } > /tmp/beal_axiom_audit.lean
 
@@ -112,6 +114,14 @@ jobs:
 
           if grep -Fq 'sorryAx' /tmp/beal_axiom_audit.txt; then
             echo "FAIL: wrapper theorem depends on sorryAx"
+            exit 1
+          fi
+          if ! grep -Fq "'FermatLastTheoremCore' does not depend on any axioms" /tmp/beal_axiom_audit.txt; then
+            echo "FAIL: FermatLastTheoremCore must be zero-axiom"
+            exit 1
+          fi
+          if ! grep -Fq "'beal_implies_fermat_core' depends on axioms: [propext]" /tmp/beal_axiom_audit.txt; then
+            echo "FAIL: Beal-to-Fermat descent may depend only on propext"
             exit 1
           fi
 

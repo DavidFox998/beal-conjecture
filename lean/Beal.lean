@@ -51,3 +51,4 @@ import Beal.B15_RibetIterate
     import Beal.B20_Beal_Core
     import Beal.B21_FermatCorollary_Core
     import Beal.B21_FermatCorollary
+    import Beal.B22_BealImpliesFermat

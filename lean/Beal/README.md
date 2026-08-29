@@ -38,6 +38,7 @@ Beal/
 ├── B15_*                       exact descent plans and Ribet iteration
 ├── B16–B20                     final contradiction and assembly
 ├── B21_*                       Beal implies Fermat corollary
+├── B22_BealImpliesFermat.lean  unrestricted Fermat by infinite descent
 ├── Galois/                      representation, Hecke, and support boundary
 └── README.md                   this guide
 ```
@@ -224,6 +225,18 @@ The wrapper exposes both:
 
 This is a short logical corollary of the Beal interface, not a replacement
 for the Beal proof itself.
+
+### B22 — unrestricted Fermat by infinite descent
+
+`B22_BealImpliesFermat.lean` strengthens the primitive B21 bridge to the
+usual positive-integer statement of Fermat's Last Theorem.  Given a Fermat
+solution, it takes the three-way gcd, uses `BealConjectureCore` to prove that
+gcd is nontrivial, divides the solution by it, and applies strong induction
+on the sum of the three bases.
+
+The theorem `beal_implies_fermat_core` has no mathematical axioms and no
+modularity dependency.  Its `#print axioms` output is exactly `[propext]`,
+coming from Lean 4.12's implementation of `Nat.gcd`.
 
 ## The active proof path
 
