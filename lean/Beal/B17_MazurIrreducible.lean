@@ -1,5 +1,5 @@
 import Beal.B17_MazurIrreducible_Core
-import Beal.B17_FreyRationalTwoTorsion
+import Beal.B17_FullE2
 import Beal.B14_FreyTate
 
 namespace Beal17Mazur
@@ -47,6 +47,28 @@ theorem FreyMazurContext.hasThreeDistinctRationalTwoTorsion
   exact ⟨freyThreeDistinctRationalTwoTorsion
     context.A context.B context.x context.y hA hB⟩
 
+/-- The full rational 2-torsion proposition for the fixed Frey equation.
+
+Unlike the v8.1 lower-bound certificate, this proposition states the exact
+four-point set equality, including the point at infinity.
+-/
+def HasFullRationalTwoTorsion (context : FreyMazurContext) : Prop :=
+  ∃ (hA : 0 < context.A) (hB : 0 < context.B),
+    FullE2 context.A context.B context.x context.y =
+      {0,
+        freyTwoTorsionZero context.A context.B context.x context.y hA hB,
+        freyTwoTorsionA context.A context.B context.x context.y hA hB,
+        freyTwoTorsionNegB context.A context.B context.x context.y hA hB}
+
+/-- Every Frey context has exactly the point at infinity and the three
+displayed affine points in its rational 2-torsion set. -/
+theorem FreyMazurContext.hasFullRationalTwoTorsion
+    (context : FreyMazurContext) :
+    HasFullRationalTwoTorsion context := by
+  rcases context.beal with ⟨hA, hB, _⟩
+  exact ⟨hA, hB,
+    freyFullE2_eq context.A context.B context.x context.y hA hB⟩
+
 /-- Vocabulary that a future elliptic-curve/Galois layer must instantiate.
 
 Mathlib 4.12 does not provide residual representations for rational Frey
@@ -64,7 +86,7 @@ elliptic-curve notions and then inhabit this proposition.
 def MazurIrreducibilityBoundary (predicates : FreyMazurPredicates) : Prop :=
   MazurIrreducibilityBoundary17Core
     FreyMazurContext
-    HasThreeDistinctRationalTwoTorsion
+    HasFullRationalTwoTorsion
     predicates.residualRepresentationReducible
 
 /-- The model-indexed B14 conductor support proves that the fixed odd prime
@@ -114,6 +136,7 @@ theorem remove_exact_context_conductor_divisor
 #print axioms prime_not_dvd_conductor
 #print axioms remove_exact_divisor
 #print axioms remove_exact_context_conductor_divisor
+#print axioms FreyMazurContext.hasFullRationalTwoTorsion
 #print axioms MazurIrreducibilityBoundary
 
 end Beal17Mazur

@@ -54,6 +54,14 @@ formalization makes this coupling explicit rather than gestural.
 
 ## Current formal status
 
+> **v8.2.0 full rational E[2] exhaustiveness — exactly four rational points killed by doubling**
+>
+> The Frey curve's rational 2-torsion is now proved to be exactly
+> `{O, (0,0), (Aˣ,0), (-Bʸ,0)}`. The proof classifies zero-y roots by repeated
+> `mul_eq_zero` over `ℚ` and proves the converse group-law bridge. This closes
+> the former three-points-versus-full-E[2] gap; it does not claim Mazur
+> irreducibility or construct residual Galois representations.
+>
 > **v8.0.0 patching layer — 0 local axioms, 0 opaque rank propositions, explicit Taylor–Wiles data**
 >
 > This repository is still a formalization of the Beal argument, not a claim
