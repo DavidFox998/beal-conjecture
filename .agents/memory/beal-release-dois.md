@@ -23,6 +23,13 @@ record is complete and archives the GitHub v8.0.0 source ZIP. Its inherited
 v4.1.0 display title was corrected in place to “Beal Conjecture — Frey Tate
 Boundary Exposed — v8.0.0”; do not mint a duplicate DOI.
 
+The inherited v4.1.0 titles and descriptions on Zenodo records
+`10.5281/zenodo.22110949` (`v7.0.0-genuine-provider`),
+`10.5281/zenodo.22123696` (`v7.1.0`), and
+`10.5281/zenodo.22134937` (`v7.2.0`) were corrected in place. They now use
+version-specific “Beal Conjecture — Formalization Release” metadata and retain
+their original files and DOIs.
+
 The Tate local conductor verification is published as `v4.1.0` with DOI
 `10.5281/zenodo.22091549` (Zenodo record 22091549). Its archival description
 must retain the odd-prime-only boundary: one typed Frey model ties the local
