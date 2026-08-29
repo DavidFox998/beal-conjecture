@@ -40,6 +40,10 @@ import Beal.Galois.«07h_EutheosGeometry»
 import Beal.Galois.«07m_FourierQExpansion»
 import Beal.Galois.«07n_NormalizedEigenlineQExpansion»
 import Beal.Galois.«07h_DesertInfra»
+import Beal.Patching.TaylorWilesPrimes
+import Beal.Patching.PatchedModule
+import Beal.Patching.Depth
+import Beal.Patching.RankOne
     import Beal.B15_LevelTo2_Core
     import Beal.B15_LevelTo2
 import Beal.B15_RibetIterate

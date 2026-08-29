@@ -76,3 +76,15 @@ The real-number interpretation of the fixed-point inequality
 `[propext, Classical.choice, Quot.sound]`. That choice-bearing real bridge
 does not leak into the typed Eutheos/Beal path.
 
+## v8.0.0 interaction with Taylor–Wiles data
+
+`EutheosJitter` indexes the new `TaylorWilesPrimeSystem`, and
+`jitter_separation` returns only the certificate's existing
+denominator-cleared inequality. The code deliberately does not claim that this
+inequality constructs prime sets `Qₙ` or proves Frobenius separation.
+
+Prime levels and the patched tower are explicit supplier data in
+`Beal/Patching/`. This keeps the desert-brothers arithmetic honest and keeps
+the real-number bridge, including its `Classical.choice` footprint, outside
+the choice-free patching-to-rank-one theorem.
+

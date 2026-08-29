@@ -54,7 +54,7 @@
          Each returned edge carries 07k's data-valued
          `NewSubspaceSupportData` and
          `NewformHeckeToPreservedTokenTransport`, together with the restricted
-         Ihara, old/new, localized-rank-one, and support-bridge boundaries.
+         Ihara, old/new, patching/specialization, and support-bridge boundaries.
          This remains a conditional typed scaffold, not a full construction
          of modular forms. -/
        theorem beal_conjecture_conditional_on_enriched_plan :

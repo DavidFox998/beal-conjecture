@@ -26,8 +26,8 @@ V-specific eigenline edge. The boundary is explicit and data-valued:
   the data or transport boundary is claimed.
 - `GaloisEdgeWitness` carries the residual representation, maximal ideal,
   genuine coefficient submodule, localized Hecke data, attachment,
-  `NormalizedEigenlineData`, typed Eutheos geometry, localized-rank-one, 07j
-  support assembly, `NewSubspaceSupportData`, and
+  `NormalizedEigenlineData`, typed Eutheos geometry, Taylor–Wiles patching
+  data, 07j support assembly, `NewSubspaceSupportData`, and
   `NewformHeckeToPreservedTokenTransport` for one exact lowering edge.
 - B15 derives `QExpansionPrincipleOnV` through
   `QExpansionPrincipleOnV_fromEigenline`; `hQ` is not a field of the edge.
@@ -85,9 +85,9 @@ V-specific eigenline edge. The boundary is explicit and data-valued:
   audit compatibility, but B15 now consumes `EutheosGeometryInterface` and
   derives its old/new witness at the use site.
 - B14's Wiles boundary still returns the arithmetic plan only. The B15
-  supplier adds normalized eigenline data, typed Eutheos geometry, `hRank`,
-  support assembly, and token-transport data on every edge without a B14 →
-  Galois import cycle.
+  supplier adds normalized eigenline data, typed Eutheos geometry, explicit
+  patching/specialization data, support assembly, and token-transport data on
+  every edge without a B14 → Galois import cycle.
 
 ## Directory structure
 
@@ -618,4 +618,16 @@ The real-number interpretation of the fixed-point inequality
 `‖p·α₀‖ < 1/p` remains isolated in the desert-brothers module and audits to
 `[propext, Classical.choice, Quot.sound]`. That choice-bearing real bridge
 does not leak into the typed Eutheos/Beal path.
+
+## v8.0.0 handoff to patching
+
+The Galois layer still defines `LocalizedRankOne` as the target interface, but
+B15 no longer accepts that proposition as edge data. The neighboring
+`Beal/Patching/` modules expose finite patched levels, transition and diamond
+maps, compatible projections, depth data, and rank-one coordinates; only then
+does `LocalizedRankOne_from_Patching` construct the target.
+
+The patching certificate is a visible Type-valued mathematical boundary. It is
+not a renamed `LocalizedRankOne` field and it contains no stored linear
+equivalence.
 

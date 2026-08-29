@@ -413,3 +413,14 @@ The real-number interpretation of the fixed-point inequality
 `[propext, Classical.choice, Quot.sound]`. That choice-bearing real bridge
 does not leak into the typed Eutheos/Beal path.
 
+## v8.0.0 patching layer
+
+The `Patching/` family sits between the typed Eutheos geometry and B15.
+It exposes `Qₙ`, finite levels, transitions, diamond operators, inverse-limit
+projections, depth equalities, and generator/coordinate laws. B15 derives
+`LocalizedRankOne` from these fields instead of accepting `hRank` directly.
+
+This remains conditional mathematics: an enriched-plan supplier must construct
+the patching data for every edge. No claim is made that the fixed-point jitter
+inequality alone supplies Taylor–Wiles primes or an R=T theorem.
+

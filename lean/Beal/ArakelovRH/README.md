@@ -41,3 +41,14 @@ The real-number interpretation of the fixed-point inequality
 `[propext, Classical.choice, Quot.sound]`. That choice-bearing real bridge
 does not leak into the typed Eutheos/Beal path.
 
+## v8.0.0 patching boundary
+
+The typed Eutheos geometry now indexes an explicit
+`TaylorWilesPatchingData` certificate used by B15. The fixed-point inequality
+remains arithmetic separation input only: it does not prove the existence of
+Taylor–Wiles primes, deformation rings, localized Hecke freeness, or
+multiplicity one.
+
+Those obligations are exposed in `Beal/Patching/`; their rank-one consequence
+is constructed choice-free from generator and coordinate laws.
+

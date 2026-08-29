@@ -21,6 +21,7 @@
         import Beal.Galois.«07k_TokenBridge»
         import Beal.Galois.«07n_NormalizedEigenlineQExpansion»
         import Beal.Galois.«07h_EutheosGeometry»
+        import Beal.Patching.RankOne
       import Mathlib.Data.List.Basic
       import Mathlib.Data.Nat.Factors
 
@@ -36,10 +37,10 @@
 
        /-- All Galois and Hecke data needed at one exact lowering edge.
 
-           The localized-data field is explicit because `LocalizedRankOne`
-           and the 07j bridge are indexed by a typeclass. Keeping it in the
-           edge makes the dependency data-valued and avoids synthesizing it
-           through `Classical.choice`. -/
+           The localized-data field is explicit because the patching and 07j
+           bridges are indexed by it.  `hRank` is no longer accepted as a
+           proposition: the edge carries transparent Taylor–Wiles patching
+           data from which the rank-one equivalence is constructed. -/
        structure GaloisEdgeWitness
            {A B C : ℤ} {x y z : ℕ}
            {model : FreyCurveModel A B C x y z}
@@ -58,8 +59,9 @@
            Beal.Galois.NormalizedEigenlineData ℓ V
          eutheosGeometry :
            Beal.Galois.EutheosGeometryInterface M p ℓ V
-         hRank :
-           @Beal.Galois.LocalizedRankOne M ℓ m V localized
+         patching :
+           @Beal.Patching.TaylorWilesPatchingData
+             M p ℓ m V localized eutheosGeometry
          hSupportBridge :
            @Beal.Galois.hSupportFromBoundaries
              A B C x y z model ℓ R M p V m localized
@@ -130,8 +132,11 @@
          have hOldNew :=
            Beal.Galois.OldNewDecompHyp_from_Eutheos
              edge.V edge.eutheosGeometry
+         have hRank :=
+           Beal.Patching.LocalizedRankOne_from_Patching
+             edge.eutheosGeometry edge.patching
          have _hSupport :=
-           edge.hSupportBridge edge.hV hIhara hOldNew edge.hRank
+           edge.hSupportBridge edge.hV hIhara hOldNew hRank
          exact
            { level := M
              lowers := edge.hDiv

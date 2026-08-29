@@ -215,6 +215,49 @@ jobs:
           fi
           echo "OK: real jitter transport is isolated from the choice-free 07h boundary"
 
+      - name: Audit the Taylor-Wiles patching boundary
+        run: |
+          set -euo pipefail
+          if grep -R --include='*.lean' -nE \
+              '^[[:space:]]*(sorry|opaque|axiom)[[:space:]]' lean/Beal/Patching; then
+            echo "FAIL: patching modules must not introduce sorry, opaque declarations, or axioms"
+            exit 1
+          fi
+          if grep -nE '^[[:space:]]*hRank[[:space:]]*:' lean/Beal/B15_RibetIterate.lean; then
+            echo "FAIL: B15 must derive localized rank one from patching data"
+            exit 1
+          fi
+          cat > /tmp/beal_patching_audit.lean <<'EOF'
+          import Beal.Patching.RankOne
+          #print axioms Beal.Patching.RankOneCoordinates.toLinearEquiv
+          #print axioms Beal.Patching.PatchingSpecializationData.toRankOneCoordinates
+          #print axioms Beal.Patching.finite_level_free
+          #print axioms Beal.Patching.M_infty_free
+          #print axioms Beal.Patching.depth_module_ge_ring
+          #print axioms Beal.Patching.LocalizedRankOne_from_Patching
+          EOF
+          lake env lean /tmp/beal_patching_audit.lean 2>&1 |
+            tee /tmp/beal_patching_audit.txt
+          if grep -E 'sorryAx|Classical\.choice|Beal\.[A-Za-z0-9_.]*axiom' \
+              /tmp/beal_patching_audit.txt; then
+            echo "FAIL: patching-to-rank-one must remain choice-free and use no named axiom"
+            exit 1
+          fi
+          for declaration in \
+            Beal.Patching.RankOneCoordinates.toLinearEquiv \
+            Beal.Patching.PatchingSpecializationData.toRankOneCoordinates \
+            Beal.Patching.finite_level_free \
+            Beal.Patching.M_infty_free \
+            Beal.Patching.depth_module_ge_ring \
+            Beal.Patching.LocalizedRankOne_from_Patching; do
+            if ! grep -Fq "'$declaration' depends on axioms: [propext, Quot.sound]" \
+                /tmp/beal_patching_audit.txt; then
+              echo "FAIL: unexpected axiom budget for $declaration"
+              exit 1
+            fi
+          done
+          echo "OK: explicit patching data constructs rank one within [propext, Quot.sound]"
+
       - name: Verify B01 core has zero imports and zero axioms
         run: |
           if grep -nE '^[[:space:]]*import[[:space:]]' lean/Beal/B01_Def_Core.lean; then
