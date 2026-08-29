@@ -47,15 +47,13 @@
       def disc_Frey (A B C : ℤ) (x y z : ℕ) : ℤ :=
         16 * (A ^ x) ^ 2 * (B ^ y) ^ 2 * (C ^ z) ^ 2
 
-      /-- An integral Weierstrass model of the Frey curve
+      /-- The canonical integral Weierstrass data for
           `Y² = X(X − Aˣ)(X + Bʸ)`.
 
-          The conductor is deliberately data of the model rather than a radical
-          proxy fabricated from `A·B·C`. Its odd-prime local and prime-support
-          properties are supplied by the external Tate boundary below; this does
-          not yet formalize a 2-adic conductor exponent or a global computation
-          of the conductor from the coefficients. -/
-      structure FreyCurveModel (A B C : ℤ) (x y z : ℕ) where
+          This structure contains only coefficients and invariants that are
+          constructed directly. Conductor data and Tate's local theorem are
+          deliberately kept outside it. -/
+      structure FreyIntegralModel (A B C : ℤ) (x y z : ℕ) where
         a1 : ℤ
         a2 : ℤ
         a3 : ℤ
@@ -63,7 +61,6 @@
         a6 : ℤ
         c4 : ℤ
         discriminant : ℤ
-        conductor : ℕ
         a1_eq : a1 = 0
         a2_eq : a2 = B ^ y - A ^ x
         a3_eq : a3 = 0
@@ -71,13 +68,50 @@
         a6_eq : a6 = 0
         c4_eq : c4 = c4_Frey A B x y
         discriminant_eq : discriminant = disc_Frey A B C x y z
+
+      /-- The explicit integral model attached to the Beal/Frey equation.
+          No conductor theorem or external mathematical input enters this
+          construction. -/
+      def freyIntegralModel (A B C : ℤ) (x y z : ℕ) :
+          FreyIntegralModel A B C x y z where
+        a1 := 0
+        a2 := B ^ y - A ^ x
+        a3 := 0
+        a4 := -(A ^ x * B ^ y)
+        a6 := 0
+        c4 := c4_Frey A B x y
+        discriminant := disc_Frey A B C x y z
+        a1_eq := rfl
+        a2_eq := rfl
+        a3_eq := rfl
+        a4_eq := rfl
+        a6_eq := rfl
+        c4_eq := rfl
+        discriminant_eq := rfl
+
+      /-- Global conductor data for one fixed integral Frey model.
+
+          The value is indexed by the exact model; it is not defined as a
+          radical proxy. This record states prime support only. Tate Step 2,
+          which proves exact odd-prime conductor exponent one, is a separate
+          theorem in `B14_TateInImpliesOrd1`. -/
+      structure FreyConductorData
+          {A B C : ℤ} {x y z : ℕ}
+          (model : FreyIntegralModel A B C x y z) where
+        conductor : ℕ
         conductor_prime_support :
           ∀ q : ℕ, q.Prime → q ∣ conductor →
             q ∣ A.natAbs * B.natAbs * C.natAbs ∨ q = 2
-        odd_multiplicative_conductor :
-          ∀ p : ℕ, p.Prime → p ≠ 2 →
-            ¬ p ∣ c4.natAbs → p ∣ discriminant.natAbs →
-              p ∣ conductor ∧ ¬ (p * p ∣ conductor)
+
+      /-- The fixed integral model together with separately supplied global
+          conductor data. The hard local Tate implication is intentionally not
+          a field of this structure. -/
+      structure FreyCurveModel (A B C : ℤ) (x y z : ℕ)
+          extends FreyIntegralModel A B C x y z where
+        conductor : ℕ
+        conductor_prime_support :
+          ∀ q : ℕ, q.Prime → q ∣ conductor →
+            q ∣ A.natAbs * B.natAbs * C.natAbs ∨ q = 2
 
       /-- An abstract nonzero-form token carried by the Ribet descent.
 
