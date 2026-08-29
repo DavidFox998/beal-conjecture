@@ -8,4 +8,4 @@
   {"message":
    "./././lean/Beal/Galois/07j_SupportProofGenuine.lean:95:0: 'Beal.Galois.hNewformSupport_genuine_proof' depends on axioms: [propext, Quot.sound]",
    "level": "info"}],
- "depHash": "4536020070156455764"}
+ "depHash": "15515362284826764470"}

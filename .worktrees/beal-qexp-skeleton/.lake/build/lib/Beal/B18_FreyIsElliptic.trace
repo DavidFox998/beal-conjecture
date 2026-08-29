@@ -5,4 +5,4 @@
   {"message":
    "./././lean/Beal/B18_FreyIsElliptic.lean:12:0: 'Beal18Frey.frey_disc_nonzero_trivial' does not depend on any axioms",
    "level": "info"}],
- "depHash": "7476993768989008512"}
+ "depHash": "5596309744223595192"}

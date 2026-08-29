@@ -14,4 +14,4 @@
   {"message":
    "./././lean/Beal/Galois/07f_GenuineSubmodule.lean:112:0: 'Beal.Galois.genuine_excludes_07c_counterexample' depends on axioms: [propext, Quot.sound]",
    "level": "info"}],
- "depHash": "9234047304188825105"}
+ "depHash": "12328601968085874374"}

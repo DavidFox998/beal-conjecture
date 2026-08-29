@@ -20,4 +20,4 @@
   {"message":
    "./././lean/Beal/B14_TateC4Nonzero.lean:113:6: 'Beal.FreyTate.TateC4.c4_nonzero_of_dvd_C' depends on axioms: [propext, Classical.choice, Quot.sound]",
    "level": "info"}],
- "depHash": "4833983368919354389"}
+ "depHash": "538772532936060291"}

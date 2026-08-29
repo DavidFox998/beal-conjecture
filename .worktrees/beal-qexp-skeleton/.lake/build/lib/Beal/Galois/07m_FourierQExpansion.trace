@@ -8,4 +8,4 @@
   {"message":
    "./././lean/Beal/Galois/07m_FourierQExpansion.lean:42:0: 'Beal.Galois.continuousFourierQExpansion_injective' depends on axioms: [propext, Classical.choice, Quot.sound]",
    "level": "info"}],
- "depHash": "12811879603014864520"}
+ "depHash": "11356088760771839772"}

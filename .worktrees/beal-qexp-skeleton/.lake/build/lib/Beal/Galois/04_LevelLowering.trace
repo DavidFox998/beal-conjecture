@@ -23,4 +23,4 @@
   {"message":
    "./././lean/Beal/Galois/04_LevelLowering.lean:60:0: 'Beal.Galois.frey_level_lowering_of_unramified' depends on axioms: [propext, Quot.sound]",
    "level": "info"}],
- "depHash": "6991877491613163117"}
+ "depHash": "4408907141245457623"}

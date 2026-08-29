@@ -20,4 +20,4 @@
   {"message":
    "./././lean/Beal/Galois/07h_OldNewOnV.lean:139:0: 'Beal.Galois.genuineFormGenerated_oldNew_of_hyp' depends on axioms: [propext, Quot.sound]",
    "level": "info"}],
- "depHash": "10728673124850345681"}
+ "depHash": "11772671186761034780"}

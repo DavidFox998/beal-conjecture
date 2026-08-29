@@ -1,6 +1,6 @@
 // Lean compiler output
 // Module: Beal.B15_RibetIterate
-// Imports: Init Beal.B14_FreyS2 Beal.B14_FreyTate Beal.B14_FormRepresentation Beal.B14_TateInImpliesOrd1 Beal.B15_LevelTo2_Core Beal.B03_Conductor_Core Beal.Galois.«07k_TokenBridge» Beal.Galois.«07n_NormalizedEigenlineQExpansion» Mathlib.Data.List.Basic Mathlib.Data.Nat.Factors
+// Imports: Init Beal.B14_FreyS2 Beal.B14_FreyTate Beal.B14_FormRepresentation Beal.B14_TateInImpliesOrd1 Beal.B15_LevelTo2_Core Beal.B03_Conductor_Core Beal.Galois.«07k_TokenBridge» Beal.Galois.«07n_NormalizedEigenlineQExpansion» Beal.Galois.«07h_EutheosGeometry» Beal.Patching.RankOne Mathlib.Data.List.Basic Mathlib.Data.Nat.Factors
 #include <lean/lean.h>
 #if defined(__clang__)
 #pragma clang diagnostic ignored "-Wunused-parameter"
@@ -26,16 +26,16 @@ LEAN_EXPORT lean_object* l_Beal_RibetIterate_ribet__single__step__from__genuine_
 _start:
 {
 lean_object* x_6; lean_object* x_7; lean_object* x_8; lean_object* x_9; lean_object* x_10; lean_object* x_11; 
-x_6 = lean_ctor_get(x_5, 6);
+x_6 = lean_ctor_get(x_5, 0);
 lean_inc(x_6);
-x_7 = lean_ctor_get(x_5, 0);
+x_7 = lean_ctor_get(x_5, 1);
 lean_inc(x_7);
-x_8 = lean_ctor_get(x_5, 1);
+x_8 = lean_ctor_get(x_5, 9);
 lean_inc(x_8);
-x_9 = lean_ctor_get(x_5, 2);
+x_9 = lean_ctor_get(x_5, 8);
 lean_inc(x_9);
 lean_dec(x_5);
-x_10 = lean_apply_5(x_6, x_7, x_8, x_9, lean_box(0), lean_box(0));
+x_10 = lean_apply_6(x_8, x_6, x_7, x_9, lean_box(0), lean_box(0), lean_box(0));
 x_11 = lean_alloc_ctor(0, 2, 0);
 lean_ctor_set(x_11, 0, x_4);
 lean_ctor_set(x_11, 1, x_10);
@@ -146,6 +146,8 @@ lean_object* initialize_Beal_B15__LevelTo2__Core(uint8_t builtin, lean_object*);
 lean_object* initialize_Beal_B03__Conductor__Core(uint8_t builtin, lean_object*);
 lean_object* initialize_Beal_Galois_07k__TokenBridge(uint8_t builtin, lean_object*);
 lean_object* initialize_Beal_Galois_07n__NormalizedEigenlineQExpansion(uint8_t builtin, lean_object*);
+lean_object* initialize_Beal_Galois_07h__EutheosGeometry(uint8_t builtin, lean_object*);
+lean_object* initialize_Beal_Patching_RankOne(uint8_t builtin, lean_object*);
 lean_object* initialize_Mathlib_Data_List_Basic(uint8_t builtin, lean_object*);
 lean_object* initialize_Mathlib_Data_Nat_Factors(uint8_t builtin, lean_object*);
 static bool _G_initialized = false;
@@ -178,6 +180,12 @@ res = initialize_Beal_Galois_07k__TokenBridge(builtin, lean_io_mk_world());
 if (lean_io_result_is_error(res)) return res;
 lean_dec_ref(res);
 res = initialize_Beal_Galois_07n__NormalizedEigenlineQExpansion(builtin, lean_io_mk_world());
+if (lean_io_result_is_error(res)) return res;
+lean_dec_ref(res);
+res = initialize_Beal_Galois_07h__EutheosGeometry(builtin, lean_io_mk_world());
+if (lean_io_result_is_error(res)) return res;
+lean_dec_ref(res);
+res = initialize_Beal_Patching_RankOne(builtin, lean_io_mk_world());
 if (lean_io_result_is_error(res)) return res;
 lean_dec_ref(res);
 res = initialize_Mathlib_Data_List_Basic(builtin, lean_io_mk_world());

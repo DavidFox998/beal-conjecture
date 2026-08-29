@@ -11,4 +11,4 @@
   {"message":
    "./././lean/Beal/Galois/07l_ShimuraQExpansionSupplier.lean:133:0: 'Beal.Galois.IharaKernelZeroOnV_FromShimura' depends on axioms: [propext, Quot.sound]",
    "level": "info"}],
- "depHash": "1143321455328642014"}
+ "depHash": "13973365405905076560"}

@@ -15,14 +15,17 @@ extern "C" {
 #endif
 LEAN_EXPORT lean_object* l_Beal_FreyTate_b2__Frey(lean_object*, lean_object*, lean_object*, lean_object*);
 LEAN_EXPORT lean_object* l_Beal_FreyTate_c4__Frey___boxed(lean_object*, lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* l_Beal_FreyTate_freyIntegralModel___boxed(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
 static lean_object* l_Beal_FreyTate_c4__Frey___closed__1;
 lean_object* lean_nat_to_int(lean_object*);
 lean_object* l_Int_pow(lean_object*, lean_object*);
 LEAN_EXPORT lean_object* l_Beal_FreyTate_b4__Frey(lean_object*, lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* l_Beal_FreyTate_freyIntegralModel(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
 LEAN_EXPORT lean_object* l_Beal_FreyTate_b4__Frey___boxed(lean_object*, lean_object*, lean_object*, lean_object*);
 LEAN_EXPORT lean_object* l_Beal_FreyTate_b2__Frey___boxed(lean_object*, lean_object*, lean_object*, lean_object*);
 static lean_object* l_Beal_FreyTate_b2__Frey___closed__1;
 lean_object* lean_int_sub(lean_object*, lean_object*);
+static lean_object* l_Beal_FreyTate_freyIntegralModel___closed__1;
 LEAN_EXPORT lean_object* l_Beal_FreyTate_disc__Frey___boxed(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
 lean_object* lean_int_mul(lean_object*, lean_object*);
 LEAN_EXPORT lean_object* l_Beal_FreyTate_disc__Frey(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
@@ -189,6 +192,55 @@ lean_dec(x_1);
 return x_7;
 }
 }
+static lean_object* _init_l_Beal_FreyTate_freyIntegralModel___closed__1() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; 
+x_1 = lean_unsigned_to_nat(0u);
+x_2 = lean_nat_to_int(x_1);
+return x_2;
+}
+}
+LEAN_EXPORT lean_object* l_Beal_FreyTate_freyIntegralModel(lean_object* x_1, lean_object* x_2, lean_object* x_3, lean_object* x_4, lean_object* x_5, lean_object* x_6) {
+_start:
+{
+lean_object* x_7; lean_object* x_8; lean_object* x_9; lean_object* x_10; lean_object* x_11; lean_object* x_12; lean_object* x_13; lean_object* x_14; lean_object* x_15; 
+x_7 = l_Int_pow(x_2, x_5);
+x_8 = l_Int_pow(x_1, x_4);
+x_9 = lean_int_sub(x_7, x_8);
+x_10 = lean_int_mul(x_8, x_7);
+lean_dec(x_7);
+lean_dec(x_8);
+x_11 = lean_int_neg(x_10);
+lean_dec(x_10);
+x_12 = l_Beal_FreyTate_c4__Frey(x_1, x_2, x_4, x_5);
+x_13 = l_Beal_FreyTate_disc__Frey(x_1, x_2, x_3, x_4, x_5, x_6);
+x_14 = l_Beal_FreyTate_freyIntegralModel___closed__1;
+x_15 = lean_alloc_ctor(0, 7, 0);
+lean_ctor_set(x_15, 0, x_14);
+lean_ctor_set(x_15, 1, x_9);
+lean_ctor_set(x_15, 2, x_14);
+lean_ctor_set(x_15, 3, x_11);
+lean_ctor_set(x_15, 4, x_14);
+lean_ctor_set(x_15, 5, x_12);
+lean_ctor_set(x_15, 6, x_13);
+return x_15;
+}
+}
+LEAN_EXPORT lean_object* l_Beal_FreyTate_freyIntegralModel___boxed(lean_object* x_1, lean_object* x_2, lean_object* x_3, lean_object* x_4, lean_object* x_5, lean_object* x_6) {
+_start:
+{
+lean_object* x_7; 
+x_7 = l_Beal_FreyTate_freyIntegralModel(x_1, x_2, x_3, x_4, x_5, x_6);
+lean_dec(x_6);
+lean_dec(x_5);
+lean_dec(x_4);
+lean_dec(x_3);
+lean_dec(x_2);
+lean_dec(x_1);
+return x_7;
+}
+}
 lean_object* initialize_Init(uint8_t builtin, lean_object*);
 lean_object* initialize_Mathlib_Data_ZMod_Basic(uint8_t builtin, lean_object*);
 lean_object* initialize_Mathlib_NumberTheory_LegendreSymbol_Basic(uint8_t builtin, lean_object*);
@@ -232,6 +284,8 @@ l_Beal_FreyTate_b4__Frey___closed__1 = _init_l_Beal_FreyTate_b4__Frey___closed__
 lean_mark_persistent(l_Beal_FreyTate_b4__Frey___closed__1);
 l_Beal_FreyTate_c4__Frey___closed__1 = _init_l_Beal_FreyTate_c4__Frey___closed__1();
 lean_mark_persistent(l_Beal_FreyTate_c4__Frey___closed__1);
+l_Beal_FreyTate_freyIntegralModel___closed__1 = _init_l_Beal_FreyTate_freyIntegralModel___closed__1();
+lean_mark_persistent(l_Beal_FreyTate_freyIntegralModel___closed__1);
 return lean_io_result_mk_ok(lean_box(0));
 }
 #ifdef __cplusplus

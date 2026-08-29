@@ -1,6 +1,6 @@
 // Lean compiler output
 // Module: Beal
-// Imports: Init Beal.B00_OperaNumerorum Beal.B01_Def_Core Beal.B01_Def Beal.B02_Frey_Core Beal.B02_Frey Beal.B03_Conductor_Core Beal.B03_Conductor Beal.B04_Modular_Core Beal.B04_Modular Beal.B04_QExpansion_Core Beal.B05_HasseWiles_Core Beal.B05_HasseWiles Beal.B05_Modularity_Core Beal.B05_Modularity Beal.B06_Final_Core Beal.B06_Final Beal.B07_Galois_Core Beal.B07_Galois Beal.B08_LevelLowering_Core Beal.B08_LevelLowering Beal.B09_FinalContradiction_Core Beal.B09_FinalContradiction Beal.B10_RibetReal_Core Beal.B10_RibetReal Beal.B11_Epsilon_Core Beal.B11_Epsilon Beal.B12_RibetProof_Core Beal.B12_RibetProof Beal.B13_RibetRealDefs_Core Beal.B13_RibetRealDefs Beal.B14_FreyConductor_Core Beal.B14_FreyConductor Beal.B14_PrimeNotDvd_Core Beal.B14_FreyTate Beal.B14_FreyS2 Beal.B14_TateC4Nonzero Beal.B14_TateInImpliesOrd1 Beal.Galois.«07l_ShimuraQExpansionSupplier» Beal.Galois.«07m_FourierQExpansion» Beal.Galois.«07n_NormalizedEigenlineQExpansion» Beal.B15_LevelTo2_Core Beal.B15_LevelTo2 Beal.B15_RibetIterate Beal.B16_BealFinal_Core Beal.B16_BealFinal Beal.B17_MazurIrreducible_Core Beal.B17_MazurIrreducible Beal.B18_FreyIsElliptic_Core Beal.B18_FreyIsElliptic Beal.B19_BealFinalAssembly_Core Beal.B19_BealFinalAssembly Beal.B20_BealConjectureDone_Core Beal.B20_BealConjectureDone Beal.B20_Beal_Core Beal.B21_FermatCorollary_Core Beal.B21_FermatCorollary
+// Imports: Init Beal.B00_OperaNumerorum Beal.B01_Def_Core Beal.B01_Def Beal.B02_Frey_Core Beal.B02_Frey Beal.B03_Conductor_Core Beal.B03_Conductor Beal.B04_Modular_Core Beal.B04_Modular Beal.B04_QExpansion_Core Beal.B05_HasseWiles_Core Beal.B05_HasseWiles Beal.B05_Modularity_Core Beal.B05_Modularity Beal.B06_Final_Core Beal.B06_Final Beal.B07_Galois_Core Beal.B07_Galois Beal.B08_LevelLowering_Core Beal.B08_LevelLowering Beal.B09_FinalContradiction_Core Beal.B09_FinalContradiction Beal.B10_RibetReal_Core Beal.B10_RibetReal Beal.B11_Epsilon_Core Beal.B11_Epsilon Beal.B12_RibetProof_Core Beal.B12_RibetProof Beal.B13_RibetRealDefs_Core Beal.B13_RibetRealDefs Beal.B14_FreyConductor_Core Beal.B14_FreyConductor Beal.B14_PrimeNotDvd_Core Beal.B14_FreyTate Beal.B14_FreyS2 Beal.B14_TateC4Nonzero Beal.B14_TateInImpliesOrd1 Beal.Galois.«07l_ShimuraQExpansionSupplier» Beal.Galois.«07h_EutheosGeometry» Beal.Galois.«07m_FourierQExpansion» Beal.Galois.«07n_NormalizedEigenlineQExpansion» Beal.Galois.«07h_DesertInfra» Beal.Patching.TaylorWilesPrimes Beal.Patching.PatchedModule Beal.Patching.Depth Beal.Patching.RankOne Beal.B15_LevelTo2_Core Beal.B15_LevelTo2 Beal.B15_RibetIterate Beal.B16_BealFinal_Core Beal.B16_BealFinal Beal.B17_MazurIrreducible_Core Beal.B17_MazurIrreducible Beal.B18_FreyIsElliptic_Core Beal.B18_FreyIsElliptic Beal.B19_BealFinalAssembly_Core Beal.B19_BealFinalAssembly Beal.B20_BealConjectureDone_Core Beal.B20_BealConjectureDone Beal.B20_Beal_Core Beal.B21_FermatCorollary_Core Beal.B21_FermatCorollary
 #include <lean/lean.h>
 #if defined(__clang__)
 #pragma clang diagnostic ignored "-Wunused-parameter"
@@ -52,8 +52,14 @@ lean_object* initialize_Beal_B14__FreyS2(uint8_t builtin, lean_object*);
 lean_object* initialize_Beal_B14__TateC4Nonzero(uint8_t builtin, lean_object*);
 lean_object* initialize_Beal_B14__TateInImpliesOrd1(uint8_t builtin, lean_object*);
 lean_object* initialize_Beal_Galois_07l__ShimuraQExpansionSupplier(uint8_t builtin, lean_object*);
+lean_object* initialize_Beal_Galois_07h__EutheosGeometry(uint8_t builtin, lean_object*);
 lean_object* initialize_Beal_Galois_07m__FourierQExpansion(uint8_t builtin, lean_object*);
 lean_object* initialize_Beal_Galois_07n__NormalizedEigenlineQExpansion(uint8_t builtin, lean_object*);
+lean_object* initialize_Beal_Galois_07h__DesertInfra(uint8_t builtin, lean_object*);
+lean_object* initialize_Beal_Patching_TaylorWilesPrimes(uint8_t builtin, lean_object*);
+lean_object* initialize_Beal_Patching_PatchedModule(uint8_t builtin, lean_object*);
+lean_object* initialize_Beal_Patching_Depth(uint8_t builtin, lean_object*);
+lean_object* initialize_Beal_Patching_RankOne(uint8_t builtin, lean_object*);
 lean_object* initialize_Beal_B15__LevelTo2__Core(uint8_t builtin, lean_object*);
 lean_object* initialize_Beal_B15__LevelTo2(uint8_t builtin, lean_object*);
 lean_object* initialize_Beal_B15__RibetIterate(uint8_t builtin, lean_object*);
@@ -192,10 +198,28 @@ lean_dec_ref(res);
 res = initialize_Beal_Galois_07l__ShimuraQExpansionSupplier(builtin, lean_io_mk_world());
 if (lean_io_result_is_error(res)) return res;
 lean_dec_ref(res);
+res = initialize_Beal_Galois_07h__EutheosGeometry(builtin, lean_io_mk_world());
+if (lean_io_result_is_error(res)) return res;
+lean_dec_ref(res);
 res = initialize_Beal_Galois_07m__FourierQExpansion(builtin, lean_io_mk_world());
 if (lean_io_result_is_error(res)) return res;
 lean_dec_ref(res);
 res = initialize_Beal_Galois_07n__NormalizedEigenlineQExpansion(builtin, lean_io_mk_world());
+if (lean_io_result_is_error(res)) return res;
+lean_dec_ref(res);
+res = initialize_Beal_Galois_07h__DesertInfra(builtin, lean_io_mk_world());
+if (lean_io_result_is_error(res)) return res;
+lean_dec_ref(res);
+res = initialize_Beal_Patching_TaylorWilesPrimes(builtin, lean_io_mk_world());
+if (lean_io_result_is_error(res)) return res;
+lean_dec_ref(res);
+res = initialize_Beal_Patching_PatchedModule(builtin, lean_io_mk_world());
+if (lean_io_result_is_error(res)) return res;
+lean_dec_ref(res);
+res = initialize_Beal_Patching_Depth(builtin, lean_io_mk_world());
+if (lean_io_result_is_error(res)) return res;
+lean_dec_ref(res);
+res = initialize_Beal_Patching_RankOne(builtin, lean_io_mk_world());
 if (lean_io_result_is_error(res)) return res;
 lean_dec_ref(res);
 res = initialize_Beal_B15__LevelTo2__Core(builtin, lean_io_mk_world());

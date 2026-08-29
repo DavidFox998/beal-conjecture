@@ -11,4 +11,4 @@
   {"message":
    "./././lean/Beal/Galois/07d_OldNew.lean:61:0: 'Beal.Galois.OldNewDecomp' depends on axioms: [propext, Quot.sound]",
    "level": "info"}],
- "depHash": "7627427257187954782"}
+ "depHash": "8702275642053235400"}

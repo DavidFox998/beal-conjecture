@@ -63,3 +63,19 @@ workspace.
 focused source check, compile changed modules directly against a known-good
 compatible package artifact cache; use CI or a repaired checkout for the full
 Lake build. Treat this as environment failure, not a theorem failure.
+
+## Do not share mutable `.lake` directories by symlink
+
+Matching Lean versions and resolved Mathlib commit hashes are not sufficient
+for safely symlinking one checkout's whole `.lake` directory into another.
+Lake also compares dependency URL/origin metadata and may delete and reclone
+every package when that metadata differs.
+
+**Why:** A shared symlink makes the deletion occur inside the donor checkout's
+generated cache, destroying the very artifacts intended for reuse even though
+the source repositories remain untouched.
+
+**How to apply:** Keep one persistent proper worktree with its own ignored
+`.lake` directory. In CI, cache `.lake/packages` under the exact
+`lean-toolchain` plus `lake-manifest.json` hash. Never symlink a mutable
+`.lake` from another checkout; bootstrap once in the target and preserve it.

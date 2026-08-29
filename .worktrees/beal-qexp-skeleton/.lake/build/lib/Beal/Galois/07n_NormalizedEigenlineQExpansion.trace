@@ -9,9 +9,12 @@
    "./././lean/Beal/Galois/07n_NormalizedEigenlineQExpansion.lean:104:0: 'Beal.Galois.NormalizedEigenlineData.eq_zero_of_coefficient_one_eq_zero' depends on axioms: [propext, Quot.sound]",
    "level": "info"},
   {"message":
-   "./././lean/Beal/Galois/07n_NormalizedEigenlineQExpansion.lean:105:0: 'Beal.Galois.QExpansionPrincipleOnV_FromNormalizedEigenline' depends on axioms: [propext, Quot.sound]",
+   "./././lean/Beal/Galois/07n_NormalizedEigenlineQExpansion.lean:105:0: 'Beal.Galois.QExpansionPrincipleOnV_fromEigenline' depends on axioms: [propext, Quot.sound]",
    "level": "info"},
   {"message":
    "./././lean/Beal/Galois/07n_NormalizedEigenlineQExpansion.lean:106:0: 'Beal.Galois.IharaKernelZeroOnV_FromNormalizedEigenline' depends on axioms: [propext, Quot.sound]",
+   "level": "info"},
+  {"message":
+   "./././lean/Beal/Galois/07n_NormalizedEigenlineQExpansion.lean:122:0: 'Beal.QExpansionSupplier.QExpansionPrincipleOnV_fromEigenline' depends on axioms: [propext, Quot.sound]",
    "level": "info"}],
- "depHash": "10524206825711309842"}
+ "depHash": "7386241177598463763"}

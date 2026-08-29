@@ -12,6 +12,6 @@
    "./././lean/Beal/B15_LevelTo2.lean:78:4: 'BealLevelTo2.s2_level_2_witness' depends on axioms: [propext, Quot.sound]",
    "level": "info"},
   {"message":
-   "./././lean/Beal/B15_LevelTo2.lean:79:4: 'BealLevelTo2.ribet_chain_to_2_gives_False' depends on axioms: [propext,\n Classical.choice,\n Quot.sound,\n Beal.FreyTate.wiles_modularity,\n Beal.FreyTate.TateStep2.tate_step2_I_n_conductor_one]",
+   "./././lean/Beal/B15_LevelTo2.lean:79:4: 'BealLevelTo2.ribet_chain_to_2_gives_False' depends on axioms: [propext,\n Quot.sound,\n Beal.FreyTate.wiles_modularity,\n Beal.FreyTate.TateStep2.frey_conductor_data]",
    "level": "info"}],
- "depHash": "7772302321999262803"}
+ "depHash": "6888633027908077175"}
