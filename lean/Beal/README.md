@@ -213,7 +213,7 @@ The final modules assemble the conditional chain:
 | Files | Role |
 |---|---|
 | `B16_BealFinal_*` | contradiction from the terminal level-2 obstruction |
-| `B17_MazurIrreducible_*` | explicit Mazur irreducibility boundary |
+| `B17_MazurIrreducible_*` | constructive exact-factor arithmetic plus an uninhabited typed Mazur boundary |
 | `B18_FreyIsElliptic_*` | ellipticity interface for the Frey model |
 | `B19_BealFinalAssembly_*` | assembly of the major typed bridges |
 | `B20_BealConjectureDone_*` | final theorem-shaped statement and axiom audit |
@@ -225,6 +225,17 @@ The final modules assemble the conditional chain:
 conditional mathematics, not an unconditional proof of Beal's conjecture.
 The supplier is data-valued and inspectable; it is not a declared global
 axiom, and this module does not construct it.
+
+`B17_MazurIrreducible_Core.lean` proves only the elementary statement that an
+exactly-dividing prime can be removed from a natural-number level while leaving
+a positive cofactor not divisible by that factor. The wrapper fixes an actual
+`FreyIntegralModel`, a prime, and model-indexed B14 `FreyConductorData` in
+`FreyMazurContext`. It defines the parameterized schema of
+the missing Mazur torsion/isogeny-to-irreducibility theorem as
+`MazurIrreducibilityBoundary`, but does not assert or prove that boundary.
+Lean 4.12/Mathlib does not contain the arithmetic elliptic-curve theory needed
+to instantiate it. In particular, conductor divisibility alone is never called
+absolute irreducibility.
 
 The final path still names the deep inputs that have not been reconstructed
 from first principles:
@@ -401,12 +412,14 @@ V-specific edge is clean. The Task #440 build covered 2,424 targets and CI
 #239 completed successfully in 53m23s.
 
 This is not a repository-wide claim. A literal `grep -r '^axiom'` over the
-repository returns exactly two intentional mathematical boundaries:
-`mazur_irreducibility_axiom` and `wiles_lifting_axiom`. They belong to the
-existing Mazur/Wiles B20 modularity tower and are not part of the typed
-Eutheos bridge. The repository-wide focused audit therefore distinguishes
-these named boundaries from the clean Eutheos supplier rather than hiding
-them.
+repository returns two named declarations. `wiles_lifting_axiom` is a
+mathematical boundary. The separately named `mazur_irreducibility_axiom`
+inhabits only B05's legacy natural-number compatibility predicate: that
+predicate is not residual-representation irreducibility, and B05 is not
+imported by the active B15/B20 path. B17 instead defines an uninhabited,
+parameterized boundary schema tied to a fixed Frey model and model-indexed
+conductor data. The repository-wide focused audit distinguishes all of these
+from the clean Eutheos supplier rather than hiding them.
 
 The real-number interpretation of the fixed-point inequality
 `‖p·α₀‖ < 1/p` remains isolated in the desert-brothers module and audits to
