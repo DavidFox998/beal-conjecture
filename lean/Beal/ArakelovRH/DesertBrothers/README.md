@@ -54,7 +54,7 @@ list, fixed-point α₀, and distance convention are mirrored from the upstream
 Eutheos object. A future direct upstream import can replace this local layer
 once a small Lean 4.12-compatible module is available.
 
-## v7.3.1 audit clarification
+## v7.3.1 historical audit clarification
 
 The phrase **“0 axiom” is scoped to the typed Eutheos focused boundary**. It
 means that `Beal.Galois.OldNewDecompHyp_from_Eutheos`, `EutheosJitter`, and
@@ -88,3 +88,10 @@ Prime levels and the patched tower are explicit supplier data in
 the real-number bridge, including its `Classical.choice` footprint, outside
 the choice-free patching-to-rank-one theorem.
 
+## v8.2.0 release status
+
+This compatibility layer remains separate from the v8.2.0 Frey `E[2]`
+classification. Its Lean 4.12 interface, real-number bridge, and upstream
+relationship retain the boundaries described above; none is silently promoted
+to a proof of modular geometry, Mazur irreducibility, or Beal's Conjecture.
+Main CI **#256** passed the complete audit.

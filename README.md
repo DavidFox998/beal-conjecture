@@ -1,4 +1,4 @@
-[![v7.3.1 DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22150033.svg)](https://doi.org/10.5281/zenodo.22150033) [![Concept DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22041831.svg)](https://doi.org/10.5281/zenodo.22041831) [![CI](https://github.com/DavidFox998/beal-conjecture/actions/workflows/main.yml/badge.svg)](https://github.com/DavidFox998/beal-conjecture/actions/workflows/main.yml)
+[![v8.2.0 release](https://img.shields.io/github/v/release/DavidFox998/beal-conjecture?label=v8.2.0%20release)](https://github.com/DavidFox998/beal-conjecture/releases/tag/v8.2.0) [![Concept DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22041831.svg)](https://doi.org/10.5281/zenodo.22041831) [![CI](https://github.com/DavidFox998/beal-conjecture/actions/workflows/main.yml/badge.svg)](https://github.com/DavidFox998/beal-conjecture/actions/workflows/main.yml)
 
 # Beal Conjecture — a formal instrument in *Opera Numerorum*
 
@@ -323,43 +323,6 @@ first-principles proofs is a later foundational stage; it is not claimed by the
 green build.
 ---
 
-## The wider work: *Opera Numerorum* and four routes toward RH
-
-The Beal development is not itself a proof of the Riemann Hypothesis.
-It is part of a wider program in which different mathematical languages
-approach the same landscape: Arakelov geometry, automorphic forms, spectral
-gaps, arithmetic dynamics, and the analytic behavior of zeta functions.
-The program has four distinct routes toward RH — independent formalization
-paths whose value is that they can expose each other's assumptions by
-meeting at common arithmetic data.
-
-### Route A — positivity
-
-[`riemann-arakelov-positivity`](https://github.com/DavidFox998/riemann-arakelov-positivity)
-turns positivity on the modular curve $X_0(143)$ into an arithmetic
-inequality. Its architecture centers on $g(X_0(143)) = 13$,
-$\omega^2 = 48/13$, and the finite set $S_4 = \{2, 3, 19, 191\}$.
-
-### Route B — spectral descent
-
-[`arakelov-rh-descent`](https://github.com/DavidFox998/arakelov-rh-descent)
-approaches the same territory through a spectral gap on $X_0(143)$,
-with $\lambda_1 \geq 975/4096$ as the Kim–Sarnak input.
-
-### Route C — growth contradiction
-
-[`rh-growth-contradiction`](https://github.com/DavidFox998/rh-growth-contradiction)
-takes a contradiction route, comparing growth permitted by a proposed
-zeta bound with Littlewood's $\Omega$-phenomenon.
-
-### Route D — Eutheos
-
-[`brothers-desert-proof`](https://github.com/DavidFox998/brothers-desert-proof)
-is a synthetic route studying zero repulsion directly, through the
-$p = 5$ bridge and the desert property of exceptional primes.
-
----
-
 ## What CI actually checks
 
 "Green" means the Lean source elaborates, its declared dependencies are visible,
@@ -380,7 +343,8 @@ CI enforces the boundary on every push:
 
 The final audit distinguishes named mathematical assumptions from foundational
 Lean dependencies such as `propext`, `Classical.choice`, and `Quot.sound`.
-The current main branch passed the complete audit in CI run **#205**.
+The v8.2.0 release passed the complete audit in PR CI **#257** and
+main-branch CI **#256**.
 ---
 
 ## Build and audit
@@ -424,6 +388,7 @@ Tate, or Ribet from first principles.
 | **v7.2.0 V-specific eigenline edge** | `beal-4.12-v-specific-edge` / `9ebd9659b` | Pending — no verified Zenodo record | Removes the broad provider from the active B15 path; derives `hQ` from normalized eigenline data; leaves `OldNewDecompHyp` and `LocalizedRankOne` explicit; carries choice-free newform support and Hecke-to-token transport data. Focused footprint: `[propext, Quot.sound]`. |
 | **v7.3.0 typed Eutheos old/new bridge** | `v7.3.0` / `a12c58a` | [Zenodo v7.3.0](https://doi.org/10.5281/zenodo.22148517) |
 | **v7.3.1 audit clarification** | `v7.3.1` / `5f2aa7e` | [Zenodo v7.3.1](https://doi.org/10.5281/zenodo.22150033) | Makes the focused-vs-repository-wide axiom scope explicit: the typed Eutheos bridge is `[propext, Quot.sound]` with 0 local axioms and 0 opaque declarations, while the repository retains exactly two intentional Mazur/Wiles `axiom` boundaries. | Derives `OldNewDecompHyp` at the theorem boundary from typed degeneracy maps, exact old-image representation, Hecke stability, genuine-form generation, V-coverage, and a jitter-indexed separation kernel. Leaves `LocalizedRankOne` explicit. Focused footprint: `[propext, Quot.sound]`. |
+| **v8.2.0 full rational E[2] exhaustiveness** | `v8.2.0` / `f61f330` | No Zenodo version DOI yet | Proves the exact rational Frey 2-torsion set `{O, (0,0), (Aˣ,0), (-Bʸ,0)}`; Mazur irreducibility and residual representations remain explicit boundaries. |
 
 The v4.0.0 Zenodo landing page retains an older v0.4-style display title; its
 release tag, archive, and audited boundary are the v4.0.0 row above. The
@@ -461,12 +426,8 @@ DOI. For example:
 - Barry Mazur (1978) — irreducibility phenomena for Galois representations.
 - Andrew Wiles (1995) — modularity of semistable elliptic curves and Fermat's Last Theorem.
 - Richard Taylor and Andrew Wiles (1995) — the ring-theoretic criterion completing modularity.
-- [`ImperialCollegeLondon/FLT`](https://github.com/ImperialCollegeLondon/FLT) — inspiration for formalization, not a dependency of this repository.
 
 ---
-
-Maintained by DavidFox998 as part of *Opera Numerorum*: mathematics made
-auditable, with the beauty left visible.
 
 
 ### v7.3.1 release ladder clarification
@@ -521,3 +482,50 @@ that missing R=T/localization step explicitly. Constructing the complete
 `TaylorWilesPatchingData` remains a Type-valued obligation of the enriched
 descent-plan supplier.
 
+---
+
+## The wider work: *Opera Numerorum* and four routes toward RH
+
+The Beal development is not itself a proof of the Riemann Hypothesis.
+It is part of a wider program in which different mathematical languages
+approach the same landscape: Arakelov geometry, automorphic forms, spectral
+gaps, arithmetic dynamics, and the analytic behavior of zeta functions.
+The program has four distinct routes toward RH — independent formalization
+paths whose value is that they can expose each other's assumptions by
+meeting at common arithmetic data.
+
+### Route A — positivity
+
+[`riemann-arakelov-positivity`](https://github.com/DavidFox998/riemann-arakelov-positivity)
+turns positivity on the modular curve $X_0(143)$ into an arithmetic
+inequality. Its architecture centers on $g(X_0(143)) = 13$,
+$\omega^2 = 48/13$, and the finite set $S_4 = \{2, 3, 19, 191\}$.
+
+### Route B — spectral descent
+
+[`arakelov-rh-descent`](https://github.com/DavidFox998/arakelov-rh-descent)
+approaches the same territory through a spectral gap on $X_0(143)$,
+with $\lambda_1 \geq 975/4096$ as the Kim–Sarnak input.
+
+### Route C — growth contradiction
+
+[`rh-growth-contradiction`](https://github.com/DavidFox998/rh-growth-contradiction)
+takes a contradiction route, comparing growth permitted by a proposed
+zeta bound with Littlewood's $\Omega$-phenomenon.
+
+### Route D — Eutheos
+
+[`brothers-desert-proof`](https://github.com/DavidFox998/brothers-desert-proof)
+is a synthetic route studying zero repulsion directly, through the
+$p = 5$ bridge and the desert property of exceptional primes.
+
+---
+
+### Additional external reference
+
+- [`ImperialCollegeLondon/FLT`](https://github.com/ImperialCollegeLondon/FLT) — inspiration for formalization, not a dependency of this repository.
+
+---
+
+Maintained by DavidFox998 as part of *Opera Numerorum*: mathematics made
+auditable, with the beauty left visible.

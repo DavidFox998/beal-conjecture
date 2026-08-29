@@ -416,7 +416,7 @@ module changes an audited boundary, also inspect its `#print axioms` output
 and update the nearest README so the documentation remains as honest as the
 code.
 
-## v7.3.1 audit clarification
+## v7.3.1 historical audit clarification
 
 The phrase **“0 axiom” is scoped to the typed Eutheos focused boundary**. It
 means that `Beal.Galois.OldNewDecompHyp_from_Eutheos`, `EutheosJitter`, and
@@ -462,3 +462,11 @@ This remains conditional mathematics: an enriched-plan supplier must construct
 the patching data for every edge. No claim is made that the fixed-point jitter
 inequality alone supplies Taylor–Wiles primes or an R=T theorem.
 
+## v8.2.0 release status
+
+B17 now proves the full rational `E[2]` classification for the canonical Frey
+curve, not merely the existence of three distinct affine points. The exact set
+is `{O, (0,0), (Aˣ,0), (-Bʸ,0)}`. This closes the rational-torsion
+exhaustiveness gap while leaving Mazur irreducibility and residual Galois
+representations as explicit boundaries. The complete v8.2.0 audit passed in
+main CI **#256**.

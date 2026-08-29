@@ -267,7 +267,7 @@ theorem that constructs that data. The source tree is designed so
 that those distinctions remain visible both in the code and in its
 documentation.
 
-## v7.3.1 audit clarification
+## v7.3.1 historical audit clarification
 
 The phrase **“0 axiom” is scoped to the typed Eutheos focused boundary**. It
 means that `Beal.Galois.OldNewDecompHyp_from_Eutheos`, `EutheosJitter`, and
@@ -301,3 +301,11 @@ Prime selection and construction of the patched tower remain honest,
 Type-valued boundaries. The jitter inequality indexes the data but does not
 prove their existence.
 
+## v8.2.0 release status
+
+This source tree is released as v8.2.0. The new B17 `B17_FullE2.lean` module
+proves the exact rational 2-torsion classification of the canonical Frey
+curve, including the point at infinity and the three affine roots. The release
+passed the complete audit in main CI **#256**; the result still does not claim
+Mazur irreducibility, residual Galois representations, or an unconditional
+proof of Beal's Conjecture.
