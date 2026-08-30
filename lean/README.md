@@ -24,6 +24,13 @@ is `[propext, Quot.sound]`. These are audit-scope statements, not a claim that
 the typed Wiles, Tate, enriched-plan, support, or transport inputs have been
 constructed from first principles.
 
+The B15/B20 chain now derives every odd-prime exact-divisibility edge from the
+canonical Frey model through `tate_frey_multiplicative_at_model`; the Wiles
+plan retains only odd-prime quotient data. Consequently the broader final
+audit names the global conductor, local Tate, and Wiles boundaries and also
+records the existing `Classical.choice` footprint of the `ZMod` unit argument.
+The choice-free patching/rank-one audit remains `[propext, Quot.sound]`.
+
 ## Source-tree map
 
 ```text
@@ -296,6 +303,16 @@ Taylor–Wiles prime levels, patched modules, transition maps, diamond actions,
 inverse-limit projections, depth data, and rank-one coordinates.
 `LocalizedRankOne_from_Patching` constructs the equivalence from those
 coordinates and audits to `[propext, Quot.sound]`.
+
+The level-zero reconstruction law is a theorem, not a certificate field:
+coordinate compatibility propagates it across all finite levels and
+projection extensionality proves equality in the inverse-limit candidate.
+The patching certificate is also indexed by the exact Frey residual
+representation and exact Hecke attachment. It exposes a
+deformation-to-localized-Hecke map whose residual evaluation extends that
+attachment, plus finite-level Taylor–Wiles diamond actions. The map is not
+proved to be an isomorphism, and the diamond lifts are not yet identified
+with Frobenius lifts; those remain part of the R=T modularity-lifting step.
 
 Prime selection and construction of the patched tower remain honest,
 Type-valued boundaries. The jitter inequality indexes the data but does not
