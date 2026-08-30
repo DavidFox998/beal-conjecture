@@ -17,7 +17,7 @@ jobs:
 
       - name: Verify Lean and Mathlib toolchain pins
         # Fail before elan or Mathlib cache work if the repository metadata drifts.
-        run: bash scripts/check-lean-toolchain.sh
+        run: bash scripts/check-lean-toolchain.sh lean-toolchain lake-manifest.json lakefile.lean
 
       - name: Install elan
         run: |
