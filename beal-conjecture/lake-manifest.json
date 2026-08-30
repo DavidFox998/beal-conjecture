@@ -78,7 +78,7 @@
    "rev": "809c3fb3b5c8f5d7dace56e200b426187516535a",
    "name": "mathlib",
    "manifestFile": "lake-manifest.json",
-   "inputRev": "809c3fb3b5c8f5d7dace56e200b426187516535a",
+   "inputRev": "v4.12.0",
    "inherited": false,
    "configFile": "lakefile.lean"}],
  "name": "beal_conjecture",
