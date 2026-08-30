@@ -271,7 +271,9 @@ def build_report(cur_unit, cur_live, history):
         lines.append(
             f"> ⚠️ **Live smoke pass rate declined** — live smoke tests dropped "
             f"from {prev_live_rate:.0f}% to {cur_live_rate:.0f}% compared with "
-            "the most recent recorded run. The deployed service may have regressed."
+            "the most recent recorded run. A failed response-content assertion "
+            "can indicate that the deployed service returned wrong data even "
+            "when its HTTP status was 200."
         )
 
     if not unit_decline and not live_decline:

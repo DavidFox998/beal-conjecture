@@ -1,5 +1,8 @@
 """Tests for Router 21 — c9_brain."""
+import hashlib
+import json
 import os
+import re
 import pytest
 from unittest.mock import patch
 from fastapi.testclient import TestClient
@@ -231,19 +234,116 @@ _skip_live = pytest.mark.skipif(
 )
 
 
+def _assert_live_brain_payload(body):
+    """Assert the stable response contract for GET /brain.
+
+    HTTP 200 alone is not enough here: a proxy or broken deploy can return a
+    valid JSON document while dropping or changing the values clients rely on.
+    """
+    assert isinstance(body, dict), f"Live /brain payload must be an object: {body!r}"
+    expected = {
+        "brain": "LIVE",
+        "tools": 1052,
+        "routers": 21,
+        "beacon": BEACON_EXPECTED,
+        "d": D_EXPECTED,
+        "genesis": GENESIS_EXPECTED,
+        "tagline": "1 brain, 1000 tools",
+        "site": "https://zerobeacon.ai",
+    }
+    for key, value in expected.items():
+        assert body.get(key) == value, (
+            f"Live /brain {key} mismatch: expected {value!r}, "
+            f"got {body.get(key)!r}"
+        )
+    assert isinstance(body.get("ts"), (int, float)) and body["ts"] > 0, (
+        f"Live /brain ts must be a positive number: {body.get('ts')!r}"
+    )
+
+
+def _assert_live_mcp_brain_route(body, request_id=99, intent="escrow payment"):
+    """Assert the JSON-RPC and brain-route payload contracts for live /mcp."""
+    assert isinstance(body, dict), f"Live /mcp payload must be an object: {body!r}"
+    assert body.get("jsonrpc") == "2.0", (
+        f"Live /mcp JSON-RPC version mismatch: {body.get('jsonrpc')!r}"
+    )
+    assert body.get("id") == request_id, (
+        f"Live /mcp response id mismatch: expected {request_id!r}, "
+        f"got {body.get('id')!r}"
+    )
+    assert "error" not in body, (
+        f"Live /mcp returned a JSON-RPC error: {body.get('error')!r}"
+    )
+
+    result = body.get("result")
+    assert isinstance(result, dict), (
+        f"Live /mcp result must be an object: {result!r}"
+    )
+
+    # Current clients receive a standard MCP CallToolResult.  Keep accepting
+    # the legacy direct payload as well because the live service may be ahead
+    # of the checked-out source, but validate either representation fully.
+    route = result.get("structuredContent", result)
+    assert isinstance(route, dict), (
+        f"Live /mcp brain_route payload must be an object: {route!r}"
+    )
+    if "structuredContent" in result:
+        assert result.get("isError") is False, (
+            f"Live /mcp unexpectedly marked the successful call as an error: {result!r}"
+        )
+        assert result.get("ok") is True, (
+            f"Live /mcp result missing successful top-level marker: {result!r}"
+        )
+        content = result.get("content")
+        assert isinstance(content, list) and content, (
+            f"Live /mcp result missing content items: {result!r}"
+        )
+        assert content[0].get("type") == "text", (
+            f"Live /mcp first content item must be text: {content[0]!r}"
+        )
+        assert json.loads(content[0].get("text", "")) == route, (
+            "Live /mcp text content does not match structuredContent"
+        )
+
+    expected_hash = hashlib.sha256(
+        f"{intent}{BEACON_EXPECTED}".encode()
+    ).hexdigest()[:16]
+    expected = {
+        "ok": True,
+        "tool": "brain_route",
+        "intent": intent,
+        "cluster": "Market-Router",
+        "tools": "1–300",
+        "beacon": BEACON_EXPECTED,
+        "d": D_EXPECTED,
+        "hash": expected_hash,
+    }
+    for key, value in expected.items():
+        assert route.get(key) == value, (
+            f"Live /mcp brain_route {key} mismatch: expected {value!r}, "
+            f"got {route.get(key)!r}"
+        )
+    assert isinstance(route.get("ts"), (int, float)) and route["ts"] > 0, (
+        f"Live /mcp brain_route ts must be a positive number: {route.get('ts')!r}"
+    )
+    assert re.fullmatch(r"[0-9a-f]{8}", str(route.get("id", ""))), (
+        f"Live /mcp brain_route id has the wrong shape: {route.get('id')!r}"
+    )
+    return route
+
+
 @_skip_live
 def test_live_brain_beacon_and_d():
-    """Live /brain endpoint must return the exact moat-contract values."""
+    """Live /brain endpoint must return its complete response contract."""
     import requests  # stdlib-backed; available in the test environment
     resp = requests.get(f"{_live_url}/brain", timeout=10)
     assert resp.status_code == 200, f"/brain returned {resp.status_code}"
     body = resp.json()
+    _assert_live_brain_payload(body)
     assert verify_moat(body), (
         f"Live /brain response failed moat check — "
         f"d={body.get('d')!r}, beacon={body.get('beacon')!r}"
     )
-    assert body["d"]      == D_EXPECTED,      f"live d mismatch: {body.get('d')}"
-    assert body["beacon"] == BEACON_EXPECTED, f"live beacon mismatch: {body.get('beacon')}"
 
 
 @_skip_live
@@ -253,6 +353,7 @@ def test_live_brain_forgery_detection():
     resp = requests.get(f"{_live_url}/brain", timeout=10)
     assert resp.status_code == 200
     real = resp.json()
+    _assert_live_brain_payload(real)
 
     # Guard: unmodified live response must pass the moat — otherwise mutations are meaningless
     assert verify_moat(real) is True, (
@@ -286,8 +387,9 @@ _skip_live_mcp = pytest.mark.skipif(
 @_skip_live_mcp
 def test_live_mcp_forgery_detection():
     """Live /mcp endpoint: call brain_route via MCP transport with a real API key,
-    confirm the authenticated result passes verify_moat, then verify that zeroed-d,
-    wrong-beacon, and missing-d forgeries are each rejected by verify_moat."""
+    confirm the complete authenticated payload passes its contract and
+    verify_moat, then verify that zeroed-d, wrong-beacon, and missing-d
+    forgeries are each rejected by verify_moat."""
     import requests
 
     headers = {"X-API-Key": _live_api_key}
@@ -304,10 +406,7 @@ def test_live_mcp_forgery_detection():
     assert resp.status_code == 200, f"/mcp returned {resp.status_code}"
 
     body = resp.json()
-    assert "error" not in body, (
-        f"Live /mcp returned a JSON-RPC error (check API key / tool availability): {body.get('error')}"
-    )
-    result = body.get("result", {})
+    result = _assert_live_mcp_brain_route(body)
 
     # Guard: unmodified live result must pass the moat — otherwise mutations are meaningless
     assert verify_moat(result) is True, (
