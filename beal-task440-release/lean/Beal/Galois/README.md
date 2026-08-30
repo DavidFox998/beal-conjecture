@@ -70,7 +70,7 @@ V-specific eigenline edge. The boundary is explicit and data-valued:
   proposition. It records the two coefficient-level degeneracy maps, their
   exact old-image description, named Hecke-stable old and new modules,
   genuine-form generation fields, coverage of `V`, and a geometric
-  old/new-intersection kernel parameterized by `EutheosJitter`.
+  old/new-intersection kernel selected by the stored `EutheosJitter` bound.
   `OldNewDecompHyp_from_Eutheos` constructs the existing proposition from
   those lower-level fields. The kernel field is the explicit place where a
   future modular-curve proof must connect the jitter inequality to geometry;

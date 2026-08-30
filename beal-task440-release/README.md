@@ -111,9 +111,9 @@ that fixed-point arithmetic has reconstructed modular-form geometry:
   degeneracy maps `αₚ` and `βₚ`, their exact joint old-image representation,
   Hecke stability, genuine-form generation, V-membership, and coverage
   `V = old + new`.
-- `separation_kernel (j : EutheosJitter)` is the lower-level old/new
-  intersection statement `old ∩ new = ⊥`, explicitly parameterized by the
-  jitter witness and its inequality.
+- `separation_kernel` is the lower-level old/new intersection statement
+  `old ∩ new = ⊥`; it is selected by the stored jitter witness and consumes
+  that witness's denominator-cleared inequality.
 - `OldNewDecompHyp_from_Eutheos` constructs the existing
   `OldNewDecompHyp` only at the theorem boundary from those fields. The
   arithmetic inequality alone is not claimed to prove the geometric kernel.

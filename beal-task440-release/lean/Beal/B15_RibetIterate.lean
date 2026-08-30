@@ -185,7 +185,7 @@
          induction plan with
          | terminal =>
              simpa using hForms
-         | step edge tail ih =>
+         | step edge _tail ih =>
              let result := ribet_single_step_from_genuine edge
              exact ih ⟨result.form⟩
 
@@ -211,7 +211,7 @@
            let model := Beal.FreyTate.TateStep2.freyModelOf hEq
            have hWiles :=
              Beal.FreyTate.wiles_modularity hA hB hC hx hy hz hEq hCop model
-           rcases hWiles with ⟨ℓ, _, hℓ, hForms, hPlans⟩
+           rcases hWiles with ⟨ℓ, _, _hℓ, hForms, hPlans⟩
            refine Nonempty.elim hPlans ?_
            intro hPlan
            let galoisPlan :=
