@@ -160,6 +160,7 @@ The B14–B20 path now exposes the step boundary as data:
 | `frey_conductor_data` | One global conductor value and prime-support theorem, indexed by the canonical integral Frey model. |
 | `tate_step2_odd_prime_external` | The one external local Tate input: an odd-prime type-`Iₙ` fiber, expressed by unit `c₄` and bad discriminant on the fixed model, has conductor exponent one. |
 | `tate_step2_I_n_conductor_one` | A proved Lean wrapper assembling the explicit local certificates and applying the external theorem. |
+| `FreyTwoAdicConductorCertificate` | A separate model-indexed 2-adic data boundary: it records one explicit exponent and its exact power-of-two divisibility proof for that same supplied conductor. |
 | `NormalizedEigenlineData` | Explicit normalized generator and spanning data used to derive the V-specific q-expansion principle. |
 | `EutheosGeometryInterface` | Typed old/new modules, degeneracy maps, exact old-image representation, coverage, and jitter-indexed separation data; `OldNewDecompHyp` is derived at the theorem boundary. |
 | `TaylorWilesPatchingData` | Explicit prime levels, patched tower, depth bookkeeping, and the named R=T/localization specialization boundary used to construct `LocalizedRankOne`. |
@@ -298,7 +299,23 @@ then combines them with the narrowly named external Tate theorem to prove
 
 This derived theorem is not another assumption: it is the explicit bridge from
 the generic odd-prime Tate statement to the actual Frey model and its fixed
-conductor data. It does not claim a 2-adic or global conductor computation.
+conductor data.
+
+The prime 2 is accounted for separately and more cautiously.
+`two_dvd_frey_discriminant` and `two_dvd_frey_c4` prove the elementary
+divisibility facts for the canonical equation, yielding the literal
+`discEvenC4Even` invariant witness—not a reduction-type classification.
+`FreyTwoAdicLocalData` separately requires an explicit diagonal-scaling
+minimality certificate. External 2-adic work must supply a visible
+`FreyTwoAdicConductorCertificate` containing a specific exponent `e` and
+the proof `2^e ∣ N ∧ 2^(e+1) ∤ N` for the same model's supplied conductor
+`N`. No certificate is constructed here, and no full minimal-model theorem,
+Kodaira classification, or complete 2-adic Tate algorithm is claimed.
+
+The global `FreyConductorData` contract itself supplies an opaque natural
+number and prime support. It is named “conductor” as the mathematical
+boundary, but this repository does not internally construct or identify it
+with Mathlib elliptic-curve conductor data.
 
 ### Step 2 — Wiles data and Ribet level-lowering
 
@@ -443,9 +460,10 @@ minimal and the discriminant is bad,
 derived conductor statement reuses the conductor of that same fixed Frey model
 and records local conductor exponent one at `p`.
 
-This release formalizes a typed odd-prime local Tate boundary. It does not
-claim a complete Tate algorithm, a formal 2-adic conductor calculation, or a
-global computation of `N` from the Frey coefficients. Its version DOI is
+This historical release formalized a typed odd-prime local Tate boundary. It
+did not claim a complete Tate algorithm, a formal 2-adic conductor
+calculation, or a global computation of `N` from the Frey coefficients. Its
+version DOI is
 [10.5281/zenodo.22091549](https://doi.org/10.5281/zenodo.22091549).
 
 When discussing an audit, cite the specific version DOI rather than the concept

@@ -7,6 +7,7 @@
           · c4_nonzero_of_dvd_{A,B,C}   (0 sorry — B14_TateC4Nonzero)
           · frey_conductor_data          (global conductor boundary)
           · tate_step2_I_n_conductor_one (proved specialization wrapper)
+          · FreyTwoAdicConductorCertificate (data-valued 2-adic interface)
 
         Sorry count: 0.
 
@@ -139,7 +140,46 @@
           · exact absurd h (by exact_mod_cast hp.one_lt.ne')
           · linarith [show (0 : ℤ) < p from by exact_mod_cast hp.pos]
 
-        -- ── §3. Main derived theorem ──────────────────────────────────────────────────
+        -- ── §3. Elementary 2-adic facts about the canonical equation ─────────────────
+
+        theorem two_dvd_frey_discriminant
+            (A B C : ℤ) (x y z : ℕ) :
+            2 ∣ (disc_Frey A B C x y z).natAbs := by
+          simp only [disc_Frey, Int.natAbs_mul, Int.natAbs_pow,
+            Int.natAbs_ofNat]
+          refine ⟨8 * (A.natAbs ^ x) ^ 2 * (B.natAbs ^ y) ^ 2 *
+            (C.natAbs ^ z) ^ 2, ?_⟩
+          ring
+
+        theorem two_dvd_frey_c4
+            (A B : ℤ) (x y : ℕ) :
+            2 ∣ (c4_Frey A B x y).natAbs := by
+          simp only [c4_Frey, Int.natAbs_mul, Int.natAbs_ofNat]
+          refine ⟨8 * ((A ^ x) ^ 2 + A ^ x * B ^ y + (B ^ y) ^ 2).natAbs, ?_⟩
+          ring
+
+        theorem frey_two_adic_invariants_even
+            {A B C : ℤ} {x y z : ℕ}
+            (hEq : A ^ x + B ^ y = C ^ z) :
+            TwoAdicInvariantWitness (freyModelOf hEq)
+              .discEvenC4Even := by
+          constructor
+          · simpa only [(freyModelOf hEq).discriminant_eq] using
+              two_dvd_frey_discriminant A B C x y z
+          · simpa only [(freyModelOf hEq).c4_eq] using
+              two_dvd_frey_c4 A B x y
+
+        /-- Expose a supplied external 2-adic exponent for the same model. -/
+        theorem tate_frey_two_adic_conductor
+            {A B C : ℤ} {x y z : ℕ}
+            (hEq : A ^ x + B ^ y = C ^ z)
+            (certificate :
+              FreyTwoAdicConductorCertificate (freyModelOf hEq)) :
+            ExactTwoAdicConductorExponent
+              (freyModelOf hEq) certificate.exponent :=
+          certificate.exactExponent
+
+        -- ── §4. Main derived theorem ─────────────────────────────────────────────────
 
         theorem tate_frey_multiplicative_derived
           {A B C : ℤ} {x y z : ℕ}
@@ -227,6 +267,7 @@
         #print axioms freyModelOf
         #print axioms tate_step2_odd_prime_external
         #print axioms tate_step2_I_n_conductor_one
+        #print axioms tate_frey_two_adic_conductor
         #print axioms tate_frey_multiplicative_derived
         -- Expected named boundaries:
         --   frey_conductor_data
