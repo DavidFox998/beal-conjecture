@@ -1,12 +1,30 @@
 {
-  "title": "Beal Conjecture — Tate Local Conductor Verification — v4.1.0",
+  "title": "Beal Conjecture — Typed Patching and Tate-Certified Descent — v8.3.0",
   "upload_type": "software",
-  "description": "v4.1.0 Tate Local Conductor Verification. This release makes the Tate boundary truthful about which local data are being supplied and why. The closed B14 work defines the Frey Weierstrass invariants b2, b4, c4, and discriminant, proves the c4 identity by ring normalization, and proves the odd-prime c4 nonvanishing cases used by the local argument. A typed FreyCurveModel keeps the coefficients, c4, discriminant, conductor, prime support, and local conductor relation tied to one fixed tuple (A, B, C, x, y, z). The derived tate_frey_multiplicative theorem chooses that one model and returns its actual conductor rather than an unrelated natural-number witness. The remaining named Tate boundary is Beal.FreyTate.TateStep2.tate_step2_I_n_conductor_one, an explicit local axiom corresponding to the supplied odd-prime Tate Step 2 contract. This does not formalize the full Tate algorithm, the 2-adic conductor exponent, or a global conductor computation from coefficients. In the active B14-B20 path, the three named mathematical boundaries are Tate, Wiles modularity, and typed preserved-form Ribet descent; Lean foundation dependencies are audited separately. No executable sorry or sorryAx is claimed or used in the active path.",
-  "creators": [{"name": "Fox, David", "affiliation": "Opera Numerorum"}],
+  "description": "Version 8.3.0 records an audited conditional milestone in Lean 4. Exact-divisibility proofs no longer live in the Wiles plan or Galois edge witnesses: the odd-prime Tate interface derives each edge from the canonical Frey model and its conductor. The terminal 2-adic exponent-one premise is explicit model-indexed data. The patching layer carries residual-representation, Hecke-attachment, deformation, comparison, finite-level action, and diamond-specialization data. The final route remains conditional on exactly three named mathematical interfaces—frey_conductor_data, tate_step2_odd_prime_external, and wiles_modularity—and two unconstructed data suppliers, TwoAdicExponentOneSupplier and EnrichedPlanSupplier. This is not an unconditional proof of the Beal Conjecture.",
+  "creators": [
+    {
+      "name": "Fox, David",
+      "affiliation": "Opera Numerorum"
+    }
+  ],
   "license": "MIT",
-  "keywords": ["Beal Conjecture", "Lean 4", "Tate algorithm", "local conductor", "c4", "Frey curve", "Ribet", "Opera Numerorum", "formal mathematics"],
+  "keywords": [
+    "Beal Conjecture",
+    "Lean 4",
+    "Frey curve",
+    "Tate algorithm",
+    "Ribet level lowering",
+    "Taylor-Wiles patching",
+    "formal mathematics",
+    "Opera Numerorum"
+  ],
   "access_right": "open",
   "related_identifiers": [
-    {"identifier": "https://github.com/DavidFox998/beal-conjecture", "relation": "isSupplementTo", "resource_type": "software"}
+    {
+      "identifier": "https://github.com/DavidFox998/beal-conjecture",
+      "relation": "isSupplementTo",
+      "resource_type": "software"
+    }
   ]
 }

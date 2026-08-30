@@ -31,21 +31,26 @@ V-specific eigenline edge. The boundary is explicit and data-valued:
   `NewformHeckeToPreservedTokenTransport` for one exact lowering edge.
 - B15 derives `QExpansionPrincipleOnV` through
   `QExpansionPrincipleOnV_fromEigenline`; `hQ` is not a field of the edge.
-- `GaloisDescentPlan` is indexed by the exact Wiles arithmetic-plan value, so
-  every enriched edge has that constructor's `N`, `p`, and `M`; the supplier
-  cannot discard the certified path and substitute another chain.
-- `EnrichedPlanSupplier` converts the unchanged Wiles arithmetic plan into
+- `GaloisDescentPlan` is indexed by the exact Wiles arithmetic-plan value and
+  its model-dependent Tate certificate, so every enriched edge has that
+  constructor's `N`, `p`, and `M`; the supplier cannot substitute another
+  chain or conductor provenance.
+- `EnrichedPlanSupplier` converts the Tate-certified Wiles quotient plan into
   this per-edge plan. The recursive B15 proof no longer consumes a universal
   `RibetSingleStepProviders` family.
 - `#print axioms ribet_single_step_from_genuine` reports
   `[propext, Quot.sound]`.
 - The remaining named mathematical inputs on the final path are
-  `wiles_modularity`, `tate_step2_I_n_conductor_one`, and the explicit
-  enriched-plan supplier. The supplier is a conditional data boundary, not a
-  theorem silently derived from the Galois files.
-- `Classical.choice` still appears in the B20 audit through the existing
-  `TateStep2.freyModelOf` construction. It is not introduced by 07k or by the
-  B15 genuine-provider bridge.
+  `wiles_modularity`, `frey_conductor_data`,
+  and `tate_step2_odd_prime_external`. The separate 2-adic exponent-one and
+  enriched-plan suppliers are conditional data boundaries, not theorems
+  silently derived from the Galois files.
+- B15 invokes the proved `tate_frey_multiplicative_at_model` specialization to
+  certify every exact-divisibility edge. Neither the Wiles plan nor
+  `GaloisEdgeWitness` carries a duplicate `ExactDividesCore` field.
+- `TateStep2.freyModelOf` constructs the coefficient model without
+  `Classical.choice`; the conductor comes from the typed global boundary. It
+  is not introduced by 07k or by the B15 genuine-provider bridge.
 - 07f proves that genuine form data excludes the raw 07c counterexample
   `(-Bp, 1, 1)`.
 - 07g proves `ihara_zero_on_genuine_V_conditional`: the restricted Ihara
@@ -629,5 +634,11 @@ does `LocalizedRankOne_from_Patching` construct the target.
 
 The patching certificate is a visible Type-valued mathematical boundary. It is
 not a renamed `LocalizedRankOne` field and it contains no stored linear
-equivalence.
+equivalence. Its level-zero reconstruction law is now proved from coherent
+finite projections. The certificate is indexed by the same Frey residual
+representation and `FreyHeckeAttachment` carried by the B15 edge. Its
+localized residual map extends that attachment's evaluation, and its
+finite-level diamond actions come from explicit deformation lifts. It does
+not identify those lifts with Frobenius data or assert that the comparison
+map is an R=T isomorphism.
 

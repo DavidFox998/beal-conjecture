@@ -170,8 +170,22 @@ B14 is a family of related modules rather than one file:
 `FreyCurveModel` is deliberately a typed record. Its conductor is data of
 the supplied model, accompanied by the local and prime-support properties
 needed later. It is not a fabricated radical formula for the conductor, and
-the code does not claim to have formalized the full 2-adic or global Tate
-algorithm.
+the code does not claim to have formalized the full global Tate algorithm.
+
+At 2, `TwoAdicInvariantWitness` records only the literal parity split for
+the displayed discriminant and `c₄`; its cases are not reduction types.
+`IsTwoAdicallyScalingMinimal` states the diagonal scaling obstruction for
+the displayed integral equation. `FreyTwoAdicLocalData` keeps those
+hypotheses outside the curve model. The elementary Frey formulas prove that
+both invariants are even and hence establish the `discEvenC4Even` case.
+
+An external analysis must provide a visible
+`FreyTwoAdicConductorCertificate` with a specific exponent and exact
+power-of-two divisibility proof for the same model's supplied conductor.
+No such certificate is constructed here; the repository does not prove full
+minimality under every admissible change, classify Kodaira type, or run
+Tate's algorithm at 2. The global conductor remains opaque supplied data
+with prime support, not an internally constructed Mathlib elliptic conductor.
 
 The elementary formulas in `B14_FreyTate.lean` are proved directly with
 Mathlib arithmetic. The named Wiles and Tate boundaries remain visible as
@@ -187,10 +201,12 @@ B15 does not accept an unstructured proposition saying “Ribet lowers the
 level.” Instead it works with:
 
 - a typed `PreservedForm`;
-- an exact arithmetic descent plan;
+- an odd-prime quotient descent plan;
 - a `GaloisEdgeWitness` for each edge;
-- an `EnrichedPlanSupplier` that enriches the exact plan supplied by the
-  Wiles boundary;
+- a model-dependent Tate certificate deriving exact divisibility for the
+  quotient plan;
+- a separate 2-adic exponent-one certificate making the terminal level honest;
+- an `EnrichedPlanSupplier` that adds the Galois/Hecke data;
 - a recursive transport proof ending at level 2.
 
 Each `GaloisEdgeWitness` carries its own residual representation, maximal
@@ -220,11 +236,12 @@ The final modules assemble the conditional chain:
 | `B20_Beal_Core.lean` | the corresponding small final Core vocabulary |
 
 `B20_BealConjectureDone.lean` defines
-`BealConjectureConditionalOnEnrichedPlan`, whose first input is an explicit
-`EnrichedPlanSupplier`. The resulting statement is machine-checked
+`BealConjectureConditionalOnEnrichedPlan`, whose first two inputs are an
+explicit `EnrichedPlanSupplier` and an explicit
+`TwoAdicExponentOneSupplier`. The resulting statement is machine-checked
 conditional mathematics, not an unconditional proof of Beal's conjecture.
-The supplier is data-valued and inspectable; it is not a declared global
-axiom, and this module does not construct it.
+Both suppliers are data-valued and inspectable; neither is a declared global
+axiom, and this module does not construct them.
 
 `B17_FreyRationalTwoTorsion.lean` defines the actual Frey Weierstrass curve
 `Y² = X(X - Aˣ)(X + Bʸ)` over `ℚ` with Mathlib's elliptic-curve API. It proves
@@ -255,12 +272,18 @@ The final path still names the deep inputs that have not been reconstructed
 from first principles:
 
 1. `Beal.FreyTate.wiles_modularity`;
-2. `Beal.FreyTate.TateStep2.tate_step2_I_n_conductor_one`;
-3. the explicit enriched-plan supplier carrying the Galois/Hecke support
-   data.
+2. `Beal.FreyTate.TateStep2.frey_conductor_data`;
+3. `Beal.FreyTate.TateStep2.tate_step2_odd_prime_external`;
+4. the explicit 2-adic exponent-one supplier;
+5. the explicit enriched-plan supplier carrying the Galois/Hecke support data.
 
-The first two are named mathematical interfaces. The third is an explicit
-missing data boundary. This distinction is central to the project.
+The first three are named mathematical interfaces. The final two are explicit
+missing data boundaries. The final B20 route now uses the proved
+`tate_frey_multiplicative_at_model` specialization to derive every odd-prime
+exact-divisibility edge from the canonical conductor. The Wiles plan carries
+only primality, residual-prime separation, oddness, and quotient equations.
+This removes duplicated local arithmetic without claiming that the Tate
+boundary itself has been formalized.
 
 ### B21 — Beal implies Fermat
 
@@ -291,7 +314,7 @@ FreyCurveModel and explicit discriminant arithmetic
 Tate-supplied Frey model and conductor statement
         │
         ▼
-Wiles-supplied residual prime, form token, and exact arithmetic plan
+Wiles-supplied residual prime, form token, and odd-prime quotient plan
         │
         ▼
 EnrichedPlanSupplier

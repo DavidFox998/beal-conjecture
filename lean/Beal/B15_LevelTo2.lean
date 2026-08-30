@@ -68,10 +68,13 @@
       (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
       (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
       (hEq : A ^ x + B ^ y = C ^ z)
-      (hCop : IsCoprime A (B * C)) :
+      (hCop : IsCoprime A (B * C))
+      (hTwo :
+        Beal.FreyTate.FreyTwoAdicExponentOneCertificate
+          (Beal.FreyTate.TateStep2.freyModelOf hEq)) :
       False :=
     Beal.RibetIterate.ribet_iteration_gives_False
-      supplier hA hB hC hx hy hz hEq hCop
+      supplier hA hB hC hx hy hz hEq hCop hTwo
 
     #print axioms canLowerLevel_of_exact        -- 0 axioms beyond kernel
     #print axioms exactDivides_of_tate          -- 0 axioms

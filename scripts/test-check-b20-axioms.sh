@@ -11,13 +11,15 @@ cat >"$fixture_dir/allowed.txt" <<'EOF'
  Classical.choice,
  Quot.sound,
  Beal.FreyTate.wiles_modularity,
- Beal.FreyTate.TateStep2.frey_conductor_data]
+ Beal.FreyTate.TateStep2.frey_conductor_data,
+ Beal.FreyTate.TateStep2.tate_step2_odd_prime_external]
 EOF
 
 cat >"$fixture_dir/unapproved.txt" <<'EOF'
 'Beal20Done.beal_conjecture_conditional_on_enriched_plan' depends on axioms: [propext,
  Beal.FreyTate.wiles_modularity,
  Beal.FreyTate.TateStep2.frey_conductor_data,
+ Beal.FreyTate.TateStep2.tate_step2_odd_prime_external,
  Beal.Unapproved.hidden_boundary]
 EOF
 
@@ -25,7 +27,8 @@ cat >"$fixture_dir/sorry.txt" <<'EOF'
 'Beal20Done.beal_conjecture_conditional_on_enriched_plan' depends on axioms: [propext,
  sorryAx,
  Beal.FreyTate.wiles_modularity,
- Beal.FreyTate.TateStep2.frey_conductor_data]
+ Beal.FreyTate.TateStep2.frey_conductor_data,
+ Beal.FreyTate.TateStep2.tate_step2_odd_prime_external]
 EOF
 
 B20_AXIOM_AUDIT_OUTPUT="$fixture_dir/allowed.txt" \

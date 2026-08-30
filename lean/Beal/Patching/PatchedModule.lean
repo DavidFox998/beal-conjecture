@@ -97,14 +97,13 @@ structure PatchedModuleData
       (finiteLevelCoordinates n).coordinate (transition n x) =
         (finiteLevelCoordinates (n + 1)).coordinate x
 
-/-- The remaining specialization boundary connecting the finite patched tower
-    to its localized inverse-limit candidate.
+/-- Generator data connecting the coherent finite patched tower to its
+    inverse-limit candidate.
 
-    The coordinate is not supplied: it is derived from the level-zero
-    projection.  What remains explicit is the geometric specialization fact
-    that the coherent finite-level generator reconstructs every localized
-    element.  This is the missing R=T/localization input, stated separately
-    rather than hidden inside `PatchedModuleData`. -/
+    The generator is the only additional datum. Its finite projections must be
+    the already supplied finite-level generators. The reconstruction law is
+    proved below from transition-coordinate compatibility, finite-level
+    reconstruction, and projection extensionality; it is not a field. -/
 structure PatchingSpecializationData
     {R : Type u} {N : Type v}
     [Semiring R] [AddCommMonoid N] [Module R N]
@@ -113,9 +112,67 @@ structure PatchingSpecializationData
   project_generator :
     ∀ n : ℕ,
       D.project n generator = (D.finiteLevelCoordinates n).generator
-  reconstruct_from_level_zero :
-    ∀ x : N,
-      (D.finiteLevelCoordinates 0).coordinate (D.project 0 x) • generator = x
+
+/-- Every finite projection has the coordinate read at level zero.
+
+    This is the specialization calculation at the heart of the patched
+    inverse-limit comparison. It follows by induction from compatibility of
+    the transition maps with both projections and rank-one coordinates. -/
+theorem PatchedModuleData.project_eq_level_zero_coordinate_smul_generator
+    {R : Type u} {N : Type v}
+    [Semiring R] [AddCommMonoid N] [Module R N]
+    (D : PatchedModuleData R N) (x : N) (n : ℕ) :
+    D.project n x =
+      (D.finiteLevelCoordinates 0).coordinate (D.project 0 x) •
+        (D.finiteLevelCoordinates n).generator := by
+  let c : R := (D.finiteLevelCoordinates 0).coordinate (D.project 0 x)
+  induction n with
+  | zero =>
+      exact (D.finiteLevelCoordinates 0).reconstruct (D.project 0 x) |>.symm
+  | succ n ih =>
+      have hcoordinate :
+          (D.finiteLevelCoordinates (n + 1)).coordinate
+              (D.project (n + 1) x) = c := by
+        calc
+          (D.finiteLevelCoordinates (n + 1)).coordinate
+                (D.project (n + 1) x) =
+              (D.finiteLevelCoordinates n).coordinate
+                (D.transition n (D.project (n + 1) x)) :=
+            (D.transition_coordinate n (D.project (n + 1) x)).symm
+          _ = (D.finiteLevelCoordinates n).coordinate (D.project n x) := by
+            rw [D.project_compatible]
+          _ = (D.finiteLevelCoordinates n).coordinate
+                (c • (D.finiteLevelCoordinates n).generator) := by
+            rw [ih]
+          _ = c := by
+            rw [(D.finiteLevelCoordinates n).coordinate_smul,
+              (D.finiteLevelCoordinates n).generator_coordinate, mul_one]
+      change
+        D.project (n + 1) x =
+          c • (D.finiteLevelCoordinates (n + 1)).generator
+      rw [← hcoordinate]
+      exact
+        (D.finiteLevelCoordinates (n + 1)).reconstruct
+          (D.project (n + 1) x) |>.symm
+
+/-- The coherent level-zero coordinate reconstructs every inverse-limit
+    element.
+
+    Unlike the former field of the same name, this is a theorem. Equality is
+    checked at every finite projection; the finite-level result above supplies
+    those equalities, and `project_ext` finishes the inverse-limit comparison. -/
+theorem PatchingSpecializationData.reconstruct_from_level_zero
+    {R : Type u} {N : Type v}
+    [Semiring R] [AddCommMonoid N] [Module R N]
+    {D : PatchedModuleData R N}
+    (S : PatchingSpecializationData D) (x : N) :
+    (D.finiteLevelCoordinates 0).coordinate (D.project 0 x) •
+        S.generator = x := by
+  apply D.project_ext
+  intro n
+  rw [map_smul, S.project_generator]
+  exact
+    (D.project_eq_level_zero_coordinate_smul_generator x n).symm
 
 /-- Rank-one coordinates on the localized limit, derived through the
     level-zero projection and the explicit specialization boundary. -/
@@ -179,6 +236,8 @@ theorem M_infty_free
 #print axioms RankOneCoordinates.toLinearEquiv
 #print axioms PatchedModuleData
 #print axioms PatchingSpecializationData
+#print axioms PatchedModuleData.project_eq_level_zero_coordinate_smul_generator
+#print axioms PatchingSpecializationData.reconstruct_from_level_zero
 #print axioms PatchingSpecializationData.toRankOneCoordinates
 #print axioms finite_level_free
 #print axioms M_infty_free
