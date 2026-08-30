@@ -40,8 +40,9 @@ jobs:
       # @_skip_live / @_skip_live_mcp markers in test_brain.py — they will
       # appear as "skipped" in the CI summary rather than "failed".
       - name: Run live smoke tests against https://zerobeacon.ai
-        # continue-on-error so a temporarily unavailable endpoint never blocks
-        # merges — the unit tests above always enforce correctness.
+        # Keep this step non-blocking so the trend report below can always
+        # append its full table. The trend step is the merge-blocking gate when
+        # it detects a live pass-rate decline.
         continue-on-error: true
         env:
           ZEROBEACON_URL: ${{ secrets.ZEROBEACON_URL }}
@@ -81,6 +82,8 @@ jobs:
       # ── Test pass-rate trend report (unit + live smoke, with decline warning) ─
       - name: Generate test-trend report
         if: always()
+        # Do not continue on error: test_trend_report.py exits 1 for a live
+        # smoke decline, which must fail this job and block the PR check.
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python scripts/test_trend_report.py

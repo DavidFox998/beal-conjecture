@@ -5,6 +5,7 @@ scripts/test_trend_report.py
 Parse the JUnit XML reports produced by the current CI run, compare them
 with recent comparable runs (fetched via the GitHub Actions API), and append
 a Markdown trend table plus an optional decline warning to GITHUB_STEP_SUMMARY.
+The process exits non-zero when the live smoke pass rate declines.
 
 The script is deliberately defensive:
   • Missing XML files (e.g. live smoke tests that were skipped or never ran)
@@ -192,6 +193,50 @@ def is_secrets_skip(stats):
     return total > 0 and passed == 0 and failed == 0
 
 
+def _trend_declines(cur_unit, cur_live, history):
+    """Return whether the unit or live pass rate declined from prior runs."""
+    unit_decline = False
+    prev_unit_rate = cur_unit_rate = None
+
+    if cur_unit is not None and history:
+        prev = next((h["unit"] for h in history if h["unit"] is not None), None)
+        if prev is not None:
+            cur_unit_rate = pass_rate(cur_unit[1], cur_unit[0])
+            prev_unit_rate = pass_rate(prev[1], prev[0])
+            if cur_unit_rate is not None and prev_unit_rate is not None:
+                unit_decline = cur_unit_rate < prev_unit_rate
+
+    # Runs where all tests were skipped (secrets absent) are excluded from both
+    # the current-run check and the historical baseline search so that a
+    # secrets-missing run never masquerades as a regression.
+    live_decline = False
+    prev_live_rate = cur_live_rate = None
+
+    if cur_live is not None and not is_secrets_skip(cur_live) and history:
+        prev_live = next(
+            (
+                h["live"]
+                for h in history
+                if h["live"] is not None and not is_secrets_skip(h["live"])
+            ),
+            None,
+        )
+        if prev_live is not None:
+            cur_live_rate = pass_rate(cur_live[1], cur_live[0])
+            prev_live_rate = pass_rate(prev_live[1], prev_live[0])
+            if cur_live_rate is not None and prev_live_rate is not None:
+                live_decline = cur_live_rate < prev_live_rate
+
+    return (
+        unit_decline,
+        prev_unit_rate,
+        cur_unit_rate,
+        live_decline,
+        prev_live_rate,
+        cur_live_rate,
+    )
+
+
 def build_report(cur_unit, cur_live, history):
     """
     Return a Markdown string containing the trend table and optional warning.
@@ -223,39 +268,14 @@ def build_report(cur_unit, cur_live, history):
         row(h["label"], "Unit", h["unit"])
         row(h["label"], "Live smoke", h["live"])
 
-    # ── Unit test decline warning ────────────────────────────────────────────
-    unit_decline = False
-    prev_unit_rate = cur_unit_rate = None
-
-    if cur_unit is not None and history:
-        prev = next((h["unit"] for h in history if h["unit"] is not None), None)
-        if prev is not None:
-            cur_unit_rate = pass_rate(cur_unit[1], cur_unit[0])
-            prev_unit_rate = pass_rate(prev[1], prev[0])
-            if cur_unit_rate is not None and prev_unit_rate is not None:
-                unit_decline = cur_unit_rate < prev_unit_rate
-
-    # ── Live smoke-test decline warning ─────────────────────────────────────
-    # Runs where all tests were skipped (secrets absent) are excluded from both
-    # the current-run check and the historical baseline search so that a
-    # secrets-missing run never masquerades as a regression.
-    live_decline = False
-    prev_live_rate = cur_live_rate = None
-
-    if cur_live is not None and not is_secrets_skip(cur_live) and history:
-        prev_live = next(
-            (
-                h["live"]
-                for h in history
-                if h["live"] is not None and not is_secrets_skip(h["live"])
-            ),
-            None,
-        )
-        if prev_live is not None:
-            cur_live_rate = pass_rate(cur_live[1], cur_live[0])
-            prev_live_rate = pass_rate(prev_live[1], prev_live[0])
-            if cur_live_rate is not None and prev_live_rate is not None:
-                live_decline = cur_live_rate < prev_live_rate
+    (
+        unit_decline,
+        prev_unit_rate,
+        cur_unit_rate,
+        live_decline,
+        prev_live_rate,
+        cur_live_rate,
+    ) = _trend_declines(cur_unit, cur_live, history)
 
     # ── Compose the warning / status block ──────────────────────────────────
     lines.append("")
@@ -330,6 +350,14 @@ def main():
     else:
         # Useful for local testing: just print to stdout
         print(report)
+
+    if _trend_declines(cur_unit, cur_live, history)[3]:
+        print(
+            "Live smoke pass rate declined; failing the workflow so the regression "
+            "is reviewed before merging.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
 
 
 if __name__ == "__main__":
