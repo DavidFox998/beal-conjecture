@@ -28,6 +28,8 @@ import Beal.B14_FreyConductor_Core
 import Beal.B14_FreyConductor
 import Beal.B15_LevelTo2_Core
 import Beal.B15_LevelTo2
+import Beal.B15_X0_10_Core
+import Beal.B15_X0_10_Wrapper
 import Beal.B16_BealFinal_Core
 import Beal.B16_BealFinal
 import Beal.B17_FreyRationalTwoTorsion

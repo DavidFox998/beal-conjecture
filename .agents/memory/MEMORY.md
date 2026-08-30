@@ -36,3 +36,4 @@
 - [Lean Legendre symbol elaboration](lean-legendre-symbol-elaboration.md) — `legendreSym` hypotheses need a prime `Fact` during signature elaboration, before proof-local instances exist.
 - [GitHub raw sibling reads](github-raw-sibling-reads.md) — do not attach a repo-scoped Actions token when reading public raw files across sibling repositories.
 - [Lean tactic-linter replacement scope](lean-tactic-linter-replacement-scope.md) — “Try this” may replace only the final tactic; remove earlier tactics only when separately reported unused.
+- [X₀(10) source boundary](x0-10-source-boundary.md) — GJ–L Proposition 17/Table 31 classify Faltings-minimal vertices; they do not prove a no-Frey exclusion.
