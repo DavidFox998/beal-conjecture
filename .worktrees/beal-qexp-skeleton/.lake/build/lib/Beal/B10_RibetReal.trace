@@ -11,4 +11,4 @@
   {"message":
    "./././lean/Beal/B10_RibetReal.lean:30:0: 'BealRibet10.level_lowering_of_exact' depends on axioms: [propext]",
    "level": "info"}],
- "depHash": "18056253478899940116"}
+ "depHash": "14179493966995361634"}

@@ -14,4 +14,4 @@
   {"message":
    "./././lean/Beal/B03_Conductor.lean:35:0: 'BealConductor.squarefree_of_primitive_gcd' depends on axioms: [propext, Quot.sound]",
    "level": "info"}],
- "depHash": "12472108949110614634"}
+ "depHash": "5313324182999321156"}

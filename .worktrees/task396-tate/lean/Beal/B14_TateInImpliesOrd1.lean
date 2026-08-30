@@ -181,7 +181,7 @@
 
         -- ── §4. Main derived theorem ─────────────────────────────────────────────────
 
-        theorem tate_frey_multiplicative_derived
+        theorem tate_frey_multiplicative_at_model
           {A B C : ℤ} {x y z : ℕ}
           (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
           (hx : 0 < x) (hy : 0 < y) (hz : 0 < z)
@@ -189,8 +189,9 @@
           (hCop : IsCoprime A (B * C))
           (p : ℕ) (hp : Nat.Prime p) (hp2 : p ≠ 2)
           (hpDiv : p ∣ A.natAbs * B.natAbs * C.natAbs) :
-          ∃ N : ℕ, p ∣ N ∧ ¬ (p * p ∣ N) ∧
-              (∀ q : ℕ, q.Prime → q ∣ N →
+          p ∣ (freyModelOf hEq).conductor ∧
+            ¬ (p * p ∣ (freyModelOf hEq).conductor) ∧
+              (∀ q : ℕ, q.Prime → q ∣ (freyModelOf hEq).conductor →
                   q ∣ A.natAbs * B.natAbs * C.natAbs ∨ q = 2) := by
         haveI : Fact (Nat.Prime p) := ⟨hp⟩
         let model := freyModelOf hEq
@@ -260,14 +261,33 @@
             simpa only [model.discriminant_eq] using h_disc_nat)
         have h_exact :=
           tate_step2_I_n_conductor_one model p hp hp2 h_minimal h_disc_model
-        -- 5. The witness is the model's actual conductor, with its model-level support.
-        exact ⟨model.conductor, h_exact.1, h_exact.2, model.conductor_prime_support⟩
+        -- 5. Return exact divisibility for this exact model.
+        exact ⟨h_exact.1, h_exact.2, model.conductor_prime_support⟩
+
+        /-- Compatibility wrapper for callers that need an existential
+            conductor witness. Its witness is definitionally the conductor of
+            the canonical Frey model. -/
+        theorem tate_frey_multiplicative_derived
+          {A B C : ℤ} {x y z : ℕ}
+          (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
+          (hx : 0 < x) (hy : 0 < y) (hz : 0 < z)
+          (hEq : A ^ x + B ^ y = C ^ z)
+          (hCop : IsCoprime A (B * C))
+          (p : ℕ) (hp : Nat.Prime p) (hp2 : p ≠ 2)
+          (hpDiv : p ∣ A.natAbs * B.natAbs * C.natAbs) :
+          ∃ N : ℕ, p ∣ N ∧ ¬ (p * p ∣ N) ∧
+              (∀ q : ℕ, q.Prime → q ∣ N →
+                  q ∣ A.natAbs * B.natAbs * C.natAbs ∨ q = 2) := by
+          exact ⟨(freyModelOf hEq).conductor,
+            tate_frey_multiplicative_at_model
+              hA hB hC hx hy hz hEq hCop p hp hp2 hpDiv⟩
 
         #print axioms freyIntegralModel
         #print axioms freyModelOf
         #print axioms tate_step2_odd_prime_external
         #print axioms tate_step2_I_n_conductor_one
         #print axioms tate_frey_two_adic_conductor
+        #print axioms tate_frey_multiplicative_at_model
         #print axioms tate_frey_multiplicative_derived
         -- Expected named boundaries:
         --   frey_conductor_data

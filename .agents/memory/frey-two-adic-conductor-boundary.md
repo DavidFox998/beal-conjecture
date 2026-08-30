@@ -7,4 +7,4 @@ At the pinned Lean 4.12/Mathlib level, do not describe discriminant and c₄ par
 
 **Why:** Mathlib lacks Tate-algorithm, Kodaira-symbol, minimal-model, and elliptic-conductor APIs here. An existential valuation statement is mathematically vacuous for a positive natural and must not be presented as a conductor computation.
 
-**How to apply:** Keep diagonal weighted-scaling minimality explicitly narrower than full Weierstrass minimality. Replace the certificate only with a genuine local elliptic-curve construction; never hide the exponent inside the curve model or add an axiom that merely asserts some exponent exists.
+**How to apply:** Keep diagonal weighted-scaling minimality explicitly narrower than full Weierstrass minimality. An odd-prime descent whose terminal level is exactly 2 implicitly requires 2-adic exponent one; expose that as separate model-indexed certificate data before constructing the descent plan rather than attributing it to Wiles. Replace the certificate only with a genuine local elliptic-curve construction; never hide the exponent inside the curve model or add an axiom that merely asserts some exponent exists.

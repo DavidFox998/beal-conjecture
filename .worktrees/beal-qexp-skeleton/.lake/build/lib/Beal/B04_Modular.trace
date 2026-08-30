@@ -5,4 +5,4 @@
   {"message":
    "./././lean/Beal/B04_Modular.lean:22:23: unused variable `a_p`\nnote: this linter can be disabled with `set_option linter.unusedVariables false`",
    "level": "warning"}],
- "depHash": "3079738775797637649"}
+ "depHash": "4037601144906257739"}

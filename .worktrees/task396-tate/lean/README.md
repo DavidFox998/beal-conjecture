@@ -24,6 +24,13 @@ is `[propext, Quot.sound]`. These are audit-scope statements, not a claim that
 the typed Wiles, Tate, enriched-plan, support, or transport inputs have been
 constructed from first principles.
 
+The B15/B20 chain now derives every odd-prime exact-divisibility edge from the
+canonical Frey model through `tate_frey_multiplicative_at_model`; the Wiles
+plan retains only odd-prime quotient data. Consequently the broader final
+audit names the global conductor, local Tate, and Wiles boundaries and also
+records the existing `Classical.choice` footprint of the `ZMod` unit argument.
+The choice-free patching/rank-one audit remains `[propext, Quot.sound]`.
+
 ## Source-tree map
 
 ```text

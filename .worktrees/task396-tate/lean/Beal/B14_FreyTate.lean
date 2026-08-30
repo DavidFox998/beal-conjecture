@@ -189,6 +189,18 @@
         exponent : ℕ
         exactExponent : ExactTwoAdicConductorExponent model exponent
 
+      /-- Explicit certificate that the supplied conductor has 2-adic exponent
+          exactly one.
+
+          This is a data boundary, not a theorem attributed to Wiles. It is
+          required before an odd-prime descent skeleton can terminate at level
+          2 without silently assuming a 2-adic conductor calculation. -/
+      structure FreyTwoAdicExponentOneCertificate
+          {A B C : ℤ} {x y z : ℕ}
+          (model : FreyCurveModel A B C x y z) where
+        certificate : FreyTwoAdicConductorCertificate model
+        exponent_eq_one : certificate.exponent = 1
+
       /-- An abstract nonzero-form token carried by the Ribet descent.
 
           This is deliberately a typed interface, not a construction of a
@@ -200,15 +212,16 @@
       /-- Propositional availability of a preserved form token. -/
       def HasPreservedForm (ℓ N : ℕ) : Prop := Nonempty (PreservedForm ℓ N)
 
-      /-- A finite certified path from a level to level 2.
+      /-- A finite arithmetic path from a level to level 2.
 
-          Each edge records the exact divisibility and arithmetic quotient needed
-          by one Ribet step. The path is supplied by the modularity boundary until
-          the global level-lowering theorem is formalized. -/
+          Wiles supplies the odd prime, its separation from the residual prime,
+          and the arithmetic quotient at each edge. Exact divisibility is not a
+          field of this plan: `B14_TateInImpliesOrd1` derives it from the actual
+          Frey model and Tate's odd-prime local theorem. -/
       inductive RibetDescentPlan (ℓ : ℕ) : ℕ → Type
         | terminal : RibetDescentPlan ℓ 2
         | step {N p M : ℕ} :
-            p.Prime → p ≠ ℓ → p ∣ N → ¬ (p * p ∣ N) → M * p = N →
+            p.Prime → p ≠ ℓ → p ≠ 2 → M * p = N →
             RibetDescentPlan ℓ M → RibetDescentPlan ℓ N
 
       /-- Propositional availability of a certified descent path. -/
@@ -283,15 +296,19 @@
 
           For the one Frey model supplied by Tate's local interface, modularity
           supplies a residual prime, a form token at that same conductor, and a
-          certified finite descent to level 2. The plan is an explicit scaffold for
-          the still-unformalized global modular-form and level-lowering theory. -/
+          finite odd-prime descent skeleton to level 2, conditional on an
+          explicit certificate that the model's conductor has 2-adic exponent
+          one. The plan is an explicit scaffold for the still-unformalized
+          global modular-form and level-lowering theory; odd-prime Tate supplies
+          exact divisibility separately. -/
       axiom wiles_modularity
           {A B C : ℤ} {x y z : ℕ}
           (hA  : 0 < A) (hB : 0 < B) (hC : 0 < C)
           (hx  : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
           (hEq : A ^ x + B ^ y = C ^ z)
           (hCop : IsCoprime A (B * C))
-          (model : FreyCurveModel A B C x y z) :
+          (model : FreyCurveModel A B C x y z)
+          (hTwo : FreyTwoAdicExponentOneCertificate model) :
           ∃ ℓ : ℕ, 5 ≤ ℓ ∧ ℓ.Prime ∧ HasPreservedForm ℓ model.conductor ∧
             HasRibetDescentPlan ℓ model.conductor
 

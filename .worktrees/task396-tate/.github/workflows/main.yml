@@ -133,6 +133,11 @@ jobs:
           # not mathematical assumptions. Audit the final theorem's named domain axioms exactly.
           cat > /tmp/beal_final_axiom_audit.lean <<'EOF'
           import Beal
+          #check fun
+            (h : Beal20Done.BealConjectureConditionalOnEnrichedPlan)
+            (enriched : Beal.RibetIterate.EnrichedPlanSupplier)
+            (twoAdic : Beal20Done.TwoAdicExponentOneSupplier) =>
+              h enriched twoAdic
           #print axioms Beal20Done.beal_conjecture_conditional_on_enriched_plan
           #print axioms Beal20Done.twenty_bricks_conditional
           EOF
@@ -143,6 +148,7 @@ jobs:
           fi
           printf '%s\n' \
             'Beal.FreyTate.TateStep2.frey_conductor_data' \
+            'Beal.FreyTate.TateStep2.tate_step2_odd_prime_external' \
             'Beal.FreyTate.wiles_modularity' |
             sort -u > /tmp/beal_expected_domain_axioms.txt
           grep -oE 'Beal\.FreyTate(\.TateStep2)?\.[A-Za-z0-9_]+' \
@@ -151,13 +157,13 @@ jobs:
           if ! cmp -s \
             /tmp/beal_actual_domain_axioms.txt \
             /tmp/beal_expected_domain_axioms.txt; then
-            echo "FAIL: final theorem must use exactly the two approved domain axioms"
+            echo "FAIL: final theorem must use exactly the three approved domain axioms"
             diff -u \
               /tmp/beal_expected_domain_axioms.txt \
               /tmp/beal_actual_domain_axioms.txt || true
             exit 1
           fi
-          echo "OK: all cores are import-free and zero-axiom; final theorem uses exactly two approved domain axioms"
+          echo "OK: final theorem retains both explicit suppliers and uses exactly three approved domain axioms"
 
       - name: Audit the trusted real-number transport boundary
         run: |
