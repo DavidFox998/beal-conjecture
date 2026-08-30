@@ -23,6 +23,9 @@ jobs:
       - name: Build Layer 5 Hecke boundary with lake --old
         run: lake --old build 'Beal.Galois.«05_Hecke»'
 
+      - name: Build Layer 6 maximal-ideal boundary with lake --old
+        run: lake --old build 'Beal.Galois.«06_MaximalIdeal»'
+
       - name: Check NO sorry
         run: |
           ! grep -R --include="*.lean" "^\s*sorry" lean || (echo "FAIL: sorry found" && exit 1)
@@ -336,6 +339,146 @@ jobs:
             exit 1
           fi
           echo "OK: Layer 5 builds with lake --old, stays within its import boundary, and uses only propext/Quot.sound"
+
+      - name: Verify Layer 6 maximal-ideal boundary
+        run: |
+          set -euo pipefail
+          layer6_file=lean/Beal/Galois/06_MaximalIdeal.lean
+          layer4_file=lean/Beal/Galois/04_LevelLowering.lean
+          layer5_file=lean/Beal/Galois/05_Hecke.lean
+          layer6_code=/tmp/layer6_maximalideal_code.lean
+
+          # Remove Lean comments before checking the source itself. The boundary
+          # documentation intentionally names excluded concepts, but those names
+          # must not occur in executable declarations.
+          python3 - "$layer6_file" > "$layer6_code" <<'PY'
+          import pathlib
+          import sys
+
+          source = pathlib.Path(sys.argv[1]).read_text()
+          output = []
+          index = 0
+          comment_depth = 0
+          while index < len(source):
+              if comment_depth:
+                  if source.startswith("/-", index):
+                      comment_depth += 1
+                      output.extend("  ")
+                      index += 2
+                  elif source.startswith("-/", index):
+                      comment_depth -= 1
+                      output.extend("  ")
+                      index += 2
+                  else:
+                      output.append("\n" if source[index] == "\n" else " ")
+                      index += 1
+              elif source.startswith("--", index):
+                  while index < len(source) and source[index] != "\n":
+                      output.append(" ")
+                      index += 1
+              elif source.startswith("/-", index):
+                  comment_depth = 1
+                  output.extend("  ")
+                  index += 2
+              else:
+                  output.append(source[index])
+                  index += 1
+          print("".join(output), end="")
+          PY
+
+          if grep -nE '(^|[^[:alnum:]_])(axiom|opaque|sorryAx|sorry|admit)([^[:alnum:]_]|$)' \
+              "$layer6_code"; then
+            echo "FAIL: Layer 6 contains an axiom, opaque, sorry, sorryAx, or admit declaration/reference"
+            exit 1
+          fi
+
+          imports=$(grep -E '^[[:space:]]*import[[:space:]]' "$layer6_code" || true)
+          expected_imports=$'import Beal.Galois.«04_LevelLowering»\nimport Beal.Galois.«05_Hecke»'
+          if [ "$imports" != "$expected_imports" ]; then
+            echo "FAIL: Layer 6 imports changed outside its audited boundary:"
+            printf '%s\n' "$imports"
+            exit 1
+          fi
+
+          # Layers 4 and 5 are the only local dependencies of Layer 6. Keep
+          # their import edges explicit too, so a final-proof or unrelated
+          # boundary cannot enter Layer 6 transitively.
+          layer4_imports=$(grep -E '^[[:space:]]*import[[:space:]]' "$layer4_file" || true)
+          expected_layer4_imports=$'import Beal.Galois.«01_Absolute»\nimport Beal.Galois.«02_ResidualRep»\nimport Beal.Galois.«03_ModLForm»\nimport Beal.B14_FreyTate\nimport Beal.B03_Conductor_Core'
+          if [ "$layer4_imports" != "$expected_layer4_imports" ]; then
+            echo "FAIL: Layer 4 imports changed under the Layer 6 dependency boundary:"
+            printf '%s\n' "$layer4_imports"
+            exit 1
+          fi
+          layer5_imports=$(grep -E '^[[:space:]]*import[[:space:]]' "$layer5_file" || true)
+          expected_layer5_imports='import Beal.Galois.«03_ModLForm»'
+          if [ "$layer5_imports" != "$expected_layer5_imports" ]; then
+            echo "FAIL: Layer 5 imports changed under the Layer 6 dependency boundary:"
+            printf '%s\n' "$layer5_imports"
+            exit 1
+          fi
+
+          # Imports are checked above, so exclude them from the reference scan.
+          # This lets Layer 6 import the explicitly approved level-lowering
+          # interface while rejecting references to downstream proof paths.
+          implementation_code=/tmp/layer6_maximalideal_implementation.lean
+          grep -vE '^[[:space:]]*import[[:space:]]' "$layer6_code" > "$implementation_code"
+          excluded_boundary='07[b-k]_|07_NewformSupport|08_RibetProof|B15_|B16_|B17_|B18_|B19_|B20_|B21_|BSD|Birch|Swinnerton|Ribet|Wiles|TateStep2|beal_(final|proof|conjecture)|descent|level.?lowering'
+          if grep -nEi "$excluded_boundary" "$implementation_code"; then
+            echo "FAIL: Layer 6 references an excluded final-proof or unrelated boundary"
+            exit 1
+          fi
+
+          cat > /tmp/layer6_maximalideal_axioms.lean <<'EOF'
+          import Beal.Galois.«06_MaximalIdeal»
+          #print axioms Beal.Galois.HeckeIdealLike
+          #print axioms Beal.Galois.IsMaximalIdeal
+          #print axioms Beal.Galois.MaximalIdeal
+          #print axioms Beal.Galois.ResidueFieldData
+          #print axioms Beal.Galois.ResidueFieldIsZMod
+          #print axioms Beal.Galois.HeckeIdealLike.IsMaximal
+          #print axioms Beal.Galois.FreyHeckeAttachment
+          #print axioms Beal.Galois.MaximalIdealAttachedToRep
+          #print axioms Beal.Galois.HeckeIdealAnnihilatesForm
+          #print axioms Beal.Galois.IsSupportedInNewSubspace
+          #print axioms Beal.Galois.frey_unramified_implies_maximalIdeal_support
+          EOF
+          lake --old env lean /tmp/layer6_maximalideal_axioms.lean \
+            2>&1 | tee /tmp/layer6_maximalideal_axioms.txt
+
+          declarations=(
+            Beal.Galois.HeckeIdealLike
+            Beal.Galois.IsMaximalIdeal
+            Beal.Galois.MaximalIdeal
+            Beal.Galois.ResidueFieldData
+            Beal.Galois.ResidueFieldIsZMod
+            Beal.Galois.HeckeIdealLike.IsMaximal
+            Beal.Galois.FreyHeckeAttachment
+            Beal.Galois.MaximalIdealAttachedToRep
+            Beal.Galois.HeckeIdealAnnihilatesForm
+            Beal.Galois.IsSupportedInNewSubspace
+            Beal.Galois.frey_unramified_implies_maximalIdeal_support
+          )
+          for declaration in "${declarations[@]}"; do
+            if ! grep -Fq "'$declaration'" /tmp/layer6_maximalideal_axioms.txt; then
+              echo "FAIL: missing Layer 6 axiom report for $declaration"
+              exit 1
+            fi
+          done
+
+          unexpected_axioms=$(grep -E "depends on axioms:" \
+            /tmp/layer6_maximalideal_axioms.txt | grep -Ev \
+            'depends on axioms: \[(propext(, Quot\.sound)?|Quot\.sound)\]' || true)
+          if [ -n "$unexpected_axioms" ]; then
+            echo "FAIL: Layer 6 declarations exceed the [propext, Quot.sound] axiom budget:"
+            printf '%s\n' "$unexpected_axioms"
+            exit 1
+          fi
+          if grep -E 'Classical\.choice|sorryAx' /tmp/layer6_maximalideal_axioms.txt; then
+            echo "FAIL: Layer 6 axiom report contains a forbidden dependency"
+            exit 1
+          fi
+          echo "OK: Layer 6 builds with lake --old, stays within its dependency boundary, and uses only propext/Quot.sound"
 
       - name: Lake exe check
         run: lake exe cache get || true
