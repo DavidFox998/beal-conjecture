@@ -229,7 +229,7 @@ The final modules assemble the conditional chain:
 | Files | Role |
 |---|---|
 | `B16_BealFinal_*` | contradiction from the terminal level-2 obstruction |
-| `B17_FreyRationalTwoTorsion.lean`, `B17_FullE2.lean`, `B17_MazurIrreducible_*` | genuine and exhaustive rational Frey 2-torsion, constructive exact-factor arithmetic, and the remaining uninhabited Mazur boundary |
+| `B17_FreyRationalTwoTorsion.lean`, `B17_FullE2.lean`, `B17_MazurIrreducible_*` | genuine rational Frey `E[2]`, geometric `E[p]` with its absolute-Galois action, and the named Mazur isogeny boundary |
 | `B18_FreyIsElliptic_*` | ellipticity interface for the Frey model |
 | `B19_BealFinalAssembly_*` | assembly of the major typed bridges |
 | `B20_BealConjectureDone_*` | final theorem-shaped statement and axiom audit |
@@ -261,12 +261,21 @@ available under its original honest name.
 that an exactly-dividing prime can be removed from a natural-number level while
 leaving a positive cofactor not divisible by that factor. The wrapper fixes an
 actual `FreyIntegralModel`, a prime, and model-indexed B14
-`FreyConductorData` in `FreyMazurContext`. It still defines the parameterized
-schema of the missing isogeny/residual-representation irreducibility theorem as
-`MazurIrreducibilityBoundary`, but does not assert or prove that boundary.
-Lean 4.12/Mathlib does not contain the Galois-representation and Mazur
-classification theory needed to instantiate it. In particular, conductor
-divisibility alone is never called absolute irreducibility.
+`FreyConductorData` in `FreyMazurContext`. It then base-changes the canonical
+Frey curve to `ℚ̄`, defines its geometric `p`-torsion subgroup, and lets
+`Gal(ℚ̄/ℚ)` act by applying each algebra automorphism to affine coordinates.
+`FreyResidualRepresentationReducible` now means that this action preserves an
+order-`p` subgroup—equivalently, the kernel datum of a rational `p`-isogeny.
+
+The boundary is instantiated and inhabited as
+`frey_mazur_irreducibility_boundary`, but its proof depends on the single named
+axiom `frey_irreducibility_external`. The current context does not yet encode
+the semistability and reduction hypotheses needed for a derivation from
+Mazur's rational-isogeny classification, and the pinned Mathlib revision has
+neither that classification nor its modular-curve rational-point proof. Thus
+B17 has closed the *predicate* gap, not the classification theorem: conductor
+divisibility is no longer mislabeled as irreducibility, and the stronger
+remaining mathematical assumption is visible in `#print axioms`.
 
 The final path still names the deep inputs that have not been reconstructed
 from first principles:
@@ -410,7 +419,7 @@ It does **not** establish, by itself:
 
 - Wiles's modularity theorem;
 - Tate's local conductor algorithm in full generality;
-- construction of the Frey residual representation;
+- Mazur's rational-isogeny classification for the Frey specialization;
 - the Hecke-algebra representation theorem;
 - newform decomposition, Ihara/Jacquet–Langlands transport, or multiplicity
   one;
@@ -448,17 +457,17 @@ opaque declaration of their own and audit to `[propext, Quot.sound]`. The
 V-specific edge is clean. The Task #440 build covered 2,424 targets and CI
 #239 completed successfully in 53m23s.
 
-This is not a repository-wide claim. A literal `grep -r '^axiom'` over the
-repository returns two named declarations. `wiles_lifting_axiom` is a
+This is not a repository-wide claim. `wiles_lifting_axiom` remains a
 mathematical boundary. The separately named `mazur_irreducibility_axiom`
 inhabits only B05's legacy natural-number compatibility predicate: that
 predicate is not residual-representation irreducibility, and B05 is not
-imported by the active B15/B20 path. B17 now proves the full four-point rational
-2-torsion classification for the Frey curve with Mathlib points, while retaining
-an uninhabited, parameterized boundary only for the missing
-isogeny/residual-representation step. The repository-wide focused audit
-distinguishes all of these from the clean Eutheos supplier rather than hiding
-them.
+imported by the active B15/B20 path. B17's distinct
+`frey_irreducibility_external` now talks about the genuine Frey curve over
+`ℚ̄` and excludes an absolute-Galois-stable order-`p` subgroup. Its name
+deliberately does not claim that the missing Mazur specialization has already
+been derived. The focused audit requires the concrete definitions to remain
+free of domain axioms and the instantiated boundary to expose exactly this
+named external input.
 
 The real-number interpretation of the fixed-point inequality
 `‖p·α₀‖ < 1/p` remains isolated in the desert-brothers module and audits to
@@ -471,8 +480,9 @@ The full rational 2-torsion name is now theorem-backed. `Frey_E2_exhaustive`
 classifies every zero-y affine root of the Frey cubic;
 `freyTwoTorsion_affine_y_eq_zero` supplies the converse group-law bridge; and
 `freyFullE2_eq` proves the exact four-point set equality including infinity.
-This closes only the rational `E[2]` exhaustiveness gap. It does not formalize
-residual Galois representations, rational p-isogenies, or Mazur's theorem.
+This closes only the rational `E[2]` exhaustiveness gap. B17 now defines the
+geometric `p`-torsion Galois action and rational `p`-isogeny kernel predicate,
+but Mazur's classification itself remains a named mathematical axiom.
 
 ## v8.0.0 patching layer
 
@@ -484,4 +494,3 @@ projections, depth equalities, and generator/coordinate laws. B15 derives
 This remains conditional mathematics: an enriched-plan supplier must construct
 the patching data for every edge. No claim is made that the fixed-point jitter
 inequality alone supplies Taylor–Wiles primes or an R=T theorem.
-
