@@ -556,6 +556,15 @@ def _check_stripe_api_key() -> tuple[bool, str]:
         return False, f"Stripe API error — {exc}"
     except Exception as exc:
         return False, f"unexpected error — {type(exc).__name__}: {exc}"
+
+
+# ── Per-route and per-tool tier maps (built at import time) ───────────────────
+# Used by the HTTP middleware (belt-and-suspenders) and MCP tier gate.
+
+_route_tier: dict[str, str] = {}
+_tool_tier:  dict[str, str] = {}
+
+
 def _build_tier_maps() -> None:
     """Populate _route_tier and _tool_tier from router metadata.
 
