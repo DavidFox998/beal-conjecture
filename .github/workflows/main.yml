@@ -54,6 +54,95 @@ jobs:
       - name: Build all bricks
         run: lake build +Beal.B00_OperaNumerorum Beal
 
+      - name: Check Lake manifest for dependency drift
+        run: |
+          set -euo pipefail
+
+          if git diff --quiet -- lake-manifest.json; then
+            echo "OK: lake-manifest.json stayed unchanged during the build"
+            exit 0
+          fi
+
+          echo "FAIL: lake-manifest.json changed during the normal build"
+          echo
+          python3 - <<'PY'
+          import json
+          import subprocess
+          import sys
+
+          manifest_path = "lake-manifest.json"
+
+          try:
+              committed = json.loads(
+                  subprocess.check_output(
+                      ["git", "show", f"HEAD:{manifest_path}"],
+                      text=True,
+                  )
+              )
+              with open(manifest_path, encoding="utf-8") as manifest_file:
+                  current = json.load(manifest_file)
+          except (OSError, subprocess.CalledProcessError, json.JSONDecodeError) as error:
+              print(f"Unable to summarize dependency revisions: {error}")
+              sys.exit(0)
+
+          def package_map(manifest):
+              return {
+                  (package.get("name"), package.get("url")): package
+                  for package in manifest.get("packages", [])
+                  if isinstance(package, dict)
+              }
+
+          committed_packages = package_map(committed)
+          current_packages = package_map(current)
+
+          changes = []
+          for package_key in sorted(
+              set(committed_packages) | set(current_packages),
+              key=lambda key: (str(key[0]), str(key[1])),
+          ):
+              old = committed_packages.get(package_key)
+              new = current_packages.get(package_key)
+              package_name = package_key[0] or package_key[1] or "<unnamed package>"
+
+              if old is None:
+                  changes.append(
+                      f"  added {package_name}: "
+                      f"rev={new.get('rev', '<missing>')} "
+                      f"inputRev={new.get('inputRev', '<missing>')}"
+                  )
+              elif new is None:
+                  changes.append(
+                      f"  removed {package_name}: "
+                      f"rev={old.get('rev', '<missing>')} "
+                      f"inputRev={old.get('inputRev', '<missing>')}"
+                  )
+              elif (
+                  old.get("rev") != new.get("rev")
+                  or old.get("inputRev") != new.get("inputRev")
+              ):
+                  changes.append(
+                      f"  {package_name}: "
+                      f"rev {old.get('rev', '<missing>')} -> "
+                      f"{new.get('rev', '<missing>')}; "
+                      f"inputRev {old.get('inputRev', '<missing>')} -> "
+                      f"{new.get('inputRev', '<missing>')}"
+                  )
+
+          if changes:
+              print("Dependency revision changes:")
+              print("\n".join(changes))
+          else:
+              print("No package revision changed; the manifest has a structural or formatting drift.")
+          PY
+
+          echo
+          echo "Full lake-manifest.json diff:"
+          git --no-pager diff -- lake-manifest.json
+          echo
+          echo "An intentional dependency update must update lakefile.lean and lake-manifest.json together,"
+          echo "review every pinned revision, and go through the normal release/dependency review before merge."
+          exit 1
+
       - name: Check NO sorry
         run: |
           ! grep -R --include="*.lean" "^\s*sorry" lean || (echo "FAIL: sorry found" && exit 1)
