@@ -1,17 +1,19 @@
 ---
 name: Tate-to-B20 dependency
-description: Why proving the local Tate theorem alone does not yet reduce the final B20 conditional chain.
+description: How the final B20 descent separates Tate-certified local arithmetic from the Wiles descent skeleton.
 ---
 
-The final B20 descent currently receives exact-divisibility proofs as fields of
-the conditional Wiles arithmetic plan. Its axiom audit therefore does not use
-the independently stated odd-prime Tate Step 2 theorem.
+The final B20 descent must derive every odd-prime exact-divisibility edge from
+the canonical Frey model and the local Tate theorem. Wiles supplies only the
+odd prime, residual-prime separation, quotient equation, preserved-form token,
+and finite descent skeleton. The terminal 2-adic exponent-one certificate
+remains a separate explicit data input.
 
-**Why:** A previous model supplier hid the local conductor law in the same
-structure that supplied the model and conductor, making the final audit appear
-to depend on Tate even when no local Tate projection was used.
+**Why:** Duplicating exact-divisibility evidence inside Wiles data allowed the
+final proof to bypass the independently audited Tate theorem, while treating
+the terminal factor at 2 as implicit would overstate the odd-prime local result.
 
-**How to apply:** When completing Tate, also redesign the source of the Wiles
-plan's exact-divisibility edges so they are derived from the local conductor
-theorem. Otherwise Tate can compile successfully while remaining disconnected
-from the final conditional proof.
+**How to apply:** Keep exact divisibility out of Wiles and per-edge Galois
+witnesses. Certify the exact arithmetic plan from Tate before enriching it with
+Galois, Hecke, and patching data, and keep the 2-adic certificate visible at the
+final conditional boundary.

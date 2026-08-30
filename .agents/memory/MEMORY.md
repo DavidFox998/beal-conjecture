@@ -20,7 +20,7 @@
 - [GitHub EKG report compatibility](github-ekg-report-compatibility.md) — CI serializes pytest properties as one-key objects and current Playwright needs keyword-only `arg`.
 - [Beal checkout source](beal-checkout-source.md) — the embedded Beal copy is stale; use the fetched beal/main revision for current B14–B20 work.
 - [Tate local conductor boundary](tate-local-conductor-boundary.md) — model-based odd-prime conductor contract replaces free-N Tate interfaces; do not overclaim 2-adic coverage.
-- [Tate-to-B20 dependency](tate-b20-dependency.md) — B20 currently gets exact-divisibility edges from Wiles-plan data, not the independent local Tate theorem.
+- [Tate-to-B20 dependency](tate-b20-dependency.md) — derive odd-prime exact divisibility from Tate; never duplicate it in Wiles data, and keep the 2-adic input explicit.
 - [BSD repository boundary](bsd-repository-boundary.md) — Birch-and-Swinnerton-Dyer is out of scope; do not modify it unless the user explicitly reopens work there.
 - [Galois-to-Ribet bridge](galois-ribet-token-bridge.md) — 07k transports support conditionally; Prop-level token existence cannot feed B15's data-valued step without choice.
 - [Genuine Ihara boundary](genuine-ihara-boundary.md) — Ihara does not build old/new; derive it only from explicit geometry, never from jitter alone.
