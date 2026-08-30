@@ -33,3 +33,4 @@
 - [GitHub workflow scope](github-workflow-scope.md) — repo access may still forbid writes under `.github/workflows`; report the excluded file explicitly.
 - [Frey rational 2-torsion boundary](frey-rational-two-torsion-boundary.md) — full four-point rational E[2] is proved; Mazur and residual representations remain separate.
 - [Frey 2-adic conductor boundary](frey-two-adic-conductor-boundary.md) — use explicit model-indexed certificate data; invariant parity is not a reduction classification.
+- [Lean Legendre symbol elaboration](lean-legendre-symbol-elaboration.md) — `legendreSym` hypotheses need a prime `Fact` during signature elaboration, before proof-local instances exist.

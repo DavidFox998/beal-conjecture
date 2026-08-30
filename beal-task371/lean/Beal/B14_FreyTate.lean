@@ -163,6 +163,27 @@
         have hv2 : v ^ 2 = 0 := by simp [h, hu]
         exact pow_eq_zero_iff (by norm_num : 2 ≠ 0) |>.mp hv2
 
+      /-- When `legendreSym p (B^y) = -1`, the tangent cone at the node is anisotropic. -/
+      theorem anisotropic_cone_of_neg_legendreSym
+          {p : ℕ} (hp : Nat.Prime p) {B : ℤ} {y : ℕ}
+          (hQR : @legendreSym p ⟨hp⟩ (B ^ y) = -1)
+          (u v : ZMod p) (h : v ^ 2 = ((B ^ y : ℤ) : ZMod p) * u ^ 2) :
+          u = 0 ∧ v = 0 := by
+        letI : Fact (Nat.Prime p) := ⟨hp⟩
+        have hne : ((B ^ y : ℤ) : ZMod p) ≠ 0 := by
+          intro h0
+          have hleg0 : legendreSym p (B ^ y) = 0 :=
+            (legendreSym.eq_zero_iff p (a := B ^ y)).mpr h0
+          rw [hleg0] at hQR
+          norm_num at hQR
+        have hnonsquare : ¬IsSquare (((B ^ y : ℤ) : ZMod p)) := by
+          intro hsquare
+          have hleg1 : legendreSym p (B ^ y) = 1 :=
+            (legendreSym.eq_one_iff p hne).mpr hsquare
+          rw [hleg1] at hQR
+          norm_num at hQR
+        exact anisotropic_cone hnonsquare u v h
+
       end TangentCone
 
       -- ── §4. Named mathematical axioms ───────────────────────────────────────────
