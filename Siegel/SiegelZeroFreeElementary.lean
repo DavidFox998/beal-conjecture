@@ -324,7 +324,7 @@ private lemma lfunction_eq_eta_factor (s : ℂ) (hs : 1 < s.re) :
       funext k
       dsimp [g]
       push_cast
-      ring
+      ring_nf
     have hζ_odd' : Summable (fun k : ℕ => g (2 * k + 1)) := by
       rw [hodd]
       exact hζ_odd_sum
@@ -438,8 +438,8 @@ private lemma lfunction_altChar_eq_cpow_mul_zeta (s : ℂ) (hs : 1 < s.re) :
       (HurwitzZeta.hurwitzZeta ((1 / 2 : ℝ) : UnitAddCircle) s / (2 : ℂ) ^ s +
        (2 : ℂ) ^ (-s) * riemannZeta s) := by
     apply HasSum.even_add_odd
-    · exact HasSum.congr_fun hodd (fun k => by push_cast; ring)
-    · exact HasSum.congr_fun heven (fun k => by push_cast; ring)
+    · exact HasSum.congr_fun hodd (fun k => by push_cast; ring_nf)
+    · exact HasSum.congr_fun heven (fun k => by push_cast; ring_nf)
   -- [10] Uniqueness gives Hz/2^s = (1 - 2^{-s})·ζ
   have hHz_val : HurwitzZeta.hurwitzZeta ((1 / 2 : ℝ) : UnitAddCircle) s / (2 : ℂ) ^ s =
       (1 - (2 : ℂ) ^ (-s)) * riemannZeta s := by
@@ -520,7 +520,7 @@ private lemma pair_hasSum_for_gt_one (s : ℂ) (hs : 1 < s.re) :
        (2 : ℂ) ^ (-s) * riemannZeta s) := by
     apply HasSum.even_add_odd
     · exact HasSum.congr_fun hodd (fun k => by push_cast; ring)
-    · exact HasSum.congr_fun heven (fun k => by push_cast; ring)
+    · exact HasSum.congr_fun heven (fun k => by push_cast; ring_nf)
   have hHz_val : HurwitzZeta.hurwitzZeta ((1 / 2 : ℝ) : UnitAddCircle) s / (2 : ℂ) ^ s =
       (1 - (2 : ℂ) ^ (-s)) * riemannZeta s := by
     linear_combination -(hζ.unique hcombine)
@@ -532,7 +532,7 @@ private lemma pair_hasSum_for_gt_one (s : ℂ) (hs : 1 < s.re) :
   have hpair : HasSum (fun k : ℕ => (1 : ℂ) / (2 * (↑k : ℂ) + 1) ^ s -
       (1 : ℂ) / (2 * (↑k : ℂ) + 2) ^ s)
       ((1 - (2 : ℂ) ^ (-s)) * riemannZeta s - (2 : ℂ) ^ (-s) * riemannZeta s) :=
-    hodd_L.sub (HasSum.congr_fun heven (fun k => by push_cast; ring))
+    hodd_L.sub (HasSum.congr_fun heven (fun k => by ring_nf))
   have h2pow : (2 : ℂ) ^ (1 - s) = 2 * (2 : ℂ) ^ (-s) := by
     rw [show (1 : ℂ) - s = 1 + (-s) from by ring, cpow_add _ _ (by norm_num : (2:ℂ) ≠ 0), cpow_one]
   -- Simplify the sum value
@@ -749,7 +749,7 @@ private lemma lfunction_re_eq_pair_tsum (σ : ℝ) (hσ : 0 < σ) :
       rw [show (2 * (k : ℂ) + 2) = ((2 * (k : ℝ) + 2 : ℝ) : ℂ) from by push_cast; ring]
       rw [show -(σ : ℂ) = ((-σ : ℝ) : ℂ) from by push_cast; ring]
       exact (Complex.ofReal_cpow (by positivity) (-σ)).symm]
-    push_cast; ring
+    push_cast; ring_nf
   -- Since G(σ:ℂ) is a real number cast to ℂ, its real part is the real number
   rw [← hval]
   rw [hG_re, Complex.ofReal_re]

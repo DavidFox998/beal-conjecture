@@ -35,3 +35,4 @@
 - [Frey 2-adic conductor boundary](frey-two-adic-conductor-boundary.md) — use explicit model-indexed certificate data; invariant parity is not a reduction classification.
 - [Lean Legendre symbol elaboration](lean-legendre-symbol-elaboration.md) — `legendreSym` hypotheses need a prime `Fact` during signature elaboration, before proof-local instances exist.
 - [GitHub raw sibling reads](github-raw-sibling-reads.md) — do not attach a repo-scoped Actions token when reading public raw files across sibling repositories.
+- [Lean tactic-linter replacement scope](lean-tactic-linter-replacement-scope.md) — “Try this” may replace only the final tactic; remove earlier tactics only when separately reported unused.
