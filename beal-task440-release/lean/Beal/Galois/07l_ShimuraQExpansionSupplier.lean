@@ -1,8 +1,8 @@
 /-
   Galois/07l_ShimuraQExpansionSupplier
 
-  A structured landing zone for a future Shimura/modular-curve proof of the
-  q-expansion premise used by 07g.
+  Structured landing zones for Shimura/modular-curve proofs of the
+  q-expansion premise used by 07g and the old/new comparison used by 07h.
 
   The public Batch148 decomposition is useful as a historical roadmap, but its
   Hecke-eigenvalue, Jacobian-factor, and Frobenius/Hecke statements do not by
@@ -21,11 +21,13 @@
   * the geometric degeneracy-pair map has trivial kernel.
 
   Once those fields are genuinely constructed, the coefficient-level
-  `QExpansionPrincipleOnV` and restricted Ihara theorem follow by transparent
-  transport.  The structure itself is a supplier boundary, not a proof that
-  the required modular curves or Shimura correspondence have been formalized.
+  `QExpansionPrincipleOnV`, restricted Ihara theorem, and Eutheos-indexed
+  old/new separation theorem follow by transparent transport.  The structures
+  are supplier boundaries, not claims that fixed-point arithmetic has
+  formalized the required modular curves or Shimura correspondence.
 -/
 import Beal.Galois.«07g_IharaOnV»
+import Beal.Galois.«07h_EutheosGeometry»
 
 namespace Beal.Galois
 
@@ -70,6 +72,53 @@ structure ShimuraQExpansionData
     ∀ a b : SourceForm,
       degeneracyPair a b = targetZero →
         a = sourceZero ∧ b = sourceZero
+
+/-- Concrete modular-curve/Shimura old/new data together with the comparison
+    theorem used to separate the two geometric carriers.
+
+    The comparison is a geometric theorem: its input records the Eutheos
+    scale through `p`, but it does not consume the fixed-point upper bound.
+    Instead, it constructively says an old/new intersection either forces the
+    opposite lower bound or is zero.  Nothing in this structure derives
+    modular geometry from arithmetic alone. -/
+structure ShimuraOldNewGeometry
+    (M p ℓ : ℕ)
+    (V : Submodule (ZMod ℓ) (CoefficientSequence ℓ)) where
+  geometry : EutheosGeometryInterface M p ℓ V
+  old_new_comparison : EutheosOldNewComparison geometry
+
+/-- One reusable Shimura geometry implementation supplies every descent edge
+    at the relevant level, prime, coefficient characteristic, and module. -/
+structure ShimuraOldNewGeometrySupplier (ℓ : ℕ) where
+  geometry :
+    ∀ (M p : ℕ) (V : Submodule (ZMod ℓ) (CoefficientSequence ℓ)),
+      ShimuraOldNewGeometry M p ℓ V
+
+/-- Forget only the Shimura carrier names, retaining the exact geometric
+    comparison theorem in the 07h reusable certificate. -/
+def EutheosGeometryCertificate.fromShimura
+    {M p ℓ : ℕ}
+    {V : Submodule (ZMod ℓ) (CoefficientSequence ℓ)}
+    (D : ShimuraOldNewGeometry M p ℓ V) :
+    EutheosGeometryCertificate M p ℓ V where
+  geometry := D.geometry
+  comparison := D.old_new_comparison
+
+/-- The geometric old/new separation theorem.
+
+    The formally supplied Shimura theorem gives a lower bound from a
+    hypothetical nonzero intersection; the Eutheos certificate gives the
+    strict upper bound.  In particular, this proof contains no coefficient
+    arithmetic pretending to establish modular geometry. -/
+theorem old_new_separation_from_shimura
+    {M p ℓ : ℕ}
+    {V : Submodule (ZMod ℓ) (CoefficientSequence ℓ)}
+    (D : ShimuraOldNewGeometry M p ℓ V)
+    (j : Beal.ArakelovRH.DesertBrothers.EutheosJitter p) :
+    ∀ x : CoefficientSequence ℓ, x ∈ D.geometry.Old →
+      x ∈ D.geometry.New → x = 0 :=
+  old_new_separation_of_eutheos
+    (EutheosGeometryCertificate.fromShimura D) j
 
 /-- A genuine `ShimuraQExpansionData` supplier closes the exact 07g
     coefficient-cancellation premise.
@@ -129,6 +178,10 @@ theorem IharaKernelZeroOnV_FromShimura
     (QExpansionPrincipleOnV_FromShimura M p ℓ V D)
 
 #print axioms ShimuraQExpansionData
+#print axioms ShimuraOldNewGeometry
+#print axioms ShimuraOldNewGeometrySupplier
+#print axioms EutheosGeometryCertificate.fromShimura
+#print axioms old_new_separation_from_shimura
 #print axioms QExpansionPrincipleOnV_FromShimura
 #print axioms IharaKernelZeroOnV_FromShimura
 -- Expected foundational dependencies: [propext, Quot.sound] only.

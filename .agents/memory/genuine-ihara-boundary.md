@@ -47,3 +47,17 @@ prove it.
 the geometric intersection theorem explicit. It is acceptable for the latter
 to consume the jitter witness as an input, but documentation must say that a
 future modular-curve argument still has to inhabit that field.
+
+For the reusable Shimura boundary, state the geometric comparison
+constructively: an old/new intersection either forces the opposite fixed-point
+inequality or is zero. Then eliminate the lower-bound branch with the
+choice-free jitter certificate.
+
+**Why:** Proving separation by deciding whether a coefficient sequence is zero
+introduces `Classical.choice` in Lean 4.12. A supplied disjunction carries the
+geometric alternative explicitly and keeps the separation adapter within
+`[propext, Quot.sound]`.
+
+**How to apply:** Keep jitter on the arithmetic edge and keep one geometry
+supplier above the edge plan. Never store the final separation theorem on each
+edge or derive the geometric lower bound from fixed-point arithmetic.

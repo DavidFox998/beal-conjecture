@@ -26,7 +26,8 @@ V-specific eigenline edge. The boundary is explicit and data-valued:
   the data or transport boundary is claimed.
 - `GaloisEdgeWitness` carries the residual representation, maximal ideal,
   genuine coefficient submodule, localized Hecke data, attachment,
-  `NormalizedEigenlineData`, typed Eutheos geometry, localized-rank-one, 07j
+  `NormalizedEigenlineData`, a choice-free Eutheos jitter witness,
+  localized-rank-one, 07j
   support assembly, `NewSubspaceSupportData`, and
   `NewformHeckeToPreservedTokenTransport` for one exact lowering edge.
 - B15 derives `QExpansionPrincipleOnV` through
@@ -34,9 +35,11 @@ V-specific eigenline edge. The boundary is explicit and data-valued:
 - `GaloisDescentPlan` is indexed by the exact Wiles arithmetic-plan value, so
   every enriched edge has that constructor's `N`, `p`, and `M`; the supplier
   cannot discard the certified path and substitute another chain.
-- `EnrichedPlanSupplier` converts the unchanged Wiles arithmetic plan into
-  this per-edge plan. The recursive B15 proof no longer consumes a universal
-  `RibetSingleStepProviders` family.
+- `EnrichedPlanSupplier` stores one reusable
+  `ShimuraOldNewGeometrySupplier` and converts the unchanged Wiles arithmetic
+  plan into this per-edge plan. The recursive B15 proof no longer consumes a
+  universal `RibetSingleStepProviders` family or repeats old/new geometry on
+  every edge.
 - `#print axioms ribet_single_step_from_genuine` reports
   `[propext, Quot.sound]`.
 - The remaining named mathematical inputs on the final path are
@@ -56,8 +59,9 @@ V-specific eigenline edge. The boundary is explicit and data-valued:
 - 07l provides a structured Shimura/q-expansion supplier boundary. It proves
   the exact 07g coefficient-cancellation premise from explicit geometric
   source and target form carriers, q-expansion compatibility and injectivity,
-  and a genuine two-degeneracy-map kernel theorem. It does not claim those
-  geometric fields are already constructed.
+  and a genuine two-degeneracy-map kernel theorem. It also defines the
+  reusable Shimura old/new supplier and proves separation from its
+  constructive comparison alternative plus the Eutheos strict upper bound.
 - 07h now owns the unchanged `OldNewDecompHyp` proposition and proves
   `old_new_decomp_from_ihara` from restricted Ihara kernel-zero plus the
   explicit `AtkinLehnerProjectorOnV` complement premise.
@@ -69,12 +73,13 @@ V-specific eigenline edge. The boundary is explicit and data-valued:
 - `07h_EutheosGeometry` supplies the choice-free typed layer below that
   proposition. It records the two coefficient-level degeneracy maps, their
   exact old-image description, named Hecke-stable old and new modules,
-  genuine-form generation fields, coverage of `V`, and a geometric
-  old/new-intersection kernel selected by the stored `EutheosJitter` bound.
+  genuine-form generation fields, and coverage of `V`. Its separate
+  `EutheosOldNewComparison` says that an intersection either forces the
+  opposite fixed-point inequality or is zero.
   `OldNewDecompHyp_from_Eutheos` constructs the existing proposition from
-  those lower-level fields. The kernel field is the explicit place where a
-  future modular-curve proof must connect the jitter inequality to geometry;
-  the arithmetic certificate alone is not presented as proving that theorem.
+  those lower-level fields. `old_new_separation_of_eutheos` is the only place
+  where the geometric lower-bound branch is contradicted by the edge's jitter
+  upper bound; arithmetic alone is not presented as proving the comparison.
 - `07h_DesertInfra` connects 07h to the vendored Lean 4.12
   desert-brothers interface. `EutheosJitter` stores the denominator-cleared
   fixed-point inequality as natural-number data, avoiding the upstream 4.15
@@ -85,9 +90,9 @@ V-specific eigenline edge. The boundary is explicit and data-valued:
   audit compatibility, but B15 now consumes `EutheosGeometryInterface` and
   derives its old/new witness at the use site.
 - B14's Wiles boundary still returns the arithmetic plan only. The B15
-  supplier adds normalized eigenline data, typed Eutheos geometry, `hRank`,
-  support assembly, and token-transport data on every edge without a B14 →
-  Galois import cycle.
+  supplier adds one reusable Shimura geometry source, while normalized
+  eigenline data, jitter, `hRank`, support assembly, and token transport remain
+  indexed by the exact edges without a B14 → Galois import cycle.
 
 ## Directory structure
 
@@ -407,6 +412,19 @@ field represented. The active v7.2 edge instead derives this proposition from
 normalized eigenline data.
 `IharaKernelZeroOnV_FromShimura` then composes that adapter with the existing
 07g theorem.
+
+`ShimuraOldNewGeometry M p ℓ V` separately packages the typed 07h geometry
+with `EutheosOldNewComparison`. A
+`ShimuraOldNewGeometrySupplier ℓ` provides this package uniformly for each
+actual `(M,p,V)`. The comparison constructs the alternative
+
+```text
+alpha0Denominator ≤ p * scaledNearestIntegerDistance p  ∨  x = 0
+```
+
+for `x` in both old and new. `old_new_separation_from_shimura` eliminates the
+first branch using the strict bound carried by `EutheosJitter`, proving
+`x = 0` without `Classical.choice`.
 
 The dependency path is:
 

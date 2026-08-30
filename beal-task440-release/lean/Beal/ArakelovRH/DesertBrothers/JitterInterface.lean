@@ -60,9 +60,24 @@ structure EutheosJitter (p : ℕ) where
   jitter_lt_reciprocal :
     p * scaledNearestIntegerDistance p < alpha0Denominator
 
+/-- The proposition represented by a fixed-point jitter witness.
+
+    Naming the proposition separately lets geometric comparison theorems state
+    their arithmetic premise without confusing the stored proof with the type
+    of that premise. -/
+def EutheosJitter.FixedPointBound {p : ℕ} (_j : EutheosJitter p) : Prop :=
+  p * scaledNearestIntegerDistance p < alpha0Denominator
+
+/-- Every jitter witness proves its named fixed-point bound. -/
+theorem EutheosJitter.fixedPointBound {p : ℕ} (j : EutheosJitter p) :
+    j.FixedPointBound :=
+  j.jitter_lt_reciprocal
+
 #check scaledNearestIntegerDistance
 #check brothers1419_anchor
 #check brothers1419_count
 #print axioms EutheosJitter
+#print axioms EutheosJitter.FixedPointBound
+#print axioms EutheosJitter.fixedPointBound
 
 end Beal.ArakelovRH.DesertBrothers

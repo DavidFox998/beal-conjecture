@@ -38,14 +38,13 @@ three budgets independently so a later
 real-analysis change cannot silently contaminate the choice-free boundary.
 
 Neither arithmetic module proves that a jitter witness constructs an
-Atkin–Lehner complement or `OldNewDecompHyp`. The historical
-`EutheosComplementSketch` still carries that proposition explicitly, while the
-active `EutheosGeometryInterface` replaces it with named old/new modules,
-typed degeneracy maps, coverage, and an old/new intersection theorem indexed
-by the jitter witness. B15 derives `OldNewDecompHyp` from those lower-level
-fields. The geometric intersection theorem remains supplier data rather than
-a false consequence of fixed-point arithmetic alone, and the choice-free path
-introduces no `sorryAx`, declared axiom, or `opaque`.
+Atkin–Lehner complement or `OldNewDecompHyp`. The active
+`EutheosGeometryInterface` contains named old/new modules, typed degeneracy
+maps, and coverage, but no jitter or separation field. A reusable
+`ShimuraOldNewGeometrySupplier` provides the geometric comparison theorem;
+B15 combines its constructive alternative with the edge's strict fixed-point
+bound. The choice-free path introduces no `sorryAx`, declared axiom, or
+`opaque`.
 
 ## Upstream relationship
 

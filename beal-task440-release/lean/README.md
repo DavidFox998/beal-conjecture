@@ -9,14 +9,16 @@ The project-level [`README.md`](../README.md) explains the mathematical
 motivation and the current formal status. This document explains how the
 source tree is organized and how to read it as a Lean project.
 
-## v7.3.0 source snapshot
+## Reusable Shimura geometry refinement
 
-The v7.3.0 Task #440 branch extends the v7.2 eigenline edge with a typed
-`EutheosGeometryInterface`. It targets Lean and Mathlib 4.12.0. The active B15
-edge carries `NormalizedEigenlineData`, derives `QExpansionPrincipleOnV` with
-`QExpansionPrincipleOnV_fromEigenline`, and derives `OldNewDecompHyp` from
-typed degeneracy-map, coverage, and jitter-indexed separation data. The
-remaining explicit proposition-valued edge boundary is `LocalizedRankOne`.
+The active B15 edge carries `NormalizedEigenlineData`, a choice-free jitter
+witness, and the remaining edge-local Galois data. It derives
+`QExpansionPrincipleOnV` with
+`QExpansionPrincipleOnV_fromEigenline`. Old/new geometry is no longer repeated
+on every edge: `EnrichedPlanSupplier` owns one
+`ShimuraOldNewGeometrySupplier`, and `OldNewDecompHyp` is derived from its
+typed degeneracy-map and coverage data plus the constructive geometric
+comparison theorem.
 
 The release-path audit finds no executable `sorry`, `admit`, `sorryAx`,
 declared `axiom`, or opaque Ribet shortcut. Its focused foundational footprint

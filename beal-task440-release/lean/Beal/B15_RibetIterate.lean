@@ -2,7 +2,8 @@
       B15_RibetIterate — Ribet iteration N → 2, preserves mod ℓ representation.
 
       · `GaloisEdgeWitness` — per-edge arithmetic and 07g–07k data
-      · `EnrichedPlanSupplier` — enriches the unchanged Wiles arithmetic plan
+      · `EnrichedPlanSupplier` — one reusable Shimura geometry supplier plus
+        an enrichment of the unchanged Wiles arithmetic plan
       · `ribet_single_step_from_genuine` — one lower-level token assembled
         from explicit data-valued 07k support and transport
       · theorem descend_preserved_form — certified descent to level 2 (0 sorry)
@@ -20,7 +21,7 @@
       import Beal.B03_Conductor_Core
         import Beal.Galois.«07k_TokenBridge»
         import Beal.Galois.«07n_NormalizedEigenlineQExpansion»
-        import Beal.Galois.«07h_EutheosGeometry»
+        import Beal.Galois.«07l_ShimuraQExpansionSupplier»
       import Mathlib.Data.List.Basic
       import Mathlib.Data.Nat.Factors
 
@@ -56,8 +57,8 @@
          hAttach : Beal.Galois.FreyHeckeAttachment R m.1
          normalized :
            Beal.Galois.NormalizedEigenlineData ℓ V
-         eutheosGeometry :
-           Beal.Galois.EutheosGeometryInterface M p ℓ V
+         jitter :
+           Beal.ArakelovRH.DesertBrothers.EutheosJitter p
          hRank :
            @Beal.Galois.LocalizedRankOne M ℓ m V localized
          hSupportBridge :
@@ -101,13 +102,19 @@
                (RibetDescentPlan.step
                  hp hp_ne_ℓ hp_dvd hp_sq h_level rest)
 
-       /-- Explicit construction of a genuine plan from the arithmetic plan.
+       /-- Explicit construction of a genuine plan from the arithmetic plan,
+           bundled with one reusable Shimura old/new geometry supplier.
 
            The supplier is a data boundary, not a proposition-valued
-           existence statement. Its result contains the per-edge 07g–07k
-           witnesses needed by the recursive B15 proof. -/
-       def EnrichedPlanSupplier : Type 2 :=
-         ∀ {A B C : ℤ} {x y z : ℕ}
+           existence statement. Its plan result contains the per-edge
+           arithmetic and 07g–07k witnesses needed by the recursive B15 proof,
+           while old/new geometry is supplied once and looked up by
+           `(M,p,ℓ,V)`. -/
+       structure EnrichedPlanSupplier : Type 2 where
+         geometry :
+           ∀ ℓ : ℕ, Beal.Galois.ShimuraOldNewGeometrySupplier ℓ
+         plan :
+           ∀ {A B C : ℤ} {x y z : ℕ}
            (model : FreyCurveModel A B C x y z)
            (ℓ N : ℕ)
            (plan : GaloisArithmeticPlan ℓ N),
@@ -118,6 +125,7 @@
            {A B C : ℤ} {x y z : ℕ}
            {model : FreyCurveModel A B C x y z}
            {ℓ N p M : ℕ}
+           (geometrySupplier : Beal.Galois.ShimuraOldNewGeometrySupplier ℓ)
            (edge : GaloisEdgeWitness (model := model) ℓ N p M) :
            RibetStepResult ℓ N p := by
          letI := edge.localized
@@ -127,9 +135,14 @@
          have hIhara :=
            Beal.Galois.ihara_zero_on_genuine_V_conditional
              M p ℓ edge.V edge.hV qExpansion
+         let shimuraGeometry :=
+           geometrySupplier.geometry M p edge.V
+         let eutheosGeometry :=
+           Beal.Galois.EutheosGeometryCertificate.fromShimura
+             shimuraGeometry
          have hOldNew :=
            Beal.Galois.OldNewDecompHyp_from_Eutheos
-             edge.V edge.eutheosGeometry
+             edge.V eutheosGeometry edge.jitter
          have _hSupport :=
            edge.hSupportBridge edge.hV hIhara hOldNew edge.hRank
          exact
@@ -180,13 +193,15 @@
            {ℓ N : ℕ}
            (hForms : HasPreservedForm ℓ N)
            (arithPlan : GaloisArithmeticPlan ℓ N)
+           (geometrySupplier : Beal.Galois.ShimuraOldNewGeometrySupplier ℓ)
            (plan : GaloisDescentPlan (model := model) ℓ arithPlan) :
            HasPreservedForm ℓ 2 := by
          induction plan with
          | terminal =>
              simpa using hForms
          | step edge _tail ih =>
-             let result := ribet_single_step_from_genuine edge
+             let result :=
+               ribet_single_step_from_genuine geometrySupplier edge
              exact ih ⟨result.form⟩
 
       /-- No preserved form can reach level 2 because the typed terminal slot is
@@ -215,9 +230,10 @@
            refine Nonempty.elim hPlans ?_
            intro hPlan
            let galoisPlan :=
-             supplier model ℓ model.conductor hPlan
+             supplier.plan model ℓ model.conductor hPlan
            exact no_preserved_form_at_two ℓ
-             (descend_preserved_form hForms hPlan galoisPlan)
+             (descend_preserved_form hForms hPlan
+               (supplier.geometry ℓ) galoisPlan)
 
       #print axioms ribet_iterate_to_2
       -- 0 axioms beyond kernel

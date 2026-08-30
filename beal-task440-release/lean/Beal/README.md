@@ -9,7 +9,7 @@ This README is a map of the directory. It does not replace the file-level
 comments or the more specialized
 [`Galois/README.md`](Galois/README.md).
 
-## v7.3.0 mathematical boundary
+## Reusable Shimura old/new boundary
 
 On `beal-4.12-ihra-eutheos`, extending the v7.2 V-specific eigenline edge, the
 B15 edge no longer accepts an opaque or textual
@@ -17,14 +17,17 @@ q-expansion premise. `NormalizedEigenlineData` supplies a normalized
 one-dimensional eigenline, and `QExpansionPrincipleOnV_fromEigenline` derives
 the exact V-specific cancellation theorem used by restricted Ihara.
 
-The old/new complement is now derived at the existing theorem boundary by
+The old/new complement is derived at the existing theorem boundary by
 `OldNewDecompHyp_from_Eutheos`. Its choice-free
 `EutheosGeometryInterface` exposes named old/new submodules, typed degeneracy
 maps `αₚ` and `βₚ`, their exact joint old-image representation, Hecke
-stability, genuine-form generation, V-membership, coverage, and a
-jitter-indexed separation kernel. The fixed-point inequality is not presented
-as a proof of modular geometry by itself. The remaining proposition-valued
-edge obligation is localized rank-one `LocalizedRankOne`. Newform support
+stability, genuine-form generation, V-membership, and coverage. Separation is
+not a field of that interface. A reusable `ShimuraOldNewGeometrySupplier`
+provides the geometric comparison saying an intersection either forces the
+opposite fixed-point bound or is zero; the edge's jitter witness rules out the
+first branch. The fixed-point inequality is therefore not presented as a
+proof of modular geometry by itself. The remaining proposition-valued edge
+obligation is localized rank-one `LocalizedRankOne`. Newform support
 witnesses are retained as `NewSubspaceSupportData`, and
 `NewformHeckeToPreservedTokenTransport` converts them to the preserved-form
 token without choice. No inhabitant of those open data boundaries is claimed.

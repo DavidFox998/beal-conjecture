@@ -164,18 +164,35 @@ jobs:
           set -euo pipefail
           cat > /tmp/beal_desert_real_bridge.lean <<'EOF'
           import Beal.Galois.«07h_DesertInfra»
+          import Beal.Galois.«07l_ShimuraQExpansionSupplier»
+          import Beal.B15_RibetIterate
           #print axioms Beal.ArakelovRH.DesertBrothers.EutheosJitter
+          #print axioms Beal.ArakelovRH.DesertBrothers.EutheosJitter.fixedPointBound
           #print axioms Beal.ArakelovRH.DesertBrothers.realJitter_of_fixedPoint
           #print axioms Beal.Galois.EutheosComplementSketch
           #print axioms Beal.Galois.OldNewDecompHyp_from_EutheosSketch
           #print axioms Beal.Galois.EutheosGeometryInterface
+          #print axioms Beal.Galois.EutheosOldNewComparison
           #print axioms Beal.Galois.separation_kernel
+          #print axioms Beal.Galois.old_new_separation_of_eutheos
+          #print axioms Beal.Galois.old_new_separation_from_shimura
           #print axioms Beal.Galois.OldNewDecompHyp_from_Eutheos
+          #print axioms Beal.RibetIterate.GaloisEdgeWitness
+          #print axioms Beal.RibetIterate.EnrichedPlanSupplier
+          #print axioms Beal.RibetIterate.ribet_single_step_from_genuine
           EOF
           lake env lean /tmp/beal_desert_real_bridge.lean 2>&1 |
             tee /tmp/beal_desert_real_bridge.txt
           if grep -E 'sorryAx' /tmp/beal_desert_real_bridge.txt; then
             echo "FAIL: the desert-brothers bridge must never use sorryAx"
+            exit 1
+          fi
+          if grep -R --include='*.lean' -nE '^[[:space:]]*opaque[[:space:]]' \
+              lean/Beal/ArakelovRH/DesertBrothers/JitterInterface.lean \
+              lean/Beal/Galois/07h_EutheosGeometry.lean \
+              lean/Beal/Galois/07l_ShimuraQExpansionSupplier.lean \
+              lean/Beal/B15_RibetIterate.lean; then
+            echo "FAIL: the choice-free old/new path must not introduce opaque declarations"
             exit 1
           fi
           if grep -Fq "'Beal.ArakelovRH.DesertBrothers.EutheosJitter' depends on axioms" \
@@ -203,9 +220,19 @@ jobs:
             echo "FAIL: the typed Eutheos geometry interface must remain choice-free"
             exit 1
           fi
+          if ! grep -Fq "'Beal.Galois.EutheosOldNewComparison' depends on axioms: [propext, Quot.sound]" \
+              /tmp/beal_desert_real_bridge.txt; then
+            echo "FAIL: the geometric comparison theorem must remain choice-free"
+            exit 1
+          fi
           if ! grep -Fq "'Beal.Galois.separation_kernel' depends on axioms: [propext, Quot.sound]" \
               /tmp/beal_desert_real_bridge.txt; then
             echo "FAIL: the Eutheos separation kernel must remain choice-free"
+            exit 1
+          fi
+          if ! grep -Fq "'Beal.Galois.old_new_separation_from_shimura' depends on axioms: [propext, Quot.sound]" \
+              /tmp/beal_desert_real_bridge.txt; then
+            echo "FAIL: the Shimura old/new separation theorem must remain choice-free"
             exit 1
           fi
           if ! grep -Fq "'Beal.Galois.OldNewDecompHyp_from_Eutheos' depends on axioms: [propext, Quot.sound]" \
@@ -213,7 +240,17 @@ jobs:
             echo "FAIL: the Eutheos old/new supplier must remain choice-free"
             exit 1
           fi
-          echo "OK: real jitter transport is isolated from the choice-free 07h boundary"
+          for declaration in \
+              Beal.RibetIterate.GaloisEdgeWitness \
+              Beal.RibetIterate.EnrichedPlanSupplier \
+              Beal.RibetIterate.ribet_single_step_from_genuine; do
+            if ! grep -Fq "'$declaration' depends on axioms: [propext, Quot.sound]" \
+                /tmp/beal_desert_real_bridge.txt; then
+              echo "FAIL: $declaration must remain choice-free"
+              exit 1
+            fi
+          done
+           echo "OK: real jitter transport is isolated from the choice-free Shimura comparison boundary"
 
       - name: Verify B01 core has zero imports and zero axioms
         run: |

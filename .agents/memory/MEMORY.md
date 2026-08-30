@@ -23,7 +23,7 @@
 - [Tate-to-B20 dependency](tate-b20-dependency.md) — derive odd-prime exact divisibility from Tate; never duplicate it in Wiles data, and keep the 2-adic input explicit.
 - [BSD repository boundary](bsd-repository-boundary.md) — Birch-and-Swinnerton-Dyer is out of scope; do not modify it unless the user explicitly reopens work there.
 - [Galois-to-Ribet bridge](galois-ribet-token-bridge.md) — 07k transports support conditionally; Prop-level token existence cannot feed B15's data-valued step without choice.
-- [Genuine Ihara boundary](genuine-ihara-boundary.md) — Ihara does not build old/new; derive it only from explicit geometry, never from jitter alone.
+- [Genuine Ihara boundary](genuine-ihara-boundary.md) — use a constructive geometry-or-zero comparison; jitter only rules out its numerical branch.
 - [Lean cache quota](lean-cache-quota.md) — fresh Lean 4.12 Mathlib cache rebuilds can hit environment quota despite free disk; use an existing cache or CI for full verification.
 - [Radical factorization audit](radical-factorization-audit.md) — the literal radical bridge is allowed only Lean’s three standard finite-factorization foundations, never mathematical theorem axioms.
 - [Beal push refs](github-beal-push-refs.md) — push the isolated `refs/heads/beal/main`; workspace `main` also contains unrelated ZeroBeacon history.
