@@ -283,13 +283,13 @@ opaque declaration of their own and audit to `[propext, Quot.sound]`. The
 V-specific edge is clean. The Task #440 build covered 2,424 targets and CI
 #239 completed successfully in 53m23s.
 
-This is not a repository-wide claim. A literal `grep -r '^axiom'` over the
-repository returns exactly two intentional mathematical boundaries:
-`mazur_irreducibility_axiom` and `wiles_lifting_axiom`. They belong to the
-existing Mazur/Wiles B20 modularity tower and are not part of the typed
-Eutheos bridge. The repository-wide focused audit therefore distinguishes
-these named boundaries from the clean Eutheos supplier rather than hiding
-them.
+This is not a repository-wide claim. B05 retains the intentionally named
+`mazur_irreducibility_axiom` only for its legacy natural-number compatibility
+predicate. Wiles lifting is now an explicit hypothesis at that legacy boundary,
+while `Beal.Patching.REqualsT` constructs the theorem-level, semiring-carrier
+R=T equivalence from explicit two-sided comparison data. It does not assert
+complete-local or commutative ring structure. Neither boundary is part of the
+typed Eutheos bridge.
 
 The real-number interpretation of the fixed-point inequality
 `‖p·α₀‖ < 1/p` remains isolated in the desert-brothers module and audits to
@@ -303,6 +303,10 @@ Taylor–Wiles prime levels, patched modules, transition maps, diamond actions,
 inverse-limit projections, depth data, and rank-one coordinates.
 `LocalizedRankOne_from_Patching` constructs the equivalence from those
 coordinates and audits to `[propext, Quot.sound]`.
+`REqualsTComparisonData` adds the genuine Hecke-to-deformation map and both
+inverse laws as supplied data; `taylor_wiles_r_equals_t` then derives the
+semiring-carrier R=T comparison, restricted Ihara kernel zero, and localized
+rank one with the same audit.
 
 The level-zero reconstruction law is a theorem, not a certificate field:
 coordinate compatibility propagates it across all finite levels and

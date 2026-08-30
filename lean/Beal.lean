@@ -45,6 +45,7 @@ import Beal.Patching.PatchedModule
 import Beal.Patching.DeformationHecke
 import Beal.Patching.Depth
 import Beal.Patching.RankOne
+import Beal.Patching.REqualsT
     import Beal.B15_LevelTo2_Core
     import Beal.B15_LevelTo2
 import Beal.B15_RibetIterate
