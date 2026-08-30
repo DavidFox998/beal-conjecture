@@ -31,8 +31,28 @@ jobs:
         if: steps.lean-cache.outputs.cache-hit != 'true'
         run: lake exe cache get
 
+      - name: Verify Opera Numerorum is in the release build
+        run: |
+          set -euo pipefail
+          module='lean/Beal/B00_OperaNumerorum.lean'
+          entrypoint='lean/Beal.lean'
+
+          if [ ! -f "$module" ]; then
+            echo "FAIL: $module is missing."
+            echo "Restore the Opera Numerorum module before running the release build."
+            exit 1
+          fi
+
+          if ! grep -qE '^[[:space:]]*import[[:space:]]+Beal\.B00_OperaNumerorum([[:space:]]|$)' "$entrypoint"; then
+            echo "FAIL: $entrypoint does not import Beal.B00_OperaNumerorum."
+            echo "Add 'import Beal.B00_OperaNumerorum' to $entrypoint so the release build includes the module."
+            exit 1
+          fi
+
+          echo "OK: Opera Numerorum is present and imported by the release entrypoint"
+
       - name: Build all bricks
-        run: lake build
+        run: lake build +Beal.B00_OperaNumerorum Beal
 
       - name: Check NO sorry
         run: |
