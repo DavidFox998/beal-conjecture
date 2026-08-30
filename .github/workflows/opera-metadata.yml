@@ -1,0 +1,34 @@
+name: Opera Numerorum Archive Metadata
+
+# Check the public main branches so a later metadata edit cannot silently
+# break Zenodo discovery or GitHub's "Cite this repository" information.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'REPOS.md'
+      - 'scripts/check_opera_metadata.py'
+      - '.github/workflows/opera-metadata.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'REPOS.md'
+      - 'scripts/check_opera_metadata.py'
+      - '.github/workflows/opera-metadata.yml'
+  schedule:
+    - cron: '0 7 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    name: Check archive metadata (all 19 repos)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Audit remote Zenodo and citation metadata
+        run: python3 scripts/check_opera_metadata.py REPOS.md
