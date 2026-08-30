@@ -15,6 +15,10 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      - name: Verify GitHub Actions workflow allowlist
+        # API workflows belong in the separate ZeroBeacon repository.
+        run: bash scripts/check_workflow_allowlist.sh
+
       - name: Verify Lean and Mathlib toolchain pins
         # Fail before elan or Mathlib cache work if the repository metadata drifts.
         run: bash scripts/check-lean-toolchain.sh lean-toolchain lake-manifest.json lakefile.lean
