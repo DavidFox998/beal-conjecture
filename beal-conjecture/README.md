@@ -184,6 +184,37 @@ mathematical step precise before the deep theorem supplying that step has
 been formalized. That is useful engineering and honest mathematics only when
 the distinction remains visible.
 
+## Axiom Ledger: from one black box to three explicit pieces
+
+The older architecture treated `tate_frey_multiplicative` as one broad black
+box. The B14–B20 path now replaces that boundary with three named historical
+inputs:
+
+| Named axiom | What it covers | Mathematical reference |
+| --- | --- | --- |
+| `wiles_modularity` | Supplies the modularity witness for the Frey curve. | Wiles (1995) |
+| `ribet_level_lowering_real` | Lowers the modular Frey representation to level \(2\), where the contradiction is obtained. | Ribet (1990) |
+| `tate_step2_I_n_conductor_one` | Supplies the odd-prime local Tate Step 2 statement that multiplicative reduction gives conductor exponent \(1\). | Silverman, *The Arithmetic of Elliptic Curves*, IV.9 |
+
+The local conductor lineage is now explicit:
+
+```text
+tate_frey_multiplicative
+  └─ tate_frey_multiplicative_derived
+       ├─ tate_step2_I_n_conductor_one        named axiom
+       ├─ c₄ ≢ 0 at each relevant odd prime  machine-checked, 0 sorry
+       └─ conductor prime-support             machine-checked Finset induction, 0 sorry
+```
+
+The Frey–Wiles–Ribet strategy begins by attaching a Frey curve to a
+hypothetical primitive Beal solution and proving the arithmetic needed to
+control its discriminant and conductor. Wiles's theorem supplies modularity,
+while the derived Tate theorem gives the exact local conductor contribution
+at every relevant odd prime. Ribet level-lowering then removes those primes
+from the level and reaches level \(2\). Since the required weight-\(2\) cusp
+form at level \(2\) does not exist, the hypothetical solution yields a
+contradiction.
+
 ## Methodology: audit the boundary, not just the theorem name
 
 The project uses a core/wrapper discipline so that a reader can ask two
