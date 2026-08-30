@@ -211,8 +211,16 @@ modular forms. Those global ingredients remain inside the explicit
 - **v8.0.0:** B15 replaces that `hRank` proposition with
   `TaylorWilesPatchingData`. Finite generators and coordinates are coherent
   under transitions; the localized coordinate is derived through the
-  level-zero projection, while the remaining R=T/localization reconstruction
-  law is named explicitly in `PatchingSpecializationData`.
+  level-zero projection.
+- **Patching specialization refinement:** the level-zero reconstruction law
+  is now proved from transition-coordinate compatibility, finite-level
+  reconstruction, and projection extensionality rather than stored as a
+  field. The patching data is indexed by the exact Frey residual
+  representation and its exact Hecke attachment. It carries explicit
+  deformation-to-localized-Hecke and finite-level diamond comparison data.
+  The localized residual map extends the attachment evaluation, but no
+  universal deformation property, Frobenius control, or R=T isomorphism is
+  claimed.
 
 This is a more inspectable formal interface, not a stronger claim of completed
 foundational mathematics. Wiles, the global conductor data, and local Tate

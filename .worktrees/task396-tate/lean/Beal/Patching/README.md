@@ -11,7 +11,8 @@ Taylor–Wiles patching.
 | Module | Role |
 |---|---|
 | `TaylorWilesPrimes.lean` | Finite prime sets `Qₙ`, primality, avoidance, and congruence data, indexed by the typed Eutheos jitter witness. |
-| `PatchedModule.lean` | Finite patched modules, coherent rank-one coordinates, transition maps, diamond operators, compatible inverse-limit projections, and a separately named specialization boundary. |
+| `PatchedModule.lean` | Finite patched modules, coherent rank-one coordinates, transition maps, diamond operators, compatible inverse-limit projections, and the proved level-zero reconstruction law. |
+| `DeformationHecke.lean` | A deformation carrier attached to one Frey residual representation, its map to the localized Hecke algebra, residual trace compatibility, and Taylor–Wiles diamond actions on finite patched levels. |
 | `Depth.lean` | Numerical depth equalities that a future commutative-algebra construction must prove. |
 | `RankOne.lean` | Packages one edge's patching data and constructs `LocalizedRankOne` from generator/coordinate laws. |
 
@@ -31,32 +32,46 @@ boundary.
 Each finite level carries `RankOneCoordinates`, and transition maps preserve
 both its generator and coordinate. The localized coordinate is not stored:
 `PatchingSpecializationData.toRankOneCoordinates` derives it by composing the
-level-zero coordinate with the limit projection. Consequently:
+level-zero coordinate with the limit projection.
+`PatchedModuleData.project_eq_level_zero_coordinate_smul_generator` propagates
+the level-zero coordinate through every transition, and projection
+extensionality proves
+`PatchingSpecializationData.reconstruct_from_level_zero`. Consequently:
 
 - finite-level freeness is derived by `finite_level_free`;
 - inverse-limit freeness is derived by `M_infty_free`;
 - localized rank one is derived by `LocalizedRankOne_from_Patching`;
-- no declaration stores `LocalizedRankOne`, a localized coordinate function,
-  or a `LinearEquiv` as a field;
+- no declaration stores `LocalizedRankOne`, the reconstruction law, a
+  localized coordinate function, or a `LinearEquiv` as a field;
 - these derivations audit to `[propext, Quot.sound]` and do not use
   `Classical.choice` or `sorryAx`.
 
 ## What remains open
 
-`PatchingSpecializationData.reconstruct_from_level_zero` is the explicit
-remaining R=T/localization boundary. It states that the coherent finite-level
-generator reconstructs the localized module; without it, finite-level
-freeness and numerical depth bookkeeping do not imply localized rank one in
-the present Mathlib development.
+The reconstruction law is no longer open. `FreyDeformationRingData` records a
+semiring carrier, lifted traces, and their residual specialization for one
+fixed Frey residual representation.
+`FreyDeformationHeckeComparison` supplies the map to that representation's
+localized Hecke algebra, requires its residual map to extend the exact
+`FreyHeckeAttachment.eval`, and proves the attached generator-trace
+compatibility.
+`TaylorWilesFiniteLevelAction` ties primes in each supplied `Qₙ` to diamond
+scalars acting on the corresponding finite patched module and records
+transition and adjacent-level scalar compatibility.
 
-Constructing `TaylorWilesPatchingData` from the actual Frey representation
-still requires the missing Taylor–Wiles prime-selection, deformation-ring,
-Hecke-action, localization, depth, multiplicity-one, and specialization
-mathematics.  The historical Mazur/Wiles axioms in B05 do not state those
-facts, so this layer does not pretend they imply them.  B15's enriched plan
-must supply the explicit patching certificate at each edge.
+These are inspectable comparison data, not a universal deformation theorem.
+Constructing `TaylorWilesPatchingData` from geometry still requires the
+missing Taylor–Wiles prime-selection, universal deformation-ring,
+localization, depth, and multiplicity-one mathematics. In particular, this
+layer proves neither that the deformation-to-Hecke map is an isomorphism nor
+Wiles modularity lifting. Those are the next R=T boundary; the historical
+Mazur/Wiles axioms in B05 do not imply the data recorded here.
+The present prime-system interface also does not prove `q ∤ M` or relate
+diamond lifts to Frobenius trace lifts and source Hecke generators; those
+stronger local compatibility statements must precede any fuller
+Taylor–Wiles claim.
 
 The active final theorem therefore retains its existing named Wiles and Tate
-boundaries and its explicit enriched-plan supplier.  This change removes one
-opaque proposition from that supplier; it does not make the conditional Beal
-scaffold unconditional.
+boundaries and its explicit enriched-plan supplier. This change removes the
+stored reconstruction proposition from that supplier; it does not make the
+conditional Beal scaffold unconditional.

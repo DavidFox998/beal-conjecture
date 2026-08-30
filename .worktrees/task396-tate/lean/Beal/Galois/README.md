@@ -632,5 +632,11 @@ does `LocalizedRankOne_from_Patching` construct the target.
 
 The patching certificate is a visible Type-valued mathematical boundary. It is
 not a renamed `LocalizedRankOne` field and it contains no stored linear
-equivalence.
+equivalence. Its level-zero reconstruction law is now proved from coherent
+finite projections. The certificate is indexed by the same Frey residual
+representation and `FreyHeckeAttachment` carried by the B15 edge. Its
+localized residual map extends that attachment's evaluation, and its
+finite-level diamond actions come from explicit deformation lifts. It does
+not identify those lifts with Frobenius data or assert that the comparison
+map is an R=T isomorphism.
 

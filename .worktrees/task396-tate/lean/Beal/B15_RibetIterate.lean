@@ -61,7 +61,7 @@
            Beal.Galois.EutheosGeometryInterface M p ℓ V
          patching :
            @Beal.Patching.TaylorWilesPatchingData
-             M p ℓ m V localized eutheosGeometry
+              A B C x y z model M p ℓ R m hAttach V localized eutheosGeometry
          hSupportBridge :
            @Beal.Galois.hSupportFromBoundaries
              A B C x y z model ℓ R M p V m localized

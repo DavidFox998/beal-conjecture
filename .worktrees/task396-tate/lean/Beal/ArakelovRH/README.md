@@ -50,5 +50,8 @@ Taylor–Wiles primes, deformation rings, localized Hecke freeness, or
 multiplicity one.
 
 Those obligations are exposed in `Beal/Patching/`; their rank-one consequence
-is constructed choice-free from generator and coordinate laws.
+is constructed choice-free from generator and coordinate laws. The
+level-zero reconstruction law is now proved from coherent finite projections,
+while the deformation-to-Hecke map remains explicit comparison data rather
+than a claimed R=T isomorphism.
 
