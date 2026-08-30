@@ -15,10 +15,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: "3.11.9"
 
@@ -51,7 +51,7 @@ jobs:
 
       # ── Publish test results to the GitHub Actions job summary ───────────────
       - name: Publish unit test results
-        uses: dorny/test-reporter@v1
+        uses: dorny/test-reporter@v3
         if: always()
         with:
           name: "Unit Tests (brain forgery-rejection)"
@@ -60,7 +60,7 @@ jobs:
           fail-on-error: false
 
       - name: Publish live smoke test results
-        uses: dorny/test-reporter@v1
+        uses: dorny/test-reporter@v3
         if: always()
         with:
           name: "Live Smoke Tests (zerobeacon.ai MCP)"
@@ -71,7 +71,7 @@ jobs:
       # ── Retain the raw reports so pass/fail rates can be compared across runs ──
       - name: Upload JUnit XML reports
         id: upload-junit-reports
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: junit-xml-reports

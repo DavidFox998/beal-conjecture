@@ -11,7 +11,7 @@ jobs:
   check-context-size:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Check Docker build context is under 10 MB
         run: |

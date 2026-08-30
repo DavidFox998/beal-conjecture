@@ -28,7 +28,7 @@ jobs:
     name: Check archive metadata (all 19 repos)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Audit remote Zenodo and citation metadata
         run: python3 scripts/check_opera_metadata.py REPOS.md
