@@ -230,6 +230,7 @@ theorem heckeSequenceOp_mem_HeckeAlgebra
 #print axioms IsNewform
 #print axioms HeckeSequenceOp
 #print axioms HeckeAlgebra
+#print axioms heckeSequenceOp_mem_HeckeAlgebra
 -- Expected foundational dependencies: [propext, Quot.sound] only.
 
 end Beal.Galois
