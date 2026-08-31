@@ -27,6 +27,9 @@ up to date; this is environmental verification overhead, not a Lean error.
 **How to apply:** First run the exact target through `lake --old build` after
 restoring the pinned cache, then retain its successful target/audit output.
 Use a direct `lake env lean` compile to expose source-level errors promptly.
+If Lake treats a newly added module name as an unknown runnable target and
+reports its existing source file as missing, compile the source path directly;
+do not keep retrying alternate `lake build` target spellings.
 Do not conflate a trace-replay timeout with a failed theorem elaboration.
 
 When a detached Beal worktree reports changed Mathlib package URLs and removes
