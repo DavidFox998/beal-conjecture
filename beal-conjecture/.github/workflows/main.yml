@@ -5,9 +5,15 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  schedule:
+    # Weekly release-snapshot check, Monday at 06:17 UTC.
+    - cron: "17 6 * * 1"
 
 jobs:
   build:
+    # Push and pull-request validation remains unchanged. Scheduled runs only
+    # need the clean checkout below, which exercises the locked snapshot.
+    if: github.event_name != 'schedule'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -856,6 +862,19 @@ jobs:
           curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain none
           echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
 
+      - name: Verify the locked Lean toolchain is available
+        shell: bash
+        run: |
+          set -euo pipefail
+          toolchain="$(tr -d '[:space:]' < lean-toolchain)"
+          if ! elan toolchain install "$toolchain"; then
+            echo "::error title=Locked Lean toolchain unavailable::$toolchain from lean-toolchain could not be installed"
+            echo "FAIL: locked Lean toolchain '$toolchain' is unavailable."
+            echo "The release snapshot still requires the exact toolchain recorded in lean-toolchain."
+            exit 1
+          fi
+          echo "OK: locked Lean toolchain '$toolchain' is available"
+
       - name: Rebuild from the committed dependency snapshot
         shell: bash
         run: |
@@ -876,7 +895,25 @@ jobs:
             echo
             echo "FAIL: a clean checkout could not rebuild from the committed Lean and Lake dependency snapshot."
             echo "The build must work using lean-toolchain, lakefile.lean, and lake-manifest.json without leftover .lake state."
-            echo "Review the first build error above; do not repair this job by running 'lake update'."
+            echo "The first Lake error above identifies the affected locked dependency."
+            echo "Do not repair this job by running 'lake update'."
+            echo
+            echo "Locked snapshot under test:"
+            python3 - <<'PY'
+          import json
+
+          with open("lean-toolchain", encoding="utf-8") as toolchain_file:
+              print(f"  Lean toolchain: {toolchain_file.read().strip()}")
+
+          with open("lake-manifest.json", encoding="utf-8") as manifest_file:
+              manifest = json.load(manifest_file)
+
+          for package in manifest.get("packages", []):
+              name = package.get("name", "<unnamed>")
+              revision = package.get("rev", "<missing>")
+              source = package.get("url", "<missing>")
+              print(f"  Lake dependency: {name} @ {revision} ({source})")
+          PY
             exit 1
           fi
 

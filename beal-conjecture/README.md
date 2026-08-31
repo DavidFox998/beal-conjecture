@@ -424,7 +424,7 @@ $p = 5$ bridge and the desert property of exceptional primes.
 and the audit checks pass. It does **not** mean that Wiles's, Tate's, or Ribet's
 theorems have been reconstructed from first principles.
 
-CI enforces the boundary on every push:
+CI enforces the boundary on every push and pull request:
 
 - **Build all bricks** — all B01–B21 Cores and Wrappers compile
 - **Clean locked rebuild** — a separate job removes generated `.lake` state and
@@ -472,6 +472,13 @@ the Lean version in `lean-toolchain`, the package declaration in
 `lake-manifest.json`. It then verifies that Lake did not rewrite either
 committed input. A failure means that the release snapshot is not reproducible
 from its committed dependency lock.
+
+GitHub Actions repeats this clean-checkout release-snapshot check every Monday at
+06:17 UTC, even when no code has changed. The scheduled run installs the exact
+toolchain named by `lean-toolchain` before Lake fetches the exact transitive
+revisions in `lake-manifest.json`. If either the toolchain or a locked Git
+revision disappears, the job reports that locked input explicitly instead of
+silently updating the snapshot.
 
 ---
 
