@@ -37,3 +37,4 @@
 - [GitHub raw sibling reads](github-raw-sibling-reads.md) — do not attach a repo-scoped Actions token when reading public raw files across sibling repositories.
 - [Lean tactic-linter replacement scope](lean-tactic-linter-replacement-scope.md) — “Try this” may replace only the final tactic; remove earlier tactics only when separately reported unused.
 - [X₀(10) source boundary](x0-10-source-boundary.md) — GJ–L Proposition 17/Table 31 classify Faltings-minimal vertices; they do not prove a no-Frey exclusion.
+- [Lean merge protection](lean-merge-protection.md) — brothers-desert-proof/main requires only the exact Lean job check; workspace origin is not the target.

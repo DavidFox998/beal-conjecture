@@ -9,6 +9,9 @@ on:
 
 jobs:
   build:
+    # This job is the only required status check on main. The ensemble-link
+    # and bridge-notification workflows remain advisory and must not become
+    # merge blockers.
     name: "Clean lake build — Siegel.SiegelZeroFreeElementary"
     runs-on: ubuntu-latest
 
@@ -18,6 +21,12 @@ jobs:
       - name: Verify GitHub Actions workflow allowlist
         # API workflows belong in the separate ZeroBeacon repository.
         run: bash scripts/check_workflow_allowlist.sh
+
+      - name: Test workflow boundary guard
+        run: bash scripts/test_workflow_allowlist.sh
+
+      - name: Validate main branch protection contract
+        run: python3 scripts/check_main_branch_protection_contract.py
 
       - name: Verify Lean and Mathlib toolchain pins
         # Fail before elan or Mathlib cache work if the repository metadata drifts.
