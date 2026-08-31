@@ -17,6 +17,7 @@ theorem. Passing that classification as a theorem-valued supplier removes a
 global Lean axiom but does not construct or discharge the underlying
 mathematics; documentation and audits must continue to call the result
 conditional until the supplier is built from verified modular-curve theory.
-The approved public status convention is one explicitly documented
-`Prop := True` marker for the missing Mazur result; CI must permit exactly that
-marker while rejecting equivalent or additional trivial propositions.
+A rational isogeny kernel must not be treated as a rational generator, so no
+automatic rational `2p`-torsion argument is allowed. State the mixed-level
+exclusion as a nontrivial, presently uninhabited theorem type and let CI reject
+all `Prop := True` markers rather than permitting a documented exception.

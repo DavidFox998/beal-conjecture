@@ -164,7 +164,10 @@ jobs:
               lean/Beal/B17_FreyRationalTwoTorsion.lean \
               lean/Beal/B17_FullE2.lean \
               lean/Beal/B17_MazurIrreducible_Core.lean \
-              lean/Beal/B17_MazurIrreducible.lean; then
+              lean/Beal/B17_MazurIrreducible.lean \
+              lean/Beal/Mazur/FreyTorsion.lean \
+              lean/Beal/Mazur/RationalIsogenyBound.lean \
+              lean/Beal/Mazur/Supplier.lean; then
             echo "FAIL: B17 must not reintroduce True/trivial irreducibility placeholders"
             fail=1
           fi
@@ -231,8 +234,15 @@ jobs:
           #print axioms Beal17Mazur.galoisAction
           #print axioms Beal17Mazur.RationalPIsogenyKernel
           #print axioms Beal17Mazur.FreyResidualRepresentationReducible
-          #print axioms Beal17Mazur.frey_irreducibility_external
-          #print axioms Beal17Mazur.frey_mazur_irreducibility_boundary
+          #print axioms Beal17Mazur.FreyMixedLevelStructure
+          #print axioms Beal17Mazur.mixedLevelStructureOfKernel
+          #print axioms Beal17Mazur.mixedLevelStructure_nonempty_of_reducible
+          #print axioms Beal17Mazur.FreyPIsogenyExclusion
+          #print axioms Beal17Mazur.FreyResidualIrreducibleAtLeastEleven
+          #print axioms Beal17Mazur.freyResidualIrreducibleAtLeastEleven_of_isogenyExclusion
+          #print axioms Beal17Mazur.FreyPIsogenyExclusionSupplier
+          #print axioms Beal17Mazur.frey_residual_irreducible
+          #print axioms Beal17Mazur.frey_residual_irreducible_atLeastEleven
           #print axioms Beal17Mazur.prime_not_dvd_conductor
           #print axioms Beal17Mazur.remove_exact_divisor
           #print axioms Beal17Mazur.remove_exact_context_conductor_divisor
@@ -299,17 +309,24 @@ jobs:
           echo "OK: final theorem retains both explicit suppliers and uses exactly three approved domain axioms"
           echo "OK: all cores are import-free and zero-axiom; wrappers use no sorryAx"
 
-      - name: Audit the genuine B17 Mazur boundary
+      - name: Audit the Frey-specific Mazur supplier boundary
         run: |
           set -euo pipefail
           cat > /tmp/beal_b17_mazur_audit.lean <<'EOF'
-          import Beal.B17_MazurIrreducible
+          import Beal.Mazur.Supplier
           #print axioms Beal17Mazur.FreyPTorsion
           #print axioms Beal17Mazur.galoisAction
           #print axioms Beal17Mazur.RationalPIsogenyKernel
           #print axioms Beal17Mazur.FreyResidualRepresentationReducible
-          #print axioms Beal17Mazur.frey_irreducibility_external
-          #print axioms Beal17Mazur.frey_mazur_irreducibility_boundary
+          #print axioms Beal17Mazur.FreyMixedLevelStructure
+          #print axioms Beal17Mazur.mixedLevelStructureOfKernel
+          #print axioms Beal17Mazur.mixedLevelStructure_nonempty_of_reducible
+          #print axioms Beal17Mazur.FreyPIsogenyExclusion
+          #print axioms Beal17Mazur.FreyResidualIrreducibleAtLeastEleven
+          #print axioms Beal17Mazur.freyResidualIrreducibleAtLeastEleven_of_isogenyExclusion
+          #print axioms Beal17Mazur.FreyPIsogenyExclusionSupplier
+          #print axioms Beal17Mazur.frey_residual_irreducible
+          #print axioms Beal17Mazur.frey_residual_irreducible_atLeastEleven
           EOF
           lake env lean /tmp/beal_b17_mazur_audit.lean 2>&1 |
             tee /tmp/beal_b17_mazur_audit.txt
@@ -317,20 +334,28 @@ jobs:
             echo "FAIL: B17 Mazur boundary depends on sorryAx"
             exit 1
           fi
-          if ! grep -Fq \
-              "'Beal17Mazur.frey_irreducibility_external' depends on axioms: [Beal17Mazur.frey_irreducibility_external]" \
-              /tmp/beal_b17_mazur_audit.txt; then
-            echo "FAIL: the named Mazur specialization axiom changed unexpectedly"
+          if grep -rnE 'axiom[[:space:]]+frey_irreducibility_external|Prop[[:space:]]*:=[[:space:]]*True' \
+              lean/Beal/B17_MazurIrreducible.lean lean/Beal/Mazur; then
+            echo "FAIL: the Frey-specific Mazur boundary regressed to an axiom or True marker"
             exit 1
           fi
-          if ! grep -A5 -F \
-              "'Beal17Mazur.frey_mazur_irreducibility_boundary' depends on axioms:" \
-              /tmp/beal_b17_mazur_audit.txt |
-              grep -Fq 'Beal17Mazur.frey_irreducibility_external'; then
-            echo "FAIL: the instantiated B17 boundary must expose the named Mazur input"
-            exit 1
-          fi
-          echo "OK: B17 uses genuine geometric p-torsion and exposes one named Mazur input"
+          for declaration in \
+              Beal17Mazur.FreyMixedLevelStructure \
+              Beal17Mazur.mixedLevelStructureOfKernel \
+              Beal17Mazur.mixedLevelStructure_nonempty_of_reducible \
+              Beal17Mazur.FreyPIsogenyExclusion \
+              Beal17Mazur.FreyResidualIrreducibleAtLeastEleven \
+              Beal17Mazur.freyResidualIrreducibleAtLeastEleven_of_isogenyExclusion \
+              Beal17Mazur.FreyPIsogenyExclusionSupplier \
+              Beal17Mazur.frey_residual_irreducible \
+              Beal17Mazur.frey_residual_irreducible_atLeastEleven; do
+            if ! grep -Fq "'$declaration' does not depend on any axioms" \
+                /tmp/beal_b17_mazur_audit.txt; then
+              echo "FAIL: $declaration acquired an axiom dependency"
+              exit 1
+            fi
+          done
+          echo "OK: the mixed-level boundary and supplier bridge are axiom-free; the supplier remains unconstructed"
 
       - name: Test the B20 axiom-output parser
         run: bash scripts/test-check-b20-axioms.sh

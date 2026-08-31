@@ -324,7 +324,7 @@ B14 & \texttt{FreyConductorCore}       & \texttt{FreyConductorReal} obligation s
 B14b & \texttt{PrimeNotDvdCore}        & Divisibility lemmas for conductor arithmetic \\
 B15 & \texttt{LevelTo2Core}            & Level-lowering to 2 \\
 B16 & \texttt{BealFinalCore}           & Final assembly with all hypotheses named \\
-B17 & \texttt{MazurIrreducibleCore}    & Mazur irreducibility hypothesis \\
+B17 & \texttt{MazurIrreducibleCore}    & geometric kernel and mixed-level Mazur boundary \\
 B18 & \texttt{FreyIsEllipticCore}      & Semistability of the Frey curve \\
 B19 & \texttt{BealFinalAssemblyCore}   & Full chain assembly \\
 B20 & \texttt{BealConjectureDone}      & Milestone: 20 bricks complete, chain visible \\
@@ -333,7 +333,32 @@ B21 & \texttt{beal\_implies\_fermat21\_core} & Beal$\implies$FLT in one line; ze
 \end{tabular}
 \end{center}
 
-\subsection{The named modularity hypothesis}
+\subsection{The Frey-specific Mazur question}
+\label{def:frey-mazur-question}
+
+The active B17 development does not formalize the full twenty-six-case
+rational torsion theorem, nor does it need that breadth.  It asks a narrower
+question about the Frey curve
+\[
+  y^2=x(x-A^a)(x+B^b).
+\]
+The rational $2$-torsion is proved to be exactly the four expected points.
+Residual reducibility is represented by a genuine
+$\operatorname{Gal}(\overline{\mathbf Q}/\mathbf Q)$-stable cyclic subgroup of
+order $p$.  The remaining proposition says that these two pieces of level
+structure cannot coexist when $p\ge 11$.
+
+There is an important distinction at this boundary.  A rational cyclic
+$p$-isogeny has a Galois-stable kernel, but its nonzero points may be permuted
+through a nontrivial character.  It does not, without further argument,
+produce a rational point of order $p$, and hence it does not automatically
+combine with rational $2$-torsion to give rational $2p$-torsion.  The missing
+mathematics is therefore a rational-point theorem for the relevant
+mixed-level modular curve, or an equivalent semistable isogeny-character
+classification.  The Lean supplier for this theorem is stated but not
+constructed.  The formal development is incomplete at precisely that place.
+
+\subsection{The legacy named modularity hypothesis}
 \label{def:modularity-hyp}
 
 \begin{definition}[Modularity Hypothesis]
@@ -341,8 +366,8 @@ The Lean \texttt{axiom}
 \begin{lstlisting}
 axiom modularity_hypothesis : ModularityHypothesisTyped
 \end{lstlisting}
-in \texttt{B05\_Modularity\_Core.lean} is the formalization's sole extra
-axiom. Its type unfolds to a non-empty structure with three fields:
+in \texttt{B05\_Modularity\_Core.lean} belongs to the legacy compatibility
+route. Its type unfolds to a non-empty structure with three fields:
 \begin{lstlisting}
 def RibetLevelLoweringHypothesis : Prop :=
   forall (A B C x y z : Nat), 1 < x -> 1 < y -> 1 < z ->
@@ -364,8 +389,10 @@ def WilesLiftingHypothesis : Prop :=
     exists (N : Nat), 2 <= N /\
       forall q : Nat, IsPrime05Core q -> q | N -> q | A * B * C
 \end{lstlisting}
-Each field is a zero-axiom \texttt{Prop}; only the \texttt{axiom}
-declaration itself introduces an assumption beyond \texttt{propext}.
+Each field is a zero-axiom \texttt{Prop}; the legacy \texttt{axiom}
+declaration itself introduces an assumption beyond \texttt{propext}.  This
+description must not be read as an axiom count for the active B15/B20 route or
+as a claim that the Frey-specific Mazur supplier has been constructed.
 \end{definition}
 
 \begin{remark}

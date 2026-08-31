@@ -148,25 +148,13 @@ def MazurIrreducibilityBoundary (predicates : FreyMazurPredicates) : Prop :=
     HasFullRationalTwoTorsion
     predicates.residualRepresentationReducible
 
-/-- **External Frey irreducibility input.**
+/-- B17 stops at the genuine residual-reducibility predicate.
 
-This is the remaining historical arithmetic-geometry input. Its conclusion
-now excludes a genuine absolute-Galois-stable order-`p` subgroup of the fixed
-Frey curve over `ℚ̄`; it is no longer an unrelated conductor-divisibility
-predicate. The present `FreyMazurContext` does not yet carry the semistability
-and reduction data needed to derive this statement from Mazur's rational-
-isogeny classification. It therefore remains one explicitly stronger named
-axiom rather than being mislabeled as a proved Mazur specialization.
+The Frey-specific `p ≥ 11` no-isogeny problem and its non-circular supplier
+live in `Beal.Mazur`.  They are imported after this file, so B17 contains no
+zero-argument irreducibility axiom and no circular claim that a supplier has
+already been constructed.
 -/
-axiom frey_irreducibility_external
-    (context : FreyMazurContext) :
-    HasFullRationalTwoTorsion context →
-    ¬ FreyResidualRepresentationReducible context
-
-/-- B17 instantiates its boundary with the genuine Frey residual predicate. -/
-theorem frey_mazur_irreducibility_boundary :
-    MazurIrreducibilityBoundary freyMazurPredicates :=
-  frey_irreducibility_external
 
 /-- The model-indexed B14 conductor support proves that the fixed odd prime
 does not divide the model's conductor when it divides none of the bases. -/
@@ -221,7 +209,5 @@ theorem remove_exact_context_conductor_divisor
 #print axioms RationalPIsogenyKernel
 #print axioms FreyResidualRepresentationReducible
 #print axioms MazurIrreducibilityBoundary
-#print axioms frey_irreducibility_external
-#print axioms frey_mazur_irreducibility_boundary
 
 end Beal17Mazur

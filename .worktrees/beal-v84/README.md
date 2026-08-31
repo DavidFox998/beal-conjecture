@@ -77,6 +77,17 @@ formalization makes this coupling explicit rather than gestural.
 > the former three-points-versus-full-E[2] gap; it does not claim Mazur
 > irreducibility or construct residual Galois representations.
 >
+> **Frey-specific Mazur work in progress — mixed level, not fictional `2p` torsion**
+>
+> The active B17 extension now isolates the exact remaining question for the
+> Frey family: can full rational `E[2]` coexist with a rational cyclic
+> `p`-isogeny when `p ≥ 11`? A Galois-stable cyclic kernel need not have a
+> rational generator, so the repository does not turn it into a rational point
+> of order `2p`. The mixed-level structure and its supplier bridge are formal
+> and axiom-free; the rational-point classification that would construct the
+> supplier is not yet formalized. This is an unfinished theorem, not a renamed
+> proof.
+>
 > **v8.0.0 patching layer — 0 local axioms, 0 opaque rank propositions, explicit Taylor–Wiles data**
 >
 > This repository is still a formalization of the Beal argument, not a claim

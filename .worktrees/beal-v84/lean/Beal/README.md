@@ -267,15 +267,23 @@ Frey curve to `ℚ̄`, defines its geometric `p`-torsion subgroup, and lets
 `FreyResidualRepresentationReducible` now means that this action preserves an
 order-`p` subgroup—equivalently, the kernel datum of a rational `p`-isogeny.
 
-The boundary is instantiated and inhabited as
-`frey_mazur_irreducibility_boundary`, but its proof depends on the single named
-axiom `frey_irreducibility_external`. The current context does not yet encode
-the semistability and reduction hypotheses needed for a derivation from
-Mazur's rational-isogeny classification, and the pinned Mathlib revision has
-neither that classification nor its modular-curve rational-point proof. Thus
-B17 has closed the *predicate* gap, not the classification theorem: conductor
-divisibility is no longer mislabeled as irreducibility, and the stronger
-remaining mathematical assumption is visible in `#print axioms`.
+The `Mazur/` modules isolate the next theorem without pretending to possess it.
+`FreyMixedLevelStructure` combines the proved full rational `E[2]` statement
+with a genuine Galois-stable cyclic order-`p` kernel.
+`FreyPIsogenyExclusion` is the Frey-specific proposition that this structure is
+impossible for `p ≥ 11`, and `FreyPIsogenyExclusionSupplier` can yield residual
+irreducibility only after that proposition has actually been proved. These
+declarations and their bridge theorems are axiom-free; no supplier inhabitant
+is constructed.
+
+This formulation also records a necessary correction. A rational `p`-isogeny
+gives a Galois-stable kernel, not in general a rational nonzero kernel point.
+Full rational `E[2]` therefore does not by itself produce a rational point of
+order `2p`. The unfinished heart is a rational-point classification on the
+corresponding mixed-level modular curve, or an equivalent semistable
+isogeny-character argument. The pinned Mathlib revision contains neither
+development. B17 has closed the *predicate* gap and removed the former
+zero-argument external axiom; it has not proved the classification.
 
 The final path still names the deep inputs that have not been reconstructed
 from first principles:
@@ -467,16 +475,15 @@ semiring-carrier comparison from explicit two-sided data; it does not assert
 the complete-local or commutative ring structure of classical R=T, claim that
 the repository constructs those data, or imply B05's legacy predicate. B17
 proves the full four-point rational 2-torsion classification for the Frey curve
-with Mathlib points while retaining a parameterized boundary for the missing
-isogeny/residual-representation step.
+with Mathlib points. The `Mazur/` modules then express the missing step as the
+nontrivial proposition `FreyPIsogenyExclusion`, not as an already inhabited
+boundary.
 The `wiles_lifting_axiom` remains a mathematical boundary wherever that legacy
-interface is used. B17's distinct `frey_irreducibility_external` now talks
-about the genuine Frey curve over `ℚ̄` and excludes an
-absolute-Galois-stable order-`p` subgroup. Its name deliberately does not
-claim that the missing Mazur specialization has already been derived. The
-focused audit requires the concrete definitions to remain free of domain
-axioms and the instantiated boundary to expose exactly this named external
-input.
+interface is used. There is no longer a B17
+`frey_irreducibility_external` axiom. The focused audit instead requires the
+geometric kernel, mixed-level structure, exclusion proposition, supplier type,
+and supplier-to-irreducibility bridge to remain free of domain axioms. It also
+guards against replacing the missing classification by `Prop := True`.
 
 The real-number interpretation of the fixed-point inequality
 `‖p·α₀‖ < 1/p` remains isolated in the desert-brothers module and audits to
@@ -491,7 +498,8 @@ classifies every zero-y affine root of the Frey cubic;
 `freyFullE2_eq` proves the exact four-point set equality including infinity.
 This closes only the rational `E[2]` exhaustiveness gap. B17 now defines the
 geometric `p`-torsion Galois action and rational `p`-isogeny kernel predicate,
-but Mazur's classification itself remains a named mathematical axiom.
+while the new mixed-level modules expose Mazur's missing Frey-specific
+classification as an uninhabited theorem type rather than a named axiom.
 
 ## v8.0.0 patching layer
 
