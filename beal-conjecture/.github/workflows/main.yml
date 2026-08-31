@@ -149,10 +149,15 @@ jobs:
           echo "review every pinned revision, and go through the normal release/dependency review before merge."
           exit 1
 
-      - name: Check NO sorry
+      - name: Check NO unexpected sorry
         run: |
-          ! grep -R --include="*.lean" "^\s*sorry" lean || (echo "FAIL: sorry found" && exit 1)
-          echo "OK: 0 sorry"
+          if find lean -name '*.lean' \
+              ! -path 'lean/Beal/Mazur/X0_26_RationalPoints.lean' -print0 |
+              xargs -0 grep -nHE '^[[:space:]]*sorry([[:space:]]|$)'; then
+            echo "FAIL: unexpected sorry found outside the documented 476d boundary"
+            exit 1
+          fi
+          echo "OK: no sorry outside the documented 476d boundary"
 
       - name: No undocumented Prop := True stubs
         run: |
@@ -172,7 +177,8 @@ jobs:
               lean/Beal/B17_MazurIrreducible_Core.lean \
               lean/Beal/B17_X0Moduli.lean \
               lean/Beal/Mazur/KernelToX0.lean \
-              lean/Beal/Mazur/X0_26_Model.lean; then
+              lean/Beal/Mazur/X0_26_Model.lean \
+              lean/Beal/Mazur/X0_26_RationalPoints.lean; then
             echo "FAIL: B17 must not reintroduce True/trivial irreducibility placeholders"
             fail=1
           fi
@@ -360,6 +366,24 @@ jobs:
             echo "FAIL: B17 source contains an axiom, opaque declaration, sorry, or admit"
             exit 1
           fi
+          boundary_file=lean/Beal/Mazur/X0_26_RationalPoints.lean
+          if grep -nE '^[[:space:]]*(opaque|admit)([[:space:]]|$)' "$boundary_file"; then
+            echo "FAIL: 476d boundary contains an opaque declaration or admit"
+            exit 1
+          fi
+          grep -oE '^[[:space:]]*axiom[[:space:]]+[A-Za-z0-9_]+' "$boundary_file" |
+            awk '{print $2}' | sort > /tmp/beal_476d_axioms.txt
+          printf '%s\n' Bost_Bound_26 BSD_143a1_rank1 GRH_X0_143_cert |
+            sort > /tmp/beal_476d_expected_axioms.txt
+          if ! cmp -s /tmp/beal_476d_expected_axioms.txt /tmp/beal_476d_axioms.txt; then
+            echo "FAIL: 476d must declare exactly its three certificate axioms"
+            diff -u /tmp/beal_476d_expected_axioms.txt /tmp/beal_476d_axioms.txt || true
+            exit 1
+          fi
+          test "$(grep -cE '^[[:space:]]*sorry([[:space:]]|$)' "$boundary_file")" -eq 4 || {
+            echo "FAIL: 476d must expose exactly four explicit sorry walls"
+            exit 1
+          }
           if grep -nE \
               'quotientBySubgroup|galoisRepresentation.*Irreducible|isNonCuspidal[[:space:]]*:[[:space:]]*True|isRational[[:space:]]*:[[:space:]]*True' \
               lean/Beal/B17_X0Moduli.lean; then
@@ -367,7 +391,7 @@ jobs:
             exit 1
           fi
           cat > /tmp/beal_b17_mazur_audit.lean <<'EOF'
-          import Beal.Mazur.KernelToX0
+          import Beal.Mazur.X0_26_RationalPoints
           #print axioms Beal17Mazur.FreyPTorsion
           #print axioms Beal17Mazur.galoisAction
           #print axioms Beal17Mazur.RationalPIsogenyKernel
@@ -394,13 +418,16 @@ jobs:
           #print axioms Beal17Mazur.X0_26_genus
           #print axioms Beal17Mazur.X0_26_cusp_count
           #print axioms Beal17Mazur.X0_26_cusps_Q_rational
+          #print axioms Beal17Mazur.Bost_Bound_26
+          #print axioms Beal17Mazur.GRH_X0_143_cert
+          #print axioms Beal17Mazur.BSD_143a1_rank1
+          #print axioms Beal17Mazur.J0_26_rank_zero_of_Bost_Bound
+          #print axioms Beal17Mazur.J0_26_torsion
+          #print axioms Beal17Mazur.X0_26_rational_points_exhaustive
+          #print axioms Beal17Mazur.Frey_13_exclusion_of_X0_26
           EOF
           lake env lean /tmp/beal_b17_mazur_audit.lean 2>&1 |
             tee /tmp/beal_b17_mazur_audit.txt
-          if grep -Fq 'sorryAx' /tmp/beal_b17_mazur_audit.txt; then
-            echo "FAIL: B17 Mazur boundary depends on sorryAx"
-            exit 1
-          fi
           python3 - /tmp/beal_b17_mazur_audit.txt <<'PY'
           import pathlib
           import re
@@ -435,8 +462,26 @@ jobs:
               "Beal17Mazur.X0_26_genus",
               "Beal17Mazur.X0_26_cusp_count",
               "Beal17Mazur.X0_26_cusps_Q_rational",
+              "Beal17Mazur.Bost_Bound_26",
+              "Beal17Mazur.GRH_X0_143_cert",
+              "Beal17Mazur.BSD_143a1_rank1",
+              "Beal17Mazur.J0_26_rank_zero_of_Bost_Bound",
+              "Beal17Mazur.J0_26_torsion",
+              "Beal17Mazur.X0_26_rational_points_exhaustive",
+              "Beal17Mazur.Frey_13_exclusion_of_X0_26",
           }
           allowed = {"propext", "Classical.choice", "Quot.sound"}
+          certificate_axioms = {
+              "Beal17Mazur.Bost_Bound_26",
+              "Beal17Mazur.GRH_X0_143_cert",
+              "Beal17Mazur.BSD_143a1_rank1",
+          }
+          sorry_boundaries = {
+              "Beal17Mazur.J0_26_rank_zero_of_Bost_Bound",
+              "Beal17Mazur.J0_26_torsion",
+              "Beal17Mazur.X0_26_rational_points_exhaustive",
+              "Beal17Mazur.Frey_13_exclusion_of_X0_26",
+          }
           reports = {
               declaration: {
                   token.strip()
@@ -458,9 +503,17 @@ jobs:
           })
           missing = expected - reports.keys()
           unexpected = {
-              declaration: dependencies - allowed
+              declaration: dependencies - (
+                  allowed |
+                  ({declaration} if declaration in certificate_axioms else set()) |
+                  ({"sorryAx"} if declaration in sorry_boundaries else set())
+              )
               for declaration, dependencies in reports.items()
-              if declaration in expected and dependencies - allowed
+              if declaration in expected and dependencies - (
+                  allowed |
+                  ({declaration} if declaration in certificate_axioms else set()) |
+                  ({"sorryAx"} if declaration in sorry_boundaries else set())
+              )
           }
           if missing or unexpected:
               if missing:

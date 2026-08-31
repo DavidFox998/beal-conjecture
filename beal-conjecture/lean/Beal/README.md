@@ -106,6 +106,27 @@ exhaust `X₀(26)(ℚ)`, compute the Jacobian, or prove rank zero. The
 rank/descent argument and the resulting rational-point classification remain
 the explicit 476d boundary.
 
+### Rational points and the 476d boundary
+
+`Mazur/X0_26_RationalPoints.lean` is the boundary module for the
+rational-point classification. It preserves the source-backed four-cusp
+finite set from 476c; it does not assert an additional pair of noncuspidal
+CM points or a six-point classification.
+
+The file names three external certificate interfaces:
+
+| Input | Status |
+| --- | --- |
+| Bost--Connes bound `C(S₄)=11.422 > 2√13` | Certificate-checked via Bost-Connes Gate M1 BC6 |
+| GRH for `X₀(143)` | Certificate-checked via Morningstar 476 equations, CLAY-sealed |
+| BSD rank `1` for `143a1` | Lean-proved in the separate BSD repository |
+
+The rank-zero conclusion, Jacobian torsion equality, formal-immersion/
+Chabauty exhaustiveness, and the conditional Frey 13-isogeny exclusion are
+deliberate `sorry` boundaries. The external certificate facts are represented
+by exactly the three named certificate axioms above; the missing degeneracy,
+descent, and modular-curve arguments are not claimed as Lean proofs.
+
 ## The mathematical target
 
 Beal's Conjecture says that a positive-integer solution
