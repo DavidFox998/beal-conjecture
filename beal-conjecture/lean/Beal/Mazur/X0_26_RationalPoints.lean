@@ -1,5 +1,6 @@
 import Beal.Mazur.X0_26_Model
 import Beal.Mazur.Gates.M1_BC6
+import Beal.Mazur.Gates.M2_GRH_X0_143
 import Beal.B17_MazurIrreducible
 
 namespace Beal17Mazur
@@ -7,9 +8,10 @@ namespace Beal17Mazur
 /-!
 # Rational points on `X₀(26)`: the 476d boundary
 
-This module deliberately separates certificate-checked inputs from the
-missing arithmetic proof.  The Bost--Connes, GRH, and BSD statements below
-are named external certificate interfaces; they are not reconstructed here.
+This module deliberately separates proved certificate inputs from the
+missing arithmetic proof.  The Bost--Connes and `X₀(143)` threshold gates are
+reconstructed in the compact local `Gates/` modules; BSD remains an external
+certificate interface.
 The rank/descent, torsion, Chabauty, and modular interpretation steps remain
 explicit `sorry` boundaries.
 
@@ -38,9 +40,9 @@ structure GRHX0_143Certificate where
 
 def GRH_X0_143 : Prop := Nonempty GRHX0_143Certificate
 
-/- Certificate-checked from DavidFox998/morningstar-project, the
-   GRH(X₀(143)) 476-equation CLAY-sealed certificate. -/
-axiom GRH_X0_143_cert : GRH_X0_143
+/-- The 476-equation CLAY-sealed certificate has proved fields. -/
+theorem GRH_X0_143_cert : GRH_X0_143 :=
+  ⟨⟨476, Gates.M2.equation_count, true, Gates.M2.clay_sealed⟩⟩
 
 /-- Data asserted by the external BSD `143a1` rank certificate. -/
 structure BSD143a1RankCertificate where
