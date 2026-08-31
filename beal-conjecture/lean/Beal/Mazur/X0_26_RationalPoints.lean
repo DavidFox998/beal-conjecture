@@ -12,9 +12,9 @@ namespace Beal17Mazur
 
 This module deliberately separates proved certificate-shaped inputs from the
 missing arithmetic proof.  The Bost--Connes and `X₀(143)` threshold gates are
-reconstructed in the compact local `Gates/` modules.  The BSD-shaped record
-below is proved only at its declared interface level; it is not a formal
-elliptic-curve or L-function rank theorem.
+reconstructed in the compact local `Gates/` modules.  Exactly two localized
+gate theorems carry `sorryAx`: the genuine Gross--Zagier/Kolyvagin implication
+and the formal-immersion/global-exhaustiveness implication.
 `Mazur/Jacobian/E26.lean` now constructs the two corrected elliptic factors
 and verifies their discriminants and `j`-invariants.  Its copied mwrank
 quartics remain transcript data: no `decide` theorem promotes them to a
@@ -220,25 +220,20 @@ theorem Frey_13_exclusion_of_local_gates
     (heightData : Gates.KolyvaginNoSorry.HeegnerPointData)
     (rankData : Gates.KolyvaginNoSorry.J0_26_RankData)
     (hLWall : Gates.KolyvaginNoSorry.M1_M2_to_L_nonzero_wall lData)
-    (hKolyvagin :
-      Gates.KolyvaginNoSorry.KolyvaginRankZeroWall
-        lData heightData rankData)
     (hHeeg :
       Gates.KolyvaginNoSorry.HeegnerHeightNonzero heightData)
-    (hChabauty :
-      Gates.FormalImmersionNoSorry.Chabauty0ExhaustivenessWall rankData)
     (hRealization : Frey13ToX0_26Realization) :
     FreyPIsogenyExclusion 13 := by
   have hRank : Gates.KolyvaginNoSorry.J0_26_RankZero rankData :=
     Gates.KolyvaginNoSorry.J0_26_rank_zero_local
-      lData heightData rankData hLWall hKolyvagin hHeeg
+      lData heightData rankData hLWall hHeeg
   have hLocal :
       Gates.FormalImmersionNoSorry.X0_26_Q ⊆
         (Gates.FormalImmersionNoSorry.four_cusps :
           Set X0_26_RationalPoint) :=
     Gates.FormalImmersionNoSorry.X0_26_Q_subset_four_cusps
       rankData hRank
-      Gates.FormalImmersionNoSorry.formal_immersion_at_3 hChabauty
+      Gates.FormalImmersionNoSorry.formal_immersion_at_3
   have hExhaustive :
       X0_26_Q ⊆
         (X0_26_rational_points : Set X0_26_RationalPoint) := by

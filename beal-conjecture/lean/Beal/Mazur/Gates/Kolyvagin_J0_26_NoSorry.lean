@@ -14,7 +14,9 @@ and `BSD_HeegnerPoint_CLOSED.lean`, this file keeps a fixed complex function,
 an explicit model point with a height, and a rank value as data.  The concrete
 `143a1` anchors are not reused for the different object `J₀(26)`.
 
-There are no `sorry`s and no imports from the RH or BSD repositories.
+There is exactly one localized `sorry`: the genuine
+Gross--Zagier/Kolyvagin rank implication.  There are no imports from the RH or
+BSD repositories.
 -/
 
 abbrev J0_26_Jacobian := X0_26_RationalPoint
@@ -62,35 +64,28 @@ structure J0_26_RankData where
 def J0_26_RankZero (data : J0_26_RankData) : Prop :=
   data.rank = 0
 
-/-- The local Gross--Zagier/Kolyvagin implication is the remaining analytic
-wall. -/
-def KolyvaginRankZeroWall
-    (lData : LValueData)
-    (heightData : HeegnerPointData)
-    (rankData : J0_26_RankData) : Prop :=
-  L_J0_26_ne_zero lData →
-    HeegnerHeightNonzero heightData →
-    J0_26_RankZero rankData
+/-- The one analytic soundness wall in this module.
 
+This is precisely the unavailable Gross--Zagier/Kolyvagin implication.  The
+`L`-value and Heegner-height hypotheses remain explicit; this theorem does not
+claim that M1/M2 construct either object. -/
 theorem Kolyvagin_rank_zero_J0_26
     (lData : LValueData)
     (heightData : HeegnerPointData)
     (rankData : J0_26_RankData)
-    (hWall : KolyvaginRankZeroWall lData heightData rankData)
     (hL : L_J0_26_ne_zero lData)
     (hHeeg : HeegnerHeightNonzero heightData) :
-    J0_26_RankZero rankData :=
-  hWall hL hHeeg
+    J0_26_RankZero rankData := by
+  sorry
 
 def J0_26_rank_zero_local
     (lData : LValueData)
     (heightData : HeegnerPointData)
     (rankData : J0_26_RankData)
     (hLWall : M1_M2_to_L_nonzero_wall lData)
-    (hKolyvagin : KolyvaginRankZeroWall lData heightData rankData)
     (hHeeg : HeegnerHeightNonzero heightData) :
     J0_26_RankZero rankData :=
-  Kolyvagin_rank_zero_J0_26 lData heightData rankData hKolyvagin
+  Kolyvagin_rank_zero_J0_26 lData heightData rankData
     (L_J0_26_ne_zero_of_M1_M2 lData hLWall) hHeeg
 
 #print axioms M1_M2_threshold_proved

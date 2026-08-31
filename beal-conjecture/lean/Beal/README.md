@@ -150,11 +150,13 @@ retains no named certificate axioms:
 
 `Mazur/Gates/Kolyvagin_J0_26_NoSorry.lean` and
 `Mazur/Gates/FormalImmersion_J0_26_NoSorry.lean` are Beal-local and import no
-RH or BSD repository. They contain no `sorry` or declared axiom. Rational model
-points are subtypes carrying their equation certificates; the M1/M2 thresholds
-and finite `2 × 2` determinant are checked in Lean. The unavailable L-value
-interpretation, Heegner height, Kolyvagin implication, torsion identification,
-global exhaustiveness, and Frey modular realization remain typed hypotheses.
+RH or BSD repository. The gate layer contains exactly two localized `sorry`
+walls: the genuine Gross--Zagier/Kolyvagin rank implication and the
+formal-immersion/global-exhaustiveness implication. Rational model points are
+subtypes carrying their equation certificates; the M1/M2 thresholds and finite
+`2 × 2` determinant are checked in Lean. The unavailable L-value
+interpretation, Heegner height, torsion identification, and Frey modular
+realization remain typed hypotheses.
 The verified finite set remains the four source-backed cusps: no two CM points
 or six-point classification are invented.
 

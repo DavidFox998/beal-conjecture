@@ -57,29 +57,25 @@ theorem four_cusps_subset_XQ :
   intro point _hpoint
   exact point.2
 
-/-- The missing global Chabauty/formal-immersion implication is explicit. -/
-def Chabauty0ExhaustivenessWall
-    (rankData : KolyvaginNoSorry.J0_26_RankData) : Prop :=
-  KolyvaginNoSorry.J0_26_RankZero rankData →
-  FormalImmersionAt3 →
-  X0_26_Q ⊆ (four_cusps : Set X0_26_RationalPoint)
+/-- The one global soundness wall in this module.
 
+Lean checks the finite determinant, rank-zero input, and four candidates.  The
+unavailable formal-immersion/Chabauty argument connecting them to global
+rational-point exhaustiveness is localized here. -/
 theorem X0_26_Q_subset_four_cusps
     (rankData : KolyvaginNoSorry.J0_26_RankData)
     (hRank : KolyvaginNoSorry.J0_26_RankZero rankData)
-    (hImm : FormalImmersionAt3)
-    (hWall : Chabauty0ExhaustivenessWall rankData) :
-    X0_26_Q ⊆ (four_cusps : Set X0_26_RationalPoint) :=
-  hWall hRank hImm
+    (hImm : FormalImmersionAt3) :
+    X0_26_Q ⊆ (four_cusps : Set X0_26_RationalPoint) := by
+  sorry
 
 theorem X0_26_Q_eq_four_cusps
     (rankData : KolyvaginNoSorry.J0_26_RankData)
     (hRank : KolyvaginNoSorry.J0_26_RankZero rankData)
-    (hImm : FormalImmersionAt3)
-    (hWall : Chabauty0ExhaustivenessWall rankData) :
+    (hImm : FormalImmersionAt3) :
     X0_26_Q = (four_cusps : Set X0_26_RationalPoint) := by
   apply Set.Subset.antisymm
-  · exact X0_26_Q_subset_four_cusps rankData hRank hImm hWall
+  · exact X0_26_Q_subset_four_cusps rankData hRank hImm
   · exact four_cusps_subset_XQ
 
 #print axioms formal_immersion_at_3
