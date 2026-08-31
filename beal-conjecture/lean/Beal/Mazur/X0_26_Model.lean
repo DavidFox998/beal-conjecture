@@ -50,25 +50,41 @@ def X0_26_certifiedGenus : Nat :=
 theorem X0_26_genus : X0_26_certifiedGenus = 2 := by
   decide
 
-/-- Rational points on the even-degree projective hyperelliptic model.
+/-- Points on the even-degree projective hyperelliptic model.
 
 The two infinity constructors distinguish the two rational points at infinity
 coming from the square leading coefficient.
 -/
-inductive X0_26_RationalPoint where
+inductive X0_26_Model where
   | affine (x y : ℚ)
   | infinity (positiveBranch : Bool)
   deriving DecidableEq, Repr
 
 /-- Direct arithmetic membership in the displayed completed-square model. -/
-def X0_26_OnModel : X0_26_RationalPoint → Prop
+def X0_26_OnModel : X0_26_Model → Prop
   | .affine x y => y ^ 2 = X0_26_sextic x
   | .infinity positiveBranch =>
       (if positiveBranch then (1 : ℚ) else -1) ^ 2 = 1
 
-instance X0_26_OnModel_decidable (point : X0_26_RationalPoint) :
+instance X0_26_OnModel_decidable (point : X0_26_Model) :
     Decidable (X0_26_OnModel point) := by
   cases point <;> simp only [X0_26_OnModel] <;> infer_instance
+
+/-- Rationality on the explicit rational-coordinate model means satisfying
+the displayed projective equation. -/
+def X0_26_Model.IsRational (point : X0_26_Model) : Prop :=
+  X0_26_OnModel point
+
+/-- A rational point carries its equation certificate in its type. -/
+def X0_26_RationalPoint :=
+  {point : X0_26_Model // point.IsRational}
+
+instance X0_26_RationalPoint_decidableEq :
+    DecidableEq X0_26_RationalPoint := fun point₁ point₂ =>
+  if h : point₁.1 = point₂.1 then
+    isTrue (Subtype.ext h)
+  else
+    isFalse (fun hpoints => h (congrArg Subtype.val hpoints))
 
 /-- The four standard cusp labels for squarefree level `26`.
 
@@ -89,30 +105,36 @@ the displayed curve.  The modular interpretation of the coordinate map is
 source data, not reconstructed as a scheme-level theorem in Mathlib 4.12.
 -/
 def X0_26_cuspPoint : X0_26_CuspLabel → X0_26_RationalPoint
-  | .divisorOne => .affine 0 1
-  | .divisorTwo => .affine 0 (-1)
-  | .divisorThirteen => .infinity true
-  | .divisorTwentySix => .infinity false
+  | .divisorOne =>
+      ⟨.affine 0 1, by
+        norm_num [X0_26_Model.IsRational, X0_26_OnModel, X0_26_sextic]⟩
+  | .divisorTwo =>
+      ⟨.affine 0 (-1), by
+        norm_num [X0_26_Model.IsRational, X0_26_OnModel, X0_26_sextic]⟩
+  | .divisorThirteen =>
+      ⟨.infinity true, by
+        norm_num [X0_26_Model.IsRational, X0_26_OnModel]⟩
+  | .divisorTwentySix =>
+      ⟨.infinity false, by
+        norm_num [X0_26_Model.IsRational, X0_26_OnModel]⟩
 
 def X0_26_cusps : Finset X0_26_RationalPoint :=
-  {.affine 0 1, .affine 0 (-1), .infinity true, .infinity false}
+  {X0_26_cuspPoint .divisorOne, X0_26_cuspPoint .divisorTwo,
+    X0_26_cuspPoint .divisorThirteen, X0_26_cuspPoint .divisorTwentySix}
 
 theorem X0_26_cusp_count : X0_26_cusps.card = 4 := by
   decide
 
 theorem X0_26_cusps_Q_rational :
-    ∀ point ∈ X0_26_cusps, X0_26_OnModel point := by
-  intro point hpoint
-  simp only [X0_26_cusps, Finset.mem_insert, Finset.mem_singleton] at hpoint
-  rcases hpoint with hpoint | hpoint | hpoint | hpoint
-  all_goals subst point
-  all_goals norm_num [X0_26_OnModel, X0_26_sextic]
+    ∀ point ∈ X0_26_cusps, point.1.IsRational := by
+  intro point _
+  exact point.2
 
 theorem X0_26_labeled_cusps_Q_rational :
     ∀ label : X0_26_CuspLabel,
-      X0_26_OnModel (X0_26_cuspPoint label) := by
+      (X0_26_cuspPoint label).1.IsRational := by
   intro label
-  cases label <;> norm_num [X0_26_cuspPoint, X0_26_OnModel, X0_26_sextic]
+  exact (X0_26_cuspPoint label).2
 
 /-- The finite rational-point data certified in 476c.
 

@@ -367,22 +367,15 @@ jobs:
             exit 1
           fi
           boundary_file=lean/Beal/Mazur/X0_26_RationalPoints.lean
-          if grep -nE '^[[:space:]]*(opaque|admit)([[:space:]]|$)' "$boundary_file"; then
-            echo "FAIL: 476d boundary contains an opaque declaration or admit"
+          if grep -nE \
+              '^[[:space:]]*(axiom|opaque|sorry|admit)([[:space:]]|$)' \
+              "$boundary_file"; then
+            echo "FAIL: 476d must be axiom-free and sorry-free"
             exit 1
           fi
-          grep -oE '^[[:space:]]*axiom[[:space:]]+[A-Za-z0-9_]+' "$boundary_file" |
-            awk '{print $2}' | sort > /tmp/beal_476d_axioms.txt
-          : > /tmp/beal_476d_expected_axioms.txt
-          if ! cmp -s /tmp/beal_476d_expected_axioms.txt /tmp/beal_476d_axioms.txt; then
-            echo "FAIL: 476d must declare exactly its two remaining certificate axioms"
-            diff -u /tmp/beal_476d_expected_axioms.txt /tmp/beal_476d_axioms.txt || true
-            exit 1
-          fi
-          test "$(grep -cE '^[[:space:]]*sorry([[:space:]]|$)' "$boundary_file")" -eq 4 || {
-            echo "FAIL: 476d must expose exactly four explicit sorry walls"
-            exit 1
-          }
+          grep -q 'def TorsionIdentificationWall : Prop' "$boundary_file"
+          grep -q 'def FormalImmersionExhaustivenessWall : Prop' "$boundary_file"
+          grep -q 'def Frey13ToX0_26Realization : Prop' "$boundary_file"
           if grep -nE \
               'quotientBySubgroup|galoisRepresentation.*Irreducible|isNonCuspidal[[:space:]]*:[[:space:]]*True|isRational[[:space:]]*:[[:space:]]*True' \
               lean/Beal/B17_X0Moduli.lean; then
@@ -420,8 +413,10 @@ jobs:
           #print axioms Beal17Mazur.Bost_Bound_26
           #print axioms Beal17Mazur.GRH_X0_143_cert
           #print axioms Beal17Mazur.BSD_143a1_rank1
-          #print axioms Beal17Mazur.J0_26_rank_zero_of_Bost_Bound
-          #print axioms Beal17Mazur.J0_26_torsion
+          #print axioms Beal17Mazur.J0_26_rank_analytic_bound_eq_zero
+          #print axioms Beal17Mazur.torsion_bound_mod_3
+          #print axioms Beal17Mazur.formal_immersion_at_3
+          #print axioms Beal17Mazur.rank_zero_implies_torsion_eq
           #print axioms Beal17Mazur.X0_26_rational_points_exhaustive
           #print axioms Beal17Mazur.Frey_13_exclusion_of_X0_26
           EOF
@@ -461,20 +456,14 @@ jobs:
               "Beal17Mazur.X0_26_genus",
               "Beal17Mazur.X0_26_cusp_count",
               "Beal17Mazur.X0_26_cusps_Q_rational",
-              "Beal17Mazur.J0_26_rank_zero_of_Bost_Bound",
-              "Beal17Mazur.J0_26_torsion",
+              "Beal17Mazur.J0_26_rank_analytic_bound_eq_zero",
+              "Beal17Mazur.torsion_bound_mod_3",
+              "Beal17Mazur.formal_immersion_at_3",
+              "Beal17Mazur.rank_zero_implies_torsion_eq",
               "Beal17Mazur.X0_26_rational_points_exhaustive",
               "Beal17Mazur.Frey_13_exclusion_of_X0_26",
           }
           allowed = {"propext", "Classical.choice", "Quot.sound"}
-          certificate_axioms = {
-          }
-          sorry_boundaries = {
-              "Beal17Mazur.J0_26_rank_zero_of_Bost_Bound",
-              "Beal17Mazur.J0_26_torsion",
-              "Beal17Mazur.X0_26_rational_points_exhaustive",
-              "Beal17Mazur.Frey_13_exclusion_of_X0_26",
-          }
           reports = {
               declaration: {
                   token.strip()
@@ -497,15 +486,11 @@ jobs:
           missing = expected - reports.keys()
           unexpected = {
               declaration: dependencies - (
-                  allowed |
-                  ({declaration} if declaration in certificate_axioms else set()) |
-                  ({"sorryAx"} if declaration in sorry_boundaries else set())
+                  allowed
               )
               for declaration, dependencies in reports.items()
               if declaration in expected and dependencies - (
-                  allowed |
-                  ({declaration} if declaration in certificate_axioms else set()) |
-                  ({"sorryAx"} if declaration in sorry_boundaries else set())
+                  allowed
               )
           }
           if missing or unexpected:

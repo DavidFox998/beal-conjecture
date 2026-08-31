@@ -123,11 +123,14 @@ retains no named certificate axioms:
 | GRH for `X₀(143)` threshold | Lean-proved in the vendored Lindelöf M2 gate |
 | BSD-shaped rank certificate | Constructed from the declared record, not a genuine BSD rank proof |
 
-The rank-zero conclusion, Jacobian torsion equality, formal-immersion/
-Chabauty exhaustiveness, and the conditional Frey 13-isogeny exclusion are
-deliberate `sorry` boundaries. The external certificate facts are represented
-without named certificate axioms; the missing degeneracy,
-descent, and modular-curve arguments are not claimed as Lean proofs.
+The 476d language is now axiom-free and sorry-free. Rational model points are
+subtypes carrying their equation certificates; the numerical M1/M2 rank bound,
+the order-21 mod-3 certificate, and a finite `2 × 2` determinant certificate
+are checked in Lean. The genuine torsion injection, the passage from the
+formal-immersion certificate to global exhaustiveness, and the Frey modular
+realization remain explicit hypotheses of conditional theorems. The verified
+finite set remains the four source-backed cusps: no two CM points or six-point
+classification are invented.
 
 ## The mathematical target
 
