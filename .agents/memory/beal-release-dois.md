@@ -38,9 +38,9 @@ independently verified; do not mint another DOI for this release.
 The v8.4.0 release-guard, genuine Frey residual, and typed R=T milestone has
 version DOI `10.5281/zenodo.22183160` (Zenodo record 22183160), under concept
 DOI `10.5281/zenodo.22041831`. Its GitHub tag and complete source archive were
-verified at the green release commit; do not mint another DOI. The Zenodo
-record version is correctly `v8.4.0`, but its inherited display title still
-ends in `v8.3.0` and should be corrected in place rather than by minting again.
+verified at the green release commit, and its inherited display title was
+corrected in place to “Beal Conjecture — Release Guard, Genuine Frey Residual,
+and Typed R=T Patching — v8.4.0”; do not mint another DOI.
 
 The inherited v4.1.0 titles and descriptions on Zenodo records
 `10.5281/zenodo.22110949` (`v7.0.0-genuine-provider`),
