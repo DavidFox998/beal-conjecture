@@ -255,6 +255,15 @@ jobs:
            #print axioms Beal17Mazur.GaloisStableCyclicLevel.carrier_nonempty
            #print axioms Beal17Mazur.GaloisStableCyclicLevel.level_pos
            #print axioms Beal17Mazur.X0ModuliDatum.level_card
+           #print axioms Beal17Mazur.selectedRationalTwoPoint_mem_fullE2
+           #print axioms Beal17Mazur.selectedGeometricTwoPoint_addOrderOf
+           #print axioms Beal17Mazur.selectedTwoSubgroup_inf_kernel
+           #print axioms Beal17Mazur.mixedLevelCarrier_eq_zmultiples
+           #print axioms Beal17Mazur.mixedLevelCarrier_card
+           #print axioms Beal17Mazur.mixedLevelCarrier_galois_stable
+           #print axioms Beal17Mazur.mixedX0ModuliDatum
+           #print axioms Beal17Mazur.residualReducible_implies_mixedX0ModuliDatum
+           #print axioms Beal17Mazur.X0MixedLevelRealizationBoundary
            #print axioms Beal17Mazur.kernelToX0TwoPModuli
            #print axioms Beal17Mazur.reducibleToX0TwoPModuli
            #print axioms Beal17Mazur.X0_26_genus
@@ -351,6 +360,12 @@ jobs:
             echo "FAIL: B17 source contains an axiom, opaque declaration, sorry, or admit"
             exit 1
           fi
+          if grep -nE \
+              'quotientBySubgroup|galoisRepresentation.*Irreducible|isNonCuspidal[[:space:]]*:[[:space:]]*True|isRational[[:space:]]*:[[:space:]]*True' \
+              lean/Beal/B17_X0Moduli.lean; then
+            echo "FAIL: the kernel-to-X0 bridge used a forbidden quotient/isogeny shortcut or True field"
+            exit 1
+          fi
           cat > /tmp/beal_b17_mazur_audit.lean <<'EOF'
           import Beal.Mazur.KernelToX0
           #print axioms Beal17Mazur.FreyPTorsion
@@ -367,6 +382,15 @@ jobs:
           #print axioms Beal17Mazur.X0ModuliDatum
           #print axioms Beal17Mazur.kernelToX0TwoPModuli
           #print axioms Beal17Mazur.reducibleToX0TwoPModuli
+          #print axioms Beal17Mazur.selectedRationalTwoPoint_mem_fullE2
+          #print axioms Beal17Mazur.selectedGeometricTwoPoint_addOrderOf
+          #print axioms Beal17Mazur.selectedTwoSubgroup_inf_kernel
+          #print axioms Beal17Mazur.mixedLevelCarrier_eq_zmultiples
+          #print axioms Beal17Mazur.mixedLevelCarrier_card
+          #print axioms Beal17Mazur.mixedLevelCarrier_galois_stable
+          #print axioms Beal17Mazur.mixedX0ModuliDatum
+          #print axioms Beal17Mazur.residualReducible_implies_mixedX0ModuliDatum
+          #print axioms Beal17Mazur.X0MixedLevelRealizationBoundary
           #print axioms Beal17Mazur.X0_26_genus
           #print axioms Beal17Mazur.X0_26_cusp_count
           #print axioms Beal17Mazur.X0_26_cusps_Q_rational
@@ -399,6 +423,15 @@ jobs:
               "Beal17Mazur.X0ModuliDatum",
               "Beal17Mazur.kernelToX0TwoPModuli",
               "Beal17Mazur.reducibleToX0TwoPModuli",
+              "Beal17Mazur.selectedRationalTwoPoint_mem_fullE2",
+              "Beal17Mazur.selectedGeometricTwoPoint_addOrderOf",
+              "Beal17Mazur.selectedTwoSubgroup_inf_kernel",
+              "Beal17Mazur.mixedLevelCarrier_eq_zmultiples",
+              "Beal17Mazur.mixedLevelCarrier_card",
+              "Beal17Mazur.mixedLevelCarrier_galois_stable",
+              "Beal17Mazur.mixedX0ModuliDatum",
+              "Beal17Mazur.residualReducible_implies_mixedX0ModuliDatum",
+              "Beal17Mazur.X0MixedLevelRealizationBoundary",
               "Beal17Mazur.X0_26_genus",
               "Beal17Mazur.X0_26_cusp_count",
               "Beal17Mazur.X0_26_cusps_Q_rational",

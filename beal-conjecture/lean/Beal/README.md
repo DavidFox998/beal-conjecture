@@ -362,6 +362,23 @@ exception identify it as an honest boundary, not as residual irreducibility.
 The substantive residual theorem remains the conditional
 `frey_irreducible_of_mazur`, which cannot be used without the supplier.
 
+`B17_X0Moduli.lean` formalizes the valid kernel-level bridge to mixed level.
+It selects the rational point `(0,0)` from the exhaustive Frey `E[2]`
+classification, base-changes it to the geometric point group, and takes its
+cyclic order-two subgroup. For a Galois-stable order-`p` kernel supplied by
+residual reducibility, it proves that the two subgroups intersect only at the
+identity. Their subgroup sum is proved equal to the cyclic subgroup generated
+by the sum of an order-two generator and a chosen generator of the prime-order
+kernel, so its cardinality is exactly `2p`. The construction also proves
+Galois stability of the mixed subgroup.
+
+The resulting `X0ModuliDatum` is the rational `X₀(2p)` moduli datum available
+in the pinned library: an underlying Frey context with a Galois-stable cyclic
+geometric subgroup of order `2p`. It does not claim a rational generator of
+the `p`-kernel, construct an elliptic-curve quotient, or identify a point on a
+scheme-level compactified modular curve. `X0MixedLevelRealizationBoundary`
+states the narrow theorem-valued interface for that later realization.
+
 The final path still names the deep inputs that have not been reconstructed
 from first principles:
 

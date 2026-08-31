@@ -40,3 +40,4 @@
 - [X₀(26) finite-model boundary](x0-26-model-boundary.md) — X₀(26) has four rational cusps; model checks do not prove rational-point exhaustiveness or rank zero.
 - [Lean merge protection](lean-merge-protection.md) — brothers-desert-proof/main requires only the exact Lean job check; workspace origin is not the target.
 - [Frey isogeny repository audit](frey-isogeny-repository-audit.md) — all DavidFox998 Lean repos were searched; no reusable Mazur/Kenku supplier exists outside Beal.
+- [Mixed X₀(2p) level boundary](mixed-x0-level-boundary.md) — choose one rational order-two line; full E[2] is not itself cyclic X₀(2p) level.
