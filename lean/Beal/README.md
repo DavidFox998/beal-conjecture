@@ -457,17 +457,26 @@ opaque declaration of their own and audit to `[propext, Quot.sound]`. The
 V-specific edge is clean. The Task #440 build covered 2,424 targets and CI
 #239 completed successfully in 53m23s.
 
-This is not a repository-wide claim. `wiles_lifting_axiom` remains a
-mathematical boundary. The separately named `mazur_irreducibility_axiom`
-inhabits only B05's legacy natural-number compatibility predicate: that
-predicate is not residual-representation irreducibility, and B05 is not
-imported by the active B15/B20 path. B17's distinct
-`frey_irreducibility_external` now talks about the genuine Frey curve over
-`ℚ̄` and excludes an absolute-Galois-stable order-`p` subgroup. Its name
-deliberately does not claim that the missing Mazur specialization has already
-been derived. The focused audit requires the concrete definitions to remain
-free of domain axioms and the instantiated boundary to expose exactly this
-named external input.
+This is not a repository-wide claim. B05's separately named
+`mazur_irreducibility_axiom` inhabits only its legacy natural-number
+compatibility predicate: that predicate is not residual-representation
+irreducibility, and B05 is not imported by the active B15/B20 path. B05 now
+takes Wiles lifting as an explicit external hypothesis instead of declaring an
+axiom. The theorem-level `Beal.Patching.taylor_wiles_r_equals_t` constructs the
+semiring-carrier comparison from explicit two-sided data; it does not assert
+the complete-local or commutative ring structure of classical R=T, claim that
+the repository constructs those data, or imply B05's legacy predicate. B17
+proves the full four-point rational 2-torsion classification for the Frey curve
+with Mathlib points while retaining a parameterized boundary for the missing
+isogeny/residual-representation step.
+The `wiles_lifting_axiom` remains a mathematical boundary wherever that legacy
+interface is used. B17's distinct `frey_irreducibility_external` now talks
+about the genuine Frey curve over `ℚ̄` and excludes an
+absolute-Galois-stable order-`p` subgroup. Its name deliberately does not
+claim that the missing Mazur specialization has already been derived. The
+focused audit requires the concrete definitions to remain free of domain
+axioms and the instantiated boundary to expose exactly this named external
+input.
 
 The real-number interpretation of the fixed-point inequality
 `‖p·α₀‖ < 1/p` remains isolated in the desert-brothers module and audits to
