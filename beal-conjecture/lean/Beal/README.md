@@ -82,6 +82,30 @@ isogeny morphism, a scheme-level `X₀(2p)`, its cusps, or a non-cuspidal
 rational point. Interpreting the datum on a genuine modular curve remains the
 explicit realization boundary for later work.
 
+### The explicit `X₀(26)` model
+
+`Mazur/X0_26_Model.lean` records the Bruin--Najman genus-two equation
+
+```text
+y² - (x³ + 1)y = -2x⁵ + 2x⁴ - 5x³ + 2x² - 2x
+```
+
+and its completed-square sextic
+
+```text
+Y² = x⁶ - 8x⁵ + 8x⁴ - 18x³ + 8x² - 8x + 1.
+```
+
+Closed Lean computations certify the sextic discriminant is nonzero, its
+even-degree genus certificate is `2`, and the four displayed rational model
+points satisfy the equation. These are labelled by the four cusp
+representatives attached to the divisors `1`, `2`, `13`, and `26`.
+
+This is finite arithmetic only. It does not prove that the displayed points
+exhaust `X₀(26)(ℚ)`, compute the Jacobian, or prove rank zero. The
+rank/descent argument and the resulting rational-point classification remain
+the explicit 476d boundary.
+
 ## The mathematical target
 
 Beal's Conjecture says that a positive-integer solution

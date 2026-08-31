@@ -171,7 +171,8 @@ jobs:
               lean/Beal/B17_FullE2.lean \
               lean/Beal/B17_MazurIrreducible_Core.lean \
               lean/Beal/B17_X0Moduli.lean \
-              lean/Beal/Mazur/KernelToX0.lean; then
+              lean/Beal/Mazur/KernelToX0.lean \
+              lean/Beal/Mazur/X0_26_Model.lean; then
             echo "FAIL: B17 must not reintroduce True/trivial irreducibility placeholders"
             fail=1
           fi
@@ -256,6 +257,9 @@ jobs:
            #print axioms Beal17Mazur.X0ModuliDatum.level_card
            #print axioms Beal17Mazur.kernelToX0TwoPModuli
            #print axioms Beal17Mazur.reducibleToX0TwoPModuli
+           #print axioms Beal17Mazur.X0_26_genus
+           #print axioms Beal17Mazur.X0_26_cusp_count
+           #print axioms Beal17Mazur.X0_26_cusps_Q_rational
           #print axioms Beal17Mazur.FreyResidualRepresentationReducible
           #print axioms Beal17Mazur.FreyMazurContext.hasGoodReductionAtResidualPrime
           #print axioms Beal17Mazur.FreyMazurContext.isSemistableAtResidualPrime
@@ -339,6 +343,7 @@ jobs:
             lean/Beal/B17_MazurIrreducible.lean
             lean/Beal/B17_X0Moduli.lean
             lean/Beal/Mazur/KernelToX0.lean
+            lean/Beal/Mazur/X0_26_Model.lean
           )
           if grep -nE \
               '^[[:space:]]*(axiom|opaque|sorry|admit)([[:space:]]|$)' \
@@ -362,6 +367,9 @@ jobs:
           #print axioms Beal17Mazur.X0ModuliDatum
           #print axioms Beal17Mazur.kernelToX0TwoPModuli
           #print axioms Beal17Mazur.reducibleToX0TwoPModuli
+          #print axioms Beal17Mazur.X0_26_genus
+          #print axioms Beal17Mazur.X0_26_cusp_count
+          #print axioms Beal17Mazur.X0_26_cusps_Q_rational
           EOF
           lake env lean /tmp/beal_b17_mazur_audit.lean 2>&1 |
             tee /tmp/beal_b17_mazur_audit.txt
@@ -391,6 +399,9 @@ jobs:
               "Beal17Mazur.X0ModuliDatum",
               "Beal17Mazur.kernelToX0TwoPModuli",
               "Beal17Mazur.reducibleToX0TwoPModuli",
+              "Beal17Mazur.X0_26_genus",
+              "Beal17Mazur.X0_26_cusp_count",
+              "Beal17Mazur.X0_26_cusps_Q_rational",
           }
           allowed = {"propext", "Classical.choice", "Quot.sound"}
           reports = {

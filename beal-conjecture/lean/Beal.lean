@@ -58,6 +58,7 @@ import Beal.B17_FullE2
     import Beal.B17_MazurIrreducible
 import Beal.B17_X0Moduli
 import Beal.Mazur.KernelToX0
+import Beal.Mazur.X0_26_Model
     import Beal.B18_FreyIsElliptic_Core
     import Beal.B18_FreyIsElliptic
     import Beal.B19_BealFinalAssembly_Core
