@@ -115,6 +115,37 @@
           ∀ q : ℕ, q.Prime → q ∣ conductor →
             q ∣ A.natAbs * B.natAbs * C.natAbs ∨ q = 2
 
+      /-- The displayed integral model has a good-reduction certificate at
+          `q` in the invariant sense needed by B17: `q` does not divide this
+          model's discriminant.
+
+          This sufficient criterion is deliberately a proposition about the
+          concrete displayed discriminant, not a definition through the
+          Néron-model API absent from Mathlib 4.12. -/
+      def HasGoodReductionAt
+          {A B C : ℤ} {x y z : ℕ}
+          (model : FreyIntegralModel A B C x y z) (q : ℕ) : Prop :=
+        ¬ q ∣ model.discriminant.natAbs
+
+      /-- The invariant criterion for multiplicative reduction used by the
+          classical Frey argument: the discriminant is bad while `c₄` is a
+          unit modulo the prime.
+
+          The later Tate wrapper proves conductor exponent one from precisely
+          these two certificates. -/
+      def HasMultiplicativeReductionAt
+          {A B C : ℤ} {x y z : ℕ}
+          (model : FreyIntegralModel A B C x y z) (q : ℕ) : Prop :=
+        q ∣ model.discriminant.natAbs ∧ IsUnit (model.c4 : ZMod q)
+
+      /-- Semistability at one prime, expressed by the two invariant branches
+          available in the pinned Mathlib revision: good reduction or the
+          multiplicative `Δ`/`c₄` criterion. -/
+      def IsSemistableAt
+          {A B C : ℤ} {x y z : ℕ}
+          (model : FreyIntegralModel A B C x y z) (q : ℕ) : Prop :=
+        HasGoodReductionAt model q ∨ HasMultiplicativeReductionAt model q
+
       /-- The fixed integral model together with separately supplied global
           conductor data. The hard local Tate implication is intentionally not
           a field of this structure. The Beal equation is stored so the
@@ -317,6 +348,9 @@
       section AxiomAudit
       #print axioms c4_eq_b2sq_sub_24b4
       #print axioms disc_Frey_eq_from_coefficients
+      #print axioms HasGoodReductionAt
+      #print axioms HasMultiplicativeReductionAt
+      #print axioms IsSemistableAt
       #print axioms wiles_modularity
       end AxiomAudit
 

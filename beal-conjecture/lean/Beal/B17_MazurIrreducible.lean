@@ -1,6 +1,7 @@
 import Beal.B17_MazurIrreducible_Core
 import Beal.B17_FullE2
 import Beal.B14_FreyTate
+import Beal.B14_TateC4Nonzero
 import Mathlib.FieldTheory.AbsoluteGaloisGroup
 
 namespace Beal17Mazur
@@ -148,25 +149,104 @@ def MazurIrreducibilityBoundary (predicates : FreyMazurPredicates) : Prop :=
     HasFullRationalTwoTorsion
     predicates.residualRepresentationReducible
 
-/-- **External Frey irreducibility input.**
+/-- The residual prime is different from `2`. -/
+theorem FreyMazurContext.prime_ne_two (context : FreyMazurContext) :
+    context.p ≠ 2 := by
+  have hp := context.five_le
+  omega
 
-This is the remaining historical arithmetic-geometry input. Its conclusion
-now excludes a genuine absolute-Galois-stable order-`p` subgroup of the fixed
-Frey curve over `ℚ̄`; it is no longer an unrelated conductor-divisibility
-predicate. The present `FreyMazurContext` does not yet carry the semistability
-and reduction data needed to derive this statement from Mazur's rational-
-isogeny classification. It therefore remains one explicitly stronger named
-axiom rather than being mislabeled as a proved Mazur specialization.
+/-- The residual prime has good reduction on the displayed Frey model.
+
+The discriminant is a product of `16` and powers of the three bases. Since
+`p ≥ 5` and the context records that `p` divides none of those bases, its
+image modulo `p` is nonzero.
 -/
-axiom frey_irreducibility_external
+theorem FreyMazurContext.hasGoodReductionAtResidualPrime
     (context : FreyMazurContext) :
-    HasFullRationalTwoTorsion context →
-    ¬ FreyResidualRepresentationReducible context
+    HasGoodReductionAt context.model context.p := by
+  haveI : Fact (Nat.Prime context.p) := ⟨context.prime⟩
+  have h16 : (16 : ZMod context.p) ≠ 0 :=
+    Beal.FreyTate.TateC4.sixteen_ne_zero_ZMod
+      context.prime context.prime_ne_two
+  have hA : (context.A : ZMod context.p) ≠ 0 := by
+    intro hZero
+    exact context.p_not_dvd_A
+      ((ZMod.natCast_zmod_eq_zero_iff_dvd context.A context.p).mp hZero)
+  have hB : (context.B : ZMod context.p) ≠ 0 := by
+    intro hZero
+    exact context.p_not_dvd_B
+      ((ZMod.natCast_zmod_eq_zero_iff_dvd context.B context.p).mp hZero)
+  have hC : (context.C : ZMod context.p) ≠ 0 := by
+    intro hZero
+    exact context.p_not_dvd_C
+      ((ZMod.natCast_zmod_eq_zero_iff_dvd context.C context.p).mp hZero)
+  intro hDivides
+  have hZero :
+      ((context.model.discriminant : ℤ) : ZMod context.p) = 0 := by
+    rw [ZMod.intCast_zmod_eq_zero_iff_dvd]
+    exact Int.natCast_dvd.mpr hDivides
+  have hNonzero :
+      ((context.model.discriminant : ℤ) : ZMod context.p) ≠ 0 := by
+    rw [context.model.discriminant_eq]
+    simp only [disc_Frey]
+    push_cast
+    exact mul_ne_zero
+      (mul_ne_zero
+        (mul_ne_zero h16 (pow_ne_zero 2 (pow_ne_zero context.x hA)))
+        (pow_ne_zero 2 (pow_ne_zero context.y hB)))
+      (pow_ne_zero 2 (pow_ne_zero context.z hC))
+  exact False.elim (hNonzero hZero)
 
-/-- B17 instantiates its boundary with the genuine Frey residual predicate. -/
-theorem frey_mazur_irreducibility_boundary :
+/-- Good reduction is one of the two explicit semistable branches. -/
+theorem FreyMazurContext.isSemistableAtResidualPrime
+    (context : FreyMazurContext) :
+    IsSemistableAt context.model context.p :=
+  Or.inl context.hasGoodReductionAtResidualPrime
+
+/-- A theorem-valued interface for the Mazur rational-isogeny classification
+specialized to the concrete Frey objects used here.
+
+The supplier must consume the proved full rational `E[2]`, good-reduction, and
+semistability certificates and rule out a genuine Galois-stable order-`p`
+subgroup. Keeping this as an explicit argument removes the global B17 axiom
+without pretending that Mathlib 4.12 contains the modular-curve proof.
+-/
+def MazurRationalIsogenyClassification : Prop :=
+  ∀ context : FreyMazurContext,
+    HasFullRationalTwoTorsion context →
+    HasGoodReductionAt context.model context.p →
+    IsSemistableAt context.model context.p →
+    RationalPIsogenyKernel context →
+    False
+
+/-- Honest public boundary marker for the missing Mazur classification.
+
+This proposition is intentionally `True`: the pinned Mathlib revision does not
+contain the full Mazur rational-isogeny theorem needed to construct
+`MazurRationalIsogenyClassification`. It records a conditional formalization
+boundary; it is not a proof of residual irreducibility.
+-/
+def mazur_irreducibility_boundary : Prop := True
+
+/-- Derive Frey residual irreducibility from the explicit Mazur classification
+supplier and the reduction facts proved from the context. -/
+theorem frey_irreducible_of_mazur
+    (classification : MazurRationalIsogenyClassification)
+    (context : FreyMazurContext)
+    (hFull : HasFullRationalTwoTorsion context) :
+    ¬ FreyResidualRepresentationReducible context := by
+  rintro ⟨kernel⟩
+  exact classification context hFull
+    context.hasGoodReductionAtResidualPrime
+    context.isSemistableAtResidualPrime kernel
+
+/-- B17 instantiates its boundary with the genuine Frey residual predicate,
+conditional on an explicit theorem-valued Mazur classification supplier. -/
+theorem frey_mazur_irreducibility_boundary
+    (classification : MazurRationalIsogenyClassification) :
     MazurIrreducibilityBoundary freyMazurPredicates :=
-  frey_irreducibility_external
+  fun context hFull =>
+    frey_irreducible_of_mazur classification context hFull
 
 /-- The model-indexed B14 conductor support proves that the fixed odd prime
 does not divide the model's conductor when it divides none of the bases. -/
@@ -221,7 +301,11 @@ theorem remove_exact_context_conductor_divisor
 #print axioms RationalPIsogenyKernel
 #print axioms FreyResidualRepresentationReducible
 #print axioms MazurIrreducibilityBoundary
-#print axioms frey_irreducibility_external
+#print axioms FreyMazurContext.hasGoodReductionAtResidualPrime
+#print axioms FreyMazurContext.isSemistableAtResidualPrime
+#print axioms MazurRationalIsogenyClassification
+#print axioms mazur_irreducibility_boundary
+#print axioms frey_irreducible_of_mazur
 #print axioms frey_mazur_irreducibility_boundary
 
 end Beal17Mazur

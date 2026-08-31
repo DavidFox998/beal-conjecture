@@ -148,7 +148,7 @@ jobs:
           ! grep -R --include="*.lean" "^\s*sorry" lean || (echo "FAIL: sorry found" && exit 1)
           echo "OK: 0 sorry"
 
-      - name: No Prop := True stubs in Core files
+      - name: No undocumented Prop := True stubs
         run: |
           set -euo pipefail
           fail=0
@@ -163,13 +163,23 @@ jobs:
           if grep -nE ':\s*Prop\s*:=\s*True\b|:=\s*trivial\b|:=\s*by[[:space:]]+trivial\b' \
               lean/Beal/B17_FreyRationalTwoTorsion.lean \
               lean/Beal/B17_FullE2.lean \
-              lean/Beal/B17_MazurIrreducible_Core.lean \
-              lean/Beal/B17_MazurIrreducible.lean; then
+              lean/Beal/B17_MazurIrreducible_Core.lean; then
             echo "FAIL: B17 must not reintroduce True/trivial irreducibility placeholders"
             fail=1
           fi
+          b17_trivial=$(
+            grep -nE ':\s*Prop\s*:=\s*True\b|:\s*Prop\s*:=\s*¬\s*False\b|:=\s*trivial\b|:=\s*by[[:space:]]+trivial\b' \
+              lean/Beal/B17_MazurIrreducible.lean || true
+          )
+          expected_boundary='def mazur_irreducibility_boundary : Prop := True'
+          if [ "$(printf '%s\n' "$b17_trivial" | grep -Fc "$expected_boundary")" -ne 1 ] ||
+              [ "$(printf '%s\n' "$b17_trivial" | sed '/^[[:space:]]*$/d' | wc -l)" -ne 1 ]; then
+            printf '%s\n' "$b17_trivial"
+            echo "FAIL: B17 may contain only the documented Mazur conditional-boundary marker"
+            fail=1
+          fi
           if [ $fail -ne 0 ]; then exit 1; fi
-          echo "OK: no trivial Prop stubs in Core files"
+          echo "OK: no undocumented trivial Prop stubs"
 
       - name: Audit every core and wrapper theorem
         run: |
@@ -231,7 +241,11 @@ jobs:
           #print axioms Beal17Mazur.galoisAction
           #print axioms Beal17Mazur.RationalPIsogenyKernel
           #print axioms Beal17Mazur.FreyResidualRepresentationReducible
-          #print axioms Beal17Mazur.frey_irreducibility_external
+          #print axioms Beal17Mazur.FreyMazurContext.hasGoodReductionAtResidualPrime
+          #print axioms Beal17Mazur.FreyMazurContext.isSemistableAtResidualPrime
+          #print axioms Beal17Mazur.MazurRationalIsogenyClassification
+          #print axioms Beal17Mazur.mazur_irreducibility_boundary
+          #print axioms Beal17Mazur.frey_irreducible_of_mazur
           #print axioms Beal17Mazur.frey_mazur_irreducibility_boundary
           #print axioms Beal17Mazur.prime_not_dvd_conductor
           #print axioms Beal17Mazur.remove_exact_divisor
@@ -302,13 +316,29 @@ jobs:
       - name: Audit the genuine B17 Mazur boundary
         run: |
           set -euo pipefail
+          b17_files=(
+            lean/Beal/B17_FreyRationalTwoTorsion.lean
+            lean/Beal/B17_FullE2.lean
+            lean/Beal/B17_MazurIrreducible_Core.lean
+            lean/Beal/B17_MazurIrreducible.lean
+          )
+          if grep -nE \
+              '^[[:space:]]*(axiom|opaque|sorry|admit)([[:space:]]|$)' \
+              "${b17_files[@]}"; then
+            echo "FAIL: B17 source contains an axiom, opaque declaration, sorry, or admit"
+            exit 1
+          fi
           cat > /tmp/beal_b17_mazur_audit.lean <<'EOF'
           import Beal.B17_MazurIrreducible
           #print axioms Beal17Mazur.FreyPTorsion
           #print axioms Beal17Mazur.galoisAction
           #print axioms Beal17Mazur.RationalPIsogenyKernel
           #print axioms Beal17Mazur.FreyResidualRepresentationReducible
-          #print axioms Beal17Mazur.frey_irreducibility_external
+          #print axioms Beal17Mazur.FreyMazurContext.hasGoodReductionAtResidualPrime
+          #print axioms Beal17Mazur.FreyMazurContext.isSemistableAtResidualPrime
+          #print axioms Beal17Mazur.MazurRationalIsogenyClassification
+          #print axioms Beal17Mazur.mazur_irreducibility_boundary
+          #print axioms Beal17Mazur.frey_irreducible_of_mazur
           #print axioms Beal17Mazur.frey_mazur_irreducibility_boundary
           EOF
           lake env lean /tmp/beal_b17_mazur_audit.lean 2>&1 |
@@ -317,20 +347,63 @@ jobs:
             echo "FAIL: B17 Mazur boundary depends on sorryAx"
             exit 1
           fi
-          if ! grep -Fq \
-              "'Beal17Mazur.frey_irreducibility_external' depends on axioms: [Beal17Mazur.frey_irreducibility_external]" \
-              /tmp/beal_b17_mazur_audit.txt; then
-            echo "FAIL: the named Mazur specialization axiom changed unexpectedly"
-            exit 1
-          fi
-          if ! grep -A5 -F \
-              "'Beal17Mazur.frey_mazur_irreducibility_boundary' depends on axioms:" \
-              /tmp/beal_b17_mazur_audit.txt |
-              grep -Fq 'Beal17Mazur.frey_irreducibility_external'; then
-            echo "FAIL: the instantiated B17 boundary must expose the named Mazur input"
-            exit 1
-          fi
-          echo "OK: B17 uses genuine geometric p-torsion and exposes one named Mazur input"
+          python3 - /tmp/beal_b17_mazur_audit.txt <<'PY'
+          import pathlib
+          import re
+          import sys
+
+          audit_path = pathlib.Path(sys.argv[1])
+          audit = audit_path.read_text(encoding="utf-8")
+          expected = {
+              "Beal17Mazur.FreyPTorsion",
+              "Beal17Mazur.galoisAction",
+              "Beal17Mazur.RationalPIsogenyKernel",
+              "Beal17Mazur.FreyResidualRepresentationReducible",
+              "Beal17Mazur.FreyMazurContext.hasGoodReductionAtResidualPrime",
+              "Beal17Mazur.FreyMazurContext.isSemistableAtResidualPrime",
+              "Beal17Mazur.MazurRationalIsogenyClassification",
+              "Beal17Mazur.mazur_irreducibility_boundary",
+              "Beal17Mazur.frey_irreducible_of_mazur",
+              "Beal17Mazur.frey_mazur_irreducibility_boundary",
+          }
+          allowed = {"propext", "Classical.choice", "Quot.sound"}
+          reports = {
+              declaration: {
+                  token.strip()
+                  for token in dependencies.replace("\n", " ").split(",")
+                  if token.strip()
+              }
+              for declaration, dependencies in re.findall(
+                  r"'([^']+)' depends on axioms: \[([^\]]*)\]",
+                  audit,
+                  flags=re.DOTALL,
+              )
+          }
+          reports.update({
+              declaration: set()
+              for declaration in re.findall(
+                  r"'([^']+)' does not depend on any axioms",
+                  audit,
+              )
+          })
+          missing = expected - reports.keys()
+          unexpected = {
+              declaration: dependencies - allowed
+              for declaration, dependencies in reports.items()
+              if declaration in expected and dependencies - allowed
+          }
+          if missing or unexpected:
+              if missing:
+                  print("FAIL: missing B17 axiom reports:", ", ".join(sorted(missing)))
+              if unexpected:
+                  for declaration, dependencies in sorted(unexpected.items()):
+                      print(
+                          f"FAIL: {declaration} has non-foundational axioms: "
+                          + ", ".join(sorted(dependencies))
+                      )
+              sys.exit(1)
+          PY
+          echo "OK: B17's substantive theorems are conditional and its True boundary marker is explicit"
 
       - name: Test the B20 axiom-output parser
         run: bash scripts/test-check-b20-axioms.sh
