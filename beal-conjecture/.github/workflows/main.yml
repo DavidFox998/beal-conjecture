@@ -373,10 +373,10 @@ jobs:
           fi
           grep -oE '^[[:space:]]*axiom[[:space:]]+[A-Za-z0-9_]+' "$boundary_file" |
             awk '{print $2}' | sort > /tmp/beal_476d_axioms.txt
-          printf '%s\n' Bost_Bound_26 BSD_143a1_rank1 GRH_X0_143_cert |
+          printf '%s\n' BSD_143a1_rank1 GRH_X0_143_cert |
             sort > /tmp/beal_476d_expected_axioms.txt
           if ! cmp -s /tmp/beal_476d_expected_axioms.txt /tmp/beal_476d_axioms.txt; then
-            echo "FAIL: 476d must declare exactly its three certificate axioms"
+            echo "FAIL: 476d must declare exactly its two remaining certificate axioms"
             diff -u /tmp/beal_476d_expected_axioms.txt /tmp/beal_476d_axioms.txt || true
             exit 1
           fi
@@ -462,7 +462,6 @@ jobs:
               "Beal17Mazur.X0_26_genus",
               "Beal17Mazur.X0_26_cusp_count",
               "Beal17Mazur.X0_26_cusps_Q_rational",
-              "Beal17Mazur.Bost_Bound_26",
               "Beal17Mazur.GRH_X0_143_cert",
               "Beal17Mazur.BSD_143a1_rank1",
               "Beal17Mazur.J0_26_rank_zero_of_Bost_Bound",
@@ -472,7 +471,6 @@ jobs:
           }
           allowed = {"propext", "Classical.choice", "Quot.sound"}
           certificate_axioms = {
-              "Beal17Mazur.Bost_Bound_26",
               "Beal17Mazur.GRH_X0_143_cert",
               "Beal17Mazur.BSD_143a1_rank1",
           }

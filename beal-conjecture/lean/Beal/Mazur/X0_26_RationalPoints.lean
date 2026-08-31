@@ -1,4 +1,5 @@
 import Beal.Mazur.X0_26_Model
+import Beal.Mazur.Gates.M1_BC6
 import Beal.B17_MazurIrreducible
 
 namespace Beal17Mazur
@@ -17,12 +18,12 @@ noncuspidal CM points: that six-point premise is not the accepted
 classification for this curve.
 -/
 
-/-- The numerical constant occurring in the Bost--Connes certificate. -/
-noncomputable def C_S4 : ℝ := 11422 / 1000
+/-- The genuine logarithmic constant from the vendored M1 gate. -/
+noncomputable abbrev C_S4 : ℝ := Gates.M1.C_S4
 
-/- Certificate-checked from DavidFox998/bost-connes, Gate M1 BC6 Weil bound
-   closed.  This is an external input, not a Lean proof in this repository. -/
-axiom Bost_Bound_26 : C_S4 > 2 * Real.sqrt 13
+/-- The M1 threshold is now Lean-proved, not an external axiom. -/
+theorem Bost_Bound_26 : C_S4 > 2 * Real.sqrt 13 :=
+  Gates.M1.C_S4_gt_two_sqrt_13
 
 /-- Data asserted by the external `X₀(143)` GRH certificate.
 
