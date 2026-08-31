@@ -1,0 +1,66 @@
+import Beal.B00_OperaNumerorum
+    import Beal.B01_Def_Core
+    import Beal.B01_Def
+    import Beal.B02_Frey_Core
+    import Beal.B02_Frey
+    import Beal.B03_Conductor_Core
+    import Beal.B03_Conductor
+    import Beal.B04_Modular_Core
+    import Beal.B04_Modular
+    import Beal.B04_QExpansion_Core
+    import Beal.B05_HasseWiles_Core
+    import Beal.B05_HasseWiles
+    import Beal.B05_Modularity_Core
+    import Beal.B05_Modularity
+    import Beal.B06_Final_Core
+    import Beal.B06_Final
+    import Beal.B07_Galois_Core
+    import Beal.B07_Galois
+    import Beal.B08_LevelLowering_Core
+    import Beal.B08_LevelLowering
+    import Beal.B09_FinalContradiction_Core
+    import Beal.B09_FinalContradiction
+    import Beal.B10_RibetReal_Core
+    import Beal.B10_RibetReal
+    import Beal.B11_Epsilon_Core
+    import Beal.B11_Epsilon
+    import Beal.B12_RibetProof_Core
+    import Beal.B12_RibetProof
+    import Beal.B13_RibetRealDefs_Core
+    import Beal.B13_RibetRealDefs
+    import Beal.B14_FreyConductor_Core
+    import Beal.B14_FreyConductor
+    import Beal.B14_PrimeNotDvd_Core
+    import Beal.B14_FreyTate
+import Beal.B14_FreyS2
+import Beal.B14_TateC4Nonzero
+import Beal.B14_TateInImpliesOrd1
+import Beal.Galois.«07l_ShimuraQExpansionSupplier»
+import Beal.Galois.«07h_EutheosGeometry»
+import Beal.Galois.«07m_FourierQExpansion»
+import Beal.Galois.«07n_NormalizedEigenlineQExpansion»
+import Beal.Galois.«07h_DesertInfra»
+import Beal.Patching.TaylorWilesPrimes
+import Beal.Patching.PatchedModule
+import Beal.Patching.DeformationHecke
+import Beal.Patching.Depth
+import Beal.Patching.RankOne
+import Beal.Patching.REqualsT
+    import Beal.B15_LevelTo2_Core
+    import Beal.B15_LevelTo2
+import Beal.B15_RibetIterate
+    import Beal.B16_BealFinal_Core
+    import Beal.B16_BealFinal
+    import Beal.B17_FreyRationalTwoTorsion
+import Beal.B17_FullE2
+    import Beal.B17_MazurIrreducible_Core
+    import Beal.B17_MazurIrreducible
+    import Beal.B18_FreyIsElliptic_Core
+    import Beal.B18_FreyIsElliptic
+    import Beal.B19_BealFinalAssembly_Core
+    import Beal.B19_BealFinalAssembly
+    import Beal.B20_BealConjectureDone_Core
+    import Beal.B20_BealConjectureDone
+    import Beal.B20_Beal_Core
+    import Beal.B21_FermatCorollary_Core
+    import Beal.B21_FermatCorollary
