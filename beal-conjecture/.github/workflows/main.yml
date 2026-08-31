@@ -771,3 +771,49 @@ jobs:
 
       - name: Lake exe check
         run: lake exe cache get || true
+
+  clean-build:
+    name: Clean locked rebuild
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install elan
+        run: |
+          curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      - name: Rebuild from the committed dependency snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          # This job intentionally does not restore .lake or use the normal
+          # dependency cache. Lake must fetch the revisions in the committed
+          # manifest, using the package declaration in lakefile.lean.
+          rm -rf .lake
+          if [ -e .lake ]; then
+            echo "FAIL: generated .lake state could not be removed"
+            exit 1
+          fi
+
+          build_log="$(mktemp)"
+          trap 'rm -f "$build_log"' EXIT
+          if ! lake build +Beal.B00_OperaNumerorum Beal 2>&1 | tee "$build_log"; then
+            echo
+            echo "FAIL: a clean checkout could not rebuild from the committed Lean and Lake dependency snapshot."
+            echo "The build must work using lean-toolchain, lakefile.lean, and lake-manifest.json without leftover .lake state."
+            echo "Review the first build error above; do not repair this job by running 'lake update'."
+            exit 1
+          fi
+
+          if ! git diff --quiet -- lakefile.lean lake-manifest.json; then
+            echo "FAIL: the clean rebuild changed a committed Lake input."
+            echo "A clean release build must consume the revisions already recorded in lake-manifest.json"
+            echo "and the package declaration already recorded in lakefile.lean."
+            echo
+            git --no-pager diff -- lakefile.lean lake-manifest.json
+            exit 1
+          fi
+
+          echo "OK: clean checkout rebuilt with the committed Lean toolchain and locked Lake dependencies"

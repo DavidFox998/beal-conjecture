@@ -427,6 +427,10 @@ theorems have been reconstructed from first principles.
 CI enforces the boundary on every push:
 
 - **Build all bricks** — all B01–B21 Cores and Wrappers compile
+- **Clean locked rebuild** — a separate job removes generated `.lake` state and
+  rebuilds from the committed `lean-toolchain`, `lakefile.lean`, and exact
+  revisions in `lake-manifest.json`; it fails if the clean build cannot
+  reproduce the project or changes either committed Lake input
 - **Check NO sorry** — no `sorry` occurs in any brick
 - **Reject trivial Core stubs** — no `: Prop := True` or equivalent placeholder
 - **Audit every Core declaration** — Cores remain import-free and zero-axiom
@@ -458,6 +462,16 @@ and `.lake/packages` under a key derived from `lean-toolchain` and
 `lake-manifest.json`; `lake exe cache get` runs only when that exact dependency
 cache is missing. Avoid `lake clean` unless a genuinely clean rebuild is
 required.
+
+CI also runs a release-level clean-checkout validation. That job deliberately
+removes generated `.lake/` state and does not restore the incremental dependency
+cache before running
+`lake build +Beal.B00_OperaNumerorum Beal`. It must fetch and build using only
+the Lean version in `lean-toolchain`, the package declaration in
+`lakefile.lean`, and the exact transitive revisions recorded in
+`lake-manifest.json`. It then verifies that Lake did not rewrite either
+committed input. A failure means that the release snapshot is not reproducible
+from its committed dependency lock.
 
 ---
 
