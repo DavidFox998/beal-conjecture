@@ -1,0 +1,17 @@
+Phase 1 — Infrastructure (you don't have this yet)
+Task #476a: X₀(N) as modular curve in Lean
+• No Mathlib definition of X₀(N) as curve / function field exists. You have to build it. • Model: X₀(N) := H* / Γ₀(N) with cusps — define as scheme over Q, then as curve. • Lean file: Beal/ModularCurve/X0.lean — define Γ₀(N), X₀(N) via modular function field Q(j, j(Nz)) • This is 1 repo, but ∼500 lines — foundation for all p 
+Task #476b: Galois-stable cyclic p-kernel → rational point on X₀(2p)
+• You already have the interface Beacon mentions — "Beal remains only repo with Galois-stable cyclic p-kernel interface" • Formalize: Frey with full E[2] + rational p-isogeny → Q-point on X₀(2p) non-cuspidal • File: Beal/Mazur/KernelToX0.lean — ∼200 lines, uses your Full E exhaustive  Phase 2 — The p=13, X₀(26) wall
+X₀(26) is genus 2, hyperelliptic: y² = x⁶ - 3x⁵ - ... (get model from Sage/LMFDB 26.a2). Rational points known: 6 points, all cusps + CM.
+
+You need:
+
+Task #476c: X₀(26) explicit model + Jacobian rank 0
+• Get plane model from LMFDB, formalize as curve • Prove J₀(26)(Q) = torsion, rank 0 — uses 2-descent formalization. This is where Mathlib lacks descent machinery • Workaround: computational verification via Sage + certify in Lean with native_decide for point counts — not pure proof, but supplier 
+Task #476d: X₀(26)(Q) = cusps
+• Once rank 0, rational points = torsion points pullback. Enumerate torsion J₀(26)(Q)[torsion] = Z/7 × Z/7? actually Z/3 × Z/21 — check LMFDB • File: Beal/Mazur/X0_26_RationalPoints.lean 
+This one case unlocks p=13. Once you have X₀(26)(Q) = cusps, no non-cuspidal point → no rational 13-isogeny for Frey with full 2-torsion.
+Phase 3 — Generalize to p ≥ 11
+Task #476e: Kenku X₀(2p) classification for p=11,17,19,37
+• p=11 → X₀(22) genus 2, similar to 26 • p=17,19,37 genus >2 — need Mazur's isogeny theorem methods: formal group, Eisenstein ideal, cotangent • Realistically: you formalize p=11,13 now, leave p≥17 as conditional with same boundary — still removes biggest blocker for Beal (p≥11, but 13 is hardest for full 2-torsion)  Concrete next step TODAY: 1. In Beacon, split #476 into 476a-e above — don't keep it as one mega-task. Beacon won't bite mega-task.  2. Start with 476b — you have the input (Full E) — formalize Kernel → X₀(2p) point. That's 200 lines, no X₀(N) definition needed if you define X₀(2p) as moduli problem (pair E, C₂, C_p).  3. For 476c, pull LMFDB model for 26:
