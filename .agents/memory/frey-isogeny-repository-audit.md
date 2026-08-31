@@ -9,4 +9,4 @@ The closest Arakelov files concern Frobenius isogeny degree and explicitly leave
 
 **Why:** Reusing a superficially related “closed” file would falsely turn an open modular-curve/classification input into a proved B17 supplier.
 
-**How to apply:** Keep the Beal supplier uninhabited until a genuine Kenku–Mazur or X₀(2p) argument is formalized. Do not import the Arakelov Frobenius-degree or BSD torsion anchors as evidence for residual irreducibility.
+**How to apply:** A Lean constructor may assemble the Beal supplier from explicit prime-indexed evidence, but do not claim that evidence is inhabited until genuine Kenku–Mazur or X₀(2p) arguments are formalized. Every prime in an admitted finite range needs an explicit branch unless a proved classification theorem removes it. Do not import the Arakelov Frobenius-degree or BSD torsion anchors as evidence for residual irreducibility.

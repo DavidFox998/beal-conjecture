@@ -54,92 +54,40 @@ formalization makes this coupling explicit rather than gestural.
 
 ## Current formal status
 
-> **v8.3.0 typed patching and Tate-certified descent — conditional, audited, and model-indexed**
->
-> This milestone removes exact-divisibility proofs from the Wiles plan and from
-> `GaloisEdgeWitness`. Wiles supplies odd-prime, residual-prime-separation, and
-> quotient data; the odd-prime Tate interface derives each exact conductor edge
-> from the canonical Frey model. The terminal 2-adic exponent-one premise is now
-> explicit model-indexed data rather than an implicit consequence of Wiles.
->
-> The final route remains conditional. Its named mathematical boundaries are
-> `frey_conductor_data`, `tate_step2_odd_prime_external`, and
-> `wiles_modularity`; its unconstructed data inputs are
-> `TwoAdicExponentOneSupplier` and `EnrichedPlanSupplier`. A successful build is
-> an audit of that conditional route, not an unconditional proof of Beal's
-> Conjecture.
->
-> **v8.2.0 full rational E[2] exhaustiveness — exactly four rational points killed by doubling**
->
-> The Frey curve's rational 2-torsion is now proved to be exactly
-> `{O, (0,0), (Aˣ,0), (-Bʸ,0)}`. The proof classifies zero-y roots by repeated
-> `mul_eq_zero` over `ℚ` and proves the converse group-law bridge. This closes
-> the former three-points-versus-full-E[2] gap; it does not claim Mazur
-> irreducibility or construct residual Galois representations.
->
-> **v8.0.0 patching layer — 0 local axioms, 0 opaque rank propositions, explicit Taylor–Wiles data**
->
-> This repository is still a formalization of the Beal argument, not a claim
-> that Lean has reconstructed Wiles, Tate, or Ribet from first principles. The
-> v8.0.0 extends the v7.3 typed Eutheos edge with an auditable patching layer.
->
-> Here “0 axioms” is a focused statement about the typed Eutheos bridge:
-> `OldNewDecompHyp_from_Eutheos`, `EutheosJitter`, and the separation kernel
-> introduce no local proposition-valued axiom or opaque declaration and audit to
-> `[propext, Quot.sound]`. It does **not** mean that every declaration in the
-> repository is axiom-free. The repository retains several explicit,
-> independently audited mathematical boundaries, including the Mazur/Wiles
-> tower, global Frey-conductor data, and the narrow external odd-prime Tate
-> theorem. None is part of the
-> focused Eutheos bridge.
->
-> The current conditional chain is:
->
-> **primitive Beal data** → **Frey curve and discriminant arithmetic**
-> → **one canonical Frey model with externally supplied conductor data**
-> → **an explicit 2-adic exponent-one certificate for that conductor**
-> → **a typed modular-form
-> token and odd-prime quotient plan at that same conductor**
-> → **Tate-derived exact divisibility along that plan**
-> → **an explicit `EnrichedPlanSupplier` carrying normalized eigenline,
-> typed Eutheos geometry, Taylor–Wiles patching, support, and token-transport data per edge**
-> → **level 2** → **$S_2(Γ_0(2)) = 0$**
-> → **contradiction**.
->
-> The final B20 theorem depends on the typed Wiles, global Frey-conductor, and
-> odd-prime Tate interfaces, plus explicit 2-adic exponent-one and
-> `EnrichedPlanSupplier` data. At each descent edge,
-> `NormalizedEigenlineData` derives `QExpansionPrincipleOnV` through
-> `QExpansionPrincipleOnV_fromEigenline`; the old/new proposition is now
-> derived at the theorem boundary from typed Eutheos geometry. Localized rank
-> one is now constructed from explicit patched-module generator and coordinate
-> laws rather than accepted as an edge proposition.
->
-> The active token path does not use `SupportedNewformToTokenProvider`.
-> `NewSubspaceSupportData` retains a finite newform, representation
-> realization, and Hecke annihilation as data, while
-> `NewformHeckeToPreservedTokenTransport` converts that data to
-> `PreservedForm` without `Classical.choice`.
->
-> The final B20 contract has three named mathematical interfaces:
-> `Beal.FreyTate.wiles_modularity`,
-> `Beal.FreyTate.TateStep2.frey_conductor_data`, and
-> `Beal.FreyTate.TateStep2.tate_step2_odd_prime_external`.
-> Its two explicit, unconstructed data inputs are
-> `Beal20Done.TwoAdicExponentOneSupplier` and
-> `Beal.RibetIterate.EnrichedPlanSupplier`.
-> The final route invokes
-> `Beal.FreyTate.TateStep2.tate_frey_multiplicative_at_model`, whose only
-> local mathematical dependency is `tate_step2_odd_prime_external`, to derive
-> each exact-divisibility proof from the fixed model rather than accepting it
-> in the Wiles plan.
->
-> `lake build Beal` targets Lean/Mathlib 4.12.0. The focused v7.3 edge audit
-> reports the foundational footprint `{propext, Quot.sound}`. The broader B20
-> audit uses `Classical.choice` through the existing `ZMod` unit argument in
-> the local Tate specialization; this is a Lean foundation dependency, not an
-> additional mathematical theorem. `TateStep2.freyModelOf` itself remains a
-> direct typed construction.
+This is a conditional formalization, not an unconditional Lean proof of
+Beal's Conjecture. The compact referee map is:
+
+| Layer | Exact status |
+|---|---|
+| **Mathlib 4.12** | Supplies Weierstrass curves and point groups, algebraic closures and the absolute Galois group, finite groups, `ZMod`, and polynomial/arithmetic infrastructure. It does not supply scheme-level `X₀(N)`, elliptic-curve quotient/isogeny objects at this boundary, Kenku–Mazur, genus-two Jacobian descent, Wiles, or Ribet. |
+| **Project Lean proofs** | Constructs the canonical Frey model, its exact rational `E[2]`, the geometric `p`-torsion action, the mixed level-`2p` subgroup, good reduction and semistability at the residual prime, and the exhaustive prime split `11,13,17,19,23,29,31,37` for the recorded B17 range. |
+| **Lean-checked computations** | Checks the explicit `X₀(26)` sextic, discriminant and factorization, four displayed cusp points, finite-field counts, the M1/M2 numerical thresholds, and the finite formal-immersion determinant. These computations do not prove global rational-point exhaustiveness. |
+| **Mathematical interpretation** | Interprets a stable cyclic subgroup as rational isogeny data and the level-26 model as `X₀(26)`. Those interpretations are represented by typed realization boundaries because Mathlib lacks the required moduli infrastructure. |
+| **Absent / external** | A complete `X₀(26)(ℚ)` rank–torsion–exhaustiveness certificate and Frey realization for `p=13`; the seven non-13 semistable/Kenku–Mazur exclusions; full 2-adic conductor analysis; Wiles modularity; the external odd-prime Tate theorem; and the enriched Ribet/patching plan. |
+
+`B17_MazurPrimeCoverage.lean` has no unrestricted fallback. The `p = 13`
+branch is forced through `Frey_13_exclusion_of_global_certificate`; the other
+seven primes are separate fields. The constructor therefore proves that
+complete supplied evidence inhabits `MazurRationalIsogenyClassification`, but
+the repository does **not** manufacture the still-missing mathematical
+certificates.
+
+The active conditional chain is:
+
+**primitive Beal data** → **canonical Frey model and exact rational `E[2]`**
+→ **complete supplied B17 isogeny exclusions** → **externally supplied global
+conductor and 2-adic exponent-one certificate** → **Wiles form token and
+quotient plan** → **Tate-derived odd-prime exact divisibility** → **explicit
+`EnrichedPlanSupplier` carrying the Galois, Hecke, Eutheos, Taylor–Wiles,
+support, and transport data** → **level 2** → **$S_2(\Gamma_0(2))=0$**.
+
+Closing the B17 case split does not close the independent Wiles, Tate, Ribet,
+patching, or conductor boundaries. The final B20 theorem still uses exactly
+the three named domain interfaces `wiles_modularity`, `frey_conductor_data`,
+and `tate_step2_odd_prime_external`, plus the explicit
+`TwoAdicExponentOneSupplier` and `EnrichedPlanSupplier`. Foundational audit
+entries such as `propext`, `Classical.choice`, and `Quot.sound` are Lean
+foundations, not additional mathematical theorems.
 
 ### v7.3.0 Task #440: Typed Eutheos old/new geometric bridge
 
@@ -431,7 +379,9 @@ CI enforces the boundary on every push and pull request:
   rebuilds from the committed `lean-toolchain`, `lakefile.lean`, and exact
   revisions in `lake-manifest.json`; it fails if the clean build cannot
   reproduce the project or changes either committed Lake input
-- **Check NO sorry** — no `sorry` occurs in any brick
+- **Check proof placeholders** — exactly two localized level-26 gate
+  experiments retain one `sorry` wall each; every other Lean source is rejected
+  if `sorry`, `sorryAx`, or `admit` appears
 - **Reject trivial Core stubs** — no `: Prop := True` or equivalent placeholder
 - **Audit every Core declaration** — Cores remain import-free and zero-axiom
 - **Audit the real-number transport boundary** — it may use Lean foundations but

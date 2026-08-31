@@ -29,8 +29,10 @@ witnesses are retained as `NewSubspaceSupportData`, and
 `NewformHeckeToPreservedTokenTransport` converts them to the preserved-form
 token without choice. No inhabitant of those open data boundaries is claimed.
 
-The Lean 4.12.0 release path contains no executable `sorry`, `admit`,
-`sorryAx`, declared `axiom`, or opaque Ribet shortcut. The focused edge
+The active global-certificate route contains no executable `sorry`, `admit`,
+`sorryAx`, declared `axiom`, or opaque Ribet shortcut. Two separately audited
+local-gate experiment files retain one `sorry` wall each and are not used by
+that route. The focused edge
 footprint is `[propext, Quot.sound]`; the final theorem remains conditional on
 the typed Wiles, Tate, and enriched-plan inputs.
 
@@ -408,23 +410,27 @@ the good-reduction certificate says that the prime does not divide the
 displayed discriminant,
 multiplicative reduction is the bad-discriminant/unit-`c₄` branch, and
 semistability is their disjunction. B17 proves that the residual prime has good
-and therefore semistable reduction from `p ≥ 5` and the three recorded
+and therefore semistable reduction from the recorded `p ≥ 11` range and the three
 non-divisibility hypotheses.
 
-`MazurRationalIsogenyClassification` is an explicit theorem-valued supplier.
-Given the proved full rational `E[2]` and reduction certificates, it must rule
-out a genuine rational `p`-isogeny kernel. `frey_irreducible_of_mazur` and
-`frey_mazur_irreducibility_boundary` derive the B17 conclusion from that
-supplier. There is no declared B17 domain axiom, but the pinned Mathlib
-revision still does not construct the supplier or contain Mazur's modular-curve
-rational-point proof. The formal status is therefore conditional and explicit,
-not an unconditional reconstruction of Mazur's theorem.
+`B17_MazurPrimeCoverage.lean` constructs
+`MazurRationalIsogenyClassification` from complete proof-relevant inputs. Lean
+checks the exhaustive split of every prime in the recorded interval:
+`11, 13, 17, 19, 23, 29, 31, 37`. Thus `23`, `29`, and `31` cannot disappear
+because a comment quoted only the shorter exceptional list.
 
-The public `mazur_irreducibility_boundary : Prop := True` is the deliberately
-trivial marker for that missing mathematics. Its source comment and focused CI
-exception identify it as an honest boundary, not as residual irreducibility.
-The substantive residual theorem remains the conditional
-`frey_irreducible_of_mazur`, which cannot be used without the supplier.
+The `p = 13` branch is structurally forced through
+`Frey_13_exclusion_of_global_certificate`, hence through the genuine
+level-26 rational-point and Frey-realization certificate. The other seven
+branches are separate `SemistableExceptionalPrimeExclusion` fields consuming
+the proved full rational `E[2]`, good-reduction, and semistability facts. There
+is no catch-all supplier and no `Prop := True` boundary marker.
+
+The constructor and residual-irreducibility theorem are Lean-proved and have
+only foundational dependencies. Their mathematical inputs remain
+unconstructed: the repository still lacks the global `X₀(26)` certificate and
+the seven non-13 exclusion proofs. This is complete coverage of the interface,
+not an unconditional reconstruction of Kenku–Mazur.
 
 `B17_X0Moduli.lean` formalizes the valid kernel-level bridge to mixed level.
 It selects the rational point `(0,0)` from the exhaustive Frey `E[2]`
@@ -585,7 +591,8 @@ It does **not** establish, by itself:
 
 - Wiles's modularity theorem;
 - Tate's local conductor algorithm in full generality;
-- an inhabitant of the explicit Mazur rational-isogeny classification supplier;
+- a global level-26 certificate and seven non-13 prime exclusions from which
+  the explicit Mazur rational-isogeny supplier is constructed;
 - the Hecke-algebra representation theorem;
 - newform decomposition, Ihara/Jacquet–Langlands transport, or multiplicity
   one;
@@ -627,12 +634,12 @@ This is not a repository-wide claim. `wiles_lifting_axiom` remains a
 mathematical boundary. The separately named `mazur_irreducibility_axiom`
 inhabits only B05's legacy natural-number compatibility predicate: that
 predicate is not residual-representation irreducibility, and B05 is not
-imported by the active B15/B20 path. B17 instead takes an explicit
-`MazurRationalIsogenyClassification` supplier for the genuine Frey curve over
-`ℚ̄`. The focused audit requires the B17 declarations to remain free of named
-domain axioms; it does not claim that this repository constructs the supplier.
-The separate `mazur_irreducibility_boundary : Prop := True` declaration is an
-explicit status marker for precisely this unconstructed boundary.
+imported by the active B15/B20 path. B17 instead constructs its explicit
+`MazurRationalIsogenyClassification` supplier from a complete eight-prime
+split for the genuine Frey curve over `ℚ̄`. The focused audit requires the
+constructor to use the level-26 theorem at `13`, all seven other named fields,
+no catch-all field, and no vacuous status marker. It does not claim the deep
+input certificates have been constructed.
 
 The real-number interpretation of the fixed-point inequality
 `‖p·α₀‖ < 1/p` remains isolated in the desert-brothers module and audits to
@@ -647,8 +654,9 @@ classifies every zero-y affine root of the Frey cubic;
 `freyFullE2_eq` proves the exact four-point set equality including infinity.
 This closes only the rational `E[2]` exhaustiveness gap. B17 now defines the
 geometric `p`-torsion Galois action and rational `p`-isogeny kernel predicate.
-Mazur's classification is an explicit theorem-valued input rather than a
-declared axiom; no construction of that input is claimed.
+The classification supplier now has a Lean-proved constructor from the
+complete prime-indexed evidence; no construction of that deep evidence is
+claimed.
 
 ## v8.0.0 patching layer
 

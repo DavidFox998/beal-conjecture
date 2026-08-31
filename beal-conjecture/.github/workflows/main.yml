@@ -345,6 +345,7 @@ jobs:
               lean/Beal/B17_FreyRationalTwoTorsion.lean \
               lean/Beal/B17_FullE2.lean \
               lean/Beal/B17_MazurIrreducible_Core.lean \
+              lean/Beal/B17_MazurPrimeCoverage.lean \
               lean/Beal/B17_X0Moduli.lean \
               lean/Beal/Mazur/KernelToX0.lean \
               lean/Beal/Mazur/X0_26_Model.lean \
@@ -352,15 +353,10 @@ jobs:
             echo "FAIL: B17 must not reintroduce True/trivial irreducibility placeholders"
             fail=1
           fi
-          b17_trivial=$(
-            grep -nE ':\s*Prop\s*:=\s*True\b|:\s*Prop\s*:=\s*¬\s*False\b|:=\s*trivial\b|:=\s*by[[:space:]]+trivial\b' \
-              lean/Beal/B17_MazurIrreducible.lean || true
-          )
-          expected_boundary='def mazur_irreducibility_boundary : Prop := True'
-          if [ "$(printf '%s\n' "$b17_trivial" | grep -Fc "$expected_boundary")" -ne 1 ] ||
-              [ "$(printf '%s\n' "$b17_trivial" | sed '/^[[:space:]]*$/d' | wc -l)" -ne 1 ]; then
-            printf '%s\n' "$b17_trivial"
-            echo "FAIL: B17 may contain only the documented Mazur conditional-boundary marker"
+          if grep -nE ':\s*Prop\s*:=\s*True\b|:\s*Prop\s*:=\s*¬\s*False\b|:=\s*trivial\b|:=\s*by[[:space:]]+trivial\b' \
+              lean/Beal/B17_MazurIrreducible.lean \
+              lean/Beal/B17_MazurPrimeCoverage.lean; then
+            echo "FAIL: B17 must not contain a vacuous irreducibility or prime-coverage marker"
             fail=1
           fi
           if [ $fail -ne 0 ]; then exit 1; fi
@@ -452,9 +448,12 @@ jobs:
           #print axioms Beal17Mazur.FreyMazurContext.hasGoodReductionAtResidualPrime
           #print axioms Beal17Mazur.FreyMazurContext.isSemistableAtResidualPrime
           #print axioms Beal17Mazur.MazurRationalIsogenyClassification
-          #print axioms Beal17Mazur.mazur_irreducibility_boundary
           #print axioms Beal17Mazur.frey_irreducible_of_mazur
           #print axioms Beal17Mazur.frey_mazur_irreducibility_boundary
+          #print axioms Beal17Mazur.b17_residual_prime_cases
+          #print axioms Beal17Mazur.mazur_classification_of_complete_prime_inputs
+          #print axioms Beal17Mazur.mazur_classification_of_global_certificate
+          #print axioms Beal17Mazur.frey_irreducible_of_complete_prime_coverage
           #print axioms Beal17Mazur.prime_not_dvd_conductor
           #print axioms Beal17Mazur.remove_exact_divisor
           #print axioms Beal17Mazur.remove_exact_context_conductor_divisor
@@ -529,6 +528,7 @@ jobs:
             lean/Beal/B17_FullE2.lean
             lean/Beal/B17_MazurIrreducible_Core.lean
             lean/Beal/B17_MazurIrreducible.lean
+            lean/Beal/B17_MazurPrimeCoverage.lean
             lean/Beal/B17_X0Moduli.lean
             lean/Beal/Mazur/KernelToX0.lean
             lean/Beal/Mazur/X0_26_Model.lean
@@ -549,6 +549,27 @@ jobs:
           grep -q 'def TorsionIdentificationWall : Prop' "$boundary_file"
           grep -q 'def FormalImmersionExhaustivenessWall : Prop' "$boundary_file"
           grep -q 'def Frey13ToX0_26Realization : Prop' "$boundary_file"
+          coverage_file=lean/Beal/B17_MazurPrimeCoverage.lean
+          for prime in 11 17 19 23 29 31 37; do
+            if ! grep -qE "^[[:space:]]+prime${prime}[[:space:]]*:[[:space:]]*SemistableExceptionalPrimeExclusion[[:space:]]+${prime}$" \
+                "$coverage_file"; then
+              echo "FAIL: complete B17 coverage is missing the explicit p=${prime} input"
+              exit 1
+            fi
+            if ! grep -q "remaining\\.prime${prime}" "$coverage_file"; then
+              echo "FAIL: the p=${prime} input is declared but not used"
+              exit 1
+            fi
+          done
+          if grep -qE '^[[:space:]]+prime13[[:space:]]*:' "$coverage_file"; then
+            echo "FAIL: p=13 must use the level-26 rational-point theorem, not a generic field"
+            exit 1
+          fi
+          grep -q 'Frey_13_exclusion_of_global_certificate level26' "$coverage_file"
+          grep -q 'context.p = 23' "$coverage_file"
+          grep -q 'context.p = 29' "$coverage_file"
+          grep -q 'context.p = 31' "$coverage_file"
+          grep -qE '^import[[:space:]]+Beal\.B17_MazurPrimeCoverage$' lean/Beal.lean
           if grep -nE \
               'quotientBySubgroup|galoisRepresentation.*Irreducible|isNonCuspidal[[:space:]]*:[[:space:]]*True|isRational[[:space:]]*:[[:space:]]*True' \
               lean/Beal/B17_X0Moduli.lean; then
@@ -556,7 +577,12 @@ jobs:
             exit 1
           fi
           cat > /tmp/beal_b17_mazur_audit.lean <<'EOF'
-          import Beal.Mazur.X0_26_RationalPoints
+          import Beal.B17_MazurPrimeCoverage
+          example (context : Beal17Mazur.FreyMazurContext) :
+              context.p = 11 ∨ context.p = 13 ∨ context.p = 17 ∨
+                context.p = 19 ∨ context.p = 23 ∨ context.p = 29 ∨
+                context.p = 31 ∨ context.p = 37 :=
+            Beal17Mazur.b17_residual_prime_cases context
           #print axioms Beal17Mazur.FreyPTorsion
           #print axioms Beal17Mazur.galoisAction
           #print axioms Beal17Mazur.RationalPIsogenyKernel
@@ -564,9 +590,14 @@ jobs:
           #print axioms Beal17Mazur.FreyMazurContext.hasGoodReductionAtResidualPrime
           #print axioms Beal17Mazur.FreyMazurContext.isSemistableAtResidualPrime
           #print axioms Beal17Mazur.MazurRationalIsogenyClassification
-          #print axioms Beal17Mazur.mazur_irreducibility_boundary
           #print axioms Beal17Mazur.frey_irreducible_of_mazur
           #print axioms Beal17Mazur.frey_mazur_irreducibility_boundary
+          #print axioms Beal17Mazur.SemistableExceptionalPrimeExclusion
+          #print axioms Beal17Mazur.KenkuMazurExceptionalPrimeInputs
+          #print axioms Beal17Mazur.b17_residual_prime_cases
+          #print axioms Beal17Mazur.mazur_classification_of_complete_prime_inputs
+          #print axioms Beal17Mazur.mazur_classification_of_global_certificate
+          #print axioms Beal17Mazur.frey_irreducible_of_complete_prime_coverage
           #print axioms Beal17Mazur.GaloisStableCyclicLevel
           #print axioms Beal17Mazur.X0ModuliDatum
           #print axioms Beal17Mazur.kernelToX0TwoPModuli
@@ -620,9 +651,14 @@ jobs:
               "Beal17Mazur.FreyMazurContext.hasGoodReductionAtResidualPrime",
               "Beal17Mazur.FreyMazurContext.isSemistableAtResidualPrime",
               "Beal17Mazur.MazurRationalIsogenyClassification",
-              "Beal17Mazur.mazur_irreducibility_boundary",
               "Beal17Mazur.frey_irreducible_of_mazur",
               "Beal17Mazur.frey_mazur_irreducibility_boundary",
+              "Beal17Mazur.SemistableExceptionalPrimeExclusion",
+              "Beal17Mazur.KenkuMazurExceptionalPrimeInputs",
+              "Beal17Mazur.b17_residual_prime_cases",
+              "Beal17Mazur.mazur_classification_of_complete_prime_inputs",
+              "Beal17Mazur.mazur_classification_of_global_certificate",
+              "Beal17Mazur.frey_irreducible_of_complete_prime_coverage",
               "Beal17Mazur.GaloisStableCyclicLevel",
               "Beal17Mazur.X0ModuliDatum",
               "Beal17Mazur.kernelToX0TwoPModuli",
@@ -707,7 +743,7 @@ jobs:
                       )
               sys.exit(1)
           PY
-          echo "OK: B17's substantive theorems are conditional and its True boundary marker is explicit"
+          echo "OK: B17 covers every admitted prime explicitly and has no fallback or vacuous marker"
 
       - name: Replay the X0(26) finite certificate
         run: |

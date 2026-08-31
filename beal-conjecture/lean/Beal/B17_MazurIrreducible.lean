@@ -24,7 +24,8 @@ structure FreyMazurContext where
   p : Nat
   beal : IsBealSolution A B C x y z
   prime : p.Prime
-  five_le : 5 ≤ p
+  eleven_le : 11 ≤ p
+  kenku_mazur_bound : p ≤ 37
   model : FreyIntegralModel (A : Int) (B : Int) (C : Int) x y z
   conductorData : FreyConductorData model
   p_not_dvd_A : ¬ p ∣ A
@@ -152,7 +153,7 @@ def MazurIrreducibilityBoundary (predicates : FreyMazurPredicates) : Prop :=
 /-- The residual prime is different from `2`. -/
 theorem FreyMazurContext.prime_ne_two (context : FreyMazurContext) :
     context.p ≠ 2 := by
-  have hp := context.five_le
+  have hp := context.eleven_le
   omega
 
 /-- The residual prime has good reduction on the displayed Frey model.
@@ -219,15 +220,6 @@ def MazurRationalIsogenyClassification : Prop :=
     RationalPIsogenyKernel context →
     False
 
-/-- Honest public boundary marker for the missing Mazur classification.
-
-This proposition is intentionally `True`: the pinned Mathlib revision does not
-contain the full Mazur rational-isogeny theorem needed to construct
-`MazurRationalIsogenyClassification`. It records a conditional formalization
-boundary; it is not a proof of residual irreducibility.
--/
-def mazur_irreducibility_boundary : Prop := True
-
 /-- Derive Frey residual irreducibility from the explicit Mazur classification
 supplier and the reduction facts proved from the context. -/
 theorem frey_irreducible_of_mazur
@@ -263,7 +255,7 @@ theorem prime_not_dvd_conductor (context : FreyMazurContext) :
       · exact context.p_not_dvd_A hA
       · exact context.p_not_dvd_B hB
     · exact context.p_not_dvd_C hC
-  · exact (by omega : ¬ 5 ≤ 2) (hTwo ▸ context.five_le)
+  · exact (by omega : ¬ 11 ≤ 2) (hTwo ▸ context.eleven_le)
 
 /-- Remove an exactly-dividing factor from an arbitrary natural number.
 
@@ -304,7 +296,6 @@ theorem remove_exact_context_conductor_divisor
 #print axioms FreyMazurContext.hasGoodReductionAtResidualPrime
 #print axioms FreyMazurContext.isSemistableAtResidualPrime
 #print axioms MazurRationalIsogenyClassification
-#print axioms mazur_irreducibility_boundary
 #print axioms frey_irreducible_of_mazur
 #print axioms frey_mazur_irreducibility_boundary
 

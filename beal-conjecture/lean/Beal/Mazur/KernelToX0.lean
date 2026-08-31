@@ -178,7 +178,8 @@ theorem kernelToX0TwoPModuli
     rw [context.prime.coprime_iff_not_dvd]
     intro hdiv
     have : context.p ≤ 2 := Nat.le_of_dvd (by norm_num) hdiv
-    have hp5 := context.five_le
+    have hp5 : 5 ≤ context.p :=
+      Nat.le_trans (by decide : 5 ≤ 11) context.eleven_le
     omega
   have hDisjoint : Disjoint two kernel.carrier := by
     rw [disjoint_iff]

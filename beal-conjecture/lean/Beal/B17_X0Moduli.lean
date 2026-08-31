@@ -285,7 +285,9 @@ theorem kernel_le_mixedGenerator
         2 • (kernel.generator : GeometricFreyPoint context) = 0 :=
       congrArg Subtype.val hzero
     exact (nsmul_ne_zero_of_lt_addOrderOf (by omega : 2 ≠ 0)
-      (by rw [kernel.generator_addOrderOf]; exact context.five_le.trans_lt' (by omega))) hcoe
+      (by
+        rw [kernel.generator_addOrderOf]
+        exact context.eleven_le.trans_lt' (by omega))) hcoe
   have hcard : Fintype.card kernel.carrier = context.p := by
     simpa only [Nat.card_eq_fintype_card] using kernel.card_eq_prime
   have hmem :
