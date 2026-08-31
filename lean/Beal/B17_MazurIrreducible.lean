@@ -1,6 +1,7 @@
 import Beal.B17_MazurIrreducible_Core
 import Beal.B17_FullE2
 import Beal.B14_FreyTate
+import Mathlib.FieldTheory.AbsoluteGaloisGroup
 
 namespace Beal17Mazur
 
@@ -69,25 +70,103 @@ theorem FreyMazurContext.hasFullRationalTwoTorsion
   exact ⟨hA, hB,
     freyFullE2_eq context.A context.B context.x context.y hA hB⟩
 
-/-- Vocabulary that a future elliptic-curve/Galois layer must instantiate.
+/-- The geometric points of the fixed Frey curve over `ℚ̄`. -/
+noncomputable abbrev GeometricFreyPoint (context : FreyMazurContext) :=
+  ((freyRationalCurve context.A context.B context.x context.y).baseChange
+    (AlgebraicClosure ℚ)).toAffine.Point
 
-Mathlib 4.12 does not provide residual representations for rational Frey
-curves. Keeping this predicate explicit prevents an arbitrary arithmetic
-proposition from being called reducibility.
+/-- The `p`-torsion subgroup of the geometric Frey points. -/
+noncomputable def FreyPTorsion (context : FreyMazurContext) :
+    AddSubgroup (GeometricFreyPoint context) where
+  carrier := {point | context.p • point = 0}
+  zero_mem' := by simp
+  add_mem' := by
+    intro left right hleft hright
+    change context.p • left = 0 at hleft
+    change context.p • right = 0 at hright
+    change context.p • (left + right) = 0
+    rw [nsmul_add, hleft, hright, add_zero]
+  neg_mem' := by
+    intro point hpoint
+    change context.p • point = 0 at hpoint
+    simpa using congrArg Neg.neg hpoint
+
+/-- The absolute-Galois action on geometric points of the fixed Frey curve.
+
+The action is induced by applying a `ℚ`-algebra automorphism of `ℚ̄` to both
+affine coordinates. This is the actual arithmetic action whose invariant
+lines define reducibility of the residual representation.
 -/
+noncomputable def galoisAction
+    (context : FreyMazurContext)
+    (σ : Field.absoluteGaloisGroup ℚ) :
+    GeometricFreyPoint context →+ GeometricFreyPoint context :=
+  WeierstrassCurve.Affine.Point.map
+    (W := freyRationalCurve context.A context.B context.x context.y)
+    (R := ℚ) (S := ℚ)
+    (F := AlgebraicClosure ℚ) (K := AlgebraicClosure ℚ) σ.toAlgHom
+
+/-- A rational cyclic subgroup of order `p` in the geometric `p`-torsion.
+
+Such a Galois-stable subgroup is the kernel form of a rational `p`-isogeny.
+Using the kernel avoids pretending that Mathlib 4.12 already contains a
+scheme-level elliptic-curve isogeny API.
+-/
+structure RationalPIsogenyKernel (context : FreyMazurContext) where
+  carrier : AddSubgroup (GeometricFreyPoint context)
+  finite_carrier : Finite carrier
+  card_eq_prime : Nat.card carrier = context.p
+  le_pTorsion : carrier ≤ FreyPTorsion context
+  galois_stable :
+    ∀ (σ : Field.absoluteGaloisGroup ℚ)
+      (point : GeometricFreyPoint context),
+      point ∈ carrier → galoisAction context σ point ∈ carrier
+
+/-- Reducibility of the fixed Frey mod-`p` representation.
+
+For a two-dimensional elliptic-curve residual representation, reducibility
+is equivalent to the existence of an absolute-Galois-stable line. Here that
+line is represented concretely by its order-`p` subgroup of geometric
+`p`-torsion, equivalently the kernel of a rational `p`-isogeny.
+-/
+def FreyResidualRepresentationReducible
+    (context : FreyMazurContext) : Prop :=
+  Nonempty (RationalPIsogenyKernel context)
+
+/-- Predicates consumed by the import-free boundary schema. -/
 structure FreyMazurPredicates where
   residualRepresentationReducible : FreyMazurContext → Prop
 
-/-- The one honest Mazur boundary schema. B17 defines but does not assert it.
+/-- B17's genuine predicates for full rational `E[2]` and residual
+reducibility. -/
+def freyMazurPredicates : FreyMazurPredicates where
+  residualRepresentationReducible := FreyResidualRepresentationReducible
 
-A future proof must instantiate `FreyMazurPredicates` with genuine
-elliptic-curve notions and then inhabit this proposition.
--/
 def MazurIrreducibilityBoundary (predicates : FreyMazurPredicates) : Prop :=
   MazurIrreducibilityBoundary17Core
     FreyMazurContext
     HasFullRationalTwoTorsion
     predicates.residualRepresentationReducible
+
+/-- **External Frey irreducibility input.**
+
+This is the remaining historical arithmetic-geometry input. Its conclusion
+now excludes a genuine absolute-Galois-stable order-`p` subgroup of the fixed
+Frey curve over `ℚ̄`; it is no longer an unrelated conductor-divisibility
+predicate. The present `FreyMazurContext` does not yet carry the semistability
+and reduction data needed to derive this statement from Mazur's rational-
+isogeny classification. It therefore remains one explicitly stronger named
+axiom rather than being mislabeled as a proved Mazur specialization.
+-/
+axiom frey_irreducibility_external
+    (context : FreyMazurContext) :
+    HasFullRationalTwoTorsion context →
+    ¬ FreyResidualRepresentationReducible context
+
+/-- B17 instantiates its boundary with the genuine Frey residual predicate. -/
+theorem frey_mazur_irreducibility_boundary :
+    MazurIrreducibilityBoundary freyMazurPredicates :=
+  frey_irreducibility_external
 
 /-- The model-indexed B14 conductor support proves that the fixed odd prime
 does not divide the model's conductor when it divides none of the bases. -/
@@ -137,6 +216,12 @@ theorem remove_exact_context_conductor_divisor
 #print axioms remove_exact_divisor
 #print axioms remove_exact_context_conductor_divisor
 #print axioms FreyMazurContext.hasFullRationalTwoTorsion
+#print axioms FreyPTorsion
+#print axioms galoisAction
+#print axioms RationalPIsogenyKernel
+#print axioms FreyResidualRepresentationReducible
 #print axioms MazurIrreducibilityBoundary
+#print axioms frey_irreducibility_external
+#print axioms frey_mazur_irreducibility_boundary
 
 end Beal17Mazur
