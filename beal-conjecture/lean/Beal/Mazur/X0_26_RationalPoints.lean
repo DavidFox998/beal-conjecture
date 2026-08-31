@@ -1,6 +1,7 @@
 import Beal.Mazur.X0_26_Model
 import Beal.Mazur.Gates.M1_BC6
 import Beal.Mazur.Gates.M2_GRH_X0_143
+import Beal.Mazur.Gates.FormalImmersion_J0_26_NoSorry
 import Beal.B17_MazurIrreducible
 import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 
@@ -203,6 +204,48 @@ theorem Frey_13_exclusion_of_X0_26
     hRealization context hprime hReducible
   exact hOutside (hExhaustive hRational)
 
+/-- The Frey `p = 13` consequence composed through the two Beal-local gates.
+
+The finite determinant calculation is proved.  The analytic `L`-value bridge,
+Heegner-height input, Kolyvagin implication, Chabauty exhaustiveness, and Frey
+realization remain visible hypotheses.
+-/
+theorem Frey_13_exclusion_of_local_gates
+    (lData : Gates.KolyvaginNoSorry.LValueData)
+    (heightData : Gates.KolyvaginNoSorry.HeegnerHeightData)
+    (rankData : Gates.KolyvaginNoSorry.J0_26_RankData)
+    (hLWall : Gates.KolyvaginNoSorry.M1_M2_to_L_nonzero_wall lData)
+    (hKolyvagin :
+      Gates.KolyvaginNoSorry.KolyvaginRankZeroWall
+        lData heightData rankData)
+    (hHeeg :
+      Gates.KolyvaginNoSorry.HeegnerHeightNonzero heightData)
+    (hChabauty :
+      Gates.FormalImmersionNoSorry.Chabauty0ExhaustivenessWall rankData)
+    (hRealization : Frey13ToX0_26Realization) :
+    FreyPIsogenyExclusion 13 := by
+  have hRank : Gates.KolyvaginNoSorry.J0_26_RankZero rankData :=
+    Gates.KolyvaginNoSorry.J0_26_rank_zero_local
+      lData heightData rankData hLWall hKolyvagin hHeeg
+  have hLocal :
+      Gates.FormalImmersionNoSorry.X0_26_Q ⊆
+        (Gates.FormalImmersionNoSorry.four_cusps :
+          Set X0_26_RationalPoint) :=
+    Gates.FormalImmersionNoSorry.X0_26_Q_subset_four_cusps
+      rankData hRank
+      Gates.FormalImmersionNoSorry.formal_immersion_at_3 hChabauty
+  have hExhaustive :
+      X0_26_Q ⊆
+        (X0_26_rational_points : Set X0_26_RationalPoint) := by
+    intro point hpoint
+    have hpointLocal :
+        point ∈ Gates.FormalImmersionNoSorry.X0_26_Q := by
+      simpa [X0_26_Q, Gates.FormalImmersionNoSorry.X0_26_Q] using hpoint
+    have hcusp := hLocal hpointLocal
+    simpa [X0_26_rational_points, X0_26_knownRationalPoints,
+      Gates.FormalImmersionNoSorry.four_cusps] using hcusp
+  exact Frey_13_exclusion_of_X0_26 hRealization hExhaustive
+
 #print axioms Bost_Bound_26
 #print axioms GRH_X0_143_cert
 #print axioms BSD_143a1_rank1
@@ -212,5 +255,6 @@ theorem Frey_13_exclusion_of_X0_26
 #print axioms rank_zero_implies_torsion_eq
 #print axioms X0_26_rational_points_exhaustive
 #print axioms Frey_13_exclusion_of_X0_26
+#print axioms Frey_13_exclusion_of_local_gates
 
 end Beal17Mazur

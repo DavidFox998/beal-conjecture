@@ -122,15 +122,20 @@ retains no named certificate axioms:
 | Bost--Connes bound `C(S₄) > 2√13` | Lean-proved in the vendored M1 gate |
 | GRH for `X₀(143)` threshold | Lean-proved in the vendored Lindelöf M2 gate |
 | BSD-shaped rank certificate | Constructed from the declared record, not a genuine BSD rank proof |
+| M1/M2 to `L(J₀(26),1) ≠ 0` | Explicit analytic bridge hypothesis |
+| Gross--Zagier/Kolyvagin rank zero | Explicit local implication hypothesis |
+| Mod-3 `2 × 2` determinant | Lean-proved finite calculation |
+| Rank/formal immersion to four-cusp exhaustiveness | Explicit Chabauty hypothesis |
 
-The 476d language is now axiom-free and sorry-free. Rational model points are
-subtypes carrying their equation certificates; the numerical M1/M2 rank bound,
-the order-21 mod-3 certificate, and a finite `2 × 2` determinant certificate
-are checked in Lean. The genuine torsion injection, the passage from the
-formal-immersion certificate to global exhaustiveness, and the Frey modular
-realization remain explicit hypotheses of conditional theorems. The verified
-finite set remains the four source-backed cusps: no two CM points or six-point
-classification are invented.
+`Mazur/Gates/Kolyvagin_J0_26_NoSorry.lean` and
+`Mazur/Gates/FormalImmersion_J0_26_NoSorry.lean` are Beal-local and import no
+RH or BSD repository. They contain no `sorry` or declared axiom. Rational model
+points are subtypes carrying their equation certificates; the M1/M2 thresholds
+and finite `2 × 2` determinant are checked in Lean. The unavailable L-value
+interpretation, Heegner height, Kolyvagin implication, torsion identification,
+global exhaustiveness, and Frey modular realization remain typed hypotheses.
+The verified finite set remains the four source-backed cusps: no two CM points
+or six-point classification are invented.
 
 ## The mathematical target
 
