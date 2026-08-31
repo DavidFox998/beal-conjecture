@@ -56,6 +56,32 @@ genuine modular curve remains a later, explicitly named boundary. In
 particular, a successful build of this file does not prove a modular-curve
 rational-point theorem, residual irreducibility, or the Beal Conjecture.
 
+### Kernel to mixed level
+
+`Mazur/KernelToX0.lean` proves the kernel-level bridge used after residual
+reducibility. It chooses the already-proved rational Frey point `(0, 0)`,
+base-changes it to `ℚ̄`, and proves that its cyclic subgroup has order two and
+is fixed by the absolute Galois action. For a `RationalPIsogenyKernel`, it
+then proves:
+
+- the order-two subgroup and order-`p` kernel are disjoint because `p ≥ 5`;
+- addition is a bijection from their product to their internal sum, so the
+  sum has order `2p`;
+- a geometric generator of the `p`-kernel may be chosen without asserting
+  that generator is rational;
+- the sum of that generator with the rational two-torsion point has order
+  `2p`, so the internal sum is cyclic;
+- Galois stability of both factors gives Galois stability of the mixed
+  subgroup; and
+- the existing residual-reducibility predicate therefore yields an
+  `X0ModuliDatum` of level `2p`.
+
+These are Lean-proved statements about geometric point groups and stable
+cyclic subgroups. They do not construct a quotient elliptic curve, an
+isogeny morphism, a scheme-level `X₀(2p)`, its cusps, or a non-cuspidal
+rational point. Interpreting the datum on a genuine modular curve remains the
+explicit realization boundary for later work.
+
 ## The mathematical target
 
 Beal's Conjecture says that a positive-integer solution

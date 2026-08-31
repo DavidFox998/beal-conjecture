@@ -170,7 +170,8 @@ jobs:
               lean/Beal/B17_FreyRationalTwoTorsion.lean \
               lean/Beal/B17_FullE2.lean \
               lean/Beal/B17_MazurIrreducible_Core.lean \
-              lean/Beal/B17_X0Moduli.lean; then
+              lean/Beal/B17_X0Moduli.lean \
+              lean/Beal/Mazur/KernelToX0.lean; then
             echo "FAIL: B17 must not reintroduce True/trivial irreducibility placeholders"
             fail=1
           fi
@@ -253,6 +254,8 @@ jobs:
            #print axioms Beal17Mazur.GaloisStableCyclicLevel.carrier_nonempty
            #print axioms Beal17Mazur.GaloisStableCyclicLevel.level_pos
            #print axioms Beal17Mazur.X0ModuliDatum.level_card
+           #print axioms Beal17Mazur.kernelToX0TwoPModuli
+           #print axioms Beal17Mazur.reducibleToX0TwoPModuli
           #print axioms Beal17Mazur.FreyResidualRepresentationReducible
           #print axioms Beal17Mazur.FreyMazurContext.hasGoodReductionAtResidualPrime
           #print axioms Beal17Mazur.FreyMazurContext.isSemistableAtResidualPrime
@@ -334,6 +337,8 @@ jobs:
             lean/Beal/B17_FullE2.lean
             lean/Beal/B17_MazurIrreducible_Core.lean
             lean/Beal/B17_MazurIrreducible.lean
+            lean/Beal/B17_X0Moduli.lean
+            lean/Beal/Mazur/KernelToX0.lean
           )
           if grep -nE \
               '^[[:space:]]*(axiom|opaque|sorry|admit)([[:space:]]|$)' \
@@ -342,7 +347,7 @@ jobs:
             exit 1
           fi
           cat > /tmp/beal_b17_mazur_audit.lean <<'EOF'
-          import Beal.B17_MazurIrreducible
+          import Beal.Mazur.KernelToX0
           #print axioms Beal17Mazur.FreyPTorsion
           #print axioms Beal17Mazur.galoisAction
           #print axioms Beal17Mazur.RationalPIsogenyKernel
@@ -353,6 +358,10 @@ jobs:
           #print axioms Beal17Mazur.mazur_irreducibility_boundary
           #print axioms Beal17Mazur.frey_irreducible_of_mazur
           #print axioms Beal17Mazur.frey_mazur_irreducibility_boundary
+          #print axioms Beal17Mazur.GaloisStableCyclicLevel
+          #print axioms Beal17Mazur.X0ModuliDatum
+          #print axioms Beal17Mazur.kernelToX0TwoPModuli
+          #print axioms Beal17Mazur.reducibleToX0TwoPModuli
           EOF
           lake env lean /tmp/beal_b17_mazur_audit.lean 2>&1 |
             tee /tmp/beal_b17_mazur_audit.txt
@@ -378,6 +387,10 @@ jobs:
               "Beal17Mazur.mazur_irreducibility_boundary",
               "Beal17Mazur.frey_irreducible_of_mazur",
               "Beal17Mazur.frey_mazur_irreducibility_boundary",
+              "Beal17Mazur.GaloisStableCyclicLevel",
+              "Beal17Mazur.X0ModuliDatum",
+              "Beal17Mazur.kernelToX0TwoPModuli",
+              "Beal17Mazur.reducibleToX0TwoPModuli",
           }
           allowed = {"propext", "Classical.choice", "Quot.sound"}
           reports = {

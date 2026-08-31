@@ -72,6 +72,11 @@ with `lake exe cache get`. Rebuild any project prerequisite whose stale
 `.olean` hides current declarations before compiling its consumer. Treat this
 as environment failure, not a theorem failure.
 
+If the checkout has been repaired manually but a later `lake env` reports that
+package URLs changed and deletes the package again, run `lake update` once from
+the project root before restoring the cache. This reconciles Lake's manifest
+URL/origin metadata; repairing only `HEAD` does not.
+
 ## Do not share mutable `.lake` directories by symlink
 
 Matching Lean versions and resolved Mathlib commit hashes are not sufficient
