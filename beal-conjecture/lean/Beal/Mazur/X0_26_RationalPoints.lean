@@ -15,6 +15,11 @@ missing arithmetic proof.  The Bost--Connes and `X₀(143)` threshold gates are
 reconstructed in the compact local `Gates/` modules.  The BSD-shaped record
 below is proved only at its declared interface level; it is not a formal
 elliptic-curve or L-function rank theorem.
+`Mazur/Jacobian/E26.lean` now constructs the two corrected elliptic factors
+and verifies their discriminants and `j`-invariants.  Its copied mwrank
+quartics remain transcript data: no `decide` theorem promotes them to a
+2-Selmer computation.
+
 The rank/descent, torsion, Chabauty, and modular interpretation steps are
 represented as explicit hypotheses of conditional theorems.  This keeps the
 standalone Beal language axiom-free and sorry-free without claiming those

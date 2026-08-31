@@ -116,6 +116,17 @@ exhaust `X₀(26)(ℚ)`, compute the Jacobian, or prove rank zero. The
 rank/descent argument and the resulting rational-point classification remain
 the explicit 476d boundary.
 
+`Mazur/Jacobian/E26.lean` constructs the corrected LMFDB/Cremona elliptic
+models associated with the proposed decomposition
+`J₀(26) ∼ E26a1 × E26b1`. Lean checks their discriminants, `c₄` values, and
+`j`-invariants. The second model is `[1,0,1,-5,-8]`, matching the supplied
+Sage transcript; `[1,-1,1,-21,-61]` is not substituted because it has
+different invariants. The file also records the ten mwrank quartic rows as
+replay data, but deliberately provides no theorem turning those rows into
+rank zero. A complete formal 2-descent still needs definitions of the
+2-coverings and local conditions, proof of global enumeration completeness,
+the Selmer-to-rank bound, and the isogeny-induced rank transport.
+
 ### Rational points and the 476d boundary
 
 `Mazur/X0_26_RationalPoints.lean` is the boundary module for the
