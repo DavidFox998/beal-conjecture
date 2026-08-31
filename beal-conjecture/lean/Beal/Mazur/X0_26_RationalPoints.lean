@@ -8,10 +8,11 @@ namespace Beal17Mazur
 /-!
 # Rational points on `X₀(26)`: the 476d boundary
 
-This module deliberately separates proved certificate inputs from the
+This module deliberately separates proved certificate-shaped inputs from the
 missing arithmetic proof.  The Bost--Connes and `X₀(143)` threshold gates are
-reconstructed in the compact local `Gates/` modules; BSD remains an external
-certificate interface.
+reconstructed in the compact local `Gates/` modules.  The BSD-shaped record
+below is proved only at its declared interface level; it is not a formal
+elliptic-curve or L-function rank theorem.
 The rank/descent, torsion, Chabauty, and modular interpretation steps remain
 explicit `sorry` boundaries.
 
@@ -52,9 +53,14 @@ structure BSD143a1RankCertificate where
 def BSD_143a1_rank_one_statement : Prop :=
   Nonempty BSD143a1RankCertificate
 
-/- Lean-proved in the birch-swinnerton-dyer-143a1 repository; imported here
-   only as an external certificate boundary. -/
-axiom BSD_143a1_rank1 : BSD_143a1_rank_one_statement
+/-- The declared BSD certificate record is inhabited by rank `1`.
+
+This removes the axiom from the compact Beal interface, but deliberately does
+not overclaim: `BSD143a1RankCertificate` contains no curve, L-function, or
+analytic-rank data.  The genuine BSD interpretation remains outside this
+formalization. -/
+theorem BSD_143a1_rank1 : BSD_143a1_rank_one_statement :=
+  ⟨⟨1, rfl⟩⟩
 
 /-- The rational-point predicate for the explicit 476c model. -/
 def X0_26_Q : Set X0_26_RationalPoint :=

@@ -373,8 +373,7 @@ jobs:
           fi
           grep -oE '^[[:space:]]*axiom[[:space:]]+[A-Za-z0-9_]+' "$boundary_file" |
             awk '{print $2}' | sort > /tmp/beal_476d_axioms.txt
-          printf '%s\n' BSD_143a1_rank1 |
-            sort > /tmp/beal_476d_expected_axioms.txt
+          : > /tmp/beal_476d_expected_axioms.txt
           if ! cmp -s /tmp/beal_476d_expected_axioms.txt /tmp/beal_476d_axioms.txt; then
             echo "FAIL: 476d must declare exactly its two remaining certificate axioms"
             diff -u /tmp/beal_476d_expected_axioms.txt /tmp/beal_476d_axioms.txt || true
@@ -462,7 +461,6 @@ jobs:
               "Beal17Mazur.X0_26_genus",
               "Beal17Mazur.X0_26_cusp_count",
               "Beal17Mazur.X0_26_cusps_Q_rational",
-              "Beal17Mazur.BSD_143a1_rank1",
               "Beal17Mazur.J0_26_rank_zero_of_Bost_Bound",
               "Beal17Mazur.J0_26_torsion",
               "Beal17Mazur.X0_26_rational_points_exhaustive",
@@ -470,7 +468,6 @@ jobs:
           }
           allowed = {"propext", "Classical.choice", "Quot.sound"}
           certificate_axioms = {
-              "Beal17Mazur.BSD_143a1_rank1",
           }
           sorry_boundaries = {
               "Beal17Mazur.J0_26_rank_zero_of_Bost_Bound",

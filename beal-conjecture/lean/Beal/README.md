@@ -115,18 +115,18 @@ CM points or a six-point classification.
 
 Gate M1 is now vendored as `Mazur/Gates/M1_BC6.lean`. It proves the actual
 logarithmic `C(S₄) > 2√13` inequality with no axiom or `sorry`. The file
-retains one external certificate interface:
+retains no named certificate axioms:
 
 | Input | Status |
 | --- | --- |
 | Bost--Connes bound `C(S₄) > 2√13` | Lean-proved in the vendored M1 gate |
 | GRH for `X₀(143)` threshold | Lean-proved in the vendored Lindelöf M2 gate |
-| BSD rank `1` for `143a1` | Lean-proved in the separate BSD repository |
+| BSD-shaped rank certificate | Constructed from the declared record, not a genuine BSD rank proof |
 
 The rank-zero conclusion, Jacobian torsion equality, formal-immersion/
 Chabauty exhaustiveness, and the conditional Frey 13-isogeny exclusion are
 deliberate `sorry` boundaries. The external certificate facts are represented
-by exactly the one remaining named certificate axiom above; the missing degeneracy,
+without named certificate axioms; the missing degeneracy,
 descent, and modular-curve arguments are not claimed as Lean proofs.
 
 ## The mathematical target
