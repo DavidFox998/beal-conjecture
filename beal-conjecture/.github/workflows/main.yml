@@ -595,11 +595,12 @@ jobs:
           #print axioms Beal17Mazur.GRH_X0_143_cert
           #print axioms Beal17Mazur.BSD_143a1_rank1
           #print axioms Beal17Mazur.J0_26_rank_analytic_bound_eq_zero
-          #print axioms Beal17Mazur.torsion_bound_mod_3
+          #print axioms Beal17Mazur.expected_torsion_group_card
           #print axioms Beal17Mazur.formal_immersion_at_3
           #print axioms Beal17Mazur.rank_zero_implies_torsion_eq
           #print axioms Beal17Mazur.X0_26_rational_points_exhaustive
           #print axioms Beal17Mazur.Frey_13_exclusion_of_X0_26
+          #print axioms Beal17Mazur.Frey_13_exclusion_of_global_certificate
           #print axioms Beal17Mazur.Frey_13_exclusion_of_local_gates
           EOF
           lake env lean /tmp/beal_b17_mazur_audit.lean 2>&1 |
@@ -647,11 +648,12 @@ jobs:
               "Beal17Mazur.Gates.FormalImmersionNoSorry.formal_immersion_at_3",
               "Beal17Mazur.Gates.FormalImmersionNoSorry.X0_26_Q_eq_four_cusps",
               "Beal17Mazur.J0_26_rank_analytic_bound_eq_zero",
-              "Beal17Mazur.torsion_bound_mod_3",
+              "Beal17Mazur.expected_torsion_group_card",
               "Beal17Mazur.formal_immersion_at_3",
               "Beal17Mazur.rank_zero_implies_torsion_eq",
               "Beal17Mazur.X0_26_rational_points_exhaustive",
               "Beal17Mazur.Frey_13_exclusion_of_X0_26",
+              "Beal17Mazur.Frey_13_exclusion_of_global_certificate",
               "Beal17Mazur.Frey_13_exclusion_of_local_gates",
           }
           foundational = {"propext", "Classical.choice", "Quot.sound"}

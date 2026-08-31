@@ -130,9 +130,11 @@ the Selmer-to-rank bound, and the isogeny-induced rank transport.
 ### Rational points and the 476d boundary
 
 `Mazur/X0_26_RationalPoints.lean` is the boundary module for the
-rational-point classification. It preserves the source-backed four-cusp
-finite set from 476c; it does not assert an additional pair of noncuspidal
-CM points or a six-point classification.
+rational-point classification. Bruin--Najman state that the rational points
+are exactly the four cusps and that `J₀(26)(ℚ) ≃ ℤ/21ℤ`. Their CM table
+classifies exceptional quadratic points, not two additional rational points.
+The Lean file records this exact target but does not promote the source's
+Magma computations to kernel-checked proofs.
 
 Gate M1 is now vendored as `Mazur/Gates/M1_BC6.lean`. It proves the actual
 logarithmic `C(S₄) > 2√13` inequality with no axiom or `sorry`. The file
@@ -150,15 +152,16 @@ retains no named certificate axioms:
 
 `Mazur/Gates/Kolyvagin_J0_26_NoSorry.lean` and
 `Mazur/Gates/FormalImmersion_J0_26_NoSorry.lean` are Beal-local and import no
-RH or BSD repository. The gate layer contains exactly two localized `sorry`
-walls: the genuine Gross--Zagier/Kolyvagin rank implication and the
-formal-immersion/global-exhaustiveness implication. Rational model points are
-subtypes carrying their equation certificates; the M1/M2 thresholds and finite
-`2 × 2` determinant are checked in Lean. The unavailable L-value
-interpretation, Heegner height, torsion identification, and Frey modular
-realization remain typed hypotheses.
-The verified finite set remains the four source-backed cusps: no two CM points
-or six-point classification are invented.
+RH or BSD repository. They contain no `sorry` or declared axiom. Rational model
+points are subtypes carrying their equation certificates; the M1/M2 thresholds
+and finite `2 × 2` determinant are checked in Lean. The unavailable L-value
+interpretation, Heegner height, Kolyvagin implication, torsion identification,
+global exhaustiveness, and Frey modular realization remain typed hypotheses.
+`X0_26GlobalClassificationCertificate` packages the exact rank-zero,
+order-21 torsion, four-cusp exhaustiveness, and Frey-realization obligations;
+the repository constructs no value of it. The verified finite set remains the
+four source-backed cusps: no two CM points or six-point classification are
+invented.
 
 The certificate interfaces follow the useful shapes in the BSD repository:
 a fixed complex function evaluated at `s = 1`, an explicit rational point with

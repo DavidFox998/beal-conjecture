@@ -25,9 +25,15 @@ represented as explicit hypotheses of conditional theorems.  This keeps the
 standalone Beal language axiom-free and sorry-free without claiming those
 four mathematical walls have been discharged.
 
-The source-backed 476c model has four rational cusps.  We do not add two
-noncuspidal CM points: that six-point premise is not the accepted
-classification for this curve.
+Bruin--Najman state that the model has exactly four rational points, all
+cusps, and that `J₀(26)(ℚ) ≃ ℤ/21ℤ`.  Their CM table concerns exceptional
+quadratic points, not additional rational points.  We therefore do not add
+two noncuspidal CM points.
+
+The source statement is pinned in
+`docs/X0_26_RATIONAL_POINTS_CERTIFICATE.md`.  Its Magma torsion bound and
+rank-zero computation are not kernel-checkable certificates, so the exact
+global classification remains uninhabited below.
 -/
 
 /-- The genuine logarithmic constant from the vendored M1 gate. -/
@@ -120,11 +126,16 @@ def J0_26_Q : Set J0_26_JacobianPoint :=
 def torsion_subgroup : Finset J0_26_JacobianPoint :=
   X0_26_rational_points.image AJ
 
-/-- A finite mod-3 certificate type of the advertised order. -/
-def J0_26_mod_3 := Fin 21
+/-- The exact abstract group appearing in the Bruin--Najman statement.
 
-theorem torsion_bound_mod_3 : Nat.card J0_26_mod_3 = 21 := by
-  simp [J0_26_mod_3]
+This definition records the target `J₀(26)(ℚ) ≃ ℤ/21ℤ`; it does not identify
+the standalone Jacobian interface above with that group.
+-/
+abbrev J0_26_expectedTorsionGroup := ZMod 21
+
+theorem expected_torsion_group_card :
+    Nat.card J0_26_expectedTorsionGroup = 21 := by
+  simp [J0_26_expectedTorsionGroup]
 
 /-- Explicit differential matrix used by the standalone formal-immersion
 certificate.  It records the finite matrix check only; it does not claim that
@@ -199,6 +210,23 @@ def Frey13ToX0_26Realization : Prop :=
     ∃ point : X0_26_RationalPoint,
       point ∈ X0_26_Q ∧ point ∉ X0_26_rational_points
 
+/-- One proof-relevant boundary containing exactly the global facts needed
+for the level-26 argument.
+
+No value of this structure is constructed in the repository.  In particular,
+the numerical gates, finite point counts, and determinant checks above cannot
+be assembled into this certificate without a verified rank/torsion argument,
+global exhaustiveness, and the genuine modular realization.
+-/
+structure X0_26GlobalClassificationCertificate where
+  jacobianRank : Nat
+  jacobianRank_eq_zero : jacobianRank = 0
+  jacobianTorsionOrder : Nat
+  jacobianTorsionOrder_eq_21 : jacobianTorsionOrder = 21
+  rational_points_exact :
+    X0_26_Q = (X0_26_rational_points : Set X0_26_RationalPoint)
+  frey13_realization : Frey13ToX0_26Realization
+
 theorem Frey_13_exclusion_of_X0_26
     (hRealization : Frey13ToX0_26Realization)
     (hExhaustive : X0_26_Q ⊆
@@ -208,6 +236,19 @@ theorem Frey_13_exclusion_of_X0_26
   obtain ⟨point, hRational, hOutside⟩ :=
     hRealization context hprime hReducible
   exact hOutside (hExhaustive hRational)
+
+/-- The genuine `p = 13` consequence of a complete level-26 certificate.
+
+This theorem is usable only after constructing the uninhabited certificate
+above; it does not turn the source's Magma computation into a Lean proof.
+-/
+theorem Frey_13_exclusion_of_global_certificate
+    (certificate : X0_26GlobalClassificationCertificate) :
+    FreyPIsogenyExclusion 13 := by
+  apply Frey_13_exclusion_of_X0_26 certificate.frey13_realization
+  intro point hpoint
+  rw [certificate.rational_points_exact] at hpoint
+  exact hpoint
 
 /-- The Frey `p = 13` consequence composed through the two Beal-local gates.
 
@@ -250,11 +291,12 @@ theorem Frey_13_exclusion_of_local_gates
 #print axioms GRH_X0_143_cert
 #print axioms BSD_143a1_rank1
 #print axioms J0_26_rank_analytic_bound_eq_zero
-#print axioms torsion_bound_mod_3
+#print axioms expected_torsion_group_card
 #print axioms formal_immersion_at_3
 #print axioms rank_zero_implies_torsion_eq
 #print axioms X0_26_rational_points_exhaustive
 #print axioms Frey_13_exclusion_of_X0_26
+#print axioms Frey_13_exclusion_of_global_certificate
 #print axioms Frey_13_exclusion_of_local_gates
 
 end Beal17Mazur
