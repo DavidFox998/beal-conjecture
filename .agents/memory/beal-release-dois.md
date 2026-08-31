@@ -42,6 +42,13 @@ verified at the green release commit, and its inherited display title was
 corrected in place to “Beal Conjecture — Release Guard, Genuine Frey Residual,
 and Typed R=T Patching — v8.4.0”; do not mint another DOI.
 
+The v8.5 Level-26 conditional rank interface has version DOI
+`10.5281/zenodo.22216841` (Zenodo record 22216841), under concept DOI
+`10.5281/zenodo.22041831`. It archives the exact GitHub v8.5 tag and retains the
+explicit second-descent, Selmer-to-Mordell–Weil, and odd-torsion hypotheses; it
+does not claim unconditional factor or Jacobian rank zero. The GitHub release
+links this DOI without moving the annotated tag. Do not mint another DOI.
+
 The inherited v4.1.0 titles and descriptions on Zenodo records
 `10.5281/zenodo.22110949` (`v7.0.0-genuine-provider`),
 `10.5281/zenodo.22123696` (`v7.1.0`), and
