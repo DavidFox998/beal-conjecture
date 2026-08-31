@@ -32,3 +32,16 @@ the Selmer-to-rank theorem.
 Keep rank zero and `J₀(26) ∼ E26a1 × E26b1` transport explicit until those
 missing semantic links are formalized; never define them from transcript
 fields or a product alias.
+
+The accepted intermediate milestone is an explicitly conditional implication:
+singleton locally-soluble ledger classes, complete descent, descent soundness,
+and exact odd torsion remain proof obligations, while rational two-torsion is
+excluded by a kernel-checked two-division-polynomial argument.
+
+**Why:** Pinned Mathlib does not yet supply the missing Selmer and
+Mordell--Weil foundations, but downstream Jacobian transport can depend
+honestly on named propositions without turning transcript evidence into proof.
+
+**How to apply:** Preserve the conditional hypotheses visibly, keep
+`IsFreeRankZero` as “every rational point is torsion,” and do not introduce an
+unconditional rank theorem, `True`/Boolean surrogate, `sorry`, or new axiom.

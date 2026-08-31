@@ -252,14 +252,14 @@ def IsRationalTorsionPoint {E : WeierstrassCurve ℚ}
 def RationalTorsionPoints (E : WeierstrassCurve ℚ) :=
   {P : MordellWeilGroup E // IsRationalTorsionPoint P}
 
-structure TorsionOdd_7_3_Certificate where
+structure TorsionOdd_26_Certificate where
   a1_exact_cardinality : Nat.card (RationalTorsionPoints E26a1W) = 7
   b1_exact_cardinality : Nat.card (RationalTorsionPoints E26b1W) = 3
   a1_no_two_torsion : NoRationalTwoTorsion E26a1W
   b1_no_two_torsion : NoRationalTwoTorsion E26b1W
 
-def TorsionOdd_7_3 : Prop :=
-  Nonempty TorsionOdd_7_3_Certificate
+def TorsionOdd_26 : Prop :=
+  Nonempty TorsionOdd_26_Certificate
 
 /-- The missing theorem that connects this exact local ledger computation to
 the Mordell--Weil quotient.  Its premise makes the singleton Selmer result
@@ -288,13 +288,13 @@ def SecondDescentHypothesis_26 : Prop :=
   Nonempty SecondDescentCertificate_26
 
 def secondDescentStatus : String :=
-  "AXIOM: second descent, needs mwrank 2-descent soundness"
+  "CONDITIONAL: second descent, needs mwrank 2-descent soundness"
 
 def torsionStatus : String :=
-  "AXIOM: exact rational torsion orders 7 and 3 are not kernel-checked"
+  "CONDITIONAL: exact rational torsion orders 7 and 3 are not kernel-checked"
 
 theorem freeRankZero_of_secondDescent :
-    SecondDescentHypothesis_26 ∧ TorsionOdd_7_3 →
+    SecondDescentHypothesis_26 ∧ TorsionOdd_26 →
       IsFreeRankZero E26a1W ∧ IsFreeRankZero E26b1W := by
   rintro ⟨⟨certificate⟩, _⟩
   exact
