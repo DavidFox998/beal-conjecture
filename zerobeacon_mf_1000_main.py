@@ -75,6 +75,43 @@ app.add_middleware(
 )
 
 
+# Replit injects the hosted analytics tracker into published website HTML when
+# analytics is enabled. Local previews and API clients must behave normally
+# when the tracker is absent or has not loaded yet.
+_ANALYTICS_SCRIPT = r"""
+(function () {
+  function track(name, data) {
+    try {
+      if (window.umami && typeof window.umami.track === 'function') {
+        window.umami.track(name, data);
+      }
+    } catch (_) {
+      // Analytics must never break the website.
+    }
+  }
+
+  window.zeroBeaconAnalytics = { track: track };
+
+  document.addEventListener('click', function (event) {
+    var target = event.target;
+    var link = target && target.closest
+      ? target.closest('[data-analytics-event]')
+      : null;
+    if (!link) return;
+
+    var name = link.getAttribute('data-analytics-event');
+    if (!name) return;
+    var data = {};
+    var location = link.getAttribute('data-analytics-location');
+    var provider = link.getAttribute('data-analytics-provider');
+    if (location) data.location = location;
+    if (provider) data.provider = provider;
+    track(name, data);
+  });
+}());
+"""
+
+
 # ── TierAccessError handler ───────────────────────────────────────────────────
 # REST endpoints use HTTP 403 when a subscription tier is required.  The MCP
 # endpoint converts its own denials to JSON-RPC error -32001 below and does not
@@ -866,16 +903,16 @@ async def landing():
   </div>
 
 {_resend_store_warning}{_resend_key_warning}  <div class="links">
-    <a href="https://beacon.zerobeacon.ai">beacon.zerobeacon.ai</a>
-    <a href="https://api.zerobeacon.ai">api.zerobeacon.ai</a>
-    <a href="/docs">API docs</a>
-    <a href="/health">/health</a>
-    <a href="/key/check">/key/check</a>
-    <a href="/pricing">/pricing</a>
-    <a href="https://paypal.me/davidfox223" class="paypal">PayPal — davidfox223</a>
-    <a href="https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01" class="stripe">Stripe Checkout</a>
-    <a href="https://rapidapi.com/davidjfox998/api/zerobeacon" class="rapidapi" target="_blank" rel="noopener">RapidAPI Marketplace</a>
-    <a href="https://smithery.ai/servers/davidjfox998/zerobeacon-1050" target="_blank" rel="noopener" style="color:#a78bfa;border-color:#2d1f4a;">Smithery MCP</a>
+    <a href="https://beacon.zerobeacon.ai" data-analytics-event="beacon_site_clicked" data-analytics-location="landing_page">beacon.zerobeacon.ai</a>
+    <a href="https://api.zerobeacon.ai" data-analytics-event="api_site_clicked" data-analytics-location="landing_page">api.zerobeacon.ai</a>
+    <a href="/docs" data-analytics-event="docs_clicked" data-analytics-location="landing_page">API docs</a>
+    <a href="/health" data-analytics-event="health_clicked" data-analytics-location="landing_page">/health</a>
+    <a href="/key/check" data-analytics-event="key_check_clicked" data-analytics-location="landing_page">/key/check</a>
+    <a href="/pricing" data-analytics-event="pricing_clicked" data-analytics-location="landing_page">/pricing</a>
+    <a href="https://paypal.me/davidfox223" class="paypal" data-analytics-event="checkout_clicked" data-analytics-location="landing_page" data-analytics-provider="paypal">PayPal — davidfox223</a>
+    <a href="https://buy.stripe.com/eVq7sMdXk5d7chy941ebu01" class="stripe" data-analytics-event="checkout_clicked" data-analytics-location="landing_page" data-analytics-provider="stripe">Stripe Checkout</a>
+    <a href="https://rapidapi.com/davidjfox998/api/zerobeacon" class="rapidapi" target="_blank" rel="noopener" data-analytics-event="marketplace_clicked" data-analytics-location="landing_page" data-analytics-provider="rapidapi">RapidAPI Marketplace</a>
+    <a href="https://smithery.ai/servers/davidjfox998/zerobeacon-1050" target="_blank" rel="noopener" style="color:#a78bfa;border-color:#2d1f4a;" data-analytics-event="marketplace_clicked" data-analytics-location="landing_page" data-analytics-provider="smithery">Smithery MCP</a>
   </div>
 
   <p class="moat">
@@ -883,6 +920,7 @@ async def landing():
     ω²=48/13=3.6923… &gt;0 on X₀(143) — Lean4 verified
   </p>
 
+  <script>{_ANALYTICS_SCRIPT}</script>
 </body></html>
 """
 
@@ -1285,7 +1323,7 @@ async def privacy_policy():
   <p>Tool calls made through the extension are routed to <code>api.zerobeacon.ai</code>. We log standard HTTP request metadata (timestamp, tool name, response code) for capacity planning. We do not log the content of tool arguments or results.</p>
 
   <h2>3. Cookies &amp; tracking</h2>
-  <p>The extension does not set cookies and does not use analytics trackers. The main website (zerobeacon.ai) does not use third-party analytics.</p>
+  <p>The extension does not set cookies and does not use analytics trackers. When enabled in Publishing settings, the published main website may use Replit-hosted analytics for aggregate pageviews and limited interaction events, such as checkout-link clicks, API-key retrieval outcomes, and Brain control usage. Analytics is not configured or loaded by the app during local development.</p>
 
   <h2>4. Data sharing</h2>
   <p>We do not sell, rent, or share personal data with third parties except Stripe (payment processing) and Resend (transactional email delivery of your API key).</p>
@@ -1543,18 +1581,25 @@ async def success_page(request: Request):
   </div>
 
   <div class="links">
-    <a href="/docs">API docs (1000 tools)</a>
-    <a href="/pricing">Pricing tiers</a>
-    <a href="/key/check">/key/check</a>
-    <a href="/">Home</a>
+    <a href="/docs" data-analytics-event="docs_clicked" data-analytics-location="success_page">API docs (1000 tools)</a>
+    <a href="/pricing" data-analytics-event="pricing_clicked" data-analytics-location="success_page">Pricing tiers</a>
+    <a href="/key/check" data-analytics-event="key_check_clicked" data-analytics-location="success_page">/key/check</a>
+    <a href="/" data-analytics-event="home_clicked" data-analytics-location="success_page">Home</a>
   </div>
 
+<script>{_ANALYTICS_SCRIPT}</script>
 <script>
 (async () => {{
   const sessionId = {repr(session_id)};
   const card = document.getElementById('card');
+  const analytics = window.zeroBeaconAnalytics;
+  analytics.track('key_lookup_started', {{
+    location: 'success_page',
+    has_session_id: Boolean(sessionId)
+  }});
 
   if (!sessionId) {{
+    analytics.track('key_lookup_missing_session', {{location: 'success_page'}});
     card.innerHTML = '<p style="color:#cc8888">No session_id found in URL. '
       + 'Return to checkout and complete your payment.</p>';
     return;
@@ -1569,15 +1614,22 @@ async def success_page(request: Request):
     const data = await res.json();
 
     if (!res.ok) {{
+      analytics.track('key_lookup_failed', {{
+        location: 'success_page',
+        status: res.status
+      }});
       card.innerHTML = '<p style="color:#cc8888">Key not found yet — the webhook may still be '
         + 'processing. Refresh in a few seconds. (Error: ' + data.error + ')</p>';
       return;
     }}
 
+    analytics.track('key_lookup_succeeded', {{
+      location: 'success_page',
+      tier: String(data.tier_label || 'unknown')
+    }});
     card.innerHTML = `
       <div class="label">Your API Key (${{data.tier_label}})</div>
-      <div class="key-box" onclick="navigator.clipboard.writeText(this.innerText);
-           this.style.borderColor='#44aa44'" title="Click to copy">${{data.api_key}}</div>
+      <div class="key-box" id="key-box" title="Click to copy">${{data.api_key}}</div>
       <div class="label">Tier</div>
       <p style="margin-bottom:1rem;color:#e6e6ff">${{data.tier_label}} — ${{data.tools_unlocked}} tools unlocked</p>
       <div class="usage">
@@ -1588,7 +1640,16 @@ async def success_page(request: Request):
         <code>curl -H "X-API-Key: ${{data.api_key}}" \\<br>
         &nbsp;&nbsp;https://zerobeacon.ai/api/mf/03/delivery_proof</code>
       </div>`;
+    document.getElementById('key-box').addEventListener('click', function () {{
+      navigator.clipboard.writeText(this.innerText);
+      this.style.borderColor = '#44aa44';
+      analytics.track('api_key_copied', {{
+        location: 'success_page',
+        tier: String(data.tier_label || 'unknown')
+      }});
+    }});
   }} catch (e) {{
+    analytics.track('key_lookup_error', {{location: 'success_page'}});
     card.innerHTML = '<p style="color:#cc8888">Error fetching key: ' + e.message + '</p>';
   }}
 }})();
@@ -2331,15 +2392,17 @@ canvas{display:block;width:100%;height:320px;background:#050a05;border:1px solid
 </div>
 <div class="card"><canvas id="c"></canvas><div id="sustained"></div></div>
 </div>
+<script><!-- ZERO_BEACON_ANALYTICS --></script>
 <script>
 function popcount32(x){x>>>=0;let c=0;while(x){x&=x-1;c++;}return c;}
 function cyrb53(s){let h1=0xdeadbeef,h2=0x41c6ce57;for(let i=0;i<s.length;i++){let ch=s.charCodeAt(i);h1=Math.imul(h1^ch,2654435761);h2=Math.imul(h2^ch,1597334677);}h1=Math.imul(h1^(h1>>>16),2246822507)^Math.imul(h2^(h2>>>13),3266489909);h2=Math.imul(h2^(h2>>>16),2246822507)^Math.imul(h1^(h1>>>13),3266489909);return 4294967296*(2097151&h2)+(h1>>>0);}
 const BEACON=parseInt("1d2c7a5b",16),D=2303582338,GEN=82843,TWO32=4294967296;let hist=[],tick=0,playing=true,consec=0;const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
+const analytics=window.zeroBeaconAnalytics;analytics.track('brain_heartbeat_viewed',{location:'brain_heartbeat'});
 function resizeCanvas(){var dpr=window.devicePixelRatio||1;var w=Math.max(canvas.offsetWidth||canvas.clientWidth,1);var h=320;canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);}
 function beat(intent){let raw=(GEN+tick*3141592653)%TWO32,hex=raw.toString(16).padStart(8,'0'),h=cyrb53(intent+":"+tick)&0xFFFFFFFF,f=popcount32((raw&h)>>>0),th=parseInt(document.getElementById('th').value),prob=f/32,active=0;for(let i=0;i<1050;i++)if(popcount32((cyrb53(intent+":"+i)&BEACON)>>>0)>=th){active++;if(active>=50)break;} hist.push({pop:f,fires:f>=th});if(hist.length>100)hist.shift(); if(f>=th)consec++;else consec=0; document.getElementById('stats').innerHTML=`popcount(beacon)=${popcount32(BEACON)}<br>Active ${active}/1050 ${(active/1050*100).toFixed(2)}%<br>Beat ${hex}<br>Probable ${prob.toFixed(3)}`; document.getElementById('out').textContent=JSON.stringify({beat:hex,popcount:f,fires:f>=th,probable_activation:prob,active_tools:active,d:D,beacon:"1d2c7a5b",collision:"controlled at P1&P2->1d2c7a5b by if override",proof_type:"liveness"},null,2); document.getElementById('sustained').textContent=consec>=3?`Sustained ${consec} beats \u2014 measurable integration`:""; draw(); tick++; }
 function draw(){let W=Math.max(canvas.offsetWidth||canvas.clientWidth,1),H=320,pad=30;ctx.clearRect(0,0,W,H);ctx.fillStyle="#050a05";ctx.fillRect(0,0,W,H);let th=parseInt(document.getElementById('th').value);let thY=pad+(H-60)*(1-th/32);ctx.strokeStyle="#5a2a2a";ctx.setLineDash([6,4]);ctx.beginPath();ctx.moveTo(pad,thY);ctx.lineTo(W-pad,thY);ctx.stroke();ctx.setLineDash([]); if(hist.length>1){ctx.strokeStyle="#1a4a1a";ctx.beginPath();hist.forEach((pt,i)=>{let x=pad+(W-60)*i/(hist.length-1),y=pad+(H-60)*(1-pt.pop/32);if(i==0)ctx.moveTo(x,y);else ctx.lineTo(x,y);});ctx.stroke();} hist.forEach((pt,i)=>{let x=pad+(W-60)*i/(hist.length-1),y=pad+(H-60)*(1-pt.pop/32);ctx.fillStyle=pt.fires?"#7fff7f":"#2a3a2a";ctx.beginPath();ctx.arc(x,y,pt.fires?4:2,0,6.28);ctx.fill();});}
 resizeCanvas();window.addEventListener('resize',()=>{resizeCanvas();draw();});
-setInterval(()=>{if(playing)beat(document.getElementById('intent').value);},200); document.getElementById('fire').onclick=()=>{for(let k=0;k<5;k++)beat(document.getElementById('intent').value);}; document.getElementById('play').onclick=e=>{playing=!playing;e.target.textContent=playing?"Pause":"Play";}; document.getElementById('th').oninput=e=>{document.getElementById('thVal').textContent=e.target.value;}; beat(document.getElementById('intent').value);
+setInterval(()=>{if(playing)beat(document.getElementById('intent').value);},200); document.getElementById('fire').onclick=()=>{for(let k=0;k<5;k++)beat(document.getElementById('intent').value);analytics.track('brain_fire_clicked',{location:'brain_heartbeat',threshold:parseInt(document.getElementById('th').value),beat_count:5});}; document.getElementById('play').onclick=e=>{playing=!playing;e.target.textContent=playing?"Pause":"Play";analytics.track('brain_play_toggled',{location:'brain_heartbeat',playing:playing});}; document.getElementById('th').oninput=e=>{document.getElementById('thVal').textContent=e.target.value;analytics.track('brain_threshold_changed',{location:'brain_heartbeat',threshold:parseInt(e.target.value)});}; beat(document.getElementById('intent').value);
 </script>
 </body>
 </html>"""
@@ -2347,7 +2410,12 @@ setInterval(()=>{if(playing)beat(document.getElementById('intent').value);},200)
 @app.get("/brain/heartbeat", response_class=HTMLResponse)
 def brain_heartbeat_get(intent: str = ""):
     """Live EKG — popcount firing trace in real time. JSON at /brain_heartbeat."""
-    return HTMLResponse(content=_HEARTBEAT_HTML)
+    return HTMLResponse(
+        content=_HEARTBEAT_HTML.replace(
+            "<!-- ZERO_BEACON_ANALYTICS -->",
+            _ANALYTICS_SCRIPT,
+        )
+    )
 
 
 @app.post("/brain/fire")
