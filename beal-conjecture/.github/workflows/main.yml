@@ -169,7 +169,8 @@ jobs:
           if grep -nE ':\s*Prop\s*:=\s*True\b|:=\s*trivial\b|:=\s*by[[:space:]]+trivial\b' \
               lean/Beal/B17_FreyRationalTwoTorsion.lean \
               lean/Beal/B17_FullE2.lean \
-              lean/Beal/B17_MazurIrreducible_Core.lean; then
+              lean/Beal/B17_MazurIrreducible_Core.lean \
+              lean/Beal/B17_X0Moduli.lean; then
             echo "FAIL: B17 must not reintroduce True/trivial irreducibility placeholders"
             fail=1
           fi
@@ -246,6 +247,12 @@ jobs:
           #print axioms Beal17Mazur.FreyPTorsion
           #print axioms Beal17Mazur.galoisAction
           #print axioms Beal17Mazur.RationalPIsogenyKernel
+           #print axioms Beal17Mazur.GaloisStableCyclicLevel
+           #print axioms Beal17Mazur.X0ModuliDatum
+           #print axioms Beal17Mazur.GaloisStableCyclicLevel.stable_mem
+           #print axioms Beal17Mazur.GaloisStableCyclicLevel.carrier_nonempty
+           #print axioms Beal17Mazur.GaloisStableCyclicLevel.level_pos
+           #print axioms Beal17Mazur.X0ModuliDatum.level_card
           #print axioms Beal17Mazur.FreyResidualRepresentationReducible
           #print axioms Beal17Mazur.FreyMazurContext.hasGoodReductionAtResidualPrime
           #print axioms Beal17Mazur.FreyMazurContext.isSemistableAtResidualPrime

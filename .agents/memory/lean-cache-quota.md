@@ -65,7 +65,12 @@ workspace.
 **How to apply:** Restore any accidental package-tree changes first. For a
 focused source check, compile changed modules directly against a known-good
 compatible package artifact cache; use CI or a repaired checkout for the full
-Lake build. Treat this as environment failure, not a theorem failure.
+Lake build. If the exact manifest commit is already present in the package
+object store but `HEAD` points to an invalid ref and the worktree is empty,
+detach-checkout that manifest commit, then restore the official binary cache
+with `lake exe cache get`. Rebuild any project prerequisite whose stale
+`.olean` hides current declarations before compiling its consumer. Treat this
+as environment failure, not a theorem failure.
 
 ## Do not share mutable `.lake` directories by symlink
 

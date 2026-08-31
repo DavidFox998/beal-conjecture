@@ -34,6 +34,28 @@ The Lean 4.12.0 release path contains no executable `sorry`, `admit`,
 footprint is `[propext, Quot.sound]`; the final theorem remains conditional on
 the typed Wiles, Tate, and enriched-plan inputs.
 
+## The X₀ moduli boundary
+
+`B17_X0Moduli.lean` defines a deliberately small vocabulary for the moduli
+datum used by the planned Frey/Mazur bridge. `GaloisStableCyclicLevel` records
+a finite cyclic subgroup of the existing `GeometricFreyPoint` group, its
+order, and stability under the existing absolute-Galois `galoisAction`.
+`X0ModuliDatum` binds that level data to its `FreyMazurContext`.
+
+This is **not** a construction of the modular curve `X₀(N)`. Mathlib 4.12
+provides Weierstrass curves, their point-group operations, algebraic closures,
+finite groups, and polynomial arithmetic. It does **not** provide the
+scheme-level `X₀(N)`, its compactification or function field, the
+representability theorem for the moduli problem, a general elliptic-curve
+quotient/isogeny API at this boundary, genus-two Jacobian descent, or the
+Kenku–Mazur rational-isogeny classification.
+
+Accordingly, the new records are formalized Lean data and the stability
+lemmas are proved Lean theorems. Their interpretation as rational points on a
+genuine modular curve remains a later, explicitly named boundary. In
+particular, a successful build of this file does not prove a modular-curve
+rational-point theorem, residual irreducibility, or the Beal Conjecture.
+
 ## The mathematical target
 
 Beal's Conjecture says that a positive-integer solution
