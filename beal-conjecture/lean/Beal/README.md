@@ -97,9 +97,19 @@ Y² = x⁶ - 8x⁵ + 8x⁴ - 18x³ + 8x² - 8x + 1.
 ```
 
 Closed Lean computations certify the sextic discriminant is nonzero, its
-even-degree genus certificate is `2`, and the four displayed rational model
-points satisfy the equation. These are labelled by the four cusp
-representatives attached to the divisors `1`, `2`, `13`, and `26`.
+factorization is `2²⁰·13³`, its even-degree genus certificate is `2`, and the
+four displayed rational model points satisfy the equation. These are labelled
+by the four cusp representatives attached to the divisors `1`, `2`, `13`, and
+`26`. Lean also checks the completed-square change of variables, enumerates
+the affine finite-field point counts `(4,8,6,6)` at `p = 3,5,7,11`, and checks
+the arithmetic totals `(6,10,8,8)` after adding the two declared infinity
+branches. It does not construct the smooth projective reductions.
+
+The literature identifiers, exact replay commands, pinned Lean/Mathlib
+versions, and immutable producer output live in
+[`docs/X0_26_MODEL_CERTIFICATE.md`](../../docs/X0_26_MODEL_CERTIFICATE.md).
+`X0_26ModelIdentificationBoundary` names the still-missing identification with
+a genuine scheme-level modular curve; no inhabitant is fabricated.
 
 This is finite arithmetic only. It does not prove that the displayed points
 exhaust `X₀(26)(ℚ)`, compute the Jacobian, or prove rank zero. The

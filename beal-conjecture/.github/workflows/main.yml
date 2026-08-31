@@ -149,15 +149,165 @@ jobs:
           echo "review every pinned revision, and go through the normal release/dependency review before merge."
           exit 1
 
-      - name: Check NO unexpected sorry
+      - name: Check NO proof placeholders
         run: |
-          if find lean -name '*.lean' \
-              ! -path 'lean/Beal/Mazur/X0_26_RationalPoints.lean' -print0 |
-              xargs -0 grep -nHE '^[[:space:]]*sorry([[:space:]]|$)'; then
-            echo "FAIL: unexpected sorry found outside the documented 476d boundary"
-            exit 1
-          fi
-          echo "OK: no sorry outside the documented 476d boundary"
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          import sys
+
+          forbidden = re.compile(r"\b(?:sorry|sorryAx|admit)\b")
+          failures = []
+
+          def executable_source(text: str) -> str:
+              out = []
+              i = 0
+              block_depth = 0
+              in_string = False
+              in_interpolated = False
+              pending_interpolation = False
+              while i < len(text):
+                  if block_depth:
+                      if text.startswith("/-", i):
+                          block_depth += 1
+                          i += 2
+                      elif text.startswith("-/", i):
+                          block_depth -= 1
+                          i += 2
+                      else:
+                          out.append("\n" if text[i] == "\n" else " ")
+                          i += 1
+                  elif in_interpolated:
+                      # Conservatively retain the whole interpolated string.
+                      # Lean terms inside `{...}` are executable, so treating
+                      # the span as an ordinary inert string would hide proof
+                      # placeholders. Text-only false positives are preferable
+                      # to an admitted theorem passing CI.
+                      if text[i] == "\\" and i + 1 < len(text):
+                          out.extend(text[i:i + 2])
+                          i += 2
+                      elif text[i] == '"':
+                          out.append(" ")
+                          in_interpolated = False
+                          i += 1
+                      else:
+                          out.append(text[i])
+                          i += 1
+                  elif in_string:
+                      if text[i] == "\\" and i + 1 < len(text):
+                          out.extend("  ")
+                          i += 2
+                      elif text[i] == '"':
+                          out.append(" ")
+                          in_string = False
+                          i += 1
+                      else:
+                          out.append("\n" if text[i] == "\n" else " ")
+                          i += 1
+                  elif text.startswith("--", i):
+                      end = text.find("\n", i)
+                      if end == -1:
+                          out.extend(" " * (len(text) - i))
+                          break
+                      out.extend(" " * (end - i))
+                      out.append("\n")
+                      i = end + 1
+                  elif text.startswith("/-", i):
+                      out.extend("  ")
+                      block_depth = 1
+                      i += 2
+                  elif (
+                      text[i] == "!"
+                      and i > 0
+                      and (text[i - 1].isalnum() or text[i - 1] in "_'")
+                  ):
+                      # Treat any identifier-suffixed `!` macro followed by a
+                      # string as potentially interpolating executable Lean.
+                      # This covers both `s!` and `f!` without baking in a
+                      # closed list of interpolation macros.
+                      out.append("!")
+                      pending_interpolation = True
+                      i += 1
+                  elif text[i] == '"':
+                      out.append(" ")
+                      if pending_interpolation:
+                          in_interpolated = True
+                      else:
+                          in_string = True
+                      pending_interpolation = False
+                      i += 1
+                  else:
+                      out.append(text[i])
+                      if not text[i].isspace():
+                          pending_interpolation = False
+                      i += 1
+              return "".join(out)
+
+          regression_probes = {
+              "inline sorry": ("theorem t : True := by sorry", True),
+              "inline admit": ("theorem t : True := by admit", True),
+              "interpolated sorry": ('def t : String := s!"{(by sorry : Nat)}"', True),
+              "interpolated sorryAx": ('def t : String := s!"{sorryAx Nat true}"', True),
+              "interpolated admit": ('def t : String := s!"{(by admit : Nat)}"', True),
+              "spaced interpolated sorry": ('def t : String := s! "{(by sorry : Nat)}"', True),
+              "spaced interpolated sorryAx": ('def t : String := s! "{sorryAx Nat true}"', True),
+              "newline interpolated sorry": ('def t : String := s!\n"{(by sorry : Nat)}"', True),
+              "newline interpolated sorryAx": ('def t : String := s!\n"{sorryAx Nat true}"', True),
+              "line-comment interpolated sorry": (
+                  'def t : String := s! -- comment\n"{(by sorry : Nat)}"',
+                  True,
+              ),
+              "line-comment interpolated sorryAx": (
+                  'def t : String := s! -- comment\n"{sorryAx Nat true}"',
+                  True,
+              ),
+              "block-comment interpolated sorry": (
+                  'def t : String := s! /- comment -/ "{(by sorry : Nat)}"',
+                  True,
+              ),
+              "block-comment interpolated sorryAx": (
+                  'def t : String := s! /- comment -/ "{sorryAx Nat true}"',
+                  True,
+              ),
+              "format interpolated sorry": (
+                  'def t : Std.Format := f!"{(by sorry : Nat)}"',
+                  True,
+              ),
+              "spaced format interpolated sorryAx": (
+                  'def t : Std.Format := f! "{sorryAx Nat true}"',
+                  True,
+              ),
+              "commented format interpolated sorry": (
+                  'def t : Std.Format := f! /- comment -/ "{(by sorry : Nat)}"',
+                  True,
+              ),
+              "line-comment format interpolated sorryAx": (
+                  'def t : Std.Format := f! -- comment\n"{sorryAx Nat true}"',
+                  True,
+              ),
+              "line comment": ("-- sorryAx\n#check True", False),
+              "nested block comment": ("/- outer /- sorry -/ sorryAx -/\n#check True", False),
+              "ordinary string": ('def t := "sorry and sorryAx"', False),
+          }
+          for name, (probe, should_fail) in regression_probes.items():
+              detected = bool(forbidden.search(executable_source(probe)))
+              if detected != should_fail:
+                  print(f"FAIL: placeholder scanner regression: {name}")
+                  sys.exit(1)
+
+          for path in sorted(Path("lean").rglob("*.lean")):
+              source = executable_source(path.read_text(encoding="utf-8"))
+              for line_number, line in enumerate(source.splitlines(), 1):
+                  for match in forbidden.finditer(line):
+                      failures.append(f"{path}:{line_number}:{match.start() + 1}: {match.group()}")
+
+          if failures:
+              print("FAIL: Lean proof placeholder found outside comments or strings:")
+              print("\n".join(failures))
+              sys.exit(1)
+          print("OK: no sorry, sorryAx, or admit tokens in executable Lean source")
+          PY
 
       - name: No undocumented Prop := True stubs
         run: |
@@ -275,6 +425,9 @@ jobs:
            #print axioms Beal17Mazur.X0_26_genus
            #print axioms Beal17Mazur.X0_26_cusp_count
            #print axioms Beal17Mazur.X0_26_cusps_Q_rational
+           #print axioms Beal17Mazur.X0_26_completedSquare_identity
+           #print axioms Beal17Mazur.X0_26_affinePointCounts
+           #print axioms Beal17Mazur.X0_26_completedModelPointCounts
           #print axioms Beal17Mazur.FreyResidualRepresentationReducible
           #print axioms Beal17Mazur.FreyMazurContext.hasGoodReductionAtResidualPrime
           #print axioms Beal17Mazur.FreyMazurContext.isSemistableAtResidualPrime
@@ -412,6 +565,9 @@ jobs:
           #print axioms Beal17Mazur.X0_26_genus
           #print axioms Beal17Mazur.X0_26_cusp_count
           #print axioms Beal17Mazur.X0_26_cusps_Q_rational
+          #print axioms Beal17Mazur.X0_26_completedSquare_identity
+          #print axioms Beal17Mazur.X0_26_affinePointCounts
+          #print axioms Beal17Mazur.X0_26_completedModelPointCounts
           #print axioms Beal17Mazur.Gates.KolyvaginNoSorry.M1_M2_threshold_proved
           #print axioms Beal17Mazur.Gates.KolyvaginNoSorry.L_J0_26_ne_zero_of_M1_M2
           #print axioms Beal17Mazur.Gates.KolyvaginNoSorry.Kolyvagin_rank_zero_J0_26
@@ -464,6 +620,9 @@ jobs:
               "Beal17Mazur.X0_26_genus",
               "Beal17Mazur.X0_26_cusp_count",
               "Beal17Mazur.X0_26_cusps_Q_rational",
+              "Beal17Mazur.X0_26_completedSquare_identity",
+              "Beal17Mazur.X0_26_affinePointCounts",
+              "Beal17Mazur.X0_26_completedModelPointCounts",
               "Beal17Mazur.Gates.KolyvaginNoSorry.M1_M2_threshold_proved",
               "Beal17Mazur.Gates.KolyvaginNoSorry.L_J0_26_ne_zero_of_M1_M2",
               "Beal17Mazur.Gates.KolyvaginNoSorry.Kolyvagin_rank_zero_J0_26",
@@ -519,6 +678,13 @@ jobs:
               sys.exit(1)
           PY
           echo "OK: B17's substantive theorems are conditional and its True boundary marker is explicit"
+
+      - name: Replay the X0(26) finite certificate
+        run: |
+          set -euo pipefail
+          python3 scripts/x0_26_model_certificate.py > /tmp/x0_26_model_certificate.json
+          cmp /tmp/x0_26_model_certificate.json certificates/x0_26_model_certificate.json
+          echo "OK: X0(26) producer output matches the committed certificate"
 
       - name: Test the B20 axiom-output parser
         run: bash scripts/test-check-b20-axioms.sh

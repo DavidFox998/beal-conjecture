@@ -17,12 +17,40 @@ This file checks only finite arithmetic attached to that displayed model.
 It does not prove that every rational point has been found, compute the
 Jacobian, or claim rank zero.  Those arithmetic/descent statements belong to
 476d.
+
+The source and replay transcript are pinned in
+`docs/X0_26_MODEL_CERTIFICATE.md`.
 -/
+
+/-- The right-hand side of the Bruin--Najman integral equation. -/
+def X0_26_integralRhs (x : ℚ) : ℚ :=
+  -2 * x ^ 5 + 2 * x ^ 4 - 5 * x ^ 3 + 2 * x ^ 2 - 2 * x
+
+/-- Direct arithmetic membership in the affine Bruin--Najman equation. -/
+def X0_26_OnIntegralModel (x y : ℚ) : Prop :=
+  y ^ 2 - (x ^ 3 + 1) * y = X0_26_integralRhs x
 
 /-- The completed-square sextic in the canonical model of `X₀(26)`. -/
 def X0_26_sextic (x : ℚ) : ℚ :=
   x ^ 6 - 8 * x ^ 5 + 8 * x ^ 4 - 18 * x ^ 3 +
     8 * x ^ 2 - 8 * x + 1
+
+/-- Lean checks the polynomial identity behind `Y = 2y - (x³ + 1)`. -/
+theorem X0_26_completedSquare_identity (x y : ℚ) :
+    (2 * y - (x ^ 3 + 1)) ^ 2 - X0_26_sextic x =
+      4 * (y ^ 2 - (x ^ 3 + 1) * y - X0_26_integralRhs x) := by
+  simp only [X0_26_sextic, X0_26_integralRhs]
+  ring
+
+/-- The displayed change of variable carries every affine point on the
+integral equation to the completed-square equation. -/
+theorem X0_26_completedSquare_of_onIntegralModel {x y : ℚ}
+    (h : X0_26_OnIntegralModel x y) :
+    (2 * y - (x ^ 3 + 1)) ^ 2 = X0_26_sextic x := by
+  rw [X0_26_OnIntegralModel] at h
+  have hid := X0_26_completedSquare_identity x y
+  rw [h, sub_self, mul_zero] at hid
+  exact sub_eq_zero.mp hid
 
 /-- Degree of the displayed squarefree sextic. -/
 def X0_26_degree : Nat := 6
@@ -37,6 +65,10 @@ def X0_26_discriminant : Int := 2303721472
 theorem X0_26_discriminant_ne_zero :
     X0_26_discriminant ≠ 0 := by
   decide
+
+theorem X0_26_discriminant_factorization :
+    X0_26_discriminant = 2 ^ 20 * 13 ^ 3 := by
+  norm_num [X0_26_discriminant]
 
 /-- The genus read from a nonsingular even-degree hyperelliptic model.
 
@@ -136,6 +168,63 @@ theorem X0_26_labeled_cusps_Q_rational :
   intro label
   exact (X0_26_cuspPoint label).2
 
+/-- The two finite cusp coordinates also satisfy the source integral model.
+
+The corresponding completed-square coordinates are `(0, 1)` and `(0, -1)`;
+the other two cusps are the two points at infinity.
+-/
+theorem X0_26_finite_cusps_onIntegralModel :
+    X0_26_OnIntegralModel 0 1 ∧ X0_26_OnIntegralModel 0 0 := by
+  norm_num [X0_26_OnIntegralModel, X0_26_integralRhs]
+
+/-- Evaluate the completed-square sextic over `ZMod p`. -/
+def X0_26_sexticMod (p : Nat) (x : ZMod p) : ZMod p :=
+  x ^ 6 - 8 * x ^ 5 + 8 * x ^ 4 - 18 * x ^ 3 +
+    8 * x ^ 2 - 8 * x + 1
+
+/-- Affine point count over `𝔽_p`, represented by canonical residues.
+
+For the certified odd good primes below, the smooth even-degree completion
+has two additional rational points at infinity because the leading
+coefficient is the square `1`.
+-/
+def X0_26_affinePointCount (p : Nat) : Nat :=
+  (((Finset.univ : Finset (Fin p)).product
+      (Finset.univ : Finset (Fin p))).filter fun xy =>
+    (((xy.2 : Nat) : ZMod p) ^ 2 =
+      X0_26_sexticMod p ((xy.1 : Nat) : ZMod p))).card
+
+/-- Compact, kernel-checked finite-field certificates. -/
+theorem X0_26_affinePointCounts :
+    X0_26_affinePointCount 3 = 4 ∧
+    X0_26_affinePointCount 5 = 8 ∧
+    X0_26_affinePointCount 7 = 6 ∧
+    X0_26_affinePointCount 11 = 6 := by
+  decide
+
+/-- Completed-model totals obtained from the affine certificates and the two
+formally declared infinity branches: `(6,10,8,8)`.
+
+This theorem is deliberately only arithmetic.  It does not construct the
+smooth projective curve over a finite field or prove good reduction.
+-/
+theorem X0_26_completedModelPointCounts :
+    X0_26_affinePointCount 3 + 2 = 6 ∧
+    X0_26_affinePointCount 5 + 2 = 10 ∧
+    X0_26_affinePointCount 7 + 2 = 8 ∧
+    X0_26_affinePointCount 11 + 2 = 8 := by
+  decide
+
+/-- The deliberately uninhabited identification boundary.
+
+Mathlib 4.12 has no scheme-level `X₀(26)` to put on the left side.  A later
+development may instantiate `ModularCurvePoint` with genuine rational points
+and construct this equivalence from explicit birational formulas.  This file
+does not provide such an inhabitant.
+-/
+abbrev X0_26ModelIdentificationBoundary (ModularCurvePoint : Type) :=
+  ModularCurvePoint ≃ X0_26_RationalPoint
+
 /-- The finite rational-point data certified in 476c.
 
 No exhaustiveness claim is made: proving `X₀(26)(ℚ)` is contained in this
@@ -149,10 +238,16 @@ theorem X0_26_knownRationalPoints_card :
   decide
 
 #print axioms X0_26_discriminant_ne_zero
+#print axioms X0_26_discriminant_factorization
 #print axioms X0_26_genus
 #print axioms X0_26_cusp_count
 #print axioms X0_26_cusps_Q_rational
 #print axioms X0_26_labeled_cusps_Q_rational
+#print axioms X0_26_completedSquare_identity
+#print axioms X0_26_completedSquare_of_onIntegralModel
+#print axioms X0_26_finite_cusps_onIntegralModel
+#print axioms X0_26_affinePointCounts
+#print axioms X0_26_completedModelPointCounts
 #print axioms X0_26_knownRationalPoints_card
 
 end Beal17Mazur
