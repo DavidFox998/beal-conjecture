@@ -21,3 +21,10 @@ A rational isogeny kernel must not be treated as a rational generator, so no
 automatic rational `2p`-torsion argument is allowed. State the mixed-level
 exclusion as a nontrivial, presently uninhabited theorem type and let CI reject
 all `Prop := True` markers rather than permitting a documented exception.
+
+The valid replacement is kernel-level: a rational order-2 subgroup and a
+rational cyclic order-`p` kernel combine, for odd `p`, into a Galois-stable
+cyclic subgroup of order `2p`, hence a rational cyclic `2p`-isogeny. Closing the
+argument requires the Kenku–Mazur exclusion of such composite isogeny degrees
+(equivalently the relevant `X₀(2p)(ℚ)` rational-point result), not Mazur's
+rational torsion theorem.
