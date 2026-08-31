@@ -16,4 +16,7 @@ Proposition 17 uses that data to identify Faltings-minimal vertices.
 **How to apply:** Do not add or restore an unconditional no-Frey theorem
 from these tables. Such a theorem needs a separate Frey-to-graph placement,
 individual 2-adic valuations, the coprimality hypotheses used, and a proved
-incompatibility with every applicable local row.
+incompatibility with every applicable local row. For the zero-point quotient,
+use the factor `a² − 14ab + b² = (a+b)² − 16ab`; in the C-even case this
+gives profile `(8−2r,16−4r)`. The superficially similar `−10` formula creates
+false Table 30 survivors.
