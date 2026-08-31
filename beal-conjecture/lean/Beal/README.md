@@ -137,6 +137,13 @@ global exhaustiveness, and Frey modular realization remain typed hypotheses.
 The verified finite set remains the four source-backed cusps: no two CM points
 or six-point classification are invented.
 
+The certificate interfaces follow the useful shapes in the BSD repository:
+a fixed complex function evaluated at `s = 1`, an explicit rational point with
+a height value, and a natural-number rank value. The concrete BSD files concern
+the elliptic curve `143a1`: their point `(2,0)`, analytic-rank-one derivative,
+LMFDB rank anchor, and torsion computations are not statements about
+`J₀(26)`, so Beal does not silently transport them across that boundary.
+
 ## The mathematical target
 
 Beal's Conjecture says that a positive-integer solution

@@ -212,7 +212,7 @@ realization remain visible hypotheses.
 -/
 theorem Frey_13_exclusion_of_local_gates
     (lData : Gates.KolyvaginNoSorry.LValueData)
-    (heightData : Gates.KolyvaginNoSorry.HeegnerHeightData)
+    (heightData : Gates.KolyvaginNoSorry.HeegnerPointData)
     (rankData : Gates.KolyvaginNoSorry.J0_26_RankData)
     (hLWall : Gates.KolyvaginNoSorry.M1_M2_to_L_nonzero_wall lData)
     (hKolyvagin :
