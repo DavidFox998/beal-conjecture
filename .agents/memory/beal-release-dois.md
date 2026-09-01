@@ -69,6 +69,15 @@ The GitHub-first v8.7.1 Phase A–C certificate-guard release has version DOI
 `10.5281/zenodo.22041831`. Zenodo imported its ZIP directly from the annotated
 GitHub tag after green GitHub-hosted CI. Do not mint another DOI for v8.7.1.
 
+The clean v8.8.0 conditional Phase D level-26 Frey endgame has version DOI
+`10.5281/zenodo.22235410` (Zenodo record 22235410), under concept DOI
+`10.5281/zenodo.22041831`. Its annotated GitHub tag targets the green Phase D
+commit, and the published Zenodo ZIP was verified byte-for-byte against the
+GitHub tag archive. The Frey, modularity/R=T, level-lowering, descent,
+Jacobian-transport, formal-immersion, and model-realization boundaries remain
+explicit; do not describe this as an unconditional Beal proof or mint another
+DOI for v8.8.0.
+
 The inherited v4.1.0 titles and descriptions on Zenodo records
 `10.5281/zenodo.22110949` (`v7.0.0-genuine-provider`),
 `10.5281/zenodo.22123696` (`v7.1.0`), and
