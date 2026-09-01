@@ -1,4 +1,4 @@
-[![v8.6.0 DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22220130.svg)](https://doi.org/10.5281/zenodo.22220130) [![v7.3.1 DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22150033.svg)](https://doi.org/10.5281/zenodo.22150033) [![Concept DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22041831.svg)](https://doi.org/10.5281/zenodo.22041831) [![CI](https://github.com/DavidFox998/beal-conjecture/actions/workflows/main.yml/badge.svg)](https://github.com/DavidFox998/beal-conjecture/actions/workflows/main.yml)
+[![v8.8.0 DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22235410.svg)](https://doi.org/10.5281/zenodo.22235410) [![Concept DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22041831.svg)](https://doi.org/10.5281/zenodo.22041831) [![CI](https://github.com/DavidFox998/beal-conjecture/actions/workflows/main.yml/badge.svg)](https://github.com/DavidFox998/beal-conjecture/actions/workflows/main.yml)
 
 # Beal Conjecture — a formal instrument in *Opera Numerorum*
 
@@ -54,114 +54,53 @@ formalization makes this coupling explicit rather than gestural.
 
 ## Current formal status
 
-### v8.6.0 conditional boundary table
+This is a conditional formalization, not an unconditional Lean proof of
+Beal's Conjecture. The compact referee map is:
 
-The Level-26 route is recorded as explicit proposition-valued boundaries. The
-table is a dependency map, not a claim that any row has been discharged
-unconditionally:
+| Layer | Exact status |
+|---|---|
+| **Mathlib 4.12** | Supplies Weierstrass curves and point groups, algebraic closures and the absolute Galois group, finite groups, `ZMod`, and polynomial/arithmetic infrastructure. It does not supply scheme-level `X₀(N)`, elliptic-curve quotient/isogeny objects at this boundary, Kenku–Mazur, genus-two Jacobian descent, Wiles, or Ribet. |
+| **Project Lean proofs** | Constructs the canonical Frey model, its exact rational `E[2]`, the geometric `p`-torsion action, the mixed level-`2p` subgroup, good reduction and semistability at the residual prime, and the exhaustive prime split `11,13,17,19,23,29,31,37` for the recorded B17 range. |
+| **Lean-checked computations** | Checks the explicit `X₀(26)` sextic, discriminant and factorization, four displayed cusp points, finite-field counts, the M1/M2 numerical thresholds, and the finite formal-immersion determinant. These computations do not prove global rational-point exhaustiveness. |
+| **Mathematical interpretation** | Interprets a stable cyclic subgroup as rational isogeny data and the level-26 model as `X₀(26)`. Those interpretations are represented by typed realization boundaries because Mathlib lacks the required moduli infrastructure. |
+| **Absent / external** | A complete `X₀(26)(ℚ)` rank–torsion–exhaustiveness certificate and Frey realization for `p=13`; the seven non-13 semistable/Kenku–Mazur exclusions; full 2-adic conductor analysis; Wiles modularity; the external odd-prime Tate theorem; and the enriched Ribet/patching plan. |
 
-**v8.6.0 archival record:** Version DOI
-[`10.5281/zenodo.22220130`](https://doi.org/10.5281/zenodo.22220130);
-Concept DOI [`10.5281/zenodo.22041831`](https://doi.org/10.5281/zenodo.22041831);
-[Zenodo record](https://zenodo.org/records/22220130).
+`B17_MazurPrimeCoverage.lean` has no unrestricted fallback. The `p = 13`
+branch is forced through `Frey_13_exclusion_of_global_certificate`; the other
+seven primes are separate fields. The constructor therefore proves that
+complete supplied evidence inhabits `MazurRationalIsogenyClassification`, but
+the repository does **not** manufacture the still-missing mathematical
+certificates.
 
-| Phase | Boundary | Formal status |
-|---|---|---|
-| **Phase A** | `SecondDescentHypothesis_26`, `TorsionOdd_26` | `Prop` inputs for the conditional rank step |
-| **Phase B** | `JacobianTransportCertificate_26` | `Prop` boundary for transporting the elliptic-curve information to the Jacobian |
-| **Phase C** | `FormalImmersionAt3` *(upcoming)* | `Prop` formal-immersion boundary for the rational-point step |
-| **Phase D** | Modularity/level-lowering interface | `Prop` boundary for the remaining modularity route |
+The active conditional chain is:
 
-All four entries are proposition-valued boundaries. In particular, this table
-does not claim an unconditional Jacobian rank computation or an unconditional
-rank-zero theorem.
+**primitive Beal data** → **canonical Frey model and exact rational `E[2]`**
+→ **complete supplied B17 isogeny exclusions** → **externally supplied global
+conductor and 2-adic exponent-one certificate** → **Wiles form token and
+quotient plan** → **Tate-derived odd-prime exact divisibility** → **explicit
+`EnrichedPlanSupplier` carrying the Galois, Hecke, Eutheos, Taylor–Wiles,
+support, and transport data** → **level 2** → **$S_2(\Gamma_0(2))=0$**.
 
-> **v8.3.0 typed patching and Tate-certified descent — conditional, audited, and model-indexed**
->
-> This milestone removes exact-divisibility proofs from the Wiles plan and from
-> `GaloisEdgeWitness`. Wiles supplies odd-prime, residual-prime-separation, and
-> quotient data; the odd-prime Tate interface derives each exact conductor edge
-> from the canonical Frey model. The terminal 2-adic exponent-one premise is now
-> explicit model-indexed data rather than an implicit consequence of Wiles.
->
-> The final route remains conditional. Its named mathematical boundaries are
-> `frey_conductor_data`, `tate_step2_odd_prime_external`, and
-> `wiles_modularity`; its unconstructed data inputs are
-> `TwoAdicExponentOneSupplier` and `EnrichedPlanSupplier`. A successful build is
-> an audit of that conditional route, not an unconditional proof of Beal's
-> Conjecture.
->
-> **v8.2.0 full rational E[2] exhaustiveness — exactly four rational points killed by doubling**
->
-> The Frey curve's rational 2-torsion is now proved to be exactly
-> `{O, (0,0), (Aˣ,0), (-Bʸ,0)}`. The proof classifies zero-y roots by repeated
-> `mul_eq_zero` over `ℚ` and proves the converse group-law bridge. This closes
-> the former three-points-versus-full-E[2] gap; it does not claim Mazur
-> irreducibility or construct residual Galois representations.
->
-> **v8.0.0 patching layer — 0 local axioms, 0 opaque rank propositions, explicit Taylor–Wiles data**
->
-> This repository is still a formalization of the Beal argument, not a claim
-> that Lean has reconstructed Wiles, Tate, or Ribet from first principles. The
-> v8.0.0 extends the v7.3 typed Eutheos edge with an auditable patching layer.
->
-> Here “0 axioms” is a focused statement about the typed Eutheos bridge:
-> `OldNewDecompHyp_from_Eutheos`, `EutheosJitter`, and the separation kernel
-> introduce no local proposition-valued axiom or opaque declaration and audit to
-> `[propext, Quot.sound]`. It does **not** mean that every declaration in the
-> repository is axiom-free. The repository retains several explicit,
-> independently audited mathematical boundaries, including the Mazur/Wiles
-> tower, global Frey-conductor data, and the narrow external odd-prime Tate
-> theorem. None is part of the
-> focused Eutheos bridge.
->
-> The current conditional chain is:
->
-> **primitive Beal data** → **Frey curve and discriminant arithmetic**
-> → **one canonical Frey model with externally supplied conductor data**
-> → **an explicit 2-adic exponent-one certificate for that conductor**
-> → **a typed modular-form
-> token and odd-prime quotient plan at that same conductor**
-> → **Tate-derived exact divisibility along that plan**
-> → **an explicit `EnrichedPlanSupplier` carrying normalized eigenline,
-> typed Eutheos geometry, Taylor–Wiles patching, support, and token-transport data per edge**
-> → **level 2** → **$S_2(Γ_0(2)) = 0$**
-> → **contradiction**.
->
-> The final B20 theorem depends on the typed Wiles, global Frey-conductor, and
-> odd-prime Tate interfaces, plus explicit 2-adic exponent-one and
-> `EnrichedPlanSupplier` data. At each descent edge,
-> `NormalizedEigenlineData` derives `QExpansionPrincipleOnV` through
-> `QExpansionPrincipleOnV_fromEigenline`; the old/new proposition is now
-> derived at the theorem boundary from typed Eutheos geometry. Localized rank
-> one is now constructed from explicit patched-module generator and coordinate
-> laws rather than accepted as an edge proposition.
->
-> The active token path does not use `SupportedNewformToTokenProvider`.
-> `NewSubspaceSupportData` retains a finite newform, representation
-> realization, and Hecke annihilation as data, while
-> `NewformHeckeToPreservedTokenTransport` converts that data to
-> `PreservedForm` without `Classical.choice`.
->
-> The final B20 contract has three named mathematical interfaces:
-> `Beal.FreyTate.wiles_modularity`,
-> `Beal.FreyTate.TateStep2.frey_conductor_data`, and
-> `Beal.FreyTate.TateStep2.tate_step2_odd_prime_external`.
-> Its two explicit, unconstructed data inputs are
-> `Beal20Done.TwoAdicExponentOneSupplier` and
-> `Beal.RibetIterate.EnrichedPlanSupplier`.
-> The final route invokes
-> `Beal.FreyTate.TateStep2.tate_frey_multiplicative_at_model`, whose only
-> local mathematical dependency is `tate_step2_odd_prime_external`, to derive
-> each exact-divisibility proof from the fixed model rather than accepting it
-> in the Wiles plan.
->
-> `lake build Beal` targets Lean/Mathlib 4.12.0. The focused v7.3 edge audit
-> reports the foundational footprint `{propext, Quot.sound}`. The broader B20
-> audit uses `Classical.choice` through the existing `ZMod` unit argument in
-> the local Tate specialization; this is a Lean foundation dependency, not an
-> additional mathematical theorem. `TateStep2.freyModelOf` itself remains a
-> direct typed construction.
+Closing the B17 case split does not close the independent Wiles, Tate, Ribet,
+patching, or conductor boundaries. The final B20 theorem still uses exactly
+the three named domain interfaces `wiles_modularity`, `frey_conductor_data`,
+and `tate_step2_odd_prime_external`, plus the explicit
+`TwoAdicExponentOneSupplier` and `EnrichedPlanSupplier`. Foundational audit
+entries such as `propext`, `Classical.choice`, and `Quot.sound` are Lean
+foundations, not additional mathematical theorems.
+
+### v8.8.0 conditional Phase D endgame
+
+The current release adds `Mazur/Frey/LevelLowering_26.lean`. Its
+proof-relevant interface carries a primitive Beal counterexample through
+explicit Frey-construction, modularity, level-lowering, and displayed-model
+boundaries to a noncuspidal rational point on the level-26 model. The existing
+Phase A–C rank-zero and four-cusp certificates then yield the conditional
+contradiction.
+
+This is a conditional formalization milestone, not an unconditional proof of
+Beal's Conjecture. The new principal theorems compile with no `sorryAx` and use
+only Lean's standard `{propext, Classical.choice, Quot.sound}` foundations.
 
 ### v7.3.0 Task #440: Typed Eutheos old/new geometric bridge
 
@@ -403,53 +342,22 @@ with first-principles proofs is a later foundational stage; it is not claimed
 by the green build.
 ---
 
-## The wider work: *Opera Numerorum* and four routes toward RH
-
-The Beal development is not itself a proof of the Riemann Hypothesis.
-It is part of a wider program in which different mathematical languages
-approach the same landscape: Arakelov geometry, automorphic forms, spectral
-gaps, arithmetic dynamics, and the analytic behavior of zeta functions.
-The program has four distinct routes toward RH — independent formalization
-paths whose value is that they can expose each other's assumptions by
-meeting at common arithmetic data.
-
-### Route A — positivity
-
-[`riemann-arakelov-positivity`](https://github.com/DavidFox998/riemann-arakelov-positivity)
-turns positivity on the modular curve $X_0(143)$ into an arithmetic
-inequality. Its architecture centers on $g(X_0(143)) = 13$,
-$\omega^2 = 48/13$, and the finite set $S_4 = \{2, 3, 19, 191\}$.
-
-### Route B — spectral descent
-
-[`arakelov-rh-descent`](https://github.com/DavidFox998/arakelov-rh-descent)
-approaches the same territory through a spectral gap on $X_0(143)$,
-with $\lambda_1 \geq 975/4096$ as the Kim–Sarnak input.
-
-### Route C — growth contradiction
-
-[`rh-growth-contradiction`](https://github.com/DavidFox998/rh-growth-contradiction)
-takes a contradiction route, comparing growth permitted by a proposed
-zeta bound with Littlewood's $\Omega$-phenomenon.
-
-### Route D — Eutheos
-
-[`brothers-desert-proof`](https://github.com/DavidFox998/brothers-desert-proof)
-is a synthetic route studying zero repulsion directly, through the
-$p = 5$ bridge and the desert property of exceptional primes.
-
----
-
 ## What CI actually checks
 
 "Green" means the Lean source elaborates, its declared dependencies are visible,
 and the audit checks pass. It does **not** mean that Wiles's, Tate's, or Ribet's
 theorems have been reconstructed from first principles.
 
-CI enforces the boundary on every push:
+CI enforces the boundary on every push and pull request:
 
 - **Build all bricks** — all B01–B21 Cores and Wrappers compile
-- **Check NO sorry** — no `sorry` occurs in any brick
+- **Clean locked rebuild** — a separate job removes generated `.lake` state and
+  rebuilds from the committed `lean-toolchain`, `lakefile.lean`, and exact
+  revisions in `lake-manifest.json`; it fails if the clean build cannot
+  reproduce the project or changes either committed Lake input
+- **Check proof placeholders** — exactly two localized level-26 gate
+  experiments retain one `sorry` wall each; every other Lean source is rejected
+  if `sorry`, `sorryAx`, or `admit` appears
 - **Reject trivial Core stubs** — no `: Prop := True` or equivalent placeholder
 - **Audit every Core declaration** — Cores remain import-free and zero-axiom
 - **Audit the real-number transport boundary** — it may use Lean foundations but
@@ -481,6 +389,23 @@ and `.lake/packages` under a key derived from `lean-toolchain` and
 cache is missing. Avoid `lake clean` unless a genuinely clean rebuild is
 required.
 
+CI also runs a release-level clean-checkout validation. That job deliberately
+removes generated `.lake/` state and does not restore the incremental dependency
+cache before running
+`lake build +Beal.B00_OperaNumerorum Beal`. It must fetch and build using only
+the Lean version in `lean-toolchain`, the package declaration in
+`lakefile.lean`, and the exact transitive revisions recorded in
+`lake-manifest.json`. It then verifies that Lake did not rewrite either
+committed input. A failure means that the release snapshot is not reproducible
+from its committed dependency lock.
+
+GitHub Actions repeats this clean-checkout release-snapshot check every Monday at
+06:17 UTC, even when no code has changed. The scheduled run installs the exact
+toolchain named by `lean-toolchain` before Lake fetches the exact transitive
+revisions in `lake-manifest.json`. If either the toolchain or a locked Git
+revision disappears, the job reports that locked input explicitly instead of
+silently updating the snapshot.
+
 ---
 
 ## DOI / Citation — versioned audit trail
@@ -501,14 +426,21 @@ Tate, or Ribet from first principles.
 | **v4.0.0 three-axiom boundary** | `v4.0.0` / `7b5c4a7` | [Zenodo v4.0.0](https://doi.org/10.5281/zenodo.22085104) | **0 executable `sorry`; 3 named boundaries:** `wiles_modularity`, `tate_step2_I_n_conductor_one`, and `ribet_level_lowering_real` |
 | **v4.1.0 Tate local conductor verification** | `v4.1.0` / `ec8f5de` | [Zenodo v4.1.0](https://doi.org/10.5281/zenodo.22091549) | One typed `FreyCurveModel` fixes the coefficients, $c_4$, discriminant, conductor, and odd-prime local contract to the same $(A,B,C,x,y,z)$; the derived theorem returns that model's conductor and the named-axiom count remains three |
 | **v5.0.0 preserved-form Ribet descent** | `v5.0.0` / `92a165c` | [Zenodo v5.0.0](https://doi.org/10.5281/zenodo.22090900) | `ribet_level_lowering_real` leaves the active path; `ribet_single_step` transports a preserved-form witness one exact division at a time to the level-$2$ contradiction |
-| **v7.0.0 genuine provider** | `v7.0.0-genuine-provider` / `380a5f490` | Pending — no Zenodo record yet | The old `ribet_single_step : Prop` is deleted; `RibetSingleStepProviders` and `SupportedNewformToTokenProvider` are explicit data-valued boundaries, and `ribet_single_step_from_genuine` audits to `[propext, Quot.sound]` |
-| **v7.2.0 V-specific eigenline edge** | `beal-4.12-v-specific-edge` / `9ebd9659b` | Pending — no verified Zenodo record | Removes the broad provider from the active B15 path; derives `hQ` from normalized eigenline data; leaves `OldNewDecompHyp` and `LocalizedRankOne` explicit; carries choice-free newform support and Hecke-to-token transport data. Focused footprint: `[propext, Quot.sound]`. |
+| **v7.0.0 genuine provider** | `v7.0.0-genuine-provider` / `380a5f490` | [Zenodo v7.0.0](https://doi.org/10.5281/zenodo.22110949) | The old `ribet_single_step : Prop` is deleted; `RibetSingleStepProviders` and `SupportedNewformToTokenProvider` are explicit data-valued boundaries, and `ribet_single_step_from_genuine` audits to `[propext, Quot.sound]` |
+| **v7.1.0** | `v7.1.0` / `76d1dec` | [Zenodo v7.1.0](https://doi.org/10.5281/zenodo.22123696) | Formalization release in the typed Beal boundary sequence |
+| **v7.2.0 V-specific eigenline edge** | `beal-4.12-v-specific-edge` / `9ebd9659b` | [Zenodo v7.2.0](https://doi.org/10.5281/zenodo.22134937) | Removes the broad provider from the active B15 path; derives `hQ` from normalized eigenline data; leaves `OldNewDecompHyp` and `LocalizedRankOne` explicit; carries choice-free newform support and Hecke-to-token transport data. Focused footprint: `[propext, Quot.sound]`. |
 | **v7.3.0 typed Eutheos old/new bridge** | `v7.3.0` / `a12c58a` | [Zenodo v7.3.0](https://doi.org/10.5281/zenodo.22148517) | Derives `OldNewDecompHyp` from typed degeneracy maps, old-image representation, Hecke stability, V-coverage, and a jitter-indexed separation kernel. |
 | **v7.3.1 audit clarification** | `v7.3.1` / `5f2aa7e` | [Zenodo v7.3.1](https://doi.org/10.5281/zenodo.22150033) | Separates the focused `[propext, Quot.sound]` Eutheos audit from repository-wide mathematical assumptions. |
-| **v8.0.0 typed patching layer** | `v8.0.0` / `ceb98d4` | Not verified in this audit trail | Replaces an opaque localized-rank proposition with explicit Taylor–Wiles patching data. |
-| **v8.1.0 rational Frey 2-torsion** | `v8.1.0` / `646ac50` | Not verified in this audit trail | Formalizes the three nonzero affine rational 2-torsion points without claiming full exhaustiveness. |
-| **v8.2.0 full rational E[2]** | `v8.2.0` / `f61f330` | Not verified in this audit trail | Proves the four-point exhaustive rational 2-torsion classification; Mazur irreducibility remains separate. |
-| **v8.3.0 typed patching and Tate-certified descent** | `v8.3.0` | Pending — minted only after this GitHub release | Derives odd-prime exact divisibility from the canonical Frey model, makes the 2-adic exponent-one certificate explicit, and audits exactly three named mathematical boundaries plus two data suppliers. |
+| **v8.0.0 typed patching layer** | `v8.0.0` / `ceb98d4` | [Zenodo v8.0.0](https://doi.org/10.5281/zenodo.22164365) | Replaces an opaque localized-rank proposition with explicit Taylor–Wiles patching data. |
+| **v8.1.0 rational Frey 2-torsion** | `v8.1.0` / `646ac50` | [Zenodo v8.1.0](https://doi.org/10.5281/zenodo.22165277) | Formalizes the three nonzero affine rational 2-torsion points without claiming full exhaustiveness. |
+| **v8.2.0 full rational E[2]** | `v8.2.0` / `f61f330` | [Zenodo v8.2.0](https://doi.org/10.5281/zenodo.22165746) | Proves the four-point exhaustive rational 2-torsion classification; Mazur irreducibility remains separate. |
+| **v8.3.0 typed patching and Tate-certified descent** | `v8.3.0` | [Zenodo v8.3.0](https://doi.org/10.5281/zenodo.22170879) | Derives odd-prime exact divisibility from the canonical Frey model, makes the 2-adic exponent-one certificate explicit, and audits exactly three named mathematical boundaries plus two data suppliers. |
+| **v8.4.0 release guard and typed R=T patching** | `v8.4.0` | [Zenodo v8.4.0](https://doi.org/10.5281/zenodo.22183160) | Adds release guards, genuine Frey residual data, and the typed R=T patching boundary. |
+| **v8.5 Level-26 conditional rank interface** | `v8.5` | [Zenodo v8.5](https://doi.org/10.5281/zenodo.22216841) | Historical Level-26 conditional rank interface; not the canonical clean archive. |
+| **v8.6.0 clean Level-26 Phases A–C** | `v8.6.0` | [Zenodo v8.6.0](https://doi.org/10.5281/zenodo.22220130) | Clean Beal-only archive of the Level-26 conditional Phases A–C. |
+| **v8.7.0 formal-immersion release** | `v8.7.0` | [Zenodo v8.7.0](https://doi.org/10.5281/zenodo.22226053) | Conditional Phase A–C formal-immersion and four-cusp release. |
+| **v8.7.1 certificate guards** | `v8.7.1` | [Zenodo v8.7.1](https://doi.org/10.5281/zenodo.22226446) | GitHub-first certificate-guard hardening for the existing Phase A–C chain. |
+| **v8.8.0 conditional Phase D** | `v8.8.0` / `881926a` | [Zenodo v8.8.0](https://doi.org/10.5281/zenodo.22235410) | Conditional level-26 Frey endgame with explicit construction, modularity, level-lowering, descent, transport, and formal-immersion boundaries. |
 
 The v4.0.0 Zenodo landing page retains an older v0.4-style display title; its
 release tag, archive, and audited boundary are the v4.0.0 row above. The
@@ -547,13 +479,8 @@ DOI. For example:
 - Barry Mazur (1978) — irreducibility phenomena for Galois representations.
 - Andrew Wiles (1995) — modularity of semistable elliptic curves and Fermat's Last Theorem.
 - Richard Taylor and Andrew Wiles (1995) — the ring-theoretic criterion completing modularity.
-- [`ImperialCollegeLondon/FLT`](https://github.com/ImperialCollegeLondon/FLT) — inspiration for formalization, not a dependency of this repository.
 
 ---
-
-Maintained by DavidFox998 as part of *Opera Numerorum*: mathematics made
-auditable, with the beauty left visible.
-
 
 ### v7.3.1 release ladder clarification
 
@@ -606,4 +533,48 @@ multiplicity one. The reconstruction law in `PatchingSpecializationData` names
 that missing R=T/localization step explicitly. Constructing the complete
 `TaylorWilesPatchingData` remains a Type-valued obligation of the enriched
 descent-plan supplier.
+
+---
+
+## The wider work: *Opera Numerorum* and related repositories
+
+The Beal development is not itself a proof of the Riemann Hypothesis. It is one
+chamber of *Opera Numerorum*, a wider program in which different mathematical
+languages approach the same landscape: Arakelov geometry, automorphic forms,
+spectral gaps, arithmetic dynamics, and the analytic behavior of zeta
+functions. These related repositories are kept together here, at the bottom of
+the document, so the formal Beal account above remains self-contained.
+
+### Route A — positivity
+
+[`riemann-arakelov-positivity`](https://github.com/DavidFox998/riemann-arakelov-positivity)
+turns positivity on the modular curve $X_0(143)$ into an arithmetic
+inequality. Its architecture centers on $g(X_0(143)) = 13$,
+$\omega^2 = 48/13$, and the finite set $S_4 = \{2, 3, 19, 191\}$.
+
+### Route B — spectral descent
+
+[`arakelov-rh-descent`](https://github.com/DavidFox998/arakelov-rh-descent)
+approaches the same territory through a spectral gap on $X_0(143)$, with
+$\lambda_1 \geq 975/4096$ as the Kim–Sarnak input.
+
+### Route C — growth contradiction
+
+[`rh-growth-contradiction`](https://github.com/DavidFox998/rh-growth-contradiction)
+takes a contradiction route, comparing growth permitted by a proposed zeta
+bound with Littlewood's $\Omega$-phenomenon.
+
+### Route D — Eutheos
+
+[`brothers-desert-proof`](https://github.com/DavidFox998/brothers-desert-proof)
+is a synthetic route studying zero repulsion directly, through the $p = 5$
+bridge and the desert property of exceptional primes.
+
+### Formalization reference
+
+[`ImperialCollegeLondon/FLT`](https://github.com/ImperialCollegeLondon/FLT) is
+an inspiration for formalization, not a dependency of this repository.
+
+Maintained by DavidFox998 as part of *Opera Numerorum*: mathematics made
+auditable, with the beauty left visible.
 
