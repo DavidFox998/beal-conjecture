@@ -84,6 +84,13 @@ Its tarball is byte-identical to the GitHub release asset. The earlier
 `10.5281/zenodo.22238566` record is an immutable historical mistake with an
 inherited v8.3 title and a different ZIP; use the corrected DOI for v8.9.0.
 
+The corrected v9.0.0 Real S₂(26) Decomposition Evidence release has version
+DOI `10.5281/zenodo.22238979` under concept DOI
+`10.5281/zenodo.22041831`. Its tarball is byte-identical to the GitHub release
+asset. The automatic hook record `10.5281/zenodo.22238975` is an immutable
+historical mistake with an inherited v8.9 title and generated ZIP; use the
+corrected DOI for v9.0.0.
+
 The inherited v4.1.0 titles and descriptions on Zenodo records
 `10.5281/zenodo.22110949` (`v7.0.0-genuine-provider`),
 `10.5281/zenodo.22123696` (`v7.1.0`), and
