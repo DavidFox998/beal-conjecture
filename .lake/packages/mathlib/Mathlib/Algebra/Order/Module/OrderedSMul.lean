@@ -53,10 +53,11 @@ class OrderedSMul (R M : Type*) [OrderedSemiring R] [OrderedAddCommMonoid M] [SM
   /-- If `c • a < c • b` for some positive `c`, then `a < b`. -/
   protected lt_of_smul_lt_smul_of_pos : ∀ {a b : M}, ∀ {c : R}, c • a < c • b → 0 < c → a < b
 
-variable {ι 𝕜 R M N : Type*}
+variable {ι α β γ 𝕜 R M N : Type*}
 
 section OrderedSMul
 variable [OrderedSemiring R] [OrderedAddCommMonoid M] [SMulWithZero R M] [OrderedSMul R M]
+  {s : Set M} {a b : M} {c : R}
 
 instance OrderedSMul.toPosSMulStrictMono : PosSMulStrictMono R M where
   elim _a ha _b₁ _b₂ hb := OrderedSMul.smul_lt_smul_of_pos hb ha
@@ -94,7 +95,8 @@ instance Int.orderedSMul [LinearOrderedAddCommGroup M] : OrderedSMul ℤ M :=
     · cases (Int.negSucc_not_pos _).1 hn
 
 section LinearOrderedSemiring
-variable [LinearOrderedSemiring R]
+variable [LinearOrderedSemiring R] [LinearOrderedAddCommMonoid M] [SMulWithZero R M]
+  [OrderedSMul R M] {a : R}
 
 -- TODO: `LinearOrderedField M → OrderedSMul ℚ M`
 instance LinearOrderedSemiring.toOrderedSMul : OrderedSMul R R :=
@@ -134,7 +136,7 @@ end LinearOrderedSemifield
 section Invertible
 variable (α : Type*) {β : Type*}
 variable [Semiring α] [Invertible (2 : α)] [Lattice β] [AddCommGroup β] [Module α β]
-  [AddLeftMono β]
+  [CovariantClass β β (· + ·) (· ≤ ·)]
 
 lemma inf_eq_half_smul_add_sub_abs_sub (x y : β) : x ⊓ y = (⅟2 : α) • (x + y - |y - x|) := by
   rw [← two_nsmul_inf_eq_add_sub_abs_sub x y, two_smul, ← two_smul α,
@@ -149,7 +151,7 @@ end Invertible
 section DivisionSemiring
 variable (α : Type*) {β : Type*}
 variable [DivisionSemiring α] [NeZero (2 : α)] [Lattice β] [AddCommGroup β] [Module α β]
-  [AddLeftMono β]
+  [CovariantClass β β (· + ·) (· ≤ ·)]
 
 lemma inf_eq_half_smul_add_sub_abs_sub' (x y : β) : x ⊓ y = (2⁻¹ : α) • (x + y - |y - x|) := by
   letI := invertibleOfNonzero (two_ne_zero' α)

@@ -60,10 +60,6 @@ instance [Mono f] : IsIso (diagonal f) := by
   rw [(IsIso.inv_eq_of_inv_hom_id (diagonal_fst f)).symm]
   infer_instance
 
-lemma isIso_diagonal_iff : IsIso (diagonal f) ↔ Mono f :=
-  ⟨fun H ↦ ⟨fun _ _ e ↦ by rw [← lift_fst _ _ e, (cancel_epi (g := fst f f) (h := snd f f)
-    (diagonal f)).mp (by simp), lift_snd]⟩, fun _ ↦ inferInstance⟩
-
 /-- The two projections `Δ_{X/Y} ⟶ X` form a kernel pair for `f : X ⟶ Y`. -/
 theorem diagonal_isKernelPair : IsKernelPair f (pullback.fst f f) (pullback.snd f f) :=
   IsPullback.of_hasPullback f f
@@ -357,21 +353,6 @@ theorem diagonal_pullback_fst {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) :
               (Over.homMk (diagonal g) : Over.mk g ⟶ Over.mk (pullback.snd _ _ ≫ g))).left ≫
           (diagonalObjPullbackFstIso f g).inv := by
   ext <;> dsimp <;> simp
-
-/-- Informally, this is a special case of `pullback_map_diagonal_isPullback` for `T = X`. -/
-lemma pullback_lift_diagonal_isPullback (g : Y ⟶ X) (f : X ⟶ S) :
-    IsPullback g (pullback.lift (𝟙 Y) g (by simp)) (diagonal f)
-      (pullback.map (g ≫ f) f f f g (𝟙 X) (𝟙 S) (by simp) (by simp)) := by
-  let i : pullback (g ≫ f) f ≅ pullback (g ≫ f) (𝟙 X ≫ f) := congrHom rfl (by simp)
-  let e : pullback (diagonal f) (map (g ≫ f) f f f g (𝟙 X) (𝟙 S) (by simp) (by simp)) ≅
-      pullback (diagonal f) (map (g ≫ f) (𝟙 X ≫ f) f f g (𝟙 X) (𝟙 S) (by simp) (by simp)) :=
-    (asIso (map _ _ _ _ (𝟙 _) i.inv (𝟙 _) (by simp) (by ext <;> simp [i]))).symm
-  apply IsPullback.of_iso_pullback _
-      (e ≪≫ pullbackDiagonalMapIdIso (T := X) (S := S) g (𝟙 X) f ≪≫ asIso (pullback.fst _ _)).symm
-  · simp [e]
-  · ext <;> simp [e, i]
-  · constructor
-    ext <;> simp [condition]
 
 end
 

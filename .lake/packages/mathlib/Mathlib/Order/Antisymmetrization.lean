@@ -88,7 +88,7 @@ def toAntisymmetrization : α → Antisymmetrization α r :=
 
 /-- Get a representative from the antisymmetrization. -/
 noncomputable def ofAntisymmetrization : Antisymmetrization α r → α :=
-  Quotient.out
+  Quotient.out'
 
 instance [Inhabited α] : Inhabited (Antisymmetrization α r) := by
   unfold Antisymmetrization; infer_instance
@@ -119,14 +119,14 @@ theorem AntisymmRel.image {a b : α} (h : AntisymmRel (· ≤ ·) a b) {f : α �
   ⟨hf h.1, hf h.2⟩
 
 instance instPartialOrderAntisymmetrization : PartialOrder (Antisymmetrization α (· ≤ ·)) where
-  le :=
-    Quotient.lift₂ (· ≤ ·) fun (_ _ _ _ : α) h₁ h₂ =>
+  le a b :=
+    (Quotient.liftOn₂' a b (· ≤ ·)) fun (_ _ _ _ : α) h₁ h₂ =>
       propext ⟨fun h => h₁.2.trans <| h.trans h₂.1, fun h => h₁.1.trans <| h.trans h₂.2⟩
-  lt :=
-    Quotient.lift₂ (· < ·) fun (_ _ _ _ : α) h₁ h₂ =>
+  lt a b :=
+    (Quotient.liftOn₂' a b (· < ·)) fun (_ _ _ _ : α) h₁ h₂ =>
       propext ⟨fun h => h₁.2.trans_lt <| h.trans_le h₂.1, fun h =>
                 h₁.1.trans_lt <| h.trans_le h₂.2⟩
-  le_refl a := Quotient.inductionOn' a le_refl
+  le_refl a := Quotient.inductionOn' a <| le_refl
   le_trans a b c := Quotient.inductionOn₃' a b c fun _ _ _ => le_trans
   lt_iff_le_not_le a b := Quotient.inductionOn₂' a b fun _ _ => lt_iff_le_not_le
   le_antisymm a b := Quotient.inductionOn₂' a b fun _ _ hab hba => Quotient.sound' ⟨hab, hba⟩
@@ -138,30 +138,16 @@ theorem antisymmetrization_fibration :
 
 theorem acc_antisymmetrization_iff : Acc (· < ·)
     (@toAntisymmetrization α (· ≤ ·) _ a) ↔ Acc (· < ·) a :=
-  acc_lift₂_iff
+  acc_liftOn₂'_iff
 
 theorem wellFounded_antisymmetrization_iff :
     WellFounded (@LT.lt (Antisymmetrization α (· ≤ ·)) _) ↔ WellFounded (@LT.lt α _) :=
-  wellFounded_lift₂_iff
-
-theorem wellFoundedLT_antisymmetrization_iff :
-    WellFoundedLT (Antisymmetrization α (· ≤ ·)) ↔ WellFoundedLT α := by
-  simp_rw [isWellFounded_iff, wellFounded_antisymmetrization_iff]
-
-theorem wellFoundedGT_antisymmetrization_iff :
-    WellFoundedGT (Antisymmetrization α (· ≤ ·)) ↔ WellFoundedGT α := by
-  simp_rw [isWellFounded_iff]
-  convert wellFounded_liftOn₂'_iff with ⟨_⟩ ⟨_⟩
-  exact fun _ _ _ _ h₁ h₂ ↦ propext
-    ⟨fun h ↦ (h₂.2.trans_lt h).trans_le h₁.1, fun h ↦ (h₂.1.trans_lt h).trans_le h₁.2⟩
+  wellFounded_liftOn₂'_iff
 
 instance [WellFoundedLT α] : WellFoundedLT (Antisymmetrization α (· ≤ ·)) :=
-  wellFoundedLT_antisymmetrization_iff.mpr ‹_›
+  ⟨wellFounded_antisymmetrization_iff.2 IsWellFounded.wf⟩
 
-instance [WellFoundedGT α] : WellFoundedGT (Antisymmetrization α (· ≤ ·)) :=
-  wellFoundedGT_antisymmetrization_iff.mpr ‹_›
-
-instance [DecidableRel (α := α) (· ≤ ·)] [DecidableRel (α := α) (· < ·)] [IsTotal α (· ≤ ·)] :
+instance [@DecidableRel α (· ≤ ·)] [@DecidableRel α (· < ·)] [IsTotal α (· ≤ ·)] :
     LinearOrder (Antisymmetrization α (· ≤ ·)) :=
   { instPartialOrderAntisymmetrization with
     le_total := fun a b => Quotient.inductionOn₂' a b <| total_of (· ≤ ·),
@@ -181,12 +167,12 @@ theorem toAntisymmetrization_lt_toAntisymmetrization_iff :
 @[simp]
 theorem ofAntisymmetrization_le_ofAntisymmetrization_iff {a b : Antisymmetrization α (· ≤ ·)} :
     ofAntisymmetrization (· ≤ ·) a ≤ ofAntisymmetrization (· ≤ ·) b ↔ a ≤ b :=
-  (Quotient.outRelEmbedding _).map_rel_iff
+  (Quotient.out'RelEmbedding _).map_rel_iff
 
 @[simp]
 theorem ofAntisymmetrization_lt_ofAntisymmetrization_iff {a b : Antisymmetrization α (· ≤ ·)} :
     ofAntisymmetrization (· ≤ ·) a < ofAntisymmetrization (· ≤ ·) b ↔ a < b :=
-  (Quotient.outRelEmbedding _).map_rel_iff
+  (Quotient.out'RelEmbedding _).map_rel_iff
 
 @[mono]
 theorem toAntisymmetrization_mono : Monotone (@toAntisymmetrization α (· ≤ ·) _) := fun _ _ => id
@@ -223,7 +209,7 @@ variable (α)
 /-- `ofAntisymmetrization` as an order embedding. -/
 @[simps]
 noncomputable def OrderEmbedding.ofAntisymmetrization : Antisymmetrization α (· ≤ ·) ↪o α :=
-  { Quotient.outRelEmbedding _ with toFun := _root_.ofAntisymmetrization _ }
+  { Quotient.out'RelEmbedding _ with toFun := _root_.ofAntisymmetrization _ }
 
 /-- `Antisymmetrization` and `orderDual` commute. -/
 def OrderIso.dualAntisymmetrization :
@@ -232,7 +218,7 @@ def OrderIso.dualAntisymmetrization :
   invFun := (Quotient.map' id) fun _ _ => And.symm
   left_inv a := Quotient.inductionOn' a fun a => by simp_rw [Quotient.map'_mk'', id]
   right_inv a := Quotient.inductionOn' a fun a => by simp_rw [Quotient.map'_mk'', id]
-  map_rel_iff' := @fun a b => Quotient.inductionOn₂' a b fun _ _ => Iff.rfl
+  map_rel_iff' := @fun a b => Quotient.inductionOn₂' a b fun a b => Iff.rfl
 
 @[simp]
 theorem OrderIso.dualAntisymmetrization_apply (a : α) :
@@ -247,38 +233,3 @@ theorem OrderIso.dualAntisymmetrization_symm_apply (a : α) :
   rfl
 
 end Preorder
-
-section Prod
-
-variable (α β) [Preorder α] [Preorder β]
-
-namespace Antisymmetrization
-
-/-- The antisymmetrization of a product preorder is order isomorphic
-to the product of antisymmetrizations. -/
-def prodEquiv : Antisymmetrization (α × β) (· ≤ ·) ≃o
-    Antisymmetrization α (· ≤ ·) × Antisymmetrization β (· ≤ ·) where
-  toFun := Quotient.lift (fun ab ↦ (⟦ab.1⟧, ⟦ab.2⟧)) fun ab₁ ab₂ h ↦
-    Prod.mk.inj_iff.mpr ⟨Quotient.sound ⟨h.1.1, h.2.1⟩, Quotient.sound ⟨h.1.2, h.2.2⟩⟩
-  invFun := Function.uncurry <| Quotient.lift₂ (fun a b ↦ ⟦(a, b)⟧)
-    fun a₁ b₁ a₂ b₂ h₁ h₂ ↦ Quotient.sound ⟨⟨h₁.1, h₂.1⟩, h₁.2, h₂.2⟩
-  left_inv := by rintro ⟨_⟩; rfl
-  right_inv := by rintro ⟨⟨_⟩, ⟨_⟩⟩; rfl
-  map_rel_iff' := by rintro ⟨_⟩ ⟨_⟩; rfl
-
-@[simp] lemma prodEquiv_apply_mk {ab} : prodEquiv α β ⟦ab⟧ = (⟦ab.1⟧, ⟦ab.2⟧) := rfl
-@[simp] lemma prodEquiv_symm_apply_mk {a b} : (prodEquiv α β).symm (⟦a⟧, ⟦b⟧) = ⟦(a, b)⟧ := rfl
-
-end Antisymmetrization
-
-attribute [local instance] Prod.wellFoundedLT' Prod.wellFoundedGT'
-
-instance Prod.wellFoundedLT [WellFoundedLT α] [WellFoundedLT β] : WellFoundedLT (α × β) :=
-  wellFoundedLT_antisymmetrization_iff.mp <|
-    (Antisymmetrization.prodEquiv α β).strictMono.wellFoundedLT
-
-instance Prod.wellFoundedGT [WellFoundedGT α] [WellFoundedGT β] : WellFoundedGT (α × β) :=
-  wellFoundedGT_antisymmetrization_iff.mp <|
-    (Antisymmetrization.prodEquiv α β).strictMono.wellFoundedGT
-
-end Prod

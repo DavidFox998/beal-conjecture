@@ -12,7 +12,8 @@ import Mathlib.Order.Interval.Set.WithBotTop
 # Topology on extended natural numbers
 -/
 
-open Filter Set Topology
+open Set Filter
+open scoped Topology
 
 namespace ENat
 
@@ -29,20 +30,14 @@ instance : OrderTopology ℕ∞ := ⟨rfl⟩
 @[simp] theorem range_natCast : range ((↑) : ℕ → ℕ∞) = Iio ⊤ :=
   WithTop.range_coe
 
-theorem isEmbedding_natCast : IsEmbedding ((↑) : ℕ → ℕ∞) :=
-  Nat.strictMono_cast.isEmbedding_of_ordConnected <| range_natCast ▸ ordConnected_Iio
+theorem embedding_natCast : Embedding ((↑) : ℕ → ℕ∞) :=
+  Nat.strictMono_cast.embedding_of_ordConnected <| range_natCast ▸ ordConnected_Iio
 
-@[deprecated (since := "2024-10-26")]
-alias embedding_natCast := isEmbedding_natCast
-
-theorem isOpenEmbedding_natCast : IsOpenEmbedding ((↑) : ℕ → ℕ∞) :=
-  ⟨isEmbedding_natCast, range_natCast ▸ isOpen_Iio⟩
-
-@[deprecated (since := "2024-10-18")]
-alias openEmbedding_natCast := isOpenEmbedding_natCast
+theorem openEmbedding_natCast : OpenEmbedding ((↑) : ℕ → ℕ∞) :=
+  ⟨embedding_natCast, range_natCast ▸ isOpen_Iio⟩
 
 theorem nhds_natCast (n : ℕ) : 𝓝 (n : ℕ∞) = pure (n : ℕ∞) := by
-  simp [← isOpenEmbedding_natCast.map_nhds_eq]
+  simp [← openEmbedding_natCast.map_nhds_eq]
 
 @[simp]
 protected theorem nhds_eq_pure {n : ℕ∞} (h : n ≠ ⊤) : 𝓝 n = pure n := by
@@ -90,10 +85,11 @@ instance : ContinuousMul ℕ∞ where
 protected theorem continuousAt_sub {a b : ℕ∞} (h : a ≠ ⊤ ∨ b ≠ ⊤) :
     ContinuousAt (· - ·).uncurry (a, b) := by
   match a, b, h with
-  | (a : ℕ), (b : ℕ), _ => simp [ContinuousAt, nhds_prod_eq]
+  | (a : ℕ), (b : ℕ), _ =>
+    simpa [ContinuousAt, nhds_prod_eq] using tendsto_pure_nhds _ _
   | (a : ℕ), ⊤, _ =>
     suffices ∀ᶠ b in 𝓝 ⊤, (a - b : ℕ∞) = 0 by
-      simpa [ContinuousAt, nhds_prod_eq, tsub_eq_zero_of_le]
+      simpa [ContinuousAt, nhds_prod_eq]
     filter_upwards [le_mem_nhds (WithTop.coe_lt_top a)] with b using tsub_eq_zero_of_le
   | ⊤, (b : ℕ), _ =>
     suffices ∀ n : ℕ, ∀ᶠ a : ℕ∞ in 𝓝 ⊤, b + n < a by

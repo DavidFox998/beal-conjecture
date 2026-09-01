@@ -136,11 +136,11 @@ theorem differentiableAt_riemannZeta {s : ℂ} (hs' : s ≠ 1) : DifferentiableA
 
 /-- We have `ζ(0) = -1 / 2`. -/
 theorem riemannZeta_zero : riemannZeta 0 = -1 / 2 := by
-  simp_rw [riemannZeta, hurwitzZetaEven, Function.update_self, if_true]
+  simp_rw [riemannZeta, hurwitzZetaEven, Function.update_same, if_true]
 
 lemma riemannZeta_def_of_ne_zero {s : ℂ} (hs : s ≠ 0) :
     riemannZeta s = completedRiemannZeta s / Gammaℝ s := by
-  rw [riemannZeta, hurwitzZetaEven, Function.update_of_ne hs, completedHurwitzZetaEven_zero]
+  rw [riemannZeta, hurwitzZetaEven, Function.update_noteq hs, completedHurwitzZetaEven_zero]
 
 /-- The trivial zeroes of the zeta function. -/
 theorem riemannZeta_neg_two_mul_nat_add_one (n : ℕ) : riemannZeta (-2 * (n + 1)) = 0 :=
@@ -201,25 +201,6 @@ theorem zeta_nat_eq_tsum_of_gt_one {k : ℕ} (hk : 1 < k) :
 /-- The residue of `ζ(s)` at `s = 1` is equal to 1. -/
 lemma riemannZeta_residue_one : Tendsto (fun s ↦ (s - 1) * riemannZeta s) (𝓝[≠] 1) (𝓝 1) := by
   exact hurwitzZetaEven_residue_one 0
-
-/-- The residue of `ζ(s)` at `s = 1` is equal to 1, expressed using `tsum`. -/
-theorem tendsto_sub_mul_tsum_nat_cpow :
-    Tendsto (fun s : ℂ ↦ (s - 1) * ∑' (n : ℕ), 1 / (n : ℂ) ^ s) (𝓝[{s | 1 < re s}] 1) (𝓝 1) := by
-  refine (tendsto_nhdsWithin_mono_left ?_ riemannZeta_residue_one).congr' ?_
-  · simp only [subset_compl_singleton_iff, mem_setOf_eq, one_re, not_lt, le_refl]
-  · filter_upwards [eventually_mem_nhdsWithin] with s hs using
-      congr_arg _ <| zeta_eq_tsum_one_div_nat_cpow hs
-
-/-- The residue of `ζ(s)` at `s = 1` is equal to 1 expressed using `tsum` and for a
-real variable. -/
-theorem tendsto_sub_mul_tsum_nat_rpow :
-    Tendsto (fun s : ℝ ↦ (s - 1) * ∑' (n : ℕ), 1 / (n : ℝ) ^ s) (𝓝[>] 1) (𝓝 1) := by
-  rw [← tendsto_ofReal_iff, ofReal_one]
-  have : Tendsto (fun s : ℝ ↦ (s : ℂ)) (𝓝[>] 1) (𝓝[{s | 1 < re s}] 1) :=
-    continuous_ofReal.continuousWithinAt.tendsto_nhdsWithin (fun _ _ ↦ by aesop)
-  apply (tendsto_sub_mul_tsum_nat_cpow.comp this).congr fun s ↦ ?_
-  simp only [one_div, Function.comp_apply, ofReal_mul, ofReal_sub, ofReal_one, ofReal_tsum,
-    ofReal_inv, ofReal_cpow (Nat.cast_nonneg _), ofReal_natCast]
 
 /- naming scheme was changed from `riemannCompletedZeta` to `completedRiemannZeta`; add
 aliases for the old names -/

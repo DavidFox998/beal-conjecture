@@ -8,7 +8,6 @@ import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 import Mathlib.Topology.Algebra.Module.Simple
 import Mathlib.Topology.Algebra.Module.Determinant
 import Mathlib.RingTheory.LocalRing.Basic
-import Mathlib.RingTheory.Localization.FractionRing
 
 /-!
 # Finite dimensional topological vector spaces over complete fields
@@ -43,11 +42,12 @@ result follows as `continuous_equivFun_basis`.
 
 -/
 
-open Filter Module Set TopologicalSpace Topology
 
 universe u v w x
 
 noncomputable section
+
+open Set FiniteDimensional TopologicalSpace Filter
 
 section Field
 
@@ -106,7 +106,7 @@ theorem unique_topology_of_t2 {t : TopologicalSpace 𝕜} (h₁ : @TopologicalAd
       -- For that, we use that `𝓑` is balanced : since `‖ξ₀‖ < ε < ‖ξ‖`, we have `‖ξ₀ / ξ‖ ≤ 1`,
       -- hence `ξ₀ = (ξ₀ / ξ) • ξ ∈ 𝓑` because `ξ ∈ 𝓑`.
       refine (balancedCore_balanced _).smul_mem ?_ hξ
-      rw [norm_mul, norm_inv, mul_inv_le_iff₀ (norm_pos_iff.mpr hξ0), one_mul]
+      rw [norm_mul, norm_inv, mul_inv_le_iff (norm_pos_iff.mpr hξ0), mul_one]
       exact (hξ₀ε.trans h).le
   · -- Finally, to show `𝓣₀ ≤ 𝓣`, we simply argue that `id = (fun x ↦ x • 1)` is continuous from
     -- `(𝕜, 𝓣₀)` to `(𝕜, 𝓣)` because `(•) : (𝕜, 𝓣₀) × (𝕜, 𝓣) → (𝕜, 𝓣)` is continuous.
@@ -157,7 +157,7 @@ theorem LinearMap.continuous_of_isClosed_ker (l : E →ₗ[𝕜] 𝕜)
     -- Hence, we know that it is equal to the topology induced by the norm.
     have : induced φ.toEquiv.symm inferInstance = hnorm.toUniformSpace.toTopologicalSpace := by
       refine unique_topology_of_t2 (topologicalAddGroup_induced φ.symm.toLinearMap)
-        (continuousSMul_induced φ.symm.toMulActionHom) ?_
+        (continuousSMul_induced φ.symm.toLinearMap) ?_
       -- Porting note: was `rw [t2Space_iff]`
       refine (@t2Space_iff 𝕜 (induced (↑(LinearEquiv.toEquiv φ).symm) inferInstance)).mpr ?_
       exact fun x y hxy =>
@@ -197,20 +197,20 @@ private theorem continuous_equivFun_basis_aux [T2Space E] {ι : Type v} [Fintype
   induction' hn : Fintype.card ι with n IH generalizing ι E
   · rw [Fintype.card_eq_zero_iff] at hn
     exact continuous_of_const fun x y => funext hn.elim
-  · haveI : FiniteDimensional 𝕜 E := .of_fintype_basis ξ
+  · haveI : FiniteDimensional 𝕜 E := of_fintype_basis ξ
     -- first step: thanks to the induction hypothesis, any n-dimensional subspace is equivalent
     -- to a standard space of dimension n, hence it is complete and therefore closed.
     have H₁ : ∀ s : Submodule 𝕜 E, finrank 𝕜 s = n → IsClosed (s : Set E) := by
       intro s s_dim
       letI : UniformAddGroup s := s.toAddSubgroup.uniformAddGroup
       let b := Basis.ofVectorSpace 𝕜 s
-      have U : IsUniformEmbedding b.equivFun.symm.toEquiv := by
+      have U : UniformEmbedding b.equivFun.symm.toEquiv := by
         have : Fintype.card (Basis.ofVectorSpaceIndex 𝕜 s) = n := by
           rw [← s_dim]
           exact (finrank_eq_card_basis b).symm
         have : Continuous b.equivFun := IH b this
         exact
-          b.equivFun.symm.isUniformEmbedding b.equivFun.symm.toLinearMap.continuous_on_pi this
+          b.equivFun.symm.uniformEmbedding b.equivFun.symm.toLinearMap.continuous_on_pi this
       have : IsComplete (s : Set E) :=
         completeSpace_coe_iff_isComplete.1 ((completeSpace_congr U).1 inferInstance)
       exact this.isClosed
@@ -264,7 +264,7 @@ continuous (see `LinearMap.continuous_of_finiteDimensional`), which in turn impl
 norms are equivalent in finite dimensions. -/
 theorem continuous_equivFun_basis [T2Space E] {ι : Type*} [Finite ι] (ξ : Basis ι 𝕜 E) :
     Continuous ξ.equivFun :=
-  haveI : FiniteDimensional 𝕜 E := .of_fintype_basis ξ
+  haveI : FiniteDimensional 𝕜 E := of_fintype_basis ξ
   ξ.equivFun.toLinearMap.continuous_of_finiteDimensional
 
 namespace LinearMap
@@ -321,7 +321,7 @@ theorem range_toContinuousLinearMap (f : E →ₗ[𝕜] F') :
 /-- A surjective linear map `f` with finite dimensional codomain is an open map. -/
 theorem isOpenMap_of_finiteDimensional (f : F →ₗ[𝕜] E) (hf : Function.Surjective f) :
     IsOpenMap f := by
-  obtain ⟨g, hg⟩ := f.exists_rightInverse_of_surjective (LinearMap.range_eq_top.2 hf)
+  rcases f.exists_rightInverse_of_surjective (LinearMap.range_eq_top.2 hf) with ⟨g, hg⟩
   refine IsOpenMap.of_sections fun x => ⟨fun y => g (y - f x) + x, ?_, ?_, fun y => ?_⟩
   · exact
       ((g.continuous_of_finiteDimensional.comp <| continuous_id.sub continuous_const).add
@@ -374,6 +374,7 @@ theorem toLinearEquiv_toContinuousLinearEquiv (e : E ≃ₗ[𝕜] F) :
   ext x
   rfl
 
+-- Porting note (#10618): @[simp] can prove this
 theorem toLinearEquiv_toContinuousLinearEquiv_symm (e : E ≃ₗ[𝕜] F) :
     e.toContinuousLinearEquiv.symm.toLinearEquiv = e.symm := by
   ext x
@@ -489,7 +490,7 @@ variable (𝕜 E : Type*) [NontriviallyNormedField 𝕜]
 include 𝕜 in
 theorem FiniteDimensional.complete [FiniteDimensional 𝕜 E] : CompleteSpace E := by
   set e := ContinuousLinearEquiv.ofFinrankEq (@finrank_fin_fun 𝕜 _ _ (finrank 𝕜 E)).symm
-  have : IsUniformEmbedding e.toEquiv.symm := e.symm.isUniformEmbedding
+  have : UniformEmbedding e.toEquiv.symm := e.symm.uniformEmbedding
   exact (completeSpace_congr this).1 inferInstance
 
 variable {𝕜 E}
@@ -517,30 +518,24 @@ theorem Submodule.closed_of_finiteDimensional
   s.complete_of_finiteDimensional.isClosed
 
 /-- An injective linear map with finite-dimensional domain is a closed embedding. -/
-theorem LinearMap.isClosedEmbedding_of_injective [T2Space E] [FiniteDimensional 𝕜 E] {f : E →ₗ[𝕜] F}
-    (hf : LinearMap.ker f = ⊥) : IsClosedEmbedding f :=
+theorem LinearMap.closedEmbedding_of_injective [T2Space E] [FiniteDimensional 𝕜 E] {f : E →ₗ[𝕜] F}
+    (hf : LinearMap.ker f = ⊥) : ClosedEmbedding f :=
   let g := LinearEquiv.ofInjective f (LinearMap.ker_eq_bot.mp hf)
-  { IsEmbedding.subtypeVal.comp g.toContinuousLinearEquiv.toHomeomorph.isEmbedding with
+  { embedding_subtype_val.comp g.toContinuousLinearEquiv.toHomeomorph.embedding with
     isClosed_range := by
       haveI := f.finiteDimensional_range
       simpa [LinearMap.range_coe f] using f.range.closed_of_finiteDimensional }
 
-@[deprecated (since := "2024-10-20")]
-alias LinearMap.closedEmbedding_of_injective := LinearMap.isClosedEmbedding_of_injective
-
-theorem isClosedEmbedding_smul_left [T2Space E] {c : E} (hc : c ≠ 0) :
-    IsClosedEmbedding fun x : 𝕜 => x • c :=
-  LinearMap.isClosedEmbedding_of_injective (LinearMap.ker_toSpanSingleton 𝕜 E hc)
-
-@[deprecated (since := "2024-10-20")]
-alias closedEmbedding_smul_left := isClosedEmbedding_smul_left
+theorem closedEmbedding_smul_left [T2Space E] {c : E} (hc : c ≠ 0) :
+    ClosedEmbedding fun x : 𝕜 => x • c :=
+  LinearMap.closedEmbedding_of_injective (LinearMap.ker_toSpanSingleton 𝕜 E hc)
 
 -- `smul` is a closed map in the first argument.
 theorem isClosedMap_smul_left [T2Space E] (c : E) : IsClosedMap fun x : 𝕜 => x • c := by
   by_cases hc : c = 0
   · simp_rw [hc, smul_zero]
     exact isClosedMap_const
-  · exact (isClosedEmbedding_smul_left hc).isClosedMap
+  · exact (closedEmbedding_smul_left hc).isClosedMap
 
 theorem ContinuousLinearMap.exists_right_inverse_of_surjective [FiniteDimensional 𝕜 F]
     (f : E →L[𝕜] F) (hf : LinearMap.range f = ⊤) :

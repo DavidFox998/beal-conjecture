@@ -232,12 +232,12 @@ instance epi_r {A : C} : Epi (r A) := by
   let hp1 : IsLimit (KernelFork.ofι (prod.lift (𝟙 A) (0 : A ⟶ A)) hlp) := by
     refine Fork.IsLimit.mk _ (fun s => Fork.ι s ≫ Limits.prod.fst) ?_ ?_
     · intro s
-      apply Limits.prod.hom_ext <;> simp
+      apply prod.hom_ext <;> simp
     · intro s m h
       haveI : Mono (prod.lift (𝟙 A) (0 : A ⟶ A)) := mono_of_mono_fac (prod.lift_fst _ _)
       apply (cancel_mono (prod.lift (𝟙 A) (0 : A ⟶ A))).1
       convert h
-      apply Limits.prod.hom_ext <;> simp
+      apply prod.hom_ext <;> simp
   let hp2 : IsColimit (CokernelCofork.ofπ (Limits.prod.snd : A ⨯ A ⟶ A) hlp) :=
     epiIsCokernelOfKernel _ hp1
   apply NormalMonoCategory.epi_of_zero_cancel
@@ -265,6 +265,7 @@ abbrev σ {A : C} : A ⨯ A ⟶ A :=
 
 end
 
+-- Porting note (#10618): simp can prove these
 @[reassoc]
 theorem diag_σ {X : C} : diag X ≫ σ = 0 := by rw [cokernel.condition_assoc, zero_comp]
 

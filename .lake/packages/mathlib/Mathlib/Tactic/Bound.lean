@@ -27,7 +27,7 @@ uses specialized lemmas for goals of the form `1 ≤ x, 1 < x, x ≤ 1, x < 1`.
 Additional hypotheses can be passed as `bound [h0, h1 n, ...]`.  This is equivalent to declaring
 them via `have` before calling `bound`.
 
-See `MathlibTest/Bound/bound.lean` for tests.
+See `test/Bound.lean` for tests.
 
 ### Calc usage
 
@@ -112,7 +112,7 @@ lemma Nat.cast_pos_of_pos {R : Type} [OrderedSemiring R] [Nontrivial R] {n : ℕ
   Nat.cast_pos.mpr
 
 lemma Nat.one_le_cast_of_le {α : Type} [AddCommMonoidWithOne α] [PartialOrder α]
-    [AddLeftMono α] [ZeroLEOneClass α]
+    [CovariantClass α α (fun (x y : α) => x + y) fun (x y : α) => x ≤ y] [ZeroLEOneClass α]
     [CharZero α] {n : ℕ} : 1 ≤ n → 1 ≤ (n : α) :=
   Nat.one_le_cast.mpr
 

@@ -4,11 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
 import Lean.Linter.Deprecated
-import Mathlib.Algebra.Group.ZeroOne
 import Mathlib.Data.Int.Notation
-import Mathlib.Data.Nat.BinaryRec
-import Mathlib.Tactic.TypeStar
-
+import Mathlib.Algebra.Group.ZeroOne
+import Mathlib.Data.Nat.Bits
 /-!
 # Binary representation of integers using inductive types
 
@@ -159,10 +157,10 @@ instance : LT PosNum :=
 instance : LE PosNum :=
   ⟨fun a b => ¬b < a⟩
 
-instance decidableLT : DecidableRel (α := PosNum) (· < ·)
+instance decidableLT : @DecidableRel PosNum (· < ·)
   | a, b => by dsimp [LT.lt]; infer_instance
 
-instance decidableLE : DecidableRel (α := PosNum) (· ≤ ·)
+instance decidableLE : @DecidableRel PosNum (· ≤ ·)
   | a, b => by dsimp [LE.le]; infer_instance
 
 end PosNum
@@ -270,10 +268,10 @@ instance : LT Num :=
 instance : LE Num :=
   ⟨fun a b => ¬b < a⟩
 
-instance decidableLT : DecidableRel (α := Num) (· < ·)
+instance decidableLT : @DecidableRel Num (· < ·)
   | a, b => by dsimp [LT.lt]; infer_instance
 
-instance decidableLE : DecidableRel (α := Num) (· ≤ ·)
+instance decidableLE : @DecidableRel Num (· ≤ ·)
   | a, b => by dsimp [LE.le]; infer_instance
 
 /-- Converts a `Num` to a `ZNum`. -/
@@ -479,10 +477,10 @@ instance : LT ZNum :=
 instance : LE ZNum :=
   ⟨fun a b => ¬b < a⟩
 
-instance decidableLT : DecidableRel (α := ZNum) (· < ·)
+instance decidableLT : @DecidableRel ZNum (· < ·)
   | a, b => by dsimp [LT.lt]; infer_instance
 
-instance decidableLE : DecidableRel (α := ZNum) (· ≤ ·)
+instance decidableLE : @DecidableRel ZNum (· ≤ ·)
   | a, b => by dsimp [LE.le]; infer_instance
 
 end ZNum

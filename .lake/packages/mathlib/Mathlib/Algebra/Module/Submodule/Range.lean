@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Fréd�
   Heather Macbeth
 -/
 import Mathlib.Algebra.Module.Submodule.Ker
-import Mathlib.Data.Set.Finite.Range
 
 /-!
 # Range of linear maps
@@ -29,7 +28,7 @@ linear algebra, vector space, module, range
 open Function
 
 variable {R : Type*} {R₂ : Type*} {R₃ : Type*}
-variable {K : Type*}
+variable {K : Type*} {K₂ : Type*}
 variable {M : Type*} {M₂ : Type*} {M₃ : Type*}
 variable {V : Type*} {V₂ : Type*}
 
@@ -39,11 +38,13 @@ section AddCommMonoid
 
 variable [Semiring R] [Semiring R₂] [Semiring R₃]
 variable [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃]
+variable {σ₁₂ : R →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R →+* R₃}
+variable [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
 variable [Module R M] [Module R₂ M₂] [Module R₃ M₃]
 
 open Submodule
 
-variable {τ₁₂ : R →+* R₂} {τ₂₃ : R₂ →+* R₃} {τ₁₃ : R →+* R₃}
+variable {σ₂₁ : R₂ →+* R} {τ₁₂ : R →+* R₂} {τ₂₃ : R₂ →+* R₃} {τ₁₃ : R →+* R₃}
 variable [RingHomCompTriple τ₁₂ τ₂₃ τ₁₃]
 
 section
@@ -85,12 +86,8 @@ theorem range_comp_le_range [RingHomSurjective τ₂₃] [RingHomSurjective τ�
     (g : M₂ →ₛₗ[τ₂₃] M₃) : range (g.comp f : M →ₛₗ[τ₁₃] M₃) ≤ range g :=
   SetLike.coe_mono (Set.range_comp_subset_range f g)
 
-theorem range_eq_top [RingHomSurjective τ₁₂] {f : F} :
-    range f = ⊤ ↔ Surjective f := by
-  rw [SetLike.ext'_iff, range_coe, top_coe, Set.range_eq_univ]
-
-theorem range_eq_top_of_surjective [RingHomSurjective τ₁₂] (f : F) (hf : Surjective f) :
-    range f = ⊤ := range_eq_top.2 hf
+theorem range_eq_top [RingHomSurjective τ₁₂] {f : F} : range f = ⊤ ↔ Surjective f := by
+  rw [SetLike.ext'_iff, range_coe, top_coe, Set.range_iff_surjective]
 
 theorem range_le_iff_comap [RingHomSurjective τ₁₂] {f : F} {p : Submodule R₂ M₂} :
     range f ≤ p ↔ comap f p = ⊤ := by rw [range_eq_map, map_le_iff_le_comap, eq_top_iff]
@@ -104,9 +101,6 @@ theorem range_neg {R : Type*} {R₂ : Type*} {M : Type*} {M₂ : Type*} [Semirin
     [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M₂) : LinearMap.range (-f) = LinearMap.range f := by
   change range ((-LinearMap.id : M₂ →ₗ[R₂] M₂).comp f) = _
   rw [range_comp, Submodule.map_neg, Submodule.map_id]
-
-@[simp] lemma range_domRestrict [Module R M₂] (K : Submodule R M) (f : M →ₗ[R] M₂) :
-    range (domRestrict f K) = K.map f := by ext; simp
 
 lemma range_domRestrict_le_range [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M₂) (S : Submodule R M) :
     LinearMap.range (f.domRestrict S) ≤ LinearMap.range f := by
@@ -181,21 +175,14 @@ theorem range_eq_bot {f : M →ₛₗ[τ₁₂] M₂} : range f = ⊥ ↔ f = 0 
 
 theorem range_le_ker_iff {f : M →ₛₗ[τ₁₂] M₂} {g : M₂ →ₛₗ[τ₂₃] M₃} :
     range f ≤ ker g ↔ (g.comp f : M →ₛₗ[τ₁₃] M₃) = 0 :=
-  ⟨fun h => ker_eq_top.1 <| eq_top_iff'.2 fun _ => h <| ⟨_, rfl⟩, fun h x hx =>
+  ⟨fun h => ker_eq_top.1 <| eq_top_iff'.2 fun x => h <| ⟨_, rfl⟩, fun h x hx =>
     mem_ker.2 <| Exists.elim hx fun y hy => by rw [← hy, ← comp_apply, h, zero_apply]⟩
 
 theorem comap_le_comap_iff {f : F} (hf : range f = ⊤) {p p'} : comap f p ≤ comap f p' ↔ p ≤ p' :=
-  ⟨fun H ↦ by rwa [SetLike.le_def, (range_eq_top.1 hf).forall], comap_mono⟩
+  ⟨fun H x hx => by rcases range_eq_top.1 hf x with ⟨y, hy, rfl⟩; exact H hx, comap_mono⟩
 
 theorem comap_injective {f : F} (hf : range f = ⊤) : Injective (comap f) := fun _ _ h =>
   le_antisymm ((comap_le_comap_iff hf).1 (le_of_eq h)) ((comap_le_comap_iff hf).1 (ge_of_eq h))
-
--- TODO (?): generalize to semilinear maps with `f ∘ₗ g` bijective.
-theorem ker_eq_range_of_comp_eq_id {M P} [AddCommGroup M] [Module R M]
-    [AddCommGroup P] [Module R P] {f : M →ₗ[R] P} {g : P →ₗ[R] M} (h : f ∘ₗ g = .id) :
-    ker f = range (LinearMap.id - g ∘ₗ f) :=
-  le_antisymm (fun x hx ↦ ⟨x, show x - g (f x) = x by rw [hx, map_zero, sub_zero]⟩) <|
-    range_le_ker_iff.mpr <| by rw [comp_sub, comp_id, ← comp_assoc, h, id_comp, sub_self]
 
 end
 
@@ -203,10 +190,11 @@ end AddCommMonoid
 
 section Ring
 
-variable [Ring R] [Ring R₂]
-variable [AddCommGroup M] [AddCommGroup M₂]
-variable [Module R M] [Module R₂ M₂]
-variable {τ₁₂ : R →+* R₂}
+variable [Ring R] [Ring R₂] [Ring R₃]
+variable [AddCommGroup M] [AddCommGroup M₂] [AddCommGroup M₃]
+variable [Module R M] [Module R₂ M₂] [Module R₃ M₃]
+variable {τ₁₂ : R →+* R₂} {τ₂₃ : R₂ →+* R₃} {τ₁₃ : R →+* R₃}
+variable [RingHomCompTriple τ₁₂ τ₂₃ τ₁₃]
 variable {F : Type*} [FunLike F M M₂] [SemilinearMapClass F τ₁₂ M M₂]
 variable {f : F}
 
@@ -240,7 +228,7 @@ end Ring
 
 section Semifield
 
-variable [Semifield K]
+variable [Semifield K] [Semifield K₂]
 variable [AddCommMonoid V] [Module K V]
 variable [AddCommMonoid V₂] [Module K V₂]
 
@@ -261,7 +249,7 @@ section AddCommMonoid
 
 variable [Semiring R] [Semiring R₂] [AddCommMonoid M] [AddCommMonoid M₂]
 variable [Module R M] [Module R₂ M₂]
-variable (p : Submodule R M)
+variable (p p' : Submodule R M) (q : Submodule R₂ M₂)
 variable {τ₁₂ : R →+* R₂}
 variable {F : Type*} [FunLike F M M₂] [SemilinearMapClass F τ₁₂ M M₂]
 
@@ -278,6 +266,7 @@ theorem map_subtype_le (p' : Submodule R p) : map p.subtype p' ≤ p := by
 
 /-- Under the canonical linear map from a submodule `p` to the ambient space `M`, the image of the
 maximal submodule of `p` is just `p`. -/
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem map_subtype_top : map p.subtype (⊤ : Submodule R p) = p := by simp
 
 @[simp]
@@ -287,12 +276,6 @@ theorem comap_subtype_eq_top {p p' : Submodule R M} : comap p.subtype p' = ⊤ �
 @[simp]
 theorem comap_subtype_self : comap p.subtype p = ⊤ :=
   comap_subtype_eq_top.2 le_rfl
-
-@[simp]
-lemma comap_subtype_le_iff {p q r : Submodule R M} :
-    q.comap p.subtype ≤ r.comap p.subtype ↔ p ⊓ q ≤ p ⊓ r :=
-  ⟨fun h ↦ by simpa using map_mono (f := p.subtype) h,
-   fun h ↦ by simpa using comap_mono (f := p.subtype) h⟩
 
 theorem range_inclusion (p q : Submodule R M) (h : p ≤ q) :
     range (inclusion h) = comap q.subtype p := by
@@ -406,9 +389,6 @@ theorem surjective_rangeRestrict : Surjective f.rangeRestrict := by
   rw [← range_eq_top, range_rangeRestrict]
 
 @[simp] theorem ker_rangeRestrict : ker f.rangeRestrict = ker f := LinearMap.ker_codRestrict _ _ _
-
-@[simp] theorem injective_rangeRestrict_iff : Injective f.rangeRestrict ↔ Injective f :=
-  Set.injective_codRestrict _
 
 end rangeRestrict
 

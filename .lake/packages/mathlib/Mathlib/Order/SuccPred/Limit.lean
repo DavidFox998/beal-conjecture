@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
 import Mathlib.Order.SuccPred.Archimedean
-import Mathlib.Order.BoundedOrder.Lattice
+import Mathlib.Order.BoundedOrder
 
 /-!
 # Successor and predecessor limits
@@ -53,10 +53,10 @@ theorem not_isSuccPrelimit_iff_exists_covBy (a : α) : ¬IsSuccPrelimit a ↔ �
 alias not_isSuccLimit_iff_exists_covBy := not_isSuccPrelimit_iff_exists_covBy
 
 @[simp]
-theorem IsSuccPrelimit.of_dense [DenselyOrdered α] (a : α) : IsSuccPrelimit a := fun _ => not_covBy
+theorem isSuccPrelimit_of_dense [DenselyOrdered α] (a : α) : IsSuccPrelimit a := fun _ => not_covBy
 
-@[deprecated (since := "2024-09-30")] alias isSuccPrelimit_of_dense := IsSuccPrelimit.of_dense
-@[deprecated (since := "2024-09-05")] alias isSuccLimit_of_dense := IsSuccPrelimit.of_dense
+@[deprecated isSuccPrelimit_of_dense (since := "2024-09-05")]
+alias isSuccLimit_of_dense := isSuccPrelimit_of_dense
 
 end LT
 
@@ -130,12 +130,6 @@ theorem not_isSuccPrelimit_succ_of_not_isMax (ha : ¬ IsMax a) : ¬ IsSuccPrelim
 theorem not_isSuccLimit_succ_of_not_isMax (ha : ¬ IsMax a) : ¬ IsSuccLimit (succ a) :=
   mt IsSuccLimit.isMax ha
 
-/-- Given `j < i` with `i` a prelimit, `IsSuccPrelimit.mid` picks an arbitrary element strictly
-between `j` and `i`. -/
-noncomputable def IsSuccPrelimit.mid {i j : α} (hi : IsSuccPrelimit i) (hj : j < i) :
-    Ioo j i :=
-  Classical.indefiniteDescription _ ((not_covBy_iff hj).mp <| hi j)
-
 section NoMaxOrder
 
 variable [NoMaxOrder α]
@@ -193,9 +187,6 @@ variable [PartialOrder α]
 theorem isSuccLimit_iff [OrderBot α] : IsSuccLimit a ↔ a ≠ ⊥ ∧ IsSuccPrelimit a := by
   rw [IsSuccLimit, isMin_iff_eq_bot]
 
-theorem IsSuccLimit.bot_lt [OrderBot α] (h : IsSuccLimit a) : ⊥ < a :=
-  h.ne_bot.bot_lt
-
 variable [SuccOrder α]
 
 theorem isSuccPrelimit_of_succ_ne (h : ∀ b, succ b ≠ a) : IsSuccPrelimit a := fun b hba =>
@@ -225,12 +216,6 @@ theorem mem_range_succ_or_isSuccPrelimit (a) : a ∈ range (succ : α → α) �
 
 @[deprecated mem_range_succ_or_isSuccPrelimit (since := "2024-09-05")]
 alias mem_range_succ_or_isSuccLimit := mem_range_succ_or_isSuccPrelimit
-
-theorem isMin_or_mem_range_succ_or_isSuccLimit (a) :
-    IsMin a ∨ a ∈ range (succ : α → α) ∨ IsSuccLimit a := by
-  rw [IsSuccLimit]
-  have := mem_range_succ_or_isSuccPrelimit a
-  tauto
 
 theorem isSuccPrelimit_of_succ_lt (H : ∀ a < b, succ a < b) : IsSuccPrelimit b := fun a hab =>
   (H a hab.lt).ne (CovBy.succ_eq hab)
@@ -314,23 +299,9 @@ theorem IsSuccPrelimit.le_iff_forall_le (h : IsSuccPrelimit a) : a ≤ b ↔ ∀
   by_contra! ha
   exact h b ⟨ha, fun c hb hc ↦ (H c hc).not_lt hb⟩
 
-theorem IsSuccLimit.le_iff_forall_le (h : IsSuccLimit a) : a ≤ b ↔ ∀ c < a, c ≤ b :=
-  h.isSuccPrelimit.le_iff_forall_le
-
 theorem IsSuccPrelimit.lt_iff_exists_lt (h : IsSuccPrelimit b) : a < b ↔ ∃ c < b, a < c := by
   rw [← not_iff_not]
   simp [h.le_iff_forall_le]
-
-theorem IsSuccLimit.lt_iff_exists_lt (h : IsSuccLimit b) : a < b ↔ ∃ c < b, a < c :=
-  h.isSuccPrelimit.lt_iff_exists_lt
-
-variable [SuccOrder α]
-
-theorem IsSuccPrelimit.le_succ_iff (hb : IsSuccPrelimit b) : b ≤ succ a ↔ b ≤ a :=
-  le_iff_le_iff_lt_iff_lt.2 hb.succ_lt_iff
-
-theorem IsSuccLimit.le_succ_iff (hb : IsSuccLimit b) : b ≤ succ a ↔ b ≤ a :=
-  hb.isSuccPrelimit.le_succ_iff
 
 end LinearOrder
 
@@ -356,11 +327,10 @@ theorem not_isPredPrelimit_iff_exists_covBy (a : α) : ¬IsPredPrelimit a ↔ �
 @[deprecated not_isPredPrelimit_iff_exists_covBy (since := "2024-09-05")]
 alias not_isPredLimit_iff_exists_covBy := not_isPredPrelimit_iff_exists_covBy
 
-@[simp]
-theorem IsPredPrelimit.of_dense [DenselyOrdered α] (a : α) : IsPredPrelimit a := fun _ => not_covBy
+theorem isPredPrelimit_of_dense [DenselyOrdered α] (a : α) : IsPredPrelimit a := fun _ => not_covBy
 
-@[deprecated (since := "2024-09-30")] alias isPredPrelimit_of_dense := IsPredPrelimit.of_dense
-@[deprecated (since := "2024-09-05")] alias isPredLimit_of_dense := IsPredPrelimit.of_dense
+@[deprecated isPredPrelimit_of_dense (since := "2024-09-05")]
+alias isPredLimit_of_dense := isPredPrelimit_of_dense
 
 @[simp]
 theorem isSuccPrelimit_toDual_iff : IsSuccPrelimit (toDual a) ↔ IsPredPrelimit a := by
@@ -513,9 +483,6 @@ variable [PartialOrder α]
 theorem isPredLimit_iff [OrderTop α] : IsPredLimit a ↔ a ≠ ⊤ ∧ IsPredPrelimit a := by
   rw [IsPredLimit, isMax_iff_eq_top]
 
-theorem IsPredLimit.lt_top [OrderTop α] (h : IsPredLimit a) : a < ⊤ :=
-  h.ne_top.lt_top
-
 variable [PredOrder α]
 
 theorem isPredPrelimit_of_pred_ne (h : ∀ b, pred b ≠ a) : IsPredPrelimit a := fun b hba =>
@@ -611,22 +578,8 @@ variable [LinearOrder α]
 theorem IsPredPrelimit.le_iff_forall_le (h : IsPredPrelimit a) : b ≤ a ↔ ∀ ⦃c⦄, a < c → b ≤ c :=
   h.dual.le_iff_forall_le
 
-theorem IsPredLimit.le_iff_forall_le (h : IsPredLimit a) : b ≤ a ↔ ∀ ⦃c⦄, a < c → b ≤ c :=
-  h.dual.le_iff_forall_le
-
 theorem IsPredPrelimit.lt_iff_exists_lt (h : IsPredPrelimit b) : b < a ↔ ∃ c, b < c ∧ c < a :=
   h.dual.lt_iff_exists_lt
-
-theorem IsPredLimit.lt_iff_exists_lt (h : IsPredLimit b) : b < a ↔ ∃ c, b < c ∧ c < a :=
-  h.dual.lt_iff_exists_lt
-
-variable [PredOrder α]
-
-theorem IsPredPrelimit.pred_le_iff (hb : IsPredPrelimit b) : pred a ≤ b ↔ a ≤ b :=
-  hb.dual.le_succ_iff
-
-theorem IsPredLimit.pred_le_iff (hb : IsPredLimit b) : pred a ≤ b ↔ a ≤ b :=
-  hb.dual.le_succ_iff
 
 end LinearOrder
 

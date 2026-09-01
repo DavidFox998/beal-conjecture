@@ -16,7 +16,7 @@ variable {α : Type*}
 
 section CanonicallyOrderedAddCommMonoid
 
-variable [CanonicallyOrderedAddCommMonoid α] [Sub α] [OrderedSub α] {a b c : α}
+variable [CanonicallyOrderedAddCommMonoid α] [Sub α] [OrderedSub α] {a b c d : α}
 
 theorem add_tsub_cancel_iff_le : a + (b - a) = b ↔ a ≤ b :=
   ⟨fun h => le_iff_exists_add.mpr ⟨b - a, h.symm⟩, add_tsub_cancel_of_le⟩
@@ -32,7 +32,8 @@ theorem tsub_eq_zero_iff_le : a - b = 0 ↔ a ≤ b := by
 
 alias ⟨_, tsub_eq_zero_of_le⟩ := tsub_eq_zero_iff_le
 
-@[simp]
+attribute [simp] tsub_eq_zero_of_le
+
 theorem tsub_self (a : α) : a - a = 0 :=
   tsub_eq_zero_of_le le_rfl
 
@@ -75,7 +76,7 @@ end AddLECancellable
 
 section Contra
 
-variable [AddLeftReflectLE α]
+variable [ContravariantClass α α (· + ·) (· ≤ ·)]
 
 theorem tsub_le_tsub_iff_left (h : c ≤ a) : a - b ≤ a - c ↔ c ≤ b :=
   Contravariant.AddLECancellable.tsub_le_tsub_iff_left Contravariant.AddLECancellable h
@@ -104,7 +105,7 @@ end CanonicallyOrderedAddCommMonoid
 
 section CanonicallyLinearOrderedAddCommMonoid
 
-variable [CanonicallyLinearOrderedAddCommMonoid α] [Sub α] [OrderedSub α] {a b c : α}
+variable [CanonicallyLinearOrderedAddCommMonoid α] [Sub α] [OrderedSub α] {a b c d : α}
 
 @[simp]
 theorem tsub_pos_iff_lt : 0 < a - b ↔ b < a := by rw [tsub_pos_iff_not_le, not_le]
@@ -146,7 +147,7 @@ end AddLECancellable
 
 section Contra
 
-variable [AddLeftReflectLE α]
+variable [ContravariantClass α α (· + ·) (· ≤ ·)]
 
 /-- This lemma also holds for `ENNReal`, but we need a different proof for that. -/
 theorem tsub_lt_tsub_iff_right (h : c ≤ a) : a - c < b - c ↔ a < b :=
@@ -187,7 +188,8 @@ theorem tsub_add_min : a - b + min a b = a := by
   apply min_le_left
 
 -- `Odd.tsub` requires `CanonicallyLinearOrderedSemiring`, which we don't have
-lemma Even.tsub [AddLeftReflectLE α] {m n : α} (hm : Even m) (hn : Even n) :
+lemma Even.tsub
+    [ContravariantClass α α (· + ·) (· ≤ ·)] {m n : α} (hm : Even m) (hn : Even n) :
     Even (m - n) := by
   obtain ⟨a, rfl⟩ := hm
   obtain ⟨b, rfl⟩ := hn

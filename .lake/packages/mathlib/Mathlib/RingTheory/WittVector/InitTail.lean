@@ -44,11 +44,12 @@ namespace WittVector
 
 open MvPolynomial
 
+open scoped Classical
+
 noncomputable section
 
 section
 
-open scoped Classical in
 /-- `WittVector.select P x`, for a predicate `P : ℕ → Prop` is the Witt vector
 whose `n`-th coefficient is `x.coeff n` if `P n` is true, and `0` otherwise.
 -/
@@ -59,7 +60,6 @@ section Select
 
 variable (P : ℕ → Prop)
 
-open scoped Classical in
 /-- The polynomial that witnesses that `WittVector.select` is a polynomial function.
 `selectPoly n` is `X n` if `P n` holds, and `0` otherwise. -/
 def selectPoly (n : ℕ) : MvPolynomial ℕ ℤ :=
@@ -101,7 +101,7 @@ theorem select_add_select_not : ∀ x : 𝕎 R, select P x + select (fun i => ¬
   refine fun m _ => mul_eq_mul_left_iff.mpr (Or.inl ?_)
   rw [ite_pow, zero_pow (pow_ne_zero _ hp.out.ne_zero)]
   by_cases Pm : P m
-  · rw [if_pos Pm, if_neg <| not_not_intro Pm, zero_pow Fin.pos'.ne', add_zero]
+  · rw [if_pos Pm, if_neg <| not_not_intro Pm, zero_pow Fin.size_pos'.ne', add_zero]
   · rwa [if_neg Pm, if_pos, zero_add]
 
 theorem coeff_add_of_disjoint (x y : 𝕎 R) (h : ∀ n, x.coeff n = 0 ∨ y.coeff n = 0) :
@@ -174,7 +174,7 @@ elab_rules : tactic
       rintro ⟨b, k⟩ h -
       replace h := $e:term p _ h
       simp only [Finset.mem_range, Finset.mem_product, true_and, Finset.mem_univ] at h
-      have hk : k < n := by omega
+      have hk : k < n := by linarith
       fin_cases b <;> simp only [Function.uncurry, Matrix.cons_val_zero, Matrix.head_cons,
         WittVector.coeff_mk, Matrix.cons_val_one, WittVector.mk, Fin.mk_zero, Matrix.cons_val',
         Matrix.empty_val', Matrix.cons_val_fin_one, Matrix.cons_val_zero,

@@ -244,10 +244,10 @@ theorem preservesEpimorphisms_of_map_exact : L.PreservesEpimorphisms where
     exact ShortComplex.isoMk (Iso.refl _) (Iso.refl _) (Iso.refl _)
 
 /-- A functor which preserves the exactness of short complexes preserves homology. -/
-lemma preservesHomology_of_map_exact : L.PreservesHomology where
+def preservesHomologyOfMapExact : L.PreservesHomology where
   preservesCokernels X Y f := by
     have := preservesEpimorphisms_of_map_exact _ hL
-    apply preservesColimit_of_preserves_colimit_cocone (cokernelIsCokernel f)
+    apply preservesColimitOfPreservesColimitCocone (cokernelIsCokernel f)
     apply (CokernelCofork.isColimitMapCoconeEquiv _ L).2
     have : Epi ((ShortComplex.mk _ _ (cokernel.condition f)).map L).g := by
       dsimp
@@ -256,7 +256,7 @@ lemma preservesHomology_of_map_exact : L.PreservesHomology where
       (ShortComplex.exact_of_g_is_cokernel _ (cokernelIsCokernel f))).gIsCokernel
   preservesKernels X Y f := by
     have := preservesMonomorphisms_of_map_exact _ hL
-    apply preservesLimit_of_preserves_limit_cone (kernelIsKernel f)
+    apply preservesLimitOfPreservesLimitCone (kernelIsKernel f)
     apply (KernelFork.isLimitMapConeEquiv _ L).2
     have : Mono ((ShortComplex.mk _ _ (kernel.condition f)).map L).f := by
       dsimp
@@ -274,10 +274,10 @@ end
 section
 
 /-- A functor preserving zero morphisms, monos, and cokernels preserves homology. -/
-lemma preservesHomology_of_preservesMonos_and_cokernels [PreservesZeroMorphisms L]
+def preservesHomologyOfPreservesMonosAndCokernels [PreservesZeroMorphisms L]
     [PreservesMonomorphisms L] [∀ {X Y} (f : X ⟶ Y), PreservesColimit (parallelPair f 0) L] :
     PreservesHomology L := by
-  apply preservesHomology_of_map_exact
+  apply preservesHomologyOfMapExact
   intro S hS
   let φ : (ShortComplex.mk _ _ (Abelian.comp_coimage_π_eq_zero S.zero)).map L ⟶ S.map L :=
     { τ₁ := 𝟙 _
@@ -291,10 +291,10 @@ lemma preservesHomology_of_preservesMonos_and_cokernels [PreservesZeroMorphisms 
   exact CokernelCofork.mapIsColimit _ ((S.exact_iff_exact_coimage_π).1 hS).gIsCokernel L
 
 /-- A functor preserving zero morphisms, epis, and kernels preserves homology. -/
-lemma preservesHomology_of_preservesEpis_and_kernels [PreservesZeroMorphisms L]
+def preservesHomologyOfPreservesEpisAndKernels [PreservesZeroMorphisms L]
     [PreservesEpimorphisms L] [∀ {X Y} (f : X ⟶ Y), PreservesLimit (parallelPair f 0) L] :
     PreservesHomology L := by
-  apply preservesHomology_of_map_exact
+  apply preservesHomologyOfMapExact
   intro S hS
   let φ : S.map L ⟶ (ShortComplex.mk _ _ (Abelian.image_ι_comp_eq_zero S.zero)).map L :=
     { τ₁ := L.map (Abelian.factorThruImage S.f)

@@ -5,7 +5,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Logic.Nontrivial.Defs
 import Mathlib.Logic.Nonempty
-import Mathlib.Tactic.Simps.Basic
+import Batteries.Data.Sum.Lemmas
 
 /-!
 # Two-pointings

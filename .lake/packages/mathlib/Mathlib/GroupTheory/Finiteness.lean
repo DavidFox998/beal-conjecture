@@ -3,9 +3,8 @@ Copyright (c) 2021 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.Algebra.Group.Pointwise.Set.Finite
-import Mathlib.Algebra.Group.Subgroup.Pointwise
-import Mathlib.GroupTheory.QuotientGroup.Defs
+import Mathlib.Data.Set.Pointwise.Finite
+import Mathlib.GroupTheory.QuotientGroup.Basic
 import Mathlib.SetTheory.Cardinal.Finite
 
 /-!
@@ -138,7 +137,7 @@ theorem Submonoid.FG.map_injective {M' : Type*} [Monoid M'] {P : Submonoid M} (e
 
 @[to_additive (attr := simp)]
 theorem Monoid.fg_iff_submonoid_fg (N : Submonoid M) : Monoid.FG N ↔ N.FG := by
-  conv_rhs => rw [← N.mrange_subtype, MonoidHom.mrange_eq_map]
+  conv_rhs => rw [← N.range_subtype, MonoidHom.mrange_eq_map]
   exact ⟨fun h => h.out.map N.subtype, fun h => ⟨h.map_injective N.subtype Subtype.coe_injective⟩⟩
 
 @[to_additive]
@@ -148,7 +147,7 @@ theorem Monoid.fg_of_surjective {M' : Type*} [Monoid M'] [Monoid.FG M] (f : M �
     obtain ⟨s, hs⟩ := Monoid.fg_def.mp ‹_›
     use s.image f
     rwa [Finset.coe_image, ← MonoidHom.map_mclosure, hs, ← MonoidHom.mrange_eq_map,
-      MonoidHom.mrange_eq_top]
+      MonoidHom.mrange_top_iff_surjective]
 
 @[to_additive]
 instance Monoid.fg_range {M' : Type*} [Monoid M'] [Monoid.FG M] (f : M →* M') :
@@ -372,12 +371,6 @@ theorem rank_closure_finite_le_nat_card (s : Set G) [Finite s] :
   haveI := Fintype.ofFinite s
   rw [Nat.card_eq_fintype_card, ← s.toFinset_card, ← rank_congr (congr_arg _ s.coe_toFinset)]
   exact rank_closure_finset_le_card s.toFinset
-
-theorem nat_card_centralizer_nat_card_stabilizer (g : G) :
-    Nat.card (Subgroup.centralizer {g}) =
-      Nat.card (MulAction.stabilizer (ConjAct G) g) := by
-  rw [Subgroup.centralizer_eq_comap_stabilizer]
-  rfl
 
 end Subgroup
 

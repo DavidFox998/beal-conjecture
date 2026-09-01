@@ -7,6 +7,7 @@ Authors: Floris van Doorn
 import Mathlib.Init
 import Lean.Elab.Exception
 import Batteries.Lean.NameMapAttribute
+import Batteries.Lean.Expr
 import Batteries.Tactic.Lint
 
 /-!
@@ -47,7 +48,7 @@ def findArgType : Type := Name → Name → Array Expr → MetaM (Array (Option 
 /-- Find arguments for a notation class -/
 def defaultfindArgs : findArgType := fun _ className args ↦ do
   let some classExpr := (← getEnv).find? className | throwError "no such class {className}"
-  let arity := classExpr.type.getNumHeadForalls
+  let arity := classExpr.type.forallArity
   if arity == args.size then
     return args.map some
   else if args.size == 1 then
@@ -81,7 +82,7 @@ def findOneArgs : findArgType := fun _ _ args ↦
 /-- Find arguments of a coercion class (`DFunLike` or `SetLike`) -/
 def findCoercionArgs : findArgType := fun str className args ↦ do
   let some classExpr := (← getEnv).find? className | throwError "no such class {className}"
-  let arity := classExpr.type.getNumHeadForalls
+  let arity := classExpr.type.forallArity
   let eStr := mkAppN (← mkConstWithLevelParams str) args
   let classArgs := mkArray (arity - 1) none
   return #[some eStr] ++ classArgs

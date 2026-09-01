@@ -17,6 +17,8 @@ universe w v u
 
 open CategoryTheory
 
+open scoped Classical
+
 namespace CategoryTheory.Limits
 
 variable (C : Type u) [Category.{v} C]

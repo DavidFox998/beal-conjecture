@@ -6,8 +6,8 @@ Authors: Markus Himmel, Kim Morrison
 import Mathlib.Algebra.Category.ModuleCat.EpiMono
 import Mathlib.Algebra.Module.Projective
 import Mathlib.CategoryTheory.Preadditive.Projective
+import Mathlib.LinearAlgebra.FinsuppVectorSpace
 import Mathlib.Data.Finsupp.Basic
-import Mathlib.LinearAlgebra.Finsupp.VectorSpace
 
 /-!
 # The category of `R`-modules has enough projectives.
@@ -30,16 +30,13 @@ theorem IsProjective.iff_projective {R : Type u} [Ring R] {P : Type max u v} [Ad
     [Module R P] : Module.Projective R P ↔ Projective (ModuleCat.of R P) := by
   refine ⟨fun h => ?_, fun h => ?_⟩
   · letI : Module.Projective R (ModuleCat.of R P) := h
-    refine ⟨fun E X epi => ?_⟩
-    obtain ⟨f, h⟩ := Module.projective_lifting_property X.hom E.hom
-      ((ModuleCat.epi_iff_surjective _).mp epi)
-    exact ⟨ofHom f, hom_ext h⟩
+    exact ⟨fun E X epi => Module.projective_lifting_property _ _
+      ((ModuleCat.epi_iff_surjective _).mp epi)⟩
   · refine Module.Projective.of_lifting_property.{u,v} ?_
     intro E X mE mX sE sX f g s
     haveI : Epi (↟f) := (ModuleCat.epi_iff_surjective (↟f)).mpr s
     letI : Projective (ModuleCat.of R P) := h
-    exact ⟨(Projective.factorThru (↟g) (↟f)).hom,
-      ModuleCat.hom_ext_iff.mp <| Projective.factorThru_comp (↟g) (↟f)⟩
+    exact ⟨Projective.factorThru (↟g) (↟f), Projective.factorThru_comp (↟g) (↟f)⟩
 
 namespace ModuleCat
 
@@ -59,9 +56,15 @@ instance moduleCat_enoughProjectives : EnoughProjectives (ModuleCat.{max u v} R)
         projective :=
           projective_of_free.{v,u} (ι := M) (M := ModuleCat.of R (M →₀ R)) <|
             Finsupp.basisSingleOne
-        f := ofHom <| Finsupp.basisSingleOne.constr ℕ _root_.id
+        f := Finsupp.basisSingleOne.constr ℕ _root_.id
         epi := (epi_iff_range_eq_top _).mpr
             (range_eq_top.2 fun m => ⟨Finsupp.single m (1 : R), by
-              simp [Finsupp.linearCombination_single, Basis.constr] ⟩)}⟩
+              -- Porting note: simp [Finsupp.linearCombination_single] fails but rw succeeds
+              dsimp [Basis.constr]
+              simp only [Finsupp.lmapDomain_id, comp_id]
+              -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+              erw [Finsupp.linearCombination_single]
+              rw [one_smul]
+              rfl ⟩) }⟩
 
 end ModuleCat

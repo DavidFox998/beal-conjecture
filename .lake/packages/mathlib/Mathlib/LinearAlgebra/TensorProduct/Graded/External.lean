@@ -47,7 +47,7 @@ suppress_compilation
 
 open scoped TensorProduct DirectSum
 
-variable {R ι : Type*}
+variable {R ι A B : Type*}
 
 namespace TensorProduct
 
@@ -117,7 +117,7 @@ theorem gradedComm_of_tmul_of (i j : ι) (a : 𝒜 i) (b : ℬ j) :
   rw [gradedComm]
   dsimp only [LinearEquiv.trans_apply, LinearEquiv.ofLinear_apply]
   rw [TensorProduct.directSum_lof_tmul_lof, gradedCommAux_lof_tmul, Units.smul_def,
-    -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 specialized `map_smul` to `LinearEquiv.map_smul` to avoid timeouts.
+    -- Note: #8386 specialized `map_smul` to `LinearEquiv.map_smul` to avoid timeouts.
     ← Int.cast_smul_eq_zsmul R, LinearEquiv.map_smul, TensorProduct.directSum_symm_lof_tmul,
     Int.cast_smul_eq_zsmul, ← Units.smul_def]
 
@@ -197,7 +197,7 @@ theorem tmul_of_gradedMul_of_tmul (j₁ i₂ : ι)
   rw [mul_comm j₁ i₂, gradedComm_of_tmul_of]
   -- the tower smul lemmas elaborate too slowly
   rw [Units.smul_def, Units.smul_def, ← Int.cast_smul_eq_zsmul R, ← Int.cast_smul_eq_zsmul R]
-  -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to specialize `map_smul` to avoid timeouts.
+  -- Note: #8386 had to specialize `map_smul` to avoid timeouts.
   rw [← smul_tmul', LinearEquiv.map_smul, tmul_smul, LinearEquiv.map_smul, LinearMap.map_smul]
   dsimp
 
@@ -215,7 +215,7 @@ theorem algebraMap_gradedMul (r : R) (x : (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i))
 
 theorem one_gradedMul (x : (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)) :
     gradedMul R 𝒜 ℬ 1 x = x := by
-  -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to specialize `map_one` to avoid timeouts.
+  -- Note: #8386 had to specialize `map_one` to avoid timeouts.
   simpa only [RingHom.map_one, one_smul] using algebraMap_gradedMul 𝒜 ℬ 1 x
 
 theorem gradedMul_algebraMap (x : (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)) (r : R) :
@@ -225,13 +225,13 @@ theorem gradedMul_algebraMap (x : (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)) (r : R)
   ext
   dsimp
   erw [tmul_of_gradedMul_of_tmul]
-  rw [mul_zero, uzpow_zero, one_smul, smul_tmul',
-      mul_one, _root_.Algebra.smul_def, Algebra.commutes]
+  rw [mul_zero, uzpow_zero, one_smul, smul_tmul']
+  erw [mul_one, _root_.Algebra.smul_def, Algebra.commutes]
   rfl
 
 theorem gradedMul_one (x : (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)) :
     gradedMul R 𝒜 ℬ x 1 = x := by
-  -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to specialize `map_one` to avoid timeouts.
+  -- Note: #8386 had to specialize `map_one` to avoid timeouts.
   simpa only [RingHom.map_one, one_smul] using gradedMul_algebraMap 𝒜 ℬ x 1
 
 theorem gradedMul_assoc (x y z : DirectSum _ 𝒜 ⊗[R] DirectSum _ ℬ) :
@@ -261,7 +261,7 @@ theorem gradedComm_gradedMul (x y : DirectSum _ 𝒜 ⊗[R] DirectSum _ ℬ) :
   ext i₁ a₁ j₁ b₁ i₂ a₂ j₂ b₂
   dsimp
   rw [gradedComm_of_tmul_of, gradedComm_of_tmul_of, tmul_of_gradedMul_of_tmul]
-  -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to specialize `map_smul` to avoid timeouts.
+  -- Note: #8386 had to specialize `map_smul` to avoid timeouts.
   simp_rw [Units.smul_def, ← Int.cast_smul_eq_zsmul R, LinearEquiv.map_smul, LinearMap.map_smul,
     LinearMap.smul_apply]
   simp_rw [Int.cast_smul_eq_zsmul R, ← Units.smul_def, DirectSum.lof_eq_of, DirectSum.of_mul_of,

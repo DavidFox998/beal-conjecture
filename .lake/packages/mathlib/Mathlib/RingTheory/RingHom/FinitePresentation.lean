@@ -151,7 +151,7 @@ theorem finitePresentation_ofLocalizationSpanTarget :
     have : ∃ (a : S) (hb : a ∈ s), (Ideal.Quotient.mk I) (g' ⟨a, hb⟩) = g.val := by
       obtain ⟨g, hg⟩ := g
       convert hg
-      simp [A, f', t]
+      simp [t]
     obtain ⟨r, hr, hrr⟩ := this
     simp only [f']
     rw [← hrr, Ideal.Quotient.liftₐ_apply, Ideal.Quotient.lift_mk]
@@ -162,22 +162,18 @@ theorem finitePresentation_ofLocalizationSpanTarget :
 
 /-- Being finitely-presented is a local property of rings. -/
 theorem finitePresentation_isLocal : PropertyIsLocal @FinitePresentation :=
-  ⟨finitePresentation_localizationPreserves.away,
+  ⟨finitePresentation_localizationPreserves,
     finitePresentation_ofLocalizationSpanTarget,
-    finitePresentation_ofLocalizationSpanTarget.ofLocalizationSpan
-      (finitePresentation_stableUnderComposition.stableUnderCompositionWithLocalizationAway
-        finitePresentation_holdsForLocalizationAway).left,
-    (finitePresentation_stableUnderComposition.stableUnderCompositionWithLocalizationAway
-      finitePresentation_holdsForLocalizationAway).right⟩
+    finitePresentation_stableUnderComposition.stableUnderCompositionWithLocalizationAway
+      finitePresentation_holdsForLocalizationAway⟩
 
 /-- Being finitely-presented respects isomorphisms. -/
 theorem finitePresentation_respectsIso : RingHom.RespectsIso @RingHom.FinitePresentation :=
   RingHom.finitePresentation_isLocal.respectsIso
 
 /-- Being finitely-presented is stable under base change. -/
-theorem finitePresentation_isStableUnderBaseChange :
-    IsStableUnderBaseChange @FinitePresentation := by
-  apply IsStableUnderBaseChange.mk
+theorem finitePresentation_stableUnderBaseChange : StableUnderBaseChange @FinitePresentation := by
+  apply StableUnderBaseChange.mk
   · exact finitePresentation_respectsIso
   · introv h
     replace h : Algebra.FinitePresentation R T := by

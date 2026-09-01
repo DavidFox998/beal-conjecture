@@ -119,10 +119,8 @@ theorem coe_toWeakDual (x' : Dual 𝕜 E) : toWeakDual x' = x' :=
   rfl
 
 @[simp]
-theorem toWeakDual_inj (x' y' : Dual 𝕜 E) : toWeakDual x' = toWeakDual y' ↔ x' = y' :=
-  (LinearEquiv.injective toWeakDual).eq_iff
-
-@[deprecated (since := "2024-12-29")] alias toWeakDual_eq_iff := toWeakDual_inj
+theorem toWeakDual_eq_iff (x' y' : Dual 𝕜 E) : toWeakDual x' = toWeakDual y' ↔ x' = y' :=
+  Function.Injective.eq_iff <| LinearEquiv.injective toWeakDual
 
 theorem toWeakDual_continuous : Continuous fun x' : Dual 𝕜 E => toWeakDual x' :=
   WeakBilin.continuous_of_continuous_eval _ fun z => (inclusionInDoubleDual 𝕜 E z).continuous
@@ -162,10 +160,8 @@ theorem coe_toNormedDual (x' : WeakDual 𝕜 E) : toNormedDual x' = x' :=
   rfl
 
 @[simp]
-theorem toNormedDual_inj (x' y' : WeakDual 𝕜 E) : toNormedDual x' = toNormedDual y' ↔ x' = y' :=
-  (LinearEquiv.injective toNormedDual).eq_iff
-
-@[deprecated (since := "2024-12-29")] alias toNormedDual_eq_iff := toNormedDual_inj
+theorem toNormedDual_eq_iff (x' y' : WeakDual 𝕜 E) : toNormedDual x' = toNormedDual y' ↔ x' = y' :=
+  Function.Injective.eq_iff <| LinearEquiv.injective toNormedDual
 
 theorem isClosed_closedBall (x' : Dual 𝕜 E) (r : ℝ) : IsClosed (toNormedDual ⁻¹' closedBall x' r) :=
   isClosed_induced_iff'.2 (ContinuousLinearMap.is_weak_closed_closedBall x' r)
@@ -202,7 +198,7 @@ theorem isClosed_image_coe_of_bounded_of_closed {s : Set (WeakDual 𝕜 E)}
 
 theorem isCompact_of_bounded_of_closed [ProperSpace 𝕜] {s : Set (WeakDual 𝕜 E)}
     (hb : IsBounded (Dual.toWeakDual ⁻¹' s)) (hc : IsClosed s) : IsCompact s :=
-  DFunLike.coe_injective.isEmbedding_induced.isCompact_iff.mpr <|
+  (Embedding.isCompact_iff DFunLike.coe_injective.embedding_induced).mpr <|
     ContinuousLinearMap.isCompact_image_coe_of_bounded_of_closed_image hb <|
       isClosed_image_coe_of_bounded_of_closed hb hc
 

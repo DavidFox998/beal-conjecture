@@ -11,9 +11,9 @@ import Mathlib.RingTheory.Flat.Basic
 
 /-!
 
-# Linearly disjoint submodules
+# Linearly disjoint of submodules
 
-This file contains basics about linearly disjoint submodules.
+This file contains basics about the linearly disjoint of submodules.
 
 ## Mathematical background
 
@@ -25,7 +25,7 @@ Let `M` and `N` be `R`-submodules in `S` (`Submodule R S`).
   `M.LinearDisjoint N`), if the natural `R`-linear map `M ⊗[R] N →ₗ[R] S`
   (`Submodule.mulMap M N`) induced by the multiplication in `S` is injective.
 
-The following is the first equivalent characterization of linear disjointness:
+The following is the first equivalent characterization of linearly disjointness:
 
 - `Submodule.LinearDisjoint.linearIndependent_left_of_flat`:
   if `M` and `N` are linearly disjoint, if `N` is a flat `R`-module, then for any family of
@@ -49,7 +49,7 @@ Dually, we have:
   conversely, if `{ n_i }` is an `R`-basis of `N`, which is also `M`-linearly independent,
   then `M` and `N` are linearly disjoint.
 
-The following is the second equivalent characterization of linear disjointness:
+The following is the second equivalent characterization of linearly disjointness:
 
 - `Submodule.LinearDisjoint.linearIndependent_mul_of_flat`:
   if `M` and `N` are linearly disjoint, if one of `M` and `N` is flat, then for any family of
@@ -64,18 +64,15 @@ The following is the second equivalent characterization of linear disjointness:
 
 ## Other main results
 
-- `Submodule.LinearDisjoint.symm_of_commute`, `Submodule.linearDisjoint_comm_of_commute`:
-  linear disjointness is symmetric under some commutative conditions.
-
-- `Submodule.LinearDisjoint.map`:
-  linear disjointness is preserved by injective algebra homomorphisms.
+- `Submodule.LinearDisjoint.symm_of_commute`, `Submodule.linearDisjoint_symm_of_commute`:
+  linearly disjoint is symmetric under some commutative conditions.
 
 - `Submodule.linearDisjoint_op`:
-  linear disjointness is preserved by taking multiplicative opposite.
+  linearly disjoint is preserved by taking multiplicative opposite.
 
 - `Submodule.LinearDisjoint.of_le_left_of_flat`, `Submodule.LinearDisjoint.of_le_right_of_flat`,
   `Submodule.LinearDisjoint.of_le_of_flat_left`, `Submodule.LinearDisjoint.of_le_of_flat_right`:
-  linear disjointness is preserved by taking submodules under some flatness conditions.
+  linearly disjoint is preserved by taking submodules under some flatness conditions.
 
 - `Submodule.LinearDisjoint.of_linearDisjoint_fg_left`,
   `Submodule.LinearDisjoint.of_linearDisjoint_fg_right`,
@@ -118,7 +115,7 @@ The following is the second equivalent characterization of linear disjointness:
   if `M` and itself are linearly disjoint, if `M` is flat, if any two elements in `M`
   are commutative, then the rank of `M` is at most one.
 
-The results with name containing "of_commute" also have corresponding specialized versions
+The results with name containing "of_commute" also have corresponding specified versions
 assuming `S` is commutative.
 
 ## Tags
@@ -161,15 +158,11 @@ theorem LinearDisjoint.val_mulMap_tmul (H : M.LinearDisjoint N) (m : M) (n : N) 
     (H.mulMap (m ⊗ₜ[R] n) : S) = m.1 * n.1 := rfl
 
 @[nontriviality]
-theorem LinearDisjoint.of_subsingleton [Subsingleton R] : M.LinearDisjoint N :=
+theorem LinearDisjoint.of_subsingleton [Subsingleton R] : M.LinearDisjoint N := by
   haveI : Subsingleton S := Module.subsingleton R S
-  ⟨Function.injective_of_subsingleton _⟩
+  exact ⟨Function.injective_of_subsingleton _⟩
 
-@[nontriviality]
-theorem LinearDisjoint.of_subsingleton_top [Subsingleton S] : M.LinearDisjoint N :=
-  ⟨Function.injective_of_subsingleton _⟩
-
-/-- Linear disjointness is preserved by taking multiplicative opposite. -/
+/-- Linearly disjoint is preserved by taking multiplicative opposite. -/
 theorem linearDisjoint_op :
     M.LinearDisjoint N ↔ (equivOpposite.symm (MulOpposite.op N)).LinearDisjoint
       (equivOpposite.symm (MulOpposite.op M)) := by
@@ -178,29 +171,18 @@ theorem linearDisjoint_op :
 
 alias ⟨LinearDisjoint.op, LinearDisjoint.of_op⟩ := linearDisjoint_op
 
-/-- Linear disjointness is symmetric if elements in the module commute. -/
+/-- Linearly disjoint is symmetric if elements in the module commute. -/
 theorem LinearDisjoint.symm_of_commute (H : M.LinearDisjoint N)
     (hc : ∀ (m : M) (n : N), Commute m.1 n.1) : N.LinearDisjoint M := by
   rw [linearDisjoint_iff, mulMap_comm_of_commute M N hc]
   exact ((TensorProduct.comm R N M).toEquiv.injective_comp _).2 H.injective
 
-/-- Linear disjointness is symmetric if elements in the module commute. -/
-theorem linearDisjoint_comm_of_commute
+/-- Linearly disjoint is symmetric if elements in the module commute. -/
+theorem linearDisjoint_symm_of_commute
     (hc : ∀ (m : M) (n : N), Commute m.1 n.1) : M.LinearDisjoint N ↔ N.LinearDisjoint M :=
   ⟨fun H ↦ H.symm_of_commute hc, fun H ↦ H.symm_of_commute fun _ _ ↦ (hc _ _).symm⟩
 
 namespace LinearDisjoint
-
-/-- Linear disjointness is preserved by injective algebra homomorphisms. -/
-theorem map (H : M.LinearDisjoint N) {T : Type w} [Semiring T] [Algebra R T]
-    {F : Type*} [FunLike F S T] [AlgHomClass F R S T] (f : F) (hf : Function.Injective f) :
-    (M.map f).LinearDisjoint (N.map f) := by
-  rw [linearDisjoint_iff] at H ⊢
-  have : _ ∘ₗ
-    (TensorProduct.congr (M.equivMapOfInjective f hf) (N.equivMapOfInjective f hf)).toLinearMap
-      = _ := M.mulMap_map_comp_eq N f
-  replace H : Function.Injective ((f : S →ₗ[R] T) ∘ₗ mulMap M N) := hf.comp H
-  simpa only [← this, LinearMap.coe_comp, LinearEquiv.coe_coe, EquivLike.injective_comp] using H
 
 variable (M N)
 
@@ -250,12 +232,12 @@ theorem bot_right : M.LinearDisjoint (⊥ : Submodule R S) :=
 
 /-- The image of `R` in `S` is linearly disjoint with any other submodules. -/
 theorem one_left : (1 : Submodule R S).LinearDisjoint N := by
-  rw [linearDisjoint_iff, ← Algebra.toSubmodule_bot, mulMap_one_left_eq]
+  rw [linearDisjoint_iff, mulMap_one_left_eq]
   exact N.injective_subtype.comp N.lTensorOne.injective
 
 /-- The image of `R` in `S` is linearly disjoint with any other submodules. -/
 theorem one_right : M.LinearDisjoint (1 : Submodule R S) := by
-  rw [linearDisjoint_iff, ← Algebra.toSubmodule_bot, mulMap_one_right_eq]
+  rw [linearDisjoint_iff, mulMap_one_right_eq]
   exact M.injective_subtype.comp M.rTensorOne.injective
 
 /-- If for any finitely generated submodules `M'` of `M`, `M'` and `N` are linearly disjoint,
@@ -302,12 +284,12 @@ variable [CommSemiring R] [CommSemiring S] [Algebra R S]
 
 variable {M N : Submodule R S}
 
-/-- Linear disjointness is symmetric in a commutative ring. -/
+/-- Linearly disjoint is symmetric in a commutative ring. -/
 theorem LinearDisjoint.symm (H : M.LinearDisjoint N) : N.LinearDisjoint M :=
   H.symm_of_commute fun _ _ ↦ mul_comm _ _
 
-/-- Linear disjointness is symmetric in a commutative ring. -/
-theorem linearDisjoint_comm : M.LinearDisjoint N ↔ N.LinearDisjoint M :=
+/-- Linearly disjoint is symmetric in a commutative ring. -/
+theorem linearDisjoint_symm : M.LinearDisjoint N ↔ N.LinearDisjoint M :=
   ⟨LinearDisjoint.symm, LinearDisjoint.symm⟩
 
 end CommSemiring
@@ -330,7 +312,7 @@ theorem linearIndependent_left_of_flat (H : M.LinearDisjoint N) [Module.Flat R N
   refine LinearMap.ker_eq_bot_of_injective ?_
   classical simp_rw [mulLeftMap_eq_mulMap_comp, LinearMap.coe_comp, LinearEquiv.coe_coe,
     ← Function.comp_assoc, EquivLike.injective_comp]
-  rw [LinearIndependent] at hm
+  rw [LinearIndependent, LinearMap.ker_eq_bot] at hm
   exact H.injective.comp (Module.Flat.rTensor_preserves_injective_linearMap (M := N) _ hm)
 
 /-- If `{ m_i }` is an `R`-basis of `M`, which is also `N`-linearly independent,
@@ -351,7 +333,7 @@ theorem linearIndependent_right_of_flat (H : M.LinearDisjoint N) [Module.Flat R 
   refine LinearMap.ker_eq_bot_of_injective ?_
   classical simp_rw [mulRightMap_eq_mulMap_comp, LinearMap.coe_comp, LinearEquiv.coe_coe,
     ← Function.comp_assoc, EquivLike.injective_comp]
-  rw [LinearIndependent] at hn
+  rw [LinearIndependent, LinearMap.ker_eq_bot] at hn
   exact H.injective.comp (Module.Flat.lTensor_preserves_injective_linearMap (M := M) _ hn)
 
 /-- If `{ n_i }` is an `R`-basis of `N`, which is also `M`-linearly independent,
@@ -370,7 +352,7 @@ also `R`-linearly independent. -/
 theorem linearIndependent_mul_of_flat_left (H : M.LinearDisjoint N) [Module.Flat R M]
     {κ ι : Type*} {m : κ → M} {n : ι → N} (hm : LinearIndependent R m)
     (hn : LinearIndependent R n) : LinearIndependent R fun (i : κ × ι) ↦ (m i.1).1 * (n i.2).1 := by
-  rw [LinearIndependent] at hm hn ⊢
+  rw [LinearIndependent, LinearMap.ker_eq_bot] at hm hn ⊢
   let i0 := (finsuppTensorFinsupp' R κ ι).symm
   let i1 := LinearMap.rTensor (ι →₀ R) (Finsupp.linearCombination R m)
   let i2 := LinearMap.lTensor M (Finsupp.linearCombination R n)
@@ -391,7 +373,7 @@ also `R`-linearly independent. -/
 theorem linearIndependent_mul_of_flat_right (H : M.LinearDisjoint N) [Module.Flat R N]
     {κ ι : Type*} {m : κ → M} {n : ι → N} (hm : LinearIndependent R m)
     (hn : LinearIndependent R n) : LinearIndependent R fun (i : κ × ι) ↦ (m i.1).1 * (n i.2).1 := by
-  rw [LinearIndependent] at hm hn ⊢
+  rw [LinearIndependent, LinearMap.ker_eq_bot] at hm hn ⊢
   let i0 := (finsuppTensorFinsupp' R κ ι).symm
   let i1 := LinearMap.lTensor (κ →₀ R) (Finsupp.linearCombination R n)
   let i2 := LinearMap.rTensor N (Finsupp.linearCombination R m)
@@ -417,12 +399,12 @@ theorem linearIndependent_mul_of_flat (H : M.LinearDisjoint N)
   · exact H.linearIndependent_mul_of_flat_left hm hn
   · exact H.linearIndependent_mul_of_flat_right hm hn
 
-/-- If `{ m_i }` is an `R`-basis of `M`, if `{ n_j }` is an `R`-basis of `N`,
+/-- If `{ m_i }` is an `R`-basis of `M`, if `{ n_i }` is an `R`-basis of `N`,
 such that the family `{ m_i * n_j }` in `S` is `R`-linearly independent,
 then `M` and `N` are linearly disjoint. -/
 theorem of_basis_mul {κ ι : Type*} (m : Basis κ R M) (n : Basis ι R N)
     (H : LinearIndependent R fun (i : κ × ι) ↦ (m i.1).1 * (n i.2).1) : M.LinearDisjoint N := by
-  rw [LinearIndependent] at H
+  rw [LinearIndependent, LinearMap.ker_eq_bot] at H
   exact of_basis_mul' M N m n H
 
 variable {M N} in
@@ -530,7 +512,7 @@ if any two elements of `↥(M ⊓ N)` are commutative, then the rank of `↥(M �
 theorem rank_inf_le_one_of_commute_of_flat (hf : Module.Flat R M ∨ Module.Flat R N)
     (hc : ∀ (m n : ↥(M ⊓ N)), Commute m.1 n.1) : Module.rank R ↥(M ⊓ N) ≤ 1 := by
   nontriviality R
-  refine _root_.rank_le fun s h ↦ ?_
+  refine rank_le fun s h ↦ ?_
   by_contra hs
   rw [not_le, ← Fintype.card_coe, Fintype.one_lt_card_iff_nontrivial] at hs
   obtain ⟨a, b, hab⟩ := hs.exists_pair_ne

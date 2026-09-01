@@ -6,7 +6,6 @@ Authors: Sébastien Gouëzel
 import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 import Mathlib.MeasureTheory.Covering.Besicovitch
 import Mathlib.Tactic.AdaptationNote
-import Mathlib.Algebra.EuclideanDomain.Basic
 
 /-!
 # Satellite configurations for Besicovitch covering lemma in vector spaces
@@ -44,7 +43,7 @@ In particular, this number is bounded by `5 ^ dim` by a straightforward measure 
 
 universe u
 
-open Metric Set Module MeasureTheory Filter Fin
+open Metric Set FiniteDimensional MeasureTheory Filter Fin
 
 open scoped ENNReal Topology
 

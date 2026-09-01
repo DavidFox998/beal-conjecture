@@ -259,7 +259,7 @@ theorem D_subset_differentiable_set {K : Set (E →L[𝕜] F)} (hK : IsComplete 
           ‖L e p q - L e p r + (L e p r - L e' p' r) + (L e' p' r - L e' p' q')‖ := by
         congr 1; abel
       _ ≤ ‖L e p q - L e p r‖ + ‖L e p r - L e' p' r‖ + ‖L e' p' r - L e' p' q'‖ :=
-        norm_add₃_le
+        norm_add₃_le _ _ _
       _ ≤ 4 * ‖c‖ * (1 / 2) ^ e + 4 * ‖c‖ * (1 / 2) ^ e + 4 * ‖c‖ * (1 / 2) ^ e := by gcongr
       _ = 12 * ‖c‖ * (1 / 2) ^ e := by ring
   /- For definiteness, use `L0 e = L e (n e) (n e)`, to have a single sequence. We claim that this
@@ -303,7 +303,7 @@ theorem D_subset_differentiable_set {K : Set (E →L[𝕜] F)} (hK : IsComplete 
     · simp [y_pos]
     have yzero : 0 < ‖y‖ := norm_pos_iff.mpr y_pos
     have y_lt : ‖y‖ < (1 / 2) ^ (n e + 1) := by simpa using mem_ball_iff_norm.1 hy
-    have yone : ‖y‖ ≤ 1 := le_trans y_lt.le (pow_le_one₀ (by norm_num) (by norm_num))
+    have yone : ‖y‖ ≤ 1 := le_trans y_lt.le (pow_le_one _ (by norm_num) (by norm_num))
     -- define the scale `k`.
     obtain ⟨k, hk, h'k⟩ : ∃ k : ℕ, (1 / 2) ^ (k + 1) < ‖y‖ ∧ ‖y‖ ≤ (1 / 2) ^ k :=
       exists_nat_pow_near_of_lt_one yzero yone (by norm_num : (0 : ℝ) < 1 / 2)
@@ -311,7 +311,7 @@ theorem D_subset_differentiable_set {K : Set (E →L[𝕜] F)} (hK : IsComplete 
     -- the scale is large enough (as `y` is small enough)
     have k_gt : n e < k := by
       have : ((1 : ℝ) / 2) ^ (k + 1) < (1 / 2) ^ (n e + 1) := lt_trans hk y_lt
-      rw [pow_lt_pow_iff_right_of_lt_one₀ (by norm_num : (0 : ℝ) < 1 / 2) (by norm_num)] at this
+      rw [pow_lt_pow_iff_right_of_lt_one (by norm_num : (0 : ℝ) < 1 / 2) (by norm_num)] at this
       omega
     set m := k - 1
     have m_ge : n e ≤ m := Nat.le_sub_one_of_lt k_gt
@@ -444,28 +444,28 @@ with a derivative in `K`. -/
 def D (f : ℝ → F) (K : Set F) : Set ℝ :=
   ⋂ e : ℕ, ⋃ n : ℕ, ⋂ (p ≥ n) (q ≥ n), B f K ((1 / 2) ^ p) ((1 / 2) ^ q) ((1 / 2) ^ e)
 
-theorem A_mem_nhdsGT {L : F} {r ε x : ℝ} (hx : x ∈ A f L r ε) : A f L r ε ∈ 𝓝[>] x := by
+theorem A_mem_nhdsWithin_Ioi {L : F} {r ε x : ℝ} (hx : x ∈ A f L r ε) : A f L r ε ∈ 𝓝[>] x := by
   rcases hx with ⟨r', rr', hr'⟩
+  rw [mem_nhdsWithin_Ioi_iff_exists_Ioo_subset]
   obtain ⟨s, s_gt, s_lt⟩ : ∃ s : ℝ, r / 2 < s ∧ s < r' := exists_between rr'.1
   have : s ∈ Ioc (r / 2) r := ⟨s_gt, le_of_lt (s_lt.trans_le rr'.2)⟩
-  filter_upwards [Ioo_mem_nhdsGT <| show x < x + r' - s by linarith] with x' hx'
-  use s, this
+  refine ⟨x + r' - s, by simp only [mem_Ioi]; linarith, fun x' hx' => ⟨s, this, ?_⟩⟩
   have A : Icc x' (x' + s) ⊆ Icc x (x + r') := by
     apply Icc_subset_Icc hx'.1.le
     linarith [hx'.2]
   intro y hy z hz
   exact hr' y (A hy) z (A hz)
 
-theorem B_mem_nhdsGT {K : Set F} {r s ε x : ℝ} (hx : x ∈ B f K r s ε) :
+theorem B_mem_nhdsWithin_Ioi {K : Set F} {r s ε x : ℝ} (hx : x ∈ B f K r s ε) :
     B f K r s ε ∈ 𝓝[>] x := by
   obtain ⟨L, LK, hL₁, hL₂⟩ : ∃ L : F, L ∈ K ∧ x ∈ A f L r ε ∧ x ∈ A f L s ε := by
     simpa only [B, mem_iUnion, mem_inter_iff, exists_prop] using hx
-  filter_upwards [A_mem_nhdsGT hL₁, A_mem_nhdsGT hL₂] with y hy₁ hy₂
+  filter_upwards [A_mem_nhdsWithin_Ioi hL₁, A_mem_nhdsWithin_Ioi hL₂] with y hy₁ hy₂
   simp only [B, mem_iUnion, mem_inter_iff, exists_prop]
   exact ⟨L, LK, hy₁, hy₂⟩
 
 theorem measurableSet_B {K : Set F} {r s ε : ℝ} : MeasurableSet (B f K r s ε) :=
-  .of_mem_nhdsGT fun _ hx => B_mem_nhdsGT hx
+  measurableSet_of_mem_nhdsWithin_Ioi fun _ hx => B_mem_nhdsWithin_Ioi hx
 
 theorem A_mono (L : F) (r : ℝ) {ε δ : ℝ} (h : ε ≤ δ) : A f L r ε ⊆ A f L r δ := by
   rintro x ⟨r', r'r, hr'⟩
@@ -484,7 +484,7 @@ theorem mem_A_of_differentiable {ε : ℝ} (hε : 0 < ε) {x : ℝ}
     ∃ R > 0, ∀ r ∈ Ioo (0 : ℝ) R, x ∈ A f (derivWithin f (Ici x) x) r ε := by
   have := hx.hasDerivWithinAt
   simp_rw [hasDerivWithinAt_iff_isLittleO, isLittleO_iff] at this
-  rcases mem_nhdsGE_iff_exists_Ico_subset.1 (this (half_pos hε)) with ⟨m, xm, hm⟩
+  rcases mem_nhdsWithin_Ici_iff_exists_Ico_subset.1 (this (half_pos hε)) with ⟨m, xm, hm⟩
   refine ⟨m - x, by linarith [show x < m from xm], fun r hr => ?_⟩
   have : r ∈ Ioc (r / 2) r := ⟨half_lt_self hr.1, le_rfl⟩
   refine ⟨r, this, fun y hy z hz => ?_⟩
@@ -592,6 +592,7 @@ theorem D_subset_differentiable_set {K : Set F} (hK : IsComplete K) :
       _ ≤ ‖L e p q - L e p r‖ + ‖L e p r - L e' p' r‖ + ‖L e' p' r - L e' p' q'‖ :=
         (le_trans (norm_add_le _ _) (add_le_add_right (norm_add_le _ _) _))
       _ ≤ 4 * (1 / 2) ^ e + 4 * (1 / 2) ^ e + 4 * (1 / 2) ^ e := by gcongr
+        -- Porting note: proof was `by apply_rules [add_le_add]`
       _ = 12 * (1 / 2) ^ e := by ring
 
   /- For definiteness, use `L0 e = L e (n e) (n e)`, to have a single sequence. We claim that this
@@ -627,14 +628,17 @@ theorem D_subset_differentiable_set {K : Set F} (hK : IsComplete K) :
     intro ε εpos
     obtain ⟨e, he⟩ : ∃ e : ℕ, (1 / 2) ^ e < ε / 16 :=
       exists_pow_lt_of_lt_one (div_pos εpos (by norm_num)) (by norm_num)
-    filter_upwards [Icc_mem_nhdsGE <| show x < x + (1 / 2) ^ (n e + 1) by simp] with y hy
+    have xmem : x ∈ Ico x (x + (1 / 2) ^ (n e + 1)) := by
+      simp only [one_div, left_mem_Ico, lt_add_iff_pos_right, inv_pos, pow_pos, zero_lt_two,
+        zero_lt_one]
+    filter_upwards [Icc_mem_nhdsWithin_Ici xmem] with y hy
     -- We need to show that `f y - f x - f' (y - x)` is small. For this, we will work at scale
     -- `k` where `k` is chosen with `‖y - x‖ ∼ 2 ^ (-k)`.
     rcases eq_or_lt_of_le hy.1 with (rfl | xy)
     · simp only [sub_self, zero_smul, norm_zero, mul_zero, le_rfl]
     have yzero : 0 < y - x := sub_pos.2 xy
     have y_le : y - x ≤ (1 / 2) ^ (n e + 1) := by linarith [hy.2]
-    have yone : y - x ≤ 1 := le_trans y_le (pow_le_one₀ (by norm_num) (by norm_num))
+    have yone : y - x ≤ 1 := le_trans y_le (pow_le_one _ (by norm_num) (by norm_num))
     -- define the scale `k`.
     obtain ⟨k, hk, h'k⟩ : ∃ k : ℕ, (1 / 2) ^ (k + 1) < y - x ∧ y - x ≤ (1 / 2) ^ k :=
       exists_nat_pow_near_of_lt_one yzero yone (by norm_num : (0 : ℝ) < 1 / 2)
@@ -642,7 +646,7 @@ theorem D_subset_differentiable_set {K : Set F} (hK : IsComplete K) :
     -- the scale is large enough (as `y - x` is small enough)
     have k_gt : n e < k := by
       have : ((1 : ℝ) / 2) ^ (k + 1) < (1 / 2) ^ (n e + 1) := lt_of_lt_of_le hk y_le
-      rw [pow_lt_pow_iff_right_of_lt_one₀ (by norm_num : (0 : ℝ) < 1 / 2) (by norm_num)] at this
+      rw [pow_lt_pow_iff_right_of_lt_one (by norm_num : (0 : ℝ) < 1 / 2) (by norm_num)] at this
       omega
     set m := k - 1
     have m_ge : n e ≤ m := Nat.le_sub_one_of_lt k_gt
@@ -784,7 +788,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [LocallyCompactSpace E]
   {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   {α : Type*} [TopologicalSpace α]
-  {f : α → E → F}
+  {f : α → E → F} (K : Set (E →L[𝕜] F))
 
 namespace FDerivMeasurableAux
 
@@ -840,7 +844,7 @@ lemma isOpen_A_with_param {r s : ℝ} (hf : Continuous f.uncurry) (L : E →L[�
   calc
   ‖f a' z - f a' y - (L z - L y)‖ =
     ‖(f a' z - f a z) + (f a y - f a' y) + (f a z - f a y - (L z - L y))‖ := by congr; abel
-  _ ≤ ‖f a' z - f a z‖ + ‖f a y - f a' y‖ + ‖f a z - f a y - (L z - L y)‖ := norm_add₃_le
+  _ ≤ ‖f a' z - f a z‖ + ‖f a y - f a' y‖ + ‖f a z - f a y - (L z - L y)‖ := norm_add₃_le _ _ _
   _ ≤ ε + ε + b := by
       gcongr
       · rw [← dist_eq_norm]

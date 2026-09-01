@@ -74,12 +74,6 @@ instance concreteCategory : ConcreteCategory.{u} (Bundled c) where
       map_comp := fun f g => by dsimp; erw [𝒞.comp_toFun];rfl }
   forget_faithful := { map_injective := by (intros; apply 𝒞.hom_ext) }
 
-/-- This unification hint helps `rw` to figure out how to apply statements about abstract
-concrete categories to specific concrete categories. Crucially, it fires also at `reducible`
-levels so `rw` can use it (and we don't have to use `erw`). -/
-unif_hint (C : Bundled c) where
-  ⊢ (CategoryTheory.forget (Bundled c)).obj C =?= Bundled.α C
-
 variable {hom}
 
 attribute [local instance] ConcreteCategory.instFunLike
@@ -112,10 +106,10 @@ end
 This is useful for building categories such as `CommMonCat` from `MonCat`.
 -/
 def map (F : ∀ {α}, d α → c α) : BundledHom (MapHom hom @F) where
-  toFun _ _ {iα} {iβ} f := 𝒞.toFun (F iα) (F iβ) f
-  id _ {iα} := 𝒞.id (F iα)
-  comp := @fun _ _ _ iα iβ iγ f g => 𝒞.comp (F iα) (F iβ) (F iγ) f g
-  hom_ext := @fun _ _ iα iβ _ _ h => 𝒞.hom_ext (F iα) (F iβ) h
+  toFun α β {iα} {iβ} f := 𝒞.toFun (F iα) (F iβ) f
+  id α {iα} := 𝒞.id (F iα)
+  comp := @fun α β γ iα iβ iγ f g => 𝒞.comp (F iα) (F iβ) (F iγ) f g
+  hom_ext := @fun α β iα iβ f g h => 𝒞.hom_ext (F iα) (F iβ) h
 
 section
 
@@ -140,7 +134,7 @@ instance forget₂ (F : ∀ {α}, d α → c α) [ParentProjection @F] :
     HasForget₂ (Bundled d) (Bundled c) where
   forget₂ :=
     { obj := fun X => ⟨X, F X.2⟩
-      map := @fun _ _ f => f }
+      map := @fun X Y f => f }
 
 instance forget₂_full (F : ∀ {α}, d α → c α) [ParentProjection @F] :
     Functor.Full (CategoryTheory.forget₂ (Bundled d) (Bundled c)) where

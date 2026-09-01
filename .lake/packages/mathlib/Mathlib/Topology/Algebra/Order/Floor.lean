@@ -3,8 +3,9 @@ Copyright (c) 2020 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Order.Filter.AtTopBot.Floor
+import Mathlib.Algebra.Order.Floor
 import Mathlib.Topology.Algebra.Order.Group
+import Mathlib.Topology.Order.Basic
 
 /-!
 # Topological facts about `Int.floor`, `Int.ceil` and `Int.fract`
@@ -26,35 +27,7 @@ This file proves statements about limits and continuity of functions involving `
 
 open Filter Function Int Set Topology
 
-namespace FloorSemiring
-
-open scoped Nat
-
-variable {K : Type*} [LinearOrderedField K] [FloorSemiring K] [TopologicalSpace K] [OrderTopology K]
-
-theorem tendsto_mul_pow_div_factorial_sub_atTop (a c : K) (d : ℕ) :
-    Tendsto (fun n ↦ a * c ^ n / (n - d)!) atTop (𝓝 0) := by
-  rw [tendsto_order]
-  constructor
-  all_goals
-    intro ε hε
-    filter_upwards [eventually_mul_pow_lt_factorial_sub (a * ε⁻¹) c d] with n h
-    rw [mul_right_comm, ← div_eq_mul_inv] at h
-  · rw [div_lt_iff_of_neg hε] at h
-    rwa [lt_div_iff₀' (Nat.cast_pos.mpr (Nat.factorial_pos _))]
-  · rw [div_lt_iff₀ hε] at h
-    rwa [div_lt_iff₀' (Nat.cast_pos.mpr (Nat.factorial_pos _))]
-
-theorem tendsto_pow_div_factorial_atTop (c : K) :
-    Tendsto (fun n ↦ c ^ n / n !) atTop (𝓝 0) := by
-  convert tendsto_mul_pow_div_factorial_sub_atTop 1 c 0
-  rw [one_mul]
-
-end FloorSemiring
-
 variable {α β γ : Type*} [LinearOrderedRing α] [FloorRing α]
-
--- TODO: move to `Mathlib.Order.Filter.AtTopBot.Floor`
 
 theorem tendsto_floor_atTop : Tendsto (floor : α → ℤ) atTop atTop :=
   floor_mono.tendsto_atTop_atTop fun b =>
@@ -85,7 +58,7 @@ section OrderClosedTopology
 variable [OrderClosedTopology α]
 
 theorem tendsto_floor_right_pure_floor (x : α) : Tendsto (floor : α → ℤ) (𝓝[≥] x) (pure ⌊x⌋) :=
-  tendsto_pure.2 <| mem_of_superset (Ico_mem_nhdsGE <| lt_floor_add_one x) fun _y hy =>
+  tendsto_pure.2 <| mem_of_superset (Ico_mem_nhdsWithin_Ici' <| lt_floor_add_one x) fun _y hy =>
     floor_eq_on_Ico _ _ ⟨(floor_le x).trans hy.1, hy.2⟩
 
 theorem tendsto_floor_right_pure (n : ℤ) : Tendsto (floor : α → ℤ) (𝓝[≥] n) (pure n) := by
@@ -93,7 +66,7 @@ theorem tendsto_floor_right_pure (n : ℤ) : Tendsto (floor : α → ℤ) (𝓝[
 
 theorem tendsto_ceil_left_pure_ceil (x : α) : Tendsto (ceil : α → ℤ) (𝓝[≤] x) (pure ⌈x⌉) :=
   tendsto_pure.2 <| mem_of_superset
-    (Ioc_mem_nhdsLE <| sub_lt_iff_lt_add.2 <| ceil_lt_add_one _) fun _y hy =>
+    (Ioc_mem_nhdsWithin_Iic' <| sub_lt_iff_lt_add.2 <| ceil_lt_add_one _) fun _y hy =>
       ceil_eq_on_Ioc _ _ ⟨hy.1, hy.2.trans (le_ceil _)⟩
 
 theorem tendsto_ceil_left_pure (n : ℤ) : Tendsto (ceil : α → ℤ) (𝓝[≤] n) (pure n) := by
@@ -103,7 +76,7 @@ theorem tendsto_floor_left_pure_ceil_sub_one (x : α) :
     Tendsto (floor : α → ℤ) (𝓝[<] x) (pure (⌈x⌉ - 1)) :=
   have h₁ : ↑(⌈x⌉ - 1) < x := by rw [cast_sub, cast_one, sub_lt_iff_lt_add]; exact ceil_lt_add_one _
   have h₂ : x ≤ ↑(⌈x⌉ - 1) + 1 := by rw [cast_sub, cast_one, sub_add_cancel]; exact le_ceil _
-  tendsto_pure.2 <| mem_of_superset (Ico_mem_nhdsLT h₁) fun _y hy =>
+  tendsto_pure.2 <| mem_of_superset (Ico_mem_nhdsWithin_Iio' h₁) fun _y hy =>
     floor_eq_on_Ico _ _ ⟨hy.1, hy.2.trans_le h₂⟩
 
 theorem tendsto_floor_left_pure_sub_one (n : ℤ) :
@@ -113,7 +86,7 @@ theorem tendsto_floor_left_pure_sub_one (n : ℤ) :
 theorem tendsto_ceil_right_pure_floor_add_one (x : α) :
     Tendsto (ceil : α → ℤ) (𝓝[>] x) (pure (⌊x⌋ + 1)) :=
   have : ↑(⌊x⌋ + 1) - 1 ≤ x := by rw [cast_add, cast_one, add_sub_cancel_right]; exact floor_le _
-  tendsto_pure.2 <| mem_of_superset (Ioc_mem_nhdsGT <| lt_succ_floor _) fun _y hy =>
+  tendsto_pure.2 <| mem_of_superset (Ioc_mem_nhdsWithin_Ioi' <| lt_succ_floor _) fun _y hy =>
     ceil_eq_on_Ioc _ _ ⟨this.trans_lt hy.1, hy.2⟩
 
 theorem tendsto_ceil_right_pure_add_one (n : ℤ) :
@@ -195,18 +168,18 @@ theorem ContinuousOn.comp_fract' {f : β → α → γ} (h : ContinuousOn (uncur
   rw [continuous_iff_continuousAt]
   rintro ⟨s, t⟩
   rcases em (∃ n : ℤ, t = n) with (⟨n, rfl⟩ | ht)
-  · rw [ContinuousAt, nhds_prod_eq, ← nhdsLT_sup_nhdsGE (n : α), prod_sup, tendsto_sup]
+  · rw [ContinuousAt, nhds_prod_eq, ← nhds_left'_sup_nhds_right (n : α), prod_sup, tendsto_sup]
     constructor
     · refine (((h (s, 1) ⟨trivial, zero_le_one, le_rfl⟩).tendsto.mono_left ?_).comp
         (tendsto_id.prod_map (tendsto_fract_left _))).mono_right (le_of_eq ?_)
-      · rw [nhdsWithin_prod_eq, nhdsWithin_univ, ← nhdsWithin_Ico_eq_nhdsLT one_pos]
+      · rw [nhdsWithin_prod_eq, nhdsWithin_univ, ← nhdsWithin_Ico_eq_nhdsWithin_Iio one_pos]
         exact Filter.prod_mono le_rfl (nhdsWithin_mono _ Ico_subset_Icc_self)
       · simp [hf]
     · refine (((h (s, 0) ⟨trivial, le_rfl, zero_le_one⟩).tendsto.mono_left <| le_of_eq ?_).comp
         (tendsto_id.prod_map (tendsto_fract_right _))).mono_right (le_of_eq ?_) <;>
         simp [nhdsWithin_prod_eq, nhdsWithin_univ]
   · replace ht : t ≠ ⌊t⌋ := fun ht' => ht ⟨_, ht'⟩
-    refine (h.continuousAt ?_).comp (continuousAt_id.prodMap (continuousAt_fract ht))
+    refine (h.continuousAt ?_).comp (continuousAt_id.prod_map (continuousAt_fract ht))
     exact prod_mem_nhds univ_mem (Icc_mem_nhds (fract_pos.2 ht) (fract_lt_one _))
 
 theorem ContinuousOn.comp_fract {s : β → α} {f : β → α → γ}

@@ -55,7 +55,7 @@ def augment (C : ChainComplex V ℕ) {X : V} (f : C.X 0 ⟶ X) (w : C.d 1 0 ≫ 
     | _, _ => 0
   shape
     | 1, 0, h => absurd rfl h
-    | _ + 2, 0, _ => rfl
+    | i + 2, 0, _ => rfl
     | 0, _, _ => rfl
     | i + 1, j + 1, h => by
       simp only; exact C.shape i j (Nat.succ_ne_succ.1 h)
@@ -88,9 +88,9 @@ to the original complex.
 -/
 def truncateAugment (C : ChainComplex V ℕ) {X : V} (f : C.X 0 ⟶ X) (w : C.d 1 0 ≫ f = 0) :
     truncate.obj (augment C f w) ≅ C where
-  hom := { f := fun _ => 𝟙 _ }
+  hom := { f := fun i => 𝟙 _ }
   inv :=
-    { f := fun _ => 𝟙 _
+    { f := fun i => 𝟙 _
       comm' := fun i j => by
         cases j <;>
           · dsimp
@@ -125,7 +125,7 @@ theorem chainComplex_d_succ_succ_zero (C : ChainComplex V ℕ) (i : ℕ) : C.d (
 def augmentTruncate (C : ChainComplex V ℕ) :
     augment (truncate.obj C) (C.d 1 0) (C.d_comp_d _ _ _) ≅ C where
   hom :=
-    { f := fun | 0 => 𝟙 _ | _+1 => 𝟙 _
+    { f := fun | 0 => 𝟙 _ | n+1 => 𝟙 _
       comm' := fun i j => by
         -- Porting note: was an rcases n with (_|_|n) but that was causing issues
         match i with
@@ -133,7 +133,7 @@ def augmentTruncate (C : ChainComplex V ℕ) :
           cases' j with j <;> dsimp [augment, truncate] <;> simp
     }
   inv :=
-    { f := fun | 0 => 𝟙 _ | _+1 => 𝟙 _
+    { f := fun | 0 => 𝟙 _ | n+1 => 𝟙 _
       comm' := fun i j => by
         -- Porting note: was an rcases n with (_|_|n) but that was causing issues
         match i with
@@ -259,9 +259,9 @@ to the original complex.
 -/
 def truncateAugment (C : CochainComplex V ℕ) {X : V} (f : X ⟶ C.X 0) (w : f ≫ C.d 0 1 = 0) :
     truncate.obj (augment C f w) ≅ C where
-  hom := { f := fun _ => 𝟙 _ }
+  hom := { f := fun i => 𝟙 _ }
   inv :=
-    { f := fun _ => 𝟙 _
+    { f := fun i => 𝟙 _
       comm' := fun i j => by
         cases j <;>
           · dsimp
@@ -300,20 +300,18 @@ theorem cochainComplex_d_succ_succ_zero (C : CochainComplex V ℕ) (i : ℕ) : C
 def augmentTruncate (C : CochainComplex V ℕ) :
     augment (truncate.obj C) (C.d 0 1) (C.d_comp_d _ _ _) ≅ C where
   hom :=
-    { f := fun | 0 => 𝟙 _ | _+1 => 𝟙 _
+    { f := fun | 0 => 𝟙 _ | n+1 => 𝟙 _
       comm' := fun i j => by
         rcases j with (_ | _ | j) <;> cases i <;>
           · dsimp
-            -- Porting note https://github.com/leanprover-community/mathlib4/issues/10959
-            -- simp can't handle this now but aesop does
+            -- Porting note (#10959): simp can't handle this now but aesop does
             aesop }
   inv :=
-    { f := fun | 0 => 𝟙 _ | _+1 => 𝟙 _
+    { f := fun | 0 => 𝟙 _ | n+1 => 𝟙 _
       comm' := fun i j => by
         rcases j with (_ | _ | j) <;> cases' i with i <;>
           · dsimp
-            -- Porting note https://github.com/leanprover-community/mathlib4/issues/10959
-            -- simp can't handle this now but aesop does
+            -- Porting note (#10959): simp can't handle this now but aesop does
             aesop }
   hom_inv_id := by
     ext i

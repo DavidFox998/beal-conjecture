@@ -3,7 +3,6 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Data.DFinsupp.BigOperators
 import Mathlib.Data.DFinsupp.Order
 
 /-!
@@ -15,7 +14,7 @@ with `Multiset.toDFinsupp` the reverse equivalence.
 
 open Function
 
-variable {α : Type*}
+variable {α : Type*} {β : α → Type*}
 
 namespace DFinsupp
 
@@ -23,7 +22,7 @@ namespace DFinsupp
 instance addZeroClass' {β} [AddZeroClass β] : AddZeroClass (Π₀ _ : α, β) :=
   @DFinsupp.addZeroClass α (fun _ ↦ β) _
 
-variable [DecidableEq α]
+variable [DecidableEq α] {s t : Multiset α}
 
 /-- A DFinsupp version of `Finsupp.toMultiset`. -/
 def toMultiset : (Π₀ _ : α, ℕ) →+ Multiset α :=
@@ -93,11 +92,11 @@ theorem toDFinsupp_lt_toDFinsupp : toDFinsupp s < toDFinsupp t ↔ s < t :=
 
 @[simp]
 theorem toDFinsupp_inter (s t : Multiset α) : toDFinsupp (s ∩ t) = toDFinsupp s ⊓ toDFinsupp t := by
-  ext i; simp
+  ext i; simp [inf_eq_min]
 
 @[simp]
 theorem toDFinsupp_union (s t : Multiset α) : toDFinsupp (s ∪ t) = toDFinsupp s ⊔ toDFinsupp t := by
-  ext i; simp
+  ext i; simp [sup_eq_max]
 
 end Multiset
 

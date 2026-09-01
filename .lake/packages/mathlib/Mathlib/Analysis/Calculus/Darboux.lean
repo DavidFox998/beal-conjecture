@@ -17,7 +17,7 @@ intermediate values. The proof is based on the
 
 open Filter Set
 
-open scoped Topology
+open scoped Topology Classical
 
 variable {a b : ℝ} {f f' : ℝ → ℝ}
 

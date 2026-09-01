@@ -3,7 +3,7 @@ Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith, Adam Topaz
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
+import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 
 /-!
@@ -64,7 +64,7 @@ namespace WithTerminal
 variable {C}
 
 /-- Morphisms for `WithTerminal C`. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed `nolint has_nonempty_instance`
+-- Porting note(#5171): removed `nolint has_nonempty_instance`
 @[simp]
 def Hom : WithTerminal C → WithTerminal C → Type v
   | of X, of Y => X ⟶ Y
@@ -91,7 +91,7 @@ attribute [nolint simpNF] comp.eq_4
 
 instance : Category.{v} (WithTerminal C) where
   Hom X Y := Hom X Y
-  id _ := id _
+  id X := id _
   comp := comp
   assoc {a b c d} f g h := by
     -- Porting note: it would be nice to automate this away as well.
@@ -133,7 +133,7 @@ def map {D : Type*} [Category D] (F : C ⥤ D) : WithTerminal C ⥤ WithTerminal
     | star => star
   map {X Y} f :=
     match X, Y, f with
-    | of _, of _, f => F.map (down f)
+    | of x, of y, f => F.map (down f)
     | of _, star, _ => PUnit.unit
     | star, star, _ => PUnit.unit
 
@@ -141,7 +141,7 @@ def map {D : Type*} [Category D] (F : C ⥤ D) : WithTerminal C ⥤ WithTerminal
 @[simps!]
 def mapId (C : Type*) [Category C] : map (𝟭 C) ≅ 𝟭 (WithTerminal C) :=
   NatIso.ofComponents (fun X => match X with
-    | of _ => Iso.refl _
+    | of x => Iso.refl _
     | star => Iso.refl _) (by aesop_cat)
 
 /-- A natural isomorphism between the functor `map (F ⋙ G) ` and `map F ⋙ map G `. -/
@@ -149,7 +149,7 @@ def mapId (C : Type*) [Category C] : map (𝟭 C) ≅ 𝟭 (WithTerminal C) :=
 def mapComp {D E : Type*} [Category D] [Category E] (F : C ⥤ D) (G : D ⥤ E) :
     map (F ⋙ G) ≅ map F ⋙ map G :=
   NatIso.ofComponents (fun X => match X with
-    | of _ => Iso.refl _
+    | of x => Iso.refl _
     | star => Iso.refl _) (by aesop_cat)
 
 /-- From a natural transformation of functors `C ⥤ D`, the induced natural transformation
@@ -285,7 +285,7 @@ def lift {D : Type*} [Category D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, F.obj x 
     | star => Z
   map {X Y} f :=
     match X, Y, f with
-    | of _, of _, f => F.map (down f)
+    | of x, of y, f => F.map (down f)
     | of x, star, _ => M x
     | star, star, _ => 𝟙 Z
 
@@ -293,8 +293,8 @@ def lift {D : Type*} [Category D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, F.obj x 
 @[simps!]
 def inclLift {D : Type*} [Category D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, F.obj x ⟶ Z)
     (hM : ∀ (x y : C) (f : x ⟶ y), F.map f ≫ M y = M x) : incl ⋙ lift F M hM ≅ F where
-  hom := { app := fun _ => 𝟙 _ }
-  inv := { app := fun _ => 𝟙 _ }
+  hom := { app := fun X => 𝟙 _ }
+  inv := { app := fun X => 𝟙 _ }
 
 /-- The isomorphism between `(lift F _ _).obj WithTerminal.star` with `Z`. -/
 @[simps!]
@@ -368,7 +368,7 @@ namespace WithInitial
 variable {C}
 
 /-- Morphisms for `WithInitial C`. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed `nolint has_nonempty_instance`
+-- Porting note(#5171): removed `nolint has_nonempty_instance`
 @[simp]
 def Hom : WithInitial C → WithInitial C → Type v
   | of X, of Y => X ⟶ Y
@@ -435,7 +435,7 @@ def map {D : Type*} [Category D] (F : C ⥤ D) : WithInitial C ⥤ WithInitial D
     | star => star
   map {X Y} f :=
     match X, Y, f with
-    | of _, of _, f => F.map (down f)
+    | of x, of y, f => F.map (down f)
     | star, of _, _ => PUnit.unit
     | star, star, _ => PUnit.unit
 
@@ -443,7 +443,7 @@ def map {D : Type*} [Category D] (F : C ⥤ D) : WithInitial C ⥤ WithInitial D
 @[simps!]
 def mapId (C : Type*) [Category C] : map (𝟭 C) ≅ 𝟭 (WithInitial C) :=
   NatIso.ofComponents (fun X => match X with
-    | of _ => Iso.refl _
+    | of x => Iso.refl _
     | star => Iso.refl _) (by aesop_cat)
 
 /-- A natural isomorphism between the functor `map (F ⋙ G) ` and `map F ⋙ map G `. -/
@@ -451,7 +451,7 @@ def mapId (C : Type*) [Category C] : map (𝟭 C) ≅ 𝟭 (WithInitial C) :=
 def mapComp {D E : Type*} [Category D] [Category E] (F : C ⥤ D) (G : D ⥤ E) :
     map (F ⋙ G) ≅ map F ⋙ map G :=
   NatIso.ofComponents (fun X => match X with
-    | of _ => Iso.refl _
+    | of x => Iso.refl _
     | star => Iso.refl _) (by aesop_cat)
 
 /-- From a natural transformation of functors `C ⥤ D`, the induced natural transformation
@@ -583,16 +583,16 @@ def lift {D : Type*} [Category D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, Z ⟶ F.
     | star => Z
   map {X Y} f :=
     match X, Y, f with
-    | of _, of _, f => F.map (down f)
-    | star, of _, _ => M _
+    | of x, of y, f => F.map (down f)
+    | star, of x, _ => M _
     | star, star, _ => 𝟙 _
 
 /-- The isomorphism between `incl ⋙ lift F _ _` with `F`. -/
 @[simps!]
 def inclLift {D : Type*} [Category D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, Z ⟶ F.obj x)
     (hM : ∀ (x y : C) (f : x ⟶ y), M x ≫ F.map f = M y) : incl ⋙ lift F M hM ≅ F where
-  hom := { app := fun _ => 𝟙 _ }
-  inv := { app := fun _ => 𝟙 _ }
+  hom := { app := fun X => 𝟙 _ }
+  inv := { app := fun X => 𝟙 _ }
 
 /-- The isomorphism between `(lift F _ _).obj WithInitial.star` with `Z`. -/
 @[simps!]

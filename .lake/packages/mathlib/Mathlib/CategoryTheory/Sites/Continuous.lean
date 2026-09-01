@@ -115,35 +115,31 @@ abbrev PreservesOneHypercovers :=
 /-- A functor `F` is continuous if the precomposition with `F.op` sends sheaves of `Type t`
 to sheaves. -/
 class IsContinuous : Prop where
-  op_comp_isSheaf_of_types (G : Sheaf K (Type t)) : Presieve.IsSheaf J (F.op ⋙ G.val)
+  op_comp_isSheafOfTypes (G : SheafOfTypes.{t} K) : Presieve.IsSheaf J (F.op ⋙ G.val)
 
-lemma op_comp_isSheaf_of_types [Functor.IsContinuous.{t} F J K] (G : Sheaf K (Type t)) :
+lemma op_comp_isSheafOfTypes [Functor.IsContinuous.{t} F J K] (G : SheafOfTypes.{t} K) :
     Presieve.IsSheaf J (F.op ⋙ G.val) :=
-  Functor.IsContinuous.op_comp_isSheaf_of_types _
-
-@[deprecated (since := "2024-11-26")] alias op_comp_isSheafOfTypes := op_comp_isSheaf_of_types
+  Functor.IsContinuous.op_comp_isSheafOfTypes _
 
 lemma op_comp_isSheaf [Functor.IsContinuous.{t} F J K] (G : Sheaf K A) :
     Presheaf.IsSheaf J (F.op ⋙ G.val) :=
-  fun T => F.op_comp_isSheaf_of_types J K ⟨_, (isSheaf_iff_isSheaf_of_type _ _).2 (G.cond T)⟩
+  fun T => F.op_comp_isSheafOfTypes J K ⟨_, G.cond T⟩
 
 lemma isContinuous_of_iso {F₁ F₂ : C ⥤ D} (e : F₁ ≅ F₂)
     (J : GrothendieckTopology C) (K : GrothendieckTopology D)
     [Functor.IsContinuous.{t} F₁ J K] : Functor.IsContinuous.{t} F₂ J K where
-  op_comp_isSheaf_of_types G :=
+  op_comp_isSheafOfTypes G :=
     Presieve.isSheaf_iso J (isoWhiskerRight (NatIso.op e.symm) _)
-      (F₁.op_comp_isSheaf_of_types J K G)
+      (F₁.op_comp_isSheafOfTypes J K G)
 
 instance isContinuous_id : Functor.IsContinuous.{w} (𝟭 C) J J where
-  op_comp_isSheaf_of_types G := (isSheaf_iff_isSheaf_of_type _ _).1 G.2
+  op_comp_isSheafOfTypes G := G.2
 
 lemma isContinuous_comp (F₁ : C ⥤ D) (F₂ : D ⥤ E) (J : GrothendieckTopology C)
     (K : GrothendieckTopology D) (L : GrothendieckTopology E)
     [Functor.IsContinuous.{t} F₁ J K] [Functor.IsContinuous.{t} F₂ K L] :
     Functor.IsContinuous.{t} (F₁ ⋙ F₂) J L where
-  op_comp_isSheaf_of_types G :=
-    F₁.op_comp_isSheaf_of_types J K
-      ⟨_,(isSheaf_iff_isSheaf_of_type _ _).2 (F₂.op_comp_isSheaf_of_types K L G)⟩
+  op_comp_isSheafOfTypes G := F₁.op_comp_isSheafOfTypes J K ⟨_, F₂.op_comp_isSheafOfTypes K L G⟩
 
 lemma isContinuous_comp' {F₁ : C ⥤ D} {F₂ : D ⥤ E} {F₁₂ : C ⥤ E}
     (e : F₁ ⋙ F₂ ≅ F₁₂) (J : GrothendieckTopology C)
@@ -167,9 +163,9 @@ lemma op_comp_isSheaf_of_preservesOneHypercovers
 lemma isContinuous_of_preservesOneHypercovers
     [PreservesOneHypercovers.{w} F J K] [GrothendieckTopology.IsGeneratedByOneHypercovers.{w} J] :
     IsContinuous.{t} F J K where
-  op_comp_isSheaf_of_types := by
+  op_comp_isSheafOfTypes := by
     rintro ⟨P, hP⟩
-    rw [← isSheaf_iff_isSheaf_of_type]
+    rw [← isSheaf_iff_isSheaf_of_type] at hP ⊢
     exact F.op_comp_isSheaf_of_preservesOneHypercovers J K P hP
 
 end

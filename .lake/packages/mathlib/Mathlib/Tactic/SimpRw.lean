@@ -5,6 +5,7 @@ Authors: Anne Baanen, Mario Carneiro, Alex J. Best
 -/
 
 import Mathlib.Init
+import Lean
 
 /-!
 # The `simp_rw` tactic
@@ -15,8 +16,7 @@ these rules and also under binders like `∀ x, ...`, `∃ x, ...` and `fun x �
 -/
 namespace Mathlib.Tactic
 
-open Lean Elab.Tactic
-open Parser.Tactic (optConfig rwRuleSeq location getConfigItems)
+open Lean Parser.Tactic Elab.Tactic
 
 /-- A version of `withRWRulesSeq` (in core) that doesn't attempt to find equation lemmas, and simply
   passes the rw rules on to `x`. -/
@@ -61,14 +61,22 @@ example {a : ℕ}
   simp_rw [h1, h2]
 ```
 -/
-elab s:"simp_rw " cfg:optConfig rws:rwRuleSeq g:(location)? : tactic => focus do
-  evalTactic (← `(tactic| simp%$s $[$(getConfigItems cfg)]* (failIfUnchanged := false) only $(g)?))
+elab s:"simp_rw " cfg:(config)? rws:rwRuleSeq g:(location)? : tactic => focus do
+  let cfg' : TSyntax `Lean.Parser.Tactic.config ← do
+    match cfg with
+    | Option.none =>
+      `(config| (config := ({ failIfUnchanged := false } : Lean.Meta.Simp.Config)))
+    | Option.some c => match c with
+      | `(config| (config := $cfg)) =>
+        `(config| (config := ({ ($cfg : Lean.Meta.Simp.Config) with failIfUnchanged := false })))
+      | _ => throwError "malformed cfg"
+  evalTactic (← `(tactic| simp%$s $cfg' only $g ?))
   withSimpRWRulesSeq s rws fun symm term => do
     evalTactic (← match term with
     | `(term| $e:term) =>
       if symm then
-        `(tactic| simp%$e $cfg only [← $e:term] $g ?)
+        `(tactic| simp%$e $[$cfg]? only [← $e:term] $g ?)
       else
-        `(tactic| simp%$e $cfg only [$e:term] $g ?))
+        `(tactic| simp%$e $[$cfg]? only [$e:term] $g ?))
 
 end Mathlib.Tactic

@@ -63,9 +63,9 @@ instance createsColimitsOfSizeMapCompForget {Y : C} (f : X ⟶ Y) :
     CreatesColimitsOfSize.{w, w'} (map f ⋙ forget Y) :=
   show CreatesColimitsOfSize.{w, w'} (forget X) from inferInstance
 
-instance preservesColimitsOfSize_map [HasColimitsOfSize.{w, w'} C] {Y : C} (f : X ⟶ Y) :
+instance preservesColimitsOfSizeMap [HasColimitsOfSize.{w, w'} C] {Y : C} (f : X ⟶ Y) :
     PreservesColimitsOfSize.{w, w'} (map f) :=
-  preservesColimits_of_reflects_of_preserves (map f) (forget Y)
+  preservesColimitsOfReflectsOfPreserves (map f) (forget Y)
 
 /-- If `c` is a colimit cocone, then so is the cocone `c.toOver` with cocone point `𝟙 c.pt`. -/
 def isColimitToOver {F : J ⥤ C} {c : Cocone F} (hc : IsColimit c) : IsColimit c.toOver :=
@@ -110,9 +110,9 @@ instance createLimitsOfSizeMapCompForget {Y : C} (f : X ⟶ Y) :
     CreatesLimitsOfSize.{w, w'} (map f ⋙ forget X) :=
   show CreatesLimitsOfSize.{w, w'} (forget Y) from inferInstance
 
-instance preservesLimitsOfSize_map [HasLimitsOfSize.{w, w'} C] {Y : C} (f : X ⟶ Y) :
+instance preservesLimitsOfSizeMap [HasLimitsOfSize.{w, w'} C] {Y : C} (f : X ⟶ Y) :
     PreservesLimitsOfSize.{w, w'} (map f) :=
-  preservesLimits_of_reflects_of_preserves (map f) (forget X)
+  preservesLimitsOfReflectsOfPreserves (map f) (forget X)
 
 /-- If `c` is a limit cone, then so is the cone `c.toUnder` with cone point `𝟙 c.pt`. -/
 def isLimitToUnder {F : J ⥤ C} {c : Cone F} (hc : IsLimit c) : IsLimit c.toUnder :=

@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
 import Mathlib.Logic.Function.Basic
-import Mathlib.Logic.Relator
 
 /-!
 # Types that are empty
@@ -22,10 +21,10 @@ variable {α β γ : Sort*}
 class IsEmpty (α : Sort*) : Prop where
   protected false : α → False
 
-instance Empty.instIsEmpty : IsEmpty Empty :=
+instance instIsEmptyEmpty : IsEmpty Empty :=
   ⟨Empty.elim⟩
 
-instance PEmpty.instIsEmpty : IsEmpty PEmpty :=
+instance instIsEmptyPEmpty : IsEmpty PEmpty :=
   ⟨PEmpty.elim⟩
 
 instance : IsEmpty False :=
@@ -160,6 +159,7 @@ theorem isEmpty_sigma {α} {E : α → Type*} : IsEmpty (Sigma E) ↔ ∀ a, IsE
 theorem isEmpty_psigma {α} {E : α → Sort*} : IsEmpty (PSigma E) ↔ ∀ a, IsEmpty (E a) := by
   simp only [← not_nonempty_iff, nonempty_psigma, not_exists]
 
+@[simp]
 theorem isEmpty_subtype (p : α → Prop) : IsEmpty (Subtype p) ↔ ∀ x, ¬p x := by
   simp only [← not_nonempty_iff, nonempty_subtype, not_exists]
 
@@ -204,19 +204,3 @@ variable {α}
 theorem Function.extend_of_isEmpty [IsEmpty α] (f : α → β) (g : α → γ) (h : β → γ) :
     Function.extend f g h = h :=
   funext fun _ ↦ (Function.extend_apply' _ _ _) fun ⟨a, _⟩ ↦ isEmptyElim a
-
-open Relator
-
-variable {α β : Type*} (R : α → β → Prop)
-
-@[simp]
-theorem leftTotal_empty [IsEmpty α] : LeftTotal R := by
-  simp only [LeftTotal, IsEmpty.forall_iff]
-
-@[simp]
-theorem rightTotal_empty [IsEmpty β] : RightTotal R := by
-  simp only [RightTotal, IsEmpty.forall_iff]
-
-@[simp]
-theorem biTotal_empty [IsEmpty α] [IsEmpty β] : BiTotal R :=
-  ⟨leftTotal_empty R, rightTotal_empty R⟩

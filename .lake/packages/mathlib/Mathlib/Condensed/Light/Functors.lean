@@ -17,6 +17,12 @@ sets.
 * `lightProfiniteToLightCondSet : LightProfinite.{u} ⥤ LightCondSet.{u}`
   is the yoneda presheaf functor.
 
+TODO (Dagur):
+
+* Define the functor `Type u ⥤ LightCondSet.{u}` which takes a set `X` to the presheaf given by
+  mapping a light profinite space `S` to `LocallyConstant S X`, along with the isomorphism with
+  the functor that goes through `TopCat.{u+1}`.
+
 -/
 
 universe u v
@@ -25,7 +31,7 @@ open CategoryTheory Limits
 
 /-- The functor from `LightProfinite.{u}` to `LightCondSet.{u}` given by the Yoneda sheaf. -/
 def lightProfiniteToLightCondSet : LightProfinite.{u} ⥤ LightCondSet.{u} :=
-  (coherentTopology LightProfinite).yoneda
+  (coherentTopology.subcanonical LightProfinite).yoneda
 
 /-- Dot notation for the value of `lightProfiniteToLightCondSet`. -/
 abbrev LightProfinite.toCondensed (S : LightProfinite.{u}) : LightCondSet.{u} :=
@@ -34,10 +40,10 @@ abbrev LightProfinite.toCondensed (S : LightProfinite.{u}) : LightCondSet.{u} :=
 /-- `lightProfiniteToLightCondSet` is fully faithful. -/
 abbrev lightProfiniteToLightCondSetFullyFaithful :
     lightProfiniteToLightCondSet.FullyFaithful :=
-  (coherentTopology LightProfinite).yonedaFullyFaithful
+  Sheaf.Subcanonical.yonedaFullyFaithful _
 
 instance : lightProfiniteToLightCondSet.Full :=
-  inferInstanceAs ((coherentTopology LightProfinite).yoneda).Full
+  show (Sheaf.Subcanonical.yoneda _).Full from inferInstance
 
 instance : lightProfiniteToLightCondSet.Faithful :=
-  inferInstanceAs ((coherentTopology LightProfinite).yoneda).Faithful
+  show (Sheaf.Subcanonical.yoneda _).Faithful from inferInstance

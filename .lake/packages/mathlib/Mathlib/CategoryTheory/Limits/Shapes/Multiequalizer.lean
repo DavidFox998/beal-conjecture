@@ -31,29 +31,29 @@ namespace CategoryTheory.Limits
 
 open CategoryTheory
 
-universe w w' v u
+universe w v u
 
 /-- The type underlying the multiequalizer diagram. -/
 --@[nolint unused_arguments]
-inductive WalkingMulticospan {L : Type w} {R : Type w'} (fst snd : R → L) : Type max w w'
+inductive WalkingMulticospan {L R : Type w} (fst snd : R → L) : Type w
   | left : L → WalkingMulticospan fst snd
   | right : R → WalkingMulticospan fst snd
 
 /-- The type underlying the multiecoqualizer diagram. -/
 --@[nolint unused_arguments]
-inductive WalkingMultispan {L : Type w} {R : Type w'} (fst snd : L → R) : Type max w w'
+inductive WalkingMultispan {L R : Type w} (fst snd : L → R) : Type w
   | left : L → WalkingMultispan fst snd
   | right : R → WalkingMultispan fst snd
 
 namespace WalkingMulticospan
 
-variable {L : Type w} {R : Type w'} {fst snd : R → L}
+variable {L R : Type w} {fst snd : R → L}
 
 instance [Inhabited L] : Inhabited (WalkingMulticospan fst snd) :=
   ⟨left default⟩
 
 /-- Morphisms for `WalkingMulticospan`. -/
-inductive Hom : ∀ _ _ : WalkingMulticospan fst snd, Type max w w'
+inductive Hom : ∀ _ _ : WalkingMulticospan fst snd, Type w
   | id (A) : Hom A A
   | fst (b) : Hom (left (fst b)) (right b)
   | snd (b) : Hom (left (snd b)) (right b)
@@ -94,13 +94,13 @@ end WalkingMulticospan
 
 namespace WalkingMultispan
 
-variable {L : Type w} {R : Type w'} {fst snd : L → R}
+variable {L R : Type v} {fst snd : L → R}
 
 instance [Inhabited L] : Inhabited (WalkingMultispan fst snd) :=
   ⟨left default⟩
 
 /-- Morphisms for `WalkingMultispan`. -/
-inductive Hom : ∀ _ _ : WalkingMultispan fst snd, Type max w w'
+inductive Hom : ∀ _ _ : WalkingMultispan fst snd, Type v
   | id (A) : Hom A A
   | fst (a) : Hom (left a) (right (fst a))
   | snd (a) : Hom (left a) (right (snd a))
@@ -139,11 +139,10 @@ lemma Hom.comp_eq_comp {X Y Z : WalkingMultispan fst snd}
 end WalkingMultispan
 
 /-- This is a structure encapsulating the data necessary to define a `Multicospan`. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): has_nonempty_instance linter not ported yet
-@[nolint checkUnivs]
+-- Porting note(#5171): linter not ported yet
+-- @[nolint has_nonempty_instance]
 structure MulticospanIndex (C : Type u) [Category.{v} C] where
-  (L : Type w)
-  (R : Type w')
+  (L R : Type w)
   (fstTo sndTo : R → L)
   left : L → C
   right : R → C
@@ -151,11 +150,10 @@ structure MulticospanIndex (C : Type u) [Category.{v} C] where
   snd : ∀ b, left (sndTo b) ⟶ right b
 
 /-- This is a structure encapsulating the data necessary to define a `Multispan`. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): has_nonempty_instance linter not ported yet
-@[nolint checkUnivs]
+-- Porting note(#5171): linter not ported yet
+-- @[nolint has_nonempty_instance]
 structure MultispanIndex (C : Type u) [Category.{v} C] where
-  (L : Type w)
-  (R : Type w')
+  (L R : Type w)
   (fstFrom sndFrom : L → R)
   left : L → C
   right : R → C
@@ -164,7 +162,7 @@ structure MultispanIndex (C : Type u) [Category.{v} C] where
 
 namespace MulticospanIndex
 
-variable {C : Type u} [Category.{v} C] (I : MulticospanIndex.{w, w'} C)
+variable {C : Type u} [Category.{v} C] (I : MulticospanIndex.{w} C)
 
 /-- The multicospan associated to `I : MulticospanIndex`. -/
 @[simps]
@@ -212,7 +210,7 @@ end MulticospanIndex
 
 namespace MultispanIndex
 
-variable {C : Type u} [Category.{v} C] (I : MultispanIndex.{w, w'} C)
+variable {C : Type u} [Category.{v} C] (I : MultispanIndex.{w} C)
 
 /-- The multispan associated to `I : MultispanIndex`. -/
 def multispan : WalkingMultispan I.fstFrom I.sndFrom ⥤ C where
@@ -276,20 +274,20 @@ end MultispanIndex
 variable {C : Type u} [Category.{v} C]
 
 /-- A multifork is a cone over a multicospan. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): linter not ported yet
+-- Porting note(#5171): linter not ported yet
 -- @[nolint has_nonempty_instance]
-abbrev Multifork (I : MulticospanIndex.{w, w'} C) :=
+abbrev Multifork (I : MulticospanIndex.{w} C) :=
   Cone I.multicospan
 
 /-- A multicofork is a cocone over a multispan. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): linter not ported yet
+-- Porting note(#5171): linter not ported yet
 -- @[nolint has_nonempty_instance]
-abbrev Multicofork (I : MultispanIndex.{w, w'} C) :=
+abbrev Multicofork (I : MultispanIndex.{w} C) :=
   Cocone I.multispan
 
 namespace Multifork
 
-variable {I : MulticospanIndex.{w, w'} C} (K : Multifork I)
+variable {I : MulticospanIndex.{w} C} (K : Multifork I)
 
 /-- The maps from the cone point of a multifork to the objects on the left. -/
 def ι (a : I.L) : K.pt ⟶ I.left a :=
@@ -317,13 +315,13 @@ theorem hom_comp_ι (K₁ K₂ : Multifork I) (f : K₁ ⟶ K₂) (j : I.L) : f.
 
 /-- Construct a multifork using a collection `ι` of morphisms. -/
 @[simps]
-def ofι (I : MulticospanIndex.{w, w'} C) (P : C) (ι : ∀ a, P ⟶ I.left a)
+def ofι (I : MulticospanIndex.{w} C) (P : C) (ι : ∀ a, P ⟶ I.left a)
     (w : ∀ b, ι (I.fstTo b) ≫ I.fst b = ι (I.sndTo b) ≫ I.snd b) : Multifork I where
   pt := P
   π :=
     { app := fun x =>
         match x with
-        | WalkingMulticospan.left _ => ι _
+        | WalkingMulticospan.left a => ι _
         | WalkingMulticospan.right b => ι (I.fstTo b) ≫ I.fst b
       naturality := by
         rintro (_ | _) (_ | _) (_ | _ | _) <;>
@@ -417,8 +415,8 @@ noncomputable def ofPiFork (c : Fork I.fstPiMap I.sndPiMap) : Multifork I where
   π :=
     { app := fun x =>
         match x with
-        | WalkingMulticospan.left _ => c.ι ≫ Pi.π _ _
-        | WalkingMulticospan.right _ => c.ι ≫ I.fstPiMap ≫ Pi.π _ _
+        | WalkingMulticospan.left a => c.ι ≫ Pi.π _ _
+        | WalkingMulticospan.right b => c.ι ≫ I.fstPiMap ≫ Pi.π _ _
       naturality := by
         rintro (_ | _) (_ | _) (_ | _ | _)
         · simp
@@ -440,7 +438,7 @@ end Multifork
 
 namespace MulticospanIndex
 
-variable (I : MulticospanIndex.{w, w'} C) [HasProduct I.left] [HasProduct I.right]
+variable (I : MulticospanIndex.{w} C) [HasProduct I.left] [HasProduct I.right]
 
 --attribute [local tidy] tactic.case_bash
 
@@ -487,7 +485,7 @@ end MulticospanIndex
 
 namespace Multicofork
 
-variable {I : MultispanIndex.{w, w'} C} (K : Multicofork I)
+variable {I : MultispanIndex.{w} C} (K : Multicofork I)
 
 /-- The maps to the cocone point of a multicofork from the objects on the right. -/
 def π (b : I.R) : I.right b ⟶ K.pt :=
@@ -513,14 +511,14 @@ lemma π_comp_hom (K₁ K₂ : Multicofork I) (f : K₁ ⟶ K₂) (b : I.R) : K�
 
 /-- Construct a multicofork using a collection `π` of morphisms. -/
 @[simps]
-def ofπ (I : MultispanIndex.{w, w'} C) (P : C) (π : ∀ b, I.right b ⟶ P)
+def ofπ (I : MultispanIndex.{w} C) (P : C) (π : ∀ b, I.right b ⟶ P)
     (w : ∀ a, I.fst a ≫ π (I.fstFrom a) = I.snd a ≫ π (I.sndFrom a)) : Multicofork I where
   pt := P
   ι :=
     { app := fun x =>
         match x with
         | WalkingMultispan.left a => I.fst a ≫ π _
-        | WalkingMultispan.right _ => π _
+        | WalkingMultispan.right b => π _
       naturality := by
         rintro (_ | _) (_ | _) (_ | _ | _) <;> dsimp <;>
           simp only [Functor.map_id, MultispanIndex.multispan_obj_left,
@@ -595,8 +593,7 @@ noncomputable def ofSigmaCofork (c : Cofork I.fstSigmaMap I.sndSigmaMap) : Multi
         · simp [c.condition]
         · simp }
 
--- Porting note: https://github.com/leanprover-community/mathlib4/issues/10675
--- dsimp cannot prove this, once ofSigmaCofork_ι_app_right' is defined
+-- Porting note (#10675): dsimp cannot prove this... once ofSigmaCofork_ι_app_right' is defined
 @[simp]
 theorem ofSigmaCofork_ι_app_left (c : Cofork I.fstSigmaMap I.sndSigmaMap) (a) :
     (ofSigmaCofork I c).ι.app (WalkingMultispan.left a) =
@@ -617,7 +614,7 @@ end Multicofork
 
 namespace MultispanIndex
 
-variable (I : MultispanIndex.{w, w'} C) [HasCoproduct I.left] [HasCoproduct I.right]
+variable (I : MultispanIndex.{w} C) [HasCoproduct I.left] [HasCoproduct I.right]
 
 --attribute [local tidy] tactic.case_bash
 
@@ -665,7 +662,7 @@ noncomputable def multicoforkEquivSigmaCofork :
   counitIso := NatIso.ofComponents fun K =>
     Cofork.ext (Iso.refl _)
       (by
-        -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): in mathlib3 this was just `ext` and I don't know why it's not here
+        -- Porting note: in mathlib3 this was just `ext` and I don't know why it's not here
         apply Limits.colimit.hom_ext
         rintro ⟨j⟩
         dsimp
@@ -676,27 +673,27 @@ end MultispanIndex
 
 /-- For `I : MulticospanIndex C`, we say that it has a multiequalizer if the associated
   multicospan has a limit. -/
-abbrev HasMultiequalizer (I : MulticospanIndex.{w, w'} C) :=
+abbrev HasMultiequalizer (I : MulticospanIndex.{w} C) :=
   HasLimit I.multicospan
 
 noncomputable section
 
 /-- The multiequalizer of `I : MulticospanIndex C`. -/
-abbrev multiequalizer (I : MulticospanIndex.{w, w'} C) [HasMultiequalizer I] : C :=
+abbrev multiequalizer (I : MulticospanIndex.{w} C) [HasMultiequalizer I] : C :=
   limit I.multicospan
 
 /-- For `I : MultispanIndex C`, we say that it has a multicoequalizer if
   the associated multicospan has a limit. -/
-abbrev HasMulticoequalizer (I : MultispanIndex.{w, w'} C) :=
+abbrev HasMulticoequalizer (I : MultispanIndex.{w} C) :=
   HasColimit I.multispan
 
 /-- The multiecoqualizer of `I : MultispanIndex C`. -/
-abbrev multicoequalizer (I : MultispanIndex.{w, w'} C) [HasMulticoequalizer I] : C :=
+abbrev multicoequalizer (I : MultispanIndex.{w} C) [HasMulticoequalizer I] : C :=
   colimit I.multispan
 
 namespace Multiequalizer
 
-variable (I : MulticospanIndex.{w, w'} C) [HasMultiequalizer I]
+variable (I : MulticospanIndex.{w} C) [HasMultiequalizer I]
 
 /-- The canonical map from the multiequalizer to the objects on the left. -/
 abbrev ι (a : I.L) : multiequalizer I ⟶ I.left a :=
@@ -725,7 +722,7 @@ abbrev lift (W : C) (k : ∀ a, W ⟶ I.left a)
     (h : ∀ b, k (I.fstTo b) ≫ I.fst b = k (I.sndTo b) ≫ I.snd b) : W ⟶ multiequalizer I :=
   limit.lift _ (Multifork.ofι I _ k h)
 
-@[reassoc]
+@[reassoc] -- Porting note (#10618): simp can prove this, removed attribute
 theorem lift_ι (W : C) (k : ∀ a, W ⟶ I.left a)
     (h : ∀ b, k (I.fstTo b) ≫ I.fst b = k (I.sndTo b) ≫ I.snd b) (a) :
     Multiequalizer.lift I _ k h ≫ Multiequalizer.ι I a = k _ :=
@@ -761,7 +758,7 @@ end Multiequalizer
 
 namespace Multicoequalizer
 
-variable (I : MultispanIndex.{w, w'} C) [HasMulticoequalizer I]
+variable (I : MultispanIndex.{w} C) [HasMulticoequalizer I]
 
 /-- The canonical map from the multiequalizer to the objects on the left. -/
 abbrev π (b : I.R) : I.right b ⟶ multicoequalizer I :=
@@ -795,7 +792,7 @@ abbrev desc (W : C) (k : ∀ b, I.right b ⟶ W)
     (h : ∀ a, I.fst a ≫ k (I.fstFrom a) = I.snd a ≫ k (I.sndFrom a)) : multicoequalizer I ⟶ W :=
   colimit.desc _ (Multicofork.ofπ I _ k h)
 
-@[reassoc]
+@[reassoc] -- Porting note (#10618): simp can prove this, removed attribute
 theorem π_desc (W : C) (k : ∀ b, I.right b ⟶ W)
     (h : ∀ a, I.fst a ≫ k (I.fstFrom a) = I.snd a ≫ k (I.sndFrom a)) (b) :
     Multicoequalizer.π I b ≫ Multicoequalizer.desc I _ k h = k _ :=

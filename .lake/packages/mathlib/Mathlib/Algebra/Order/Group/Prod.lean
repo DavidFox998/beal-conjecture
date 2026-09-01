@@ -11,6 +11,8 @@ import Mathlib.Algebra.Order.Monoid.Prod
 -/
 
 
+variable {α : Type*}
+
 namespace Prod
 
 variable {G H : Type*}

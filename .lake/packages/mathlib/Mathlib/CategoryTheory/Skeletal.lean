@@ -67,7 +67,7 @@ variable (C D)
 /-- Construct the skeleton category as the induced category on the isomorphism classes, and derive
 its category structure.
 -/
-def Skeleton : Type u₁ := InducedCategory (C := Quotient (isIsomorphicSetoid C)) C Quotient.out
+def Skeleton : Type u₁ := InducedCategory C Quotient.out
 
 instance [Inhabited C] : Inhabited (Skeleton C) :=
   ⟨⟦default⟧⟩
@@ -75,9 +75,6 @@ instance [Inhabited C] : Inhabited (Skeleton C) :=
 -- Porting note: previously `Skeleton` used `deriving Category`
 noncomputable instance : Category (Skeleton C) := by
   apply InducedCategory.category
-
-noncomputable instance {α} [CoeSort C α] : CoeSort (Skeleton C) α :=
-  inferInstanceAs (CoeSort (InducedCategory _ _) _)
 
 /-- The functor from the skeleton of `C` to `C`. -/
 @[simps!]
@@ -95,33 +92,9 @@ instance : (fromSkeleton C).EssSurj where mem_essImage X := ⟨Quotient.mk' X, Q
 -- Porting note: named this instance
 noncomputable instance fromSkeleton.isEquivalence : (fromSkeleton C).IsEquivalence where
 
-variable {C}
-
-/-- The class of an object in the skeleton. -/
-abbrev toSkeleton (X : C) : Skeleton C := ⟦X⟧
-
-/-- The isomorphism between `⟦X⟧.out` and `X`. -/
-noncomputable def preCounitIso (X : C) : (fromSkeleton C).obj (toSkeleton X) ≅ X :=
-  Nonempty.some (Quotient.mk_out X)
-
-variable (C)
-
-/-- An inverse to `fromSkeleton C` that forms an equivalence with it. -/
-@[simps] noncomputable def toSkeletonFunctor : C ⥤ Skeleton C where
-  obj := toSkeleton
-  map {X Y} f := by apply (preCounitIso X).hom ≫ f ≫ (preCounitIso Y).inv
-  map_id _ := by aesop
-  map_comp _ _ := by change _ = CategoryStruct.comp (obj := C) _ _; simp
-
 /-- The equivalence between the skeleton and the category itself. -/
-@[simps] noncomputable def skeletonEquivalence : Skeleton C ≌ C where
-  functor := fromSkeleton C
-  inverse := toSkeletonFunctor C
-  unitIso := NatIso.ofComponents
-    (fun X ↦ InducedCategory.isoMk (Nonempty.some <| Quotient.mk_out X.out).symm)
-    fun _ ↦ .symm <| Iso.inv_hom_id_assoc _ _
-  counitIso := NatIso.ofComponents preCounitIso
-  functor_unitIso_comp _ := Iso.inv_hom_id _
+noncomputable def skeletonEquivalence : Skeleton C ≌ C :=
+  (fromSkeleton C).asEquivalence
 
 theorem skeleton_skeletal : Skeletal (Skeleton C) := by
   rintro X Y ⟨h⟩
@@ -171,7 +144,7 @@ instance ThinSkeleton.preorder : Preorder (ThinSkeleton C) where
   le_refl := by
     refine Quotient.ind fun a => ?_
     exact ⟨𝟙 _⟩
-  le_trans a b c := Quotient.inductionOn₃ a b c fun _ _ _ => Nonempty.map2 (· ≫ ·)
+  le_trans a b c := Quotient.inductionOn₃ a b c fun A B C => Nonempty.map2 (· ≫ ·)
 
 /-- The functor from a category to its thin skeleton. -/
 @[simps]
@@ -198,8 +171,8 @@ variable {C} {D}
 /-- A functor `C ⥤ D` computably lowers to a functor `ThinSkeleton C ⥤ ThinSkeleton D`. -/
 @[simps]
 def map (F : C ⥤ D) : ThinSkeleton C ⥤ ThinSkeleton D where
-  obj := Quotient.map F.obj fun _ _ ⟨hX⟩ => ⟨F.mapIso hX⟩
-  map {X} {Y} := Quotient.recOnSubsingleton₂ X Y fun _ _ k => homOfLE (k.le.elim fun t => ⟨F.map t⟩)
+  obj := Quotient.map F.obj fun X₁ X₂ ⟨hX⟩ => ⟨F.mapIso hX⟩
+  map {X} {Y} := Quotient.recOnSubsingleton₂ X Y fun x y k => homOfLE (k.le.elim fun t => ⟨F.map t⟩)
 
 theorem comp_toThinSkeleton (F : C ⥤ D) : F ⋙ toThinSkeleton D = toThinSkeleton C ⋙ map F :=
   rfl
@@ -232,7 +205,7 @@ def map₂Functor (F : C ⥤ D ⥤ E) : ThinSkeleton C → ThinSkeleton D ⥤ Th
     { obj := fun y => map₂ObjMap F x y
       map := fun {y₁} {y₂} => @Quotient.recOnSubsingleton C (isIsomorphicSetoid C)
         (fun x => (y₁ ⟶ y₂) → (map₂ObjMap F x y₁ ⟶ map₂ObjMap F x y₂)) _ x fun X
-          => Quotient.recOnSubsingleton₂ y₁ y₂ fun _ _ hY =>
+          => Quotient.recOnSubsingleton₂ y₁ y₂ fun Y₁ Y₂ hY =>
             homOfLE (hY.le.elim fun g => ⟨(F.obj X).map g⟩) }
 
 /-- This provides natural transformations `map₂Functor F x₁ ⟶ map₂Functor F x₂` given
@@ -297,11 +270,11 @@ theorem skeletal : Skeletal (ThinSkeleton C) := fun X Y =>
 
 theorem map_comp_eq (F : E ⥤ D) (G : D ⥤ C) : map (F ⋙ G) = map F ⋙ map G :=
   Functor.eq_of_iso skeletal <|
-    NatIso.ofComponents fun X => Quotient.recOnSubsingleton X fun _ => Iso.refl _
+    NatIso.ofComponents fun X => Quotient.recOnSubsingleton X fun x => Iso.refl _
 
 theorem map_id_eq : map (𝟭 C) = 𝟭 (ThinSkeleton C) :=
   Functor.eq_of_iso skeletal <|
-    NatIso.ofComponents fun X => Quotient.recOnSubsingleton X fun _ => Iso.refl _
+    NatIso.ofComponents fun X => Quotient.recOnSubsingleton X fun x => Iso.refl _
 
 theorem map_iso_eq {F₁ F₂ : D ⥤ C} (h : F₁ ≅ F₂) : map F₁ = map F₂ :=
   Functor.eq_of_iso skeletal

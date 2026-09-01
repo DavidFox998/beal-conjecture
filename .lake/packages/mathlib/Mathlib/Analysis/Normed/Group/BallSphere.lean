@@ -12,7 +12,8 @@ In this file we define `InvolutiveNeg` and `ContinuousNeg` instances for spheres
 closed balls in a semi normed group.
 -/
 
-open Metric Set Topology
+
+open Metric Set
 
 variable {E : Type*} [i : SeminormedAddCommGroup E] {r : ℝ}
 
@@ -26,7 +27,8 @@ instance : InvolutiveNeg (sphere (0 : E) r) where
 theorem coe_neg_sphere {r : ℝ} (v : sphere (0 : E) r) : ↑(-v) = (-v : E) :=
   rfl
 
-instance : ContinuousNeg (sphere (0 : E) r) := IsInducing.subtypeVal.continuousNeg fun _ => rfl
+instance : ContinuousNeg (sphere (0 : E) r) :=
+  Inducing.continuousNeg inducing_subtype_val fun _ => rfl
 
 /-- We equip the ball, in a seminormed group, with a formal operation of negation, namely the
 antipodal map. -/
@@ -36,7 +38,8 @@ instance {r : ℝ} : InvolutiveNeg (ball (0 : E) r) where
 
 @[simp] theorem coe_neg_ball {r : ℝ} (v : ball (0 : E) r) : ↑(-v) = (-v : E) := rfl
 
-instance : ContinuousNeg (ball (0 : E) r) := IsInducing.subtypeVal.continuousNeg fun _ => rfl
+instance : ContinuousNeg (ball (0 : E) r) :=
+  Inducing.continuousNeg inducing_subtype_val fun _ => rfl
 
 /-- We equip the closed ball, in a seminormed group, with a formal operation of negation, namely the
 antipodal map. -/
@@ -46,4 +49,5 @@ instance {r : ℝ} : InvolutiveNeg (closedBall (0 : E) r) where
 
 @[simp] theorem coe_neg_closedBall {r : ℝ} (v : closedBall (0 : E) r) : ↑(-v) = (-v : E) := rfl
 
-instance : ContinuousNeg (closedBall (0 : E) r) := IsInducing.subtypeVal.continuousNeg  fun _ => rfl
+instance : ContinuousNeg (closedBall (0 : E) r) :=
+  Inducing.continuousNeg inducing_subtype_val fun _ => rfl

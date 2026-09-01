@@ -47,7 +47,7 @@ analytic.
 variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 
-open scoped Topology
+open scoped Classical Topology
 open Set Filter Asymptotics NNReal ENNReal
 
 variable {f g : E → F} {p pf pg : FormalMultilinearSeries 𝕜 E F} {x : E} {r r' : ℝ≥0∞} {n m : ℕ}
@@ -390,6 +390,8 @@ section
 /-! We study what happens when we change the origin of a finite formal multilinear series `p`. The
 main point is that the new series `p.changeOrigin x` is still finite, with the same bound. -/
 
+variable (p : FormalMultilinearSeries 𝕜 E F) {x y : E} {r R : ℝ≥0}
+
 /-- If `p` is a formal multilinear series such that `p m = 0` for `n ≤ m`, then
 `p.changeOriginSeriesTerm k l = 0` for `n ≤ k + l`. -/
 lemma changeOriginSeriesTerm_bound (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ}
@@ -565,7 +567,7 @@ open FormalMultilinearSeries
 
 protected theorem hasFiniteFPowerSeriesOnBall :
     HasFiniteFPowerSeriesOnBall f f.toFormalMultilinearSeries 0 (Fintype.card ι + 1) ⊤ :=
-  .mk' (fun _ hm ↦ dif_neg (Nat.succ_le_iff.mp hm).ne) ENNReal.zero_lt_top fun y _ ↦ by
+  .mk' (fun m hm ↦ dif_neg (Nat.succ_le_iff.mp hm).ne) ENNReal.zero_lt_top fun y _ ↦ by
     rw [Finset.sum_eq_single_of_mem _ (Finset.self_mem_range_succ _), zero_add]
     · rw [toFormalMultilinearSeries, dif_pos rfl]; rfl
     · intro m _ ne; rw [toFormalMultilinearSeries, dif_neg ne.symm]; rfl
@@ -648,5 +650,21 @@ lemma analyticAt_uncurry_of_multilinear : AnalyticAt 𝕜 (fun (p : G × (Π i, 
 lemma analyticWithinAt_uncurry_of_multilinear :
     AnalyticWithinAt 𝕜 (fun (p : G × (Π i, Em i)) ↦ f p.1 p.2) s x :=
   f.analyticAt_uncurry_of_multilinear.analyticWithinAt
+
+lemma continuousOn_uncurry_of_multilinear :
+    ContinuousOn (fun (p : G × (Π i, Em i)) ↦ f p.1 p.2) s :=
+  f.analyticOnNhd_uncurry_of_multilinear.continuousOn
+
+lemma continuous_uncurry_of_multilinear :
+    Continuous (fun (p : G × (Π i, Em i)) ↦ f p.1 p.2) :=
+  f.analyticOnNhd_uncurry_of_multilinear.continuous
+
+lemma continuousAt_uncurry_of_multilinear :
+    ContinuousAt (fun (p : G × (Π i, Em i)) ↦ f p.1 p.2) x :=
+  f.analyticAt_uncurry_of_multilinear.continuousAt
+
+lemma continuousWithinAt_uncurry_of_multilinear :
+    ContinuousWithinAt (fun (p : G × (Π i, Em i)) ↦ f p.1 p.2) s x :=
+  f.analyticWithinAt_uncurry_of_multilinear.continuousWithinAt
 
 end ContinuousLinearMap

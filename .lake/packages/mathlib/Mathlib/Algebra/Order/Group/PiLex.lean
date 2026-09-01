@@ -33,14 +33,14 @@ instance orderedCommGroup [∀ i, OrderedCommGroup (α i)] : OrderedCommGroup (L
   mul_le_mul_left _ _ := mul_le_mul_left'
 
 @[to_additive]
-noncomputable instance linearOrderedCancelCommMonoid [WellFoundedLT ι]
+noncomputable instance linearOrderedCancelCommMonoid [IsWellOrder ι (· < ·)]
     [∀ i, LinearOrderedCancelCommMonoid (α i)] :
     LinearOrderedCancelCommMonoid (Lex (∀ i, α i)) where
   __ : LinearOrder (Lex (∀ i, α i)) := inferInstance
   __ : OrderedCancelCommMonoid (Lex (∀ i, α i)) := inferInstance
 
 @[to_additive]
-noncomputable instance linearOrderedCommGroup [WellFoundedLT ι]
+noncomputable instance linearOrderedCommGroup [IsWellOrder ι (· < ·)]
     [∀ i, LinearOrderedCommGroup (α i)] :
     LinearOrderedCommGroup (Lex (∀ i, α i)) where
   __ : LinearOrder (Lex (∀ i, α i)) := inferInstance

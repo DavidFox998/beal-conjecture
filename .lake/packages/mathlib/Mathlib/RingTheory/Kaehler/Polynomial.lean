@@ -16,7 +16,7 @@ open Algebra
 
 universe u v
 
-variable (R : Type u) [CommRing R]
+variable (R : Type u) (S : Type v) [CommRing R] [CommRing S] [Algebra R S]
 
 suppress_compilation
 

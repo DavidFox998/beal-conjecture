@@ -66,7 +66,7 @@ structure AbstractCompletion (α : Type u) [UniformSpace α] where
   /-- The completion is a T₀ space. -/
   separation : T0Space space
   /-- The map into the completion is uniform-inducing. -/
-  isUniformInducing : IsUniformInducing coe
+  uniformInducing : UniformInducing coe
   /-- The map into the completion has dense range. -/
   dense : DenseRange coe
 
@@ -81,20 +81,18 @@ local notation "hatα" => pkg.space
 
 local notation "ι" => pkg.coe
 
-@[deprecated (since := "2024-10-08")] alias uniformInducing := isUniformInducing
-
 /-- If `α` is complete, then it is an abstract completion of itself. -/
 def ofComplete [T0Space α] [CompleteSpace α] : AbstractCompletion α :=
-  mk α id inferInstance inferInstance inferInstance .id denseRange_id
+  mk α id inferInstance inferInstance inferInstance uniformInducing_id denseRange_id
 
 theorem closure_range : closure (range ι) = univ :=
   pkg.dense.closure_range
 
 theorem isDenseInducing : IsDenseInducing ι :=
-  ⟨pkg.isUniformInducing.isInducing, pkg.dense⟩
+  ⟨pkg.uniformInducing.inducing, pkg.dense⟩
 
 theorem uniformContinuous_coe : UniformContinuous ι :=
-  IsUniformInducing.uniformContinuous pkg.isUniformInducing
+  UniformInducing.uniformContinuous pkg.uniformInducing
 
 theorem continuous_coe : Continuous ι :=
   pkg.uniformContinuous_coe.continuous
@@ -132,7 +130,7 @@ variable [CompleteSpace β]
 theorem uniformContinuous_extend : UniformContinuous (pkg.extend f) := by
   by_cases hf : UniformContinuous f
   · rw [pkg.extend_def hf]
-    exact uniformContinuous_uniformly_extend pkg.isUniformInducing pkg.dense hf
+    exact uniformContinuous_uniformly_extend pkg.uniformInducing pkg.dense hf
   · change UniformContinuous (ite _ _ _)
     rw [if_neg hf]
     exact uniformContinuous_of_const fun a b => by congr 1
@@ -307,8 +305,8 @@ protected def prod : AbstractCompletion (α × β) where
   uniformStruct := inferInstance
   complete := inferInstance
   separation := inferInstance
-  isUniformInducing := IsUniformInducing.prod pkg.isUniformInducing pkg'.isUniformInducing
-  dense := pkg.dense.prodMap pkg'.dense
+  uniformInducing := UniformInducing.prod pkg.uniformInducing pkg'.uniformInducing
+  dense := DenseRange.prod_map pkg.dense pkg'.dense
 
 end Prod
 

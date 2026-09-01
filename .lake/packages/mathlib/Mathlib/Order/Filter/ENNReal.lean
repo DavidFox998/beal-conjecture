@@ -62,7 +62,6 @@ theorem limsup_const_mul [CountableInterFilter f] {u : α → ℝ≥0∞} {a : �
     have hfu : f.limsup u ≠ 0 := mt limsup_eq_zero_iff.1 hu
     simp only [ha_top, top_mul', h_top_le, hfu, ite_false]
 
-/-- See also `limsup_mul_le'`.-/
 theorem limsup_mul_le [CountableInterFilter f] (u v : α → ℝ≥0∞) :
     f.limsup (u * v) ≤ f.limsup u * f.limsup v :=
   calc

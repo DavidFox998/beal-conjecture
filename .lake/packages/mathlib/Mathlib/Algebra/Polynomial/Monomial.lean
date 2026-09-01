@@ -16,6 +16,8 @@ noncomputable section
 
 namespace Polynomial
 
+open Polynomial
+
 universe u
 
 variable {R : Type u} {a b : R} {m n : ℕ}
@@ -54,9 +56,12 @@ theorem ringHom_ext {S} [Semiring S] {f g : R[X] →+* S} (h₁ : ∀ a, f (C a)
   set f' := f.comp (toFinsuppIso R).symm.toRingHom with hf'
   set g' := g.comp (toFinsuppIso R).symm.toRingHom with hg'
   have A : f' = g' := by
-    ext
-    simp [f', g', h₁, RingEquiv.toRingHom_eq_coe]
-    simpa using h₂
+    -- Porting note: Was `ext; simp [..]; simpa [..] using h₂`.
+    ext : 1
+    · ext
+      simp [f', g', h₁, RingEquiv.toRingHom_eq_coe]
+    · refine MonoidHom.ext_mnat ?_
+      simpa [RingEquiv.toRingHom_eq_coe] using h₂
   have B : f = f'.comp (toFinsuppIso R) := by
     rw [hf', RingHom.comp_assoc]
     ext x

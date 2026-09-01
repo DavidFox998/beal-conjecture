@@ -13,6 +13,8 @@ import Mathlib.CategoryTheory.FinCategory.Basic
 
 universe w v u
 
+open scoped Classical
+
 noncomputable section
 
 namespace CategoryTheory
@@ -41,7 +43,7 @@ abbrev AsType : Type :=
 @[simps (config := .lemmasOnly) id comp]
 noncomputable instance categoryAsType : SmallCategory (AsType α) where
   Hom i j := Fin (Fintype.card (@Quiver.Hom (ObjAsType α) _ i j))
-  id _ := Fintype.equivFin _ (𝟙 _)
+  id i := Fintype.equivFin _ (𝟙 _)
   comp f g := Fintype.equivFin _ ((Fintype.equivFin _).symm f ≫ (Fintype.equivFin _).symm g)
 
 attribute [local simp] categoryAsType_id categoryAsType_comp
@@ -50,13 +52,13 @@ attribute [local simp] categoryAsType_id categoryAsType_comp
 @[simps]
 noncomputable def asTypeToObjAsType : AsType α ⥤ ObjAsType α where
   obj := id
-  map {_ _} := (Fintype.equivFin _).symm
+  map {X Y} := (Fintype.equivFin _).symm
 
 /-- The "identity" functor from `ObjAsType α` to `AsType α`. -/
 @[simps]
 noncomputable def objAsTypeToAsType : ObjAsType α ⥤ AsType α where
   obj := id
-  map {_ _} := Fintype.equivFin _
+  map {X Y} := Fintype.equivFin _
 
 /-- The constructed category (`AsType α`) is equivalent to `ObjAsType α`. -/
 noncomputable def asTypeEquivObjAsType : AsType α ≌ ObjAsType α where

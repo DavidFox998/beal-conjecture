@@ -43,7 +43,7 @@ Simplicial complexes can be generalized to affine spaces once `ConvexHull` has b
 
 open Finset Set
 
-variable (𝕜 E : Type*) [OrderedRing 𝕜] [AddCommGroup E] [Module 𝕜 E]
+variable (𝕜 E : Type*) {ι : Type*} [OrderedRing 𝕜] [AddCommGroup E] [Module 𝕜 E]
 
 namespace Geometry
 
@@ -202,7 +202,7 @@ theorem not_facet_iff_subface (hs : s ∈ K.faces) : s ∉ K.facets ↔ ∃ t, t
 variable (𝕜 E)
 
 /-- The complex consisting of only the faces present in both of its arguments. -/
-instance : Min (SimplicialComplex 𝕜 E) :=
+instance : Inf (SimplicialComplex 𝕜 E) :=
   ⟨fun K L =>
     { faces := K.faces ∩ L.faces
       not_empty_mem := fun h => K.not_empty_mem (Set.inter_subset_left h)

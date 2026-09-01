@@ -47,7 +47,7 @@ variable (F : C → D)
 which provides a category structure so that the morphisms `X ⟶ Y` are the morphisms
 in `D` from `F X` to `F Y`.
 -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
+-- Porting note(#5171): removed @[nolint has_nonempty_instance]
 @[nolint unusedArguments]
 def InducedCategory (_F : C → D) : Type u₁ :=
   C
@@ -62,15 +62,6 @@ instance InducedCategory.category : Category.{v} (InducedCategory D F) where
   Hom X Y := F X ⟶ F Y
   id X := 𝟙 (F X)
   comp f g := f ≫ g
-
-variable {F} in
-/-- Construct an isomorphism in the induced category
-from an isomorphism in the original category. -/
-@[simps] def InducedCategory.isoMk {X Y : InducedCategory D F} (f : F X ≅ F Y) : X ≅ Y where
-  hom := f.hom
-  inv := f.inv
-  hom_inv_id := f.hom_inv_id
-  inv_hom_id := f.inv_hom_id
 
 /-- The forgetful functor from an induced category to the original category,
 forgetting the extra data.

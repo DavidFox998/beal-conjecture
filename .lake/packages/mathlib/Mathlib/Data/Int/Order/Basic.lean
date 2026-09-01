@@ -6,7 +6,7 @@ Authors: Jeremy Avigad
 
 import Mathlib.Data.Int.Notation
 import Mathlib.Data.Nat.Notation
-import Mathlib.Order.Defs.LinearOrder
+import Mathlib.Order.Defs
 
 /-!
 # The order relation on the integers

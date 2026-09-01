@@ -6,10 +6,8 @@ Authors: Yakov Pechersky
 import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 import Mathlib.Algebra.SMulWithZero
 import Mathlib.Order.Hom.Basic
+import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
-import Mathlib.Algebra.Order.AddGroupWithTop
-import Mathlib.Algebra.Ring.Nat
-import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
 
 /-!
 
@@ -293,6 +291,7 @@ theorem add_eq_left_iff {x y : Tropical R} : x + y = x ↔ x ≤ y := by
 theorem add_eq_right_iff {x y : Tropical R} : x + y = y ↔ y ≤ x := by
   rw [trop_add_def, trop_eq_iff_eq_untrop, ← untrop_le_iff, min_eq_right_iff]
 
+-- Porting note (#10618): removing `simp`. `simp` can prove it
 theorem add_self (x : Tropical R) : x + x = x :=
   untrop_injective (min_eq_right le_rfl)
 
@@ -432,15 +431,15 @@ end Monoid
 
 section Distrib
 
-instance mulLeftMono [LE R] [Add R] [AddLeftMono R] :
-    MulLeftMono (Tropical R) :=
+instance covariant_mul [LE R] [Add R] [CovariantClass R R (· + ·) (· ≤ ·)] :
+    CovariantClass (Tropical R) (Tropical R) (· * ·) (· ≤ ·) :=
   ⟨fun _ y z h => add_le_add_left (show untrop y ≤ untrop z from h) _⟩
 
-instance mulRightMono [LE R] [Add R] [AddRightMono R] :
-    MulRightMono (Tropical R) :=
+instance covariant_swap_mul [LE R] [Add R] [CovariantClass R R (Function.swap (· + ·)) (· ≤ ·)] :
+    CovariantClass (Tropical R) (Tropical R) (Function.swap (· * ·)) (· ≤ ·) :=
   ⟨fun _ y z h => add_le_add_right (show untrop y ≤ untrop z from h) _⟩
 
-instance addLeftMono [LinearOrder R] : AddLeftMono (Tropical R) :=
+instance covariant_add [LinearOrder R] : CovariantClass (Tropical R) (Tropical R) (· + ·) (· ≤ ·) :=
   ⟨fun x y z h => by
     rcases le_total x y with hx | hy
     · rw [add_eq_left hx, add_eq_left (hx.trans h)]
@@ -449,15 +448,17 @@ instance addLeftMono [LinearOrder R] : AddLeftMono (Tropical R) :=
       · rwa [add_eq_left hx]
       · rwa [add_eq_right hx]⟩
 
-instance mulLeftStrictMono [LT R] [Add R] [AddLeftStrictMono R] :
-    MulLeftStrictMono (Tropical R) :=
+instance covariant_mul_lt [LT R] [Add R] [CovariantClass R R (· + ·) (· < ·)] :
+    CovariantClass (Tropical R) (Tropical R) (· * ·) (· < ·) :=
   ⟨fun _ _ _ h => add_lt_add_left (untrop_lt_iff.2 h) _⟩
 
-instance mulRightStrictMono [Preorder R] [Add R] [AddRightStrictMono R] :
-    MulRightStrictMono (Tropical R) :=
+instance covariant_swap_mul_lt [Preorder R] [Add R]
+    [CovariantClass R R (Function.swap (· + ·)) (· < ·)] :
+    CovariantClass (Tropical R) (Tropical R) (Function.swap (· * ·)) (· < ·) :=
   ⟨fun _ y z h => add_lt_add_right (show untrop y < untrop z from h) _⟩
 
-instance instDistribTropical [LinearOrder R] [Add R] [AddLeftMono R] [AddRightMono R] :
+instance instDistribTropical [LinearOrder R] [Add R] [CovariantClass R R (· + ·) (· ≤ ·)]
+    [CovariantClass R R (Function.swap (· + ·)) (· ≤ ·)] :
     Distrib (Tropical R) where
   mul := (· * ·)
   add := (· + ·)
@@ -465,8 +466,8 @@ instance instDistribTropical [LinearOrder R] [Add R] [AddLeftMono R] [AddRightMo
   right_distrib _ _ _ := untrop_injective (min_add_add_right _ _ _).symm
 
 @[simp]
-theorem add_pow [LinearOrder R] [AddMonoid R] [AddLeftMono R] [AddRightMono R]
-    (x y : Tropical R) (n : ℕ) :
+theorem add_pow [LinearOrder R] [AddMonoid R] [CovariantClass R R (· + ·) (· ≤ ·)]
+    [CovariantClass R R (Function.swap (· + ·)) (· ≤ ·)] (x y : Tropical R) (n : ℕ) :
     (x + y) ^ n = x ^ n + y ^ n := by
   rcases le_total x y with h | h
   · rw [add_eq_left h, add_eq_left (pow_le_pow_left' h _)]
@@ -496,6 +497,7 @@ theorem succ_nsmul {R} [LinearOrder R] [OrderTop R] (x : Tropical R) (n : ℕ) :
 -- Requires `zero_eq_bot` to be true
 -- lemma add_eq_zero_iff {a b : tropical R} :
 --   a + b = 1 ↔ a = 1 ∨ b = 1 := sorry
+-- Porting note (#10618): removing @[simp], `simp` can prove it
 theorem mul_eq_zero_iff {R : Type*} [LinearOrderedAddCommMonoid R] {a b : Tropical (WithTop R)} :
     a * b = 0 ↔ a = 0 ∨ b = 0 := by simp [← untrop_inj_iff, WithTop.add_eq_top]
 

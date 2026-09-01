@@ -172,7 +172,8 @@ def elabSingleIndexingMode (stx : Syntax) : ElabM IndexingMode :=
   where
     elabKeys (stx : Syntax) : ElabM (Array DiscrTree.Key) :=
       show TermElabM _ from withoutModifyingState do
-        mkDiscrTreePath (← elabPattern stx)
+        let e ← elabPattern stx
+        DiscrTree.mkPath (← instantiateMVars e) discrTreeConfig
 
 def IndexingMode.elab (stxs : Array Syntax) : ElabM IndexingMode :=
   .or <$> stxs.mapM elabSingleIndexingMode
@@ -314,8 +315,6 @@ inductive Feature
 
 namespace Feature
 
--- Workaround for codegen bug, see #182
-set_option compiler.extract_closed false in
 partial def «elab» (stx : Syntax) : ElabM Feature :=
   withRef stx do
     match stx with
@@ -331,7 +330,7 @@ partial def «elab» (stx : Syntax) : ElabM Feature :=
         let nonIdentAlts :=
           stx.getArgs.filter λ stx => ! stx.isOfKind ``Parser.featIdent
         if h : nonIdentAlts.size = 1 then
-          return ← «elab» $ nonIdentAlts[0]
+          return ← «elab» $ nonIdentAlts[0]'(by simp [h])
       throwUnsupportedSyntax
 
 end Feature

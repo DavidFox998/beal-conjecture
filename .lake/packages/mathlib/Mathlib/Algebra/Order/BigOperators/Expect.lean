@@ -16,13 +16,14 @@ open Function
 open Fintype (card)
 open scoped BigOperators Pointwise NNRat
 
-variable {ι α R : Type*}
+variable {ι κ α β R : Type*}
 
 local notation a " /ℚ " q => (q : ℚ≥0)⁻¹ • a
 
 namespace Finset
 section OrderedAddCommMonoid
-variable [OrderedAddCommMonoid α] [Module ℚ≥0 α] {s : Finset ι} {f g : ι → α}
+variable [OrderedAddCommMonoid α] [Module ℚ≥0 α] [OrderedAddCommMonoid β] [Module ℚ≥0 β]
+  {s : Finset ι} {f g : ι → α}
 
 lemma expect_eq_zero_iff_of_nonneg (hs : s.Nonempty) (hf : ∀ i ∈ s, 0 ≤ f i) :
     𝔼 i ∈ s, f i = 0 ↔ ∀ i ∈ s, f i = 0 := by
@@ -104,7 +105,7 @@ end PosSMulMono
 end OrderedAddCommMonoid
 
 section OrderedCancelAddCommMonoid
-variable [OrderedCancelAddCommMonoid α] [Module ℚ≥0 α] {s : Finset ι} {f : ι → α}
+variable [OrderedCancelAddCommMonoid α] [Module ℚ≥0 α] {s : Finset ι} {f g : ι → α}
 section PosSMulStrictMono
 variable [PosSMulStrictMono ℚ≥0 α]
 
@@ -129,7 +130,8 @@ end LinearOrderedAddCommMonoid
 section LinearOrderedAddCommGroup
 variable [LinearOrderedAddCommGroup α] [Module ℚ≥0 α] [PosSMulMono ℚ≥0 α]
 
-lemma abs_expect_le (s : Finset ι) (f : ι → α) : |𝔼 i ∈ s, f i| ≤ 𝔼 i ∈ s, |f i| :=
+-- TODO: Norm version
+lemma abs_expect_le_expect_abs (s : Finset ι) (f : ι → α) : |𝔼 i ∈ s, f i| ≤ 𝔼 i ∈ s, |f i| :=
   le_expect_of_subadditive abs_zero abs_add (fun _ ↦ abs_nnqsmul _)
 
 end LinearOrderedAddCommGroup
@@ -150,7 +152,7 @@ end Finset
 open Finset
 
 namespace Fintype
-variable [Fintype ι]
+variable [Fintype ι] [Fintype κ]
 
 section OrderedAddCommMonoid
 variable [OrderedAddCommMonoid α] [Module ℚ≥0 α] {f : ι → α}
@@ -170,7 +172,6 @@ namespace Mathlib.Meta.Positivity
 open Qq Lean Meta Finset
 open scoped BigOperators
 
-attribute [local instance] monadLiftOptionMetaM in
 /-- Positivity extension for `Finset.expect`. -/
 @[positivity Finset.expect _ _]
 def evalFinsetExpect : PositivityExt where eval {u α} zα pα e := do

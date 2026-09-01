@@ -94,7 +94,7 @@ needs to have a complete control over the choice of the implicit function.
 * both functions are strictly differentiable at `a`;
 * the derivatives are surjective;
 * the kernels of the derivatives are complementary subspaces of `E`. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): linter not yet ported @[nolint has_nonempty_instance]
+-- Porting note(#5171): linter not yet ported @[nolint has_nonempty_instance]
 structure ImplicitFunctionData (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*)
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace E] (F : Type*) [NormedAddCommGroup F]
     [NormedSpace 𝕜 F] [CompleteSpace F] (G : Type*) [NormedAddCommGroup G] [NormedSpace 𝕜 G]
@@ -190,7 +190,11 @@ theorem implicitFunction_hasStrictFDerivAt (g'inv : G →L[𝕜] E)
   convert this.comp (φ.rightFun φ.pt) ((hasStrictFDerivAt_const _ _).prod (hasStrictFDerivAt_id _))
   -- Porting note: added parentheses to help `simp`
   simp only [ContinuousLinearMap.ext_iff, (ContinuousLinearMap.comp_apply)] at hg'inv hg'invf ⊢
-  simp [ContinuousLinearEquiv.eq_symm_apply, *]
+  -- porting note (#10745): was `simp [ContinuousLinearEquiv.eq_symm_apply]`;
+  -- both `simp` and `rw` fail here, `erw` works
+  intro x
+  erw [ContinuousLinearEquiv.eq_symm_apply]
+  simp [*]
 
 end ImplicitFunctionData
 

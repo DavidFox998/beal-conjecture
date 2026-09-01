@@ -15,7 +15,7 @@ The category `ReflQuiv` of (bundled) reflexive quivers, and the free/forgetful 
 -/
 
 namespace CategoryTheory
-universe v u v₁ v₂ u₁ u₂
+universe v u
 
 /-- Category of refl quivers. -/
 @[nolint checkUnivs]
@@ -70,32 +70,10 @@ theorem forgetToQuiv_faithful {V W : ReflQuiv} (F G : V ⥤rq W)
     (hyp : forgetToQuiv.map F = forgetToQuiv.map G) : F = G := by
   cases F; cases G; cases hyp; rfl
 
-instance forgetToQuiv.Faithful : Functor.Faithful forgetToQuiv where
+theorem forgetToQuiv.Faithful : Functor.Faithful (forgetToQuiv) where
   map_injective := fun hyp ↦ forgetToQuiv_faithful _ _ hyp
 
 theorem forget_forgetToQuiv : forget ⋙ forgetToQuiv = Quiv.forget := rfl
-
-/-- An isomorphism of quivers lifts to an isomorphism of reflexive quivers given a suitable
-compatibility with the identities. -/
-def isoOfQuivIso {V W : Type u} [ReflQuiver V] [ReflQuiver W]
-    (e : Quiv.of V ≅ Quiv.of W)
-    (h_id : ∀ (X : V), e.hom.map (𝟙rq X) = ReflQuiver.id (obj := W) (e.hom.obj X)) :
-    ReflQuiv.of V ≅ ReflQuiv.of W where
-  hom := ReflPrefunctor.mk e.hom h_id
-  inv := ReflPrefunctor.mk e.inv
-    (fun Y => (Quiv.homEquivOfIso e).injective (by simp [Quiv.hom_map_inv_map_of_iso, h_id]))
-  hom_inv_id := by
-    apply forgetToQuiv.map_injective
-    exact e.hom_inv_id
-  inv_hom_id := by
-    apply forgetToQuiv.map_injective
-    exact e.inv_hom_id
-
-/-- Compatible equivalences of types and hom-types induce an isomorphism of reflexive quivers. -/
-def isoOfEquiv {V W : Type u } [ReflQuiver V] [ReflQuiver W] (e : V ≃ W)
-    (he : ∀ (X Y : V), (X ⟶ Y) ≃ (e X ⟶ e Y))
-    (h_id : ∀ (X : V), he _ _ (𝟙rq X) = ReflQuiver.id (obj := W) (e X)) :
-    ReflQuiv.of V ≅ ReflQuiv.of W := isoOfQuivIso (Quiv.isoOfEquiv e he) h_id
 
 end ReflQuiv
 

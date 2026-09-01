@@ -3,8 +3,7 @@ Copyright (c) 2022 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Algebra.CharZero.Infinite
-import Mathlib.Data.Rat.Encodable
+import Mathlib.Data.Rat.Denumerable
 import Mathlib.ModelTheory.Complexity
 import Mathlib.ModelTheory.Fraisse
 import Mathlib.Order.CountableDenseLinearOrder
@@ -313,7 +312,7 @@ theorem realize_denselyOrdered [h : DenselyOrdered M] :
 
 variable (L) (M)
 
-theorem denselyOrdered_of_dlo [M ⊨ L.dlo] : DenselyOrdered M :=
+theorem denselyOrdered_of_dlo [h: M ⊨ L.dlo] : DenselyOrdered M :=
   realize_denselyOrdered_iff.1 (L.dlo.realize_sentence_of_mem (by
     simp only [dlo, Set.union_insert, Set.union_singleton, Set.mem_insert_iff, true_or, or_true]))
 
@@ -359,14 +358,10 @@ instance : @OrderedStructure L M _ (L.leOfStructure M) _ := by
   intros
   rfl
 
-/-- The order structure on an ordered language is decidable. -/
--- This should not be a global instance,
--- because it will match with any `LE` typeclass search
-@[local instance]
-def decidableLEOfStructure
-    [h : DecidableRel (fun (a b : M) => Structure.RelMap (leSymb : L.Relations 2) ![a,b])] :
-    letI := L.leOfStructure M
-    DecidableRel ((· : M) ≤ ·) := h
+instance [h : DecidableRel (fun (a b : M) => Structure.RelMap (leSymb : L.Relations 2) ![a,b])] :
+    DecidableRel (@LE.le M (L.leOfStructure M)) := by
+  letI := L.leOfStructure M
+  exact h
 
 /-- Any model of a theory of preorders is a preorder. -/
 def preorderOfModels [h : M ⊨ L.preorderTheory] : Preorder M where
@@ -483,8 +478,8 @@ lemma dlo_isExtensionPair
         Substructure.closure_eq])).toOrderEmbedding.trans g)
   use StrongHomClass.toEmbedding g'
   ext ⟨x, xS⟩
-  refine congr_fun hg.symm ⟨x, (?_ : x ∈ hS.toFinset)⟩
-  simp only [Set.Finite.mem_toFinset, SetLike.mem_coe, xS]
+  refine ((funext_iff.1 hg) ⟨x, ?_⟩).symm
+  simp only [Set.Finite.coe_toFinset, SetLike.mem_coe, xS]
 
 instance (M : Type w) [Language.order.Structure M] [M ⊨ Language.order.dlo] [Nonempty M] :
     Infinite M := by
@@ -534,7 +529,7 @@ theorem dlo_isComplete : Language.order.dlo.IsComplete :=
     ⟨by
       letI : Language.order.Structure ℚ := orderStructure ℚ
       exact Theory.ModelType.of _ ℚ⟩
-    fun _ => inferInstance
+    fun M => inferInstance
 
 end Fraisse
 

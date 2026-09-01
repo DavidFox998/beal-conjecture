@@ -69,7 +69,7 @@ open scoped ENNReal Topology MeasureTheory
 
 namespace MeasureTheory
 
-variable {α F F' 𝕜 : Type*} [RCLike 𝕜]
+variable {α F F' 𝕜 : Type*} {p : ℝ≥0∞} [RCLike 𝕜]
   -- 𝕜 for ℝ or ℂ
   -- F' for integrals on a Lp submodule
   [NormedAddCommGroup F']
@@ -208,7 +208,7 @@ theorem integral_condexp (hm : m ≤ m0) [hμm : SigmaFinite (μ.trim hm)] :
     ∫ x, (μ[f|m]) x ∂μ = ∫ x, f x ∂μ := by
   by_cases hf : Integrable f μ
   · suffices ∫ x in Set.univ, (μ[f|m]) x ∂μ = ∫ x in Set.univ, f x ∂μ by
-      simp_rw [setIntegral_univ] at this; exact this
+      simp_rw [integral_univ] at this; exact this
     exact setIntegral_condexp hm hf (@MeasurableSet.univ _ m)
   simp only [condexp_undef hf, Pi.zero_apply, integral_zero, integral_undef hf]
 

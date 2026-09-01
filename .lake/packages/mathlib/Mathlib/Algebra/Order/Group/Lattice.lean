@@ -14,8 +14,8 @@ underpinnings of vector lattices, Banach lattices, AL-space, AM-space etc.
 A lattice ordered group is a type `α` satisfying:
 * `Lattice α`
 * `CommGroup α`
-* `MulLeftMono α`
-* `MulRightMono α`
+* `CovariantClass α α (· * ·) (· ≤ ·)`
+* `CovariantClass α α (swap (· * ·)) (· ≤ ·)`
 
 This file establishes basic properties of lattice ordered groups. It is shown that when the group is
 commutative, the lattice is distributive. This also holds in the non-commutative case
@@ -37,44 +37,44 @@ lattice, order, group
 
 open Function
 
-variable {α : Type*}
+variable {α β : Type*}
 
 section Group
 variable [Lattice α] [Group α]
 
 -- Special case of Bourbaki A.VI.9 (1)
 @[to_additive]
-lemma mul_sup [MulLeftMono α] (a b c : α) :
+lemma mul_sup [CovariantClass α α (· * ·) (· ≤ ·)] (a b c : α) :
     c * (a ⊔ b) = c * a ⊔ c * b :=
   (OrderIso.mulLeft _).map_sup _ _
 
 @[to_additive]
-lemma sup_mul [MulRightMono α] (a b c : α) :
+lemma sup_mul [CovariantClass α α (swap (· * ·)) (· ≤ ·)] (a b c : α) :
     (a ⊔ b) * c = a * c ⊔ b * c :=
   (OrderIso.mulRight _).map_sup _ _
 
 @[to_additive]
-lemma mul_inf [MulLeftMono α] (a b c : α) :
+lemma mul_inf [CovariantClass α α (· * ·) (· ≤ ·)] (a b c : α) :
     c * (a ⊓ b) = c * a ⊓ c * b :=
   (OrderIso.mulLeft _).map_inf _ _
 
 @[to_additive]
-lemma inf_mul [MulRightMono α] (a b c : α) :
+lemma inf_mul [CovariantClass α α (swap (· * ·)) (· ≤ ·)] (a b c : α) :
     (a ⊓ b) * c = a * c ⊓ b * c :=
   (OrderIso.mulRight _).map_inf _ _
 
 @[to_additive]
-lemma sup_div [MulRightMono α] (a b c : α) :
+lemma sup_div [CovariantClass α α (swap (· * ·)) (· ≤ ·)] (a b c : α) :
     (a ⊔ b) / c = a / c ⊔ b / c :=
   (OrderIso.divRight _).map_sup _ _
 
 @[to_additive]
-lemma inf_div [MulRightMono α] (a b c : α) :
+lemma inf_div [CovariantClass α α (swap (· * ·)) (· ≤ ·)] (a b c : α) :
     (a ⊓ b) / c = a / c ⊓ b / c :=
   (OrderIso.divRight _).map_inf _ _
 
 section
-variable [MulLeftMono α] [MulRightMono α]
+variable [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
 
 @[to_additive] lemma inv_sup (a b : α) : (a ⊔ b)⁻¹ = a⁻¹ ⊓ b⁻¹ := (OrderIso.inv α).map_sup _ _
 
@@ -106,7 +106,7 @@ variable [Lattice α] [CommGroup α]
 -- Fuchs p67
 -- Bourbaki A.VI.10 Prop 7
 @[to_additive]
-lemma inf_mul_sup [MulLeftMono α] (a b : α) : (a ⊓ b) * (a ⊔ b) = a * b :=
+lemma inf_mul_sup [CovariantClass α α (· * ·) (· ≤ ·)] (a b : α) : (a ⊓ b) * (a ⊔ b) = a * b :=
   calc
     (a ⊓ b) * (a ⊔ b) = (a ⊓ b) * (a * b * (b⁻¹ ⊔ a⁻¹)) := by
       rw [mul_sup b⁻¹ a⁻¹ (a * b), mul_inv_cancel_right, mul_inv_cancel_comm]
@@ -117,7 +117,7 @@ lemma inf_mul_sup [MulLeftMono α] (a b : α) : (a ⊓ b) * (a ⊔ b) = a * b :=
 -- Non-comm case needs cancellation law https://ncatlab.org/nlab/show/distributive+lattice
 @[to_additive "Every lattice ordered commutative additive group is a distributive lattice"]
 def CommGroup.toDistribLattice (α : Type*) [Lattice α] [CommGroup α]
-    [MulLeftMono α] : DistribLattice α where
+    [CovariantClass α α (· * ·) (· ≤ ·)] : DistribLattice α where
   le_sup_inf x y z := by
     rw [← mul_le_mul_iff_left (x ⊓ (y ⊓ z)), inf_mul_sup x (y ⊓ z), ← inv_mul_le_iff_le_mul,
       le_inf_iff]

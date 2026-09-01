@@ -5,7 +5,7 @@ Authors: Eric Wieser
 -/
 import Mathlib.Algebra.TrivSqZeroExt
 import Mathlib.Topology.Algebra.InfiniteSum.Basic
-import Mathlib.Topology.Algebra.Module.LinearMapPiProd
+import Mathlib.Topology.Algebra.Module.Basic
 
 /-!
 # Topology on `TrivSqZeroExt R M`
@@ -24,8 +24,7 @@ one value.
 
 -/
 
-open Topology
-
+open scoped Topology
 variable {α S R M : Type*}
 
 local notation "tsze" => TrivSqZeroExt
@@ -42,12 +41,14 @@ instance instTopologicalSpace : TopologicalSpace (tsze R M) :=
 instance [T2Space R] [T2Space M] : T2Space (tsze R M) :=
   Prod.t2Space
 
-theorem nhds_def (x : tsze R M) : 𝓝 x = 𝓝 x.fst ×ˢ 𝓝 x.snd := nhds_prod_eq
+theorem nhds_def (x : tsze R M) : 𝓝 x = (𝓝 x.fst).prod (𝓝 x.snd) := by
+  cases x using Prod.rec
+  exact nhds_prod_eq
 
-theorem nhds_inl [Zero M] (x : R) : 𝓝 (inl x : tsze R M) = 𝓝 x ×ˢ 𝓝 0 :=
+theorem nhds_inl [Zero M] (x : R) : 𝓝 (inl x : tsze R M) = (𝓝 x).prod (𝓝 0) :=
   nhds_def _
 
-theorem nhds_inr [Zero R] (m : M) : 𝓝 (inr m : tsze R M) = 𝓝 0 ×ˢ 𝓝 m :=
+theorem nhds_inr [Zero R] (m : M) : 𝓝 (inr m : tsze R M) = (𝓝 0).prod (𝓝 m) :=
   nhds_def _
 
 nonrec theorem continuous_fst : Continuous (fst : tsze R M → R) :=
@@ -62,17 +63,11 @@ theorem continuous_inl [Zero M] : Continuous (inl : R → tsze R M) :=
 theorem continuous_inr [Zero R] : Continuous (inr : M → tsze R M) :=
   continuous_const.prod_mk continuous_id
 
-theorem IsEmbedding.inl [Zero M] : IsEmbedding (inl : R → tsze R M) :=
-  .of_comp continuous_inl continuous_fst .id
+theorem embedding_inl [Zero M] : Embedding (inl : R → tsze R M) :=
+  embedding_of_embedding_compose continuous_inl continuous_fst embedding_id
 
-@[deprecated (since := "2024-10-26")]
-alias embedding_inl := IsEmbedding.inl
-
-theorem IsEmbedding.inr [Zero R] : IsEmbedding (inr : M → tsze R M) :=
-  .of_comp continuous_inr continuous_snd .id
-
-@[deprecated (since := "2024-10-26")]
-alias embedding_inr := IsEmbedding.inr
+theorem embedding_inr [Zero R] : Embedding (inr : M → tsze R M) :=
+  embedding_of_embedding_compose continuous_inr continuous_snd embedding_id
 
 variable (R M)
 

@@ -78,7 +78,7 @@ end PLift
 
 namespace ULift
 
-variable {α : Type u} {β : Type v}
+variable {α : Type u} {β : Type v} {f : α → β}
 
 /-- Functorial action. -/
 protected def map (f : α → β) (a : ULift.{u'} α) : ULift.{v'} β := ULift.up.{v'} (f a.down)

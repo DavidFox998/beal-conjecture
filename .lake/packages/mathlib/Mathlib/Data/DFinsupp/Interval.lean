@@ -5,7 +5,6 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Data.DFinsupp.BigOperators
 import Mathlib.Data.DFinsupp.Order
 import Mathlib.Order.Interval.Finset.Basic
 
@@ -36,7 +35,8 @@ def dfinsupp (s : Finset ι) (t : ∀ i, Finset (α i)) : Finset (Π₀ i, α i)
       convert congr_fun h ⟨i, hi⟩⟩
 
 @[simp]
-theorem card_dfinsupp (s : Finset ι) (t : ∀ i, Finset (α i)) : #(s.dfinsupp t) = ∏ i ∈ s, #(t i) :=
+theorem card_dfinsupp (s : Finset ι) (t : ∀ i, Finset (α i)) :
+    (s.dfinsupp t).card = ∏ i ∈ s, (t i).card :=
   (card_map _).trans <| card_pi _ _
 
 variable [∀ i, DecidableEq (α i)]
@@ -102,6 +102,7 @@ def rangeIcc (f g : Π₀ i, α i) : Π₀ i, Finset (α i) where
             (Multiset.not_mem_mono (Multiset.Le.subset <| Multiset.le_add_right _ _) h)
         have hg : g i = 0 := (gs.prop i).resolve_left
             (Multiset.not_mem_mono (Multiset.Le.subset <| Multiset.le_add_left _ _) h)
+        -- Porting note: was rw, but was rewriting under lambda, so changed to simp_rw
         simp_rw [hf, hg]
         exact Icc_self _⟩
 
@@ -134,7 +135,7 @@ theorem mem_pi {f : Π₀ i, Finset (α i)} {g : Π₀ i, α i} : g ∈ f.pi ↔
   mem_dfinsupp_iff_of_support_subset <| Subset.refl _
 
 @[simp]
-theorem card_pi (f : Π₀ i, Finset (α i)) : #f.pi = f.prod fun i ↦ #(f i) := by
+theorem card_pi (f : Π₀ i, Finset (α i)) : f.pi.card = f.prod fun i => (f i).card := by
   rw [pi, card_dfinsupp]
   exact Finset.prod_congr rfl fun i _ => by simp only [Pi.natCast_apply, Nat.cast_id]
 
@@ -157,16 +158,16 @@ variable (f g : Π₀ i, α i)
 
 theorem Icc_eq : Icc f g = (f.support ∪ g.support).dfinsupp (f.rangeIcc g) := rfl
 
-lemma card_Icc : #(Icc f g) = ∏ i ∈ f.support ∪ g.support, #(Icc (f i) (g i)) :=
+theorem card_Icc : (Icc f g).card = ∏ i ∈ f.support ∪ g.support, (Icc (f i) (g i)).card :=
   card_dfinsupp _ _
 
-lemma card_Ico : #(Ico f g) = (∏ i ∈ f.support ∪ g.support, #(Icc (f i) (g i))) - 1 := by
+theorem card_Ico : (Ico f g).card = (∏ i ∈ f.support ∪ g.support, (Icc (f i) (g i)).card) - 1 := by
   rw [card_Ico_eq_card_Icc_sub_one, card_Icc]
 
-lemma card_Ioc : #(Ioc f g) = (∏ i ∈ f.support ∪ g.support, #(Icc (f i) (g i))) - 1 := by
+theorem card_Ioc : (Ioc f g).card = (∏ i ∈ f.support ∪ g.support, (Icc (f i) (g i)).card) - 1 := by
   rw [card_Ioc_eq_card_Icc_sub_one, card_Icc]
 
-lemma card_Ioo : #(Ioo f g) = (∏ i ∈ f.support ∪ g.support, #(Icc (f i) (g i))) - 2 := by
+theorem card_Ioo : (Ioo f g).card = (∏ i ∈ f.support ∪ g.support, (Icc (f i) (g i)).card) - 2 := by
   rw [card_Ioo_eq_card_Icc_sub_two, card_Icc]
 
 end PartialOrder
@@ -175,7 +176,7 @@ section Lattice
 variable [DecidableEq ι] [∀ i, DecidableEq (α i)] [∀ i, Lattice (α i)] [∀ i, Zero (α i)]
   [∀ i, LocallyFiniteOrder (α i)] (f g : Π₀ i, α i)
 
-lemma card_uIcc : #(uIcc f g) = ∏ i ∈ f.support ∪ g.support, #(uIcc (f i) (g i)) := by
+theorem card_uIcc : (uIcc f g).card = ∏ i ∈ f.support ∪ g.support, (uIcc (f i) (g i)).card := by
   rw [← support_inf_union_support_sup]; exact card_Icc _ _
 
 end Lattice
@@ -186,11 +187,11 @@ variable [DecidableEq ι] [∀ i, DecidableEq (α i)]
 variable [∀ i, CanonicallyOrderedAddCommMonoid (α i)] [∀ i, LocallyFiniteOrder (α i)]
 variable (f : Π₀ i, α i)
 
-lemma card_Iic : #(Iic f) = ∏ i ∈ f.support, #(Iic (f i)) := by
+theorem card_Iic : (Iic f).card = ∏ i ∈ f.support, (Iic (f i)).card := by
   simp_rw [Iic_eq_Icc, card_Icc, DFinsupp.bot_eq_zero, support_zero, empty_union, zero_apply,
     bot_eq_zero]
 
-lemma card_Iio : #(Iio f) = (∏ i ∈ f.support, #(Iic (f i))) - 1 := by
+theorem card_Iio : (Iio f).card = (∏ i ∈ f.support, (Iic (f i)).card) - 1 := by
   rw [card_Iio_eq_card_Iic_sub_one, card_Iic]
 
 end CanonicallyOrdered

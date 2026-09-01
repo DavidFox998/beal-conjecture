@@ -128,7 +128,7 @@ lemma lambda_dvd_or_dvd_sub_one_or_dvd_add_one [NumberField K] [IsCyclotomicExte
   have := hζ.finite_quotient_toInteger_sub_one (by decide)
   let _ := Fintype.ofFinite (𝓞 K ⧸ Ideal.span {λ})
   let _ : Ring (𝓞 K ⧸ Ideal.span {λ}) := CommRing.toRing -- to speed up instance synthesis
-  let _ : AddGroup (𝓞 K ⧸ Ideal.span {λ}) := AddGroupWithOne.toAddGroup -- ditto
+  let _ : AddGroup (𝓞 K ⧸ Ideal.span {λ}) := AddGroupWithOne.toAddGroup -- dito
   have := Finset.mem_univ (Ideal.Quotient.mk (Ideal.span {λ}) x)
   have h3 : Fintype.card (𝓞 K ⧸ Ideal.span {λ}) = 3 := by
     rw [← Nat.card_eq_fintype_card, hζ.card_quotient_toInteger_sub_one (by decide),

@@ -18,7 +18,6 @@ The map `productOfMemOpens` is always inducing. Whenever `X` is T0, `productOfMe
 also injective and therefore an embedding.
 -/
 
-open Topology
 
 noncomputable section
 
@@ -44,22 +43,16 @@ def productOfMemOpens : C(X, Opens X → Prop) where
   toFun x u := x ∈ u
   continuous_toFun := continuous_pi_iff.2 fun u => continuous_Prop.2 u.isOpen
 
-theorem productOfMemOpens_isInducing : IsInducing (productOfMemOpens X) := by
+theorem productOfMemOpens_inducing : Inducing (productOfMemOpens X) := by
   convert inducing_iInf_to_pi fun (u : Opens X) (x : X) => x ∈ u
   apply eq_induced_by_maps_to_sierpinski
-
-@[deprecated (since := "2024-10-28")]
-alias productOfMemOpens_inducing := productOfMemOpens_isInducing
 
 theorem productOfMemOpens_injective [T0Space X] : Function.Injective (productOfMemOpens X) := by
   intro x1 x2 h
   apply Inseparable.eq
-  rw [← IsInducing.inseparable_iff (productOfMemOpens_isInducing X), h]
+  rw [← Inducing.inseparable_iff (productOfMemOpens_inducing X), h]
 
-theorem productOfMemOpens_isEmbedding [T0Space X] : IsEmbedding (productOfMemOpens X) :=
-  .mk (productOfMemOpens_isInducing X) (productOfMemOpens_injective X)
-
-@[deprecated (since := "2024-10-26")]
-alias productOfMemOpens_embedding := productOfMemOpens_isEmbedding
+theorem productOfMemOpens_embedding [T0Space X] : Embedding (productOfMemOpens X) :=
+  Embedding.mk (productOfMemOpens_inducing X) (productOfMemOpens_injective X)
 
 end TopologicalSpace

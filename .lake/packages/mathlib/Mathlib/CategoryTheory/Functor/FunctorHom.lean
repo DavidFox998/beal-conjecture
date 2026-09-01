@@ -203,6 +203,6 @@ lemma associator_hom_apply (K L M N : C ⥤ D) {X : C}
 noncomputable instance : EnrichedCategory (C ⥤ Type max v' v u) (C ⥤ D) where
   Hom := functorHom
   id F := natTransEquiv.symm (𝟙 F)
-  comp F G H := { app := fun _ ⟨f, g⟩ => f.comp g }
+  comp F G H := { app := fun X ⟨f, g⟩ => f.comp g }
 
 end CategoryTheory.Enriched.Functor

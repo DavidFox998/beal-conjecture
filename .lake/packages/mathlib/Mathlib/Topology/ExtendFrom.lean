@@ -3,7 +3,7 @@ Copyright (c) 2020 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Anatole Dedecker
 -/
-import Mathlib.Topology.Separation.Regular
+import Mathlib.Topology.Separation
 
 /-!
 # Extending a function from a subset

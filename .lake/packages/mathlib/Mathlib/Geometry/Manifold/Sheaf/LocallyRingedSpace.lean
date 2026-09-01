@@ -31,11 +31,7 @@ smooth manifolds.
 noncomputable section
 universe u
 
-/- Next line is necessary while the manifold smoothness class is not extended to `ω`.
-Later, replace with `open scoped ContDiff`. -/
-local notation "∞" => (⊤ : ℕ∞)
-
-variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type u} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
   {EM : Type*} [NormedAddCommGroup EM] [NormedSpace 𝕜 EM]
   {HM : Type*} [TopologicalSpace HM] (IM : ModelWithCorners 𝕜 EM HM)
   {M : Type u} [TopologicalSpace M] [ChartedSpace HM M]
@@ -58,7 +54,7 @@ theorem smoothSheafCommRing.isUnit_stalk_iff {x : M}
     obtain ⟨U : Opens M, hxU, f : C^∞⟮IM, U; 𝓘(𝕜), 𝕜⟯, rfl⟩ := S.germ_exist x f
     have hf' : f ⟨x, hxU⟩ ≠ 0 := by
       convert hf
-      exact (smoothSheafCommRing.eval_germ U x hxU f).symm
+      exact (smoothSheafCommRing.eval_germ U ⟨x, hxU⟩ f).symm
     -- In fact, by continuity, `f` is nonzero on a neighbourhood `V` of `x`
     have H :  ∀ᶠ (z : U) in 𝓝 ⟨x, hxU⟩, f z ≠ 0 := f.2.continuous.continuousAt.eventually_ne hf'
     rw [eventually_nhds_iff] at H
@@ -81,27 +77,25 @@ theorem smoothSheafCommRing.isUnit_stalk_iff {x : M}
     -- Let `g` be the pointwise inverse of `f` on `V`, which is smooth since `f` is nonzero there
     let g : C^∞⟮IM, V; 𝓘(𝕜), 𝕜⟯ := ⟨(f ∘ Set.inclusion hUV)⁻¹, ?_⟩
     -- The germ of `g` is inverse to the germ of `f`, so `f` is a unit
-    · refine ⟨⟨S.germ _ x (hxV) (SmoothMap.restrictRingHom IM 𝓘(𝕜) 𝕜 hUV f), S.germ _ x hxV g,
-        ?_, ?_⟩, S.germ_res_apply hUV.hom x hxV f⟩
+    · refine ⟨⟨S.germ ⟨x, hxV⟩ (SmoothMap.restrictRingHom IM 𝓘(𝕜) 𝕜 hUV f), S.germ ⟨x, hxV⟩ g,
+        ?_, ?_⟩, S.germ_res_apply hUV.hom ⟨x, hxV⟩ f⟩
       · rw [← map_mul]
-        -- Qualified the name to avoid Lean not finding a `OneHomClass` https://github.com/leanprover-community/mathlib4/pull/8386
+        -- Qualified the name to avoid Lean not finding a `OneHomClass` #8386
         convert RingHom.map_one _
         apply Subtype.ext
         ext y
         apply mul_inv_cancel₀
         exact hVf y
       · rw [← map_mul]
-        -- Qualified the name to avoid Lean not finding a `OneHomClass` https://github.com/leanprover-community/mathlib4/pull/8386
+        -- Qualified the name to avoid Lean not finding a `OneHomClass` #8386
         convert RingHom.map_one _
         apply Subtype.ext
         ext y
         apply inv_mul_cancel₀
         exact hVf y
     · intro y
-      #adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
-        was `exact`; somehow `convert` bypasess unification issues -/
-      convert ((contDiffAt_inv _ (hVf y)).contMDiffAt).comp y
-        (f.contMDiff.comp (contMDiff_inclusion hUV)).contMDiffAt
+      exact ((contDiffAt_inv _ (hVf y)).contMDiffAt).comp y
+        (f.smooth.comp (smooth_inclusion hUV)).smoothAt
 
 /-- The non-units of the stalk at `x` of the sheaf of smooth functions from `M` to `𝕜`, considered
 as a sheaf of commutative rings, are the functions whose values at `x` are zero. -/
@@ -114,8 +108,8 @@ theorem smoothSheafCommRing.nonunits_stalk (x : M) :
 
 /-- The stalks of the structure sheaf of a smooth manifold-with-corners are local rings. -/
 instance smoothSheafCommRing.instLocalRing_stalk (x : M) :
-    IsLocalRing ((smoothSheafCommRing IM 𝓘(𝕜) M 𝕜).presheaf.stalk x) := by
-  apply IsLocalRing.of_nonunits_add
+    LocalRing ((smoothSheafCommRing IM 𝓘(𝕜) M 𝕜).presheaf.stalk x) := by
+  apply LocalRing.of_nonunits_add
   rw [smoothSheafCommRing.nonunits_stalk]
   intro f g
   exact Ideal.add_mem _
@@ -127,4 +121,4 @@ def SmoothManifoldWithCorners.locallyRingedSpace : LocallyRingedSpace where
   carrier := TopCat.of M
   presheaf := smoothPresheafCommRing IM 𝓘(𝕜) M 𝕜
   IsSheaf := (smoothSheafCommRing IM 𝓘(𝕜) M 𝕜).cond
-  isLocalRing x := smoothSheafCommRing.instLocalRing_stalk IM x
+  localRing x := smoothSheafCommRing.instLocalRing_stalk IM x

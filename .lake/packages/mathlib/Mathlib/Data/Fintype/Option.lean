@@ -19,7 +19,7 @@ open Nat
 
 universe u v
 
-variable {α β : Type*}
+variable {α β γ : Type*}
 
 open Finset Function
 

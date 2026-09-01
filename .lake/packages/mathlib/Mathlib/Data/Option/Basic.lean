@@ -137,11 +137,28 @@ variable {p : α → Prop} (f : ∀ a : α, p a → β) (x : Option α)
 theorem pbind_eq_bind (f : α → Option β) (x : Option α) : (x.pbind fun a _ ↦ f a) = x.bind f := by
   cases x <;> simp only [pbind, none_bind', some_bind']
 
+theorem map_bind {α β γ} (f : β → γ) (x : Option α) (g : α → Option β) :
+    Option.map f (x >>= g) = x >>= fun a ↦ Option.map f (g a) := by
+  simp only [← map_eq_map, ← bind_pure_comp, LawfulMonad.bind_assoc]
+
 theorem map_bind' (f : β → γ) (x : Option α) (g : α → Option β) :
     Option.map f (x.bind g) = x.bind fun a ↦ Option.map f (g a) := by cases x <;> simp
 
+theorem map_pbind (f : β → γ) (x : Option α) (g : ∀ a, a ∈ x → Option β) :
+    Option.map f (x.pbind g) = x.pbind fun a H ↦ Option.map f (g a H) := by
+  cases x <;> simp only [pbind, map_none']
+
 theorem pbind_map (f : α → β) (x : Option α) (g : ∀ b : β, b ∈ x.map f → Option γ) :
     pbind (Option.map f x) g = x.pbind fun a h ↦ g (f a) (mem_map_of_mem _ h) := by cases x <;> rfl
+
+@[simp]
+theorem pmap_none (f : ∀ a : α, p a → β) {H} : pmap f (@none α) H = none :=
+  rfl
+
+@[simp]
+theorem pmap_some (f : ∀ a : α, p a → β) {x : α} (h : p x) :
+    pmap f (some x) = fun _ ↦ some (f x h) :=
+  rfl
 
 theorem mem_pmem {a : α} (h : ∀ a ∈ x, p a) (ha : a ∈ x) : f a (h a ha) ∈ pmap f x h := by
   rw [mem_def] at ha ⊢
@@ -149,7 +166,7 @@ theorem mem_pmem {a : α} (h : ∀ a ∈ x, p a) (ha : a ∈ x) : f a (h a ha) �
   rfl
 
 theorem pmap_map (g : γ → α) (x : Option γ) (H) :
-    pmap f (x.map g) H = pmap (fun a h ↦ f (g a) h) x fun _ h ↦ H _ (mem_map_of_mem _ h) := by
+    pmap f (x.map g) H = pmap (fun a h ↦ f (g a) h) x fun a h ↦ H _ (mem_map_of_mem _ h) := by
   cases x <;> simp only [map_none', map_some', pmap]
 
 theorem map_pmap (g : β → γ) (f : ∀ a, p a → β) (x H) :
@@ -164,7 +181,7 @@ theorem pmap_eq_map (p : α → Prop) (f : α → β) (x H) :
 
 theorem pmap_bind {α β γ} {x : Option α} {g : α → Option β} {p : β → Prop} {f : ∀ b, p b → γ} (H)
     (H' : ∀ (a : α), ∀ b ∈ g a, b ∈ x >>= g) :
-    pmap f (x >>= g) H = x >>= fun a ↦ pmap f (g a) fun _ h ↦ H _ (H' a _ h) := by
+    pmap f (x >>= g) H = x >>= fun a ↦ pmap f (g a) fun b h ↦ H _ (H' a _ h) := by
   cases x <;> simp only [pmap, bind_eq_bind, none_bind, some_bind]
 
 theorem bind_pmap {α β γ} {p : α → Prop} (f : ∀ a, p a → β) (x : Option α) (g : β → Option γ) (H) :
@@ -190,6 +207,24 @@ theorem pbind_eq_some {f : ∀ a : α, a ∈ x → Option β} {y : β} :
     rintro ⟨z, H, hz⟩
     simp only [mem_def, Option.some_inj] at H
     simpa [H] using hz
+
+-- Porting note: Can't simp tag this anymore because `pmap` simplifies
+-- @[simp]
+theorem pmap_eq_none_iff {h} : pmap f x h = none ↔ x = none := by cases x <;> simp
+
+-- Porting note: Can't simp tag this anymore because `pmap` simplifies
+-- @[simp]
+theorem pmap_eq_some_iff {hf} {y : β} :
+    pmap f x hf = some y ↔ ∃ (a : α) (H : x = some a), f a (hf a H) = y := by
+  rcases x with (_|x)
+  · simp only [not_mem_none, exists_false, pmap, not_false_iff, exists_prop_of_false, reduceCtorEq]
+  · constructor
+    · intro h
+      simp only [pmap, Option.some_inj] at h
+      exact ⟨x, rfl, h⟩
+    · rintro ⟨a, H, rfl⟩
+      simp only [mem_def, Option.some_inj] at H
+      simp only [H, pmap]
 
 -- Porting note: Can't simp tag this anymore because `join` and `pmap` simplify
 -- @[simp]
@@ -233,8 +268,8 @@ theorem guard_eq_some' {p : Prop} [Decidable p] (u) : _root_.guard p = some u �
 theorem liftOrGet_choice {f : α → α → α} (h : ∀ a b, f a b = a ∨ f a b = b) :
     ∀ o₁ o₂, liftOrGet f o₁ o₂ = o₁ ∨ liftOrGet f o₁ o₂ = o₂
   | none, none => Or.inl rfl
-  | some _, none => Or.inl rfl
-  | none, some _ => Or.inr rfl
+  | some a, none => Or.inl rfl
+  | none, some b => Or.inr rfl
   | some a, some b => by simpa [liftOrGet] using h a b
 
 /-- Given an element of `a : Option α`, a default element `b : β` and a function `α → β`, apply this
@@ -263,7 +298,7 @@ theorem casesOn'_none_coe (f : Option α → β) (o : Option α) :
 lemma casesOn'_eq_elim (b : β) (f : α → β) (a : Option α) :
     Option.casesOn' a b f = Option.elim a b f := by cases a <;> rfl
 
--- porting note: workaround for https://github.com/leanprover/lean4/issues/2049
+-- porting note: workaround for leanprover/lean4#2049
 compile_inductive% Option
 
 theorem orElse_eq_some (o o' : Option α) (x : α) :

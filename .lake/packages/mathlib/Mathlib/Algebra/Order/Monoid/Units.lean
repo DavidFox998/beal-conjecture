@@ -5,7 +5,7 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
 import Mathlib.Order.Hom.Basic
 import Mathlib.Order.MinMax
-import Mathlib.Algebra.Group.Units.Defs
+import Mathlib.Algebra.Group.Units
 
 /-!
 # Units in ordered monoids

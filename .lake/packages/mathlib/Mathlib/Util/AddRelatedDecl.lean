@@ -23,7 +23,7 @@ and has been factored out to avoid code duplication.
 Feel free to add features as needed for other applications.
 
 This helper:
-* calls `addDeclarationRangesFromSyntax`, so jump-to-definition works,
+* calls `addDeclarationRanges`, so jump-to-definition works,
 * copies the `protected` status of the existing declaration, and
 * supports copying attributes.
 
@@ -48,7 +48,9 @@ def addRelatedDecl (src : Name) (suffix : String) (ref : Syntax)
   let tgt := match src with
     | Name.str n s => Name.mkStr n <| s ++ suffix
     | x => x
-  addDeclarationRangesFromSyntax tgt (← getRef) ref
+  addDeclarationRanges tgt {
+    range := ← getDeclarationRange (← getRef)
+    selectionRange := ← getDeclarationRange ref }
   let info ← getConstInfo src
   let (newValue, newLevels) ← construct info.type info.value! info.levelParams
   let newValue ← instantiateMVars newValue

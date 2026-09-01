@@ -30,8 +30,10 @@ namespace CategoryTheory
 
 open Localization
 
-variable {C₁ : Type u₁} {C₂ : Type u₂} {C₃ : Type u₃} {D₁ : Type u₄} {D₂ : Type u₅}
-  [Category.{v₁} C₁] [Category.{v₂} C₂] [Category.{v₃} C₃] [Category.{v₄} D₁] [Category.{v₅} D₂]
+variable {C₁ : Type u₁} {C₂ : Type u₂} {C₃ : Type u₃}
+  {D₁ : Type u₄} {D₂ : Type u₅} {D₃ : Type u₆}
+  [Category.{v₁} C₁] [Category.{v₂} C₂] [Category.{v₃} C₃]
+  [Category.{v₄} D₁] [Category.{v₅} D₂] [Category.{v₆} D₃]
   (W₁ : MorphismProperty C₁) (W₂ : MorphismProperty C₂) (W₃ : MorphismProperty C₃)
 
 /-- If `W₁ : MorphismProperty C₁` and `W₂ : MorphismProperty C₂`, a `LocalizerMorphism W₁ W₂`
@@ -126,7 +128,7 @@ lemma isEquivalence_iff : G.IsEquivalence ↔ G'.IsEquivalence :=
 end
 
 /-- Condition that a `LocalizerMorphism` induces an equivalence on the localized categories -/
-class IsLocalizedEquivalence : Prop where
+class IsLocalizedEquivalence : Prop :=
   /-- the induced functor on the constructed localized categories is an equivalence -/
   isEquivalence : (Φ.localizedFunctor W₁.Q W₂.Q).IsEquivalence
 

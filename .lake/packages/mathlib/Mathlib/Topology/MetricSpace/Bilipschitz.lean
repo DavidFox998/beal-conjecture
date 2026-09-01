@@ -55,7 +55,7 @@ instance : UniformSpace α := (inferInstance : UniformSpace β).comap f
 in order to avoid abuse of the definitional equality `α := β`. -/
 lemma uniformity_eq_of_bilipschitz (hf₁ : AntilipschitzWith K₁ f) (hf₂ : LipschitzWith K₂ f) :
     𝓤[(inferInstance : UniformSpace β).comap f] = 𝓤 α :=
-  hf₁.isUniformInducing hf₂.uniformContinuous |>.comap_uniformity
+  hf₁.uniformInducing hf₂.uniformContinuous |>.comap_uniformity
 
 end Uniformity
 

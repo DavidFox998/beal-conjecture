@@ -32,7 +32,7 @@ structure ContinuousOpenMap (α β : Type*) [TopologicalSpace α] [TopologicalSp
   ContinuousMap α β where
   map_open' : IsOpenMap toFun
 
-@[inherit_doc] infixr:25 " →CO " => ContinuousOpenMap
+infixr:25 " →CO " => ContinuousOpenMap
 
 section
 

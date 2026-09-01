@@ -54,28 +54,26 @@ def tensorObj (M N : ModuleCat R) : ModuleCat R :=
 /-- (implementation) tensor product of morphisms R-modules -/
 def tensorHom {M N M' N' : ModuleCat R} (f : M ⟶ N) (g : M' ⟶ N') :
     tensorObj M M' ⟶ tensorObj N N' :=
-  ofHom <| TensorProduct.map f.hom g.hom
+  TensorProduct.map f g
 
 /-- (implementation) left whiskering for R-modules -/
 def whiskerLeft (M : ModuleCat R) {N₁ N₂ : ModuleCat R} (f : N₁ ⟶ N₂) :
     tensorObj M N₁ ⟶ tensorObj M N₂ :=
-  ofHom <| f.hom.lTensor M
+  f.lTensor M
 
 /-- (implementation) right whiskering for R-modules -/
 def whiskerRight {M₁ M₂ : ModuleCat R} (f : M₁ ⟶ M₂) (N : ModuleCat R) :
     tensorObj M₁ N ⟶ tensorObj M₂ N :=
-  ofHom <| f.hom.rTensor N
+  f.rTensor N
 
 theorem tensor_id (M N : ModuleCat R) : tensorHom (𝟙 M) (𝟙 N) = 𝟙 (ModuleCat.of R (M ⊗ N)) := by
-  ext : 1
-  -- Porting note (https://github.com/leanprover-community/mathlib4/pull/11041): even with high priority `ext` fails to find this.
+  -- Porting note (#11041): even with high priority `ext` fails to find this.
   apply TensorProduct.ext
   rfl
 
 theorem tensor_comp {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : ModuleCat R} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (g₁ : Y₁ ⟶ Z₁)
     (g₂ : Y₂ ⟶ Z₂) : tensorHom (f₁ ≫ g₁) (f₂ ≫ g₂) = tensorHom f₁ f₂ ≫ tensorHom g₁ g₂ := by
-  ext : 1
-  -- Porting note (https://github.com/leanprover-community/mathlib4/pull/11041): even with high priority `ext` fails to find this.
+  -- Porting note (#11041): even with high priority `ext` fails to find this.
   apply TensorProduct.ext
   rfl
 
@@ -97,37 +95,64 @@ instance instMonoidalCategoryStruct : MonoidalCategoryStruct (ModuleCat.{u} R) w
   tensorObj := tensorObj
   whiskerLeft := whiskerLeft
   whiskerRight := whiskerRight
-  tensorHom f g := ofHom <| TensorProduct.map f.hom g.hom
+  tensorHom f g := TensorProduct.map f g
   tensorUnit := ModuleCat.of R R
   associator := associator
   leftUnitor := leftUnitor
   rightUnitor := rightUnitor
 
+section
+
+/-! The `associator_naturality` and `pentagon` lemmas below are very slow to elaborate.
+
+We give them some help by expressing the lemmas first non-categorically, then using
+`convert _aux using 1` to have the elaborator work as little as possible. -/
+
+
+open TensorProduct (assoc map)
+
+private theorem associator_naturality_aux {X₁ X₂ X₃ : Type*} [AddCommMonoid X₁] [AddCommMonoid X₂]
+    [AddCommMonoid X₃] [Module R X₁] [Module R X₂] [Module R X₃] {Y₁ Y₂ Y₃ : Type*}
+    [AddCommMonoid Y₁] [AddCommMonoid Y₂] [AddCommMonoid Y₃] [Module R Y₁] [Module R Y₂]
+    [Module R Y₃] (f₁ : X₁ →ₗ[R] Y₁) (f₂ : X₂ →ₗ[R] Y₂) (f₃ : X₃ →ₗ[R] Y₃) :
+    ↑(assoc R Y₁ Y₂ Y₃) ∘ₗ map (map f₁ f₂) f₃ = map f₁ (map f₂ f₃) ∘ₗ ↑(assoc R X₁ X₂ X₃) := by
+  apply TensorProduct.ext_threefold
+  intro x y z
+  rfl
+
+variable (R)
+
+private theorem pentagon_aux (W X Y Z : Type*) [AddCommMonoid W] [AddCommMonoid X]
+    [AddCommMonoid Y] [AddCommMonoid Z] [Module R W] [Module R X] [Module R Y] [Module R Z] :
+    (((assoc R X Y Z).toLinearMap.lTensor W).comp
+            (assoc R W (X ⊗[R] Y) Z).toLinearMap).comp
+        ((assoc R W X Y).toLinearMap.rTensor Z) =
+      (assoc R W X (Y ⊗[R] Z)).toLinearMap.comp (assoc R (W ⊗[R] X) Y Z).toLinearMap := by
+  apply TensorProduct.ext_fourfold
+  intro w x y z
+  rfl
+
+end
+
 theorem associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃ : ModuleCat R} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂)
     (f₃ : X₃ ⟶ Y₃) :
     tensorHom (tensorHom f₁ f₂) f₃ ≫ (associator Y₁ Y₂ Y₃).hom =
       (associator X₁ X₂ X₃).hom ≫ tensorHom f₁ (tensorHom f₂ f₃) := by
-  ext : 1
-  apply TensorProduct.ext_threefold
-  intro x y z
-  rfl
+  convert associator_naturality_aux f₁ f₂ f₃ using 1
 
 theorem pentagon (W X Y Z : ModuleCat R) :
     whiskerRight (associator W X Y).hom Z ≫
         (associator W (tensorObj X Y) Z).hom ≫ whiskerLeft W (associator X Y Z).hom =
       (associator (tensorObj W X) Y Z).hom ≫ (associator W X (tensorObj Y Z)).hom := by
-  ext : 1
-  apply TensorProduct.ext_fourfold
-  intro w x y z
-  rfl
+  convert pentagon_aux R W X Y Z using 1
 
 theorem leftUnitor_naturality {M N : ModuleCat R} (f : M ⟶ N) :
     tensorHom (𝟙 (ModuleCat.of R R)) f ≫ (leftUnitor N).hom = (leftUnitor M).hom ≫ f := by
-  ext : 1
-  -- Porting note (https://github.com/leanprover-community/mathlib4/pull/11041): broken ext
+  -- Porting note (#11041): broken ext
   apply TensorProduct.ext
-  ext x
-  -- Porting note (https://github.com/leanprover-community/mathlib4/pull/10934): used to be dsimp
+  apply LinearMap.ext_ring
+  apply LinearMap.ext; intro x
+  -- Porting note (#10934): used to be dsimp
   change ((leftUnitor N).hom) ((tensorHom (𝟙 (of R R)) f) ((1 : R) ⊗ₜ[R] x)) =
     f (((leftUnitor M).hom) (1 ⊗ₜ[R] x))
   erw [TensorProduct.lid_tmul, TensorProduct.lid_tmul]
@@ -136,11 +161,13 @@ theorem leftUnitor_naturality {M N : ModuleCat R} (f : M ⟶ N) :
 
 theorem rightUnitor_naturality {M N : ModuleCat R} (f : M ⟶ N) :
     tensorHom f (𝟙 (ModuleCat.of R R)) ≫ (rightUnitor N).hom = (rightUnitor M).hom ≫ f := by
-  ext : 1
-  -- Porting note (https://github.com/leanprover-community/mathlib4/pull/11041): broken ext
+  -- Porting note (#11041): broken ext
   apply TensorProduct.ext
-  ext x
-  dsimp
+  apply LinearMap.ext; intro x
+  apply LinearMap.ext_ring
+  -- Porting note (#10934): used to be dsimp
+  change ((rightUnitor N).hom) ((tensorHom f (𝟙 (of R R))) (x ⊗ₜ[R] (1 : R))) =
+    f (((rightUnitor M).hom) (x ⊗ₜ[R] 1))
   erw [TensorProduct.rid_tmul, TensorProduct.rid_tmul]
   rw [LinearMap.map_smul]
   rfl
@@ -148,10 +175,10 @@ theorem rightUnitor_naturality {M N : ModuleCat R} (f : M ⟶ N) :
 theorem triangle (M N : ModuleCat.{u} R) :
     (associator M (ModuleCat.of R R) N).hom ≫ tensorHom (𝟙 M) (leftUnitor N).hom =
       tensorHom (rightUnitor M).hom (𝟙 N) := by
-  ext : 1
   apply TensorProduct.ext_threefold
   intro x y z
-  -- Porting note (https://github.com/leanprover-community/mathlib4/pull/10934): used to be dsimp [tensorHom, associator]
+  change R at y
+  -- Porting note (#10934): used to be dsimp [tensorHom, associator]
   change x ⊗ₜ[R] ((leftUnitor N).hom) (y ⊗ₜ[R] z) = ((rightUnitor M).hom) (x ⊗ₜ[R] y) ⊗ₜ[R] z
   erw [TensorProduct.lid_tmul, TensorProduct.rid_tmul]
   exact (TensorProduct.smul_tmul _ _ _).symm
@@ -176,12 +203,9 @@ instance : CommRing ((𝟙_ (ModuleCat.{u} R) : ModuleCat.{u} R) : Type u) :=
 namespace MonoidalCategory
 
 @[simp]
-theorem tensorHom_tmul {K L M N : ModuleCat.{u} R} (f : K ⟶ L) (g : M ⟶ N) (k : K) (m : M) :
+theorem hom_apply {K L M N : ModuleCat.{u} R} (f : K ⟶ L) (g : M ⟶ N) (k : K) (m : M) :
     (f ⊗ g) (k ⊗ₜ m) = f k ⊗ₜ g m :=
   rfl
-
-@[deprecated (since := "2024-09-30")] alias hom_apply := tensorHom_tmul
-
 
 @[simp]
 theorem whiskerLeft_apply (L : ModuleCat.{u} R) {M N : ModuleCat.{u} R} (f : M ⟶ N)
@@ -225,97 +249,60 @@ theorem associator_inv_apply {M N K : ModuleCat.{u} R} (m : M) (n : N) (k : K) :
     ((α_ M N K).inv : M ⊗ N ⊗ K ⟶ (M ⊗ N) ⊗ K) (m ⊗ₜ (n ⊗ₜ k)) = m ⊗ₜ n ⊗ₜ k :=
   rfl
 
-variable {M₁ M₂ M₃ M₄ : ModuleCat.{u} R}
-
-section
-
-variable (f : M₁ → M₂ → M₃) (h₁ : ∀ m₁ m₂ n, f (m₁ + m₂) n = f m₁ n + f m₂ n)
-  (h₂ : ∀ (a : R) m n, f (a • m) n = a • f m n)
-  (h₃ : ∀ m n₁ n₂, f m (n₁ + n₂) = f m n₁ + f m n₂)
-  (h₄ : ∀ (a : R) m n, f m (a • n) = a • f m n)
-
-/-- Construct for morphisms from the tensor product of two objects in `ModuleCat`. -/
-noncomputable def tensorLift : M₁ ⊗ M₂ ⟶ M₃ :=
-  ofHom <| TensorProduct.lift (LinearMap.mk₂ R f h₁ h₂ h₃ h₄)
-
-@[simp]
-lemma tensorLift_tmul (m : M₁) (n : M₂) :
-    tensorLift f h₁ h₂ h₃ h₄ (m ⊗ₜ n) = f m n := rfl
-
-end
-
-lemma tensor_ext {f g : M₁ ⊗ M₂ ⟶ M₃} (h : ∀ m n, f (m ⊗ₜ n) = g (m ⊗ₜ n)) :
-    f = g :=
-  hom_ext <| TensorProduct.ext (by ext; apply h)
-
-/-- Extensionality lemma for morphisms from a module of the form `(M₁ ⊗ M₂) ⊗ M₃`. -/
-lemma tensor_ext₃' {f g : (M₁ ⊗ M₂) ⊗ M₃ ⟶ M₄}
-    (h : ∀ m₁ m₂ m₃, f (m₁ ⊗ₜ m₂ ⊗ₜ m₃) = g (m₁ ⊗ₜ m₂ ⊗ₜ m₃)) :
-    f = g :=
-  hom_ext <| TensorProduct.ext_threefold h
-
-/-- Extensionality lemma for morphisms from a module of the form `M₁ ⊗ (M₂ ⊗ M₃)`. -/
-lemma tensor_ext₃ {f g : M₁ ⊗ (M₂ ⊗ M₃) ⟶ M₄}
-    (h : ∀ m₁ m₂ m₃, f (m₁ ⊗ₜ (m₂ ⊗ₜ m₃)) = g (m₁ ⊗ₜ (m₂ ⊗ₜ m₃))) :
-    f = g := by
-  rw [← cancel_epi (α_ _ _ _).hom]
-  exact tensor_ext₃' h
-
 end MonoidalCategory
 
 open Opposite
 
+-- Porting note: simp wasn't firing but rw was, annoying
 instance : MonoidalPreadditive (ModuleCat.{u} R) := by
   refine ⟨?_, ?_, ?_, ?_⟩
   · intros
-    ext : 1
     refine TensorProduct.ext (LinearMap.ext fun x => LinearMap.ext fun y => ?_)
-    simp only [LinearMap.compr₂_apply, TensorProduct.mk_apply, hom_zero, LinearMap.zero_apply]
-    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
+    simp only [LinearMap.compr₂_apply, TensorProduct.mk_apply]
+    rw [LinearMap.zero_apply]
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     erw [MonoidalCategory.whiskerLeft_apply]
-    simp
+    rw [LinearMap.zero_apply, TensorProduct.tmul_zero]
   · intros
-    ext : 1
     refine TensorProduct.ext (LinearMap.ext fun x => LinearMap.ext fun y => ?_)
-    simp only [LinearMap.compr₂_apply, TensorProduct.mk_apply, hom_zero, LinearMap.zero_apply, ]
-    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
+    simp only [LinearMap.compr₂_apply, TensorProduct.mk_apply]
+    rw [LinearMap.zero_apply]
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     erw [MonoidalCategory.whiskerRight_apply]
-    simp
+    rw [LinearMap.zero_apply, TensorProduct.zero_tmul]
   · intros
-    ext : 1
     refine TensorProduct.ext (LinearMap.ext fun x => LinearMap.ext fun y => ?_)
-    simp only [LinearMap.compr₂_apply, TensorProduct.mk_apply, hom_add, LinearMap.add_apply]
-    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
+    simp only [LinearMap.compr₂_apply, TensorProduct.mk_apply]
+    rw [LinearMap.add_apply]
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     erw [MonoidalCategory.whiskerLeft_apply, MonoidalCategory.whiskerLeft_apply]
     erw [MonoidalCategory.whiskerLeft_apply]
-    simp [TensorProduct.tmul_add]
+    rw [LinearMap.add_apply, TensorProduct.tmul_add]
   · intros
-    ext : 1
     refine TensorProduct.ext (LinearMap.ext fun x => LinearMap.ext fun y => ?_)
-    simp only [LinearMap.compr₂_apply, TensorProduct.mk_apply, hom_add, LinearMap.add_apply]
-    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
+    simp only [LinearMap.compr₂_apply, TensorProduct.mk_apply]
+    rw [LinearMap.add_apply]
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     erw [MonoidalCategory.whiskerRight_apply, MonoidalCategory.whiskerRight_apply]
     erw [MonoidalCategory.whiskerRight_apply]
-    simp [TensorProduct.add_tmul]
+    rw [LinearMap.add_apply, TensorProduct.add_tmul]
 
+-- Porting note: simp wasn't firing but rw was, annoying
 instance : MonoidalLinear R (ModuleCat.{u} R) := by
   refine ⟨?_, ?_⟩
   · intros
-    ext : 1
     refine TensorProduct.ext (LinearMap.ext fun x => LinearMap.ext fun y => ?_)
-    simp only [LinearMap.compr₂_apply, TensorProduct.mk_apply, hom_smul, LinearMap.smul_apply]
-    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
+    simp only [LinearMap.compr₂_apply, TensorProduct.mk_apply]
+    rw [LinearMap.smul_apply]
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     erw [MonoidalCategory.whiskerLeft_apply, MonoidalCategory.whiskerLeft_apply]
-    simp
+    rw [LinearMap.smul_apply, TensorProduct.tmul_smul]
   · intros
-    ext : 1
     refine TensorProduct.ext (LinearMap.ext fun x => LinearMap.ext fun y => ?_)
-    simp only [LinearMap.compr₂_apply, TensorProduct.mk_apply, hom_smul, LinearMap.smul_apply]
-    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
+    simp only [LinearMap.compr₂_apply, TensorProduct.mk_apply]
+    rw [LinearMap.smul_apply]
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     erw [MonoidalCategory.whiskerRight_apply, MonoidalCategory.whiskerRight_apply]
-    simp [TensorProduct.smul_tmul, TensorProduct.tmul_smul]
-
-@[simp] lemma ofHom₂_compr₂ {M N P Q : ModuleCat.{u} R} (f : M →ₗ[R] N →ₗ[R] P) (g : P →ₗ[R] Q):
-    ofHom₂ (f.compr₂ g) = ofHom₂ f ≫ ofHom (Linear.rightComp R _ (ofHom g)) := rfl
+    rw [LinearMap.smul_apply, TensorProduct.smul_tmul, TensorProduct.tmul_smul]
 
 end ModuleCat

@@ -3,8 +3,8 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Finset.Lattice.Fold
-import Mathlib.Data.Finite.Prod
+import Mathlib.Data.Finset.Prod
+import Mathlib.Data.Set.Finite
 
 /-!
 # N-ary images of finsets
@@ -46,16 +46,16 @@ theorem coe_image₂ (f : α → β → γ) (s : Finset α) (t : Finset β) :
   Set.ext fun _ => mem_image₂
 
 theorem card_image₂_le (f : α → β → γ) (s : Finset α) (t : Finset β) :
-    #(image₂ f s t) ≤ #s * #t :=
+    (image₂ f s t).card ≤ s.card * t.card :=
   card_image_le.trans_eq <| card_product _ _
 
 theorem card_image₂_iff :
-    #(image₂ f s t) = #s * #t ↔ (s ×ˢ t : Set (α × β)).InjOn fun x => f x.1 x.2 := by
+    (image₂ f s t).card = s.card * t.card ↔ (s ×ˢ t : Set (α × β)).InjOn fun x => f x.1 x.2 := by
   rw [← card_product, ← coe_product]
   exact card_image_iff
 
 theorem card_image₂ (hf : Injective2 f) (s : Finset α) (t : Finset β) :
-    #(image₂ f s t) = #s * #t :=
+    (image₂ f s t).card = s.card * t.card :=
   (card_image_of_injective _ hf.uncurry).trans <| card_product _ _
 
 theorem mem_image₂_of_mem (ha : a ∈ s) (hb : b ∈ t) : f a b ∈ image₂ f s t :=
@@ -64,16 +64,13 @@ theorem mem_image₂_of_mem (ha : a ∈ s) (hb : b ∈ t) : f a b ∈ image₂ f
 theorem mem_image₂_iff (hf : Injective2 f) : f a b ∈ image₂ f s t ↔ a ∈ s ∧ b ∈ t := by
   rw [← mem_coe, coe_image₂, mem_image2_iff hf, mem_coe, mem_coe]
 
-@[gcongr]
 theorem image₂_subset (hs : s ⊆ s') (ht : t ⊆ t') : image₂ f s t ⊆ image₂ f s' t' := by
   rw [← coe_subset, coe_image₂, coe_image₂]
   exact image2_subset hs ht
 
-@[gcongr]
 theorem image₂_subset_left (ht : t ⊆ t') : image₂ f s t ⊆ image₂ f s t' :=
   image₂_subset Subset.rfl ht
 
-@[gcongr]
 theorem image₂_subset_right (hs : s ⊆ s') : image₂ f s t ⊆ image₂ f s' t :=
   image₂_subset hs Subset.rfl
 
@@ -83,19 +80,13 @@ theorem image_subset_image₂_left (hb : b ∈ t) : s.image (fun a => f a b) ⊆
 theorem image_subset_image₂_right (ha : a ∈ s) : t.image (fun b => f a b) ⊆ image₂ f s t :=
   image_subset_iff.2 fun _ => mem_image₂_of_mem ha
 
-lemma forall_mem_image₂ {p : γ → Prop} :
+theorem forall_image₂_iff {p : γ → Prop} :
     (∀ z ∈ image₂ f s t, p z) ↔ ∀ x ∈ s, ∀ y ∈ t, p (f x y) := by
-  simp_rw [← mem_coe, coe_image₂, forall_mem_image2]
-
-lemma exists_mem_image₂ {p : γ → Prop} :
-    (∃ z ∈ image₂ f s t, p z) ↔ ∃ x ∈ s, ∃ y ∈ t, p (f x y) := by
-  simp_rw [← mem_coe, coe_image₂, exists_mem_image2]
-
-@[deprecated (since := "2024-11-23")] alias forall_image₂_iff := forall_mem_image₂
+  simp_rw [← mem_coe, coe_image₂, forall_image2_iff]
 
 @[simp]
 theorem image₂_subset_iff : image₂ f s t ⊆ u ↔ ∀ x ∈ s, ∀ y ∈ t, f x y ∈ u :=
-  forall_mem_image₂
+  forall_image₂_iff
 
 theorem image₂_subset_iff_left : image₂ f s t ⊆ u ↔ ∀ a ∈ s, (t.image fun b => f a b) ⊆ u := by
   simp_rw [image₂_subset_iff, image_subset_iff]
@@ -202,11 +193,11 @@ theorem image₂_congr' (h : ∀ a b, f a b = f' a b) : image₂ f s t = image�
 
 variable (s t)
 
-theorem card_image₂_singleton_left (hf : Injective (f a)) : #(image₂ f {a} t) = #t := by
+theorem card_image₂_singleton_left (hf : Injective (f a)) : (image₂ f {a} t).card = t.card := by
   rw [image₂_singleton_left, card_image_of_injective _ hf]
 
 theorem card_image₂_singleton_right (hf : Injective fun a => f a b) :
-    #(image₂ f s {b}) = #s := by rw [image₂_singleton_right, card_image_of_injective _ hf]
+    (image₂ f s {b}).card = s.card := by rw [image₂_singleton_right, card_image_of_injective _ hf]
 
 theorem image₂_singleton_inter [DecidableEq β] (t₁ t₂ : Finset β) (hf : Injective (f a)) :
     image₂ f {a} (t₁ ∩ t₂) = image₂ f {a} t₁ ∩ image₂ f {a} t₂ := by
@@ -217,13 +208,13 @@ theorem image₂_inter_singleton [DecidableEq α] (s₁ s₂ : Finset α) (hf : 
   simp_rw [image₂_singleton_right, image_inter _ _ hf]
 
 theorem card_le_card_image₂_left {s : Finset α} (hs : s.Nonempty) (hf : ∀ a, Injective (f a)) :
-    #t ≤ #(image₂ f s t) := by
+    t.card ≤ (image₂ f s t).card := by
   obtain ⟨a, ha⟩ := hs
   rw [← card_image₂_singleton_left _ (hf a)]
   exact card_le_card (image₂_subset_right <| singleton_subset_iff.2 ha)
 
 theorem card_le_card_image₂_right {t : Finset β} (ht : t.Nonempty)
-    (hf : ∀ b, Injective fun a => f a b) : #s ≤ #(image₂ f s t) := by
+    (hf : ∀ b, Injective fun a => f a b) : s.card ≤ (image₂ f s t).card := by
   obtain ⟨b, hb⟩ := ht
   rw [← card_image₂_singleton_right _ (hf b)]
   exact card_le_card (image₂_subset_left <| singleton_subset_iff.2 hb)
@@ -437,7 +428,7 @@ theorem image₂_right_identity {f : γ → β → γ} {b : β} (h : ∀ a, f a 
 applications are disjoint (but not necessarily distinct!), then the size of `t` divides the size of
 `Finset.image₂ f s t`. -/
 theorem card_dvd_card_image₂_right (hf : ∀ a ∈ s, Injective (f a))
-    (hs : ((fun a => t.image <| f a) '' s).PairwiseDisjoint id) : #t ∣ #(image₂ f s t) := by
+    (hs : ((fun a => t.image <| f a) '' s).PairwiseDisjoint id) : t.card ∣ (image₂ f s t).card := by
   classical
   induction' s using Finset.induction with a s _ ih
   · simp
@@ -459,21 +450,19 @@ applications are disjoint (but not necessarily distinct!), then the size of `s` 
 `Finset.image₂ f s t`. -/
 theorem card_dvd_card_image₂_left (hf : ∀ b ∈ t, Injective fun a => f a b)
     (ht : ((fun b => s.image fun a => f a b) '' t).PairwiseDisjoint id) :
-    #s ∣ #(image₂ f s t) := by rw [← image₂_swap]; exact card_dvd_card_image₂_right hf ht
+    s.card ∣ (image₂ f s t).card := by rw [← image₂_swap]; exact card_dvd_card_image₂_right hf ht
 
 /-- If a `Finset` is a subset of the image of two `Set`s under a binary operation,
 then it is a subset of the `Finset.image₂` of two `Finset` subsets of these `Set`s. -/
-theorem subset_set_image₂ {s : Set α} {t : Set β} (hu : ↑u ⊆ image2 f s t) :
+theorem subset_image₂ {s : Set α} {t : Set β} (hu : ↑u ⊆ image2 f s t) :
     ∃ (s' : Finset α) (t' : Finset β), ↑s' ⊆ s ∧ ↑t' ⊆ t ∧ u ⊆ image₂ f s' t' := by
-  rw [← Set.image_prod, subset_set_image_iff] at hu
+  rw [← Set.image_prod, subset_image_iff] at hu
   rcases hu with ⟨u, hu, rfl⟩
   classical
   use u.image Prod.fst, u.image Prod.snd
   simp only [coe_image, Set.image_subset_iff, image₂_image_left, image₂_image_right,
     image_subset_iff]
   exact ⟨fun _ h ↦ (hu h).1, fun _ h ↦ (hu h).2, fun x hx ↦ mem_image₂_of_mem hx hx⟩
-
-@[deprecated (since := "2024-09-22")] alias subset_image₂ := subset_set_image₂
 
 end
 section UnionInter
@@ -510,10 +499,10 @@ section SemilatticeSup
 
 variable [SemilatticeSup δ]
 
-@[simp (default + 1)] -- otherwise `simp` doesn't use `forall_mem_image₂`
+@[simp (default + 1)] -- otherwise `simp` doesn't use `forall_image₂_iff`
 lemma sup'_image₂_le {g : γ → δ} {a : δ} (h : (image₂ f s t).Nonempty) :
     sup' (image₂ f s t) h g ≤ a ↔ ∀ x ∈ s, ∀ y ∈ t, g (f x y) ≤ a := by
-  rw [sup'_le_iff, forall_mem_image₂]
+  rw [sup'_le_iff, forall_image₂_iff]
 
 lemma sup'_image₂_left (g : γ → δ) (h : (image₂ f s t).Nonempty) :
     sup' (image₂ f s t) h g =
@@ -527,10 +516,10 @@ lemma sup'_image₂_right (g : γ → δ) (h : (image₂ f s t).Nonempty) :
 
 variable [OrderBot δ]
 
-@[simp (default + 1)] -- otherwise `simp` doesn't use `forall_mem_image₂`
+@[simp (default + 1)] -- otherwise `simp` doesn't use `forall_image₂_iff`
 lemma sup_image₂_le {g : γ → δ} {a : δ} :
     sup (image₂ f s t) g ≤ a ↔ ∀ x ∈ s, ∀ y ∈ t, g (f x y) ≤ a := by
-  rw [Finset.sup_le_iff, forall_mem_image₂]
+  rw [Finset.sup_le_iff, forall_image₂_iff]
 
 variable (s t)
 
@@ -546,10 +535,10 @@ section SemilatticeInf
 
 variable [SemilatticeInf δ]
 
-@[simp (default + 1)] -- otherwise `simp` doesn't use `forall_mem_image₂`
+@[simp (default + 1)] -- otherwise `simp` doesn't use `forall_image₂_iff`
 lemma le_inf'_image₂ {g : γ → δ} {a : δ} (h : (image₂ f s t).Nonempty) :
     a ≤ inf' (image₂ f s t) h g ↔ ∀ x ∈ s, ∀ y ∈ t, a ≤ g (f x y) := by
-  rw [le_inf'_iff, forall_mem_image₂]
+  rw [le_inf'_iff, forall_image₂_iff]
 
 lemma inf'_image₂_left (g : γ → δ) (h : (image₂ f s t).Nonempty) :
     inf' (image₂ f s t) h g =
@@ -563,7 +552,7 @@ lemma inf'_image₂_right (g : γ → δ) (h : (image₂ f s t).Nonempty) :
 
 variable [OrderTop δ]
 
-@[simp (default + 1)] -- otherwise `simp` doesn't use `forall_mem_image₂`
+@[simp (default + 1)] -- otherwise `simp` doesn't use `forall_image₂_iff`
 lemma le_inf_image₂ {g : γ → δ} {a : δ} :
     a ≤ inf (image₂ f s t) g ↔ ∀ x ∈ s, ∀ y ∈ t, a ≤ g (f x y) :=
   sup_image₂_le (δ := δᵒᵈ)
@@ -588,7 +577,7 @@ variable {ι : Type*} {α β γ : ι → Type*} [DecidableEq ι] [Fintype ι] [�
 lemma piFinset_image₂ (f : ∀ i, α i → β i → γ i) (s : ∀ i, Finset (α i)) (t : ∀ i, Finset (β i)) :
     piFinset (fun i ↦ image₂ (f i) (s i) (t i)) =
       image₂ (fun a b i ↦ f _ (a i) (b i)) (piFinset s) (piFinset t) := by
-  ext; simp only [mem_piFinset, mem_image₂, Classical.skolem, forall_and, funext_iff]
+  ext; simp only [mem_piFinset, mem_image₂, Classical.skolem, forall_and, Function.funext_iff]
 
 end Fintype
 

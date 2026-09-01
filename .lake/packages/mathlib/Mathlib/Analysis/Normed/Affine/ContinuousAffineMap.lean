@@ -175,7 +175,7 @@ noncomputable instance : NormedAddCommGroup (V →ᴬ[𝕜] W) :=
           simp only [norm_eq_zero, coe_const, Function.const_apply] at h₁
           rw [h₁]
           rfl
-        · rw [norm_eq_zero, contLinear_eq_zero_iff_exists_const] at h₁
+        · rw [norm_eq_zero', contLinear_eq_zero_iff_exists_const] at h₁
           obtain ⟨q, rfl⟩ := h₁
           simp only [norm_le_zero_iff, coe_const, Function.const_apply] at h₂
           rw [h₂]
@@ -220,7 +220,7 @@ def toConstProdContinuousLinearMap : (V →ᴬ[𝕜] W) ≃ₗᵢ[𝕜] W × (V 
   right_inv := by rintro ⟨v, f⟩; ext <;> simp
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
-  norm_map' _ := rfl
+  norm_map' f := rfl
 
 @[simp]
 theorem toConstProdContinuousLinearMap_fst (f : V →ᴬ[𝕜] W) :

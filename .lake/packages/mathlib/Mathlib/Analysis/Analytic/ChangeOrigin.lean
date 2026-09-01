@@ -45,7 +45,7 @@ namespace FormalMultilinearSeries
 
 section
 
-variable (p : FormalMultilinearSeries 𝕜 E F) {x y : E} {r : ℝ≥0}
+variable (p : FormalMultilinearSeries 𝕜 E F) {x y : E} {r R : ℝ≥0}
 
 /-- A term of `FormalMultilinearSeries.changeOriginSeries`.
 
@@ -60,7 +60,7 @@ p (k + l) (s.piecewise (fun _ ↦ x) (fun _ ↦ y))`
 def changeOriginSeriesTerm (k l : ℕ) (s : Finset (Fin (k + l))) (hs : s.card = l) :
     E[×l]→L[𝕜] E[×k]→L[𝕜] F :=
   let a := ContinuousMultilinearMap.curryFinFinset 𝕜 E F hs
-    (by rw [Finset.card_compl, Fintype.card_fin, hs, add_tsub_cancel_right])
+    (by erw [Finset.card_compl, Fintype.card_fin, hs, add_tsub_cancel_right])
   a (p (k + l))
 
 theorem changeOriginSeriesTerm_apply (k l : ℕ) (s : Finset (Fin (k + l))) (hs : s.card = l)
@@ -106,7 +106,7 @@ theorem nnnorm_changeOriginSeries_apply_le_tsum (k l : ℕ) (x : E) :
     ‖p.changeOriginSeries k l fun _ => x‖₊ ≤
       ∑' _ : { s : Finset (Fin (k + l)) // s.card = l }, ‖p (k + l)‖₊ * ‖x‖₊ ^ l := by
   rw [NNReal.tsum_mul_right, ← Fin.prod_const]
-  exact (p.changeOriginSeries k l).le_of_opNNNorm_le (p.nnnorm_changeOriginSeries_le_tsum _ _) _
+  exact (p.changeOriginSeries k l).le_of_opNNNorm_le _ (p.nnnorm_changeOriginSeries_le_tsum _ _)
 
 /-- Changing the origin of a formal multilinear series `p`, so that
 `p.sum (x+y) = (p.changeOrigin x).sum y` when this makes sense.
@@ -232,19 +232,11 @@ theorem radius_le_radius_derivSeries : p.radius ≤ p.derivSeries.radius := by
   apply mul_le_of_le_one_left (norm_nonneg  _)
   exact ContinuousLinearMap.opNorm_le_bound _ zero_le_one (by simp)
 
-theorem derivSeries_eq_zero {n : ℕ} (hp : p (n + 1) = 0) : p.derivSeries n = 0 := by
-  suffices p.changeOriginSeries 1 n = 0 by ext v; simp [derivSeries, this]
-  apply Finset.sum_eq_zero (fun s hs ↦ ?_)
-  ext v
-  have : p (1 + n) = 0 := p.congr_zero (by abel) hp
-  simp [changeOriginSeriesTerm, ContinuousMultilinearMap.curryFinFinset_apply,
-    ContinuousMultilinearMap.zero_apply, this]
-
 end
 
 -- From this point on, assume that the space is complete, to make sure that series that converge
 -- in norm also converge in `F`.
-variable [CompleteSpace F] (p : FormalMultilinearSeries 𝕜 E F) {x y : E}
+variable [CompleteSpace F] (p : FormalMultilinearSeries 𝕜 E F) {x y : E} {r R : ℝ≥0}
 
 theorem hasFPowerSeriesOnBall_changeOrigin (k : ℕ) (hr : 0 < p.radius) :
     HasFPowerSeriesOnBall (fun x => p.changeOrigin x k) (p.changeOriginSeries k) 0 p.radius :=

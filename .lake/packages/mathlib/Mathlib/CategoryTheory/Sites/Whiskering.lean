@@ -75,7 +75,7 @@ If `η : F ⟶ G` is a natural transformation then we obtain a morphism of funct
 `sheafCompose J F ⟶ sheafCompose J G` by whiskering with `η` on the level of presheaves.
 -/
 def sheafCompose_map : sheafCompose J F ⟶ sheafCompose J G where
-  app := fun _ => .mk <| whiskerLeft _ η
+  app := fun X => .mk <| whiskerLeft _ η
 
 @[simp]
 lemma sheafCompose_id : sheafCompose_map (F := F) J (𝟙 _) = 𝟙 _ := rfl
@@ -97,8 +97,8 @@ def multicospanComp : (S.index (P ⋙ F)).multicospan ≅ (S.index P).multicospa
   NatIso.ofComponents
     (fun t =>
       match t with
-      | WalkingMulticospan.left _ => Iso.refl _
-      | WalkingMulticospan.right _ => Iso.refl _)
+      | WalkingMulticospan.left a => Iso.refl _
+      | WalkingMulticospan.right b => Iso.refl _)
     (by
       rintro (a | b) (a | b) (f | f | f)
       all_goals aesop_cat)

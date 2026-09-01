@@ -35,7 +35,7 @@ Related to the TODO in the module docstring of `Mathlib.Order.PartialSups`.
 -/
 
 
-variable {α : Type*}
+variable {α β : Type*}
 
 section GeneralizedBooleanAlgebra
 

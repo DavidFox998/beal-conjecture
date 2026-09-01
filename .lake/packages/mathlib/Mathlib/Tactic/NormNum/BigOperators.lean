@@ -38,7 +38,7 @@ In particular, we can't use the plugin on sums containing variables.
 
 namespace Mathlib.Meta
 
-open Lean
+open Lean hiding Rat mkRat
 open Meta
 open Qq
 
@@ -346,7 +346,6 @@ partial def evalFinsetBigop {α : Q(Type u)} {β : Q(Type v)}
       let eq : Q($op $s $f = $op (Finset.cons $a $s' $h) $f) := q(congr_fun (congr_arg _ $pf) _)
       pure (res.eq_trans eq)
 
-attribute [local instance] monadLiftOptionMetaM in
 /-- `norm_num` plugin for evaluating products of finsets.
 
 If your finset is not supported, you can add it to the match in `Finset.proveEmptyOrCons`.
@@ -376,7 +375,6 @@ partial def evalFinsetProd : NormNumExt where eval {u β} e := do
       pure <| res.eq_trans eq)
     s
 
-attribute [local instance] monadLiftOptionMetaM in
 /-- `norm_num` plugin for evaluating sums of finsets.
 
 If your finset is not supported, you can add it to the match in `Finset.proveEmptyOrCons`.

@@ -36,6 +36,8 @@ open CategoryTheory
 
 open CategoryTheory.Category
 
+open scoped Classical
+
 namespace CategoryTheory.Limits
 
 variable (C : Type u) [Category.{v} C]
@@ -142,7 +144,7 @@ section
 variable [HasZeroMorphisms D]
 
 instance : HasZeroMorphisms (C ⥤ D) where
-  zero F G := ⟨{ app := fun _ => 0 }⟩
+  zero F G := ⟨{ app := fun X => 0 }⟩
   comp_zero := fun η H => by
     ext X; dsimp; apply comp_zero
   zero_comp := fun F {G H} η => by
@@ -250,7 +252,7 @@ open ZeroObject
     code should generally ask for an instance of `HasZeroMorphisms` separately, even if it already
     asks for an instance of `HasZeroObjects`. -/
 def zeroMorphismsOfZeroObject : HasZeroMorphisms C where
-  zero X _ := { zero := (default : X ⟶ 0) ≫ default }
+  zero X Y := { zero := (default : X ⟶ 0) ≫ default }
   zero_comp X {Y Z} f := by
     change ((default : X ⟶ 0) ≫ default) ≫ f = (default : X ⟶ 0) ≫ default
     rw [Category.assoc]
@@ -376,14 +378,14 @@ theorem idZeroEquivIsoZero_apply_inv (X : C) (h : 𝟙 X = 0) : ((idZeroEquivIso
 
 /-- If `0 : X ⟶ Y` is a monomorphism, then `X ≅ 0`. -/
 @[simps]
-def isoZeroOfMonoZero {X Y : C} (_ : Mono (0 : X ⟶ Y)) : X ≅ 0 where
+def isoZeroOfMonoZero {X Y : C} (h : Mono (0 : X ⟶ Y)) : X ≅ 0 where
   hom := 0
   inv := 0
   hom_inv_id := (cancel_mono (0 : X ⟶ Y)).mp (by simp)
 
 /-- If `0 : X ⟶ Y` is an epimorphism, then `Y ≅ 0`. -/
 @[simps]
-def isoZeroOfEpiZero {X Y : C} (_ : Epi (0 : X ⟶ Y)) : Y ≅ 0 where
+def isoZeroOfEpiZero {X Y : C} (h : Epi (0 : X ⟶ Y)) : Y ≅ 0 where
   hom := 0
   inv := 0
   hom_inv_id := (cancel_epi (0 : X ⟶ Y)).mp (by simp)
@@ -521,7 +523,7 @@ def monoFactorisationZero (X Y : C) : MonoFactorisation (0 : X ⟶ Y) where
 -/
 def imageFactorisationZero (X Y : C) : ImageFactorisation (0 : X ⟶ Y) where
   F := monoFactorisationZero X Y
-  isImage := { lift := fun _ => 0 }
+  isImage := { lift := fun F' => 0 }
 
 instance hasImage_zero {X Y : C} : HasImage (0 : X ⟶ Y) :=
   HasImage.mk <| imageFactorisationZero _ _
@@ -553,13 +555,13 @@ end Image
 
 /-- In the presence of zero morphisms, coprojections into a coproduct are (split) monomorphisms. -/
 instance isSplitMono_sigma_ι {β : Type u'} [HasZeroMorphisms C] (f : β → C)
-    [HasColimit (Discrete.functor f)] (b : β) : IsSplitMono (Sigma.ι f b) := by
-  classical exact IsSplitMono.mk' { retraction := Sigma.desc <| Pi.single b (𝟙 _) }
+    [HasColimit (Discrete.functor f)] (b : β) : IsSplitMono (Sigma.ι f b) :=
+  IsSplitMono.mk' { retraction := Sigma.desc <| Pi.single b (𝟙 _) }
 
 /-- In the presence of zero morphisms, projections into a product are (split) epimorphisms. -/
 instance isSplitEpi_pi_π {β : Type u'} [HasZeroMorphisms C] (f : β → C)
-    [HasLimit (Discrete.functor f)] (b : β) : IsSplitEpi (Pi.π f b) := by
-  classical exact IsSplitEpi.mk' { section_ := Pi.lift <| Pi.single b (𝟙 _) }
+    [HasLimit (Discrete.functor f)] (b : β) : IsSplitEpi (Pi.π f b) :=
+  IsSplitEpi.mk' { section_ := Pi.lift <| Pi.single b (𝟙 _) }
 
 /-- In the presence of zero morphisms, coprojections into a coproduct are (split) monomorphisms. -/
 instance isSplitMono_coprod_inl [HasZeroMorphisms C] {X Y : C} [HasColimit (pair X Y)] :

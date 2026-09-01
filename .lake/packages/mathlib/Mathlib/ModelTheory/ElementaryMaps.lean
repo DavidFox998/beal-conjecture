@@ -65,13 +65,16 @@ instance instFunLike : FunLike (M ↪ₑ[L] N) M N where
     cases g
     simp only [ElementaryEmbedding.mk.injEq]
     ext x
-    exact funext_iff.1 h x
+    exact Function.funext_iff.1 h x
+
+instance : CoeFun (M ↪ₑ[L] N) fun _ => M → N :=
+  DFunLike.hasCoeToFun
 
 @[simp]
 theorem map_boundedFormula (f : M ↪ₑ[L] N) {α : Type*} {n : ℕ} (φ : L.BoundedFormula α n)
     (v : α → M) (xs : Fin n → M) : φ.Realize (f ∘ v) (f ∘ xs) ↔ φ.Realize v xs := by
   classical
-    rw [← BoundedFormula.realize_restrictFreeVar' Set.Subset.rfl, Set.inclusion_eq_id, iff_eq_eq]
+    rw [← BoundedFormula.realize_restrictFreeVar Set.Subset.rfl, Set.inclusion_eq_id, iff_eq_eq]
     have h :=
       f.map_formula' ((φ.restrictFreeVar id).toFormula.relabel (Fintype.equivFin _))
         (Sum.elim (v ∘ (↑)) xs ∘ (Fintype.equivFin _).symm)
@@ -84,7 +87,7 @@ theorem map_boundedFormula (f : M ↪ₑ[L] N) {α : Type*} {n : ℕ} (φ : L.Bo
     erw [Function.comp_assoc _ _ (Fintype.equivFin _), _root_.Equiv.symm_comp_self,
       Function.comp_id, Sum.elim_comp_inl, Sum.elim_comp_inr (v ∘ Subtype.val) xs,
       ← Set.inclusion_eq_id (s := (BoundedFormula.freeVarFinset φ : Set α)) Set.Subset.rfl,
-      BoundedFormula.realize_restrictFreeVar' Set.Subset.rfl]
+      BoundedFormula.realize_restrictFreeVar Set.Subset.rfl]
 
 @[simp]
 theorem map_formula (f : M ↪ₑ[L] N) {α : Type*} (φ : L.Formula α) (x : α → M) :

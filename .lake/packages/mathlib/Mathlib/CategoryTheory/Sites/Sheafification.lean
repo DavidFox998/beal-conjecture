@@ -55,7 +55,7 @@ theorem HasSheafify.mk' {F : (Cᵒᵖ ⥤ A) ⥤ Sheaf J A} (adj : F ⊣ sheafTo
   isRightAdjoint := ⟨F, ⟨adj⟩⟩
   isLeftExact := ⟨by
     have : (sheafToPresheaf J A).IsRightAdjoint := ⟨_, ⟨adj⟩⟩
-    exact ⟨fun _ _ _ ↦ preservesLimitsOfShape_of_natIso
+    exact ⟨fun _ _ _ ↦ preservesLimitsOfShapeOfNatIso
       (adj.leftAdjointUniq (Adjunction.ofIsRightAdjoint (sheafToPresheaf J A)))⟩⟩
 
 /-- The sheafification functor, left adjoint to the inclusion. -/

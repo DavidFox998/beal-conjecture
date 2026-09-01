@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Devon Tuma
 -/
 import Mathlib.Probability.ProbabilityMassFunction.Monad
-import Mathlib.Control.ULiftable
 
 /-!
 # Specific Constructions of Probability Mass Functions
@@ -24,7 +23,7 @@ and `filter` uses this to filter the support of a `PMF` and re-normalize the new
 
 -/
 
-universe u v
+universe u
 
 namespace PMF
 
@@ -33,7 +32,7 @@ noncomputable section
 variable {α β γ : Type*}
 
 open scoped Classical
-open NNReal ENNReal Finset MeasureTheory
+open NNReal ENNReal
 
 section Map
 
@@ -83,18 +82,12 @@ variable (s : Set β)
 theorem toOuterMeasure_map_apply : (p.map f).toOuterMeasure s = p.toOuterMeasure (f ⁻¹' s) := by
   simp [map, Set.indicator, toOuterMeasure_apply p (f ⁻¹' s)]
 
-variable {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
-
 @[simp]
-theorem toMeasure_map_apply (hf : Measurable f)
+theorem toMeasure_map_apply [MeasurableSpace α] [MeasurableSpace β] (hf : Measurable f)
     (hs : MeasurableSet s) : (p.map f).toMeasure s = p.toMeasure (f ⁻¹' s) := by
   rw [toMeasure_apply_eq_toOuterMeasure_apply _ s hs,
     toMeasure_apply_eq_toOuterMeasure_apply _ (f ⁻¹' s) (measurableSet_preimage hf hs)]
   exact toOuterMeasure_map_apply f p s
-
-@[simp]
-lemma toMeasure_map (p : PMF α) (hf : Measurable f) : p.toMeasure.map f = (p.map f).toMeasure := by
-  ext s hs : 1; rw [PMF.toMeasure_map_apply _ _ _ hf hs, Measure.map_apply hf hs]
 
 end Measure
 
@@ -130,25 +123,10 @@ instance : LawfulFunctor PMF where
   comp_map _ _ _ := (map_comp _ _ _).symm
 
 instance : LawfulMonad PMF := LawfulMonad.mk'
-  (bind_pure_comp := fun _ _ => rfl)
+  (bind_pure_comp := fun f x => rfl)
   (id_map := id_map)
   (pure_bind := pure_bind)
   (bind_assoc := bind_bind)
-
-/--
-This instance allows `do` notation for `PMF` to be used across universes, for instance as
-```lean4
-example {R : Type u} [Ring R] (x : PMF ℕ) : PMF R := do
-  let ⟨n⟩ ← ULiftable.up x
-  pure n
-```
-where `x` is in universe `0`, but the return value is in universe `u`.
--/
-instance : ULiftable PMF.{u} PMF.{v} where
-  congr e :=
-    { toFun := map e, invFun := map e.symm
-      left_inv := fun a => by simp [map_comp, map_id]
-      right_inv := fun a => by simp [map_comp, map_id] }
 
 section OfFinset
 
@@ -206,14 +184,6 @@ theorem ofFintype_apply (a : α) : ofFintype f h a = f a := rfl
 theorem support_ofFintype : (ofFintype f h).support = Function.support f := rfl
 
 theorem mem_support_ofFintype_iff (a : α) : a ∈ (ofFintype f h).support ↔ f a ≠ 0 := Iff.rfl
-
-@[simp]
-lemma map_ofFintype [Fintype β] (f : α → ℝ≥0∞) (h : ∑ a, f a = 1) (g : α → β) :
-    (ofFintype f h).map g = ofFintype (fun b ↦ ∑ a with g a = b, f a)
-      (by simpa [Finset.sum_fiberwise_eq_sum_filter univ univ g f]) := by
-  ext b : 1
-  simp only [sum_filter, eq_comm, map_apply, ofFintype_apply]
-  exact tsum_eq_sum fun _ h ↦ (h <| mem_univ _).elim
 
 section Measure
 
@@ -277,7 +247,7 @@ theorem support_filter : (p.filter s h).support = s ∩ p.support :=
   Set.ext fun _ => mem_support_filter_iff _
 
 theorem filter_apply_eq_zero_iff (a : α) : (p.filter s h) a = 0 ↔ a ∉ s ∨ a ∉ p.support := by
-  rw [apply_eq_zero_iff, support_filter, Set.mem_inter_iff, not_and_or]
+  erw [apply_eq_zero_iff, support_filter, Set.mem_inter_iff, not_and_or]
 
 theorem filter_apply_ne_zero_iff (a : α) : (p.filter s h) a ≠ 0 ↔ a ∈ s ∧ a ∈ p.support := by
   rw [Ne, filter_apply_eq_zero_iff, not_or, Classical.not_not, Classical.not_not]

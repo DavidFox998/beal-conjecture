@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
 import Mathlib.Topology.ContinuousOn
 import Mathlib.Order.Minimal
-import Mathlib.Order.Zorn
 /-!
 # Irreducibility in topological spaces
 
@@ -28,7 +27,7 @@ https://ncatlab.org/nlab/show/too+simple+to+be+simple#relationship_to_biased_def
 
 -/
 
-open Set Topology
+open Set
 
 variable {X : Type*} {Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {s t : Set X}
 
@@ -213,11 +212,6 @@ instance (priority := 100) {X} [Infinite X] : IrreducibleSpace (CofiniteTopology
     simpa only [compl_union, compl_compl] using ((hu hu').union (hv hv')).infinite_compl.nonempty
   toNonempty := (inferInstance : Nonempty X)
 
-theorem irreducibleComponents_eq_singleton [IrreducibleSpace X] :
-    irreducibleComponents X = {univ} :=
-  Set.ext fun _ ↦ IsGreatest.maximal_iff (s := IsIrreducible (X := X))
-    ⟨IrreducibleSpace.isIrreducible_univ X, fun _ _ ↦ Set.subset_univ _⟩
-
 /-- A set `s` is irreducible if and only if
 for every finite collection of open sets all of whose members intersect `s`,
 `s` also intersects the intersection of the entire collection
@@ -240,7 +234,7 @@ theorem isIrreducible_iff_sInter :
 
 /-- A set is preirreducible if and only if
 for every cover by two closed sets, it is contained in one of the two covering sets. -/
-theorem isPreirreducible_iff_isClosed_union_isClosed :
+theorem isPreirreducible_iff_closed_union_closed :
     IsPreirreducible s ↔
       ∀ z₁ z₂ : Set X, IsClosed z₁ → IsClosed z₂ → s ⊆ z₁ ∪ z₂ → s ⊆ z₁ ∨ s ⊆ z₂ := by
   refine compl_surjective.forall.trans <| forall_congr' fun z₁ => compl_surjective.forall.trans <|
@@ -248,12 +242,10 @@ theorem isPreirreducible_iff_isClosed_union_isClosed :
   simp only [isOpen_compl_iff, ← compl_union, inter_compl_nonempty_iff]
   refine forall₂_congr fun _ _ => ?_
   rw [← and_imp, ← not_or, not_imp_not]
-@[deprecated (since := "2024-11-19")] alias
-isPreirreducible_iff_closed_union_closed := isPreirreducible_iff_isClosed_union_isClosed
 
 /-- A set is irreducible if and only if for every cover by a finite collection of closed sets, it is
 contained in one of the members of the collection. -/
-theorem isIrreducible_iff_sUnion_isClosed :
+theorem isIrreducible_iff_sUnion_closed :
     IsIrreducible s ↔
       ∀ t : Finset (Set X), (∀ z ∈ t, IsClosed z) → (s ⊆ ⋃₀ ↑t) → ∃ z ∈ t, s ⊆ z := by
   simp only [isIrreducible_iff_sInter]
@@ -264,9 +256,6 @@ theorem isIrreducible_iff_sUnion_isClosed :
   refine forall_congr' fun _ => Iff.trans ?_ not_imp_not
   simp only [not_exists, not_and, ← compl_iInter₂, ← sInter_eq_biInter,
     subset_compl_iff_disjoint_right, not_disjoint_iff_nonempty_inter]
-
-@[deprecated (since := "2024-11-19")] alias
-isIrreducible_iff_sUnion_closed := isIrreducible_iff_sUnion_isClosed
 
 /-- A nonempty open subset of a preirreducible subspace is dense in the subspace. -/
 theorem subset_closure_inter_of_isPreirreducible_of_isOpen {S U : Set X} (hS : IsPreirreducible S)
@@ -303,12 +292,12 @@ theorem IsPreirreducible.interior (ht : IsPreirreducible t) : IsPreirreducible (
   ht.open_subset isOpen_interior interior_subset
 
 theorem IsPreirreducible.preimage (ht : IsPreirreducible t) {f : Y → X}
-    (hf : IsOpenEmbedding f) : IsPreirreducible (f ⁻¹' t) := by
+    (hf : OpenEmbedding f) : IsPreirreducible (f ⁻¹' t) := by
   rintro U V hU hV ⟨x, hx, hx'⟩ ⟨y, hy, hy'⟩
   obtain ⟨_, h₁, ⟨y, h₂, rfl⟩, ⟨y', h₃, h₄⟩⟩ :=
     ht _ _ (hf.isOpenMap _ hU) (hf.isOpenMap _ hV) ⟨f x, hx, Set.mem_image_of_mem f hx'⟩
       ⟨f y, hy, Set.mem_image_of_mem f hy'⟩
-  cases hf.injective h₄
+  cases hf.inj h₄
   exact ⟨y, h₁, h₂, h₃⟩
 
 end Preirreducible

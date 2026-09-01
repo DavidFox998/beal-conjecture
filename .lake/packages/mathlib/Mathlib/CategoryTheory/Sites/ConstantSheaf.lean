@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.Sites.Sheafification
-import Mathlib.CategoryTheory.Sites.DenseSubsite.SheafEquiv
+import Mathlib.CategoryTheory.Sites.DenseSubsite
 /-!
 
 # The constant sheaf
@@ -27,6 +27,11 @@ under equivalence of sheaf categories.
 
 * `Sheaf.isConstant_iff_forget` : Given a "forgetful" functor `U : D ⥤ B` a sheaf `F : Sheaf J D` is
 constant if and only if the sheaf given by postcomposition with `U` is constant.
+
+## Future work
+
+* (Dagur) Use `Sheaf.isConstant_iff_forget` to prove that a condensed module is discrete if and
+only if its underlying condensed set is discrete.
 -/
 
 namespace CategoryTheory

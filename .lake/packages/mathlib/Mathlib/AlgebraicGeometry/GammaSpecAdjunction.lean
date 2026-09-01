@@ -30,7 +30,7 @@ case the unit and the counit would switch to each other.
 
 -/
 
--- Explicit universe annotations were used in this file to improve performance https://github.com/leanprover-community/mathlib4/issues/12737
+-- Explicit universe annotations were used in this file to improve performance #12737
 
 
 noncomputable section
@@ -63,21 +63,18 @@ variable (X : LocallyRingedSpace.{u})
 
 /-- The canonical map from the underlying set to the prime spectrum of `Γ(X)`. -/
 def toΓSpecFun : X → PrimeSpectrum (Γ.obj (op X)) := fun x =>
-  comap (X.presheaf.Γgerm x).hom (IsLocalRing.closedPoint (X.presheaf.stalk x))
+  comap (X.presheaf.Γgerm x) (LocalRing.closedPoint (X.presheaf.stalk x))
 
 theorem not_mem_prime_iff_unit_in_stalk (r : Γ.obj (op X)) (x : X) :
     r ∉ (X.toΓSpecFun x).asIdeal ↔ IsUnit (X.presheaf.Γgerm x r) := by
-  erw [IsLocalRing.mem_maximalIdeal, Classical.not_not]
+  erw [LocalRing.mem_maximalIdeal, Classical.not_not]
 
 /-- The preimage of a basic open in `Spec Γ(X)` under the unit is the basic
 open in `X` defined by the same element (they are equal as sets). -/
 theorem toΓSpec_preimage_basicOpen_eq (r : Γ.obj (op X)) :
     X.toΓSpecFun ⁻¹' (basicOpen r).1 = (X.toRingedSpace.basicOpen r).1 := by
       ext
-      dsimp
-      simp only [Set.mem_preimage, SetLike.mem_coe]
-      rw [X.toRingedSpace.mem_top_basicOpen]
-      exact not_mem_prime_iff_unit_in_stalk ..
+      erw [X.toRingedSpace.mem_top_basicOpen]; apply not_mem_prime_iff_unit_in_stalk
 
 /-- `toΓSpecFun` is continuous. -/
 theorem toΓSpec_continuous : Continuous X.toΓSpecFun := by
@@ -93,7 +90,7 @@ def toΓSpecBase : X.toTopCat ⟶ Spec.topObj (Γ.obj (op X)) where
   toFun := X.toΓSpecFun
   continuous_toFun := X.toΓSpec_continuous
 
--- These lemmas have always been bad (https://github.com/leanprover-community/mathlib4/issues/7657), but https://github.com/leanprover/lean4/pull/2644 made `simp` start noticing
+-- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
 attribute [nolint simpNF] AlgebraicGeometry.LocallyRingedSpace.toΓSpecBase_apply
 
 variable (r : Γ.obj (op X))
@@ -114,24 +111,17 @@ abbrev toToΓSpecMapBasicOpen :
 /-- `r` is a unit as a section on the basic open defined by `r`. -/
 theorem isUnit_res_toΓSpecMapBasicOpen : IsUnit (X.toToΓSpecMapBasicOpen r r) := by
   convert
-    (X.presheaf.map <| (eqToHom <| X.toΓSpecMapBasicOpen_eq r).op).hom.isUnit_map
+    (X.presheaf.map <| (eqToHom <| X.toΓSpecMapBasicOpen_eq r).op).isUnit_map
       (X.toRingedSpace.isUnit_res_basicOpen r)
   -- Porting note: `rw [comp_apply]` to `erw [comp_apply]`
-  erw [← CommRingCat.comp_apply, ← Functor.map_comp]
+  erw [← comp_apply, ← Functor.map_comp]
   congr
 
 /-- Define the sheaf hom on individual basic opens for the unit. -/
 def toΓSpecCApp :
     (structureSheaf <| Γ.obj <| op X).val.obj (op <| basicOpen r) ⟶
       X.presheaf.obj (op <| X.toΓSpecMapBasicOpen r) :=
-  -- note: the explicit type annotations were not needed before
-  -- https://github.com/leanprover-community/mathlib4/pull/19757
-  CommRingCat.ofHom  <|
-    IsLocalization.Away.lift
-      (R := Γ.obj (op X))
-      (S := (structureSheaf ↑(Γ.obj (op X))).val.obj (op (basicOpen r)))
-      r
-      (isUnit_res_toΓSpecMapBasicOpen _ r)
+  IsLocalization.Away.lift r (isUnit_res_toΓSpecMapBasicOpen _ r)
 
 /-- Characterization of the sheaf hom on basic opens,
     direction ← (next lemma) is used at various places, but → is not used in this file. -/
@@ -143,13 +133,11 @@ theorem toΓSpecCApp_iff
   -- Porting Note: Type class problem got stuck in `IsLocalization.Away.AwayMap.lift_comp`
   -- created instance manually. This replaces the `pick_goal` tactics
   have loc_inst := IsLocalization.to_basicOpen (Γ.obj (op X)) r
-  refine CommRingCat.hom_ext_iff.trans ?_
-  rw [← @IsLocalization.Away.lift_comp _ _ _ _ _ _ _ r loc_inst _
+  rw [← @IsLocalization.Away.AwayMap.lift_comp _ _ _ _ _ _ _ r loc_inst _
       (X.isUnit_res_toΓSpecMapBasicOpen r)]
   --pick_goal 5; exact is_localization.to_basic_open _ r
   constructor
   · intro h
-    ext : 1
     exact IsLocalization.ringHom_ext (Submonoid.powers r) h
   apply congr_arg
 
@@ -165,7 +153,7 @@ def toΓSpecCBasicOpens :
   naturality r s f := by
     apply (StructureSheaf.to_basicOpen_epi (Γ.obj (op X)) r.unop).1
     simp only [← Category.assoc]
-    rw [X.toΓSpecCApp_spec r.unop]
+    erw [X.toΓSpecCApp_spec r.unop]
     convert X.toΓSpecCApp_spec s.unop
     symm
     apply X.presheaf.map_comp
@@ -193,18 +181,21 @@ theorem toΓSpecSheafedSpace_app_eq :
     stalks (in `Spec Γ(X)` and in `X`). -/
 theorem toStalk_stalkMap_toΓSpec (x : X) :
     toStalk _ _ ≫ X.toΓSpecSheafedSpace.stalkMap x = X.presheaf.Γgerm x := by
-  rw [PresheafedSpace.Hom.stalkMap,
-    ← toOpen_germ _ (basicOpen (1 : Γ.obj (op X))) _ (by rw [basicOpen_one]; trivial),
-    ← Category.assoc, Category.assoc (toOpen _ _), stalkFunctor_map_germ, ← Category.assoc,
-    toΓSpecSheafedSpace_app_spec, Γgerm]
-  erw [← stalkPushforward_germ _ _ X.presheaf ⊤]
+  rw [PresheafedSpace.Hom.stalkMap]
+  erw [← toOpen_germ _ (basicOpen (1 : Γ.obj (op X)))
+      ⟨X.toΓSpecFun x, by rw [basicOpen_one]; trivial⟩]
+  rw [← Category.assoc, Category.assoc (toOpen _ _)]
+  erw [stalkFunctor_map_germ]
+  rw [← Category.assoc, toΓSpecSheafedSpace_app_spec, Γgerm]
+  rw [← stalkPushforward_germ _ X.toΓSpecBase X.presheaf ⊤]
   congr 1
-  exact (X.toΓSpecBase _* X.presheaf).germ_res le_top.hom _ _
+  change (X.toΓSpecBase _* X.presheaf).map le_top.hom.op ≫ _ = _
+  apply germ_res
 
 /-- The canonical morphism from `X` to the spectrum of its global sections. -/
-@[simps! base]
+@[simps! val_base]
 def toΓSpec : X ⟶ Spec.locallyRingedSpaceObj (Γ.obj (op X)) where
-  __ := X.toΓSpecSheafedSpace
+  val := X.toΓSpecSheafedSpace
   prop := by
     intro x
     let p : PrimeSpectrum (Γ.obj (op X)) := X.toΓSpecFun x
@@ -221,7 +212,7 @@ def toΓSpec : X ⟶ Spec.locallyRingedSpaceObj (Γ.obj (op X)) where
     refine IsLocalization.map_units S (⟨r, ?_⟩ : p.asIdeal.primeCompl)
     apply (not_mem_prime_iff_unit_in_stalk _ _ _).mpr
     rw [← toStalk_stalkMap_toΓSpec]
-    erw [CommRingCat.comp_apply, ← he]
+    erw [comp_apply, ← he]
     rw [RingHom.map_mul]
     exact ht.mul <| (IsLocalization.map_units (R := Γ.obj (op X)) S s).map _
 
@@ -229,11 +220,11 @@ def toΓSpec : X ⟶ Spec.locallyRingedSpaceObj (Γ.obj (op X)) where
 of `Γ(X, ⊤)` under `toΓSpec` agrees with the associated zero locus on `X`. -/
 lemma toΓSpec_preimage_zeroLocus_eq {X : LocallyRingedSpace.{u}}
     (s : Set (X.presheaf.obj (op ⊤))) :
-    X.toΓSpec.base ⁻¹' PrimeSpectrum.zeroLocus s = X.toRingedSpace.zeroLocus s := by
+    X.toΓSpec.val.base ⁻¹' PrimeSpectrum.zeroLocus s = X.toRingedSpace.zeroLocus s := by
   simp only [RingedSpace.zeroLocus]
   have (i : LocallyRingedSpace.Γ.obj (op X)) (_ : i ∈ s) :
       ((X.toRingedSpace.basicOpen i).carrier)ᶜ =
-        X.toΓSpec.base ⁻¹' (PrimeSpectrum.basicOpen i).carrierᶜ := by
+        X.toΓSpec.val.base ⁻¹' (PrimeSpectrum.basicOpen i).carrierᶜ := by
     symm
     erw [Set.preimage_compl, X.toΓSpec_preimage_basicOpen_eq i]
   erw [Set.iInter₂_congr this]
@@ -244,27 +235,28 @@ lemma toΓSpec_preimage_zeroLocus_eq {X : LocallyRingedSpace.{u}}
 
 theorem comp_ring_hom_ext {X : LocallyRingedSpace.{u}} {R : CommRingCat.{u}} {f : R ⟶ Γ.obj (op X)}
     {β : X ⟶ Spec.locallyRingedSpaceObj R}
-    (w : X.toΓSpec.base ≫ (Spec.locallyRingedSpaceMap f).base = β.base)
+    (w : X.toΓSpec.1.base ≫ (Spec.locallyRingedSpaceMap f).1.base = β.1.base)
     (h :
       ∀ r : R,
-        f ≫ X.presheaf.map (homOfLE le_top : (Opens.map β.base).obj (basicOpen r) ⟶ _).op =
-          toOpen R (basicOpen r) ≫ β.c.app (op (basicOpen r))) :
+        f ≫ X.presheaf.map (homOfLE le_top : (Opens.map β.1.base).obj (basicOpen r) ⟶ _).op =
+          toOpen R (basicOpen r) ≫ β.1.c.app (op (basicOpen r))) :
     X.toΓSpec ≫ Spec.locallyRingedSpaceMap f = β := by
   ext1
   -- Porting note: was `apply Spec.basicOpen_hom_ext`
   refine Spec.basicOpen_hom_ext w ?_
   intro r U
-  rw [LocallyRingedSpace.comp_c_app]
+  rw [LocallyRingedSpace.comp_val_c_app]
   erw [toOpen_comp_comap_assoc]
   rw [Category.assoc]
   erw [toΓSpecSheafedSpace_app_spec, ← X.presheaf.map_comp]
   exact h r
 
 /-- `toSpecΓ _` is an isomorphism so these are mutually two-sided inverses. -/
-theorem Γ_Spec_left_triangle : toSpecΓ (Γ.obj (op X)) ≫ X.toΓSpec.c.app (op ⊤) = 𝟙 _ := by
+theorem Γ_Spec_left_triangle : toSpecΓ (Γ.obj (op X)) ≫ X.toΓSpec.1.c.app (op ⊤) = 𝟙 _ := by
   unfold toSpecΓ
-  rw [← toOpen_res _ (basicOpen (1 : Γ.obj (op X))) ⊤ (eqToHom basicOpen_one.symm),
-    Category.assoc, NatTrans.naturality, ← Category.assoc]
+  rw [← toOpen_res _ (basicOpen (1 : Γ.obj (op X))) ⊤ (eqToHom basicOpen_one.symm)]
+  erw [Category.assoc]
+  rw [NatTrans.naturality, ← Category.assoc]
   erw [X.toΓSpecSheafedSpace_app_spec 1, ← Functor.map_comp]
   convert eqToHom_map X.presheaf _; rfl
 
@@ -277,23 +269,33 @@ def identityToΓSpec : 𝟭 LocallyRingedSpace.{u} ⟶ Γ.rightOp ⋙ Spec.toLoc
     symm
     apply LocallyRingedSpace.comp_ring_hom_ext
     · ext1 x
-      dsimp
-      show PrimeSpectrum.comap (f.c.app (op ⊤)).hom (X.toΓSpecFun x) = Y.toΓSpecFun (f.base x)
+      dsimp only [Spec.topMap, LocallyRingedSpace.toΓSpecFun]
+      -- Porting note: Had to add the next four lines
+      rw [comp_apply]
+      dsimp [toΓSpecBase]
+      -- The next six lines were `rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk]` before
+      -- leanprover/lean4#2644
+      have : (ContinuousMap.mk (toΓSpecFun Y) (toΓSpec_continuous _)) (f.val.base x)
+        = toΓSpecFun Y (f.val.base x) := by rw [ContinuousMap.coe_mk]
+      erw [this]
+      have : (ContinuousMap.mk (toΓSpecFun X) (toΓSpec_continuous _)) x
+        = toΓSpecFun X x := by rw [ContinuousMap.coe_mk]
+      erw [this]
       dsimp [toΓSpecFun]
-      rw [← IsLocalRing.comap_closedPoint (f.stalkMap x).hom, ←
-        PrimeSpectrum.comap_comp_apply, ← PrimeSpectrum.comap_comp_apply,
-        ← CommRingCat.hom_comp, ← CommRingCat.hom_comp]
-      congr 3
-      exact (PresheafedSpace.stalkMap_germ f.1 ⊤ x trivial).symm
+      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+      erw [← LocalRing.comap_closedPoint (f.stalkMap x), ←
+        PrimeSpectrum.comap_comp_apply, ← PrimeSpectrum.comap_comp_apply]
+      congr 2
+      exact (PresheafedSpace.stalkMap_germ f.1 ⊤ ⟨x, trivial⟩).symm
     · intro r
-      rw [LocallyRingedSpace.comp_c_app, ← Category.assoc]
-      erw [Y.toΓSpecSheafedSpace_app_spec, f.c.naturality]
+      rw [LocallyRingedSpace.comp_val_c_app, ← Category.assoc]
+      erw [Y.toΓSpecSheafedSpace_app_spec, f.1.c.naturality]
       rfl
 
 namespace ΓSpec
 
 theorem left_triangle (X : LocallyRingedSpace) :
-    SpecΓIdentity.inv.app (Γ.obj (op X)) ≫ (identityToΓSpec.app X).c.app (op ⊤) = 𝟙 _ :=
+    SpecΓIdentity.inv.app (Γ.obj (op X)) ≫ (identityToΓSpec.app X).val.c.app (op ⊤) = 𝟙 _ :=
   X.Γ_Spec_left_triangle
 
 /-- `SpecΓIdentity` is iso so these are mutually two-sided inverses. -/
@@ -360,7 +362,7 @@ lemma toOpen_comp_locallyRingedSpaceAdjunction_homEquiv_app
     {X : LocallyRingedSpace} {R : Type u} [CommRing R]
     (f : Γ.rightOp.obj X ⟶ op (CommRingCat.of R)) (U) :
     StructureSheaf.toOpen R U.unop ≫
-      (locallyRingedSpaceAdjunction.homEquiv X (op <| CommRingCat.of R) f).c.app U =
+      (locallyRingedSpaceAdjunction.homEquiv X (op <| CommRingCat.of R) f).1.c.app U =
     f.unop ≫ X.presheaf.map (homOfLE le_top).op := by
   rw [← StructureSheaf.toOpen_res _ _ _ (homOfLE le_top), Category.assoc,
     NatTrans.naturality _ (homOfLE (le_top (a := U.unop))).op,
@@ -372,25 +374,27 @@ lemma toOpen_comp_locallyRingedSpaceAdjunction_homEquiv_app
   rfl
 
 /-- The adjunction `Γ ⊣ Spec` from `CommRingᵒᵖ` to `Scheme`. -/
-def adjunction : Scheme.Γ.rightOp ⊣ Scheme.Spec.{u} where
-  unit :=
-  { app := fun X ↦ ⟨locallyRingedSpaceAdjunction.{u}.unit.app X.toLocallyRingedSpace⟩
-    naturality := fun _ _ f ↦
-      Scheme.Hom.ext' (locallyRingedSpaceAdjunction.{u}.unit.naturality f.toLRSHom) }
-  counit := (NatIso.op Scheme.SpecΓIdentity.{u}).inv
-  left_triangle_components Y :=
-    locallyRingedSpaceAdjunction.left_triangle_components Y.toLocallyRingedSpace
-  right_triangle_components R :=
-    Scheme.Hom.ext' <| locallyRingedSpaceAdjunction.right_triangle_components R
+def adjunction : Scheme.Γ.rightOp ⊣ Scheme.Spec.{u} :=
+  Adjunction.mk' {
+    homEquiv := fun X Y ↦ locallyRingedSpaceAdjunction.{u}.homEquiv X.toLocallyRingedSpace Y
+    unit :=
+    { app := fun X ↦ locallyRingedSpaceAdjunction.{u}.unit.app X.toLocallyRingedSpace
+      naturality := fun _ _ f ↦ locallyRingedSpaceAdjunction.{u}.unit.naturality f }
+    counit := (NatIso.op Scheme.SpecΓIdentity.{u}).inv
+    homEquiv_unit := rfl
+    homEquiv_counit := rfl }
 
 theorem adjunction_homEquiv_apply {X : Scheme} {R : CommRingCatᵒᵖ}
     (f : (op <| Scheme.Γ.obj <| op X) ⟶ R) :
-    ΓSpec.adjunction.homEquiv X R f = ⟨locallyRingedSpaceAdjunction.homEquiv X.1 R f⟩ := rfl
+    ΓSpec.adjunction.homEquiv X R f = locallyRingedSpaceAdjunction.homEquiv X.1 R f := rfl
+
+theorem adjunction_homEquiv (X : Scheme) (R : CommRingCatᵒᵖ) :
+    ΓSpec.adjunction.homEquiv X R = locallyRingedSpaceAdjunction.homEquiv X.1 R := rfl
 
 theorem adjunction_homEquiv_symm_apply {X : Scheme} {R : CommRingCatᵒᵖ}
     (f : X ⟶ Scheme.Spec.obj R) :
     (ΓSpec.adjunction.homEquiv X R).symm f =
-      (locallyRingedSpaceAdjunction.homEquiv X.1 R).symm f.toLRSHom := rfl
+      (locallyRingedSpaceAdjunction.homEquiv X.1 R).symm f := rfl
 
 theorem adjunction_counit_app' {R : CommRingCatᵒᵖ} :
     ΓSpec.adjunction.counit.app R = locallyRingedSpaceAdjunction.counit.app R := rfl
@@ -399,13 +403,14 @@ theorem adjunction_counit_app' {R : CommRingCatᵒᵖ} :
 theorem adjunction_counit_app {R : CommRingCatᵒᵖ} :
     ΓSpec.adjunction.counit.app R = (Scheme.ΓSpecIso (unop R)).inv.op := rfl
 
-/-- The canonical map `X ⟶ Spec Γ(X, ⊤)`. This is the unit of the `Γ-Spec` adjunction. -/
-def _root_.AlgebraicGeometry.Scheme.toSpecΓ (X : Scheme.{u}) : X ⟶ Spec Γ(X, ⊤) :=
-  ΓSpec.adjunction.unit.app X
-
-@[simp]
+-- This is not a simp lemma to respect the abstraction
 theorem adjunction_unit_app {X : Scheme} :
-    ΓSpec.adjunction.unit.app X = X.toSpecΓ := rfl
+    ΓSpec.adjunction.unit.app X = locallyRingedSpaceAdjunction.unit.app X.1 := rfl
+
+@[reassoc (attr := simp)]
+theorem adjunction_unit_naturality {X Y : Scheme.{u}} (f : X ⟶ Y) :
+    f ≫ ΓSpec.adjunction.unit.app Y = ΓSpec.adjunction.unit.app X ≫ Spec.map (f.app ⊤) :=
+  ΓSpec.adjunction.unit.naturality f
 
 instance isIso_locallyRingedSpaceAdjunction_counit :
     IsIso.{u + 1, u + 1} locallyRingedSpaceAdjunction.counit :=
@@ -417,87 +422,66 @@ instance isIso_adjunction_counit : IsIso ΓSpec.adjunction.counit := by
   rw [adjunction_counit_app]
   infer_instance
 
-end ΓSpec
-
-theorem Scheme.toSpecΓ_base (X : Scheme.{u}) (x) :
-    (Scheme.toSpecΓ X).base x =
-      (Spec.map (X.presheaf.germ ⊤ x trivial)).base (IsLocalRing.closedPoint _) := rfl
-
-@[reassoc (attr := simp)]
-theorem Scheme.toSpecΓ_naturality {X Y : Scheme.{u}} (f : X ⟶ Y) :
-    f ≫ Y.toSpecΓ = X.toSpecΓ ≫ Spec.map (f.appTop) :=
-  ΓSpec.adjunction.unit.naturality f
-
 @[simp]
-theorem Scheme.toSpecΓ_appTop (X : Scheme.{u}) :
-    X.toSpecΓ.appTop = (Scheme.ΓSpecIso Γ(X, ⊤)).hom := by
+theorem adjunction_unit_app_app_top (X : Scheme.{u}) :
+    (ΓSpec.adjunction.unit.app X).app ⊤ = (Scheme.ΓSpecIso Γ(X, ⊤)).hom := by
   have := ΓSpec.adjunction.left_triangle_components X
   dsimp at this
   rw [← IsIso.eq_comp_inv] at this
-  simp only [ΓSpec.adjunction_counit_app, Functor.id_obj, Functor.comp_obj, Functor.rightOp_obj,
+  simp only [adjunction_counit_app, Functor.id_obj, Functor.comp_obj, Functor.rightOp_obj,
     Scheme.Γ_obj, Category.id_comp] at this
   rw [← Quiver.Hom.op_inj.eq_iff, this, ← op_inv, IsIso.Iso.inv_inv]
 
-@[deprecated (since := "2024-11-23")] alias Scheme.toSpecΓ_app_top := Scheme.toSpecΓ_appTop
-
 @[simp]
 theorem SpecMap_ΓSpecIso_hom (R : CommRingCat.{u}) :
-    Spec.map ((Scheme.ΓSpecIso R).hom) = (Spec R).toSpecΓ := by
+    Spec.map ((Scheme.ΓSpecIso R).hom) = adjunction.unit.app (Spec R) := by
   have := ΓSpec.adjunction.right_triangle_components (op R)
   dsimp at this
   rwa [← IsIso.eq_comp_inv, Category.id_comp, ← Spec.map_inv, IsIso.Iso.inv_inv, eq_comm] at this
 
-lemma Scheme.toSpecΓ_preimage_basicOpen (X : Scheme.{u}) (r : Γ(X, ⊤)) :
-    X.toSpecΓ ⁻¹ᵁ (PrimeSpectrum.basicOpen r) = X.basicOpen r := by
-  rw [← basicOpen_eq_of_affine, Scheme.preimage_basicOpen, ← Scheme.Hom.appTop]
+lemma adjunction_unit_map_basicOpen (X : Scheme.{u}) (r : Γ(X, ⊤)) :
+    (ΓSpec.adjunction.unit.app X ⁻¹ᵁ (PrimeSpectrum.basicOpen r)) = X.basicOpen r := by
+  rw [← basicOpen_eq_of_affine]
+  erw [Scheme.preimage_basicOpen]
   congr
-  rw [Scheme.toSpecΓ_appTop]
-  exact Iso.inv_hom_id_apply (C := CommRingCat) _ _
+  rw [ΓSpec.adjunction_unit_app_app_top]
+  exact Iso.inv_hom_id_apply _ _
 
--- Warning: this LHS of this lemma breaks the structure-sheaf abstraction.
-@[reassoc (attr := simp)]
-theorem toOpen_toSpecΓ_app {X : Scheme.{u}} (U) :
-    StructureSheaf.toOpen _ _ ≫ X.toSpecΓ.app U =
+theorem toOpen_unit_app_val_c_app {X : Scheme.{u}} (U) :
+    StructureSheaf.toOpen _ _ ≫ (ΓSpec.adjunction.unit.app X).val.c.app U =
       X.presheaf.map (homOfLE (by exact le_top)).op := by
   rw [← StructureSheaf.toOpen_res _ _ _ (homOfLE le_top), Category.assoc,
-    NatTrans.naturality _ (homOfLE (le_top (a := U))).op]
+    NatTrans.naturality _ (homOfLE (le_top (a := U.unop))).op]
   show (ΓSpec.adjunction.counit.app (Scheme.Γ.rightOp.obj X)).unop ≫
     (Scheme.Γ.rightOp.map (ΓSpec.adjunction.unit.app X)).unop ≫ _ = _
   rw [← Category.assoc, ← unop_comp, ΓSpec.adjunction.left_triangle_components]
   dsimp
   exact Category.id_comp _
 
-lemma ΓSpecIso_inv_ΓSpec_adjunction_homEquiv {X : Scheme.{u}} {B : CommRingCat} (φ : B ⟶ Γ(X, ⊤)) :
-    (Scheme.ΓSpecIso B).inv ≫ ((ΓSpec.adjunction.homEquiv X (op B)) φ.op).appTop = φ := by
-  simp only [Adjunction.homEquiv_apply, Scheme.Spec_map, Opens.map_top, Scheme.comp_app]
-  simp
+-- Warning: this LHS of this lemma breaks the structure-sheaf abstraction.
+@[reassoc (attr := simp)]
+theorem toOpen_unit_app_val_c_app' {X : Scheme.{u}} (U : Opens (PrimeSpectrum Γ(X, ⊤))) :
+    toOpen Γ(X, ⊤) U ≫ (adjunction.unit.app X).app U =
+      X.presheaf.map (homOfLE (by exact le_top)).op :=
+  ΓSpec.toOpen_unit_app_val_c_app (op U)
 
-lemma ΓSpec_adjunction_homEquiv_eq {X : Scheme.{u}} {B : CommRingCat} (φ : B ⟶ Γ(X, ⊤)) :
-    ((ΓSpec.adjunction.homEquiv X (op B)) φ.op).appTop = (Scheme.ΓSpecIso B).hom ≫ φ := by
-  rw [← Iso.inv_comp_eq, ΓSpecIso_inv_ΓSpec_adjunction_homEquiv]
+end ΓSpec
 
 theorem ΓSpecIso_obj_hom {X : Scheme.{u}} (U : X.Opens) :
-    (Scheme.ΓSpecIso Γ(X, U)).hom = (Spec.map U.topIso.inv).appTop ≫
-      U.toScheme.toSpecΓ.appTop ≫ U.topIso.hom := by simp
-
-@[deprecated (since := "2024-07-24")]
-alias ΓSpec.adjunction_unit_naturality := Scheme.toSpecΓ_naturality
-@[deprecated (since := "2024-07-24")]
-alias ΓSpec.adjunction_unit_naturality_assoc := Scheme.toSpecΓ_naturality_assoc
-@[deprecated (since := "2024-07-24")]
-alias ΓSpec.adjunction_unit_app_app_top := Scheme.toSpecΓ_appTop
-@[deprecated (since := "2024-07-24")]
-alias ΓSpec.adjunction_unit_map_basicOpen := Scheme.toSpecΓ_preimage_basicOpen
+    (Scheme.ΓSpecIso Γ(X, U)).hom = (Spec.map U.topIso.inv).app ⊤ ≫
+      (ΓSpec.adjunction.unit.app U).app ⊤ ≫ U.topIso.hom := by
+  rw [ΓSpec.adjunction_unit_app_app_top] -- why can't simp find this
+  simp
 
 /-! Immediate consequences of the adjunction. -/
 
 
 /-- Spec preserves limits. -/
 instance : Limits.PreservesLimits Spec.toLocallyRingedSpace :=
-  ΓSpec.locallyRingedSpaceAdjunction.rightAdjoint_preservesLimits
+  ΓSpec.locallyRingedSpaceAdjunction.rightAdjointPreservesLimits
 
 instance Spec.preservesLimits : Limits.PreservesLimits Scheme.Spec :=
-  ΓSpec.adjunction.rightAdjoint_preservesLimits
+  ΓSpec.adjunction.rightAdjointPreservesLimits
 
 /-- The functor `Spec.toLocallyRingedSpace : CommRingCatᵒᵖ ⥤ LocallyRingedSpace`
 is fully faithful.-/

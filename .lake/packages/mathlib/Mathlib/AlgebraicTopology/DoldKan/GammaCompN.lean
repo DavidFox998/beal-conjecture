@@ -6,7 +6,6 @@ Authors: Joël Riou
 import Mathlib.AlgebraicTopology.DoldKan.FunctorGamma
 import Mathlib.AlgebraicTopology.DoldKan.SplitSimplicialObject
 import Mathlib.CategoryTheory.Idempotents.HomologicalComplex
-import Mathlib.Tactic.SuppressCompilation
 
 /-! The counit isomorphism of the Dold-Kan equivalence
 
@@ -18,7 +17,6 @@ and `N₂Γ₂ : Γ₂ ⋙ N₂ ≅ 𝟭 (Karoubi (ChainComplex C ℕ))`.
 
 -/
 
-suppress_compilation
 
 noncomputable section
 
@@ -34,7 +32,7 @@ variable {C : Type*} [Category C] [Preadditive C] [HasFiniteCoproducts C]
 /-- The isomorphism `(Γ₀.splitting K).nondegComplex ≅ K` for all `K : ChainComplex C ℕ`. -/
 @[simps!]
 def Γ₀NondegComplexIso (K : ChainComplex C ℕ) : (Γ₀.splitting K).nondegComplex ≅ K :=
-  HomologicalComplex.Hom.isoOfComponents (fun _ => Iso.refl _)
+  HomologicalComplex.Hom.isoOfComponents (fun n => Iso.refl _)
     (by
       rintro _ n (rfl : n + 1 = _)
       dsimp
@@ -103,6 +101,9 @@ theorem N₁Γ₀_inv_app_f_f (K : ChainComplex C ℕ) (n : ℕ) :
   rw [N₁Γ₀_inv_app]
   apply id_comp
 
+-- Porting note (#10694): added to speed up elaboration
+attribute [irreducible] N₁Γ₀
+
 /-- Compatibility isomorphism between `toKaroubi _ ⋙ Γ₂ ⋙ N₂` and `Γ₀ ⋙ N₁` which
 are functors `ChainComplex C ℕ ⥤ Karoubi (ChainComplex C ℕ)`. -/
 def N₂Γ₂ToKaroubiIso : toKaroubi (ChainComplex C ℕ) ⋙ Γ₂ ⋙ N₂ ≅ Γ₀ ⋙ N₁ :=
@@ -141,6 +142,9 @@ lemma N₂Γ₂ToKaroubiIso_inv_app (X : ChainComplex C ℕ) :
   rw [Splitting.ι_desc]
   erw [comp_id, id_comp]
 
+-- Porting note (#10694): added to speed up elaboration
+attribute [irreducible] N₂Γ₂ToKaroubiIso
+
 /-- The counit isomorphism of the Dold-Kan equivalence for additive categories. -/
 def N₂Γ₂ : Γ₂ ⋙ N₂ ≅ 𝟭 (Karoubi (ChainComplex C ℕ)) :=
   ((whiskeringLeft _ _ _).obj (toKaroubi (ChainComplex C ℕ))).preimageIso
@@ -168,6 +172,9 @@ lemma whiskerLeft_toKaroubi_N₂Γ₂_hom :
     (toKaroubi (ChainComplex C ℕ))).map_preimage e.hom
   dsimp only [whiskeringLeft, N₂Γ₂, Functor.preimageIso] at h ⊢
   exact h
+
+-- Porting note (#10694): added to speed up elaboration
+attribute [irreducible] N₂Γ₂
 
 theorem N₂Γ₂_compatible_with_N₁Γ₀ (K : ChainComplex C ℕ) :
     N₂Γ₂.hom.app ((toKaroubi _).obj K) = N₂Γ₂ToKaroubiIso.hom.app K ≫ N₁Γ₀.hom.app K :=

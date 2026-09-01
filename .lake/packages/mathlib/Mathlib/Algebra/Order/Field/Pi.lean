@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Order.Monoid.Defs
-import Mathlib.Data.Finset.Lattice.Fold
-import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.Finset.Lattice
+import Mathlib.Data.Fintype.Card
 
 /-!
 # Lemmas about (finite domain) functions into fields.

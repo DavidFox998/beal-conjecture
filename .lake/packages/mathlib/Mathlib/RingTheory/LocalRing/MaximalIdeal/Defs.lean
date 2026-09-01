@@ -13,14 +13,14 @@ We define the maximal ideal of a local ring as the ideal of all non units.
 
 ## Main definitions
 
-* `IsLocalRing.maximalIdeal`: The unique maximal ideal for a local rings. Its carrier set is the
+* `LocalRing.maximalIdeal`: The unique maximal ideal for a local rings. Its carrier set is the
   set of non units.
 
 -/
 
-namespace IsLocalRing
+namespace LocalRing
 
-variable (R : Type*) [CommSemiring R] [IsLocalRing R]
+variable (R : Type*) [CommSemiring R] [LocalRing R]
 
 /-- The ideal of elements that are not units. -/
 def maximalIdeal : Ideal R where
@@ -29,6 +29,4 @@ def maximalIdeal : Ideal R where
   add_mem' {_ _} hx hy := nonunits_add hx hy
   smul_mem' _ _ := mul_mem_nonunits_right
 
-end IsLocalRing
-
-@[deprecated (since := "2024-11-11")] alias LocalRing.maximalIdeal := IsLocalRing.maximalIdeal
+end LocalRing

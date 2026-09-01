@@ -11,7 +11,7 @@ import Mathlib.Algebra.Ring.Defs
 -/
 
 
-variable {M : Type*} {S : Set M}
+variable {M : Type*} {S T : Set M}
 
 namespace Set
 

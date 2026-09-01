@@ -63,8 +63,8 @@ def lift : (α →ₙ* β) ≃ (WithOne α →* β) where
         (fun x => WithOne.cases_on y (by rw [mul_one]; exact (mul_one _).symm)
           (fun y => f.map_mul x y)) }
   invFun F := F.toMulHom.comp coeMulHom
-  left_inv _ := MulHom.ext fun _ => rfl
-  right_inv F := MonoidHom.ext fun x => WithOne.cases_on x F.map_one.symm (fun _ => rfl)
+  left_inv f := MulHom.ext fun x => rfl
+  right_inv F := MonoidHom.ext fun x => WithOne.cases_on x F.map_one.symm (fun x => rfl)
 -- Porting note: the above proofs were broken because they were parenthesized wrong by mathport?
 
 variable (f : α →ₙ* β)
@@ -73,7 +73,8 @@ variable (f : α →ₙ* β)
 theorem lift_coe (x : α) : lift f x = f x :=
   rfl
 
-@[to_additive (attr := simp)]
+-- Porting note (#11119): removed `simp` attribute to appease `simpNF` linter.
+@[to_additive]
 theorem lift_one : lift f 1 = 1 :=
   rfl
 

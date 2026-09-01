@@ -5,8 +5,6 @@ Authors: Kenny Lau
 -/
 import Mathlib.RingTheory.IntegralClosure.IsIntegral.Defs
 import Mathlib.Algebra.Polynomial.Expand
-import Mathlib.RingTheory.Adjoin.Polynomial
-import Mathlib.RingTheory.Finiteness.Subalgebra
 import Mathlib.RingTheory.Polynomial.Tower
 
 /-!
@@ -101,14 +99,9 @@ theorem isIntegral_one [Algebra R B] : IsIntegral R (1 : B) :=
 variable (f : R →+* S)
 
 theorem IsIntegral.of_pow [Algebra R B] {x : B} {n : ℕ} (hn : 0 < n) (hx : IsIntegral R <| x ^ n) :
-    IsIntegral R x :=
-  have ⟨p, hmonic, heval⟩ := hx
-  ⟨expand R n p, hmonic.expand hn, by rwa [← aeval_def, expand_aeval]⟩
-
-theorem IsIntegral.of_aeval_monic {x : A} {p : R[X]} (monic : p.Monic)
-    (deg : p.natDegree ≠ 0) (hx : IsIntegral R (aeval x p)) : IsIntegral R x :=
-  have ⟨p, hmonic, heval⟩ := hx
-  ⟨_, hmonic.comp monic deg, by rwa [eval₂_comp, ← aeval_def x]⟩
+    IsIntegral R x := by
+  rcases hx with ⟨p, hmonic, heval⟩
+  exact ⟨expand R n p, hmonic.expand hn, by rwa [← aeval_def, expand_aeval]⟩
 
 end
 
@@ -186,7 +179,6 @@ theorem isIntegral_iff_isIntegral_closure_finite {r : B} :
   rcases hr with ⟨s, _, hsr⟩
   exact hsr.of_subring _
 
-@[stacks 09GH]
 theorem fg_adjoin_of_finite {s : Set A} (hfs : s.Finite) (his : ∀ x ∈ s, IsIntegral R x) :
     (Algebra.adjoin R s).toSubmodule.FG :=
   Set.Finite.induction_on hfs

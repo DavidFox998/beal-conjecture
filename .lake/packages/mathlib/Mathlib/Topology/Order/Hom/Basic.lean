@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Order.Hom.Basic
-import Mathlib.Topology.Basic
-import Mathlib.Topology.ContinuousMap.Defs
+import Mathlib.Topology.ContinuousMap.Basic
 
 /-!
 # Continuous order homomorphisms
@@ -36,7 +35,7 @@ structure ContinuousOrderHom (α β : Type*) [Preorder α] [Preorder β] [Topolo
   [TopologicalSpace β] extends OrderHom α β where
   continuous_toFun : Continuous toFun
 
-@[inherit_doc] infixr:25 " →Co " => ContinuousOrderHom
+infixr:25 " →Co " => ContinuousOrderHom
 
 section
 

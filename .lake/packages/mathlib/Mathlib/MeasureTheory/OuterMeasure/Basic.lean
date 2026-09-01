@@ -61,7 +61,7 @@ theorem measure_iUnion_le [Countable ι] (s : ι → Set α) : μ (⋃ i, s i) �
     μ (⋃ i, t i) = μ (⋃ i, disjointed t i) := by rw [iUnion_disjointed]
     _ ≤ ∑' i, μ (disjointed t i) :=
       OuterMeasureClass.measure_iUnion_nat_le _ _ (disjoint_disjointed _)
-    _ ≤ ∑' i, μ (t i) := by gcongr; exact disjointed_subset ..
+    _ ≤ ∑' i, μ (t i) := by gcongr; apply disjointed_subset
 
 theorem measure_biUnion_le {I : Set ι} (μ : F) (hI : I.Countable) (s : ι → Set α) :
     μ (⋃ i ∈ I, s i) ≤ ∑' i : I, μ (s i) := by
@@ -193,6 +193,11 @@ theorem iUnion_null_iff {ι : Sort*} [Countable ι] (m : OuterMeasure α) {s : �
 
 @[deprecated measure_iUnion_null (since := "2024-05-14")]
 alias ⟨_, iUnion_null⟩ := iUnion_null_iff
+
+@[deprecated (since := "2024-01-14")]
+theorem iUnion_null_iff' (m : OuterMeasure α) {ι : Prop} {s : ι → Set α} :
+    m (⋃ i, s i) = 0 ↔ ∀ i, m (s i) = 0 :=
+  measure_iUnion_null_iff
 
 @[deprecated measure_biUnion_finset_le (since := "2024-05-14")]
 protected theorem iUnion_finset (m : OuterMeasure α) (s : β → Set α) (t : Finset β) :

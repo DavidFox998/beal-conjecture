@@ -81,7 +81,7 @@ lemma summable_and_hasSum_factoredNumbers_prod_filter_prime_tsum
     (hsum : ∀ {p : ℕ}, p.Prime → Summable (fun n : ℕ ↦ ‖f (p ^ n)‖)) (s : Finset ℕ) :
     Summable (fun m : factoredNumbers s ↦ ‖f m‖) ∧
       HasSum (fun m : factoredNumbers s ↦ f m)
-        (∏ p ∈ s with p.Prime, ∑' n : ℕ, f (p ^ n)) := by
+        (∏ p ∈ s.filter Nat.Prime, ∑' n : ℕ, f (p ^ n)) := by
   induction' s using Finset.induction with p s hp ih
   · rw [factoredNumbers_empty]
     simp only [not_mem_empty, IsEmpty.forall_iff, forall_const, filter_true_of_mem, prod_empty]
@@ -93,7 +93,7 @@ lemma summable_and_hasSum_factoredNumbers_prod_filter_prime_tsum
           equivProdNatFactoredNumbers_apply', factoredNumbers.map_prime_pow_mul hmul hpp hp]
         refine Summable.of_nonneg_of_le (fun _ ↦ norm_nonneg _) (fun _ ↦ norm_mul_le ..) ?_
         apply Summable.mul_of_nonneg (hsum hpp) ih.1 <;> exact fun n ↦ norm_nonneg _
-      · have hp' : p ∉ {p ∈ s | p.Prime} := mt (mem_of_mem_filter p) hp
+      · have hp' : p ∉ s.filter Nat.Prime := mt (mem_of_mem_filter p) hp
         rw [prod_insert hp', ← (equivProdNatFactoredNumbers hpp hp).hasSum_iff, Function.comp_def]
         conv =>
           enter [1, x]
@@ -108,7 +108,7 @@ include hf₁ hmul in
 /-- A version of `EulerProduct.summable_and_hasSum_factoredNumbers_prod_filter_prime_tsum`
 in terms of the value of the series. -/
 lemma prod_filter_prime_tsum_eq_tsum_factoredNumbers (hsum : Summable (‖f ·‖)) (s : Finset ℕ) :
-    ∏ p ∈ s with p.Prime, ∑' n : ℕ, f (p ^ n) = ∑' m : factoredNumbers s, f m :=
+    ∏ p ∈ s.filter Nat.Prime, ∑' n : ℕ, f (p ^ n) = ∑' m : factoredNumbers s, f m :=
   (summable_and_hasSum_factoredNumbers_prod_filter_prime_tsum hf₁ hmul
     (fun hp ↦ hsum.comp_injective <| Nat.pow_right_injective hp.one_lt) _).2.tsum_eq.symm
 
@@ -175,7 +175,7 @@ theorem eulerProduct_hasProd (hsum : Summable (‖f ·‖)) (hf₀ : f 0 = 0) :
   intro ε hε
   obtain ⟨N₀, hN₀⟩ := norm_tsum_factoredNumbers_sub_tsum_lt hsum.of_norm hf₀ hε
   refine ⟨range N₀, fun s hs ↦ ?_⟩
-  have : ∏ p ∈ s, {p | Nat.Prime p}.mulIndicator F p = ∏ p ∈ s with p.Prime, F p :=
+  have : ∏ p ∈ s, {p | Nat.Prime p}.mulIndicator F p = ∏ p ∈ s.filter Nat.Prime, F p :=
     prod_mulIndicator_eq_prod_filter s (fun _ ↦ F) _ id
   rw [this, dist_eq_norm, prod_filter_prime_tsum_eq_tsum_factoredNumbers hf₁ hmul hsum,
     norm_sub_rev]
@@ -208,7 +208,7 @@ theorem eulerProduct (hsum : Summable (‖f ·‖)) (hf₀ : f 0 = 0) :
   have H (n : ℕ) : ∏ i ∈ range n, Set.mulIndicator {p | Nat.Prime p} F i =
                      ∏ p ∈ primesBelow n, ∑' (e : ℕ), f (p ^ e) :=
     prod_mulIndicator_eq_prod_filter (range n) (fun _ ↦ F) (fun _ ↦ {p | Nat.Prime p}) id
-  simpa only [F, H]
+  simpa only [H]
 
 include hf₁ hmul in
 /-- The *Euler Product* for multiplicative (on coprime arguments) functions.
@@ -292,10 +292,10 @@ we show that the sum involved converges absolutely. -/
 lemma summable_and_hasSum_factoredNumbers_prod_filter_prime_geometric {f : ℕ →* F}
     (h : ∀ {p : ℕ}, p.Prime → ‖f p‖ < 1) (s : Finset ℕ) :
     Summable (fun m : factoredNumbers s ↦ ‖f m‖) ∧
-      HasSum (fun m : factoredNumbers s ↦ f m) (∏ p ∈ s with p.Prime, (1 - f p)⁻¹) := by
+      HasSum (fun m : factoredNumbers s ↦ f m) (∏ p ∈ s.filter Nat.Prime, (1 - f p)⁻¹) := by
   have hmul {m n} (_ : Nat.Coprime m n) := f.map_mul m n
   have H₁ :
-      ∏ p ∈ s with p.Prime, ∑' n : ℕ, f (p ^ n) = ∏ p ∈ s with p.Prime, (1 - f p)⁻¹ := by
+      ∏ p ∈ s.filter Nat.Prime, ∑' n : ℕ, f (p ^ n) = ∏ p ∈ s.filter Nat.Prime, (1 - f p)⁻¹ := by
     refine prod_congr rfl fun p hp ↦ ?_
     simp only [map_pow]
     exact tsum_geometric_of_norm_lt_one <| h (mem_filter.mp hp).2
@@ -310,7 +310,7 @@ lemma summable_and_hasSum_factoredNumbers_prod_filter_prime_geometric {f : ℕ �
 in terms of the value of the series. -/
 lemma prod_filter_prime_geometric_eq_tsum_factoredNumbers {f : ℕ →* F} (hsum : Summable f)
     (s : Finset ℕ) :
-    ∏ p ∈ s with p.Prime, (1 - f p)⁻¹ = ∑' m : factoredNumbers s, f m := by
+    ∏ p ∈ s.filter Nat.Prime, (1 - f p)⁻¹ = ∑' m : factoredNumbers s, f m := by
   refine (summable_and_hasSum_factoredNumbers_prod_filter_prime_geometric ?_ s).2.tsum_eq.symm
   exact fun {_} hp ↦ hsum.norm_lt_one hp.one_lt
 

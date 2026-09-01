@@ -66,6 +66,8 @@ macro_rules
             spreads := spreads.push arg
           else
             newFields := newFields.push field
+        | `(structInstFieldAbbrev| $_:ident) =>
+          newFields := newFields.push field
         | _ =>
           throwUnsupported
 

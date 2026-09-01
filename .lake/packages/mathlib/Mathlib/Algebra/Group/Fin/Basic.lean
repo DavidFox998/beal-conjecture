@@ -23,7 +23,7 @@ assert_not_exists MonoidWithZero
 open Nat
 
 namespace Fin
-variable {n : ℕ}
+variable {m n : ℕ}
 
 /-! ### Instances -/
 
@@ -43,7 +43,7 @@ instance addCommMonoid (n : ℕ) [NeZero n] : AddCommMonoid (Fin n) where
 
 instance instAddMonoidWithOne (n) [NeZero n] : AddMonoidWithOne (Fin n) where
   __ := inferInstanceAs (AddCommMonoid (Fin n))
-  natCast i := Fin.ofNat' n i
+  natCast n := Fin.ofNat'' n
   natCast_zero := rfl
   natCast_succ _ := Fin.ext (add_mod _ _ _)
 

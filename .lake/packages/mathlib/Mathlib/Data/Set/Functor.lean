@@ -20,7 +20,7 @@ open Function Set.Notation
 
 namespace Set
 
-variable {α β : Type u} {s : Set α} {f : α → Set β}
+variable {α β : Type u} {s : Set α} {f : α → Set β} {g : Set (α → β)}
 
 /-- The `Set` functor is a monad.
 

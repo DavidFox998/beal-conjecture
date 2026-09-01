@@ -21,6 +21,8 @@ The implementation of `maxPowDiv` improves on the speed of `padicValNat`.
 
 namespace Nat
 
+open Nat
+
 /--
 Tail recursive function which returns the largest `k : ℕ` such that `p ^ k ∣ n` for any `p : ℕ`.
 `padicValNat_eq_maxPowDiv` allows the code generator to use this definition for `padicValNat`

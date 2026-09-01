@@ -38,7 +38,7 @@ This construction shows up unrelatedly twice in the theory of Roth numbers:
 open Finset Function Sum3
 
 variable {α β γ 𝕜 : Type*} [LinearOrderedField 𝕜] {t : Finset (α × β × γ)} {a a' : α} {b b' : β}
-  {c c' : γ} {x : α × β × γ}
+  {c c' : γ} {x : α × β × γ} {ε : 𝕜}
 
 namespace SimpleGraph
 namespace TripartiteFromTriangles
@@ -216,11 +216,11 @@ lemma cliqueFinset_eq_image [NoAccidental t] : (graph t).cliqueFinset 3 = t.imag
 lemma cliqueFinset_eq_map [NoAccidental t] : (graph t).cliqueFinset 3 = t.map toTriangle := by
   simp [cliqueFinset_eq_image, map_eq_image]
 
-@[simp] lemma card_triangles [NoAccidental t] : #((graph t).cliqueFinset 3) = #t := by
+@[simp] lemma card_triangles [NoAccidental t] : ((graph t).cliqueFinset 3).card = t.card := by
   rw [cliqueFinset_eq_map, card_map]
 
 lemma farFromTriangleFree [ExplicitDisjoint t] {ε : 𝕜}
-    (ht : ε * ((Fintype.card α + Fintype.card β + Fintype.card γ) ^ 2 : ℕ) ≤ #t) :
+    (ht : ε * ((Fintype.card α + Fintype.card β + Fintype.card γ) ^ 2 : ℕ) ≤ t.card) :
     (graph t).FarFromTriangleFree ε :=
   farFromTriangleFree_of_disjoint_triangles (t.map toTriangle)
     (map_subset_iff_subset_preimage.2 fun x hx ↦ by simpa using toTriangle_is3Clique hx)

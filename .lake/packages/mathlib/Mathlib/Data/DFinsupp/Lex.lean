@@ -91,13 +91,13 @@ private def lt_trichotomy_rec {P : Lex (Π₀ i, α i) → Lex (Π₀ i, α i) �
         not_mem_neLocus.mp (Finset.not_mem_of_lt_min hj <| by rwa [neLocus_comm]), hwit⟩
 
 /-- The less-or-equal relation for the lexicographic ordering is decidable. -/
-irreducible_def Lex.decidableLE : DecidableRel (α := Lex (Π₀ i, α i)) (· ≤ ·) :=
+irreducible_def Lex.decidableLE : @DecidableRel (Lex (Π₀ i, α i)) (· ≤ ·) :=
   lt_trichotomy_rec (fun h ↦ isTrue <| Or.inr h)
     (fun h ↦ isTrue <| Or.inl <| congr_arg _ h)
     fun h ↦ isFalse fun h' ↦ lt_irrefl _ (h.trans_le h')
 
 /-- The less-than relation for the lexicographic ordering is decidable. -/
-irreducible_def Lex.decidableLT : DecidableRel (α := Lex (Π₀ i, α i)) (· < ·) :=
+irreducible_def Lex.decidableLT : @DecidableRel (Lex (Π₀ i, α i)) (· < ·) :=
   lt_trichotomy_rec (fun h ↦ isTrue h) (fun h ↦ isFalse h.not_lt) fun h ↦ isFalse h.asymm
 
 -- Porting note: Added `DecidableEq` for `LinearOrder`.
@@ -136,33 +136,37 @@ section Covariants
 variable [LinearOrder ι] [∀ i, AddMonoid (α i)] [∀ i, LinearOrder (α i)]
 
 /-!  We are about to sneak in a hypothesis that might appear to be too strong.
-We assume `AddLeftStrictMono` (covariant with *strict* inequality `<`) also when proving the one
-with the *weak* inequality `≤`. This is actually necessary: addition on `Lex (Π₀ i, α i)` may fail
-to be monotone, when it is "just" monotone on `α i`. -/
+We assume `CovariantClass` with *strict* inequality `<` also when proving the one with the
+*weak* inequality `≤`. This is actually necessary: addition on `Lex (Π₀ i, α i)` may fail to be
+monotone, when it is "just" monotone on `α i`. -/
 
 
 section Left
 
-variable [∀ i, AddLeftStrictMono (α i)]
+variable [∀ i, CovariantClass (α i) (α i) (· + ·) (· < ·)]
 
-instance Lex.addLeftStrictMono : AddLeftStrictMono (Lex (Π₀ i, α i)) :=
+instance Lex.covariantClass_lt_left :
+    CovariantClass (Lex (Π₀ i, α i)) (Lex (Π₀ i, α i)) (· + ·) (· < ·) :=
   ⟨fun _ _ _ ⟨a, lta, ha⟩ ↦ ⟨a, fun j ja ↦ congr_arg _ (lta j ja), add_lt_add_left ha _⟩⟩
 
-instance Lex.addLeftMono : AddLeftMono (Lex (Π₀ i, α i)) :=
-  addLeftMono_of_addLeftStrictMono _
+instance Lex.covariantClass_le_left :
+    CovariantClass (Lex (Π₀ i, α i)) (Lex (Π₀ i, α i)) (· + ·) (· ≤ ·) :=
+  covariantClass_le_of_lt _ _ _
 
 end Left
 
 section Right
 
-variable [∀ i, AddRightStrictMono (α i)]
+variable [∀ i, CovariantClass (α i) (α i) (Function.swap (· + ·)) (· < ·)]
 
-instance Lex.addRightStrictMono : AddRightStrictMono (Lex (Π₀ i, α i)) :=
+instance Lex.covariantClass_lt_right :
+    CovariantClass (Lex (Π₀ i, α i)) (Lex (Π₀ i, α i)) (Function.swap (· + ·)) (· < ·) :=
   ⟨fun f _ _ ⟨a, lta, ha⟩ ↦
     ⟨a, fun j ja ↦ congr_arg (· + ofLex f j) (lta j ja), add_lt_add_right ha _⟩⟩
 
-instance Lex.addRightMono : AddRightMono (Lex (Π₀ i, α i)) :=
-  addRightMono_of_addRightStrictMono _
+instance Lex.covariantClass_le_right :
+    CovariantClass (Lex (Π₀ i, α i)) (Lex (Π₀ i, α i)) (Function.swap (· + ·)) (· ≤ ·) :=
+  covariantClass_le_of_lt _ _ _
 
 end Right
 

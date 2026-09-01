@@ -16,7 +16,7 @@ measure `1` to the parallelepiped spanned by any orthonormal basis, and that it 
 the canonical `volume` from the `MeasureSpace` instance.
 -/
 
-open Module MeasureTheory MeasureTheory.Measure Set
+open FiniteDimensional MeasureTheory MeasureTheory.Measure Set
 
 variable {ι E F : Type*}
 

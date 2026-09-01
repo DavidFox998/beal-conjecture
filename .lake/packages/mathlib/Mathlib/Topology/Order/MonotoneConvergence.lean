@@ -107,7 +107,7 @@ end IsGLB
 
 section CiSup
 
-variable [ConditionallyCompleteLattice α] [SupConvergenceClass α] {f : ι → α}
+variable [ConditionallyCompleteLattice α] [SupConvergenceClass α] {f : ι → α} {a : α}
 
 theorem tendsto_atTop_ciSup (h_mono : Monotone f) (hbdd : BddAbove <| range f) :
     Tendsto f atTop (𝓝 (⨆ i, f i)) := by
@@ -121,7 +121,7 @@ end CiSup
 
 section CiInf
 
-variable [ConditionallyCompleteLattice α] [InfConvergenceClass α] {f : ι → α}
+variable [ConditionallyCompleteLattice α] [InfConvergenceClass α] {f : ι → α} {a : α}
 
 theorem tendsto_atBot_ciInf (h_mono : Monotone f) (hbdd : BddBelow <| range f) :
     Tendsto f atBot (𝓝 (⨅ i, f i)) := by convert tendsto_atTop_ciSup h_mono.dual hbdd.dual using 1
@@ -133,7 +133,7 @@ end CiInf
 
 section iSup
 
-variable [CompleteLattice α] [SupConvergenceClass α] {f : ι → α}
+variable [CompleteLattice α] [SupConvergenceClass α] {f : ι → α} {a : α}
 
 theorem tendsto_atTop_iSup (h_mono : Monotone f) : Tendsto f atTop (𝓝 (⨆ i, f i)) :=
   tendsto_atTop_ciSup h_mono (OrderTop.bddAbove _)
@@ -145,7 +145,7 @@ end iSup
 
 section iInf
 
-variable [CompleteLattice α] [InfConvergenceClass α] {f : ι → α}
+variable [CompleteLattice α] [InfConvergenceClass α] {f : ι → α} {a : α}
 
 theorem tendsto_atBot_iInf (h_mono : Monotone f) : Tendsto f atBot (𝓝 (⨅ i, f i)) :=
   tendsto_atBot_ciInf h_mono (OrderBot.bddBelow _)

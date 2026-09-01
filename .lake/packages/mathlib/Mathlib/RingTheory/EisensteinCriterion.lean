@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.Data.Nat.Cast.WithTop
-import Mathlib.RingTheory.Ideal.Quotient.Basic
-import Mathlib.RingTheory.Polynomial.Content
 import Mathlib.RingTheory.Prime
+import Mathlib.RingTheory.Polynomial.Content
+import Mathlib.RingTheory.Ideal.Quotient
 
 /-!
 # Eisenstein's criterion
@@ -22,6 +22,8 @@ variable {R : Type*} [CommRing R]
 
 namespace Polynomial
 
+open Polynomial
+
 namespace EisensteinCriterionAux
 
 -- Section for auxiliary lemmas used in the proof of `irreducible_of_eisenstein_criterion`
@@ -32,7 +34,8 @@ theorem map_eq_C_mul_X_pow_of_forall_coeff_mem {f : R[X]} {P : Ideal R}
     by_cases hf0 : f = 0
     · simp [hf0]
     rcases lt_trichotomy (n : WithBot ℕ) (degree f) with (h | h | h)
-    · rw [coeff_map, eq_zero_iff_mem.2 (hfP n h), coeff_C_mul, coeff_X_pow, if_neg, mul_zero]
+    · erw [coeff_map, eq_zero_iff_mem.2 (hfP n h), coeff_C_mul, coeff_X_pow, if_neg,
+        mul_zero]
       rintro rfl
       exact not_lt_of_ge degree_le_natDegree h
     · have : natDegree f = n := natDegree_eq_of_degree_eq_some h.symm
@@ -40,7 +43,7 @@ theorem map_eq_C_mul_X_pow_of_forall_coeff_mem {f : R[X]} {P : Ideal R}
     · rw [coeff_eq_zero_of_degree_lt, coeff_eq_zero_of_degree_lt]
       · refine lt_of_le_of_lt (degree_C_mul_X_pow_le _ _) ?_
         rwa [← degree_eq_natDegree hf0]
-      · exact lt_of_le_of_lt degree_map_le h
+      · exact lt_of_le_of_lt (degree_map_le _ _) h
 
 theorem le_natDegree_of_map_eq_mul_X_pow {n : ℕ} {P : Ideal R} (hP : P.IsPrime) {q : R[X]}
     {c : Polynomial (R ⧸ P)} (hq : map (mk P) q = c * X ^ n) (hc0 : c.degree = 0) :
@@ -49,7 +52,7 @@ theorem le_natDegree_of_map_eq_mul_X_pow {n : ℕ} {P : Ideal R} (hP : P.IsPrime
     (calc
       ↑n = degree (q.map (mk P)) := by
         rw [hq, degree_mul, hc0, zero_add, degree_pow, degree_X, nsmul_one]
-      _ ≤ degree q := degree_map_le
+      _ ≤ degree q := degree_map_le _ _
       _ ≤ natDegree q := degree_le_natDegree
       )
 

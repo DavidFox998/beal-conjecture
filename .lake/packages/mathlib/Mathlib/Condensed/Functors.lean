@@ -20,6 +20,15 @@ sets.
 * `compHausToCondensed : CompHaus.{u} ⥤ CondensedSet.{u}` is essentially the yoneda presheaf
   functor. We also define `profiniteToCondensed` and `stoneanToCondensed`.
 
+TODO (Dagur):
+
+* Define the analogues of `compHausToCondensed` for sheaves on `Profinite` and `Stonean` and provide
+  the relevant isomorphisms with `profiniteToCondensed` and `stoneanToCondensed`.
+
+* Define the functor `Type (u+1) ⥤ CondensedSet.{u}` which takes a set `X` to the presheaf given by
+  mapping a compact Hausdorff space `S` to `LocallyConstant S X`, along with the isomorphism with
+  the functor that goes through `TopCat.{u+1}`.
+
 -/
 
 universe u v
@@ -42,7 +51,7 @@ section Topology
 
 /-- The functor from `CompHaus` to `Condensed.{u} (Type u)` given by the Yoneda sheaf. -/
 def compHausToCondensed' : CompHaus.{u} ⥤ Condensed.{u} (Type u) :=
-  (coherentTopology CompHaus).yoneda
+  (coherentTopology.subcanonical CompHaus).yoneda
 
 /-- The yoneda presheaf as an actual condensed set. -/
 def compHausToCondensed : CompHaus.{u} ⥤ CondensedSet.{u} :=
@@ -66,13 +75,13 @@ def stoneanToCondensed : Stonean.{u} ⥤ CondensedSet.{u} :=
 abbrev Stonean.toCondensed (S : Stonean.{u}) : CondensedSet.{u} := stoneanToCondensed.obj S
 
 instance : compHausToCondensed'.Full :=
-  inferInstanceAs ((coherentTopology CompHaus).yoneda).Full
+  show (Sheaf.Subcanonical.yoneda _).Full from inferInstance
 
 instance : compHausToCondensed'.Faithful :=
-  inferInstanceAs ((coherentTopology CompHaus).yoneda).Faithful
+  show (Sheaf.Subcanonical.yoneda _).Faithful from inferInstance
 
-instance : compHausToCondensed.Full := inferInstanceAs (_ ⋙ _).Full
+instance : compHausToCondensed.Full := show (_ ⋙ _).Full from inferInstance
 
-instance : compHausToCondensed.Faithful := inferInstanceAs (_ ⋙ _).Faithful
+instance : compHausToCondensed.Faithful := show (_ ⋙ _).Faithful from inferInstance
 
 end Topology

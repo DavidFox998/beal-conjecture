@@ -4,12 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov, Patrick Massot
 -/
 import Mathlib.Data.Finset.Preimage
-import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Order.Filter.Bases
-import Mathlib.Data.Set.Finite.Lemmas
-import Mathlib.Order.Filter.Prod
 import Mathlib.Order.Interval.Set.Disjoint
-import Mathlib.Order.Interval.Set.OrderIso
 
 /-!
 # `Filter.atTop` and `Filter.atBot` filters on preorders, monoids and groups.
@@ -172,6 +169,20 @@ theorem Tendsto.eventually_forall_le_atBot [Preorder β] {l : Filter α}
     ∀ᶠ x in l, ∀ y, y ≤ f x → p y := by
   rw [← Filter.eventually_forall_le_atBot] at h_evtl; exact (h_evtl.comap f).filter_mono hf.le_comap
 
+instance (priority := 200) atTop.isCountablyGenerated [Preorder α] [Countable α] :
+    (atTop : Filter <| α).IsCountablyGenerated :=
+  isCountablyGenerated_seq _
+
+instance (priority := 200) atBot.isCountablyGenerated [Preorder α] [Countable α] :
+    (atBot : Filter <| α).IsCountablyGenerated :=
+  isCountablyGenerated_seq _
+
+instance _root_.OrderDual.instIsCountablyGeneratedAtTop [Preorder α]
+    [IsCountablyGenerated (atBot : Filter α)] : IsCountablyGenerated (atTop : Filter αᵒᵈ) := ‹_›
+
+instance _root_.OrderDual.instIsCountablyGeneratedAtBot [Preorder α]
+    [IsCountablyGenerated (atTop : Filter α)] : IsCountablyGenerated (atBot : Filter αᵒᵈ) := ‹_›
+
 theorem _root_.IsTop.atTop_eq [Preorder α] {a : α} (ha : IsTop a) : atTop = 𝓟 (Ici a) :=
   (iInf_le _ _).antisymm <| le_iInf fun b ↦ principal_mono.2 <| Ici_subset_Ici.2 <| ha b
 
@@ -246,15 +257,6 @@ variable [Nonempty α]
 @[instance]
 lemma atTop_neBot : NeBot (atTop : Filter α) := atTop_basis.neBot_iff.2 fun _ => nonempty_Ici
 
-theorem atTop_neBot_iff {α : Type*} [Preorder α] :
-    (atTop : Filter α).NeBot ↔ Nonempty α ∧ IsDirected α (· ≤ ·) := by
-  refine ⟨fun h ↦ ⟨nonempty_of_neBot atTop, ⟨fun x y ↦ ?_⟩⟩, fun ⟨h₁, h₂⟩ ↦ atTop_neBot⟩
-  exact ((eventually_ge_atTop x).and (eventually_ge_atTop y)).exists
-
-theorem atBot_neBot_iff {α : Type*} [Preorder α] :
-    (atBot : Filter α).NeBot ↔ Nonempty α ∧ IsDirected α (· ≥ ·) :=
-  atTop_neBot_iff (α := αᵒᵈ)
-
 @[simp] lemma mem_atTop_sets {s : Set α} : s ∈ (atTop : Filter α) ↔ ∃ a : α, ∀ b ≥ a, b ∈ s :=
   atTop_basis.mem_iff.trans <| exists_congr fun _ => iff_of_eq (true_and _)
 
@@ -276,6 +278,10 @@ theorem map_atTop_eq {f : α → β} : atTop.map f = ⨅ a, 𝓟 (f '' { a' | a 
 
 theorem frequently_atTop' [NoMaxOrder α] : (∃ᶠ x in atTop, p x) ↔ ∀ a, ∃ b > a, p b :=
   atTop_basis_Ioi.frequently_iff.trans <| by simp
+
+lemma atTop_countable_basis [Countable α] :
+    HasCountableBasis (atTop : Filter α) (fun _ => True) Ici :=
+  { atTop_basis with countable := to_countable _ }
 
 end IsDirected
 
@@ -314,6 +320,10 @@ theorem map_atBot_eq {f : α → β} : atBot.map f = ⨅ a, 𝓟 (f '' { a' | a'
 
 theorem frequently_atBot' [NoMinOrder α] : (∃ᶠ x in atBot, p x) ↔ ∀ a, ∃ b < a, p b :=
   frequently_atTop' (α := αᵒᵈ)
+
+lemma atBot_countable_basis [Countable α] :
+    HasCountableBasis (atBot : Filter α) (fun _ => True) Iic :=
+  { atBot_basis with countable := to_countable _ }
 
 end IsCodirected
 
@@ -555,198 +565,6 @@ theorem strictMono_subseq_of_id_le {u : ℕ → ℕ} (hu : ∀ n, n ≤ u n) :
 theorem _root_.StrictMono.tendsto_atTop {φ : ℕ → ℕ} (h : StrictMono φ) : Tendsto φ atTop atTop :=
   tendsto_atTop_mono h.id_le tendsto_id
 
-/-- If `f` is a monotone function and `g` tends to `atTop` along a nontrivial filter.
-then the upper bounds of the range of `f ∘ g`
-are the same as the upper bounds of the range of `f`.
-
-This lemma together with `exists_seq_monotone_tendsto_atTop_atTop` below
-is useful to reduce a statement
-about a monotone family indexed by a type with countably generated `atTop` (e.g., `ℝ`)
-to the case of a family indexed by natural numbers. -/
-theorem _root_.Monotone.upperBounds_range_comp_tendsto_atTop [Preorder β] [Preorder γ]
-    {l : Filter α} [l.NeBot] {f : β → γ} (hf : Monotone f) {g : α → β} (hg : Tendsto g l atTop) :
-    upperBounds (range (f ∘ g)) = upperBounds (range f) := by
-  refine Subset.antisymm ?_ (upperBounds_mono_set <| range_comp_subset_range _ _)
-  rintro c hc _ ⟨b, rfl⟩
-  obtain ⟨a, ha⟩ : ∃ a, b ≤ g a := (hg.eventually_ge_atTop b).exists
-  exact (hf ha).trans <| hc <| mem_range_self _
-
-/-- If `f` is a monotone function and `g` tends to `atBot` along a nontrivial filter.
-then the lower bounds of the range of `f ∘ g`
-are the same as the lower bounds of the range of `f`. -/
-theorem _root_.Monotone.lowerBounds_range_comp_tendsto_atBot [Preorder β] [Preorder γ]
-    {l : Filter α} [l.NeBot] {f : β → γ} (hf : Monotone f) {g : α → β} (hg : Tendsto g l atBot) :
-    lowerBounds (range (f ∘ g)) = lowerBounds (range f) :=
-  hf.dual.upperBounds_range_comp_tendsto_atTop hg
-
-/-- If `f` is an antitone function and `g` tends to `atTop` along a nontrivial filter.
-then the upper bounds of the range of `f ∘ g`
-are the same as the upper bounds of the range of `f`. -/
-theorem _root_.Antitone.lowerBounds_range_comp_tendsto_atTop [Preorder β] [Preorder γ]
-    {l : Filter α} [l.NeBot] {f : β → γ} (hf : Antitone f) {g : α → β} (hg : Tendsto g l atTop) :
-    lowerBounds (range (f ∘ g)) = lowerBounds (range f) :=
-  hf.dual_left.lowerBounds_range_comp_tendsto_atBot hg
-
-/-- If `f` is an antitone function and `g` tends to `atBot` along a nontrivial filter.
-then the upper bounds of the range of `f ∘ g`
-are the same as the upper bounds of the range of `f`. -/
-theorem _root_.Antitone.upperBounds_range_comp_tendsto_atBot [Preorder β] [Preorder γ]
-    {l : Filter α} [l.NeBot] {f : β → γ} (hf : Antitone f) {g : α → β} (hg : Tendsto g l atBot) :
-    upperBounds (range (f ∘ g)) = upperBounds (range f) :=
-  hf.dual.lowerBounds_range_comp_tendsto_atTop hg
-
-/-- If `f` is a monotone function with bounded range
-and `g` tends to `atTop` along a nontrivial filter,
-then the indexed supremum of `f ∘ g` is equal to the indexed supremum of `f`.
-
-The assumption `BddAbove (range f)` can be omitted,
-if the codomain of `f` is a conditionally complete linear order or a complete lattice, see below.
--/
-theorem _root_.Monotone.ciSup_comp_tendsto_atTop [Preorder β] [ConditionallyCompleteLattice γ]
-    {l : Filter α} [l.NeBot] {f : β → γ} (hf : Monotone f) (hb : BddAbove (range f))
-    {g : α → β} (hg : Tendsto g l atTop) : ⨆ a, f (g a) = ⨆ b, f b := by
-  have : Nonempty α := nonempty_of_neBot l
-  have : Nonempty β := .map g ‹_›
-  rw [← csInf_upperBounds_range, ← csInf_upperBounds_range,
-    ← hf.upperBounds_range_comp_tendsto_atTop hg, Function.comp_def]
-  exacts [hb, hb.mono <| range_comp_subset_range _ _]
-
-/-- If `f` is a monotone function with bounded range
-and `g` tends to `atBot` along a nontrivial filter,
-then the indexed infimum of `f ∘ g` is equal to the indexed infimum of `f`.
-
-The assumption `BddBelow (range f)` can be omitted,
-if the codomain of `f` is a conditionally complete linear order or a complete lattice, see below.
--/
-theorem _root_.Monotone.ciInf_comp_tendsto_atBot [Preorder β] [ConditionallyCompleteLattice γ]
-    {l : Filter α} [l.NeBot] {f : β → γ} (hf : Monotone f) (hb : BddBelow (range f))
-    {g : α → β} (hg : Tendsto g l atBot) : ⨅ a, f (g a) = ⨅ b, f b :=
-  hf.dual.ciSup_comp_tendsto_atTop hb hg
-
-/-- If `f` is an antitone function with bounded range
-and `g` tends to `atBot` along a nontrivial filter,
-then the indexed supremum of `f ∘ g` is equal to the indexed supremum of `f`.
-
-The assumption `BddAbove (range f)` can be omitted,
-if the codomain of `f` is a conditionally complete linear order or a complete lattice, see below.
--/
-theorem _root_.Antitone.ciSup_comp_tendsto_atBot [Preorder β] [ConditionallyCompleteLattice γ]
-    {l : Filter α} [l.NeBot] {f : β → γ} (hf : Antitone f) (hb : BddAbove (range f))
-    {g : α → β} (hg : Tendsto g l atBot) : ⨆ a, f (g a) = ⨆ b, f b :=
-  hf.dual_left.ciSup_comp_tendsto_atTop hb hg
-
-/-- If `f` is an antitone function with bounded range
-and `g` tends to `atTop` along a nontrivial filter,
-then the indexed infimum of `f ∘ g` is equal to the indexed infimum of `f`.
-
-The assumption `BddBelow (range f)` can be omitted,
-if the codomain of `f` is a conditionally complete linear order or a complete lattice, see below.
--/
-theorem _root_.Antitone.ciInf_comp_tendsto_atTop [Preorder β] [ConditionallyCompleteLattice γ]
-    {l : Filter α} [l.NeBot] {f : β → γ} (hf : Antitone f) (hb : BddBelow (range f))
-    {g : α → β} (hg : Tendsto g l atTop) : ⨅ a, f (g a) = ⨅ b, f b :=
-  hf.dual.ciSup_comp_tendsto_atBot hb hg
-
-/-- If `f` is a monotone function taking values in a conditionally complete linear order
-and `g` tends to `atTop` along a nontrivial filter,
-then the indexed supremum of `f ∘ g` is equal to the indexed supremum of `f`. -/
-theorem _root_.Monotone.ciSup_comp_tendsto_atTop_of_linearOrder [Preorder β]
-    [ConditionallyCompleteLinearOrder γ] {l : Filter α} [l.NeBot] {f : β → γ} (hf : Monotone f)
-    {g : α → β} (hg : Tendsto g l atTop) : ⨆ a, f (g a) = ⨆ b, f b := by
-  if hb : BddAbove (range f) then
-    exact hf.ciSup_comp_tendsto_atTop hb hg
-  else
-    rw [iSup, iSup, csSup_of_not_bddAbove, csSup_of_not_bddAbove hb]
-    rwa [BddAbove, ← Function.comp_def f g, hf.upperBounds_range_comp_tendsto_atTop hg]
-
-/-- If `f` is a monotone function taking values in a conditionally complete linear order
-and `g` tends to `atBot` along a nontrivial filter,
-then the indexed infimum of `f ∘ g` is equal to the indexed infimum of `f`. -/
-theorem _root_.Monotone.ciInf_comp_tendsto_atBot_of_linearOrder [Preorder β]
-    [ConditionallyCompleteLinearOrder γ] {l : Filter α} [l.NeBot] {f : β → γ} (hf : Monotone f)
-    {g : α → β} (hg : Tendsto g l atBot) : ⨅ a, f (g a) = ⨅ b, f b :=
-  hf.dual.ciSup_comp_tendsto_atTop_of_linearOrder hg
-
-/-- If `f` is an antitone function taking values in a conditionally complete linear order
-and `g` tends to `atTop` along a nontrivial filter,
-then the indexed infimum of `f ∘ g` is equal to the indexed infimum of `f`. -/
-theorem _root_.Antitone.ciInf_comp_tendsto_atTop_of_linearOrder [Preorder β]
-    [ConditionallyCompleteLinearOrder γ] {l : Filter α} [l.NeBot] {f : β → γ} (hf : Antitone f)
-    {g : α → β} (hg : Tendsto g l atTop) : ⨅ a, f (g a) = ⨅ b, f b :=
-  hf.dual_left.ciInf_comp_tendsto_atBot_of_linearOrder hg
-
-/-- If `f` is an antitone function taking values in a conditionally complete linear order
-and `g` tends to `atBot` along a nontrivial filter,
-then the indexed supremum of `f ∘ g` is equal to the indexed supremum of `f`. -/
-theorem _root_.Antitone.ciSup_comp_tendsto_atBot_of_linearOrder [Preorder β]
-    [ConditionallyCompleteLinearOrder γ] {l : Filter α} [l.NeBot] {f : β → γ} (hf : Antitone f)
-    {g : α → β} (hg : Tendsto g l atBot) : ⨆ a, f (g a) = ⨆ b, f b :=
-  hf.dual_left.ciSup_comp_tendsto_atTop_of_linearOrder hg
-
-/-- If `f` is a monotone function taking values in a complete lattice
-and `g` tends to `atTop` along a nontrivial filter,
-then the indexed supremum of `f ∘ g` is equal to the indexed supremum of `f`. -/
-theorem _root_.Monotone.iSup_comp_tendsto_atTop
-    [Preorder β] [ConditionallyCompleteLattice γ] [OrderTop γ]
-    {l : Filter α} [l.NeBot] {f : β → γ} (hf : Monotone f) {g : α → β} (hg : Tendsto g l atTop) :
-    ⨆ a, f (g a) = ⨆ b, f b :=
-  hf.ciSup_comp_tendsto_atTop (OrderTop.bddAbove _) hg
-
-/-- If `f` is a monotone function taking values in a complete lattice
-and `g` tends to `atBot` along a nontrivial filter,
-then the indexed infimum of `f ∘ g` is equal to the indexed infimum of `f`. -/
-theorem _root_.Monotone.iInf_comp_tendsto_atBot
-    [Preorder β] [ConditionallyCompleteLattice γ] [OrderBot γ]
-    {l : Filter α} [l.NeBot] {f : β → γ} (hf : Monotone f) {g : α → β} (hg : Tendsto g l atBot) :
-    ⨅ a, f (g a) = ⨅ b, f b :=
-  hf.ciInf_comp_tendsto_atBot (OrderBot.bddBelow _) hg
-
-/-- If `f` is an antitone function taking values in a complete lattice
-and `g` tends to `atBot` along a nontrivial filter,
-then the indexed supremum of `f ∘ g` is equal to the indexed supremum of `f`. -/
-theorem _root_.Antitone.iSup_comp_tendsto_atBot
-    [Preorder β] [ConditionallyCompleteLattice γ] [OrderTop γ]
-    {l : Filter α} [l.NeBot] {f : β → γ} (hf : Antitone f) {g : α → β} (hg : Tendsto g l atBot) :
-    ⨆ a, f (g a) = ⨆ b, f b :=
-  hf.ciSup_comp_tendsto_atBot (OrderTop.bddAbove _) hg
-
-/-- If `f` is an antitone function taking values in a complete lattice
-and `g` tends to `atTop` along a nontrivial filter,
-then the indexed infimum of `f ∘ g` is equal to the indexed infimum of `f`. -/
-theorem _root_.Antitone.iInf_comp_tendsto_atTop
-    [Preorder β] [ConditionallyCompleteLattice γ] [OrderBot γ]
-    {l : Filter α} [l.NeBot] {f : β → γ} (hf : Antitone f) {g : α → β} (hg : Tendsto g l atTop) :
-    ⨅ a, f (g a) = ⨅ b, f b :=
-  hf.ciInf_comp_tendsto_atTop (OrderBot.bddBelow _) hg
-
-/-- If `s` is a monotone family of sets and `f` tends to `atTop` along a nontrivial filter,
-then the indexed union of `s ∘ f` is equal to the indexed union of `s`. -/
-theorem _root_.Monotone.iUnion_comp_tendsto_atTop [Preorder β] {l : Filter α} [l.NeBot]
-    {s : β → Set γ} (hs : Monotone s) {f : α → β} (hf : Tendsto f l atTop) :
-    ⋃ a, s (f a) = ⋃ b, s b :=
-  hs.iSup_comp_tendsto_atTop hf
-
-/-- If `s` is a monotone family of sets and `f` tends to `atBot` along a nontrivial filter,
-then the indexed intersection of `s ∘ f` is equal to the indexed intersection of `s`. -/
-theorem _root_.Monotone.iInter_comp_tendsto_atBot [Preorder β] {l : Filter α} [l.NeBot]
-    {s : β → Set γ} (hs : Monotone s) {f : α → β} (hf : Tendsto f l atBot) :
-    ⋂ a, s (f a) = ⋂ b, s b :=
-  hs.iInf_comp_tendsto_atBot hf
-
-/-- If `s` is an antitone family of sets and `f` tends to `atTop` along a nontrivial filter,
-then the indexed intersection of `s ∘ f` is equal to the indexed intersection of `s`. -/
-theorem _root_.Antitone.iInter_comp_tendsto_atTop [Preorder β] {l : Filter α} [l.NeBot]
-    {s : β → Set γ} (hs : Antitone s) {f : α → β} (hf : Tendsto f l atTop) :
-    ⋂ a, s (f a) = ⋂ b, s b :=
-  hs.iInf_comp_tendsto_atTop hf
-
-/-- If `s` is a monotone family of sets and `f` tends to `atBot` along a nontrivial filter,
-then the indexed union of `s ∘ f` is equal to the indexed union of `s`. -/
-theorem _root_.Antitone.iUnion_comp_tendsto_atBot [Preorder β] {l : Filter α} [l.NeBot]
-    {s : β → Set γ} (hs : Antitone s) {f : α → β} (hf : Tendsto f l atBot) :
-    ⋃ a, s (f a) = ⋃ b, s b :=
-  hs.iSup_comp_tendsto_atBot hf
-
 theorem tendsto_atTop_atTop_of_monotone [Preorder α] [Preorder β] {f : α → β} (hf : Monotone f)
     (h : ∀ b, ∃ a, b ≤ f a) : Tendsto f atTop atTop :=
   tendsto_iInf.2 fun b =>
@@ -896,6 +714,12 @@ theorem prod_atTop_atTop_eq [Preorder α] [Preorder β] :
   · subsingleton
   simpa [atTop, prod_iInf_left, prod_iInf_right, iInf_prod] using iInf_comm
 
+instance instIsCountablyGeneratedAtTopProd [Preorder α] [IsCountablyGenerated (atTop : Filter α)]
+    [Preorder β] [IsCountablyGenerated (atTop : Filter β)] :
+    IsCountablyGenerated (atTop : Filter (α × β)) := by
+  rw [← prod_atTop_atTop_eq]
+  infer_instance
+
 lemma tendsto_finset_prod_atTop :
     Tendsto (fun (p : Finset ι × Finset ι') ↦ p.1 ×ˢ p.2) atTop atTop := by
   classical
@@ -909,6 +733,12 @@ lemma tendsto_finset_prod_atTop :
 theorem prod_atBot_atBot_eq [Preorder α] [Preorder β] :
     (atBot : Filter α) ×ˢ (atBot : Filter β) = (atBot : Filter (α × β)) :=
   @prod_atTop_atTop_eq αᵒᵈ βᵒᵈ _ _
+
+instance instIsCountablyGeneratedAtBotProd [Preorder α] [IsCountablyGenerated (atBot : Filter α)]
+    [Preorder β] [IsCountablyGenerated (atBot : Filter β)] :
+    IsCountablyGenerated (atBot : Filter (α × β)) := by
+  rw [← prod_atBot_atBot_eq]
+  infer_instance
 
 theorem prod_map_atTop_eq {α₁ α₂ β₁ β₂ : Type*} [Preorder β₁] [Preorder β₂]
     (u₁ : β₁ → α₁) (u₂ : β₂ → α₂) : map u₁ atTop ×ˢ map u₂ atTop = map (Prod.map u₁ u₂) atTop := by
@@ -1137,12 +967,12 @@ theorem tendsto_comp_val_Iic_atBot [Preorder α] [IsDirected α (· ≥ ·)]
   tendsto_comp_val_Ici_atTop (α := αᵒᵈ)
 
 theorem map_add_atTop_eq_nat (k : ℕ) : map (fun a => a + k) atTop = atTop :=
-  map_atTop_eq_of_gc (· - k) k (fun _ _ h => Nat.add_le_add_right h k)
-    (fun _ _ h => (Nat.le_sub_iff_add_le h).symm) fun a h => by rw [Nat.sub_add_cancel h]
+  map_atTop_eq_of_gc (· - k) k (fun a b h => Nat.add_le_add_right h k)
+    (fun a b h => (Nat.le_sub_iff_add_le h).symm) fun a h => by rw [Nat.sub_add_cancel h]
 
 theorem map_sub_atTop_eq_nat (k : ℕ) : map (fun a => a - k) atTop = atTop :=
-  map_atTop_eq_of_gc (· + k) 0 (fun _ _ h => Nat.sub_le_sub_right h _)
-    (fun _ _ _ => Nat.sub_le_iff_le_add) fun b _ => by rw [Nat.add_sub_cancel_right]
+  map_atTop_eq_of_gc (· + k) 0 (fun a b h => Nat.sub_le_sub_right h _)
+    (fun a b _ => Nat.sub_le_iff_le_add) fun b _ => by rw [Nat.add_sub_cancel_right]
 
 theorem tendsto_add_atTop_nat (k : ℕ) : Tendsto (fun a => a + k) atTop atTop :=
   le_of_eq (map_add_atTop_eq_nat k)
@@ -1156,7 +986,7 @@ theorem tendsto_add_atTop_iff_nat {f : ℕ → α} {l : Filter α} (k : ℕ) :
     rw [← tendsto_map'_iff, map_add_atTop_eq_nat]
 
 theorem map_div_atTop_eq_nat (k : ℕ) (hk : 0 < k) : map (fun a => a / k) atTop = atTop :=
-  map_atTop_eq_of_gc (fun b => k * b + (k - 1)) 1 (fun _ _ h => Nat.div_le_div_right h)
+  map_atTop_eq_of_gc (fun b => k * b + (k - 1)) 1 (fun a b h => Nat.div_le_div_right h)
     -- Porting note: there was a parse error in `calc`, use `simp` instead
     (fun a b _ => by rw [Nat.div_le_iff_le_mul_add_pred hk])
     fun b _ => by rw [Nat.mul_add_div hk, Nat.div_eq_of_lt, add_zero]; omega
@@ -1262,11 +1092,105 @@ theorem HasAntitoneBasis.subbasis_with_rel {f : Filter α} {s : ℕ → Set α}
   simp only [forall_mem_image, forall_and, mem_Iio] at hφ
   exact ⟨φ, forall_swap.2 hφ.1, forall_swap.2 hφ.2⟩
 
+/-- If `f` is a nontrivial countably generated filter, then there exists a sequence that converges
+to `f`. -/
+theorem exists_seq_tendsto (f : Filter α) [IsCountablyGenerated f] [NeBot f] :
+    ∃ x : ℕ → α, Tendsto x atTop f := by
+  obtain ⟨B, h⟩ := f.exists_antitone_basis
+  choose x hx using fun n => Filter.nonempty_of_mem (h.mem n)
+  exact ⟨x, h.tendsto hx⟩
+
+theorem exists_seq_monotone_tendsto_atTop_atTop (α : Type*) [Preorder α] [Nonempty α]
+    [IsDirected α (· ≤ ·)] [(atTop : Filter α).IsCountablyGenerated] :
+    ∃ xs : ℕ → α, Monotone xs ∧ Tendsto xs atTop atTop := by
+  obtain ⟨ys, h⟩ := exists_seq_tendsto (atTop : Filter α)
+  choose c hleft hright using exists_ge_ge (α := α)
+  set xs : ℕ → α := fun n => (List.range n).foldl (fun x n ↦ c x (ys n)) (ys 0)
+  have hsucc (n : ℕ) : xs (n + 1) = c (xs n) (ys n) := by simp [xs, List.range_succ]
+  refine ⟨xs, ?_, ?_⟩
+  · refine monotone_nat_of_le_succ fun n ↦ ?_
+    rw [hsucc]
+    apply hleft
+  · refine (tendsto_add_atTop_iff_nat 1).1 <| tendsto_atTop_mono (fun n ↦ ?_) h
+    rw [hsucc]
+    apply hright
+
+theorem exists_seq_antitone_tendsto_atTop_atBot (α : Type*) [Preorder α] [Nonempty α]
+    [IsDirected α (· ≥ ·)] [(atBot : Filter α).IsCountablyGenerated] :
+    ∃ xs : ℕ → α, Antitone xs ∧ Tendsto xs atTop atBot :=
+  exists_seq_monotone_tendsto_atTop_atTop αᵒᵈ
+
+/-- An abstract version of continuity of sequentially continuous functions on metric spaces:
+if a filter `k` is countably generated then `Tendsto f k l` iff for every sequence `u`
+converging to `k`, `f ∘ u` tends to `l`. -/
+theorem tendsto_iff_seq_tendsto {f : α → β} {k : Filter α} {l : Filter β} [k.IsCountablyGenerated] :
+    Tendsto f k l ↔ ∀ x : ℕ → α, Tendsto x atTop k → Tendsto (f ∘ x) atTop l := by
+  refine ⟨fun h x hx => h.comp hx, fun H s hs => ?_⟩
+  contrapose! H
+  have : NeBot (k ⊓ 𝓟 (f ⁻¹' sᶜ)) := by simpa [neBot_iff, inf_principal_eq_bot]
+  rcases (k ⊓ 𝓟 (f ⁻¹' sᶜ)).exists_seq_tendsto with ⟨x, hx⟩
+  rw [tendsto_inf, tendsto_principal] at hx
+  refine ⟨x, hx.1, fun h => ?_⟩
+  rcases (hx.2.and (h hs)).exists with ⟨N, hnmem, hmem⟩
+  exact hnmem hmem
+
+theorem tendsto_of_seq_tendsto {f : α → β} {k : Filter α} {l : Filter β} [k.IsCountablyGenerated] :
+    (∀ x : ℕ → α, Tendsto x atTop k → Tendsto (f ∘ x) atTop l) → Tendsto f k l :=
+  tendsto_iff_seq_tendsto.2
+
+theorem eventually_iff_seq_eventually {ι : Type*} {l : Filter ι} {p : ι → Prop}
+    [l.IsCountablyGenerated] :
+    (∀ᶠ n in l, p n) ↔ ∀ x : ℕ → ι, Tendsto x atTop l → ∀ᶠ n : ℕ in atTop, p (x n) := by
+  simpa using tendsto_iff_seq_tendsto (f := id) (l := 𝓟 {x | p x})
+
+theorem frequently_iff_seq_frequently {ι : Type*} {l : Filter ι} {p : ι → Prop}
+    [l.IsCountablyGenerated] :
+    (∃ᶠ n in l, p n) ↔ ∃ x : ℕ → ι, Tendsto x atTop l ∧ ∃ᶠ n : ℕ in atTop, p (x n) := by
+  simp only [Filter.Frequently, eventually_iff_seq_eventually (l := l)]
+  push_neg; rfl
+
 theorem subseq_forall_of_frequently {ι : Type*} {x : ℕ → ι} {p : ι → Prop} {l : Filter ι}
     (h_tendsto : Tendsto x atTop l) (h : ∃ᶠ n in atTop, p (x n)) :
     ∃ ns : ℕ → ℕ, Tendsto (fun n => x (ns n)) atTop l ∧ ∀ n, p (x (ns n)) := by
   choose ns hge hns using frequently_atTop.1 h
   exact ⟨ns, h_tendsto.comp (tendsto_atTop_mono hge tendsto_id), hns⟩
+
+theorem exists_seq_forall_of_frequently {ι : Type*} {l : Filter ι} {p : ι → Prop}
+    [l.IsCountablyGenerated] (h : ∃ᶠ n in l, p n) :
+    ∃ ns : ℕ → ι, Tendsto ns atTop l ∧ ∀ n, p (ns n) := by
+  rw [frequently_iff_seq_frequently] at h
+  obtain ⟨x, hx_tendsto, hx_freq⟩ := h
+  obtain ⟨n_to_n, h_tendsto, h_freq⟩ := subseq_forall_of_frequently hx_tendsto hx_freq
+  exact ⟨x ∘ n_to_n, h_tendsto, h_freq⟩
+
+lemma frequently_iff_seq_forall {ι : Type*} {l : Filter ι} {p : ι → Prop}
+    [l.IsCountablyGenerated] :
+    (∃ᶠ n in l, p n) ↔ ∃ ns : ℕ → ι, Tendsto ns atTop l ∧ ∀ n, p (ns n) :=
+  ⟨exists_seq_forall_of_frequently, fun ⟨_ns, hnsl, hpns⟩ ↦
+    hnsl.frequently <| Frequently.of_forall hpns⟩
+
+/-- A sequence converges if every subsequence has a convergent subsequence. -/
+theorem tendsto_of_subseq_tendsto {ι : Type*} {x : ι → α} {f : Filter α} {l : Filter ι}
+    [l.IsCountablyGenerated]
+    (hxy : ∀ ns : ℕ → ι, Tendsto ns atTop l →
+      ∃ ms : ℕ → ℕ, Tendsto (fun n => x (ns <| ms n)) atTop f) :
+    Tendsto x l f := by
+  contrapose! hxy
+  obtain ⟨s, hs, hfreq⟩ : ∃ s ∈ f, ∃ᶠ n in l, x n ∉ s := by
+    rwa [not_tendsto_iff_exists_frequently_nmem] at hxy
+  obtain ⟨y, hy_tendsto, hy_freq⟩ := exists_seq_forall_of_frequently hfreq
+  refine ⟨y, hy_tendsto, fun ms hms_tendsto ↦ ?_⟩
+  rcases (hms_tendsto.eventually_mem hs).exists with ⟨n, hn⟩
+  exact absurd hn <| hy_freq _
+
+theorem subseq_tendsto_of_neBot {f : Filter α} [IsCountablyGenerated f] {u : ℕ → α}
+    (hx : NeBot (f ⊓ map u atTop)) : ∃ θ : ℕ → ℕ, StrictMono θ ∧ Tendsto (u ∘ θ) atTop f := by
+  rw [← Filter.push_pull', map_neBot_iff] at hx
+  rcases exists_seq_tendsto (comap u f ⊓ atTop) with ⟨φ, hφ⟩
+  rw [tendsto_inf, tendsto_comap_iff] at hφ
+  obtain ⟨ψ, hψ, hψφ⟩ : ∃ ψ : ℕ → ℕ, StrictMono ψ ∧ StrictMono (φ ∘ ψ) :=
+    strictMono_subseq_of_tendsto_atTop hφ.2
+  exact ⟨φ ∘ ψ, hψφ, hφ.1.comp hψ.tendsto_atTop⟩
 
 end Filter
 
@@ -1291,45 +1215,3 @@ theorem Antitone.piecewise_eventually_eq_iInter {β : α → Type*} [Preorder ι
   convert ← (compl_anti.comp hs).piecewise_eventually_eq_iUnion g f a using 3
   · convert congr_fun (Set.piecewise_compl (s _) g f) a
   · simp only [(· ∘ ·), ← compl_iInter, Set.piecewise_compl]
-
-namespace Nat
-
-theorem eventually_pow_lt_factorial_sub (c d : ℕ) : ∀ᶠ n in atTop, c ^ n < (n - d)! := by
-  rw [eventually_atTop]
-  refine ⟨2 * (c ^ 2 + d + 1), ?_⟩
-  intro n hn
-  obtain ⟨d', rfl⟩ := Nat.exists_eq_add_of_le hn
-  obtain (rfl | c0) := c.eq_zero_or_pos
-  · simp [Nat.two_mul, ← Nat.add_assoc, Nat.add_right_comm _ 1, Nat.factorial_pos]
-  refine (Nat.le_mul_of_pos_right _ (Nat.pow_pos (n := d') c0)).trans_lt ?_
-  convert_to (c ^ 2) ^ (c ^ 2 + d' + d + 1) < (c ^ 2 + (c ^ 2 + d' + d + 1) + 1)!
-  · rw [← pow_mul, ← pow_add]
-    congr 1
-    omega
-  · congr 1
-    omega
-  refine (lt_of_lt_of_le ?_ Nat.factorial_mul_pow_le_factorial).trans_le <|
-    (factorial_le (Nat.le_succ _))
-  rw [← one_mul (_ ^ _ : ℕ)]
-  apply Nat.mul_lt_mul_of_le_of_lt
-  · exact Nat.one_le_of_lt (Nat.factorial_pos _)
-  · exact Nat.pow_lt_pow_left (Nat.lt_succ_self _) (Nat.succ_ne_zero _)
-  · exact (Nat.factorial_pos _)
-
-theorem eventually_mul_pow_lt_factorial_sub (a c d : ℕ) :
-    ∀ᶠ n in atTop, a * c ^ n < (n - d)! := by
-  filter_upwards [Nat.eventually_pow_lt_factorial_sub (a * c) d, Filter.eventually_gt_atTop 0]
-    with n hn hn0
-  rw [mul_pow] at hn
-  exact (Nat.mul_le_mul_right _ (Nat.le_self_pow hn0.ne' _)).trans_lt hn
-
-@[deprecated eventually_pow_lt_factorial_sub (since := "2024-09-25")]
-theorem exists_pow_lt_factorial (c : ℕ) : ∃ n0 > 1, ∀ n ≥ n0, c ^ n < (n - 1)! :=
-  let ⟨n0, h⟩ := (eventually_pow_lt_factorial_sub c 1).exists_forall_of_atTop
-  ⟨max n0 2, by omega, fun n hn ↦ h n (by omega)⟩
-
-@[deprecated eventually_mul_pow_lt_factorial_sub (since := "2024-09-25")]
-theorem exists_mul_pow_lt_factorial (a : ℕ) (c : ℕ) : ∃ n0, ∀ n ≥ n0, a * c ^ n < (n - 1)! :=
-  (eventually_mul_pow_lt_factorial_sub a c 1).exists_forall_of_atTop
-
-end Nat

@@ -6,10 +6,9 @@ Authors: Anne Baanen
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 import Mathlib.LinearAlgebra.FreeModule.PID
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
-import Mathlib.LinearAlgebra.Quotient.Pi
+import Mathlib.LinearAlgebra.QuotientPi
 import Mathlib.RingTheory.Ideal.Basis
 import Mathlib.LinearAlgebra.Dimension.Constructions
-import Mathlib.Data.ZMod.Quotient
 
 /-! # Ideals in free modules over PIDs
 
@@ -41,7 +40,9 @@ noncomputable def quotientEquivPiSpan (I : Ideal S) (b : Basis ι R S) (hI : I �
   have ab_eq := I.selfBasis_def b hI
   have mem_I_iff : ∀ x, x ∈ I ↔ ∀ i, a i ∣ b'.repr x i := by
     intro x
-    simp_rw [ab.mem_ideal_iff', ab, ab_eq]
+    -- Porting note: these lines used to be `simp_rw [ab.mem_ideal_iff', ab_eq]`
+    rw [ab.mem_ideal_iff']
+    simp_rw [ab_eq]
     have : ∀ (c : ι → R) (i), b'.repr (∑ j : ι, c j • a j • b' j) i = a i * c i := by
       intro c i
       simp only [← MulAction.mul_smul, b'.repr_sum_self, mul_comm]
@@ -113,9 +114,9 @@ noncomputable def quotientEquivDirectSum :
 theorem finrank_quotient_eq_sum {ι} [Fintype ι] (b : Basis ι R S) [Nontrivial F]
     [∀ i, Module.Free F (R ⧸ span ({I.smithCoeffs b hI i} : Set R))]
     [∀ i, Module.Finite F (R ⧸ span ({I.smithCoeffs b hI i} : Set R))] :
-    Module.finrank F (S ⧸ I) =
-      ∑ i, Module.finrank F (R ⧸ span ({I.smithCoeffs b hI i} : Set R)) := by
+    FiniteDimensional.finrank F (S ⧸ I) =
+      ∑ i, FiniteDimensional.finrank F (R ⧸ span ({I.smithCoeffs b hI i} : Set R)) := by
   -- slow, and dot notation doesn't work
-  rw [LinearEquiv.finrank_eq <| quotientEquivDirectSum F b hI, Module.finrank_directSum]
+  rw [LinearEquiv.finrank_eq <| quotientEquivDirectSum F b hI, FiniteDimensional.finrank_directSum]
 
 end Ideal

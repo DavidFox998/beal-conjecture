@@ -38,14 +38,6 @@ the coproduct of the objects `X₁ i ⊗ X₂ j` for `i + j = n` exists. -/
 abbrev HasTensor (X₁ X₂ : GradedObject I C) : Prop :=
   HasMap (((mapBifunctor (curriedTensor C) I I).obj X₁).obj X₂) (fun ⟨i, j⟩ => i + j)
 
-lemma hasTensor_of_iso {X₁ X₂ Y₁ Y₂ : GradedObject I C}
-    (e₁ : X₁ ≅ Y₁) (e₂ : X₂ ≅ Y₂) [HasTensor X₁ X₂] :
-    HasTensor Y₁ Y₂ := by
-  let e : ((mapBifunctor (curriedTensor C) I I).obj X₁).obj X₂ ≅
-    ((mapBifunctor (curriedTensor C) I I).obj Y₁).obj Y₂ := isoMk _ _
-      (fun ⟨i, j⟩ ↦ (eval i).mapIso e₁ ⊗ (eval j).mapIso e₂)
-  exact hasMap_of_iso e _
-
 namespace Monoidal
 
 /-- The tensor product of two graded objects. -/
@@ -127,17 +119,6 @@ lemma tensor_comp {X₁ X₂ X₃ Y₁ Y₂ Y₃ : GradedObject I C} (f₁ : X�
   rw [← mapMap_comp]
   apply congr_mapMap
   simp
-
-/-- The isomorphism `tensorObj X₁ Y₁ ≅ tensorObj X₂ Y₂` induced by isomorphisms of graded
-objects `e : X₁ ≅ X₂` and `e' : Y₁ ≅ Y₂`. -/
-@[simps]
-noncomputable def tensorIso {X₁ X₂ Y₁ Y₂ : GradedObject I C} (e : X₁ ≅ X₂) (e' : Y₁ ≅ Y₂)
-    [HasTensor X₁ Y₁] [HasTensor X₂ Y₂] :
-    tensorObj X₁ Y₁ ≅ tensorObj X₂ Y₂ where
-  hom := tensorHom e.hom e'.hom
-  inv := tensorHom e.inv e'.inv
-  hom_inv_id := by simp only [← tensor_comp, Iso.hom_inv_id, tensor_id]
-  inv_hom_id := by simp only [← tensor_comp, Iso.inv_hom_id, tensor_id]
 
 lemma tensorHom_def {X₁ X₂ Y₁ Y₂ : GradedObject I C} (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂)
     [HasTensor X₁ Y₁] [HasTensor X₂ Y₂] [HasTensor X₂ Y₁] :
@@ -344,7 +325,7 @@ lemma left_tensor_tensorObj₃_ext {j : I} {A : C} (Z : C)
       (_ ◁ ιTensorObj₃ X₁ X₂ X₃ i₁ i₂ i₃ j h) ≫ f =
         (_ ◁ ιTensorObj₃ X₁ X₂ X₃ i₁ i₂ i₃ j h) ≫ g) : f = g := by
     refine (@isColimitOfPreserves C _ C _ _ _ _ ((curriedTensor C).obj Z) _
-      (isColimitCofan₃MapBifunctorBifunctor₂₃MapObj (H := H) (j := j)) hZ).hom_ext ?_
+      (isColimitCofan₃MapBifunctorBifunctor₂₃MapObj (H := H) j) hZ).hom_ext ?_
     intro ⟨⟨i₁, i₂, i₃⟩, hi⟩
     exact h _ _ _ hi
 
@@ -565,7 +546,6 @@ lemma triangle :
       tensorHom (rightUnitor X₁).hom (𝟙 X₃) := by
   convert mapBifunctor_triangle (curriedAssociatorNatIso C) (𝟙_ C)
     (rightUnitorNatIso C) (leftUnitorNatIso C) (triangleIndexData I) X₁ X₃ (by simp)
-  all_goals assumption
 
 end Triangle
 

@@ -39,7 +39,10 @@ Prove lemmas relating extreme sets and points to the intrinsic frontier.
 -/
 
 
-open Function Set Affine
+open Function Set
+
+open scoped Classical
+open Affine
 
 variable {𝕜 E F ι : Type*} {π : ι → Type*}
 
@@ -153,7 +156,7 @@ end SMul
 section OrderedSemiring
 
 variable [OrderedSemiring 𝕜] [AddCommGroup E] [AddCommGroup F] [∀ i, AddCommGroup (π i)]
-  [Module 𝕜 E] [Module 𝕜 F] [∀ i, Module 𝕜 (π i)] {A B : Set E}
+  [Module 𝕜 E] [Module 𝕜 F] [∀ i, Module 𝕜 (π i)] {A B : Set E} {x : E}
 
 theorem IsExtreme.convex_diff (hA : Convex 𝕜 A) (hAB : IsExtreme 𝕜 A B) : Convex 𝕜 (A \ B) :=
   convex_iff_openSegment_subset.2 fun _ ⟨hx₁A, hx₁B⟩ _ ⟨hx₂A, _⟩ _ hx ↦
@@ -184,18 +187,17 @@ theorem extremePoints_prod (s : Set E) (t : Set F) :
 @[simp]
 theorem extremePoints_pi (s : ∀ i, Set (π i)) :
     (univ.pi s).extremePoints 𝕜 = univ.pi fun i ↦ (s i).extremePoints 𝕜 := by
-  classical
   ext x
   simp only [mem_extremePoints, mem_pi, mem_univ, true_imp_iff, @forall_and ι]
   refine and_congr_right fun hx ↦ ⟨fun h i ↦ ?_, fun h ↦ ?_⟩
   · rintro x₁ hx₁ x₂ hx₂ hi
-    refine (h (update x i x₁) ?_ (update x i x₂) ?_ ?_).imp (fun h₁ ↦ by rw [← h₁, update_self])
-        fun h₂ ↦ by rw [← h₂, update_self]
+    refine (h (update x i x₁) ?_ (update x i x₂) ?_ ?_).imp (fun h₁ ↦ by rw [← h₁, update_same])
+        fun h₂ ↦ by rw [← h₂, update_same]
     iterate 2
       rintro j
       obtain rfl | hji := eq_or_ne j i
-      · rwa [update_self]
-      · rw [update_of_ne hji]
+      · rwa [update_same]
+      · rw [update_noteq hji]
         exact hx _
     rw [← Pi.image_update_openSegment]
     exact ⟨_, hi, update_eq_self _ _⟩
@@ -223,7 +225,7 @@ end OrderedRing
 section LinearOrderedRing
 
 variable [LinearOrderedRing 𝕜] [AddCommGroup E] [Module 𝕜 E]
-variable [DenselyOrdered 𝕜] [NoZeroSMulDivisors 𝕜 E] {A : Set E} {x : E}
+variable [DenselyOrdered 𝕜] [NoZeroSMulDivisors 𝕜 E] {A B : Set E} {x : E}
 
 /-- A useful restatement using `segment`: `x` is an extreme point iff the only (closed) segments
 that contain it are those with `x` as one of their endpoints. -/

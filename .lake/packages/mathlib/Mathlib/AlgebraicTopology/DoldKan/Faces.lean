@@ -182,7 +182,10 @@ theorem induction {Y : C} {n q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : HigherFacesVa
     rfl
   -- now, we assume j ≠ a (i.e. a < j)
   have haj : a < j := (Ne.le_iff_lt hj₂).mp (by omega)
-  have ham : a ≤ m := by omega
+  have ham : a ≤ m := by
+    by_contra h
+    rw [not_le, ← Nat.succ_le_iff] at h
+    omega
   rw [X.δ_comp_σ_of_gt', j.pred_succ]
   swap
   · rw [Fin.lt_iff_val_lt_val]
@@ -193,7 +196,7 @@ theorem induction {Y : C} {n q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : HigherFacesVa
     swap
     · rw [Fin.le_iff_val_le_val]
       dsimp
-      omega
+      linarith
     simp only [← assoc, v j (by omega), zero_comp]
   · -- in the last case, a=m, q=1 and j=a+1
     rw [X.δ_comp_δ_self'_assoc]

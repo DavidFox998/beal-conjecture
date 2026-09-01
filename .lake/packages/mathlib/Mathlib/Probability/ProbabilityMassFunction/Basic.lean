@@ -32,7 +32,7 @@ probability mass function, discrete probability measure
 
 noncomputable section
 
-variable {α : Type*}
+variable {α β γ : Type*}
 
 open scoped Classical
 open NNReal ENNReal MeasureTheory
@@ -132,7 +132,7 @@ open MeasureTheory MeasureTheory.OuterMeasure
 def toOuterMeasure (p : PMF α) : OuterMeasure α :=
   OuterMeasure.sum fun x : α => p x • dirac x
 
-variable (p : PMF α) (s : Set α)
+variable (p : PMF α) (s t : Set α)
 
 theorem toOuterMeasure_apply : p.toOuterMeasure s = ∑' x, s.indicator p x :=
   tsum_congr fun x => smul_dirac_apply (p x) x s
@@ -165,7 +165,7 @@ theorem toOuterMeasure_inj {p q : PMF α} : p.toOuterMeasure = q.toOuterMeasure 
 
 theorem toOuterMeasure_apply_eq_zero_iff : p.toOuterMeasure s = 0 ↔ Disjoint p.support s := by
   rw [toOuterMeasure_apply, ENNReal.tsum_eq_zero]
-  exact funext_iff.symm.trans Set.indicator_eq_zero'
+  exact Function.funext_iff.symm.trans Set.indicator_eq_zero'
 
 theorem toOuterMeasure_apply_eq_one_iff : p.toOuterMeasure s = 1 ↔ p.support ⊆ s := by
   refine (p.toOuterMeasure_apply s).symm ▸ ⟨fun h a hap => ?_, fun h => ?_⟩
@@ -176,8 +176,7 @@ theorem toOuterMeasure_apply_eq_one_iff : p.toOuterMeasure s = 1 ↔ p.support �
       (fun x => Set.indicator_apply_le fun _ => le_rfl) hsa
   · suffices ∀ (x) (_ : x ∉ s), p x = 0 from
       _root_.trans (tsum_congr
-        fun a => (Set.indicator_apply s p a).trans
-          (ite_eq_left_iff.2 <| symm ∘ this a)) p.tsum_coe
+        fun a => (Set.indicator_apply s p a).trans (ite_eq_left_iff.2 <| symm ∘ this a)) p.tsum_coe
     exact fun a ha => (p.apply_eq_zero_iff a).2 <| Set.not_mem_subset h ha
 
 @[simp]
@@ -210,7 +209,7 @@ open MeasureTheory
 def toMeasure [MeasurableSpace α] (p : PMF α) : Measure α :=
   p.toOuterMeasure.toMeasure ((toOuterMeasure_caratheodory p).symm ▸ le_top)
 
-variable [MeasurableSpace α] (p : PMF α) (s : Set α)
+variable [MeasurableSpace α] (p : PMF α) (s t : Set α)
 
 theorem toOuterMeasure_apply_le_toMeasure_apply : p.toOuterMeasure s ≤ p.toMeasure s :=
   le_toMeasure_apply p.toOuterMeasure _ s
@@ -333,7 +332,8 @@ instance toMeasure.isProbabilityMeasure [MeasurableSpace α] (p : PMF α) :
     simpa only [MeasurableSet.univ, toMeasure_apply_eq_toOuterMeasure_apply, Set.indicator_univ,
       toOuterMeasure_apply, ENNReal.coe_eq_one] using tsum_coe p⟩
 
-variable [Countable α] [MeasurableSpace α] [MeasurableSingletonClass α] (p : PMF α)
+variable [Countable α] [MeasurableSpace α] [MeasurableSingletonClass α] (p : PMF α) (μ : Measure α)
+  [IsProbabilityMeasure μ]
 
 @[simp]
 theorem toMeasure_toPMF : p.toMeasure.toPMF = p :=

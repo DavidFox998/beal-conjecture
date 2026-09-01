@@ -37,7 +37,8 @@ such that `f ≫ retraction f = 𝟙 X`.
 
 Every split monomorphism is a monomorphism.
 -/
-/- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance] -/
+/- Porting note(#5171): removed @[nolint has_nonempty_instance] -/
+/- Porting note: `@[ext]` used to accept lemmas like this. Now we add an aesop rule -/
 @[ext, aesop apply safe (rule_sets := [CategoryTheory])]
 structure SplitMono {X Y : C} (f : X ⟶ Y) where
   /-- The map splitting `f` -/
@@ -52,12 +53,6 @@ class IsSplitMono {X Y : C} (f : X ⟶ Y) : Prop where
   /-- There is a splitting -/
   exists_splitMono : Nonempty (SplitMono f)
 
-/-- A composition of `SplitMono` is a `SplitMono`. --/
-@[simps]
-def SplitMono.comp {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} (smf : SplitMono f) (smg : SplitMono g) :
-    SplitMono (f ≫ g) where
-  retraction := smg.retraction ≫ smf.retraction
-
 /-- A constructor for `IsSplitMono f` taking a `SplitMono f` as an argument -/
 theorem IsSplitMono.mk' {X Y : C} {f : X ⟶ Y} (sm : SplitMono f) : IsSplitMono f :=
   ⟨Nonempty.intro sm⟩
@@ -68,7 +63,8 @@ such that `section_ f ≫ f = 𝟙 Y`.
 
 Every split epimorphism is an epimorphism.
 -/
-/- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance] -/
+/- Porting note(#5171): removed @[nolint has_nonempty_instance] -/
+/- Porting note: `@[ext]` used to accept lemmas like this. Now we add an aesop rule -/
 @[ext, aesop apply safe (rule_sets := [CategoryTheory])]
 structure SplitEpi {X Y : C} (f : X ⟶ Y) where
   /-- The map splitting `f` -/
@@ -82,12 +78,6 @@ attribute [reassoc (attr := simp)] SplitEpi.id
 class IsSplitEpi {X Y : C} (f : X ⟶ Y) : Prop where
   /-- There is a splitting -/
   exists_splitEpi : Nonempty (SplitEpi f)
-
-/-- A composition of `SplitEpi` is a split `SplitEpi`. --/
-@[simps]
-def SplitEpi.comp {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} (sef : SplitEpi f) (seg : SplitEpi g) :
-    SplitEpi (f ≫ g) where
-  section_ := seg.section_ ≫ sef.section_
 
 /-- A constructor for `IsSplitEpi f` taking a `SplitEpi f` as an argument -/
 theorem IsSplitEpi.mk' {X Y : C} {f : X ⟶ Y} (se : SplitEpi f) : IsSplitEpi f :=
@@ -157,12 +147,6 @@ theorem SplitEpi.epi {X Y : C} {f : X ⟶ Y} (se : SplitEpi f) : Epi f :=
 /-- Every split epi is an epi. -/
 instance (priority := 100) IsSplitEpi.epi {X Y : C} (f : X ⟶ Y) [hf : IsSplitEpi f] : Epi f :=
   hf.exists_splitEpi.some.epi
-
-instance {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} [hf : IsSplitMono f] [hg : IsSplitMono g] :
-    IsSplitMono (f ≫ g) := IsSplitMono.mk' <| hf.exists_splitMono.some.comp hg.exists_splitMono.some
-
-instance {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} [hf : IsSplitEpi f] [hg : IsSplitEpi g] :
-    IsSplitEpi (f ≫ g) := IsSplitEpi.mk' <| hf.exists_splitEpi.some.comp hg.exists_splitEpi.some
 
 /-- Every split mono whose retraction is mono is an iso. -/
 theorem IsIso.of_mono_retraction' {X Y : C} {f : X ⟶ Y} (hf : SplitMono f) [Mono <| hf.retraction] :

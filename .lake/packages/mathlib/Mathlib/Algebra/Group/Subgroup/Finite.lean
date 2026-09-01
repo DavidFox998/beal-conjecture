@@ -4,9 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
 import Mathlib.Algebra.Group.Subgroup.Basic
-import Mathlib.Algebra.Group.Submonoid.BigOperators
+import Mathlib.Algebra.Group.Submonoid.Membership
 import Mathlib.Data.Finite.Card
-import Mathlib.Data.Set.Finite.Range
 
 /-!
 # Subgroups
@@ -166,11 +165,9 @@ theorem pi_mem_of_mulSingle_mem_aux [DecidableEq η] (I : Finset η) {H : Subgro
     x ∈ H := by
   induction I using Finset.induction_on generalizing x with
   | empty =>
-    have : x = 1 := by
-      ext i
-      exact h1 i (Finset.not_mem_empty i)
-    rw [this]
-    exact one_mem H
+    convert one_mem H
+    ext i
+    exact h1 i (Finset.not_mem_empty i)
   | insert hnmem ih =>
     rename_i i I
     have : x = Function.update x i 1 * Pi.mulSingle i (x i) := by
@@ -192,7 +189,7 @@ theorem pi_mem_of_mulSingle_mem_aux [DecidableEq η] (I : Finset η) {H : Subgro
         have : j ≠ i := by
           rintro rfl
           contradiction
-        simp only [ne_eq, this, not_false_eq_true, Function.update_of_ne]
+        simp only [ne_eq, this, not_false_eq_true, Function.update_noteq]
         exact h2 _ (Finset.mem_insert_of_mem hj)
     · apply h2
       simp

@@ -19,14 +19,16 @@ Results requiring a group (rather than monoid) structure on the target should go
 
 noncomputable section
 
-open Filter Finset Function Topology
+open Filter Finset Function
 
-variable {α β γ : Type*}
+open scoped Topology
+
+variable {α β γ δ : Type*}
 
 section HasProd
 
 variable [CommMonoid α] [TopologicalSpace α]
-variable {f g : β → α} {a b : α}
+variable {f g : β → α} {a b : α} {s : Finset β}
 
 /-- Constant one function has product `1` -/
 @[to_additive "Constant zero function has sum `0`"]
@@ -44,17 +46,11 @@ theorem multipliable_one : Multipliable (fun _ ↦ 1 : β → α) :=
 theorem multipliable_empty [IsEmpty β] : Multipliable f :=
   hasProd_empty.multipliable
 
-/-- See `multipliable_congr_cofinite` for a version allowing the functions to
-disagree on a finite set. -/
-@[to_additive "See `summable_congr_cofinite` for a version allowing the functions to
-disagree on a finite set."]
+@[to_additive]
 theorem multipliable_congr (hfg : ∀ b, f b = g b) : Multipliable f ↔ Multipliable g :=
   iff_of_eq (congr_arg Multipliable <| funext hfg)
 
-/-- See `Multipliable.congr_cofinite` for a version allowing the functions to
-disagree on a finite set. -/
-@[to_additive "See `Summable.congr_cofinite` for a version allowing the functions to
-disagree on a finite set."]
+@[to_additive]
 theorem Multipliable.congr (hf : Multipliable f) (hfg : ∀ b, f b = g b) : Multipliable g :=
   (multipliable_congr hfg).mp hf
 
@@ -190,13 +186,11 @@ protected theorem HasProd.map [CommMonoid γ] [TopologicalSpace γ] (hf : HasPro
   exact (hg.tendsto a).comp hf
 
 @[to_additive]
-protected theorem Topology.IsInducing.hasProd_iff [CommMonoid γ] [TopologicalSpace γ] {G}
-    [FunLike G α γ] [MonoidHomClass G α γ] {g : G} (hg : IsInducing g) (f : β → α) (a : α) :
+protected theorem Inducing.hasProd_iff [CommMonoid γ] [TopologicalSpace γ] {G}
+    [FunLike G α γ] [MonoidHomClass G α γ] {g : G} (hg : Inducing g) (f : β → α) (a : α) :
     HasProd (g ∘ f) (g a) ↔ HasProd f a := by
   simp_rw [HasProd, comp_apply, ← map_prod]
   exact hg.tendsto_nhds_iff.symm
-
-@[deprecated (since := "2024-10-28")] alias Inducing.hasProd_iff := IsInducing.hasProd_iff
 
 @[to_additive]
 protected theorem Multipliable.map [CommMonoid γ] [TopologicalSpace γ] (hf : Multipliable f) {G}
@@ -218,8 +212,8 @@ theorem Multipliable.map_tprod [CommMonoid γ] [TopologicalSpace γ] [T2Space γ
     g (∏' i, f i) = ∏' i, g (f i) := (HasProd.tprod_eq (HasProd.map hf.hasProd g hg)).symm
 
 @[to_additive]
-lemma Topology.IsInducing.multipliable_iff_tprod_comp_mem_range [CommMonoid γ] [TopologicalSpace γ]
-    [T2Space γ] {G} [FunLike G α γ] [MonoidHomClass G α γ] {g : G} (hg : IsInducing g) (f : β → α) :
+theorem Inducing.multipliable_iff_tprod_comp_mem_range [CommMonoid γ] [TopologicalSpace γ]
+    [T2Space γ] {G} [FunLike G α γ] [MonoidHomClass G α γ] {g : G} (hg : Inducing g) (f : β → α) :
     Multipliable f ↔ Multipliable (g ∘ f) ∧ ∏' i, g (f i) ∈ Set.range g := by
   constructor
   · intro hf
@@ -232,10 +226,6 @@ lemma Topology.IsInducing.multipliable_iff_tprod_comp_mem_range [CommMonoid γ] 
     have := hgf.hasProd
     simp_rw [comp_apply, ← ha] at this
     exact (hg.hasProd_iff f a).mp this
-
-@[deprecated (since := "2024-10-28")]
-alias Inducing.multipliable_iff_tprod_comp_mem_range :=
-  IsInducing.multipliable_iff_tprod_comp_mem_range
 
 /-- "A special case of `Multipliable.map_iff_of_leftInverse` for convenience" -/
 @[to_additive "A special case of `Summable.map_iff_of_leftInverse` for convenience"]
@@ -270,7 +260,7 @@ theorem hasProd_prod {f : γ → β → α} {a : γ → α} {s : Finset γ} :
   classical
   exact Finset.induction_on s (by simp only [hasProd_one, prod_empty, forall_true_iff]) <| by
     -- Porting note: with some help, `simp` used to be able to close the goal
-    simp +contextual only [mem_insert, forall_eq_or_imp, not_false_iff,
+    simp (config := { contextual := true }) only [mem_insert, forall_eq_or_imp, not_false_iff,
       prod_insert, and_imp]
     exact fun x s _ IH hx h ↦ hx.mul (IH h)
 
@@ -355,7 +345,7 @@ end HasProd
 
 section tprod
 
-variable [CommMonoid α] [TopologicalSpace α] {f g : β → α}
+variable [CommMonoid α] [TopologicalSpace α] {f g : β → α} {a a₁ a₂ : α}
 
 @[to_additive]
 theorem tprod_congr_set_coe (f : β → α) {s t : Set β} (h : s = t) :
@@ -426,7 +416,8 @@ theorem tprod_ite_eq (b : β) [DecidablePred (· = b)] (a : α) :
   · simp
   · intro b' hb'; simp [hb']
 
-@[to_additive (attr := simp)]
+-- Porting note: Added nolint simpNF, simpNF falsely claims that lhs does not simplify under simp
+@[to_additive (attr := simp, nolint simpNF)]
 theorem Finset.tprod_subtype (s : Finset β) (f : β → α) :
     ∏' x : { x // x ∈ s }, f x = ∏ x ∈ s, f x := by
   rw [← prod_attach]; exact tprod_fintype _
@@ -435,7 +426,8 @@ theorem Finset.tprod_subtype (s : Finset β) (f : β → α) :
 theorem Finset.tprod_subtype' (s : Finset β) (f : β → α) :
     ∏' x : (s : Set β), f x = ∏ x ∈ s, f x := by simp
 
-@[to_additive (attr := simp)]
+-- Porting note: Added nolint simpNF, simpNF falsely claims that lhs does not simplify under simp
+@[to_additive (attr := simp, nolint simpNF)]
 theorem tprod_singleton (b : β) (f : β → α) : ∏' x : ({b} : Set β), f x = f b := by
   rw [← coe_singleton, Finset.tprod_subtype', prod_singleton]
 
@@ -478,7 +470,8 @@ theorem tprod_subtype (s : Set β) (f : β → α) : ∏' x : s, f x = ∏' x, s
   rw [← tprod_subtype_eq_of_mulSupport_subset Set.mulSupport_mulIndicator_subset, tprod_congr]
   simp
 
-@[to_additive (attr := simp)]
+-- Porting note: Added nolint simpNF, simpNF falsely claims that lhs does not simplify under simp
+@[to_additive (attr := simp, nolint simpNF)]
 theorem tprod_univ (f : β → α) : ∏' x : (Set.univ : Set β), f x = ∏' x, f x :=
   tprod_subtype_eq_of_mulSupport_subset <| Set.subset_univ _
 
@@ -579,7 +572,7 @@ theorem tprod_eq_mul_tprod_ite' [DecidableEq β] {f : β → α} (b : β)
     ∏' x, f x = ∏' x, (ite (x = b) (f x) 1 * update f b 1 x) :=
       tprod_congr fun n ↦ by split_ifs with h <;> simp [update_apply, h]
     _ = (∏' x, ite (x = b) (f x) 1) * ∏' x, update f b 1 x :=
-      tprod_mul ⟨ite (b = b) (f b) 1, hasProd_single b fun _ hb ↦ if_neg hb⟩ hf
+      tprod_mul ⟨ite (b = b) (f b) 1, hasProd_single b fun b hb ↦ if_neg hb⟩ hf
     _ = ite (b = b) (f b) 1 * ∏' x, update f b 1 x := by
       congr
       exact tprod_eq_mulSingle b fun b' hb' ↦ if_neg hb'

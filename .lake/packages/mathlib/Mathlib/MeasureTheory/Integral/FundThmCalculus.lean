@@ -146,7 +146,7 @@ open MeasureTheory Set Filter Function
 
 open scoped Classical Topology Filter ENNReal Interval NNReal
 
-variable {ι 𝕜 E A : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {ι 𝕜 E F A : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 namespace intervalIntegral
 
@@ -467,7 +467,7 @@ at `(a, b)` provided that `f` is integrable on `a..b` and is continuous at `a` a
 
 
 variable [CompleteSpace E]
-  {f : ℝ → E} {c ca cb : E} {l l' la la' lb lb' : Filter ℝ} {lt : Filter ι} {a b : ℝ}
+  {f : ℝ → E} {c ca cb : E} {l l' la la' lb lb' : Filter ℝ} {lt : Filter ι} {a b z : ℝ}
   {u v ua ub va vb : ι → ℝ} [FTCFilter a la la'] [FTCFilter b lb lb']
 
 /-!
@@ -590,7 +590,7 @@ theorem integral_hasStrictFDerivAt_of_tendsto_ae (hf : IntervalIntegrable f volu
       (continuous_fst.fst.tendsto ((a, b), (a, b)))
       (continuous_snd.snd.tendsto ((a, b), (a, b)))
       (continuous_fst.snd.tendsto ((a, b), (a, b)))
-  refine .of_isLittleO <| (this.congr_left ?_).trans_isBigO ?_
+  refine (this.congr_left ?_).trans_isBigO ?_
   · intro x; simp [sub_smul]
   · exact isBigO_fst_prod.norm_left.add isBigO_snd_prod.norm_left
 
@@ -614,9 +614,8 @@ If `f : ℝ → E` is integrable on `a..b` and `f x` has a finite limit `c` almo
 theorem integral_hasStrictDerivAt_of_tendsto_ae_right (hf : IntervalIntegrable f volume a b)
     (hmeas : StronglyMeasurableAtFilter f (𝓝 b)) (hb : Tendsto f (𝓝 b ⊓ ae volume) (𝓝 c)) :
     HasStrictDerivAt (fun u => ∫ x in a..u, f x) c b :=
-  .of_isLittleO <|
-    integral_sub_integral_sub_linear_isLittleO_of_tendsto_ae_right hf hmeas hb continuousAt_snd
-      continuousAt_fst
+  integral_sub_integral_sub_linear_isLittleO_of_tendsto_ae_right hf hmeas hb continuousAt_snd
+    continuousAt_fst
 
 /-- **Fundamental theorem of calculus-1**, strict differentiability in the right endpoint.
 
@@ -954,7 +953,7 @@ semicontinuity. As  `g' t < G' t`, this gives the conclusion. One can therefore 
 this inequality to the right until the point `b`, where it gives the desired conclusion.
 -/
 
-variable {g' g φ : ℝ → ℝ} {a b : ℝ}
+variable {f : ℝ → E} {g' g φ : ℝ → ℝ} {a b : ℝ}
 
 /-- Hard part of FTC-2 for integrable derivatives, real-valued functions: one has
 `g b - g a ≤ ∫ y in a..b, g' y` when `g'` is integrable.
@@ -992,7 +991,7 @@ theorem sub_le_integral_of_hasDeriv_right_of_le_Ico (hab : a ≤ b)
     have I1 : ∀ᶠ u in 𝓝[>] t, (u - t) * y ≤ ∫ w in t..u, (G' w).toReal := by
       have B : ∀ᶠ u in 𝓝 t, (y : EReal) < G' u := G'cont.lowerSemicontinuousAt _ _ y_lt_G'
       rcases mem_nhds_iff_exists_Ioo_subset.1 B with ⟨m, M, ⟨hm, hM⟩, H⟩
-      have : Ioo t (min M b) ∈ 𝓝[>] t := Ioo_mem_nhdsGT (lt_min hM ht.right.right)
+      have : Ioo t (min M b) ∈ 𝓝[>] t := Ioo_mem_nhdsWithin_Ioi' (lt_min hM ht.right.right)
       filter_upwards [this] with u hu
       have I : Icc t u ⊆ Icc a b := Icc_subset_Icc ht.2.1 (hu.2.le.trans (min_le_right _ _))
       calc
@@ -1027,7 +1026,10 @@ theorem sub_le_integral_of_hasDeriv_right_of_le_Ico (hab : a ≤ b)
     -- `∫ x in a..u, G' x`.
     have I3 : ∀ᶠ u in 𝓝[>] t, g u - g t ≤ ∫ w in t..u, (G' w).toReal := by
       filter_upwards [I1, I2] with u hu1 hu2 using hu2.trans hu1
-    have I4 : ∀ᶠ u in 𝓝[>] t, u ∈ Ioc t (min v b) := Ioc_mem_nhdsGT <| lt_min t_lt_v ht.2.2
+    have I4 : ∀ᶠ u in 𝓝[>] t, u ∈ Ioc t (min v b) := by
+      refine mem_nhdsWithin_Ioi_iff_exists_Ioc_subset.2 ⟨min v b, ?_, Subset.rfl⟩
+      simp only [lt_min_iff, mem_Ioi]
+      exact ⟨t_lt_v, ht.2.2⟩
     -- choose a point `x` slightly to the right of `t` which satisfies the above bound
     rcases (I3.and I4).exists with ⟨x, hx, h'x⟩
     -- we check that it belongs to `s`, essentially by construction
@@ -1151,15 +1153,16 @@ theorem integral_eq_sub_of_hasDerivAt_of_tendsto (hab : a < b) {fa fb}
   have Fderiv : ∀ x ∈ Ioo a b, HasDerivAt F (f' x) x := by
     refine fun x hx => (hderiv x hx).congr_of_eventuallyEq ?_
     filter_upwards [Ioo_mem_nhds hx.1 hx.2] with _ hy
-    unfold F
-    rw [update_of_ne hy.2.ne, update_of_ne hy.1.ne']
+    unfold_let F
+    rw [update_noteq hy.2.ne, update_noteq hy.1.ne']
   have hcont : ContinuousOn F (Icc a b) := by
     rw [continuousOn_update_iff, continuousOn_update_iff, Icc_diff_right, Ico_diff_left]
     refine ⟨⟨fun z hz => (hderiv z hz).continuousAt.continuousWithinAt, ?_⟩, ?_⟩
     · exact fun _ => ha.mono_left (nhdsWithin_mono _ Ioo_subset_Ioi_self)
     · rintro -
       refine (hb.congr' ?_).mono_left (nhdsWithin_mono _ Ico_subset_Iio_self)
-      filter_upwards [Ioo_mem_nhdsLT hab] with _ hz using (update_of_ne hz.1.ne' _ _).symm
+      filter_upwards [Ioo_mem_nhdsWithin_Iio (right_mem_Ioc.2 hab)] with _ hz using
+        (update_noteq hz.1.ne' _ _).symm
   simpa [F, hab.ne, hab.ne'] using integral_eq_sub_of_hasDerivAt_of_le hab.le hcont Fderiv hint
 
 /-- Fundamental theorem of calculus-2: If `f : ℝ → E` is differentiable at every `x` in `[a, b]` and
@@ -1223,7 +1226,7 @@ theorem integrableOn_deriv_right_of_nonneg (hcont : ContinuousOn g (Icc a b))
   let F : ℝ → ℝ := (↑) ∘ f
   have intF : IntegrableOn F (Ioo a b) := by
     refine ⟨f.measurable.coe_nnreal_real.aestronglyMeasurable, ?_⟩
-    simpa only [F, hasFiniteIntegral_iff_nnnorm, comp_apply, NNReal.nnnorm_eq] using fint
+    simpa only [F, HasFiniteIntegral, comp_apply, NNReal.nnnorm_eq] using fint
   have A : ∫⁻ x : ℝ in Ioo a b, f x = ENNReal.ofReal (∫ x in Ioo a b, F x) :=
     lintegral_coe_eq_integral _ intF
   rw [A] at hf

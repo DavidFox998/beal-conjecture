@@ -29,7 +29,8 @@ variable {K : Type*} [NontriviallyNormedField K]
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace K E]
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace K F]
 variable {G : Type*} [NormedAddCommGroup G] [NormedSpace K G]
-variable {f : E → F} {x} {s}
+variable {G' : Type*} [NormedAddCommGroup G'] [NormedSpace K G']
+variable {f f₀ f₁ g : E → F} {x} {s t}
 
 
 theorem differentiableOn_id' : DifferentiableOn K (fun x : E => x) s :=

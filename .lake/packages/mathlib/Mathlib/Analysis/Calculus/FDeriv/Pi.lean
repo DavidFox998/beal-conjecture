@@ -11,6 +11,7 @@ import Mathlib.Analysis.Calculus.FDeriv.Add
 
 variable {𝕜 ι : Type*} [DecidableEq ι] [Fintype ι] [NontriviallyNormedField 𝕜]
 variable {E : ι → Type*} [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 @[fun_prop]
 theorem hasFDerivAt_update (x : ∀ i, E i) {i : ι} (y : E i) :

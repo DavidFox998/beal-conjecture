@@ -93,7 +93,8 @@ theorem Matrix.represents_iff' {A : Matrix ι ι R} {f : Module.End R M} :
     have := LinearMap.congr_fun h (Pi.single i 1)
     rwa [PiToModule.fromEnd_apply_single_one, PiToModule.fromMatrix_apply_single_one] at this
   · intro h
-    ext
+    -- Porting note: was `ext`
+    refine LinearMap.pi_ext' (fun i => LinearMap.ext_ring ?_)
     simp_rw [LinearMap.comp_apply, LinearMap.coe_single, PiToModule.fromEnd_apply_single_one,
       PiToModule.fromMatrix_apply_single_one]
     apply h
@@ -228,4 +229,4 @@ theorem LinearMap.exists_monic_and_coeff_mem_pow_and_aeval_eq_zero_of_range_le_s
 theorem LinearMap.exists_monic_and_aeval_eq_zero [Module.Finite R M] (f : Module.End R M) :
     ∃ p : R[X], p.Monic ∧ Polynomial.aeval f p = 0 :=
   (LinearMap.exists_monic_and_coeff_mem_pow_and_aeval_eq_zero_of_range_le_smul R f ⊤ (by simp)).imp
-    fun _ h => h.imp_right And.right
+    fun p h => h.imp_right And.right

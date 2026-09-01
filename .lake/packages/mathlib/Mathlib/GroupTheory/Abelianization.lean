@@ -4,10 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Michael Howes
 -/
 import Mathlib.Data.Finite.Card
-import Mathlib.Data.Finite.Prod
-import Mathlib.GroupTheory.Commutator.Basic
-import Mathlib.GroupTheory.Coset.Basic
 import Mathlib.GroupTheory.Finiteness
+import Mathlib.GroupTheory.Commutator.Basic
 
 /-!
 # The abelianization of a group
@@ -49,11 +47,6 @@ theorem commutator_eq_closure : commutator G = Subgroup.closure (commutatorSet G
 
 theorem commutator_eq_normalClosure : commutator G = Subgroup.normalClosure (commutatorSet G) := by
   simp [commutator, Subgroup.commutator_def', commutatorSet]
-
-variable {G} in
-theorem Subgroup.map_subtype_commutator (H : Subgroup G) :
-    (_root_.commutator H).map H.subtype = ⁅H, H⁆ := by
-  rw [_root_.commutator_def, map_commutator, ← MonoidHom.range_eq_map, H.range_subtype]
 
 instance commutator_characteristic : (commutator G).Characteristic :=
   Subgroup.commutator_characteristic ⊤ ⊤
@@ -116,11 +109,6 @@ def of : G →* Abelianization G where
 @[simp]
 theorem mk_eq_of (a : G) : Quot.mk _ a = of a :=
   rfl
-
-variable (G) in
-@[simp]
-theorem ker_of : of.ker = commutator G :=
-  QuotientGroup.ker_mk' (commutator G)
 
 section lift
 
@@ -243,7 +231,7 @@ def Abelianization.equivOfComm {H : Type*} [CommGroup H] : H ≃* Abelianization
   { Abelianization.of with
     toFun := Abelianization.of
     invFun := Abelianization.lift (MonoidHom.id H)
-    left_inv := fun _ => rfl
+    left_inv := fun a => rfl
     right_inv := by
       rintro ⟨a⟩
       rfl }

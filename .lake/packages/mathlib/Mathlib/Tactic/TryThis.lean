@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Init
-import Lean.Meta.Tactic.TryThis
+import Lean
 
 /-!
 # 'Try this' tactic macro
@@ -18,17 +18,13 @@ namespace Mathlib.Tactic
 open Lean
 
 /-- Produces the text `Try this: <tac>` with the given tactic, and then executes it. -/
-elab tk:"try_this" tac:tactic info:(str)? : tactic => do
+elab tk:"try_this" tac:tactic : tactic => do
   Elab.Tactic.evalTactic tac
-  Meta.Tactic.TryThis.addSuggestion tk
-    { suggestion := tac, postInfo? := TSyntax.getString <$> info }
-    (origSpan? := ← getRef)
+  Meta.Tactic.TryThis.addSuggestion tk tac (origSpan? := ← getRef)
 
 /-- Produces the text `Try this: <tac>` with the given conv tactic, and then executes it. -/
-elab tk:"try_this" tac:conv info:(str)? : conv => do
+elab tk:"try_this" tac:conv : conv => do
   Elab.Tactic.evalTactic tac
-  Meta.Tactic.TryThis.addSuggestion tk
-    { suggestion := tac, postInfo? := TSyntax.getString <$> info }
-    (origSpan? := ← getRef)
+  Meta.Tactic.TryThis.addSuggestion tk tac (origSpan? := ← getRef)
 
 end Mathlib.Tactic

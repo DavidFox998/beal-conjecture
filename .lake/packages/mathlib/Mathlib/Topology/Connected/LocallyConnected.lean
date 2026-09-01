@@ -31,18 +31,15 @@ class LocallyConnectedSpace (α : Type*) [TopologicalSpace α] : Prop where
   /-- Open connected neighborhoods form a basis of the neighborhoods filter. -/
   open_connected_basis : ∀ x, (𝓝 x).HasBasis (fun s : Set α => IsOpen s ∧ x ∈ s ∧ IsConnected s) id
 
-theorem locallyConnectedSpace_iff_hasBasis_isOpen_isConnected :
+theorem locallyConnectedSpace_iff_open_connected_basis :
     LocallyConnectedSpace α ↔
       ∀ x, (𝓝 x).HasBasis (fun s : Set α => IsOpen s ∧ x ∈ s ∧ IsConnected s) id :=
   ⟨@LocallyConnectedSpace.open_connected_basis _ _, LocallyConnectedSpace.mk⟩
 
-@[deprecated (since := "2024-11-18")] alias locallyConnectedSpace_iff_open_connected_basis :=
-  locallyConnectedSpace_iff_hasBasis_isOpen_isConnected
-
-theorem locallyConnectedSpace_iff_subsets_isOpen_isConnected :
+theorem locallyConnectedSpace_iff_open_connected_subsets :
     LocallyConnectedSpace α ↔
       ∀ x, ∀ U ∈ 𝓝 x, ∃ V : Set α, V ⊆ U ∧ IsOpen V ∧ x ∈ V ∧ IsConnected V := by
-  simp_rw [locallyConnectedSpace_iff_hasBasis_isOpen_isConnected]
+  simp_rw [locallyConnectedSpace_iff_open_connected_basis]
   refine forall_congr' fun _ => ?_
   constructor
   · intro h U hU
@@ -52,13 +49,10 @@ theorem locallyConnectedSpace_iff_subsets_isOpen_isConnected :
       let ⟨V, hVU, hV⟩ := h U hU
       ⟨V, hV, hVU⟩, fun ⟨V, ⟨hV, hxV, _⟩, hVU⟩ => mem_nhds_iff.mpr ⟨V, hVU, hV, hxV⟩⟩⟩
 
-@[deprecated (since := "2024-11-18")] alias locallyConnectedSpace_iff_open_connected_subsets :=
-  locallyConnectedSpace_iff_subsets_isOpen_isConnected
-
 /-- A space with discrete topology is a locally connected space. -/
 instance (priority := 100) DiscreteTopology.toLocallyConnectedSpace (α) [TopologicalSpace α]
     [DiscreteTopology α] : LocallyConnectedSpace α :=
-  locallyConnectedSpace_iff_subsets_isOpen_isConnected.2 fun x _U hU =>
+  locallyConnectedSpace_iff_open_connected_subsets.2 fun x _U hU =>
     ⟨{x}, singleton_subset_iff.2 <| mem_of_mem_nhds hU, isOpen_discrete _, rfl,
       isConnected_singleton⟩
 
@@ -91,7 +85,7 @@ theorem locallyConnectedSpace_iff_connectedComponentIn_open :
   · intro h
     exact fun F hF x _ => hF.connectedComponentIn
   · intro h
-    rw [locallyConnectedSpace_iff_subsets_isOpen_isConnected]
+    rw [locallyConnectedSpace_iff_open_connected_subsets]
     refine fun x U hU =>
         ⟨connectedComponentIn (interior U) x,
           (connectedComponentIn_subset _ _).trans interior_subset, h _ isOpen_interior x ?_,
@@ -101,7 +95,7 @@ theorem locallyConnectedSpace_iff_connectedComponentIn_open :
 theorem locallyConnectedSpace_iff_connected_subsets :
     LocallyConnectedSpace α ↔ ∀ (x : α), ∀ U ∈ 𝓝 x, ∃ V ∈ 𝓝 x, IsPreconnected V ∧ V ⊆ U := by
   constructor
-  · rw [locallyConnectedSpace_iff_subsets_isOpen_isConnected]
+  · rw [locallyConnectedSpace_iff_open_connected_subsets]
     intro h x U hxU
     rcases h x U hxU with ⟨V, hVU, hV₁, hxV, hV₂⟩
     exact ⟨V, hV₁.mem_nhds hxV, hV₂.isPreconnected, hVU⟩
@@ -126,20 +120,17 @@ theorem locallyConnectedSpace_of_connected_bases {ι : Type*} (b : α → ι →
       (fun i hi => ⟨b x i, ⟨(hbasis x).mem_of_mem hi, hconnected x i hi⟩, subset_rfl⟩) fun s hs =>
       ⟨(hbasis x).index s hs.1, ⟨(hbasis x).property_index hs.1, (hbasis x).set_index_subset hs.1⟩⟩
 
-lemma Topology.IsOpenEmbedding.locallyConnectedSpace [LocallyConnectedSpace α] [TopologicalSpace β]
-    {f : β → α} (h : IsOpenEmbedding f) : LocallyConnectedSpace β := by
+theorem OpenEmbedding.locallyConnectedSpace [LocallyConnectedSpace α] [TopologicalSpace β]
+    {f : β → α} (h : OpenEmbedding f) : LocallyConnectedSpace β := by
   refine locallyConnectedSpace_of_connected_bases (fun _ s ↦ f ⁻¹' s)
     (fun x s ↦ (IsOpen s ∧ f x ∈ s ∧ IsConnected s) ∧ s ⊆ range f) (fun x ↦ ?_)
-    (fun x s hxs ↦ hxs.1.2.2.isPreconnected.preimage_of_isOpenMap h.injective h.isOpenMap hxs.2)
+    (fun x s hxs ↦ hxs.1.2.2.isPreconnected.preimage_of_isOpenMap h.inj h.isOpenMap hxs.2)
   rw [h.nhds_eq_comap]
   exact LocallyConnectedSpace.open_connected_basis (f x) |>.restrict_subset
     (h.isOpen_range.mem_nhds <| mem_range_self _) |>.comap _
 
-@[deprecated (since := "2024-10-18")]
-alias OpenEmbedding.locallyConnectedSpace := IsOpenEmbedding.locallyConnectedSpace
-
 theorem IsOpen.locallyConnectedSpace [LocallyConnectedSpace α] {U : Set α} (hU : IsOpen U) :
     LocallyConnectedSpace U :=
-  hU.isOpenEmbedding_subtypeVal.locallyConnectedSpace
+  hU.openEmbedding_subtype_val.locallyConnectedSpace
 
 end LocallyConnectedSpace

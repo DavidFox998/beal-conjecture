@@ -36,8 +36,9 @@ using a norm on the fiber model if this helps.
 
 noncomputable section
 
-open Bundle Set ContinuousLinearMap Topology
 open scoped Bundle
+
+open Bundle Set ContinuousLinearMap
 
 variable {𝕜₁ : Type*} [NontriviallyNormedField 𝕜₁] {𝕜₂ : Type*} [NontriviallyNormedField 𝕜₂]
   (σ : 𝕜₁ →+* 𝕜₂)
@@ -108,8 +109,8 @@ def continuousLinearMap :
   invFun p := ⟨p.1, .comp (e₂.symmL 𝕜₂ p.1) (p.2.comp (e₁.continuousLinearMapAt 𝕜₁ p.1))⟩
   source := Bundle.TotalSpace.proj ⁻¹' (e₁.baseSet ∩ e₂.baseSet)
   target := (e₁.baseSet ∩ e₂.baseSet) ×ˢ Set.univ
-  map_source' := fun ⟨_, _⟩ h => ⟨h, Set.mem_univ _⟩
-  map_target' := fun ⟨_, _⟩ h => h.1
+  map_source' := fun ⟨x, L⟩ h => ⟨h, Set.mem_univ _⟩
+  map_target' := fun ⟨x, f⟩ h => h.1
   left_inv' := fun ⟨x, L⟩ ⟨h₁, h₂⟩ => by
     simp only [TotalSpace.mk_inj]
     ext (v : E₁ x)
@@ -129,7 +130,7 @@ def continuousLinearMap :
   target_eq := rfl
   proj_toFun _ _ := rfl
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: see if Lean 4 can generate this instance without a hint
+-- Porting note (#11215): TODO: see if Lean 4 can generate this instance without a hint
 instance continuousLinearMap.isLinear [∀ x, ContinuousAdd (E₂ x)] [∀ x, ContinuousSMul 𝕜₂ (E₂ x)] :
     (Pretrivialization.continuousLinearMap σ e₁ e₂).IsLinear 𝕜₂ where
   linear x _ :=
@@ -208,7 +209,7 @@ def Bundle.ContinuousLinearMap.vectorPrebundle :
     exact ⟨continuousLinearMapCoordChange σ e₁ e₁' e₂ e₂',
       continuousOn_continuousLinearMapCoordChange,
       continuousLinearMapCoordChange_apply σ e₁ e₁' e₂ e₂'⟩
-  totalSpaceMk_isInducing := by
+  totalSpaceMk_inducing := by
     intro b
     let L₁ : E₁ b ≃L[𝕜₁] F₁ :=
       (trivializationAt F₁ E₁ b).continuousLinearEquivAt 𝕜₁ b
@@ -217,7 +218,7 @@ def Bundle.ContinuousLinearMap.vectorPrebundle :
       (trivializationAt F₂ E₂ b).continuousLinearEquivAt 𝕜₂ b
         (mem_baseSet_trivializationAt _ _ _)
     let φ : (E₁ b →SL[σ] E₂ b) ≃L[𝕜₂] F₁ →SL[σ] F₂ := L₁.arrowCongrSL L₂
-    have : IsInducing fun x => (b, φ x) := isInducing_const_prod.mpr φ.toHomeomorph.isInducing
+    have : Inducing fun x => (b, φ x) := inducing_const_prod.mpr φ.toHomeomorph.inducing
     convert this
     ext f
     dsimp [Pretrivialization.continuousLinearMap_apply]

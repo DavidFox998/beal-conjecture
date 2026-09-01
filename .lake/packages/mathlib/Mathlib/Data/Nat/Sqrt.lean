@@ -48,9 +48,9 @@ lemma sqrt.iter_sq_le (n guess : ℕ) : sqrt.iter n guess * sqrt.iter n guess �
   unfold sqrt.iter
   let next := (guess + n / guess) / 2
   if h : next < guess then
-    simpa only [next, dif_pos h] using sqrt.iter_sq_le n next
+    simpa only [dif_pos h] using sqrt.iter_sq_le n next
   else
-    simp only [next, dif_neg h]
+    simp only [dif_neg h]
     apply Nat.mul_le_of_le_div
     apply Nat.le_of_add_le_add_left (a := guess)
     rw [← Nat.mul_two, ← le_div_iff_mul_le]

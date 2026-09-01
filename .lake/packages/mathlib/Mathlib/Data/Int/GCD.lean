@@ -7,9 +7,7 @@ import Mathlib.Algebra.Group.Int
 import Mathlib.Algebra.GroupWithZero.Semiconj
 import Mathlib.Algebra.Group.Commute.Units
 import Mathlib.Data.Nat.GCD.Basic
-import Mathlib.Data.Set.Operations
-import Mathlib.Order.Basic
-import Mathlib.Order.Bounds.Defs
+import Mathlib.Order.Bounds.Basic
 
 /-!
 # Extended GCD and divisibility over ℤ

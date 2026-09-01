@@ -53,12 +53,10 @@ def NatOrdinal : Type _ :=
   -- Porting note: used to derive LinearOrder & SuccOrder but need to manually define
   Ordinal deriving Zero, Inhabited, One, WellFoundedRelation
 
-instance NatOrdinal.instLinearOrder : LinearOrder NatOrdinal := Ordinal.instLinearOrder
-instance NatOrdinal.instSuccOrder : SuccOrder NatOrdinal := Ordinal.instSuccOrder
-instance NatOrdinal.instOrderBot : OrderBot NatOrdinal := Ordinal.instOrderBot
-instance NatOrdinal.instNoMaxOrder : NoMaxOrder NatOrdinal := Ordinal.instNoMaxOrder
-instance NatOrdinal.instZeroLEOneClass : ZeroLEOneClass NatOrdinal := Ordinal.instZeroLEOneClass
-instance NatOrdinal.instNeZeroOne : NeZero (1 : NatOrdinal) := Ordinal.instNeZeroOne
+instance NatOrdinal.linearOrder : LinearOrder NatOrdinal := {Ordinal.linearOrder with}
+instance NatOrdinal.instSuccOrder : SuccOrder NatOrdinal := {Ordinal.instSuccOrder with}
+instance NatOrdinal.orderBot : OrderBot NatOrdinal := {Ordinal.orderBot with}
+instance NatOrdinal.noMaxOrder : NoMaxOrder NatOrdinal := {Ordinal.noMaxOrder with}
 
 /-- The identity function between `Ordinal` and `NatOrdinal`. -/
 @[match_pattern]
@@ -78,15 +76,19 @@ open Ordinal
 theorem toOrdinal_symm_eq : NatOrdinal.toOrdinal.symm = Ordinal.toNatOrdinal :=
   rfl
 
+-- Porting note: used to use dot notation, but doesn't work in Lean 4 with `OrderIso`
 @[simp]
-theorem toOrdinal_toNatOrdinal (a : NatOrdinal) : a.toOrdinal.toNatOrdinal = a :=
-  rfl
+theorem toOrdinal_toNatOrdinal (a : NatOrdinal) :
+    Ordinal.toNatOrdinal (NatOrdinal.toOrdinal a) = a := rfl
 
 theorem lt_wf : @WellFounded NatOrdinal (· < ·) :=
   Ordinal.lt_wf
 
 instance : WellFoundedLT NatOrdinal :=
   Ordinal.wellFoundedLT
+
+instance : IsWellOrder NatOrdinal (· < ·) :=
+  { }
 
 instance : ConditionallyCompleteLinearOrderBot NatOrdinal :=
   WellFoundedLT.conditionallyCompleteLinearOrderBot _
@@ -142,7 +144,7 @@ theorem toNatOrdinal_symm_eq : toNatOrdinal.symm = NatOrdinal.toOrdinal :=
   rfl
 
 @[simp]
-theorem toNatOrdinal_toOrdinal (a : Ordinal) : a.toNatOrdinal.toOrdinal = a :=
+theorem toNatOrdinal_toOrdinal (a : Ordinal) :  NatOrdinal.toOrdinal (toNatOrdinal a) = a :=
   rfl
 
 @[simp]
@@ -305,7 +307,7 @@ theorem add_le_nadd : a + b ≤ a ♯ b := by
   | H₂ c h =>
     rwa [add_succ, nadd_succ, succ_le_succ_iff]
   | H₃ c hc H =>
-    simp_rw [← IsNormal.blsub_eq.{u, u} (isNormal_add_right a) hc, blsub_le_iff]
+    simp_rw [← IsNormal.blsub_eq.{u, u} (add_isNormal a) hc, blsub_le_iff]
     exact fun i hi => (H i hi).trans_lt (nadd_lt_nadd_left hi a)
 
 end Ordinal
@@ -317,30 +319,31 @@ open Ordinal NaturalOps
 instance : Add NatOrdinal := ⟨nadd⟩
 instance : SuccAddOrder NatOrdinal := ⟨fun x => (nadd_one x).symm⟩
 
-instance : AddLeftStrictMono NatOrdinal.{u} :=
+instance add_covariantClass_lt : CovariantClass NatOrdinal.{u} NatOrdinal.{u} (· + ·) (· < ·) :=
   ⟨fun a _ _ h => nadd_lt_nadd_left h a⟩
 
-instance : AddLeftMono NatOrdinal.{u} :=
+instance add_covariantClass_le : CovariantClass NatOrdinal.{u} NatOrdinal.{u} (· + ·) (· ≤ ·) :=
   ⟨fun a _ _ h => nadd_le_nadd_left h a⟩
 
-instance : AddLeftReflectLE NatOrdinal.{u} :=
+instance add_contravariantClass_le :
+    ContravariantClass NatOrdinal.{u} NatOrdinal.{u} (· + ·) (· ≤ ·) :=
   ⟨fun a b c h => by
     by_contra! h'
     exact h.not_lt (add_lt_add_left h' a)⟩
 
-instance : OrderedCancelAddCommMonoid NatOrdinal :=
-  { NatOrdinal.instLinearOrder with
+instance orderedCancelAddCommMonoid : OrderedCancelAddCommMonoid NatOrdinal :=
+  { NatOrdinal.linearOrder with
     add := (· + ·)
     add_assoc := nadd_assoc
-    add_le_add_left := fun _ _ => add_le_add_left
-    le_of_add_le_add_left := fun _ _ _ => le_of_add_le_add_left
+    add_le_add_left := fun a b => add_le_add_left
+    le_of_add_le_add_left := fun a b c => le_of_add_le_add_left
     zero := 0
     zero_add := zero_nadd
     add_zero := nadd_zero
     add_comm := nadd_comm
     nsmul := nsmulRec }
 
-instance : AddMonoidWithOne NatOrdinal :=
+instance addMonoidWithOne : AddMonoidWithOne NatOrdinal :=
   AddMonoidWithOne.unary
 
 @[deprecated Order.succ_eq_add_one (since := "2024-09-04")]
@@ -439,22 +442,17 @@ theorem nadd_right_comm : ∀ a b c, a ♯ b ♯ c = a ♯ c ♯ b :=
 
 variable {a b c d : Ordinal.{u}}
 
-@[deprecated "avoid using the definition of `nmul` directly" (since := "2024-11-19")]
 theorem nmul_def (a b : Ordinal) :
-    a ⨳ b = sInf {c | ∀ a' < a, ∀ b' < b, a' ⨳ b ♯ a ⨳ b' < c ♯ a' ⨳ b'} := by
-  rw [nmul]
+    a ⨳ b = sInf {c | ∀ a' < a, ∀ b' < b, a' ⨳ b ♯ a ⨳ b' < c ♯ a' ⨳ b'} := by rw [nmul]
 
 /-- The set in the definition of `nmul` is nonempty. -/
 private theorem nmul_nonempty (a b : Ordinal.{u}) :
-    {c : Ordinal.{u} | ∀ a' < a, ∀ b' < b, a' ⨳ b ♯ a ⨳ b' < c ♯ a' ⨳ b'}.Nonempty := by
-  obtain ⟨c, hc⟩ : BddAbove ((fun x ↦ x.1 ⨳ b ♯ a ⨳ x.2) '' Set.Iio a ×ˢ Set.Iio b) :=
-    bddAbove_of_small _
-  exact ⟨_, fun x hx y hy ↦
-    (lt_succ_of_le <| hc <| Set.mem_image_of_mem _ <| Set.mk_mem_prod hx hy).trans_le le_self_nadd⟩
+    {c : Ordinal.{u} | ∀ a' < a, ∀ b' < b, a' ⨳ b ♯ a ⨳ b' < c ♯ a' ⨳ b'}.Nonempty :=
+  ⟨_, fun _ ha _ hb => (lt_blsub₂.{u, u, u} _ ha hb).trans_le le_self_nadd⟩
 
 theorem nmul_nadd_lt {a' b' : Ordinal} (ha : a' < a) (hb : b' < b) :
     a' ⨳ b ♯ a ⨳ b' < a ⨳ b ♯ a' ⨳ b' := by
-  conv_rhs => rw [nmul]
+  rw [nmul_def a b]
   exact csInf_mem (nmul_nonempty a b) a' ha b' hb
 
 theorem nmul_nadd_le {a' b' : Ordinal} (ha : a' ≤ a) (hb : b' ≤ b) :
@@ -479,9 +477,11 @@ theorem nmul_le_iff : a ⨳ b ≤ c ↔ ∀ a' < a, ∀ b' < b, a' ⨳ b ♯ a �
 theorem nmul_comm (a b) : a ⨳ b = b ⨳ a := by
   rw [nmul, nmul]
   congr; ext x; constructor <;> intro H c hc d hd
-  · rw [nadd_comm, ← nmul_comm, ← nmul_comm a, ← nmul_comm d]
+  -- Porting note: had to add additional arguments to `nmul_comm` here
+  -- for the termination checker.
+  · rw [nadd_comm, ← nmul_comm d b, ← nmul_comm a c, ← nmul_comm d]
     exact H _ hd _ hc
-  · rw [nadd_comm, nmul_comm, nmul_comm c, nmul_comm c]
+  · rw [nadd_comm, nmul_comm a d, nmul_comm c, nmul_comm c]
     exact H _ hd _ hc
 termination_by (a, b)
 
@@ -496,13 +496,17 @@ theorem zero_nmul (a) : 0 ⨳ a = 0 := by rw [nmul_comm, nmul_zero]
 @[simp]
 theorem nmul_one (a : Ordinal) : a ⨳ 1 = a := by
   rw [nmul]
-  convert csInf_Ici
+  simp only [lt_one_iff_zero, forall_eq, nmul_zero, nadd_zero]
+  convert csInf_Ici (α := Ordinal)
   ext b
-  refine ⟨fun H ↦ le_of_forall_lt (a := a) fun c hc ↦ ?_, fun ha c hc ↦ ?_⟩
+  -- Porting note: added this `simp` line, as the result from `convert`
+  -- is slightly different.
+  simp only [Set.mem_setOf_eq, Set.mem_Ici]
+  refine ⟨fun H => le_of_forall_lt fun c hc => ?_, fun ha c hc => ?_⟩
   -- Porting note: had to add arguments to `nmul_one` in the next two lines
   -- for the termination checker.
-  · simpa [nmul_one c] using H c hc
-  · simpa [nmul_one c] using hc.trans_le ha
+  · simpa only [nmul_one c] using H c hc
+  · simpa only [nmul_one c] using hc.trans_le ha
 termination_by a
 
 @[simp]
@@ -532,16 +536,19 @@ alias nmul_le_nmul_of_nonneg_right := nmul_le_nmul_right
 theorem nmul_nadd (a b c : Ordinal) : a ⨳ (b ♯ c) = a ⨳ b ♯ a ⨳ c := by
   refine le_antisymm (nmul_le_iff.2 fun a' ha d hd => ?_)
     (nadd_le_iff.2 ⟨fun d hd => ?_, fun d hd => ?_⟩)
-  · rw [nmul_nadd]
+  · -- Porting note: adding arguments to `nmul_nadd` for the termination checker.
+    rw [nmul_nadd a' b c]
     rcases lt_nadd_iff.1 hd with (⟨b', hb, hd⟩ | ⟨c', hc, hd⟩)
     · have := nadd_lt_nadd_of_lt_of_le (nmul_nadd_lt ha hb) (nmul_nadd_le ha.le hd)
-      rw [nmul_nadd, nmul_nadd] at this
+      -- Porting note: adding arguments to `nmul_nadd` for the termination checker.
+      rw [nmul_nadd a' b' c, nmul_nadd a b' c] at this
       simp only [nadd_assoc] at this
       rwa [nadd_left_comm, nadd_left_comm _ (a ⨳ b'), nadd_left_comm (a ⨳ b),
         nadd_lt_nadd_iff_left, nadd_left_comm (a' ⨳ b), nadd_left_comm (a ⨳ b),
         nadd_lt_nadd_iff_left, ← nadd_assoc, ← nadd_assoc] at this
     · have := nadd_lt_nadd_of_le_of_lt (nmul_nadd_le ha.le hd) (nmul_nadd_lt ha hc)
-      rw [nmul_nadd, nmul_nadd] at this
+      -- Porting note: adding arguments to `nmul_nadd` for the termination checker.
+      rw [nmul_nadd a' b c', nmul_nadd a b c'] at this
       simp only [nadd_assoc] at this
       rwa [nadd_left_comm, nadd_comm (a ⨳ c), nadd_left_comm (a' ⨳ d), nadd_left_comm (a ⨳ c'),
         nadd_left_comm (a ⨳ b), nadd_lt_nadd_iff_left, nadd_comm (a' ⨳ c), nadd_left_comm (a ⨳ d),
@@ -549,7 +556,8 @@ theorem nmul_nadd (a b c : Ordinal) : a ⨳ (b ♯ c) = a ⨳ b ♯ a ⨳ c := b
         nadd_comm (a' ⨳ d), ← nadd_assoc, ← nadd_assoc] at this
   · rcases lt_nmul_iff.1 hd with ⟨a', ha, b', hb, hd⟩
     have := nadd_lt_nadd_of_le_of_lt hd (nmul_nadd_lt ha (nadd_lt_nadd_right hb c))
-    rw [nmul_nadd, nmul_nadd, nmul_nadd a'] at this
+    -- Porting note: adding arguments to `nmul_nadd` for the termination checker.
+    rw [nmul_nadd a' b c, nmul_nadd a b' c, nmul_nadd a'] at this
     simp only [nadd_assoc] at this
     rwa [nadd_left_comm (a' ⨳ b'), nadd_left_comm, nadd_lt_nadd_iff_left, nadd_left_comm,
       nadd_left_comm _ (a' ⨳ b'), nadd_left_comm (a ⨳ b'), nadd_lt_nadd_iff_left,
@@ -557,7 +565,8 @@ theorem nmul_nadd (a b c : Ordinal) : a ⨳ (b ♯ c) = a ⨳ b ♯ a ⨳ c := b
       nadd_comm _ (a' ⨳ c), nadd_lt_nadd_iff_left] at this
   · rcases lt_nmul_iff.1 hd with ⟨a', ha, c', hc, hd⟩
     have := nadd_lt_nadd_of_lt_of_le (nmul_nadd_lt ha (nadd_lt_nadd_left hc b)) hd
-    rw [nmul_nadd, nmul_nadd, nmul_nadd a'] at this
+    -- Porting note: adding arguments to `nmul_nadd` for the termination checker.
+    rw [nmul_nadd a' b c, nmul_nadd a b c', nmul_nadd a'] at this
     simp only [nadd_assoc] at this
     rwa [nadd_left_comm _ (a' ⨳ b), nadd_lt_nadd_iff_left, nadd_left_comm (a' ⨳ c'),
       nadd_left_comm _ (a' ⨳ c), nadd_lt_nadd_iff_left, nadd_left_comm, nadd_comm (a' ⨳ c'),
@@ -578,25 +587,26 @@ theorem nmul_nadd_le₃ {a' b' c' : Ordinal} (ha : a' ≤ a) (hb : b' ≤ b) (hc
       a ⨳ b ⨳ c ♯ a' ⨳ b' ⨳ c ♯ a' ⨳ b ⨳ c' ♯ a ⨳ b' ⨳ c' := by
   simpa only [nadd_nmul, ← nadd_assoc] using nmul_nadd_le (nmul_nadd_le ha hb) hc
 
-private theorem nmul_nadd_lt₃' {a' b' c' : Ordinal} (ha : a' < a) (hb : b' < b) (hc : c' < c) :
+theorem nmul_nadd_lt₃' {a' b' c' : Ordinal} (ha : a' < a) (hb : b' < b) (hc : c' < c) :
     a' ⨳ (b ⨳ c) ♯ a ⨳ (b' ⨳ c) ♯ a ⨳ (b ⨳ c') ♯ a' ⨳ (b' ⨳ c') <
       a ⨳ (b ⨳ c) ♯ a' ⨳ (b' ⨳ c) ♯ a' ⨳ (b ⨳ c') ♯ a ⨳ (b' ⨳ c') := by
   simp only [nmul_comm _ (_ ⨳ _)]
   convert nmul_nadd_lt₃ hb hc ha using 1 <;>
-    (simp only [nadd_eq_add, NatOrdinal.toOrdinal_toNatOrdinal]; abel_nf)
+    · simp only [nadd_eq_add, NatOrdinal.toOrdinal_toNatOrdinal]; abel_nf
 
-@[deprecated nmul_nadd_le₃ (since := "2024-11-19")]
 theorem nmul_nadd_le₃' {a' b' c' : Ordinal} (ha : a' ≤ a) (hb : b' ≤ b) (hc : c' ≤ c) :
     a' ⨳ (b ⨳ c) ♯ a ⨳ (b' ⨳ c) ♯ a ⨳ (b ⨳ c') ♯ a' ⨳ (b' ⨳ c') ≤
       a ⨳ (b ⨳ c) ♯ a' ⨳ (b' ⨳ c) ♯ a' ⨳ (b ⨳ c') ♯ a ⨳ (b' ⨳ c') := by
   simp only [nmul_comm _ (_ ⨳ _)]
   convert nmul_nadd_le₃ hb hc ha using 1 <;>
-    (simp only [nadd_eq_add, NatOrdinal.toOrdinal_toNatOrdinal]; abel_nf)
+    · simp only [nadd_eq_add, NatOrdinal.toOrdinal_toNatOrdinal]; abel_nf
 
-theorem lt_nmul_iff₃ : d < a ⨳ b ⨳ c ↔ ∃ a' < a, ∃ b' < b, ∃ c' < c,
-    d ♯ a' ⨳ b' ⨳ c ♯ a' ⨳ b ⨳ c' ♯ a ⨳ b' ⨳ c' ≤
-      a' ⨳ b ⨳ c ♯ a ⨳ b' ⨳ c ♯ a ⨳ b ⨳ c' ♯ a' ⨳ b' ⨳ c' := by
-  refine ⟨fun h ↦ ?_, fun ⟨a', ha, b', hb, c', hc, h⟩ ↦ ?_⟩
+theorem lt_nmul_iff₃ :
+    d < a ⨳ b ⨳ c ↔
+      ∃ a' < a, ∃ b' < b, ∃ c' < c,
+        d ♯ a' ⨳ b' ⨳ c ♯ a' ⨳ b ⨳ c' ♯ a ⨳ b' ⨳ c' ≤
+          a' ⨳ b ⨳ c ♯ a ⨳ b' ⨳ c ♯ a ⨳ b ⨳ c' ♯ a' ⨳ b' ⨳ c' := by
+  refine ⟨fun h => ?_, ?_⟩
   · rcases lt_nmul_iff.1 h with ⟨e, he, c', hc, H₁⟩
     rcases lt_nmul_iff.1 he with ⟨a', ha, b', hb, H₂⟩
     refine ⟨a', ha, b', hb, c', hc, ?_⟩
@@ -606,38 +616,52 @@ theorem lt_nmul_iff₃ : d < a ⨳ b ⨳ c ↔ ∃ a' < a, ∃ b' < b, ∃ c' < 
       nadd_left_comm (a ⨳ b' ⨳ c), nadd_left_comm (a' ⨳ b ⨳ c), nadd_left_comm (a ⨳ b ⨳ c'),
       nadd_le_nadd_iff_left, nadd_left_comm (a ⨳ b ⨳ c'), nadd_left_comm (a ⨳ b ⨳ c')] at this
     simpa only [nadd_assoc]
-  · have := h.trans_lt (nmul_nadd_lt₃ ha hb hc)
-    repeat rw [nadd_lt_nadd_iff_right] at this
+  · rintro ⟨a', ha, b', hb, c', hc, h⟩
+    have := h.trans_lt (nmul_nadd_lt₃ ha hb hc)
+    repeat' rw [nadd_lt_nadd_iff_right] at this
     assumption
 
-theorem nmul_le_iff₃ : a ⨳ b ⨳ c ≤ d ↔ ∀ a' < a, ∀ b' < b, ∀ c' < c,
-    a' ⨳ b ⨳ c ♯ a ⨳ b' ⨳ c ♯ a ⨳ b ⨳ c' ♯ a' ⨳ b' ⨳ c' <
-      d ♯ a' ⨳ b' ⨳ c ♯ a' ⨳ b ⨳ c' ♯ a ⨳ b' ⨳ c' := by
-  simpa using lt_nmul_iff₃.not
+theorem nmul_le_iff₃ :
+    a ⨳ b ⨳ c ≤ d ↔
+      ∀ a' < a, ∀ b' < b, ∀ c' < c,
+        a' ⨳ b ⨳ c ♯ a ⨳ b' ⨳ c ♯ a ⨳ b ⨳ c' ♯ a' ⨳ b' ⨳ c' <
+          d ♯ a' ⨳ b' ⨳ c ♯ a' ⨳ b ⨳ c' ♯ a ⨳ b' ⨳ c' := by
+  rw [← not_iff_not]; simp [lt_nmul_iff₃]
 
-private theorem nmul_le_iff₃' : a ⨳ (b ⨳ c) ≤ d ↔ ∀ a' < a, ∀ b' < b, ∀ c' < c,
-    a' ⨳ (b ⨳ c) ♯ a ⨳ (b' ⨳ c) ♯ a ⨳ (b ⨳ c') ♯ a' ⨳ (b' ⨳ c') <
-      d ♯ a' ⨳ (b' ⨳ c) ♯ a' ⨳ (b ⨳ c') ♯ a ⨳ (b' ⨳ c') := by
-  simp only [nmul_comm _ (_ ⨳ _), nmul_le_iff₃, nadd_eq_add, toOrdinal_toNatOrdinal]
-  constructor <;> intro h a' ha b' hb c' hc
-  · convert h b' hb c' hc a' ha using 1 <;> abel_nf
-  · convert h c' hc a' ha b' hb using 1 <;> abel_nf
+theorem lt_nmul_iff₃' :
+    d < a ⨳ (b ⨳ c) ↔
+      ∃ a' < a, ∃ b' < b, ∃ c' < c,
+        d ♯ a' ⨳ (b' ⨳ c) ♯ a' ⨳ (b ⨳ c') ♯ a ⨳ (b' ⨳ c') ≤
+          a' ⨳ (b ⨳ c) ♯ a ⨳ (b' ⨳ c) ♯ a ⨳ (b ⨳ c') ♯ a' ⨳ (b' ⨳ c') := by
+  simp only [nmul_comm _ (_ ⨳ _), lt_nmul_iff₃, nadd_eq_add, NatOrdinal.toOrdinal_toNatOrdinal]
+  constructor <;> rintro ⟨b', hb, c', hc, a', ha, h⟩
+  · use a', ha, b', hb, c', hc; convert h using 1 <;> abel_nf
+  · use c', hc, a', ha, b', hb; convert h using 1 <;> abel_nf
 
-@[deprecated lt_nmul_iff₃ (since := "2024-11-19")]
-theorem lt_nmul_iff₃' : d < a ⨳ (b ⨳ c) ↔ ∃ a' < a, ∃ b' < b, ∃ c' < c,
-    d ♯ a' ⨳ (b' ⨳ c) ♯ a' ⨳ (b ⨳ c') ♯ a ⨳ (b' ⨳ c') ≤
-      a' ⨳ (b ⨳ c) ♯ a ⨳ (b' ⨳ c) ♯ a ⨳ (b ⨳ c') ♯ a' ⨳ (b' ⨳ c') := by
-  simpa using nmul_le_iff₃'.not
+theorem nmul_le_iff₃' :
+    a ⨳ (b ⨳ c) ≤ d ↔
+      ∀ a' < a, ∀ b' < b, ∀ c' < c,
+        a' ⨳ (b ⨳ c) ♯ a ⨳ (b' ⨳ c) ♯ a ⨳ (b ⨳ c') ♯ a' ⨳ (b' ⨳ c') <
+          d ♯ a' ⨳ (b' ⨳ c) ♯ a' ⨳ (b ⨳ c') ♯ a ⨳ (b' ⨳ c') := by
+  rw [← not_iff_not]; simp [lt_nmul_iff₃']
 
 theorem nmul_assoc (a b c : Ordinal) : a ⨳ b ⨳ c = a ⨳ (b ⨳ c) := by
   apply le_antisymm
   · rw [nmul_le_iff₃]
     intro a' ha b' hb c' hc
-    repeat rw [nmul_assoc]
+    -- Porting note: the next line was just
+    -- repeat' rw [nmul_assoc]
+    -- but we need to spell out the arguments for the termination checker.
+    rw [nmul_assoc a' b c, nmul_assoc a b' c, nmul_assoc a b c', nmul_assoc a' b' c',
+      nmul_assoc a' b' c, nmul_assoc a' b c', nmul_assoc a b' c']
     exact nmul_nadd_lt₃' ha hb hc
   · rw [nmul_le_iff₃']
     intro a' ha b' hb c' hc
-    repeat rw [← nmul_assoc]
+    -- Porting note: the next line was just
+    -- repeat' rw [← nmul_assoc]
+    -- but we need to spell out the arguments for the termination checker.
+    rw [← nmul_assoc a' b c, ← nmul_assoc a b' c, ← nmul_assoc a b c', ← nmul_assoc a' b' c',
+      ← nmul_assoc a' b' c, ← nmul_assoc a' b c', ← nmul_assoc a b' c']
     exact nmul_nadd_lt₃ ha hb hc
 termination_by (a, b, c)
 
@@ -651,8 +675,8 @@ instance : Mul NatOrdinal :=
 -- Porting note: had to add universe annotations to ensure that the
 -- two sources lived in the same universe.
 instance : OrderedCommSemiring NatOrdinal.{u} :=
-  { NatOrdinal.instOrderedCancelAddCommMonoid.{u},
-    NatOrdinal.instLinearOrder.{u} with
+  { NatOrdinal.orderedCancelAddCommMonoid.{u},
+    NatOrdinal.linearOrder.{u} with
     mul := (· * ·)
     left_distrib := nmul_nadd
     right_distrib := nadd_nmul
@@ -664,8 +688,8 @@ instance : OrderedCommSemiring NatOrdinal.{u} :=
     mul_one := nmul_one
     mul_comm := nmul_comm
     zero_le_one := @zero_le_one Ordinal _ _ _ _
-    mul_le_mul_of_nonneg_left := fun _ _ c h _ => nmul_le_nmul_left h c
-    mul_le_mul_of_nonneg_right := fun _ _ c h _ => nmul_le_nmul_right h c }
+    mul_le_mul_of_nonneg_left := fun a b c h _ => nmul_le_nmul_left h c
+    mul_le_mul_of_nonneg_right := fun a b c h _ => nmul_le_nmul_right h c }
 
 namespace Ordinal
 
@@ -697,7 +721,7 @@ theorem mul_le_nmul (a b : Ordinal.{u}) : a * b ≤ a ⨳ b := by
   · intro c hc H
     rcases eq_zero_or_pos a with (rfl | ha)
     · simp
-    · rw [← IsNormal.blsub_eq.{u, u} (isNormal_mul_right ha) hc, blsub_le_iff]
+    · rw [← IsNormal.blsub_eq.{u, u} (mul_isNormal ha) hc, blsub_le_iff]
       exact fun i hi => (H i hi).trans_lt (nmul_lt_nmul_of_pos_left hi ha)
 
 @[deprecated mul_le_nmul (since := "2024-08-20")]

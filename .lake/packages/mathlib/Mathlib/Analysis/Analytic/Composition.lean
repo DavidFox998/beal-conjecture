@@ -141,14 +141,14 @@ theorem applyComposition_update (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ}
   by_cases h : k = c.index j
   · rw [h]
     let r : Fin (c.blocksFun (c.index j)) → Fin n := c.embedding (c.index j)
-    simp only [Function.update_self]
+    simp only [Function.update_same]
     change p (c.blocksFun (c.index j)) (Function.update v j z ∘ r) = _
     let j' := c.invEmbedding j
     suffices B : Function.update v j z ∘ r = Function.update (v ∘ r) j' z by rw [B]
     suffices C : Function.update v (r j') z ∘ r = Function.update (v ∘ r) j' z by
       convert C; exact (c.embedding_comp_inv j).symm
     exact Function.update_comp_eq_of_injective _ (c.embedding _).injective _ _
-  · simp only [h, Function.update_eq_self, Function.update_of_ne, Ne, not_false_iff]
+  · simp only [h, Function.update_eq_self, Function.update_noteq, Ne, not_false_iff]
     let r : Fin (c.blocksFun k) → Fin n := c.embedding k
     change p (c.blocksFun k) (Function.update v j z ∘ r) = p (c.blocksFun k) (v ∘ r)
     suffices B : Function.update v j z ∘ r = v ∘ r by rw [B]
@@ -175,21 +175,22 @@ map `f` in `c.length` variables, one may form a continuous multilinear map in `n
 applying the right coefficient of `p` to each block of the composition, and then applying `f` to
 the resulting vector. It is called `f.compAlongComposition p c`. -/
 def compAlongComposition {n : ℕ} (p : FormalMultilinearSeries 𝕜 E F) (c : Composition n)
-    (f : F [×c.length]→L[𝕜] G) : E [×n]→L[𝕜] G where
+    (f : ContinuousMultilinearMap 𝕜 (fun _i : Fin c.length => F) G) :
+    ContinuousMultilinearMap 𝕜 (fun _i : Fin n => E) G where
   toFun v := f (p.applyComposition c v)
-  map_update_add' v i x y := by
+  map_add' v i x y := by
     cases Subsingleton.elim ‹_› (instDecidableEqFin _)
-    simp only [applyComposition_update, ContinuousMultilinearMap.map_update_add]
-  map_update_smul' v i c x := by
+    simp only [applyComposition_update, ContinuousMultilinearMap.map_add]
+  map_smul' v i c x := by
     cases Subsingleton.elim ‹_› (instDecidableEqFin _)
-    simp only [applyComposition_update, ContinuousMultilinearMap.map_update_smul]
+    simp only [applyComposition_update, ContinuousMultilinearMap.map_smul]
   cont :=
     f.cont.comp <|
-      continuous_pi fun _ => (coe_continuous _).comp <| continuous_pi fun _ => continuous_apply _
+      continuous_pi fun i => (coe_continuous _).comp <| continuous_pi fun j => continuous_apply _
 
 @[simp]
 theorem compAlongComposition_apply {n : ℕ} (p : FormalMultilinearSeries 𝕜 E F) (c : Composition n)
-    (f : F [×c.length]→L[𝕜] G) (v : Fin n → E) :
+    (f : ContinuousMultilinearMap 𝕜 (fun _i : Fin c.length => F) G) (v : Fin n → E) :
     (f.compAlongComposition p c) v = f (p.applyComposition c v) :=
   rfl
 
@@ -206,7 +207,8 @@ form a continuous multilinear map in `n` variables by applying the right coeffic
 block of the composition, and then applying `q c.length` to the resulting vector. It is
 called `q.compAlongComposition p c`. -/
 def compAlongComposition {n : ℕ} (q : FormalMultilinearSeries 𝕜 F G)
-    (p : FormalMultilinearSeries 𝕜 E F) (c : Composition n) : (E [×n]→L[𝕜] G) :=
+    (p : FormalMultilinearSeries 𝕜 E F) (c : Composition n) :
+    ContinuousMultilinearMap 𝕜 (fun _i : Fin n => E) G :=
   (q c.length).compAlongComposition p c
 
 @[simp]
@@ -288,7 +290,7 @@ namespace FormalMultilinearSeries
 /-- The norm of `f.compAlongComposition p c` is controlled by the product of
 the norms of the relevant bits of `f` and `p`. -/
 theorem compAlongComposition_bound {n : ℕ} (p : FormalMultilinearSeries 𝕜 E F) (c : Composition n)
-    (f : F [×c.length]→L[𝕜] G) (v : Fin n → E) :
+    (f : ContinuousMultilinearMap 𝕜 (fun _i : Fin c.length => F) G) (v : Fin n → E) :
     ‖f.compAlongComposition p c v‖ ≤ (‖f‖ * ∏ i, ‖p (c.blocksFun i)‖) * ∏ i : Fin n, ‖v i‖ :=
   calc
     ‖f.compAlongComposition p c v‖ = ‖f (p.applyComposition c v)‖ := rfl
@@ -309,7 +311,7 @@ the norms of the relevant bits of `q` and `p`. -/
 theorem compAlongComposition_norm {n : ℕ} (q : FormalMultilinearSeries 𝕜 F G)
     (p : FormalMultilinearSeries 𝕜 E F) (c : Composition n) :
     ‖q.compAlongComposition p c‖ ≤ ‖q c.length‖ * ∏ i, ‖p (c.blocksFun i)‖ :=
-  ContinuousMultilinearMap.opNorm_le_bound (by positivity) (compAlongComposition_bound _ _ _)
+  ContinuousMultilinearMap.opNorm_le_bound _ (by positivity) (compAlongComposition_bound _ _ _)
 
 theorem compAlongComposition_nnnorm {n : ℕ} (q : FormalMultilinearSeries 𝕜 F G)
     (p : FormalMultilinearSeries 𝕜 E F) (c : Composition n) :
@@ -471,7 +473,7 @@ theorem comp_summable_nnreal (q : FormalMultilinearSeries 𝕜 F G) (p : FormalM
         simp only [Finset.prod_mul_distrib, Finset.prod_pow_eq_pow_sum, c.sum_blocksFun]
       _ ≤ ∏ _i : Fin c.length, Cp := Finset.prod_le_prod' fun i _ => hCp _
       _ = Cp ^ c.length := by simp
-      _ ≤ Cp ^ n := pow_right_mono₀ hCp1 c.length_le
+      _ ≤ Cp ^ n := pow_le_pow_right hCp1 c.length_le
     calc
       ‖q.compAlongComposition p c‖₊ * r ^ n ≤
           (‖q c.length‖₊ * ∏ i, ‖p (c.blocksFun i)‖₊) * r ^ n :=
@@ -805,7 +807,7 @@ theorem HasFPowerSeriesWithinAt.comp {g : F → G} {f : E → F} {q : FormalMult
         _ ≤ ‖compAlongComposition q p c‖ * (r : ℝ) ^ n := by
           apply mul_le_mul_of_nonneg_left _ (norm_nonneg _)
           rw [Finset.prod_const, Finset.card_fin]
-          gcongr
+          apply pow_le_pow_left (norm_nonneg _)
           rw [EMetric.mem_ball, edist_eq_coe_nnnorm] at hy
           have := le_trans (le_of_lt hy) (min_le_right _ _)
           rwa [ENNReal.coe_le_coe, ← NNReal.coe_le_coe, coe_nnnorm] at this
@@ -1019,9 +1021,9 @@ def gather (a : Composition n) (b : Composition a.length) : Composition n where
       _ ≤ j.sum := length_le_sum_of_one_le _ H
     intro i hi
     apply a.one_le_blocks
-    rw [← a.blocks.flatten_splitWrtComposition b]
-    exact mem_flatten_of_mem hj hi
-  blocks_sum := by rw [← sum_flatten, flatten_splitWrtComposition, a.blocks_sum]
+    rw [← a.blocks.join_splitWrtComposition b]
+    exact mem_join_of_mem hj hi
+  blocks_sum := by rw [← sum_join, join_splitWrtComposition, a.blocks_sum]
 
 theorem length_gather (a : Composition n) (b : Composition a.length) :
     length (a.gather b) = b.length :=
@@ -1040,8 +1042,8 @@ def sigmaCompositionAux (a : Composition n) (b : Composition a.length)
   blocks_pos {i} hi :=
     a.blocks_pos
       (by
-        rw [← a.blocks.flatten_splitWrtComposition b]
-        exact mem_flatten_of_mem (List.getElem_mem _) hi)
+        rw [← a.blocks.join_splitWrtComposition b]
+        exact mem_join_of_mem (List.getElem_mem _ _ _) hi)
   blocks_sum := by simp [Composition.blocksFun, getElem_map, Composition.gather]
 
 theorem length_sigmaCompositionAux (a : Composition n) (b : Composition a.length)
@@ -1051,15 +1053,16 @@ theorem length_sigmaCompositionAux (a : Composition n) (b : Composition a.length
   show List.length ((splitWrtComposition a.blocks b)[i.1]) = blocksFun b i by
     rw [getElem_map_rev List.length, getElem_of_eq (map_length_splitWrtComposition _ _)]; rfl
 
+set_option linter.deprecated false in
 theorem blocksFun_sigmaCompositionAux (a : Composition n) (b : Composition a.length)
     (i : Fin b.length) (j : Fin (blocksFun b i)) :
     blocksFun (sigmaCompositionAux a b ⟨i, (length_gather a b).symm ▸ i.2⟩)
         ⟨j, (length_sigmaCompositionAux a b i).symm ▸ j.2⟩ =
-      blocksFun a (embedding b i j) := by
-  unfold sigmaCompositionAux
-  rw [blocksFun, get_eq_getElem, getElem_of_eq (getElem_splitWrtComposition _ _ _ _),
-    getElem_drop, getElem_take]; rfl
+      blocksFun a (embedding b i j) :=
+  show get (get _ ⟨_, _⟩) ⟨_, _⟩  = a.blocks.get ⟨_, _⟩ by
+    rw [get_of_eq (get_splitWrtComposition _ _ _), get_drop', get_take']; rfl
 
+set_option linter.deprecated false in
 /-- Auxiliary lemma to prove that the composition of formal multilinear series is associative.
 
 Consider a composition `a` of `n` and a composition `b` of `a.length`. Grouping together some
@@ -1106,7 +1109,7 @@ theorem sizeUpTo_sizeUpTo_add (a : Composition n) (b : Composition a.length) {i 
     have : sizeUpTo b i + Nat.succ j = (sizeUpTo b i + j).succ := rfl
     rw [this, sizeUpTo_succ _ D, IHj A, sizeUpTo_succ _ B]
     simp only [sigmaCompositionAux, add_assoc, add_left_inj, Fin.val_mk]
-    rw [getElem_of_eq (getElem_splitWrtComposition _ _ _ _), getElem_drop, getElem_take' _ _ C]
+    rw [getElem_of_eq (getElem_splitWrtComposition _ _ _ _), getElem_drop, getElem_take _ _ C]
 
 /-- Natural equivalence between `(Σ (a : Composition n), Composition a.length)` and
 `(Σ (c : Composition n), Π (i : Fin c.length), Composition (c.blocksFun i))`, that shows up as a
@@ -1127,9 +1130,9 @@ def sigmaEquivSigmaPi (n : ℕ) :
       Σ c : Composition n, ∀ i : Fin c.length, Composition (c.blocksFun i) where
   toFun i := ⟨i.1.gather i.2, i.1.sigmaCompositionAux i.2⟩
   invFun i :=
-    ⟨{  blocks := (ofFn fun j => (i.2 j).blocks).flatten
+    ⟨{  blocks := (ofFn fun j => (i.2 j).blocks).join
         blocks_pos := by
-          simp only [and_imp, List.mem_flatten, exists_imp, forall_mem_ofFn_iff]
+          simp only [and_imp, List.mem_join, exists_imp, forall_mem_ofFn_iff]
           exact @fun i j hj => Composition.blocks_pos _ hj
         blocks_sum := by simp [sum_ofFn, Composition.blocks_sum, Composition.sum_blocksFun] },
       { blocks := ofFn fun j => (i.2 j).length
@@ -1146,7 +1149,7 @@ def sigmaEquivSigmaPi (n : ℕ) :
     dsimp
     constructor
     · conv_rhs =>
-        rw [← flatten_splitWrtComposition a.blocks b, ← ofFn_get (splitWrtComposition a.blocks b)]
+        rw [← join_splitWrtComposition a.blocks b, ← ofFn_get (splitWrtComposition a.blocks b)]
       have A : length (gather a b) = List.length (splitWrtComposition a.blocks b) := by
         simp only [length, gather, length_map, length_splitWrtComposition]
       congr! 2
@@ -1170,13 +1173,13 @@ def sigmaEquivSigmaPi (n : ℕ) :
     · congr
       ext1
       dsimp [Composition.gather]
-      rwa [splitWrtComposition_flatten]
+      rwa [splitWrtComposition_join]
       simp only [map_ofFn]
       rfl
     · rw [Fin.heq_fun_iff]
       · intro i
         dsimp [Composition.sigmaCompositionAux]
-        rw [getElem_of_eq (splitWrtComposition_flatten _ _ _)]
+        rw [getElem_of_eq (splitWrtComposition_join _ _ _)]
         · simp only [List.getElem_ofFn]
         · simp only [map_ofFn]
           rfl

@@ -32,7 +32,7 @@ namespace NumberField.Units
 
 variable (K : Type*) [Field K]
 
-open MeasureTheory Classical NumberField.InfinitePlace
+open MeasureTheory Classical BigOperators NumberField.InfinitePlace
   NumberField NumberField.Units.dirichletUnitTheorem
 
 variable [NumberField K]

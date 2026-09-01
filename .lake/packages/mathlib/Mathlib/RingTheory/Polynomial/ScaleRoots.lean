@@ -20,6 +20,8 @@ variable {R S A K : Type*}
 
 namespace Polynomial
 
+open Polynomial
+
 section Semiring
 
 variable [Semiring R] [Semiring S]
@@ -31,7 +33,7 @@ noncomputable def scaleRoots (p : R[X]) (s : R) : R[X] :=
 @[simp]
 theorem coeff_scaleRoots (p : R[X]) (s : R) (i : ℕ) :
     (scaleRoots p s).coeff i = coeff p i * s ^ (p.natDegree - i) := by
-  simp +contextual [scaleRoots, coeff_monomial]
+  simp (config := { contextual := true }) [scaleRoots, coeff_monomial]
 
 theorem coeff_scaleRoots_natDegree (p : R[X]) (s : R) :
     (scaleRoots p s).coeff p.natDegree = p.leadingCoeff := by

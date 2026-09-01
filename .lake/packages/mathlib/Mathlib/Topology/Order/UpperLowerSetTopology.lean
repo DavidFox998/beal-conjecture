@@ -80,10 +80,8 @@ namespace WithUpperSet
 /-- `ofUpperSet` is the identity function from the `WithUpperSet` of a type. -/
 @[match_pattern] def ofUpperSet : WithUpperSet α ≃ α := Equiv.refl _
 
-@[simp] lemma toUpperSet_symm : (@toUpperSet α).symm = ofUpperSet := rfl
-@[deprecated (since := "2024-10-10")] alias to_WithUpperSet_symm_eq := toUpperSet_symm
-@[simp] lemma ofUpperSet_symm : (@ofUpperSet α).symm = toUpperSet := rfl
-@[deprecated (since := "2024-10-10")] alias of_WithUpperSet_symm_eq := ofUpperSet_symm
+@[simp] lemma to_WithUpperSet_symm_eq : (@toUpperSet α).symm = ofUpperSet := rfl
+@[simp] lemma of_WithUpperSet_symm_eq : (@ofUpperSet α).symm = toUpperSet := rfl
 @[simp] lemma toUpperSet_ofUpperSet (a : WithUpperSet α) : toUpperSet (ofUpperSet a) = a := rfl
 @[simp] lemma ofUpperSet_toUpperSet (a : α) : ofUpperSet (toUpperSet a) = a := rfl
 lemma toUpperSet_inj {a b : α} : toUpperSet a = toUpperSet b ↔ a = b := Iff.rfl
@@ -97,7 +95,7 @@ protected def rec {β : WithUpperSet α → Sort*} (h : ∀ a, β (toUpperSet a)
 instance [Nonempty α] : Nonempty (WithUpperSet α) := ‹Nonempty α›
 instance [Inhabited α] : Inhabited (WithUpperSet α) := ‹Inhabited α›
 
-variable [Preorder α] [Preorder β]
+variable [Preorder α] [Preorder β] [Preorder γ]
 
 instance : Preorder (WithUpperSet α) := ‹Preorder α›
 instance : TopologicalSpace (WithUpperSet α) := upperSet α
@@ -128,10 +126,8 @@ namespace WithLowerSet
 /-- `ofLowerSet` is the identity function from the `WithLowerSet` of a type. -/
 @[match_pattern] def ofLowerSet : WithLowerSet α ≃ α := Equiv.refl _
 
-@[simp] lemma toLowerSet_symm : (@toLowerSet α).symm = ofLowerSet := rfl
-@[deprecated (since := "2024-10-10")] alias to_WithLowerSet_symm_eq := toLowerSet_symm
-@[simp] lemma ofLowerSet_symm : (@ofLowerSet α).symm = toLowerSet := rfl
-@[deprecated (since := "2024-10-10")] alias of_WithLowerSet_symm_eq := ofLowerSet_symm
+@[simp] lemma to_WithLowerSet_symm_eq : (@toLowerSet α).symm = ofLowerSet := rfl
+@[simp] lemma of_WithLowerSet_symm_eq : (@ofLowerSet α).symm = toLowerSet := rfl
 @[simp] lemma toLowerSet_ofLowerSet (a : WithLowerSet α) : toLowerSet (ofLowerSet a) = a := rfl
 @[simp] lemma ofLowerSet_toLowerSet (a : α) : ofLowerSet (toLowerSet a) = a := rfl
 lemma toLowerSet_inj {a b : α} : toLowerSet a = toLowerSet b ↔ a = b := Iff.rfl
@@ -224,7 +220,7 @@ instance _root_.OrderDual.instIsLowerSet [Preorder α] [TopologicalSpace α] [To
 /-- If `α` is equipped with the upper set topology, then it is homeomorphic to
 `WithUpperSet α`. -/
 def WithUpperSetHomeomorph : WithUpperSet α ≃ₜ α :=
-  WithUpperSet.ofUpperSet.toHomeomorphOfIsInducing ⟨by erw [topology_eq α, induced_id]; rfl⟩
+  WithUpperSet.ofUpperSet.toHomeomorphOfInducing ⟨by erw [topology_eq α, induced_id]; rfl⟩
 
 lemma isOpen_iff_isUpperSet : IsOpen s ↔ IsUpperSet s := by
   rw [topology_eq α]
@@ -306,7 +302,7 @@ instance _root_.OrderDual.instIsUpperSet [Preorder α] [TopologicalSpace α] [To
 
 /-- If `α` is equipped with the lower set topology, then it is homeomorphic to `WithLowerSet α`. -/
 def WithLowerSetHomeomorph : WithLowerSet α ≃ₜ α :=
-  WithLowerSet.ofLowerSet.toHomeomorphOfIsInducing ⟨by erw [topology_eq α, induced_id]; rfl⟩
+  WithLowerSet.ofLowerSet.toHomeomorphOfInducing ⟨by erw [topology_eq α, induced_id]; rfl⟩
 
 lemma isOpen_iff_isLowerSet : IsOpen s ↔ IsLowerSet s := by rw [topology_eq α]; rfl
 

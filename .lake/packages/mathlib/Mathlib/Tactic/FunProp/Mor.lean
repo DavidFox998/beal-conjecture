@@ -3,6 +3,7 @@ Copyright (c) 2024 Tomáš Skřivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomáš Skřivan
 -/
+import Lean
 import Mathlib.Data.FunLike.Basic
 import Mathlib.Tactic.FunProp.ToBatteries
 
@@ -63,14 +64,14 @@ can specify which when to unfold definitions.
 
 For example calling this on `coe (f a) b` will put `f` in weak normal head form instead of `coe`.
  -/
-partial def whnfPred (e : Expr) (pred : Expr → MetaM Bool) :
+partial def whnfPred (e : Expr) (pred : Expr → MetaM Bool) (cfg : WhnfCoreConfig := {}) :
     MetaM Expr := do
   whnfEasyCases e fun e => do
-    let e ← whnfCore e
+    let e ← whnfCore e cfg
 
     if let .some ⟨coe,f,x⟩ ← isMorApp? e then
-      let f ← whnfPred f pred
-      if (← getConfig).zeta then
+      let f ← whnfPred f pred cfg
+      if cfg.zeta then
         return (coe.app f).app x
       else
         return ← letTelescope f fun xs f' =>
@@ -78,7 +79,7 @@ partial def whnfPred (e : Expr) (pred : Expr → MetaM Bool) :
 
     if (← pred e) then
         match (← unfoldDefinition? e) with
-        | some e => whnfPred e pred
+        | some e => whnfPred e pred cfg
         | none   => return e
     else
       return e
@@ -88,8 +89,8 @@ Weak normal head form of an expression involving morphism applications.
 
 For example calling this on `coe (f a) b` will put `f` in weak normal head form instead of `coe`.
  -/
-def whnf (e : Expr) : MetaM Expr :=
-  whnfPred e (fun _ => return false)
+def whnf (e : Expr) (cfg : WhnfCoreConfig := {}) : MetaM Expr :=
+  whnfPred e (fun _ => return false) cfg
 
 
 /-- Argument of morphism application that stores corresponding coercion if necessary -/

@@ -266,6 +266,7 @@ structure LeftHomologyMapData where
 namespace LeftHomologyMapData
 
 attribute [reassoc (attr := simp)] commi commf' commπ
+attribute [nolint simpNF] mk.injEq
 
 /-- The left homology map data associated to the zero morphism between two short complexes. -/
 @[simps]

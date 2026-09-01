@@ -85,7 +85,7 @@ Tokenize a string at whitespace, and then pull off delimiters.
 -- this makes it "cheap" to change one identifier for another.
 def tokenize (e : Expr) : MetaM (List String) := do
   let s := (← ppExpr e).pretty
-  return s.splitOn.map splitDelimiters |>.flatten
+  return s.splitOn.map splitDelimiters |>.join
 
 /--
 Data structure containing the history of a rewrite search.

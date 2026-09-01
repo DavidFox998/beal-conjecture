@@ -47,9 +47,6 @@ General algebra:
     nilpotent group: 'Group.IsNilpotent'
     permutation group of a type: 'Equiv.Perm'
     structure of finitely generated abelian groups: 'AddCommGroup.equiv_free_prod_directSum_zmod'
-    first Sylow theorem: Sylow.exists_subgroup_card_pow_prime
-    second Sylow theorem: Sylow.isPretransitive_of_finite
-    third Sylow theorem: card_sylow_modEq_one
 
   Rings:
     ring: 'Ring'
@@ -57,7 +54,7 @@ General algebra:
     the category of rings: 'RingCat'
     subring: 'Subring'
     localization: 'Localization'
-    local ring: 'IsLocalRing'
+    local ring: 'LocalRing'
     noetherian ring: 'IsNoetherianRing'
     ordered ring: 'OrderedRing'
 
@@ -471,7 +468,7 @@ Data structures:
   Maps:
     key-value map: 'AList'
     red-black map: 'Batteries.RBMap'
-    hash map: 'Std.HashMap'
+    hash map: 'Batteries.HashMap'
     finitely supported function: 'Finsupp'
     finite map: 'Finmap'
 

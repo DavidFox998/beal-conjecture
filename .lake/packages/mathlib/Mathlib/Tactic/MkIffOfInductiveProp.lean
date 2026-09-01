@@ -3,8 +3,7 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, David Renshaw
 -/
-import Lean.Elab.DeclarationRange
-import Lean.Meta.Tactic.Cases
+import Lean
 import Mathlib.Lean.Meta
 import Mathlib.Lean.Name
 import Mathlib.Tactic.TypeStar
@@ -328,7 +327,10 @@ def mkIffOfInductivePropImpl (ind : Name) (rel : Name) (relStx : Syntax) : MetaM
     type := thmTy
     value := ← instantiateMVars mvar
   }
-  addDeclarationRangesFromSyntax rel (← getRef) relStx
+  addDeclarationRanges rel {
+    range := ← getDeclarationRange (← getRef)
+    selectionRange := ← getDeclarationRange relStx
+  }
   addConstInfo relStx rel
 
 /--

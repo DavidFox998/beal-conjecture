@@ -24,6 +24,8 @@ assert_not_exists DenselyOrdered
 
 open Function
 
+universe u
+
 variable {α β G M : Type*}
 
 section ite
@@ -115,7 +117,7 @@ instance CommMagma.to_isCommutative [CommMagma G] : Std.Commutative (α := G) (�
 
 section MulOneClass
 
-variable [MulOneClass M]
+variable {M : Type u} [MulOneClass M]
 
 @[to_additive]
 theorem ite_mul_one {P : Prop} [Decidable P] {a b : M} :
@@ -170,7 +172,7 @@ end CommSemigroup
 attribute [local simp] mul_assoc sub_eq_add_neg
 
 section Monoid
-variable [Monoid M] {a b : M} {m n : ℕ}
+variable [Monoid M] {a b c : M} {m n : ℕ}
 
 @[to_additive boole_nsmul]
 lemma pow_boole (P : Prop) [Decidable P] (a : M) :
@@ -224,7 +226,7 @@ end CommMonoid
 
 section LeftCancelMonoid
 
-variable [LeftCancelMonoid M] {a b : M}
+variable {M : Type u} [LeftCancelMonoid M] {a b : M}
 
 @[to_additive (attr := simp)]
 theorem mul_right_eq_self : a * b = a ↔ b = 1 := calc
@@ -245,7 +247,7 @@ end LeftCancelMonoid
 
 section RightCancelMonoid
 
-variable [RightCancelMonoid M] {a b : M}
+variable {M : Type u} [RightCancelMonoid M] {a b : M}
 
 @[to_additive (attr := simp)]
 theorem mul_left_eq_self : a * b = b ↔ a = 1 := calc
@@ -314,7 +316,7 @@ end InvolutiveInv
 
 section DivInvMonoid
 
-variable [DivInvMonoid G]
+variable [DivInvMonoid G] {a b c : G}
 
 @[to_additive, field_simps] -- The attributes are out of order on purpose
 theorem inv_eq_one_div (x : G) : x⁻¹ = 1 / x := by rw [div_eq_mul_inv, one_mul]
@@ -378,10 +380,7 @@ theorem eq_one_div_of_mul_eq_one_right (h : a * b = 1) : b = 1 / a := by
 theorem eq_of_div_eq_one (h : a / b = 1) : a = b :=
   inv_injective <| inv_eq_of_mul_eq_one_right <| by rwa [← div_eq_mul_inv]
 
-@[to_additive]
 lemma eq_of_inv_mul_eq_one (h : a⁻¹ * b = 1) : a = b := by simpa using eq_inv_of_mul_eq_one_left h
-
-@[to_additive]
 lemma eq_of_mul_inv_eq_one (h : a * b⁻¹ = 1) : a = b := by simpa using eq_inv_of_mul_eq_one_left h
 
 @[to_additive]
@@ -427,7 +426,7 @@ lemma one_zpow : ∀ n : ℤ, (1 : α) ^ n = 1
 
 @[to_additive (attr := simp) neg_zsmul]
 lemma zpow_neg (a : α) : ∀ n : ℤ, a ^ (-n) = (a ^ n)⁻¹
-  | (_ + 1 : ℕ) => DivInvMonoid.zpow_neg' _ _
+  | (n + 1 : ℕ) => DivInvMonoid.zpow_neg' _ _
   | 0 => by
     change a ^ (0 : ℤ) = (a ^ (0 : ℤ))⁻¹
     simp

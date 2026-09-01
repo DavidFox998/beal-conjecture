@@ -106,15 +106,11 @@ lemma of_fac' {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) (ha : p.obj
   obtain rfl : f = p.map φ := by simpa using h.symm
   infer_instance
 
-lemma of_commsq {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) (ha : p.obj a = R) (hb : p.obj b = S)
-    (h : p.map φ ≫ eqToHom hb = (eqToHom ha) ≫ f) : p.IsHomLift f φ := by
-  subst ha hb
-  obtain rfl : f = p.map φ := by simpa using h.symm
-  infer_instance
-
 lemma of_commSq {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) (ha : p.obj a = R) (hb : p.obj b = S)
-    (h : CommSq (p.map φ) (eqToHom ha) (eqToHom hb) f) : p.IsHomLift f φ :=
-  of_commsq p f φ ha hb h.1
+    (h : CommSq (p.map φ) (eqToHom ha) (eqToHom hb) f) : p.IsHomLift f φ := by
+  subst ha hb
+  obtain rfl : f = p.map φ := by simpa using h.1.symm
+  infer_instance
 
 instance comp {R S T : 𝒮} {a b c : 𝒳} (f : R ⟶ S) (g : S ⟶ T) (φ : a ⟶ b)
     (ψ : b ⟶ c) [p.IsHomLift f φ] [p.IsHomLift g ψ] : p.IsHomLift (f ≫ g) (φ ≫ ψ) := by
@@ -184,25 +180,25 @@ instance lift_comp_eqToHom {R S S' : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a �
 lemma comp_eqToHom_lift_iff {R S : 𝒮} {a' a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) (h : a' = a) :
     p.IsHomLift f (eqToHom h ≫ φ) ↔ p.IsHomLift f φ where
   mp hφ' := by subst h; simpa using hφ'
-  mpr _ := inferInstance
+  mpr hφ := inferInstance
 
 @[simp]
 lemma eqToHom_comp_lift_iff {R S : 𝒮} {a b b' : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) (h : b = b') :
     p.IsHomLift f (φ ≫ eqToHom h) ↔ p.IsHomLift f φ where
   mp hφ' := by subst h; simpa using hφ'
-  mpr _ := inferInstance
+  mpr hφ := inferInstance
 
 @[simp]
 lemma lift_eqToHom_comp_iff {R' R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) (h : R' = R) :
     p.IsHomLift (eqToHom h ≫ f) φ ↔ p.IsHomLift f φ where
   mp hφ' := by subst h; simpa using hφ'
-  mpr _ := inferInstance
+  mpr hφ := inferInstance
 
 @[simp]
 lemma lift_comp_eqToHom_iff {R S S' : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) (h : S = S') :
     p.IsHomLift (f ≫ eqToHom h) φ ↔ p.IsHomLift f φ where
   mp := fun hφ' => by subst h; simpa using hφ'
-  mpr := fun _ => inferInstance
+  mpr := fun hφ => inferInstance
 
 section
 

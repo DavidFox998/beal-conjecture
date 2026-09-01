@@ -83,7 +83,7 @@ def Iso.mk {α β : FinPartOrd.{u}} (e : α ≃o β) : α ≅ β where
 @[simps]
 def dual : FinPartOrd ⥤ FinPartOrd where
   obj X := of Xᵒᵈ
-  map {_ _} := OrderHom.dual
+  map {X Y} := OrderHom.dual
 
 /-- The equivalence between `FinPartOrd` and itself induced by `OrderDual` both ways. -/
 @[simps]

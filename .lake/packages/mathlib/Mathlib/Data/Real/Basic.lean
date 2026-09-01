@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn
 -/
 import Mathlib.Algebra.Order.CauSeq.Completion
-import Mathlib.Algebra.Order.Field.Rat
 
 /-!
 # Real numbers from Cauchy sequences
@@ -54,7 +53,7 @@ namespace Real
 
 open CauSeq CauSeq.Completion
 
-variable {x : ℝ}
+variable {x y : ℝ}
 
 theorem ext_cauchy_iff : ∀ {x y : Real}, x = y ↔ x.cauchy = y.cauchy
   | ⟨a⟩, ⟨b⟩ => by rw [ofCauchy.injEq]
@@ -394,7 +393,7 @@ instance nontrivial : Nontrivial ℝ :=
 private irreducible_def sup : ℝ → ℝ → ℝ
   | ⟨x⟩, ⟨y⟩ => ⟨Quotient.map₂ (· ⊔ ·) (fun _ _ hx _ _ hy => sup_equiv_sup hx hy) x y⟩
 
-instance : Max ℝ :=
+instance : Sup ℝ :=
   ⟨sup⟩
 
 theorem ofCauchy_sup (a b) : (⟨⟦a ⊔ b⟧⟩ : ℝ) = ⟨⟦a⟧⟩ ⊔ ⟨⟦b⟧⟩ :=
@@ -409,7 +408,7 @@ theorem mk_sup (a b) : (mk (a ⊔ b) : ℝ) = mk a ⊔ mk b :=
 private irreducible_def inf : ℝ → ℝ → ℝ
   | ⟨x⟩, ⟨y⟩ => ⟨Quotient.map₂ (· ⊓ ·) (fun _ _ hx _ _ hy => inf_equiv_inf hx hy) x y⟩
 
-instance : Min ℝ :=
+instance : Inf ℝ :=
   ⟨inf⟩
 
 theorem ofCauchy_inf (a b) : (⟨⟦a ⊓ b⟧⟩ : ℝ) = ⟨⟦a⟧⟩ ⊓ ⟨⟦b⟧⟩ :=
@@ -429,13 +428,13 @@ instance : DistribLattice ℝ :=
       intros a b
       induction' a using Real.ind_mk with a
       induction' b using Real.ind_mk with b
-      dsimp only; rw [← mk_sup, mk_le]
+      rw [← mk_sup, mk_le]
       exact CauSeq.le_sup_left
     le_sup_right := by
       intros a b
       induction' a using Real.ind_mk with a
       induction' b using Real.ind_mk with b
-      dsimp only; rw [← mk_sup, mk_le]
+      rw [← mk_sup, mk_le]
       exact CauSeq.le_sup_right
     sup_le := by
       intros a b c
@@ -449,13 +448,13 @@ instance : DistribLattice ℝ :=
       intros a b
       induction' a using Real.ind_mk with a
       induction' b using Real.ind_mk with b
-      dsimp only; rw [← mk_inf, mk_le]
+      rw [← mk_inf, mk_le]
       exact CauSeq.inf_le_left
     inf_le_right := by
       intros a b
       induction' a using Real.ind_mk with a
       induction' b using Real.ind_mk with b
-      dsimp only; rw [← mk_inf, mk_le]
+      rw [← mk_inf, mk_le]
       exact CauSeq.inf_le_right
     le_inf := by
       intros a b c
@@ -483,16 +482,17 @@ instance : SemilatticeInf ℝ :=
 instance : SemilatticeSup ℝ :=
   inferInstance
 
-instance leTotal_R : IsTotal ℝ (· ≤ ·) :=
+open scoped Classical
+
+instance : IsTotal ℝ (· ≤ ·) :=
   ⟨by
     intros a b
     induction' a using Real.ind_mk with a
     induction' b using Real.ind_mk with b
     simpa using le_total a b⟩
 
-open scoped Classical in
 noncomputable instance linearOrder : LinearOrder ℝ :=
-  Lattice.toLinearOrder ℝ
+  Lattice.toLinearOrder _
 
 noncomputable instance linearOrderedCommRing : LinearOrderedCommRing ℝ :=
   { Real.nontrivial, Real.strictOrderedRing, Real.commRing, Real.linearOrder with }
@@ -520,9 +520,9 @@ noncomputable instance instLinearOrderedField : LinearOrderedField ℝ where
     exact CauSeq.Completion.inv_mul_cancel h
   inv_zero := by simp [← ofCauchy_zero, ← ofCauchy_inv]
   nnqsmul := _
-  nnqsmul_def := fun _ _ => rfl
+  nnqsmul_def := fun q a => rfl
   qsmul := _
-  qsmul_def := fun _ _ => rfl
+  qsmul_def := fun q a => rfl
   nnratCast_def q := by
     rw [← ofCauchy_nnratCast, NNRat.cast_def, ofCauchy_div, ofCauchy_natCast, ofCauchy_natCast]
   ratCast_def q := by
@@ -583,14 +583,11 @@ lemma mul_add_one_le_add_one_pow {a : ℝ} (ha : 0 ≤ a) (b : ℕ) : a * b + 1 
   induction b generalizing a with
   | zero => simp
   | succ b hb =>
-    calc
-      a * ↑(b + 1) + 1 = (0 + 1) ^ b * a + (a * b + 1) := by
-        simp [mul_add, add_assoc, add_left_comm]
-      _ ≤ (a + 1) ^ b * a + (a + 1) ^ b := by
-        gcongr
-        · norm_num
-        · exact hb ha'
-      _ = (a + 1) ^ (b + 1) := by simp [pow_succ, mul_add]
+    rw [Nat.cast_add_one, mul_add, mul_one, add_right_comm, pow_succ, mul_add, mul_one, add_comm]
+    gcongr
+    · rw [le_mul_iff_one_le_left ha']
+      exact (pow_le_pow_left zero_le_one (by simpa using ha'.le) b).trans' (by simp)
+    · exact hb ha'
 
 end Real
 
@@ -603,10 +600,3 @@ def IsNonarchimedean {A : Type*} [Add A] (f : A → ℝ) : Prop :=
 `f (r ^ n) = (f r) ^ n`. -/
 def IsPowMul {R : Type*} [Pow R ℕ] (f : R → ℝ) :=
   ∀ (a : R) {n : ℕ}, 1 ≤ n → f (a ^ n) = f a ^ n
-
-/-- A ring homomorphism `f : α →+* β` is bounded with respect to the functions `nα : α → ℝ` and
-  `nβ : β → ℝ` if there exists a positive constant `C` such that for all `x` in `α`,
-  `nβ (f x) ≤ C * nα x`. -/
-def RingHom.IsBoundedWrt {α : Type*} [Ring α] {β : Type*} [Ring β] (nα : α → ℝ) (nβ : β → ℝ)
-    (f : α →+* β) : Prop :=
-  ∃ C : ℝ, 0 < C ∧ ∀ x : α, nβ (f x) ≤ C * nα x

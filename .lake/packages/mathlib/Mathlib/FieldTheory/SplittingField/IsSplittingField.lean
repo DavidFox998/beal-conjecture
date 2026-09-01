@@ -38,7 +38,6 @@ namespace Polynomial
 variable [Field K] [Field L] [Field F] [Algebra K L]
 
 /-- Typeclass characterising splitting fields. -/
-@[stacks 09HV "Predicate version"]
 class IsSplittingField (f : K[X]) : Prop where
   splits' : Splits (algebraMap K L) f
   adjoin_rootSet' : Algebra.adjoin K (f.rootSet L : Set L) = ⊤
@@ -130,7 +129,7 @@ theorem of_algEquiv [Algebra K F] (p : K[X]) (f : F ≃ₐ[K] L) [IsSplittingFie
   constructor
   · rw [← f.toAlgHom.comp_algebraMap]
     exact splits_comp_of_splits _ _ (splits F p)
-  · rw [← (AlgHom.range_eq_top f.toAlgHom).mpr f.surjective,
+  · rw [← (Algebra.range_top_iff_surjective f.toAlgHom).mpr f.surjective,
       adjoin_rootSet_eq_range (splits F p), adjoin_rootSet F p]
 
 theorem adjoin_rootSet_eq_range [Algebra K F] (f : K[X]) [IsSplittingField K L f] (i : L →ₐ[K] F) :

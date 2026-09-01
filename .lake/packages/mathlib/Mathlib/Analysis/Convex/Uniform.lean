@@ -72,8 +72,7 @@ theorem exists_forall_closed_ball_dist_add_le_two_sub (hε : 0 < ε) :
   have h₂ : ∀ z : E, ‖z‖ ≤ 1 → 1 - δ' ≤ ‖z‖ → ‖‖z‖⁻¹ • z - z‖ ≤ δ' := by
     rintro z hz hδz
     nth_rw 3 [← one_smul ℝ z]
-    rwa [← sub_smul,
-      norm_smul_of_nonneg (sub_nonneg_of_le <| (one_le_inv₀ (hδ'.trans_le hδz)).2 hz),
+    rwa [← sub_smul, norm_smul_of_nonneg (sub_nonneg_of_le <| one_le_inv (hδ'.trans_le hδz) hz),
       sub_mul, inv_mul_cancel₀ (hδ'.trans_le hδz).ne', one_mul, sub_le_comm]
   set x' := ‖x‖⁻¹ • x
   set y' := ‖y‖⁻¹ • y
@@ -87,16 +86,25 @@ theorem exists_forall_closed_ball_dist_add_le_two_sub (hε : 0 < ε) :
       _ ≤ _ := by
         have : ∀ x' y', x - y = x' - y' + (x - x') + (y' - y) := fun _ _ => by abel
         rw [sub_le_iff_le_add, norm_sub_rev _ x, ← add_assoc, this]
-        exact norm_add₃_le
+        exact norm_add₃_le _ _ _
   calc
     ‖x + y‖ ≤ ‖x' + y'‖ + ‖x' - x‖ + ‖y' - y‖ := by
       have : ∀ x' y', x + y = x' + y' + (x - x') + (y - y') := fun _ _ => by abel
       rw [norm_sub_rev, norm_sub_rev y', this]
-      exact norm_add₃_le
+      exact norm_add₃_le _ _ _
     _ ≤ 2 - δ + δ' + δ' :=
       (add_le_add_three (h (h₁ _ hx') (h₁ _ hy') hxy') (h₂ _ hx hx'.le) (h₂ _ hy hy'.le))
     _ ≤ 2 - δ' := by
-      suffices δ' ≤ δ / 3 by linarith
+      dsimp only [δ']
+      rw [← le_sub_iff_add_le, ← le_sub_iff_add_le, sub_sub, sub_sub]
+      refine sub_le_sub_left ?_ _
+      ring_nf
+      rw [← mul_div_cancel₀ δ three_ne_zero]
+      norm_num
+      -- Porting note: these three extra lines needed to make `exact` work
+      have : 3 * (δ / 3) * (1 / 3) = δ / 3 := by linarith
+      rw [this, mul_comm]
+      gcongr
       exact min_le_of_right_le <| min_le_right _ _
 
 theorem exists_forall_closed_ball_dist_add_le_two_mul_sub (hε : 0 < ε) (r : ℝ) :
@@ -109,7 +117,7 @@ theorem exists_forall_closed_ball_dist_add_le_two_mul_sub (hε : 0 < ε) (r : �
   rw [← div_le_one hr, div_eq_inv_mul, ← norm_smul_of_nonneg (inv_nonneg.2 hr.le)] at hx hy
   have := h hx hy
   simp_rw [← smul_add, ← smul_sub, norm_smul_of_nonneg (inv_nonneg.2 hr.le), ← div_eq_inv_mul,
-    div_le_div_iff_of_pos_right hr, div_le_iff₀ hr, sub_mul] at this
+    div_le_div_right hr, div_le_iff₀ hr, sub_mul] at this
   exact this hxy
 
 end SeminormedAddCommGroup

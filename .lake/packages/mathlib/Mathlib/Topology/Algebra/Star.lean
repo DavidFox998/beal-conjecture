@@ -6,7 +6,7 @@ Authors: Eric Wieser
 import Mathlib.Algebra.Star.Pi
 import Mathlib.Algebra.Star.Prod
 import Mathlib.Topology.Algebra.Constructions
-import Mathlib.Topology.ContinuousMap.Defs
+import Mathlib.Topology.ContinuousMap.Basic
 
 /-!
 # Continuity of `star`

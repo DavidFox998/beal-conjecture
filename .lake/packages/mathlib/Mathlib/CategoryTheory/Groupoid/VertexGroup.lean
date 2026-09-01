@@ -5,7 +5,7 @@ Authors: Rémi Bottinelli
 -/
 import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.CategoryTheory.Groupoid
-import Mathlib.CategoryTheory.PathCategory.Basic
+import Mathlib.CategoryTheory.PathCategory
 import Mathlib.Combinatorics.Quiver.Path
 
 /-!

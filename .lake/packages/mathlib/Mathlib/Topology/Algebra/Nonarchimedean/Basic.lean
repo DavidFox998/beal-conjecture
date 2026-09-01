@@ -25,8 +25,8 @@ group is nonarchimedean.
 
 -/
 
-open Topology
-open scoped Pointwise
+
+open scoped Pointwise Topology
 
 /-- A topological additive group is nonarchimedean if every neighborhood of 0
   contains an open subgroup. -/
@@ -60,7 +60,7 @@ variable {K : Type*} [Group K] [TopologicalSpace K] [NonarchimedeanGroup K]
 
 /-- If a topological group embeds into a nonarchimedean group, then it is nonarchimedean. -/
 @[to_additive]
-theorem nonarchimedean_of_emb (f : G →* H) (emb : IsOpenEmbedding f) : NonarchimedeanGroup H :=
+theorem nonarchimedean_of_emb (f : G →* H) (emb : OpenEmbedding f) : NonarchimedeanGroup H :=
   { is_nonarchimedean := fun U hU =>
       have h₁ : f ⁻¹' U ∈ 𝓝 (1 : G) := by
         apply emb.continuous.tendsto
@@ -75,7 +75,7 @@ the cartesian product of two nonarchimedean groups contains the cartesian produc
 an open neighborhood in each group."]
 theorem prod_subset {U} (hU : U ∈ 𝓝 (1 : G × K)) :
     ∃ (V : OpenSubgroup G) (W : OpenSubgroup K), (V : Set G) ×ˢ (W : Set K) ⊆ U := by
-  rw [nhds_prod_eq, Filter.mem_prod_iff] at hU
+  erw [nhds_prod_eq, Filter.mem_prod_iff] at hU
   rcases hU with ⟨U₁, hU₁, U₂, hU₂, h⟩
   cases' is_nonarchimedean _ hU₁ with V hV
   cases' is_nonarchimedean _ hU₂ with W hW
@@ -97,13 +97,15 @@ theorem prod_self_subset {U} (hU : U ∈ 𝓝 (1 : G × G)) :
 /-- The cartesian product of two nonarchimedean groups is nonarchimedean. -/
 @[to_additive "The cartesian product of two nonarchimedean groups is nonarchimedean."]
 instance : NonarchimedeanGroup (G × K) where
-  is_nonarchimedean _ hU :=
+  is_nonarchimedean U hU :=
     let ⟨V, W, h⟩ := prod_subset hU
     ⟨V.prod W, ‹_›⟩
 
 end NonarchimedeanGroup
 
 namespace NonarchimedeanRing
+
+open NonarchimedeanRing
 
 open NonarchimedeanAddGroup
 

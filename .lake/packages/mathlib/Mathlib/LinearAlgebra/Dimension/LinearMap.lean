@@ -3,7 +3,6 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.Module.Projective
 import Mathlib.LinearAlgebra.Dimension.DivisionRing
 import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 
@@ -35,7 +34,7 @@ abbrev rank (f : V →ₗ[K] V') : Cardinal :=
   Module.rank K (LinearMap.range f)
 
 theorem rank_le_range (f : V →ₗ[K] V') : rank f ≤ Module.rank K V' :=
-  Submodule.rank_le _
+  rank_submodule_le _
 
 theorem rank_le_domain (f : V →ₗ[K] V₁) : rank f ≤ Module.rank K V :=
   rank_range_le _
@@ -47,7 +46,7 @@ theorem rank_zero [Nontrivial K] : rank (0 : V →ₗ[K] V') = 0 := by
 variable [AddCommGroup V''] [Module K V'']
 
 theorem rank_comp_le_left (g : V →ₗ[K] V') (f : V' →ₗ[K] V'') : rank (f.comp g) ≤ rank f := by
-  refine Submodule.rank_mono ?_
+  refine rank_le_of_submodule _ _ ?_
   rw [LinearMap.range_comp]
   exact LinearMap.map_le_range
 
@@ -83,7 +82,7 @@ variable [AddCommGroup V'] [Module K V']
 theorem rank_add_le (f g : V →ₗ[K] V') : rank (f + g) ≤ rank f + rank g :=
   calc
     rank (f + g) ≤ Module.rank K (LinearMap.range f ⊔ LinearMap.range g : Submodule K V') := by
-      refine Submodule.rank_mono ?_
+      refine rank_le_of_submodule _ _ ?_
       exact LinearMap.range_le_iff_comap.2 <| eq_top_iff'.2 fun x =>
         show f x + g x ∈ (LinearMap.range f ⊔ LinearMap.range g : Submodule K V') from
         mem_sup.2 ⟨_, ⟨x, rfl⟩, _, ⟨x, rfl⟩, rfl⟩

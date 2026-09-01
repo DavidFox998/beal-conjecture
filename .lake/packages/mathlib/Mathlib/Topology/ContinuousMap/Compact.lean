@@ -3,8 +3,7 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Topology.ContinuousMap.Bounded.Star
-import Mathlib.Topology.ContinuousMap.Star
+import Mathlib.Topology.ContinuousMap.Bounded
 import Mathlib.Topology.UniformSpace.Compact
 import Mathlib.Topology.CompactOpen
 import Mathlib.Topology.Sets.Compacts
@@ -30,8 +29,8 @@ open NNReal BoundedContinuousFunction Set Metric
 
 namespace ContinuousMap
 
-variable {α β E : Type*}
-variable [TopologicalSpace α] [CompactSpace α] [PseudoMetricSpace β] [SeminormedAddCommGroup E]
+variable {α β E : Type*} [TopologicalSpace α] [CompactSpace α] [MetricSpace β]
+  [NormedAddCommGroup E]
 
 section
 
@@ -48,8 +47,8 @@ def equivBoundedOfCompact : C(α, β) ≃ (α →ᵇ β) :=
     ext
     rfl⟩
 
-theorem isUniformInducing_equivBoundedOfCompact : IsUniformInducing (equivBoundedOfCompact α β) :=
-  IsUniformInducing.mk'
+theorem uniformInducing_equivBoundedOfCompact : UniformInducing (equivBoundedOfCompact α β) :=
+  UniformInducing.mk'
     (by
       simp only [hasBasis_compactConvergenceUniformity.mem_iff, uniformity_basis_dist_le.mem_iff]
       exact fun s =>
@@ -60,15 +59,8 @@ theorem isUniformInducing_equivBoundedOfCompact : IsUniformInducing (equivBounde
           ⟨⟨Set.univ, { p | dist p.1 p.2 ≤ ε }⟩, ⟨isCompact_univ, ⟨ε, hε, fun _ h => h⟩⟩,
             fun ⟨f, g⟩ h => hs _ _ (ht ((dist_le hε.le).mpr fun x => h x (mem_univ x)))⟩⟩)
 
-@[deprecated (since := "2024-10-05")]
-alias uniformInducing_equivBoundedOfCompact := isUniformInducing_equivBoundedOfCompact
-
-theorem isUniformEmbedding_equivBoundedOfCompact : IsUniformEmbedding (equivBoundedOfCompact α β) :=
-  { isUniformInducing_equivBoundedOfCompact α β with
-    injective := (equivBoundedOfCompact α β).injective }
-
-@[deprecated (since := "2024-10-01")]
-alias uniformEmbedding_equivBoundedOfCompact := isUniformEmbedding_equivBoundedOfCompact
+theorem uniformEmbedding_equivBoundedOfCompact : UniformEmbedding (equivBoundedOfCompact α β) :=
+  { uniformInducing_equivBoundedOfCompact α β with inj := (equivBoundedOfCompact α β).injective }
 
 /-- When `α` is compact, the bounded continuous maps `α →ᵇ 𝕜` are
 additively equivalent to `C(α, 𝕜)`.
@@ -90,13 +82,8 @@ theorem addEquivBoundedOfCompact_apply [AddMonoid β] [LipschitzAdd β] :
     ⇑(addEquivBoundedOfCompact α β) = mkOfCompact :=
   rfl
 
-instance instPseudoMetricSpace : PseudoMetricSpace C(α, β) :=
-  (isUniformEmbedding_equivBoundedOfCompact α β).comapPseudoMetricSpace _
-
-instance instMetricSpace {β : Type*} [MetricSpace β] :
-    MetricSpace C(α, β) :=
-  (isUniformEmbedding_equivBoundedOfCompact α β).comapMetricSpace _
-
+instance metricSpace : MetricSpace C(α, β) :=
+  (uniformEmbedding_equivBoundedOfCompact α β).comapMetricSpace _
 
 /-- When `α` is compact, and `β` is a metric space, the bounded continuous maps `α →ᵇ β` are
 isometric to `C(α, β)`.
@@ -146,13 +133,6 @@ theorem dist_lt_iff (C0 : (0 : ℝ) < C) : dist f g < C ↔ ∀ x : α, dist (f 
   rw [← dist_mkOfCompact, dist_lt_iff_of_compact C0]
   simp only [mkOfCompact_apply]
 
-instance {R} [Zero R] [Zero β] [PseudoMetricSpace R] [SMul R β] [BoundedSMul R β] :
-    BoundedSMul R C(α, β) where
-  dist_smul_pair' r f g := by
-    simpa only [← dist_mkOfCompact] using dist_smul_pair r (mkOfCompact f) (mkOfCompact g)
-  dist_pair_smul' r₁ r₂ f := by
-    simpa only [← dist_mkOfCompact] using dist_pair_smul r₁ r₂ (mkOfCompact f)
-
 end
 
 -- TODO at some point we will need lemmas characterising this norm!
@@ -170,17 +150,13 @@ theorem _root_.BoundedContinuousFunction.norm_toContinuousMap_eq (f : α →ᵇ 
 
 open BoundedContinuousFunction
 
-instance : SeminormedAddCommGroup C(α, E) where
-  __ := ContinuousMap.instPseudoMetricSpace _ _
-  __ := ContinuousMap.instAddCommGroupContinuousMap
-  dist_eq x y := by
-    rw [← norm_mkOfCompact, ← dist_mkOfCompact, dist_eq_norm, mkOfCompact_sub]
-  dist := dist
-  norm := norm
-
-instance {E : Type*} [NormedAddCommGroup E] : NormedAddCommGroup C(α, E) where
-  __ : SeminormedAddCommGroup C(α, E) := inferInstance
-  __ : MetricSpace C(α, E) := inferInstance
+instance : NormedAddCommGroup C(α, E) :=
+  { ContinuousMap.metricSpace _ _,
+    ContinuousMap.instAddCommGroupContinuousMap with
+    dist_eq := fun x y => by
+      rw [← norm_mkOfCompact, ← dist_mkOfCompact, dist_eq_norm, mkOfCompact_sub]
+    dist := dist
+    norm := norm }
 
 instance [Nonempty α] [One E] [NormOneClass E] : NormOneClass C(α, E) where
   norm_one := by simp only [← norm_mkOfCompact, mkOfCompact_one, norm_one]
@@ -223,9 +199,6 @@ theorem apply_le_norm (f : C(α, ℝ)) (x : α) : f x ≤ ‖f‖ :=
 theorem neg_norm_le_apply (f : C(α, ℝ)) (x : α) : -‖f‖ ≤ f x :=
   le_trans (neg_le_neg (f.norm_coe_le_norm x)) (neg_le.mp (neg_le_abs (f x)))
 
-theorem nnnorm_eq_iSup_nnnorm : ‖f‖₊ = ⨆ x : α, ‖f x‖₊ :=
-  (mkOfCompact f).nnnorm_eq_iSup_nnnorm
-
 theorem norm_eq_iSup_norm : ‖f‖ = ⨆ x : α, ‖f x‖ :=
   (mkOfCompact f).norm_eq_iSup_norm
 
@@ -242,40 +215,11 @@ end
 
 section
 
-variable {R : Type*}
+variable {R : Type*} [NormedRing R]
 
-instance [NonUnitalSeminormedRing R] : NonUnitalSeminormedRing C(α, R) where
-  __ : SeminormedAddCommGroup C(α, R) := inferInstance
-  __ : NonUnitalRing C(α, R) := inferInstance
-  norm_mul f g := norm_mul_le (mkOfCompact f) (mkOfCompact g)
-
-instance [NonUnitalSeminormedCommRing R] : NonUnitalSeminormedCommRing C(α, R) where
-  __ : NonUnitalSeminormedRing C(α, R) := inferInstance
-  __ : NonUnitalCommRing C(α, R) := inferInstance
-
-instance [SeminormedRing R] : SeminormedRing C(α, R) where
-  __ : NonUnitalSeminormedRing C(α, R) := inferInstance
-  __ : Ring C(α, R) := inferInstance
-
-instance [SeminormedCommRing R] : SeminormedCommRing C(α, R) where
-  __ : SeminormedRing C(α, R) := inferInstance
-  __ : CommRing C(α, R) := inferInstance
-
-instance [NonUnitalNormedRing R] : NonUnitalNormedRing C(α, R) where
-  __ : NormedAddCommGroup C(α, R) := inferInstance
-  __ : NonUnitalSeminormedRing C(α, R) := inferInstance
-
-instance [NonUnitalNormedCommRing R] : NonUnitalNormedCommRing C(α, R) where
-  __ : NonUnitalNormedRing C(α, R) := inferInstance
-  __ : NonUnitalCommRing C(α, R) := inferInstance
-
-instance [NormedRing R] : NormedRing C(α, R) where
-  __ : NormedAddCommGroup C(α, R) := inferInstance
-  __ : SeminormedRing C(α, R) := inferInstance
-
-instance [NormedCommRing R] : NormedCommRing C(α, R) where
-  __ : NormedRing C(α, R) := inferInstance
-  __ : CommRing C(α, R) := inferInstance
+instance : NormedRing C(α, R) :=
+  { (inferInstance : NormedAddCommGroup C(α, R)), ContinuousMap.instRing with
+    norm_mul := fun f g => norm_mul_le (mkOfCompact f) (mkOfCompact g) }
 
 end
 
@@ -284,7 +228,7 @@ section
 variable {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 E]
 
 instance normedSpace : NormedSpace 𝕜 C(α, E) where
-  norm_smul_le := norm_smul_le
+  norm_smul_le c f := (norm_smul_le c (mkOfCompact f) : _)
 
 section
 
@@ -299,7 +243,15 @@ def linearIsometryBoundedOfCompact : C(α, E) ≃ₗᵢ[𝕜] α →ᵇ E :=
     map_smul' := fun c f => by
       ext
       norm_cast
-    norm_map' := fun _ => rfl }
+    norm_map' := fun f => rfl }
+
+variable {α E}
+
+-- to match `BoundedContinuousFunction.evalCLM`
+/-- The evaluation at a point, as a continuous linear map from `C(α, 𝕜)` to `𝕜`. -/
+def evalCLM (x : α) : C(α, E) →L[𝕜] E :=
+  (BoundedContinuousFunction.evalCLM 𝕜 x).comp
+    (linearIsometryBoundedOfCompact α E 𝕜).toLinearIsometry.toContinuousLinearMap
 
 end
 
@@ -320,7 +272,7 @@ theorem linearIsometryBoundedOfCompact_toIsometryEquiv :
     (linearIsometryBoundedOfCompact α E 𝕜).toIsometryEquiv = isometryEquivBoundedOfCompact α E :=
   rfl
 
-@[simp]
+@[simp] -- Porting note: adjusted LHS because `simpNF` complained it simplified.
 theorem linearIsometryBoundedOfCompact_toAddEquiv :
     ((linearIsometryBoundedOfCompact α E 𝕜).toLinearEquiv : C(α, E) ≃+ (α →ᵇ E)) =
       addEquivBoundedOfCompact α E :=
@@ -333,19 +285,9 @@ theorem linearIsometryBoundedOfCompact_of_compact_toEquiv :
 
 end
 
-@[simp] lemma nnnorm_smul_const {R β : Type*} [NormedAddCommGroup β] [NormedDivisionRing R]
-    [Module R β] [BoundedSMul R β] (f : C(α, R)) (b : β) :
-    ‖f • const α b‖₊ = ‖f‖₊ * ‖b‖₊ := by
-  simp only [nnnorm_eq_iSup_nnnorm, smul_apply', const_apply, nnnorm_smul, iSup_mul]
-
-@[simp] lemma norm_smul_const {R β : Type*} [NormedAddCommGroup β] [NormedDivisionRing R]
-    [Module R β] [BoundedSMul R β] (f : C(α, R)) (b : β) :
-    ‖f • const α b‖ = ‖f‖ * ‖b‖ := by
-  simp only [← coe_nnnorm, NNReal.coe_mul, nnnorm_smul_const]
-
 section
 
-variable {𝕜 : Type*} {γ : Type*} [NormedField 𝕜] [SeminormedRing γ] [NormedAlgebra 𝕜 γ]
+variable {𝕜 : Type*} {γ : Type*} [NormedField 𝕜] [NormedRing γ] [NormedAlgebra 𝕜 γ]
 
 instance : NormedAlgebra 𝕜 C(α, γ) :=
   { ContinuousMap.normedSpace, ContinuousMap.algebra with }
@@ -359,7 +301,7 @@ namespace ContinuousMap
 section UniformContinuity
 
 variable {α β : Type*}
-variable [PseudoMetricSpace α] [CompactSpace α] [PseudoMetricSpace β]
+variable [MetricSpace α] [CompactSpace α] [MetricSpace β]
 
 /-!
 We now set up some declarations making it convenient to use uniform continuity.
@@ -393,7 +335,7 @@ section CompLeft
 variable (X : Type*) {𝕜 β γ : Type*} [TopologicalSpace X] [CompactSpace X]
   [NontriviallyNormedField 𝕜]
 
-variable [SeminormedAddCommGroup β] [NormedSpace 𝕜 β] [SeminormedAddCommGroup γ] [NormedSpace 𝕜 γ]
+variable [NormedAddCommGroup β] [NormedSpace 𝕜 β] [NormedAddCommGroup γ] [NormedSpace 𝕜 γ]
 
 open ContinuousMap
 
@@ -423,6 +365,55 @@ end CompLeft
 
 namespace ContinuousMap
 
+/-!
+We now setup variations on `compRight* f`, where `f : C(X, Y)`
+(that is, precomposition by a continuous map),
+as a morphism `C(Y, T) → C(X, T)`, respecting various types of structure.
+
+In particular:
+* `compRightContinuousMap`, the bundled continuous map (for this we need `X Y` compact).
+* `compRightHomeomorph`, when we precompose by a homeomorphism.
+* `compRightAlgHom`, when `T = R` is a topological ring.
+-/
+
+
+section CompRight
+
+/-- Precomposition by a continuous map is itself a continuous map between spaces of continuous maps.
+-/
+def compRightContinuousMap {X Y : Type*} (T : Type*) [TopologicalSpace X] [CompactSpace X]
+    [TopologicalSpace Y] [CompactSpace Y] [MetricSpace T] (f : C(X, Y)) : C(C(Y, T), C(X, T)) where
+  toFun g := g.comp f
+  continuous_toFun := by
+    refine Metric.continuous_iff.mpr ?_
+    intro g ε ε_pos
+    refine ⟨ε, ε_pos, fun g' h => ?_⟩
+    rw [ContinuousMap.dist_lt_iff ε_pos] at h ⊢
+    exact fun x => h (f x)
+
+@[simp]
+theorem compRightContinuousMap_apply {X Y : Type*} (T : Type*) [TopologicalSpace X]
+    [CompactSpace X] [TopologicalSpace Y] [CompactSpace Y] [MetricSpace T] (f : C(X, Y))
+    (g : C(Y, T)) : (compRightContinuousMap T f) g = g.comp f :=
+  rfl
+
+/-- Precomposition by a homeomorphism is itself a homeomorphism between spaces of continuous maps.
+-/
+def compRightHomeomorph {X Y : Type*} (T : Type*) [TopologicalSpace X] [CompactSpace X]
+    [TopologicalSpace Y] [CompactSpace Y] [MetricSpace T] (f : X ≃ₜ Y) : C(Y, T) ≃ₜ C(X, T) where
+  toFun := compRightContinuousMap T f.toContinuousMap
+  invFun := compRightContinuousMap T f.symm.toContinuousMap
+  left_inv g := ext fun _ => congr_arg g (f.apply_symm_apply _)
+  right_inv g := ext fun _ => congr_arg g (f.symm_apply_apply _)
+
+theorem compRightAlgHom_continuous {X Y : Type*} (R A : Type*) [TopologicalSpace X]
+    [CompactSpace X] [TopologicalSpace Y] [CompactSpace Y] [CommSemiring R] [Semiring A]
+    [MetricSpace A] [TopologicalSemiring A] [Algebra R A] (f : C(X, Y)) :
+    Continuous (compRightAlgHom R A f) :=
+  map_continuous (compRightContinuousMap A f)
+
+end CompRight
+
 section LocalNormalConvergence
 
 /-! ### Local normal convergence
@@ -430,6 +421,7 @@ section LocalNormalConvergence
 A sum of continuous functions (on a locally compact space) is "locally normally convergent" if the
 sum of its sup-norms on any compact subset is summable. This implies convergence in the topology
 of `C(X, E)` (i.e. locally uniform convergence). -/
+
 
 open TopologicalSpace
 
@@ -445,7 +437,7 @@ theorem summable_of_locally_summable_norm {ι : Type*} {F : ι → C(X, E)}
     intro s
     ext1 x
     simp
-    -- This used to be the end of the proof before https://github.com/leanprover/lean4/pull/2644
+    -- This used to be the end of the proof before leanprover/lean4#2644
     erw [restrict_apply, restrict_apply, restrict_apply, restrict_apply]
     simp? says simp only [coe_sum, Finset.sum_apply]
     congr!
@@ -465,7 +457,7 @@ Furthermore, if `α` is compact and `β` is a C⋆-ring, then `C(α, β)` is a C
 section NormedSpace
 
 variable {α : Type*} {β : Type*}
-variable [TopologicalSpace α] [SeminormedAddCommGroup β] [StarAddMonoid β] [NormedStarGroup β]
+variable [TopologicalSpace α] [NormedAddCommGroup β] [StarAddMonoid β] [NormedStarGroup β]
 
 theorem _root_.BoundedContinuousFunction.mkOfCompact_star [CompactSpace α] (f : C(α, β)) :
     mkOfCompact (star f) = star (mkOfCompact f) :=
@@ -481,9 +473,9 @@ end NormedSpace
 section CStarRing
 
 variable {α : Type*} {β : Type*}
-variable [TopologicalSpace α] [CompactSpace α]
+variable [TopologicalSpace α] [NormedRing β] [StarRing β]
 
-instance [NonUnitalNormedRing β] [StarRing β] [CStarRing β] : CStarRing C(α, β) where
+instance [CompactSpace α] [CStarRing β] : CStarRing C(α, β) where
   norm_mul_self_le f := by
     rw [← sq, ← Real.le_sqrt (norm_nonneg _) (norm_nonneg _),
       ContinuousMap.norm_le _ (Real.sqrt_nonneg _)]

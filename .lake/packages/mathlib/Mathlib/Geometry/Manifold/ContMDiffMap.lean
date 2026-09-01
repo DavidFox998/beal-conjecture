@@ -14,8 +14,8 @@ bundled maps.
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H : Type*}
-  [TopologicalSpace H] {H' : Type*} [TopologicalSpace H'] {I : ModelWithCorners 𝕜 E H}
-  {I' : ModelWithCorners 𝕜 E' H'} (M : Type*) [TopologicalSpace M] [ChartedSpace H M] (M' : Type*)
+  [TopologicalSpace H] {H' : Type*} [TopologicalSpace H'] (I : ModelWithCorners 𝕜 E H)
+  (I' : ModelWithCorners 𝕜 E' H') (M : Type*) [TopologicalSpace M] [ChartedSpace H M] (M' : Type*)
   [TopologicalSpace M'] [ChartedSpace H' M'] {E'' : Type*} [NormedAddCommGroup E'']
   [NormedSpace 𝕜 E''] {H'' : Type*} [TopologicalSpace H''] {I'' : ModelWithCorners 𝕜 E'' H''}
   {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H'' M'']
@@ -24,12 +24,13 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCom
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type*} [TopologicalSpace G]
   {J : ModelWithCorners 𝕜 F G} {N : Type*} [TopologicalSpace N] [ChartedSpace G N] (n : ℕ∞)
 
-variable (I I') in
 /-- Bundled `n` times continuously differentiable maps. -/
 def ContMDiffMap :=
   { f : M → M' // ContMDiff I I' n f }
 
-@[deprecated (since := "024-11-21")] alias SmoothMap := ContMDiffMap
+/-- Bundled smooth maps. -/
+abbrev SmoothMap :=
+  ContMDiffMap I I' M M' ⊤
 
 @[inherit_doc]
 scoped[Manifold] notation "C^" n "⟮" I ", " M "; " I' ", " M' "⟯" => ContMDiffMap I I' M M' n
@@ -39,14 +40,10 @@ scoped[Manifold]
   notation "C^" n "⟮" I ", " M "; " k "⟯" => ContMDiffMap I (modelWithCornersSelf k k) M k n
 
 open scoped Manifold
-/- Next line is necessary while the manifold smoothness class is not extended to `ω`.
-Later, replace with `open scoped ContDiff`. -/
-local notation "∞" => (⊤ : ℕ∞)
-
 
 namespace ContMDiffMap
 
-variable {M} {M'} {n}
+variable {I} {I'} {M} {M'} {n}
 
 instance instFunLike : FunLike C^n⟮I, M; I', M'⟯ M M' where
   coe := Subtype.val
@@ -55,7 +52,8 @@ instance instFunLike : FunLike C^n⟮I, M; I', M'⟯ M M' where
 protected theorem contMDiff (f : C^n⟮I, M; I', M'⟯) : ContMDiff I I' n f :=
   f.prop
 
-@[deprecated (since := "2024-11-20")] alias smooth := ContMDiffMap.contMDiff
+protected theorem smooth (f : C^∞⟮I, M; I', M'⟯) : Smooth I I' f :=
+  f.prop
 
 -- Porting note: use generic instance instead
 -- instance : Coe C^n⟮I, M; I', M'⟯ C(M, M') :=

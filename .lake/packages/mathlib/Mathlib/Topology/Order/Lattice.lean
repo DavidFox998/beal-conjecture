@@ -30,7 +30,7 @@ open Topology
 `⊓:L×L → L` be an infimum. Then `L` is said to have *(jointly) continuous infimum* if the map
 `⊓:L×L → L` is continuous.
 -/
-class ContinuousInf (L : Type*) [TopologicalSpace L] [Min L] : Prop where
+class ContinuousInf (L : Type*) [TopologicalSpace L] [Inf L] : Prop where
   /-- The infimum is continuous -/
   continuous_inf : Continuous fun p : L × L => p.1 ⊓ p.2
 
@@ -38,17 +38,17 @@ class ContinuousInf (L : Type*) [TopologicalSpace L] [Min L] : Prop where
 `⊓:L×L → L` be a supremum. Then `L` is said to have *(jointly) continuous supremum* if the map
 `⊓:L×L → L` is continuous.
 -/
-class ContinuousSup (L : Type*) [TopologicalSpace L] [Max L] : Prop where
+class ContinuousSup (L : Type*) [TopologicalSpace L] [Sup L] : Prop where
   /-- The supremum is continuous -/
   continuous_sup : Continuous fun p : L × L => p.1 ⊔ p.2
 
 -- see Note [lower instance priority]
-instance (priority := 100) OrderDual.continuousSup (L : Type*) [TopologicalSpace L] [Min L]
+instance (priority := 100) OrderDual.continuousSup (L : Type*) [TopologicalSpace L] [Inf L]
     [ContinuousInf L] : ContinuousSup Lᵒᵈ where
   continuous_sup := @ContinuousInf.continuous_inf L _ _ _
 
 -- see Note [lower instance priority]
-instance (priority := 100) OrderDual.continuousInf (L : Type*) [TopologicalSpace L] [Max L]
+instance (priority := 100) OrderDual.continuousInf (L : Type*) [TopologicalSpace L] [Sup L]
     [ContinuousSup L] : ContinuousInf Lᵒᵈ where
   continuous_inf := @ContinuousSup.continuous_sup L _ _ _
 
@@ -71,20 +71,20 @@ instance (priority := 100) LinearOrder.topologicalLattice {L : Type*} [Topologic
 variable {L X : Type*} [TopologicalSpace L] [TopologicalSpace X]
 
 @[continuity]
-theorem continuous_inf [Min L] [ContinuousInf L] : Continuous fun p : L × L => p.1 ⊓ p.2 :=
+theorem continuous_inf [Inf L] [ContinuousInf L] : Continuous fun p : L × L => p.1 ⊓ p.2 :=
   ContinuousInf.continuous_inf
 
 @[continuity, fun_prop]
-theorem Continuous.inf [Min L] [ContinuousInf L] {f g : X → L} (hf : Continuous f)
+theorem Continuous.inf [Inf L] [ContinuousInf L] {f g : X → L} (hf : Continuous f)
     (hg : Continuous g) : Continuous fun x => f x ⊓ g x :=
   continuous_inf.comp (hf.prod_mk hg : _)
 
 @[continuity]
-theorem continuous_sup [Max L] [ContinuousSup L] : Continuous fun p : L × L => p.1 ⊔ p.2 :=
+theorem continuous_sup [Sup L] [ContinuousSup L] : Continuous fun p : L × L => p.1 ⊔ p.2 :=
   ContinuousSup.continuous_sup
 
 @[continuity, fun_prop]
-theorem Continuous.sup [Max L] [ContinuousSup L] {f g : X → L} (hf : Continuous f)
+theorem Continuous.sup [Sup L] [ContinuousSup L] {f g : X → L} (hf : Continuous f)
     (hg : Continuous g) : Continuous fun x => f x ⊔ g x :=
   continuous_sup.comp (hf.prod_mk hg : _)
 
@@ -94,19 +94,19 @@ section SupInf
 
 variable {α : Type*} {l : Filter α} {f g : α → L} {x y : L}
 
-lemma sup_nhds' [Max L] [ContinuousSup L] (hf : Tendsto f l (𝓝 x)) (hg : Tendsto g l (𝓝 y)) :
+lemma sup_nhds' [Sup L] [ContinuousSup L] (hf : Tendsto f l (𝓝 x)) (hg : Tendsto g l (𝓝 y)) :
     Tendsto (f ⊔ g) l (𝓝 (x ⊔ y)) :=
   (continuous_sup.tendsto _).comp (Tendsto.prod_mk_nhds hf hg)
 
-lemma sup_nhds [Max L] [ContinuousSup L] (hf : Tendsto f l (𝓝 x)) (hg : Tendsto g l (𝓝 y)) :
+lemma sup_nhds [Sup L] [ContinuousSup L] (hf : Tendsto f l (𝓝 x)) (hg : Tendsto g l (𝓝 y)) :
     Tendsto (fun i => f i ⊔ g i) l (𝓝 (x ⊔ y)) :=
   hf.sup_nhds' hg
 
-lemma inf_nhds' [Min L] [ContinuousInf L] (hf : Tendsto f l (𝓝 x)) (hg : Tendsto g l (𝓝 y)) :
+lemma inf_nhds' [Inf L] [ContinuousInf L] (hf : Tendsto f l (𝓝 x)) (hg : Tendsto g l (𝓝 y)) :
     Tendsto (f ⊓ g) l (𝓝 (x ⊓ y)) :=
   (continuous_inf.tendsto _).comp (Tendsto.prod_mk_nhds hf hg)
 
-lemma inf_nhds [Min L] [ContinuousInf L] (hf : Tendsto f l (𝓝 x)) (hg : Tendsto g l (𝓝 y)) :
+lemma inf_nhds [Inf L] [ContinuousInf L] (hf : Tendsto f l (𝓝 x)) (hg : Tendsto g l (𝓝 y)) :
     Tendsto (fun i => f i ⊓ g i) l (𝓝 (x ⊓ y)) :=
   hf.inf_nhds' hg
 
@@ -166,7 +166,7 @@ end Filter.Tendsto
 
 section Sup
 
-variable [Max L] [ContinuousSup L] {f g : X → L} {s : Set X} {x : X}
+variable [Sup L] [ContinuousSup L] {f g : X → L} {s : Set X} {x : X}
 
 lemma ContinuousAt.sup' (hf : ContinuousAt f x) (hg : ContinuousAt g x) :
     ContinuousAt (f ⊔ g) x :=
@@ -200,7 +200,7 @@ end Sup
 
 section Inf
 
-variable [Min L] [ContinuousInf L] {f g : X → L} {s : Set X} {x : X}
+variable [Inf L] [ContinuousInf L] {f g : X → L} {s : Set X} {x : X}
 
 lemma ContinuousAt.inf' (hf : ContinuousAt f x) (hg : ContinuousAt g x) :
     ContinuousAt (f ⊓ g) x :=

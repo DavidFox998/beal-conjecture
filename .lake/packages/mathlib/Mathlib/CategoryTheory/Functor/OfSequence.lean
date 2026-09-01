@@ -3,6 +3,7 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.EqToHom
 
@@ -16,9 +17,6 @@ of morphisms `f : X n ⟶ X (n + 1)` for all `n : ℕ`.
 We also provide a constructor `NatTrans.ofSequence` for natural
 transformations between functors `ℕ ⥤ C` which allows to check
 the naturality condition only for morphisms `n ⟶ n + 1`.
-
-The duals of the above for functors `ℕᵒᵖ ⥤ C` are given by `Functor.ofOpSequence` and
-`NatTrans.ofOpSequence`.
 
 -/
 
@@ -45,7 +43,7 @@ def map : ∀ {X : ℕ → C} (_ : ∀ n, X n ⟶ X (n + 1)) (i j : ℕ), i ≤ 
   | _, _, 0, 0 => fun _ ↦ 𝟙 _
   | _, f, 0, 1 => fun _ ↦ f 0
   | _, f, 0, l + 1 => fun _ ↦ f 0 ≫ map (fun n ↦ f (n + 1)) 0 l (by omega)
-  | _, _, _ + 1, 0 => nofun
+  | _, _, k + 1, 0 => nofun
   | _, f, k + 1, l + 1 => fun _ ↦ map (fun n ↦ f (n + 1)) k l (by omega)
 
 lemma map_id (i : ℕ) : map f i i (by omega) = 𝟙 _ := by
@@ -81,7 +79,7 @@ lemma map_comp (i j k : ℕ) (hij : i ≤ j) (hjk : j ≤ k) :
           · omega
           · obtain rfl : j = 0 := by omega
             rw [map_id, comp_id]
-          · simp only [map, Nat.reduceAdd]
+          · dsimp [map]
             rw [hj (fun n ↦ f (n + 1)) (k + 1) (by omega) (by omega)]
             obtain _|j := j
             all_goals simp [map]
@@ -143,47 +141,6 @@ def ofSequence : F ⟶ G where
         obtain rfl : j = i + k + 1 := by omega
         simp only [← homOfLE_comp (show i ≤ i + k by omega) (show i + k ≤ i + k + 1 by omega),
           Functor.map_comp, assoc, naturality, reassoc_of% (hk rfl)]
-
-end NatTrans
-
-namespace Functor
-
-variable {X : ℕ → C} (f : ∀ n, X (n + 1) ⟶ X n)
-
-/-- The functor `ℕᵒᵖ ⥤ C` constructed from a sequence of
-morphisms `f : X (n + 1) ⟶ X n` for all `n : ℕ`. -/
-@[simps! obj]
-def ofOpSequence : ℕᵒᵖ ⥤ C := (ofSequence (fun n ↦ (f n).op)).leftOp
-
--- `ofOpSequence` has good definitional properties when applied to explicit natural numbers
-example : (ofOpSequence f).map (homOfLE (show 5 ≤ 5 by omega)).op = 𝟙 _ := rfl
-example : (ofOpSequence f).map (homOfLE (show 0 ≤ 3 by omega)).op = (f 2 ≫ f 1) ≫ f 0 := rfl
-example : (ofOpSequence f).map (homOfLE (show 3 ≤ 7 by omega)).op =
-    ((f 6 ≫ f 5) ≫ f 4) ≫ f 3 := rfl
-
-@[simp]
-lemma ofOpSequence_map_homOfLE_succ (n : ℕ) :
-    (ofOpSequence f).map (homOfLE (Nat.le_add_right n 1)).op = f n := by
-  simp [ofOpSequence]
-
-end Functor
-
-namespace NatTrans
-
-variable {F G : ℕᵒᵖ ⥤ C} (app : ∀ (n : ℕ), F.obj ⟨n⟩ ⟶ G.obj ⟨n⟩)
-  (naturality : ∀ (n : ℕ), F.map (homOfLE (n.le_add_right 1)).op ≫ app n =
-      app (n + 1) ≫ G.map (homOfLE (n.le_add_right 1)).op)
-
-/-- Constructor for natural transformations `F ⟶ G` in `ℕᵒᵖ ⥤ C` which takes as inputs
-the morphisms `F.obj ⟨n⟩ ⟶ G.obj ⟨n⟩` for all `n : ℕ` and the naturality condition only
-for morphisms of the form `n ⟶ n + 1`. -/
-@[simps!]
-def ofOpSequence : F ⟶ G where
-  app n := app n.unop
-  naturality _ _ f := by
-    let φ : G.rightOp ⟶ F.rightOp := ofSequence (fun n ↦ (app n).op)
-      (fun n ↦ Quiver.Hom.unop_inj (naturality n).symm)
-    exact Quiver.Hom.op_inj (φ.naturality f.unop).symm
 
 end NatTrans
 

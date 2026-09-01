@@ -382,7 +382,7 @@ end
 section Fintype
 
 instance {R : Type*} [Fintype R] : Fintype (TruncatedWittVector p n R) :=
-  Pi.instFintype
+  Pi.fintype
 
 variable (p n R)
 
@@ -482,7 +482,7 @@ def liftEquiv : { f : ∀ k, S →+* TruncatedWittVector p k R // ∀ (k₁ k₂
       intro _ _ h
       simp only [← RingHom.comp_assoc, truncate_comp_wittVector_truncate]⟩
   left_inv := by rintro ⟨f, hf⟩; simp only [truncate_comp_lift]
-  right_inv _ := lift_unique _ _ fun _ => rfl
+  right_inv g := lift_unique _ _ fun _ => rfl
 
 theorem hom_ext (g₁ g₂ : S →+* 𝕎 R) (h : ∀ k, (truncate k).comp g₁ = (truncate k).comp g₂) :
     g₁ = g₂ :=

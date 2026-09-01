@@ -3,6 +3,7 @@ Copyright (c) 2024 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
+import Mathlib.Data.Complex.Abs
 import Mathlib.MeasureTheory.Measure.GiryMonad
 import Mathlib.MeasureTheory.Measure.Stieltjes
 import Mathlib.Analysis.Normed.Order.Lattice
@@ -45,22 +46,9 @@ open MeasureTheory Set Filter TopologicalSpace
 
 open scoped NNReal ENNReal MeasureTheory Topology
 
-/-- A measurable function `α → StieltjesFunction` with limits 0 at -∞ and 1 at +∞ gives a measurable
-function `α → Measure ℝ` by taking `StieltjesFunction.measure` at each point. -/
-lemma StieltjesFunction.measurable_measure {α : Type*} {_ : MeasurableSpace α}
-    {f : α → StieltjesFunction} (hf : ∀ q, Measurable fun a ↦ f a q)
-    (hf_bot : ∀ a, Tendsto (f a) atBot (𝓝 0))
-    (hf_top : ∀ a, Tendsto (f a) atTop (𝓝 1)) :
-    Measurable fun a ↦ (f a).measure :=
-  have : ∀ a, IsProbabilityMeasure (f a).measure :=
-    fun a ↦ (f a).isProbabilityMeasure (hf_bot a) (hf_top a)
-  .measure_of_isPiSystem_of_isProbabilityMeasure (borel_eq_generateFrom_Iic ℝ) isPiSystem_Iic <| by
-    simp_rw [forall_mem_range, StieltjesFunction.measure_Iic (f _) (hf_bot _), sub_zero]
-    exact fun _ ↦ (hf _).ennreal_ofReal
-
 namespace ProbabilityTheory
 
-variable {α : Type*}
+variable {α β ι : Type*}
 
 section IsMeasurableRatCDF
 
@@ -96,7 +84,7 @@ lemma measurableSet_isRatStieltjesPoint [MeasurableSpace α] (hf : Measurable f)
   have h4 : MeasurableSet {a | ∀ t : ℚ, ⨅ r : Ioi t, f a r = f a t} := by
     rw [Set.setOf_forall]
     refine MeasurableSet.iInter (fun q ↦ ?_)
-    exact measurableSet_eq_fun (.iInf fun _ ↦ hf.eval) hf.eval
+    exact measurableSet_eq_fun (measurable_iInf fun _ ↦ hf.eval) hf.eval
   suffices {a | IsRatStieltjesPoint f a}
       = ({a | Monotone (f a)} ∩ {a | Tendsto (f a) atTop (𝓝 1)} ∩ {a | Tendsto (f a) atBot (𝓝 0)}
         ∩ {a | ∀ t : ℚ, ⨅ r : Ioi t, f a r = f a t}) by
@@ -321,7 +309,7 @@ lemma IsMeasurableRatCDF.monotone_stieltjesFunctionAux (a : α) :
 lemma IsMeasurableRatCDF.continuousWithinAt_stieltjesFunctionAux_Ici (a : α) (x : ℝ) :
     ContinuousWithinAt (IsMeasurableRatCDF.stieltjesFunctionAux f a) (Ici x) x := by
   rw [← continuousWithinAt_Ioi_iff_Ici]
-  convert Monotone.tendsto_nhdsGT (monotone_stieltjesFunctionAux hf a) x
+  convert Monotone.tendsto_nhdsWithin_Ioi (monotone_stieltjesFunctionAux hf a) x
   rw [sInf_image']
   have h' : ⨅ r : Ioi x, stieltjesFunctionAux f a r
       = ⨅ r : { r' : ℚ // x < r' }, stieltjesFunctionAux f a r := by
@@ -400,7 +388,7 @@ lemma IsMeasurableRatCDF.measurable_stieltjesFunction (x : ℝ) :
     congr with q
     rw [stieltjesFunction_eq]
   rw [this]
-  exact .iInf (fun q ↦ hf.measurable.eval)
+  exact measurable_iInf (fun q ↦ hf.measurable.eval)
 
 lemma IsMeasurableRatCDF.stronglyMeasurable_stieltjesFunction (x : ℝ) :
     StronglyMeasurable fun a ↦ hf.stieltjesFunction a x :=
@@ -425,8 +413,25 @@ instance IsMeasurableRatCDF.instIsProbabilityMeasure_stieltjesFunction (a : α) 
 
 lemma IsMeasurableRatCDF.measurable_measure_stieltjesFunction :
     Measurable fun a ↦ (hf.stieltjesFunction a).measure := by
-  apply_rules [StieltjesFunction.measurable_measure, measurable_stieltjesFunction,
-    tendsto_stieltjesFunction_atBot, tendsto_stieltjesFunction_atTop]
+  rw [Measure.measurable_measure]
+  refine fun s hs ↦ MeasurableSpace.induction_on_inter
+    (C := fun s ↦ Measurable fun b ↦ StieltjesFunction.measure (hf.stieltjesFunction b) s)
+    (borel_eq_generateFrom_Iic ℝ) isPiSystem_Iic ?_ ?_ ?_ ?_ hs
+  · simp only [measure_empty, measurable_const]
+  · rintro S ⟨u, rfl⟩
+    simp_rw [measure_stieltjesFunction_Iic hf _ u]
+    exact (measurable_stieltjesFunction hf u).ennreal_ofReal
+  · intro t ht ht_cd_meas
+    have : (fun a ↦ (hf.stieltjesFunction a).measure tᶜ) =
+        (fun a ↦ (hf.stieltjesFunction a).measure univ)
+          - fun a ↦ (hf.stieltjesFunction a).measure t := by
+      ext1 a
+      rw [measure_compl ht (measure_ne_top (hf.stieltjesFunction a).measure _), Pi.sub_apply]
+    simp_rw [this, measure_stieltjesFunction_univ hf]
+    exact Measurable.sub measurable_const ht_cd_meas
+  · intro f hf_disj hf_meas hf_cd_meas
+    simp_rw [measure_iUnion hf_disj hf_meas]
+    exact Measurable.ennreal_tsum hf_cd_meas
 
 end Measure
 

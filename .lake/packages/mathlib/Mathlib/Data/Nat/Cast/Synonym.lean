@@ -22,7 +22,7 @@ the natural numbers into an additive monoid with a one (`Nat.cast`).
 -- where `simp [map_zero]` should suffice. (Similarly for `map_one`.)
 -- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/simp.20regression.20with.20MonoidHomClass
 
-variable {α : Type*}
+variable {α β : Type*}
 
 /-! ### Order dual -/
 
@@ -42,18 +42,20 @@ instance [h : AddCommMonoidWithOne α] : AddCommMonoidWithOne αᵒᵈ :=
 theorem toDual_natCast [NatCast α] (n : ℕ) : toDual (n : α) = n :=
   rfl
 
+-- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem toDual_ofNat [NatCast α] (n : ℕ) [n.AtLeastTwo] :
-    (toDual (ofNat(n) : α)) = ofNat(n) :=
+    (toDual (no_index (OfNat.ofNat n : α))) = OfNat.ofNat n :=
   rfl
 
 @[simp]
 theorem ofDual_natCast [NatCast α] (n : ℕ) : (ofDual n : α) = n :=
   rfl
 
+-- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem ofDual_ofNat [NatCast α] (n : ℕ) [n.AtLeastTwo] :
-    (ofDual (ofNat(n) : αᵒᵈ)) = ofNat(n) :=
+    (ofDual (no_index (OfNat.ofNat n : αᵒᵈ))) = OfNat.ofNat n :=
   rfl
 
 /-! ### Lexicographic order -/

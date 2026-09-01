@@ -37,7 +37,7 @@ variable {α E' F' 𝕜 : Type*} {p : ℝ≥0∞} {m m0 : MeasurableSpace α} {�
   [InnerProductSpace 𝕜 E'] [CompleteSpace E'] [NormedSpace ℝ E']
   -- F' for integrals on a Lp submodule
   [NormedAddCommGroup F']
-  [NormedSpace ℝ F'] [CompleteSpace F']
+  [NormedSpace 𝕜 F'] [NormedSpace ℝ F'] [CompleteSpace F']
 
 section UniquenessOfConditionalExpectation
 
@@ -77,7 +77,7 @@ theorem Lp.ae_eq_zero_of_forall_setIntegral_eq_zero' (hm : m ≤ m0) (f : Lp E' 
     (hf_meas : AEStronglyMeasurable' m f μ) : f =ᵐ[μ] 0 := by
   let f_meas : lpMeas E' 𝕜 m p μ := ⟨f, hf_meas⟩
   -- Porting note: `simp only` does not call `rfl` to try to close the goal. See https://github.com/leanprover-community/mathlib4/issues/5025
-  have hf_f_meas : f =ᵐ[μ] f_meas := by simp only [f_meas, Subtype.coe_mk]; rfl
+  have hf_f_meas : f =ᵐ[μ] f_meas := by simp only [Subtype.coe_mk]; rfl
   refine hf_f_meas.trans ?_
   refine lpMeas.ae_eq_zero_of_forall_setIntegral_eq_zero hm f_meas hp_ne_zero hp_ne_top ?_ ?_
   · intro s hs hμs
@@ -129,9 +129,9 @@ theorem ae_eq_of_forall_setIntegral_eq_of_sigmaFinite' (hm : m ≤ m0) [SigmaFin
     (hfg_eq : ∀ s : Set α, MeasurableSet[m] s → μ s < ∞ → ∫ x in s, f x ∂μ = ∫ x in s, g x ∂μ)
     (hfm : AEStronglyMeasurable' m f μ) (hgm : AEStronglyMeasurable' m g μ) : f =ᵐ[μ] g := by
   rw [← ae_eq_trim_iff_of_aeStronglyMeasurable' hm hfm hgm]
-  have hf_mk_int_finite (s) :
-      MeasurableSet[m] s → μ.trim hm s < ∞ → @IntegrableOn _ _ m _ _ (hfm.mk f) s (μ.trim hm) := by
-    intro hs hμs
+  have hf_mk_int_finite :
+    ∀ s, MeasurableSet[m] s → μ.trim hm s < ∞ → @IntegrableOn _ _ m _ (hfm.mk f) s (μ.trim hm) := by
+    intro s hs hμs
     rw [trim_measurableSet_eq hm hs] at hμs
     -- Porting note: `rw [IntegrableOn]` fails with
     -- synthesized type class instance is not definitionally equal to expression inferred by typing
@@ -140,9 +140,9 @@ theorem ae_eq_of_forall_setIntegral_eq_of_sigmaFinite' (hm : m ≤ m0) [SigmaFin
     rw [restrict_trim hm _ hs]
     refine Integrable.trim hm ?_ hfm.stronglyMeasurable_mk
     exact Integrable.congr (hf_int_finite s hs hμs) (ae_restrict_of_ae hfm.ae_eq_mk)
-  have hg_mk_int_finite (s) :
-      MeasurableSet[m] s → μ.trim hm s < ∞ → @IntegrableOn _ _ m _ _ (hgm.mk g) s (μ.trim hm) := by
-    intro hs hμs
+  have hg_mk_int_finite :
+    ∀ s, MeasurableSet[m] s → μ.trim hm s < ∞ → @IntegrableOn _ _ m _ (hgm.mk g) s (μ.trim hm) := by
+    intro s hs hμs
     rw [trim_measurableSet_eq hm hs] at hμs
     -- Porting note: `rw [IntegrableOn]` fails with
     -- synthesized type class instance is not definitionally equal to expression inferred by typing

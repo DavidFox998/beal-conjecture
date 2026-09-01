@@ -55,10 +55,10 @@ instance : OrderBot G.Finsubgraph where
   bot := ⟨⊥, finite_empty⟩
   bot_le _ := bot_le (α := G.Subgraph)
 
-instance : Max G.Finsubgraph :=
+instance : Sup G.Finsubgraph :=
   ⟨fun G₁ G₂ => ⟨G₁ ⊔ G₂, G₁.2.union G₂.2⟩⟩
 
-instance : Min G.Finsubgraph :=
+instance : Inf G.Finsubgraph :=
   ⟨fun G₁ G₂ => ⟨G₁ ⊓ G₂, G₁.2.subset inter_subset_left⟩⟩
 
 instance instSDiff : SDiff G.Finsubgraph where
@@ -157,7 +157,7 @@ theorem nonempty_hom_of_forall_finite_subgraph_hom [Finite W]
   haveI : ∀ G' : G.Finsubgraphᵒᵖ, Fintype ((finsubgraphHomFunctor G F).obj G') := by
     intro G'
     haveI : Fintype (G'.unop.val.verts : Type u) := G'.unop.property.fintype
-    haveI : Fintype (↥G'.unop.val.verts → W) := by classical exact Pi.instFintype
+    haveI : Fintype (↥G'.unop.val.verts → W) := by classical exact Pi.fintype
     exact Fintype.ofInjective (fun f => f.toFun) RelHom.coe_fn_injective
   -- Use compactness to obtain a section.
   obtain ⟨u, hu⟩ := nonempty_sections_of_finite_inverse_system (finsubgraphHomFunctor G F)

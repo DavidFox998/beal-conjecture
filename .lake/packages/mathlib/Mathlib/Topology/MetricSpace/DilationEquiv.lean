@@ -42,7 +42,7 @@ end Class
 structure DilationEquiv (X Y : Type*) [PseudoEMetricSpace X] [PseudoEMetricSpace Y]
     extends X ≃ Y, Dilation X Y
 
-@[inherit_doc] infixl:25 " ≃ᵈ " => DilationEquiv
+infixl:25 " ≃ᵈ " => DilationEquiv
 
 namespace DilationEquiv
 
@@ -59,6 +59,9 @@ instance : EquivLike (X ≃ᵈ Y) X Y where
 
 instance : DilationEquivClass (X ≃ᵈ Y) X Y where
   edist_eq' f := f.edist_eq'
+
+instance : CoeFun (X ≃ᵈ Y) fun _ ↦ (X → Y) where
+  coe f := f
 
 @[simp] theorem coe_toEquiv (e : X ≃ᵈ Y) : ⇑e.toEquiv = e := rfl
 

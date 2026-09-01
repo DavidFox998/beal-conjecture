@@ -3,21 +3,17 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Joey van Langen, Casper Putz
 -/
+import Mathlib.Algebra.Field.Basic
+import Mathlib.Algebra.Group.Fin.Basic
+import Mathlib.Algebra.Group.ULift
 import Mathlib.Data.Int.ModEq
-import Mathlib.Data.Nat.Cast.Defs
+import Mathlib.Data.Nat.Cast.Prod
 import Mathlib.Data.Nat.Find
 import Mathlib.Data.Nat.Prime.Defs
-import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Data.ULift
 
 /-!
 # Characteristic of semirings
-
-## Main definitions
- * `CharP R p` expresses that the ring (additive monoid with one) `R` has characteristic `p`
- * `ringChar`: the characteristic of a ring
- * `ExpChar R p` expresses that the ring (additive monoid with one) `R` has
-    exponential characteristic `p` (which is `1` if `R` has characteristic 0, and `p` if it has
-    prime characteristic `p`)
 -/
 
 assert_not_exists Finset
@@ -61,12 +57,14 @@ lemma natCast_eq_natCast' (h : a ≡ b [MOD p]) : (a : R) = b := by
 
 @[simp] lemma cast_eq_zero : (p : R) = 0 := (cast_eq_zero_iff R p p).2 dvd_rfl
 
+-- See note [no_index around OfNat.ofNat]
+--
 -- TODO: This lemma needs to be `@[simp]` for confluence in the presence of `CharP.cast_eq_zero` and
 -- `Nat.cast_ofNat`, but with `no_index` on its entire LHS, it matches literally every expression so
--- is too expensive. If https://github.com/leanprover/lean4/issues/2867 is fixed in a performant way, this can be made `@[simp]`.
+-- is too expensive. If lean4#2867 is fixed in a performant way, this can be made `@[simp]`.
 --
 -- @[simp]
-lemma ofNat_eq_zero [p.AtLeastTwo] : (ofNat(p) : R) = 0 := cast_eq_zero R p
+lemma ofNat_eq_zero [p.AtLeastTwo] : no_index (OfNat.ofNat p : R) = 0 := cast_eq_zero R p
 
 lemma natCast_eq_natCast_mod (a : ℕ) : (a : R) = a % p :=
   natCast_eq_natCast' R p (Nat.mod_modEq a p).symm
@@ -87,17 +85,27 @@ lemma natCast_eq_natCast : (a : R) = b ↔ a ≡ b [MOD p] := by
     ← add_right_cancel_iff (G := R) (a := a) (b := b - a), zero_add, ← Nat.cast_add,
     Nat.sub_add_cancel hle, eq_comm]
 
+lemma natCast_injOn_Iio : (Set.Iio p).InjOn ((↑) : ℕ → R) :=
+  fun _a ha _b hb hab ↦ ((natCast_eq_natCast _ _).1 hab).eq_of_lt_of_lt ha hb
+
 end AddMonoidWithOne
 
 section AddGroupWithOne
 variable [AddGroupWithOne R] (p : ℕ) [CharP R p] {a b : ℤ}
 
+lemma intCast_injOn_Ico [IsRightCancelAdd R] : InjOn (Int.cast : ℤ → R) (Ico 0 p) := by
+  rintro a ⟨ha₀, ha⟩ b ⟨hb₀, hb⟩ hab
+  lift a to ℕ using ha₀
+  lift b to ℕ using hb₀
+  norm_cast at *
+  exact natCast_injOn_Iio _ _ ha hb hab
+
 lemma intCast_eq_zero_iff (a : ℤ) : (a : R) = 0 ↔ (p : ℤ) ∣ a := by
   rcases lt_trichotomy a 0 with (h | rfl | h)
-  · rw [← neg_eq_zero, ← Int.cast_neg, ← Int.dvd_neg]
+  · rw [← neg_eq_zero, ← Int.cast_neg, ← dvd_neg]
     lift -a to ℕ using neg_nonneg.mpr (le_of_lt h) with b
     rw [Int.cast_natCast, CharP.cast_eq_zero_iff R p, Int.natCast_dvd_natCast]
-  · simp only [Int.cast_zero, eq_self_iff_true, Int.dvd_zero]
+  · simp only [Int.cast_zero, eq_self_iff_true, dvd_zero]
   · lift a to ℕ using le_of_lt h with b
     rw [Int.cast_natCast, CharP.cast_eq_zero_iff R p, Int.natCast_dvd_natCast]
 
@@ -144,27 +152,25 @@ lemma «exists» : ∃ p, CharP R p :=
             of_not_not (not_not_of_not_imp <| Nat.find_spec (not_forall.1 H)),
             zero_mul]⟩⟩⟩
 
-lemma existsUnique : ∃! p, CharP R p :=
+lemma exists_unique : ∃! p, CharP R p :=
   let ⟨c, H⟩ := CharP.exists R
   ⟨c, H, fun _y H2 => CharP.eq R H2 H⟩
-
-@[deprecated (since := "2024-12-17")] alias exists_unique := existsUnique
 
 end NonAssocSemiring
 end CharP
 
 /-- Noncomputable function that outputs the unique characteristic of a semiring. -/
-noncomputable def ringChar [NonAssocSemiring R] : ℕ := Classical.choose (CharP.existsUnique R)
+noncomputable def ringChar [NonAssocSemiring R] : ℕ := Classical.choose (CharP.exists_unique R)
 
 namespace ringChar
 variable [NonAssocSemiring R]
 
 lemma spec : ∀ x : ℕ, (x : R) = 0 ↔ ringChar R ∣ x := by
-  letI : CharP R (ringChar R) := (Classical.choose_spec (CharP.existsUnique R)).1
+  letI : CharP R (ringChar R) := (Classical.choose_spec (CharP.exists_unique R)).1
   exact CharP.cast_eq_zero_iff R (ringChar R)
 
 lemma eq (p : ℕ) [C : CharP R p] : ringChar R = p :=
-  ((Classical.choose_spec (CharP.existsUnique R)).2 p C).symm
+  ((Classical.choose_spec (CharP.exists_unique R)).2 p C).symm
 
 instance charP : CharP R (ringChar R) :=
   ⟨spec R⟩
@@ -184,6 +190,7 @@ lemma dvd {x : ℕ} (hx : (x : R) = 0) : ringChar R ∣ x :=
 lemma eq_zero [CharZero R] : ringChar R = 0 :=
   eq R 0
 
+-- @[simp] -- Porting note (#10618): simp can prove this
 lemma Nat.cast_ringChar : (ringChar R : R) = 0 := by rw [ringChar.spec]
 
 end ringChar
@@ -202,6 +209,10 @@ lemma CharP.neg_one_ne_one [Ring R] (p : ℕ) [CharP R p] [Fact (2 < p)] : (-1 :
   have := Nat.le_of_dvd (by decide) this
   rw [fact_iff] at *
   omega
+
+lemma RingHom.charP_iff_charP {K L : Type*} [DivisionRing K] [Semiring L] [Nontrivial L]
+    (f : K →+* L) (p : ℕ) : CharP K p ↔ CharP L p := by
+  simp only [charP_iff, ← f.injective.eq_iff, map_natCast f, map_zero f]
 
 namespace CharP
 
@@ -231,8 +242,8 @@ section NoZeroDivisors
 
 variable [NoZeroDivisors R]
 
-lemma char_is_prime_of_two_le (p : ℕ) [CharP R p] (hp : 2 ≤ p) : Nat.Prime p :=
-  suffices ∀ (d) (_ : d ∣ p), d = 1 ∨ d = p from Nat.prime_def.mpr ⟨hp, this⟩
+lemma char_is_prime_of_two_le (p : ℕ) [hc : CharP R p] (hp : 2 ≤ p) : Nat.Prime p :=
+  suffices ∀ (d) (_ : d ∣ p), d = 1 ∨ d = p from Nat.prime_def_lt''.mpr ⟨hp, this⟩
   fun (d : ℕ) (hdvd : ∃ e, p = d * e) =>
   let ⟨e, hmul⟩ := hdvd
   have : (p : R) = 0 := (cast_eq_zero_iff R p p).mpr (dvd_refl p)
@@ -258,10 +269,6 @@ lemma char_is_prime_or_zero (p : ℕ) [hc : CharP R p] : Nat.Prime p ∨ p = 0 :
   | 0, _ => Or.inr rfl
   | 1, hc => absurd (Eq.refl (1 : ℕ)) (@char_ne_one R _ _ (1 : ℕ) hc)
   | m + 2, hc => Or.inl (@char_is_prime_of_two_le R _ _ (m + 2) hc (Nat.le_add_left 2 m))
-
-/-- The characteristic is prime if it is non-zero. -/
-lemma char_prime_of_ne_zero {p : ℕ} [CharP R p] (hp : p ≠ 0) : p.Prime :=
-  (CharP.char_is_prime_or_zero R p).resolve_right hp
 
 lemma exists' (R : Type*) [NonAssocRing R] [NoZeroDivisors R] [Nontrivial R] :
     CharZero R ∨ ∃ p : ℕ, Fact p.Prime ∧ CharP R p := by
@@ -308,8 +315,84 @@ lemma nontrivial_of_char_ne_one {v : ℕ} (hv : v ≠ 1) [hr : CharP R v] : Nont
   ⟨⟨(1 : ℕ), 0, fun h =>
       hv <| by rwa [CharP.cast_eq_zero_iff _ v, Nat.dvd_one] at h⟩⟩
 
+lemma ringChar_of_prime_eq_zero [Nontrivial R] {p : ℕ} (hprime : Nat.Prime p)
+    (hp0 : (p : R) = 0) : ringChar R = p :=
+  Or.resolve_left ((Nat.dvd_prime hprime).1 (ringChar.dvd hp0)) ringChar_ne_one
+
+lemma charP_iff_prime_eq_zero [Nontrivial R] {p : ℕ} (hp : p.Prime) :
+    CharP R p ↔ (p : R) = 0 :=
+  ⟨fun _ => cast_eq_zero R p,
+   fun hp0 => (ringChar_of_prime_eq_zero hp hp0) ▸ inferInstance⟩
+
 end NonAssocSemiring
 end CharP
+
+section
+
+/-- We have `2 ≠ 0` in a nontrivial ring whose characteristic is not `2`. -/
+protected lemma Ring.two_ne_zero {R : Type*} [NonAssocSemiring R] [Nontrivial R]
+    (hR : ringChar R ≠ 2) : (2 : R) ≠ 0 := by
+  rw [Ne, (by norm_cast : (2 : R) = (2 : ℕ)), ringChar.spec, Nat.dvd_prime Nat.prime_two]
+  exact mt (or_iff_left hR).mp CharP.ringChar_ne_one
+
+-- We have `CharP.neg_one_ne_one`, which assumes `[Ring R] (p : ℕ) [CharP R p] [Fact (2 < p)]`.
+-- This is a version using `ringChar` instead.
+/-- Characteristic `≠ 2` and nontrivial implies that `-1 ≠ 1`. -/
+lemma Ring.neg_one_ne_one_of_char_ne_two {R : Type*} [NonAssocRing R] [Nontrivial R]
+    (hR : ringChar R ≠ 2) : (-1 : R) ≠ 1 := fun h =>
+  Ring.two_ne_zero hR (one_add_one_eq_two (R := R) ▸ neg_eq_iff_add_eq_zero.mp h)
+
+/-- Characteristic `≠ 2` in a domain implies that `-a = a` iff `a = 0`. -/
+lemma Ring.eq_self_iff_eq_zero_of_char_ne_two {R : Type*} [NonAssocRing R] [Nontrivial R]
+    [NoZeroDivisors R] (hR : ringChar R ≠ 2) {a : R} : -a = a ↔ a = 0 :=
+  ⟨fun h =>
+    (mul_eq_zero.mp <| (two_mul a).trans <| neg_eq_iff_add_eq_zero.mp h).resolve_left
+      (Ring.two_ne_zero hR),
+    fun h => ((congr_arg (fun x => -x) h).trans neg_zero).trans h.symm⟩
+
+end
+
+section Prod
+variable (S : Type*) [AddMonoidWithOne R] [AddMonoidWithOne S] (p q : ℕ) [CharP R p]
+
+/-- The characteristic of the product of rings is the least common multiple of the
+characteristics of the two rings. -/
+instance Nat.lcm.charP [CharP S q] : CharP (R × S) (Nat.lcm p q) where
+  cast_eq_zero_iff' := by
+    simp [Prod.ext_iff, CharP.cast_eq_zero_iff R p, CharP.cast_eq_zero_iff S q, Nat.lcm_dvd_iff]
+
+/-- The characteristic of the product of two rings of the same characteristic
+  is the same as the characteristic of the rings -/
+instance Prod.charP [CharP S p] : CharP (R × S) p := by
+  convert Nat.lcm.charP R S p p; simp
+
+instance Prod.charZero_of_left [CharZero R] : CharZero (R × S) where
+  cast_injective _ _ h := CharZero.cast_injective congr(Prod.fst $h)
+
+instance Prod.charZero_of_right [CharZero S] : CharZero (R × S) where
+  cast_injective _ _ h := CharZero.cast_injective congr(Prod.snd $h)
+
+end Prod
+
+instance ULift.charP [AddMonoidWithOne R] (p : ℕ) [CharP R p] : CharP (ULift R) p where
+  cast_eq_zero_iff' n := Iff.trans ULift.ext_iff <| CharP.cast_eq_zero_iff R p n
+
+instance MulOpposite.charP [AddMonoidWithOne R] (p : ℕ) [CharP R p] : CharP Rᵐᵒᵖ p where
+  cast_eq_zero_iff' n := MulOpposite.unop_inj.symm.trans <| CharP.cast_eq_zero_iff R p n
+
+section
+
+/-- If two integers from `{0, 1, -1}` result in equal elements in a ring `R`
+that is nontrivial and of characteristic not `2`, then they are equal. -/
+lemma Int.cast_injOn_of_ringChar_ne_two {R : Type*} [NonAssocRing R] [Nontrivial R]
+    (hR : ringChar R ≠ 2) : ({0, 1, -1} : Set ℤ).InjOn ((↑) : ℤ → R) := by
+  rintro _ (rfl | rfl | rfl) _ (rfl | rfl | rfl) h <;>
+  simp only
+    [cast_neg, cast_one, cast_zero, neg_eq_zero, one_ne_zero, zero_ne_one, zero_eq_neg] at h ⊢
+  · exact ((Ring.neg_one_ne_one_of_char_ne_two hR).symm h).elim
+  · exact ((Ring.neg_one_ne_one_of_char_ne_two hR) h).elim
+
+end
 
 namespace NeZero
 
@@ -323,136 +406,20 @@ lemma not_char_dvd (p : ℕ) [CharP R p] (k : ℕ) [h : NeZero (k : R)] : ¬p �
 
 end NeZero
 
-/-!
-### Exponential characteristic
+namespace CharZero
 
-This section defines the exponential characteristic, which is defined to be 1 for a ring with
-characteristic 0 and the same as the ordinary characteristic, if the ordinary characteristic is
-prime. This concept is useful to simplify some theorem statements.
-This file establishes a few basic results relating it to the (ordinary characteristic).
-The definition is stated for a semiring, but the actual results are for nontrivial rings
-(as far as exponential characteristic one is concerned), respectively a ring without zero-divisors
-(for prime characteristic).
--/
+lemma charZero_iff_forall_prime_ne_zero [NonAssocRing R] [NoZeroDivisors R] [Nontrivial R] :
+    CharZero R ↔ ∀ p : ℕ, p.Prime → (p : R) ≠ 0 := by
+  refine ⟨fun h p hp => by simp [hp.ne_zero], fun h => ?_⟩
+  let p := ringChar R
+  cases CharP.char_is_prime_or_zero R p with
+  | inl hp => simpa using h p hp
+  | inr h => have : CharP R 0 := h ▸ inferInstance; exact CharP.charP_to_charZero R
 
-section AddMonoidWithOne
-variable [AddMonoidWithOne R]
+end CharZero
 
-/-- The definition of the exponential characteristic of a semiring. -/
-class inductive ExpChar : ℕ → Prop
-  | zero [CharZero R] : ExpChar 1
-  | prime {q : ℕ} (hprime : q.Prime) [hchar : CharP R q] : ExpChar q
+namespace Fin
 
-instance expChar_prime (p) [CharP R p] [Fact p.Prime] : ExpChar R p := ExpChar.prime Fact.out
-instance expChar_one [CharZero R] : ExpChar R 1 := ExpChar.zero
+instance charP (n : ℕ) [NeZero n] : CharP (Fin n) n where cast_eq_zero_iff' _ := natCast_eq_zero
 
-lemma expChar_ne_zero (p : ℕ) [hR : ExpChar R p] : p ≠ 0 := by
-  cases hR
-  · exact one_ne_zero
-  · exact ‹p.Prime›.ne_zero
-
-variable {R} in
-/-- The exponential characteristic is unique. -/
-lemma ExpChar.eq {p q : ℕ} (hp : ExpChar R p) (hq : ExpChar R q) : p = q := by
-  rcases hp with ⟨hp⟩ | ⟨hp'⟩
-  · rcases hq with hq | hq'
-    exacts [rfl, False.elim (Nat.not_prime_zero (CharP.eq R ‹_› (CharP.ofCharZero R) ▸ hq'))]
-  · rcases hq with hq | hq'
-    exacts [False.elim (Nat.not_prime_zero (CharP.eq R ‹_› (CharP.ofCharZero R) ▸ hp')),
-      CharP.eq R ‹_› ‹_›]
-
-lemma ExpChar.congr {p : ℕ} (q : ℕ) [hq : ExpChar R q] (h : q = p) : ExpChar R p := h ▸ hq
-
-/-- The exponential characteristic is one if the characteristic is zero. -/
-lemma expChar_one_of_char_zero (q : ℕ) [hp : CharP R 0] [hq : ExpChar R q] : q = 1 := by
-  rcases hq with q | hq_prime
-  · rfl
-  · exact False.elim <| hq_prime.ne_zero <| ‹CharP R q›.eq R hp
-
-/-- The characteristic equals the exponential characteristic iff the former is prime. -/
-lemma char_eq_expChar_iff (p q : ℕ) [hp : CharP R p] [hq : ExpChar R q] : p = q ↔ p.Prime := by
-  rcases hq with q | hq_prime
-  · rw [(CharP.eq R hp inferInstance : p = 0)]
-    decide
-  · exact ⟨fun hpq => hpq.symm ▸ hq_prime, fun _ => CharP.eq R hp ‹CharP R q›⟩
-
-/-- The exponential characteristic is a prime number or one.
-See also `CharP.char_is_prime_or_zero`. -/
-lemma expChar_is_prime_or_one (q : ℕ) [hq : ExpChar R q] : Nat.Prime q ∨ q = 1 := by
-  cases hq with
-  | zero => exact .inr rfl
-  | prime hp => exact .inl hp
-
-/-- The exponential characteristic is positive. -/
-lemma expChar_pos (q : ℕ) [ExpChar R q] : 0 < q := by
-  rcases expChar_is_prime_or_one R q with h | rfl
-  exacts [Nat.Prime.pos h, Nat.one_pos]
-
-/-- Any power of the exponential characteristic is positive. -/
-lemma expChar_pow_pos (q : ℕ) [ExpChar R q] (n : ℕ) : 0 < q ^ n :=
-  Nat.pos_pow_of_pos n (expChar_pos R q)
-
-end AddMonoidWithOne
-
-section NonAssocSemiring
-variable [NonAssocSemiring R]
-
-/-- Noncomputable function that outputs the unique exponential characteristic of a semiring. -/
-noncomputable def ringExpChar : ℕ := max (ringChar R) 1
-
-lemma ringExpChar.eq (q : ℕ) [h : ExpChar R q] : ringExpChar R = q := by
-  rcases h with _ | h
-  · haveI := CharP.ofCharZero R
-    rw [ringExpChar, ringChar.eq R 0]; rfl
-  rw [ringExpChar, ringChar.eq R q]
-  exact Nat.max_eq_left h.one_lt.le
-
-@[simp] lemma ringExpChar.eq_one [CharZero R] : ringExpChar R = 1 := by
-  rw [ringExpChar, ringChar.eq_zero, max_eq_right (Nat.zero_le _)]
-
-section Nontrivial
-variable [Nontrivial R]
-
-/-- The exponential characteristic is one if the characteristic is zero. -/
-lemma char_zero_of_expChar_one (p : ℕ) [hp : CharP R p] [hq : ExpChar R 1] : p = 0 := by
-  cases hq
-  · exact CharP.eq R hp inferInstance
-  · exact False.elim (CharP.char_ne_one R 1 rfl)
-
--- This could be an instance, but there are no `ExpChar R 1` instances in mathlib.
-/-- The characteristic is zero if the exponential characteristic is one. -/
-lemma charZero_of_expChar_one' [hq : ExpChar R 1] : CharZero R := by
-  cases hq
-  · assumption
-  · exact False.elim (CharP.char_ne_one R 1 rfl)
-
-/-- The exponential characteristic is one iff the characteristic is zero. -/
-lemma expChar_one_iff_char_zero (p q : ℕ) [CharP R p] [ExpChar R q] : q = 1 ↔ p = 0 := by
-  constructor
-  · rintro rfl
-    exact char_zero_of_expChar_one R p
-  · rintro rfl
-    exact expChar_one_of_char_zero R q
-
-end Nontrivial
-end NonAssocSemiring
-
-lemma ExpChar.exists [Ring R] [IsDomain R] : ∃ q, ExpChar R q := by
-  obtain _ | ⟨p, ⟨hp⟩, _⟩ := CharP.exists' R
-  exacts [⟨1, .zero⟩, ⟨p, .prime hp⟩]
-
-lemma ExpChar.exists_unique [Ring R] [IsDomain R] : ∃! q, ExpChar R q :=
-  let ⟨q, H⟩ := ExpChar.exists R
-  ⟨q, H, fun _ H2 ↦ ExpChar.eq H2 H⟩
-
-instance ringExpChar.expChar [Ring R] [IsDomain R] : ExpChar R (ringExpChar R) := by
-  obtain ⟨q, _⟩ := ExpChar.exists R
-  rwa [ringExpChar.eq R q]
-
-variable {R} in
-lemma ringExpChar.of_eq [Ring R] [IsDomain R] {q : ℕ} (h : ringExpChar R = q) : ExpChar R q :=
-  h ▸ ringExpChar.expChar R
-
-variable {R} in
-lemma ringExpChar.eq_iff [Ring R] [IsDomain R] {q : ℕ} : ringExpChar R = q ↔ ExpChar R q :=
-  ⟨ringExpChar.of_eq, fun _ ↦ ringExpChar.eq R q⟩
+end Fin

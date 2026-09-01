@@ -50,7 +50,7 @@ noncomputable def uniformEquiv_unitization_addEquiv_prod :
 
 instance instCompleteSpace [CompleteSpace 𝕜] [CompleteSpace A] :
     CompleteSpace (WithLp 1 (Unitization 𝕜 A)) :=
-  completeSpace_congr (uniformEquiv_unitization_addEquiv_prod 𝕜 A).isUniformEmbedding |>.mpr
+  completeSpace_congr (uniformEquiv_unitization_addEquiv_prod 𝕜 A).uniformEmbedding |>.mpr
     CompleteSpace.prod
 
 variable {𝕜 A}

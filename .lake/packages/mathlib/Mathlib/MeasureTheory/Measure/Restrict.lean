@@ -3,7 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.MeasureTheory.Measure.Comap
+import Mathlib.MeasureTheory.Measure.MeasureSpace
 
 /-!
 # Restricting a measure to a subset or a subtype
@@ -423,18 +423,17 @@ theorem ext_of_generateFrom_of_cover {S T : Set (Set α)} (h_gen : ‹_› = gen
   refine ext_of_sUnion_eq_univ hc hU fun t ht => ?_
   ext1 u hu
   simp only [restrict_apply hu]
-  induction u, hu using induction_on_inter h_gen h_inter with
-  | empty => simp only [Set.empty_inter, measure_empty]
-  | basic u hu => exact ST_eq _ ht _ hu
-  | compl u hu ihu =>
+  refine induction_on_inter h_gen h_inter ?_ (ST_eq t ht) ?_ ?_ hu
+  · simp only [Set.empty_inter, measure_empty]
+  · intro v hv hvt
     have := T_eq t ht
-    rw [Set.inter_comm] at ihu ⊢
-    rwa [← measure_inter_add_diff t hu, ← measure_inter_add_diff t hu, ← ihu,
+    rw [Set.inter_comm] at hvt ⊢
+    rwa [← measure_inter_add_diff t hv, ← measure_inter_add_diff t hv, ← hvt,
       ENNReal.add_right_inj] at this
     exact ne_top_of_le_ne_top (htop t ht) (measure_mono Set.inter_subset_left)
-  | iUnion f hfd hfm ihf =>
-    simp only [← restrict_apply (hfm _), ← restrict_apply (MeasurableSet.iUnion hfm)] at ihf ⊢
-    simp only [measure_iUnion hfd hfm, ihf]
+  · intro f hfd hfm h_eq
+    simp only [← restrict_apply (hfm _), ← restrict_apply (MeasurableSet.iUnion hfm)] at h_eq ⊢
+    simp only [measure_iUnion hfd hfm, h_eq]
 
 /-- Two measures are equal if they are equal on the π-system generating the σ-algebra,
   and they are both finite on an increasing spanning sequence of sets in the π-system.
@@ -608,6 +607,10 @@ theorem mem_map_restrict_ae_iff {β} {s : Set α} {t : Set β} {f : α → β} (
     t ∈ Filter.map f (ae (μ.restrict s)) ↔ μ ((f ⁻¹' t)ᶜ ∩ s) = 0 := by
   rw [mem_map, mem_ae_iff, Measure.restrict_apply' hs]
 
+theorem ae_smul_measure {p : α → Prop} [Monoid R] [DistribMulAction R ℝ≥0∞]
+    [IsScalarTower R ℝ≥0∞ ℝ≥0∞] (h : ∀ᵐ x ∂μ, p x) (c : R) : ∀ᵐ x ∂c • μ, p x :=
+  ae_iff.2 <| by rw [smul_apply, ae_iff.1 h, smul_zero]
+
 theorem ae_add_measure_iff {p : α → Prop} {ν} :
     (∀ᵐ x ∂μ + ν, p x) ↔ (∀ᵐ x ∂μ, p x) ∧ ∀ᵐ x ∂ν, p x :=
   add_eq_zero
@@ -631,7 +634,8 @@ theorem div_ae_eq_one {β} [Group β] (f g : α → β) : f / g =ᵐ[μ] 1 ↔ f
   · rwa [Pi.div_apply, Pi.one_apply, div_eq_one]
 
 @[to_additive sub_nonneg_ae]
-lemma one_le_div_ae {β : Type*} [Group β] [LE β] [MulRightMono β] (f g : α → β) :
+lemma one_le_div_ae {β : Type*} [Group β] [LE β]
+    [CovariantClass β β (Function.swap (· * ·)) (· ≤ ·)] (f g : α → β) :
     1 ≤ᵐ[μ] g / f ↔ f ≤ᵐ[μ] g := by
   refine ⟨fun h ↦ h.mono fun a ha ↦ ?_, fun h ↦ h.mono fun a ha ↦ ?_⟩
   · rwa [Pi.one_apply, Pi.div_apply, one_le_div'] at ha
@@ -647,9 +651,7 @@ theorem ae_restrict_eq (hs : MeasurableSet s) : ae (μ.restrict s) = ae μ ⊓ �
     Classical.not_imp, fun a => and_comm (a := a ∈ s) (b := ¬a ∈ t)]
   rfl
 
-lemma ae_restrict_le (hs : MeasurableSet s) : ae (μ.restrict s) ≤ ae μ :=
-  ae_restrict_eq hs ▸ inf_le_left
-
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem ae_restrict_eq_bot {s} : ae (μ.restrict s) = ⊥ ↔ μ s = 0 :=
   ae_eq_bot.trans restrict_eq_zero
 
@@ -702,23 +704,24 @@ section ComapAnyMeasure
 theorem MeasurableSet.nullMeasurableSet_subtype_coe {t : Set s} (hs : NullMeasurableSet s μ)
     (ht : MeasurableSet t) : NullMeasurableSet ((↑) '' t) μ := by
   rw [Subtype.instMeasurableSpace, comap_eq_generateFrom] at ht
-  induction t, ht using generateFrom_induction with
-  | hC t' ht' =>
-    obtain ⟨s', hs', rfl⟩ := ht'
+  refine
+    generateFrom_induction (p := fun t : Set s => NullMeasurableSet ((↑) '' t) μ)
+      { t : Set s | ∃ s' : Set α, MeasurableSet s' ∧ (↑) ⁻¹' s' = t } ?_ ?_ ?_ ?_ ht
+  · rintro t' ⟨s', hs', rfl⟩
     rw [Subtype.image_preimage_coe]
     exact hs.inter (hs'.nullMeasurableSet)
-  | empty => simp only [image_empty, nullMeasurableSet_empty]
-  | compl t' _ ht' =>
+  · simp only [image_empty, nullMeasurableSet_empty]
+  · intro t'
     simp only [← range_diff_image Subtype.coe_injective, Subtype.range_coe_subtype, setOf_mem_eq]
-    exact hs.diff ht'
-  | iUnion f _ hf =>
+    exact hs.diff
+  · intro f
     dsimp only []
     rw [image_iUnion]
-    exact .iUnion hf
+    exact NullMeasurableSet.iUnion
 
 theorem NullMeasurableSet.subtype_coe {t : Set s} (hs : NullMeasurableSet s μ)
     (ht : NullMeasurableSet t (μ.comap Subtype.val)) : NullMeasurableSet (((↑) : s → α) '' t) μ :=
-  NullMeasurableSet.image _ μ Subtype.coe_injective
+  NullMeasurableSet.image (↑) μ Subtype.coe_injective
     (fun _ => MeasurableSet.nullMeasurableSet_subtype_coe hs) ht
 
 theorem measure_subtype_coe_le_comap (hs : NullMeasurableSet s μ) (t : Set s) :

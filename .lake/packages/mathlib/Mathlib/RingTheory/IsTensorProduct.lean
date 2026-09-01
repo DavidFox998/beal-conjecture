@@ -3,9 +3,8 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.Module.ULift
 import Mathlib.RingTheory.TensorProduct.Basic
-import Mathlib.Tactic.Ring
+import Mathlib.Algebra.Module.ULift
 
 /-!
 # The characteristic predicate of tensor product
@@ -116,13 +115,6 @@ theorem IsTensorProduct.inductionOn (h : IsTensorProduct f) {C : M → Prop} (m 
     rw [map_add]
     apply hadd <;> assumption
 
-lemma IsTensorProduct.of_equiv (e : M₁ ⊗[R] M₂ ≃ₗ[R] M) (he : ∀ x y, e (x ⊗ₜ y) = f x y) :
-    IsTensorProduct f := by
-  have : TensorProduct.lift f = e := by
-    ext x y
-    simp [he]
-  simpa [IsTensorProduct, this] using e.bijective
-
 end IsTensorProduct
 
 section IsBaseChange
@@ -220,7 +212,7 @@ noncomputable nonrec def IsBaseChange.equiv : S ⊗[R] M ≃ₗ[S] N :=
       refine TensorProduct.induction_on x ?_ ?_ ?_
       · rw [smul_zero, map_zero, smul_zero]
       · intro x y
-        -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): was simp [smul_tmul', Algebra.ofId_apply]
+        -- porting note (#10745): was simp [smul_tmul', Algebra.ofId_apply]
         simp only [Algebra.linearMap_apply, lift.tmul, smul_eq_mul, LinearMap.mul_apply,
           LinearMap.smul_apply, IsTensorProduct.equiv_apply, Module.algebraMap_end_apply, map_mul,
           smul_tmul', eq_self_iff_true, LinearMap.coe_restrictScalars, LinearMap.flip_apply]
@@ -232,34 +224,6 @@ theorem IsBaseChange.equiv_tmul (s : S) (m : M) : h.equiv (s ⊗ₜ m) = s • f
 
 theorem IsBaseChange.equiv_symm_apply (m : M) : h.equiv.symm (f m) = 1 ⊗ₜ m := by
   rw [h.equiv.symm_apply_eq, h.equiv_tmul, one_smul]
-
-lemma IsBaseChange.of_equiv (e : S ⊗[R] M ≃ₗ[S] N) (he : ∀ x, e (1 ⊗ₜ x) = f x) :
-    IsBaseChange S f := by
-  apply IsTensorProduct.of_equiv (e.restrictScalars R)
-  intro x y
-  simp [show x ⊗ₜ[R] y = x • (1 ⊗ₜ[R] y) by simp [smul_tmul'], he]
-
-section
-
-variable (A : Type*) [CommSemiring A]
-variable [Algebra R A] [Algebra S A] [IsScalarTower R S A]
-variable [Module S M] [IsScalarTower R S M]
-variable [Module A N] [IsScalarTower S A N] [IsScalarTower R A N]
-
-/-- If `N` is the base change of `M` to `A`, then `N ⊗[R] P` is the base change
-of `M ⊗[R] P` to `A`. This is simply the isomorphism
-`A ⊗[S] (M ⊗[R] P) ≃ₗ[A] (A ⊗[S] M) ⊗[R] P`. -/
-lemma isBaseChange_tensorProduct_map {f : M →ₗ[S] N} (hf : IsBaseChange A f) :
-    IsBaseChange A (AlgebraTensorModule.map f (LinearMap.id (R := R) (M := P))) := by
-  let e : A ⊗[S] M ⊗[R] P ≃ₗ[A] N ⊗[R] P := (AlgebraTensorModule.assoc R S A A M P).symm.trans
-    (AlgebraTensorModule.congr hf.equiv (LinearEquiv.refl R P))
-  refine IsBaseChange.of_equiv e (fun x ↦ ?_)
-  induction' x with m p _ _ h1 h2
-  · simp
-  · simp [e, IsBaseChange.equiv_tmul]
-  · simp [tmul_add, h1, h2]
-
-end
 
 variable (f)
 
@@ -354,40 +318,11 @@ theorem IsBaseChange.comp {f : M →ₗ[R] N} (hf : IsBaseChange S f) {g : N →
   ext
   rfl
 
-/-- If `N` is the base change of `M` to `S` and `O` the base change of `M` to `T`, then
-`O` is the base change of `N` to `T`. -/
-lemma IsBaseChange.of_comp {f : M →ₗ[R] N} (hf : IsBaseChange S f) {h : N →ₗ[S] O}
-    (hc : IsBaseChange T ((h : N →ₗ[R] O) ∘ₗ f)) :
-    IsBaseChange T h := by
-  apply IsBaseChange.of_lift_unique
-  intro Q _ _ _ _ r
-  letI : Module R Q := inferInstanceAs (Module R (RestrictScalars R S Q))
-  haveI : IsScalarTower R S Q := IsScalarTower.of_algebraMap_smul fun r ↦ congrFun rfl
-  haveI : IsScalarTower R T Q := IsScalarTower.of_algebraMap_smul fun r x ↦ by
-    simp [IsScalarTower.algebraMap_apply R S T]
-  let r' : M →ₗ[R] Q := r ∘ₗ f
-  let q : O →ₗ[T] Q := hc.lift r'
-  refine ⟨q, ?_, ?_⟩
-  · apply hf.algHom_ext'
-    simp [r', q, LinearMap.comp_assoc, hc.lift_comp]
-  · intro q' hq'
-    apply hc.algHom_ext'
-    apply_fun LinearMap.restrictScalars R at hq'
-    rw [← LinearMap.comp_assoc]
-    rw [show q'.restrictScalars R ∘ₗ h.restrictScalars R = _ from hq', hc.lift_comp]
-
-/-- If `N` is the base change `M` to `S`, then `O` is the base change of `M` to `T` if and
-only if `O` is the base change of `N` to `T`. -/
-lemma IsBaseChange.comp_iff {f : M →ₗ[R] N} (hf : IsBaseChange S f) {h : N →ₗ[S] O} :
-    IsBaseChange T ((h : N →ₗ[R] O) ∘ₗ f) ↔ IsBaseChange T h :=
-  ⟨fun hc ↦ IsBaseChange.of_comp hf hc, fun hh ↦ IsBaseChange.comp hf hh⟩
-
 variable {R' S' : Type*} [CommSemiring R'] [CommSemiring S']
 variable [Algebra R R'] [Algebra S S'] [Algebra R' S'] [Algebra R S']
 variable [IsScalarTower R R' S'] [IsScalarTower R S S']
 
 open IsScalarTower (toAlgHom)
-open IsScalarTower (algebraMap_apply)
 
 variable (R S R' S')
 
@@ -425,7 +360,7 @@ theorem Algebra.IsPushout.symm (h : Algebra.IsPushout R S R' S') : Algebra.IsPus
     (toAlgHom R S S').toLinearMap =
       (e.toLinearMap.restrictScalars R).comp (TensorProduct.mk R R' S 1) := by
     ext
-    simp [e, h.1.equiv_tmul, Algebra.smul_def]
+    simp [h.1.equiv_tmul, Algebra.smul_def]
   constructor
   rw [this]
   exact (TensorProduct.isBaseChange R S R').comp (IsBaseChange.ofEquiv e)
@@ -535,34 +470,5 @@ theorem Algebra.IsPushout.algHom_ext [H : Algebra.IsPushout R S R' S'] {A : Type
     exact (AlgHom.congr_fun h₂ s : _)
   · intro s₁ s₂ e₁ e₂
     rw [map_add, map_add, e₁, e₂]
-
-/--
-Let the following be a commutative diagram of rings
-```
-  R  →  S  →  T
-  ↓     ↓     ↓
-  R' →  S' →  T'
-```
-where the left-hand square is a pushout. Then the following are equivalent:
-- the big rectangle is a pushout.
-- the right-hand square is a pushout.
-
-Note that this is essentially the isomorphism `T ⊗[S] (S ⊗[R] R') ≃ₐ[T] T ⊗[R] R'`.
--/
-lemma Algebra.IsPushout.comp_iff {T' : Type*} [CommRing T'] [Algebra R T']
-    [Algebra S' T'] [Algebra S T'] [Algebra T T'] [Algebra R' T']
-    [IsScalarTower R T T'] [IsScalarTower S T T'] [IsScalarTower S S' T']
-    [IsScalarTower R R' T'] [IsScalarTower R S' T'] [IsScalarTower R' S' T']
-    [Algebra.IsPushout R S R' S'] :
-    Algebra.IsPushout R T R' T' ↔ Algebra.IsPushout S T S' T' := by
-  let f : R' →ₗ[R] S' := (IsScalarTower.toAlgHom R R' S').toLinearMap
-  haveI : IsScalarTower R S T' := IsScalarTower.of_algebraMap_eq <| fun x ↦ by
-    rw [algebraMap_apply R S' T', algebraMap_apply R S S', ← algebraMap_apply S S' T']
-  have heq : (toAlgHom S S' T').toLinearMap.restrictScalars R ∘ₗ f =
-      (toAlgHom R R' T').toLinearMap := by
-    ext x
-    simp [f, ← IsScalarTower.algebraMap_apply]
-  rw [isPushout_iff, isPushout_iff, ← heq, IsBaseChange.comp_iff]
-  exact Algebra.IsPushout.out
 
 end IsBaseChange

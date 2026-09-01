@@ -30,7 +30,7 @@ that the integral commutes with the continuous functional calculus under appropr
 + Use this to prove operator monotonicity and concavity/convexity of `rpow` and `log`
 -/
 
-open MeasureTheory Topology
+open MeasureTheory
 open scoped ContinuousMapZero
 
 section unital
@@ -141,7 +141,7 @@ lemma cfcₙ_integral' [TopologicalSpace X] [OpensMeasurableSpace X] (f : X → 
   refine cfcₙ_integral f bound a ?_ hf₂ ?_ hbound hbound_finite_integral
   · exact (continuousOn_iff_continuous_restrict.mpr <| hf.uncurry_left ·)
   · let g := ((↑) : C(quasispectrum 𝕜 a, 𝕜)₀ → C(quasispectrum 𝕜 a, 𝕜))
-    refine ((isInducing_iff g).mpr rfl).continuous_iff.mpr ?_
+    refine (Inducing.continuous_iff (g := g) ((inducing_iff g).mpr rfl)).mpr ?_
     exact ContinuousMap.curry ⟨_, hf⟩ |>.continuous
 
 end nonunital

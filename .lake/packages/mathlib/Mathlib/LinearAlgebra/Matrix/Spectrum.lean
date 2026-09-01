@@ -7,6 +7,7 @@ import Mathlib.Analysis.InnerProductSpace.Spectrum
 import Mathlib.Data.Matrix.Rank
 import Mathlib.LinearAlgebra.Matrix.Diagonal
 import Mathlib.LinearAlgebra.Matrix.Hermitian
+import Mathlib.Analysis.CStarAlgebra.Matrix
 import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 /-! # Spectral theory of hermitian matrices
@@ -53,7 +54,12 @@ lemma mulVec_eigenvectorBasis (j : n) :
 
 /-- The spectrum of a Hermitian matrix `A` coincides with the spectrum of `toEuclideanLin A`. -/
 theorem spectrum_toEuclideanLin : spectrum 𝕜 (toEuclideanLin A) = spectrum 𝕜 A :=
-  AlgEquiv.spectrum_eq (Matrix.toLinAlgEquiv (PiLp.basisFun 2 𝕜 n)) _
+  AlgEquiv.spectrum_eq
+    (AlgEquiv.trans
+      ((toEuclideanCLM : Matrix n n 𝕜 ≃⋆ₐ[𝕜] EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 n) :
+          Matrix n n 𝕜 ≃ₐ[𝕜] EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 n)
+      (Module.End.toContinuousLinearMap (EuclideanSpace 𝕜 n)).symm)
+    _
 
 /-- Eigenvalues of a hermitian matrix A are in the ℝ spectrum of A. -/
 theorem eigenvalues_mem_spectrum_real (i : n) : hA.eigenvalues i ∈ spectrum ℝ A := by
@@ -115,7 +121,7 @@ theorem spectral_theorem :
     ← mul_assoc, (Matrix.mem_unitaryGroup_iff).mp (eigenvectorUnitary hA).2, one_mul]
 
 theorem eigenvalues_eq (i : n) :
-    (hA.eigenvalues i) = RCLike.re (dotProduct (star ⇑(hA.eigenvectorBasis i))
+    (hA.eigenvalues i) = RCLike.re (Matrix.dotProduct (star ⇑(hA.eigenvectorBasis i))
     (A *ᵥ ⇑(hA.eigenvectorBasis i))) := by
   simp only [mulVec_eigenvectorBasis, dotProduct_smul,← EuclideanSpace.inner_eq_star_dotProduct,
     inner_self_eq_norm_sq_to_K, RCLike.smul_re, hA.eigenvectorBasis.orthonormal.1 i,

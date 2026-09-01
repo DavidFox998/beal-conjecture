@@ -23,13 +23,10 @@ universe v u
 variable (R : Type u) [CommRing R]
 
 /-- The category of `R`-Hopf algebras. -/
-structure HopfAlgebraCat where
-  /-- The underlying type. -/
-  carrier : Type v
-  [instRing : Ring carrier]
-  [instHopfAlgebra : HopfAlgebra R carrier]
+structure HopfAlgebraCat extends Bundled Ring.{v} where
+  [instHopfAlgebra : HopfAlgebra R α]
 
-attribute [instance] HopfAlgebraCat.instHopfAlgebra HopfAlgebraCat.instRing
+attribute [instance] HopfAlgebraCat.instHopfAlgebra
 
 variable {R}
 
@@ -38,7 +35,7 @@ namespace HopfAlgebraCat
 open HopfAlgebra
 
 instance : CoeSort (HopfAlgebraCat.{v} R) (Type v) :=
-  ⟨(·.carrier)⟩
+  ⟨(·.α)⟩
 
 variable (R)
 
@@ -46,7 +43,7 @@ variable (R)
 @[simps]
 def of (X : Type v) [Ring X] [HopfAlgebra R X] :
     HopfAlgebraCat R where
-  carrier := X
+  instHopfAlgebra := (inferInstance : HopfAlgebra R X)
 
 variable {R}
 
@@ -61,7 +58,7 @@ lemma of_counit {X : Type v} [Ring X] [HopfAlgebra R X] :
 /-- A type alias for `BialgHom` to avoid confusion between the categorical and
 algebraic spellings of composition. -/
 @[ext]
-structure Hom (V W : HopfAlgebraCat.{v} R) where
+structure Hom (V W : HopfAlgebraCat.{v} R) :=
   /-- The underlying `BialgHom`. -/
   toBialgHom : V →ₐc[R] W
 
@@ -99,12 +96,12 @@ instance concreteCategory : ConcreteCategory.{v} (HopfAlgebraCat.{v} R) where
     { obj := fun M => M
       map := fun f => f.toBialgHom }
   forget_faithful :=
-    { map_injective := fun {_ _} => DFunLike.coe_injective.comp <| Hom.toBialgHom_injective _ _ }
+    { map_injective := fun {M N} => DFunLike.coe_injective.comp <| Hom.toBialgHom_injective _ _ }
 
 instance hasForgetToBialgebra : HasForget₂ (HopfAlgebraCat R) (BialgebraCat R) where
   forget₂ :=
     { obj := fun X => BialgebraCat.of R X
-      map := fun {_ _} f => BialgebraCat.ofHom f.toBialgHom }
+      map := fun {X Y} f => BialgebraCat.ofHom f.toBialgHom }
 
 @[simp]
 theorem forget₂_bialgebra_obj (X : HopfAlgebraCat R) :

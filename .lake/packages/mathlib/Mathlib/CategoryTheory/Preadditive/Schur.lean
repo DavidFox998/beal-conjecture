@@ -66,11 +66,11 @@ noncomputable instance [HasKernels C] {X : C} [Simple X] : DivisionRing (End X) 
     haveI := isIso_of_hom_simple hf
     exact IsIso.inv_hom_id f
   nnqsmul := _
-  nnqsmul_def := fun _ _ => rfl
+  nnqsmul_def := fun q a => rfl
   qsmul := _
-  qsmul_def := fun _ _ => rfl
+  qsmul_def := fun q a => rfl
 
-open Module
+open FiniteDimensional
 
 section
 
@@ -184,10 +184,14 @@ theorem finrank_hom_simple_simple_eq_zero_iff (X Y : C) [FiniteDimensional 𝕜 
     [FiniteDimensional 𝕜 (X ⟶ Y)] [Simple X] [Simple Y] :
     finrank 𝕜 (X ⟶ Y) = 0 ↔ IsEmpty (X ≅ Y) := by
   rw [← not_nonempty_iff, ← not_congr (finrank_hom_simple_simple_eq_one_iff 𝕜 X Y)]
+  refine ⟨fun h => by rw [h]; simp, fun h => ?_⟩
   have := finrank_hom_simple_simple_le_one 𝕜 X Y
-  omega
+  interval_cases finrank 𝕜 (X ⟶ Y)
+  · rfl
+  · exact False.elim (h rfl)
 
-open scoped Classical in
+open scoped Classical
+
 theorem finrank_hom_simple_simple (X Y : C) [∀ X Y : C, FiniteDimensional 𝕜 (X ⟶ Y)] [Simple X]
     [Simple Y] : finrank 𝕜 (X ⟶ Y) = if Nonempty (X ≅ Y) then 1 else 0 := by
   split_ifs with h

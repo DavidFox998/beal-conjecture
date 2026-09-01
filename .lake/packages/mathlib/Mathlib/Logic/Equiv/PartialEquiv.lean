@@ -236,7 +236,7 @@ def _root_.Equiv.toPartialEquivOfImageEq (e : α ≃ β) (s : Set α) (t : Set �
   invFun := e.symm
   source := s
   target := t
-  map_source' _ hx := h ▸ mem_image_of_mem _ hx
+  map_source' x hx := h ▸ mem_image_of_mem _ hx
   map_target' x hx := by
     subst t
     rcases hx with ⟨x, hx, rfl⟩
@@ -316,7 +316,7 @@ def IsImage (s : Set α) (t : Set β) : Prop :=
 
 namespace IsImage
 
-variable {e} {s : Set α} {t : Set β} {x : α}
+variable {e} {s : Set α} {t : Set β} {x : α} {y : β}
 
 theorem apply_mem_iff (h : e.IsImage s t) (hx : x ∈ e.source) : e x ∈ t ↔ x ∈ s :=
   h hx
@@ -622,32 +622,32 @@ theorem inv_image_trans_target : e'.symm '' (e.trans e').target = e'.source ∩ 
   image_trans_source e'.symm e.symm
 
 theorem trans_assoc (e'' : PartialEquiv γ δ) : (e.trans e').trans e'' = e.trans (e'.trans e'') :=
-  PartialEquiv.ext (fun _ => rfl) (fun _ => rfl)
+  PartialEquiv.ext (fun x => rfl) (fun x => rfl)
     (by simp [trans_source, @preimage_comp α β γ, inter_assoc])
 
 @[simp, mfld_simps]
 theorem trans_refl : e.trans (PartialEquiv.refl β) = e :=
-  PartialEquiv.ext (fun _ => rfl) (fun _ => rfl) (by simp [trans_source])
+  PartialEquiv.ext (fun x => rfl) (fun x => rfl) (by simp [trans_source])
 
 @[simp, mfld_simps]
 theorem refl_trans : (PartialEquiv.refl α).trans e = e :=
-  PartialEquiv.ext (fun _ => rfl) (fun _ => rfl) (by simp [trans_source, preimage_id])
+  PartialEquiv.ext (fun x => rfl) (fun x => rfl) (by simp [trans_source, preimage_id])
 
 theorem trans_ofSet (s : Set β) : e.trans (ofSet s) = e.restr (e ⁻¹' s) :=
   PartialEquiv.ext (fun _ => rfl) (fun _ => rfl) rfl
 
 theorem trans_refl_restr (s : Set β) :
     e.trans ((PartialEquiv.refl β).restr s) = e.restr (e ⁻¹' s) :=
-  PartialEquiv.ext (fun _ => rfl) (fun _ => rfl) (by simp [trans_source])
+  PartialEquiv.ext (fun x => rfl) (fun x => rfl) (by simp [trans_source])
 
 theorem trans_refl_restr' (s : Set β) :
     e.trans ((PartialEquiv.refl β).restr s) = e.restr (e.source ∩ e ⁻¹' s) :=
-  PartialEquiv.ext (fun _ => rfl) (fun _ => rfl) <| by
+  PartialEquiv.ext (fun x => rfl) (fun x => rfl) <| by
     simp only [trans_source, restr_source, refl_source, univ_inter]
     rw [← inter_assoc, inter_self]
 
 theorem restr_trans (s : Set α) : (e.restr s).trans e' = (e.trans e').restr s :=
-  PartialEquiv.ext (fun _ => rfl) (fun _ => rfl) <| by
+  PartialEquiv.ext (fun x => rfl) (fun x => rfl) <| by
     simp [trans_source, inter_comm, inter_assoc]
 
 /-- A lemma commonly useful when `e` and `e'` are charts of a manifold. -/
@@ -843,8 +843,8 @@ variable {ι : Type*} {αi βi γi : ι → Type*}
 /-- The product of a family of partial equivalences, as a partial equivalence on the pi type. -/
 @[simps (config := mfld_cfg) apply source target]
 protected def pi (ei : ∀ i, PartialEquiv (αi i) (βi i)) : PartialEquiv (∀ i, αi i) (∀ i, βi i) where
-  toFun := Pi.map fun i ↦ ei i
-  invFun := Pi.map fun i ↦ (ei i).symm
+  toFun f i := ei i (f i)
+  invFun f i := (ei i).symm (f i)
   source := pi univ fun i => (ei i).source
   target := pi univ fun i => (ei i).target
   map_source' _ hf i hi := (ei i).map_source (hf i hi)
@@ -916,7 +916,7 @@ theorem symm_toPartialEquiv : e.symm.toPartialEquiv = e.toPartialEquiv.symm :=
 @[simp, mfld_simps]
 theorem trans_toPartialEquiv :
     (e.trans e').toPartialEquiv = e.toPartialEquiv.trans e'.toPartialEquiv :=
-  PartialEquiv.ext (fun _ => rfl) (fun _ => rfl)
+  PartialEquiv.ext (fun x => rfl) (fun x => rfl)
     (by simp [PartialEquiv.trans_source, Equiv.toPartialEquiv])
 
 /-- Precompose a partial equivalence with an equivalence.

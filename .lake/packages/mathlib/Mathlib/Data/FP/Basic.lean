@@ -5,17 +5,13 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Semiquot
 import Mathlib.Data.Nat.Size
-import Batteries.Data.Rat.Basic
-import Mathlib.Data.PNat.Defs
-import Mathlib.Data.Rat.Init
-import Mathlib.Algebra.Ring.Int.Defs
-import Mathlib.Algebra.Order.Group.Unbundled.Basic
+import Mathlib.Tactic.Ring.RingNF
 
 /-!
 # Implementation of floating-point numbers (experimental).
 -/
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO add docs and remove `@[nolint docBlame]`
+-- Porting note (#11215): TODO add docs and remove `@[nolint docBlame]`
 
 @[nolint docBlame]
 def Int.shift2 (a b : ℕ) : ℤ → ℕ × ℕ
@@ -86,8 +82,10 @@ theorem Float.Zero.valid : ValidFinite emin 0 :=
       rw [← Int.ofNat_le] at this
       rw [← sub_nonneg] at *
       simp only [emin, emax] at *
-      omega
-    le_trans C.precMax (Nat.le_mul_of_pos_left _ Nat.zero_lt_two),
+      ring_nf
+      rw [mul_comm]
+      assumption
+    le_trans C.precMax (Nat.le_mul_of_pos_left _ two_pos),
     by (rw [max_eq_right]; simp [sub_eq_add_neg, Int.ofNat_zero_le])⟩
 
 @[nolint docBlame]
@@ -148,6 +146,7 @@ unsafe def nextUpPos (e m) (v : ValidFinite e m) : Float :=
     Float.finite false e m' (by unfold ValidFinite at *; rw [ss]; exact v)
   else if h : e = emax then Float.inf false else Float.finite false e.succ (Nat.div2 m') lcProof
 
+set_option linter.deprecated false in
 -- Porting note: remove this line when you dropped 'lcProof'
 set_option linter.unusedVariables false in
 @[nolint docBlame]

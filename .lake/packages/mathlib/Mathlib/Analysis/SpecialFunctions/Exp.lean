@@ -19,9 +19,9 @@ exp
 
 noncomputable section
 
-open Asymptotics Bornology Finset Filter Function Metric Set Topology
+open Finset Filter Metric Asymptotics Set Function Bornology
 
-open scoped Nat
+open scoped Topology Nat
 
 namespace Complex
 
@@ -226,21 +226,23 @@ theorem tendsto_exp_atTop : Tendsto exp atTop atTop := by
 at `+∞` -/
 theorem tendsto_exp_neg_atTop_nhds_zero : Tendsto (fun x => exp (-x)) atTop (𝓝 0) :=
   (tendsto_inv_atTop_zero.comp tendsto_exp_atTop).congr fun x => (exp_neg x).symm
+@[deprecated (since := "2024-01-31")]
+alias tendsto_exp_neg_atTop_nhds_0 := tendsto_exp_neg_atTop_nhds_zero
 
 /-- The real exponential function tends to `1` at `0`. -/
 theorem tendsto_exp_nhds_zero_nhds_one : Tendsto exp (𝓝 0) (𝓝 1) := by
   convert continuous_exp.tendsto 0
   simp
 
+@[deprecated (since := "2024-01-31")]
+alias tendsto_exp_nhds_0_nhds_1 := tendsto_exp_nhds_zero_nhds_one
+
 theorem tendsto_exp_atBot : Tendsto exp atBot (𝓝 0) :=
   (tendsto_exp_neg_atTop_nhds_zero.comp tendsto_neg_atBot_atTop).congr fun x =>
     congr_arg exp <| neg_neg x
 
-theorem tendsto_exp_atBot_nhdsGT : Tendsto exp atBot (𝓝[>] 0) :=
+theorem tendsto_exp_atBot_nhdsWithin : Tendsto exp atBot (𝓝[>] 0) :=
   tendsto_inf.2 ⟨tendsto_exp_atBot, tendsto_principal.2 <| Eventually.of_forall exp_pos⟩
-
-@[deprecated (since := "2024-12-22")]
-alias tendsto_exp_atBot_nhdsWithin := tendsto_exp_atBot_nhdsGT
 
 @[simp]
 theorem isBoundedUnder_ge_exp_comp (l : Filter α) (f : α → ℝ) :
@@ -261,13 +263,13 @@ theorem tendsto_exp_div_pow_atTop (n : ℕ) : Tendsto (fun x => exp x / x ^ n) a
     eventually_atTop.1
       ((tendsto_pow_const_div_const_pow_of_one_lt n (one_lt_exp_iff.2 zero_lt_one)).eventually
         (gt_mem_nhds this))
-  simp only [← exp_nat_mul, mul_one, div_lt_iff₀, exp_pos, ← div_eq_inv_mul] at hN
+  simp only [← exp_nat_mul, mul_one, div_lt_iff, exp_pos, ← div_eq_inv_mul] at hN
   refine ⟨N, trivial, fun x hx => ?_⟩
   rw [Set.mem_Ioi] at hx
   have hx₀ : 0 < x := (Nat.cast_nonneg N).trans_lt hx
   rw [Set.mem_Ici, le_div_iff₀ (pow_pos hx₀ _), ← le_div_iff₀' hC₀]
   calc
-    x ^ n ≤ ⌈x⌉₊ ^ n := by gcongr; exact Nat.le_ceil _
+    x ^ n ≤ ⌈x⌉₊ ^ n := mod_cast pow_le_pow_left hx₀.le (Nat.le_ceil _) _
     _ ≤ exp ⌈x⌉₊ / (exp 1 * C) := mod_cast (hN _ (Nat.lt_ceil.2 hx).le).le
     _ ≤ exp (x + 1) / (exp 1 * C) := by gcongr; exact (Nat.ceil_lt_add_one hx₀.le).le
     _ = exp x / C := by rw [add_comm, exp_add, mul_div_mul_left _ _ (exp_pos _).ne']
@@ -277,6 +279,8 @@ theorem tendsto_pow_mul_exp_neg_atTop_nhds_zero (n : ℕ) :
     Tendsto (fun x => x ^ n * exp (-x)) atTop (𝓝 0) :=
   (tendsto_inv_atTop_zero.comp (tendsto_exp_div_pow_atTop n)).congr fun x => by
     rw [comp_apply, inv_eq_one_div, div_div_eq_mul_div, one_mul, div_eq_mul_inv, exp_neg]
+@[deprecated (since := "2024-01-31")]
+alias tendsto_pow_mul_exp_neg_atTop_nhds_0 := tendsto_pow_mul_exp_neg_atTop_nhds_zero
 
 /-- The function `(b * exp x + c) / (x ^ n)` tends to `+∞` at `+∞`, for any natural number
 `n` and any real numbers `b` and `c` such that `b` is positive. -/
@@ -312,7 +316,7 @@ def expOrderIso : ℝ ≃o Ioi (0 : ℝ) :=
   StrictMono.orderIsoOfSurjective _ (exp_strictMono.codRestrict exp_pos) <|
     (continuous_exp.subtype_mk _).surjective
       (by rw [tendsto_Ioi_atTop]; simp only [tendsto_exp_atTop])
-      (by rw [tendsto_Ioi_atBot]; simp only [tendsto_exp_atBot_nhdsGT])
+      (by rw [tendsto_Ioi_atBot]; simp only [tendsto_exp_atBot_nhdsWithin])
 
 @[simp]
 theorem coe_expOrderIso_apply (x : ℝ) : (expOrderIso x : ℝ) = exp x :=
@@ -348,11 +352,8 @@ theorem map_exp_atBot : map exp atBot = 𝓝[>] 0 := by
   rw [← coe_comp_expOrderIso, ← Filter.map_map, expOrderIso.map_atBot, ← map_coe_Ioi_atBot]
 
 @[simp]
-theorem comap_exp_nhdsGT_zero : comap exp (𝓝[>] 0) = atBot := by
+theorem comap_exp_nhdsWithin_Ioi_zero : comap exp (𝓝[>] 0) = atBot := by
   rw [← map_exp_atBot, comap_map exp_injective]
-
-@[deprecated (since := "2024-12-22")]
-alias comap_exp_nhdsWithin_Ioi_zero := comap_exp_nhdsGT_zero
 
 theorem tendsto_comp_exp_atBot {f : ℝ → α} :
     Tendsto (fun x => f (exp x)) atBot l ↔ Tendsto f (𝓝[>] 0) l := by
@@ -368,19 +369,16 @@ theorem tendsto_exp_comp_nhds_zero {f : α → ℝ} :
     Tendsto (fun x => exp (f x)) l (𝓝 0) ↔ Tendsto f l atBot := by
   simp_rw [← comp_apply (f := exp), ← tendsto_comap_iff, comap_exp_nhds_zero]
 
-theorem isOpenEmbedding_exp : IsOpenEmbedding exp :=
-  isOpen_Ioi.isOpenEmbedding_subtypeVal.comp expOrderIso.toHomeomorph.isOpenEmbedding
-
-@[deprecated (since := "2024-10-18")]
-alias openEmbedding_exp := isOpenEmbedding_exp
+theorem openEmbedding_exp : OpenEmbedding exp :=
+  isOpen_Ioi.openEmbedding_subtype_val.comp expOrderIso.toHomeomorph.openEmbedding
 
 @[simp]
 theorem map_exp_nhds (x : ℝ) : map exp (𝓝 x) = 𝓝 (exp x) :=
-  isOpenEmbedding_exp.map_nhds_eq x
+  openEmbedding_exp.map_nhds_eq x
 
 @[simp]
 theorem comap_exp_nhds_exp (x : ℝ) : comap exp (𝓝 (exp x)) = 𝓝 x :=
-  (isOpenEmbedding_exp.nhds_eq_comap x).symm
+  (openEmbedding_exp.nhds_eq_comap x).symm
 
 theorem isLittleO_pow_exp_atTop {n : ℕ} : (fun x : ℝ => x ^ n) =o[atTop] Real.exp := by
   simpa [isLittleO_iff_tendsto fun x hx => ((exp_pos x).ne' hx).elim] using
@@ -389,7 +387,7 @@ theorem isLittleO_pow_exp_atTop {n : ℕ} : (fun x : ℝ => x ^ n) =o[atTop] Rea
 @[simp]
 theorem isBigO_exp_comp_exp_comp {f g : α → ℝ} :
     ((fun x => exp (f x)) =O[l] fun x => exp (g x)) ↔ IsBoundedUnder (· ≤ ·) l (f - g) :=
-  Iff.trans (isBigO_iff_isBoundedUnder_le_div <| Eventually.of_forall fun _ => exp_ne_zero _) <| by
+  Iff.trans (isBigO_iff_isBoundedUnder_le_div <| Eventually.of_forall fun x => exp_ne_zero _) <| by
     simp only [norm_eq_abs, abs_exp, ← exp_sub, isBoundedUnder_le_exp_comp, Pi.sub_def]
 
 @[simp]
@@ -405,6 +403,8 @@ theorem isLittleO_exp_comp_exp_comp {f g : α → ℝ} :
   simp only [isLittleO_iff_tendsto, exp_ne_zero, ← exp_sub, ← tendsto_neg_atTop_iff, false_imp_iff,
     imp_true_iff, tendsto_exp_comp_nhds_zero, neg_sub]
 
+-- Porting note (#10618): @[simp] can prove:  by simp only [@Asymptotics.isLittleO_one_left_iff,
+--   Real.norm_eq_abs, Real.abs_exp, @Real.tendsto_exp_comp_atTop]
 theorem isLittleO_one_exp_comp {f : α → ℝ} :
     ((fun _ => 1 : α → ℝ) =o[l] fun x => exp (f x)) ↔ Tendsto f l atTop := by
   simp only [← exp_zero, isLittleO_exp_comp_exp_comp, sub_zero]
@@ -466,12 +466,9 @@ theorem comap_exp_nhds_zero : comap exp (𝓝 0) = comap re atBot :=
       simp only [comap_comap, ← comap_abs_nhds_zero, Function.comp_def, abs_exp]
     _ = comap re atBot := by rw [Real.comap_exp_nhds_zero]
 
-theorem comap_exp_nhdsNE : comap exp (𝓝[≠] 0) = comap re atBot := by
+theorem comap_exp_nhdsWithin_zero : comap exp (𝓝[≠] 0) = comap re atBot := by
   have : (exp ⁻¹' {0})ᶜ = Set.univ := eq_univ_of_forall exp_ne_zero
   simp [nhdsWithin, comap_exp_nhds_zero, this]
-
-@[deprecated (since := "2024-12-22")]
-alias comap_exp_nhdsWithin_zero := comap_exp_nhdsNE
 
 theorem tendsto_exp_nhds_zero_iff {α : Type*} {l : Filter α} {f : α → ℂ} :
     Tendsto (fun x => exp (f x)) l (𝓝 0) ↔ Tendsto (fun x => re (f x)) l atBot := by
@@ -486,11 +483,8 @@ theorem tendsto_exp_comap_re_atTop : Tendsto exp (comap re atTop) (cobounded ℂ
 theorem tendsto_exp_comap_re_atBot : Tendsto exp (comap re atBot) (𝓝 0) :=
   comap_exp_nhds_zero ▸ tendsto_comap
 
-theorem tendsto_exp_comap_re_atBot_nhdsNE : Tendsto exp (comap re atBot) (𝓝[≠] 0) :=
-  comap_exp_nhdsNE ▸ tendsto_comap
-
-@[deprecated (since := "2024-12-22")]
-alias tendsto_exp_comap_re_atBot_nhdsWithin := tendsto_exp_comap_re_atBot_nhdsNE
+theorem tendsto_exp_comap_re_atBot_nhdsWithin : Tendsto exp (comap re atBot) (𝓝[≠] 0) :=
+  comap_exp_nhdsWithin_zero ▸ tendsto_comap
 
 end Complex
 

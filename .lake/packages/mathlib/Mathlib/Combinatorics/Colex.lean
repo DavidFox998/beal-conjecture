@@ -7,7 +7,6 @@ import Mathlib.Algebra.GeomSum
 import Mathlib.Data.Finset.Slice
 import Mathlib.Data.Nat.BitIndices
 import Mathlib.Order.SupClosed
-import Mathlib.Order.UpperLower.Basic
 
 /-!
 # Colexigraphic order
@@ -66,7 +65,7 @@ namespace Finset
 /-- Type synonym of `Finset α` equipped with the colexicographic order rather than the inclusion
 order. -/
 @[ext]
-structure Colex (α) where
+structure Colex (α) :=
   /-- `toColex` is the "identity" function between `Finset α` and `Finset.Colex α`. -/
   toColex ::
   /-- `ofColex` is the "identity" function between `Finset.Colex α` and `Finset α`. -/
@@ -103,7 +102,7 @@ instance instLE : LE (Colex α) where
 private lemma trans_aux (hst : toColex s ≤ toColex t) (htu : toColex t ≤ toColex u)
     (has : a ∈ s) (hat : a ∉ t) : ∃ b, b ∈ u ∧ b ∉ s ∧ a ≤ b := by
   classical
-  let s' : Finset α := {b ∈ s | b ∉ t ∧ a ≤ b}
+  let s' : Finset α := s.filter fun b ↦ b ∉ t ∧ a ≤ b
   have ⟨b, hb, hbmax⟩ := exists_maximal s' ⟨a, by simp [s', has, hat]⟩
   simp only [s', mem_filter, and_imp] at hb hbmax
   have ⟨c, hct, hcs, hbc⟩ := hst hb.1 hb.2.1
@@ -121,8 +120,8 @@ private lemma antisymm_aux (hst : toColex s ≤ toColex t) (hts : toColex t ≤ 
   exact hb₂ hb₁
 
 instance instPartialOrder : PartialOrder (Colex α) where
-  le_refl _ _ ha ha' := (ha' ha).elim
-  le_antisymm _ _ hst hts := Colex.ext <| (antisymm_aux hst hts).antisymm (antisymm_aux hts hst)
+  le_refl s a ha ha' := (ha' ha).elim
+  le_antisymm s t hst hts := Colex.ext <| (antisymm_aux hst hts).antisymm (antisymm_aux hts hst)
   le_trans s t u hst htu a has hau := by
     by_cases hat : a ∈ ofColex t
     · have ⟨b, hbu, hbt, hab⟩ := htu hat hau
@@ -220,19 +219,18 @@ variable [DecidableEq α]
 instance instDecidableEq : DecidableEq (Colex α) := fun s t ↦
   decidable_of_iff' (s.ofColex = t.ofColex) Colex.ext_iff
 
-instance instDecidableLE [DecidableRel (α := α) (· ≤ ·)] : DecidableRel (α := Colex α) (· ≤ ·) :=
-  fun s t ↦ decidable_of_iff'
+instance instDecidableLE [@DecidableRel α (· ≤ ·)] : @DecidableRel (Colex α) (· ≤ ·) := fun s t ↦
+  decidable_of_iff'
     (∀ ⦃a⦄, a ∈ ofColex s → a ∉ ofColex t → ∃ b, b ∈ ofColex t ∧ b ∉ ofColex s ∧ a ≤ b) Iff.rfl
 
-instance instDecidableLT [DecidableRel (α := α) (· ≤ ·)] : DecidableRel (α := Colex α) (· < ·) :=
+instance instDecidableLT [@DecidableRel α (· ≤ ·)] : @DecidableRel (Colex α) (· < ·) :=
   decidableLTOfDecidableLE
 
 /-- The colexigraphic order is insensitive to removing the same elements from both sets. -/
 lemma toColex_sdiff_le_toColex_sdiff (hus : u ⊆ s) (hut : u ⊆ t) :
     toColex (s \ u) ≤ toColex (t \ u) ↔ toColex s ≤ toColex t := by
   simp_rw [toColex_le_toColex, ← and_imp, ← and_assoc, ← mem_sdiff,
-    sdiff_sdiff_sdiff_cancel_right (show u ≤ s from hus),
-    sdiff_sdiff_sdiff_cancel_right (show u ≤ t from hut)]
+    sdiff_sdiff_sdiff_cancel_right hus, sdiff_sdiff_sdiff_cancel_right hut]
 
 /-- The colexigraphic order is insensitive to removing the same elements from both sets. -/
 lemma toColex_sdiff_lt_toColex_sdiff (hus : u ⊆ s) (hut : u ⊆ t) :
@@ -318,8 +316,7 @@ lemma toColex_le_toColex_iff_max'_mem :
   refine ⟨fun h hst ↦ ?_, fun h a has hat ↦ ?_⟩
   · set m := (s ∆ t).max' (symmDiff_nonempty.2 hst)
     by_contra hmt
-    have hms : m ∈ s := by
-      simpa [m, mem_symmDiff, hmt] using max'_mem _ <| symmDiff_nonempty.2 hst
+    have hms : m ∈ s := by simpa [mem_symmDiff, hmt] using max'_mem _ <| symmDiff_nonempty.2 hst
     have ⟨b, hbt, hbs, hmb⟩ := h hms hmt
     exact lt_irrefl _ <| (max'_lt_iff _ _).1 (hmb.lt_of_ne <| ne_of_mem_of_not_mem hms hbs) _ <|
       mem_symmDiff.2 <| Or.inr ⟨hbt, hbs⟩
@@ -341,10 +338,10 @@ lemma lt_iff_max'_mem {s t : Colex α} :
   rw [lt_iff_le_and_ne, le_iff_max'_mem]; aesop
 
 lemma lt_iff_exists_filter_lt :
-    toColex s < toColex t ↔ ∃ w ∈ t \ s, {a ∈ s | w < a} = {a ∈ t | w < a} := by
+    toColex s < toColex t ↔ ∃ w ∈ t \ s, s.filter (w < ·) = t.filter (w < ·) := by
   simp only [lt_iff_exists_forall_lt, mem_sdiff, filter_inj, and_assoc]
   refine ⟨fun h ↦ ?_, ?_⟩
-  · let u := {w ∈ t \ s | ∀ a ∈ s, a ∉ t → a < w}
+  · let u := (t \ s).filter fun w ↦ ∀ a ∈ s, a ∉ t → a < w
     have mem_u {w : α} : w ∈ u ↔ w ∈ t ∧ w ∉ s ∧ ∀ a ∈ s, a ∉ t → a < w := by simp [u, and_assoc]
     have hu : u.Nonempty := h.imp fun _ ↦ mem_u.2
     let m := max' _ hu
@@ -358,8 +355,8 @@ lemma lt_iff_exists_filter_lt :
     by_contra! hwa
     exact hat <| (hw <| hwa.lt_of_ne <| ne_of_mem_of_not_mem hwt hat).1 has
 
-/-- If `s ≤ t` in colex and `#s ≤ #t`, then `s \ {a} ≤ t \ {min t}` for any `a ∈ s`. -/
-lemma erase_le_erase_min' (hst : toColex s ≤ toColex t) (hcard : #s ≤ #t) (ha : a ∈ s) :
+/-- If `s ≤ t` in colex and `s.card ≤ t.card`, then `s \ {a} ≤ t \ {min t}` for any `a ∈ s`. -/
+lemma erase_le_erase_min' (hst : toColex s ≤ toColex t) (hcard : s.card ≤ t.card) (ha : a ∈ s) :
     toColex (s.erase a) ≤
       toColex (t.erase <| min' t <| card_pos.1 <| (card_pos.2 ⟨a, ha⟩).trans_le hcard) := by
   generalize_proofs ht
@@ -437,7 +434,7 @@ end Fintype
 downwards closed with respect to colex among sets of size `r`. -/
 def IsInitSeg (𝒜 : Finset (Finset α)) (r : ℕ) : Prop :=
   (𝒜 : Set (Finset α)).Sized r ∧
-    ∀ ⦃s t : Finset α⦄, s ∈ 𝒜 → toColex t < toColex s ∧ #t = r → t ∈ 𝒜
+    ∀ ⦃s t : Finset α⦄, s ∈ 𝒜 → toColex t < toColex s ∧ t.card = r → t ∈ 𝒜
 
 @[simp] lemma isInitSeg_empty : IsInitSeg (∅ : Finset (Finset α)) r := by simp [IsInitSeg]
 
@@ -457,23 +454,24 @@ lemma IsInitSeg.total (h₁ : IsInitSeg 𝒜₁ r) (h₂ : IsInitSeg 𝒜₂ r) 
 
 variable [Fintype α]
 
-/-- The initial segment of the colexicographic order on sets with `#s` elements and ending at
+/-- The initial segment of the colexicographic order on sets with `s.card` elements and ending at
 `s`. -/
-def initSeg (s : Finset α) : Finset (Finset α) := {t | #s = #t ∧ toColex t ≤ toColex s}
+def initSeg (s : Finset α) : Finset (Finset α) :=
+  univ.filter fun t ↦ s.card = t.card ∧ toColex t ≤ toColex s
 
 @[simp]
-lemma mem_initSeg : t ∈ initSeg s ↔ #s = #t ∧ toColex t ≤ toColex s := by simp [initSeg]
+lemma mem_initSeg : t ∈ initSeg s ↔ s.card = t.card ∧ toColex t ≤ toColex s := by simp [initSeg]
 
 lemma mem_initSeg_self : s ∈ initSeg s := by simp
 @[simp] lemma initSeg_nonempty : (initSeg s).Nonempty := ⟨s, mem_initSeg_self⟩
 
-lemma isInitSeg_initSeg : IsInitSeg (initSeg s) #s := by
+lemma isInitSeg_initSeg : IsInitSeg (initSeg s) s.card := by
   refine ⟨fun t ht => (mem_initSeg.1 ht).1.symm, fun t₁ t₂ ht₁ ht₂ ↦ mem_initSeg.2 ⟨ht₂.2.symm, ?_⟩⟩
   rw [mem_initSeg] at ht₁
   exact ht₂.1.le.trans ht₁.2
 
 lemma IsInitSeg.exists_initSeg (h𝒜 : IsInitSeg 𝒜 r) (h𝒜₀ : 𝒜.Nonempty) :
-    ∃ s : Finset α, #s = r ∧ 𝒜 = initSeg s := by
+    ∃ s : Finset α, s.card = r ∧ 𝒜 = initSeg s := by
   have hs := sup'_mem (ofColex ⁻¹' 𝒜) (LinearOrder.supClosed _) 𝒜 h𝒜₀ toColex
     (fun a ha ↦ by simpa using ha)
   refine ⟨_, h𝒜.1 hs, ?_⟩
@@ -489,7 +487,7 @@ lemma IsInitSeg.exists_initSeg (h𝒜 : IsInitSeg 𝒜 r) (h𝒜₀ : 𝒜.Nonem
 
 /-- Being a nonempty initial segment of colex is equivalent to being an `initSeg`. -/
 lemma isInitSeg_iff_exists_initSeg :
-    IsInitSeg 𝒜 r ∧ 𝒜.Nonempty ↔ ∃ s : Finset α, #s = r ∧ 𝒜 = initSeg s := by
+    IsInitSeg 𝒜 r ∧ 𝒜.Nonempty ↔ ∃ s : Finset α, s.card = r ∧ 𝒜 = initSeg s := by
   refine ⟨fun h𝒜 ↦ h𝒜.1.exists_initSeg h𝒜.2, ?_⟩
   rintro ⟨s, rfl, rfl⟩
   exact ⟨isInitSeg_initSeg, initSeg_nonempty⟩
@@ -535,7 +533,7 @@ theorem geomSum_injective {n : ℕ} (hn : 2 ≤ n) :
     geomSum_le_geomSum_iff_toColex_le_toColex hn, ← le_antisymm_iff, Colex.toColex.injEq] at h
 
 theorem lt_geomSum_of_mem {a : ℕ} (hn : 2 ≤ n) (hi : a ∈ s) : a < ∑ i in s, n ^ i :=
-  (a.lt_pow_self hn).trans_le <| single_le_sum (by simp) hi
+  (Nat.lt_pow_self hn a).trans_le <| single_le_sum (by simp) hi
 
 @[simp] theorem toFinset_bitIndices_twoPowSum (s : Finset ℕ) :
     (∑ i in s, 2 ^ i).bitIndices.toFinset = s := by

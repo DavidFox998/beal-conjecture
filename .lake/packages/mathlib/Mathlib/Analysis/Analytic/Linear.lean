@@ -77,25 +77,29 @@ def fpowerSeriesBilinear (f : E →L[𝕜] F →L[𝕜] G) (x : E × F) : Formal
   | 2 => f.uncurryBilinear
   | _ => 0
 
-@[simp]
 theorem fpowerSeriesBilinear_apply_zero (f : E →L[𝕜] F →L[𝕜] G) (x : E × F) :
     fpowerSeriesBilinear f x 0 = ContinuousMultilinearMap.uncurry0 𝕜 _ (f x.1 x.2) :=
   rfl
 
-@[simp]
 theorem fpowerSeriesBilinear_apply_one (f : E →L[𝕜] F →L[𝕜] G) (x : E × F) :
     fpowerSeriesBilinear f x 1 = (continuousMultilinearCurryFin1 𝕜 (E × F) G).symm (f.deriv₂ x) :=
   rfl
 
-@[simp]
 theorem fpowerSeriesBilinear_apply_two (f : E →L[𝕜] F →L[𝕜] G) (x : E × F) :
     fpowerSeriesBilinear f x 2 = f.uncurryBilinear :=
   rfl
 
-@[simp]
 theorem fpowerSeriesBilinear_apply_add_three (f : E →L[𝕜] F →L[𝕜] G) (x : E × F) (n) :
     fpowerSeriesBilinear f x (n + 3) = 0 :=
   rfl
+
+attribute
+  [eqns
+    fpowerSeriesBilinear_apply_zero
+    fpowerSeriesBilinear_apply_one
+    fpowerSeriesBilinear_apply_two
+    fpowerSeriesBilinear_apply_add_three] fpowerSeriesBilinear
+attribute [simp] fpowerSeriesBilinear
 
 @[simp]
 theorem fpowerSeriesBilinear_radius (f : E →L[𝕜] F →L[𝕜] G) (x : E × F) :

@@ -42,7 +42,7 @@ category is preserved by the functor `(X × -)`. This appears in `CategoryTheory
 -/
 
 
-universe w₁ w₂ v₁ v₂ u₁ u₂
+universe v₁ v₂ u₁ u₂
 
 noncomputable section
 
@@ -91,7 +91,7 @@ private def liftToDiscrete {α : Type u₂} (F : J ⥤ Discrete α) : J ⥤ Disc
 /-- Implementation detail of `isoConstant`. -/
 private def factorThroughDiscrete {α : Type u₂} (F : J ⥤ Discrete α) :
     liftToDiscrete F ⋙ Discrete.functor F.obj ≅ F :=
-  NatIso.ofComponents (fun _ => eqToIso Function.apply_invFun_apply) (by aesop_cat)
+  NatIso.ofComponents (fun j => eqToIso Function.apply_invFun_apply) (by aesop_cat)
 
 end IsPreconnected.IsoConstantAux
 
@@ -102,7 +102,7 @@ def isoConstant [IsPreconnected J] {α : Type u₂} (F : J ⥤ Discrete α) (j :
     F ≅ (Functor.const J).obj (F.obj j) :=
   (IsPreconnected.IsoConstantAux.factorThroughDiscrete F).symm
     ≪≫ isoWhiskerRight (IsPreconnected.iso_constant _ j).some _
-    ≪≫ NatIso.ofComponents (fun _ => eqToIso Function.apply_invFun_apply) (by aesop_cat)
+    ≪≫ NatIso.ofComponents (fun j' => eqToIso Function.apply_invFun_apply) (by aesop_cat)
 
 /-- If `J` is connected, any functor to a discrete category is constant on objects.
 The converse is given in `IsConnected.of_any_functor_const_on_obj`.
@@ -225,7 +225,7 @@ theorem isPreconnected_of_equivalent {K : Type u₂} [Category.{v₂} K] [IsPrec
           isoWhiskerLeft e.inverse (isoConstant (e.functor ⋙ F) (e.inverse.obj k))
         _ ≅ e.inverse ⋙ (Functor.const J).obj (F.obj k) :=
           isoWhiskerLeft _ ((F ⋙ Functor.const J).mapIso (e.counitIso.app k))
-        _ ≅ (Functor.const K).obj (F.obj k) := NatIso.ofComponents fun _ => Iso.refl _⟩
+        _ ≅ (Functor.const K).obj (F.obj k) := NatIso.ofComponents fun X => Iso.refl _⟩
 
 lemma isPreconnected_iff_of_equivalence {K : Type u₂} [Category.{v₂} K] (e : J ≌ K) :
     IsPreconnected J ↔ IsPreconnected K :=
@@ -259,20 +259,15 @@ theorem isPreconnected_of_isPreconnected_op [IsPreconnected Jᵒᵖ] : IsPreconn
 theorem isConnected_of_isConnected_op [IsConnected Jᵒᵖ] : IsConnected J :=
   isConnected_of_equivalent (opOpEquivalence J)
 
-variable (J) in
-@[simp]
-theorem isConnected_op_iff_isConnected : IsConnected Jᵒᵖ ↔ IsConnected J :=
-  ⟨fun _ => isConnected_of_isConnected_op, fun _ => isConnected_op⟩
-
 /-- j₁ and j₂ are related by `Zag` if there is a morphism between them. -/
 def Zag (j₁ j₂ : J) : Prop :=
   Nonempty (j₁ ⟶ j₂) ∨ Nonempty (j₂ ⟶ j₁)
 
-@[refl] theorem Zag.refl (X : J) : Zag X X := Or.inl ⟨𝟙 _⟩
+theorem Zag.refl (X : J) : Zag X X := Or.inl ⟨𝟙 _⟩
 
 theorem zag_symmetric : Symmetric (@Zag J _) := fun _ _ h => h.symm
 
-@[symm] theorem Zag.symm {j₁ j₂ : J} (h : Zag j₁ j₂) : Zag j₂ j₁ := zag_symmetric h
+theorem Zag.symm {j₁ j₂ : J} (h : Zag j₁ j₂) : Zag j₂ j₁ := zag_symmetric h
 
 theorem Zag.of_hom {j₁ j₂ : J} (f : j₁ ⟶ j₂) : Zag j₁ j₂ := Or.inl ⟨f⟩
 
@@ -291,12 +286,11 @@ theorem zigzag_equivalence : _root_.Equivalence (@Zigzag J _) :=
   _root_.Equivalence.mk Relation.reflexive_reflTransGen (fun h => zigzag_symmetric h)
   (fun h g => Relation.transitive_reflTransGen h g)
 
-@[refl] theorem Zigzag.refl (X : J) : Zigzag X X := zigzag_equivalence.refl _
+theorem Zigzag.refl (X : J) : Zigzag X X := zigzag_equivalence.refl _
 
-@[symm] theorem Zigzag.symm {j₁ j₂ : J} (h : Zigzag j₁ j₂) : Zigzag j₂ j₁ := zigzag_symmetric h
+theorem Zigzag.symm {j₁ j₂ : J} (h : Zigzag j₁ j₂) : Zigzag j₂ j₁ := zigzag_symmetric h
 
-@[trans] theorem Zigzag.trans {j₁ j₂ j₃ : J} (h₁ : Zigzag j₁ j₂) (h₂ : Zigzag j₂ j₃) :
-    Zigzag j₁ j₃ :=
+theorem Zigzag.trans {j₁ j₂ j₃ : J} (h₁ : Zigzag j₁ j₂) (h₂ : Zigzag j₂ j₃) : Zigzag j₁ j₃ :=
   zigzag_equivalence.trans h₁ h₂
 
 theorem Zigzag.of_zag {j₁ j₂ : J} (h : Zag j₁ j₂) : Zigzag j₁ j₂ :=
@@ -331,18 +325,11 @@ def Zigzag.setoid (J : Type u₂) [Category.{v₁} J] : Setoid J where
   iseqv := zigzag_equivalence
 
 /-- If there is a zigzag from `j₁` to `j₂`, then there is a zigzag from `F j₁` to
-`F j₂` as long as `F` is a prefunctor.
--/
-theorem zigzag_prefunctor_obj_of_zigzag (F : J ⥤q K) {j₁ j₂ : J} (h : Zigzag j₁ j₂) :
-    Zigzag (F.obj j₁) (F.obj j₂) :=
-  h.lift _ fun _ _ => Or.imp (Nonempty.map fun f => F.map f) (Nonempty.map fun f => F.map f)
-
-/-- If there is a zigzag from `j₁` to `j₂`, then there is a zigzag from `F j₁` to
 `F j₂` as long as `F` is a functor.
 -/
 theorem zigzag_obj_of_zigzag (F : J ⥤ K) {j₁ j₂ : J} (h : Zigzag j₁ j₂) :
     Zigzag (F.obj j₁) (F.obj j₂) :=
-  zigzag_prefunctor_obj_of_zigzag F.toPrefunctor h
+  h.lift _ fun _ _ => Or.imp (Nonempty.map fun f => F.map f) (Nonempty.map fun f => F.map f)
 
 /-- A Zag in a discrete category entails an equality of its extremities -/
 lemma eq_of_zag (X) {a b : Discrete X} (h : Zag a b) : a.as = b.as :=
@@ -425,7 +412,7 @@ def discreteIsConnectedEquivPUnit {α : Type u₁} [IsConnected (Discrete α)] :
       unitIso := isoConstant _ (Classical.arbitrary _)
       counitIso := Functor.punitExt _ _ }
 
-variable {C : Type w₂} [Category.{w₁} C]
+variable {C : Type u₂} [Category.{u₁} C]
 
 /-- For objects `X Y : C`, any natural transformation `α : const X ⟶ const Y` from a connected
 category must be constant.

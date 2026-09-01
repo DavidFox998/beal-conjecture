@@ -5,8 +5,7 @@ Authors: Jireh Loreaux
 -/
 import Mathlib.Algebra.Group.Pointwise.Set.Basic
 import Mathlib.Algebra.Star.Basic
-import Mathlib.Data.Set.Finite.Basic
-import Mathlib.Algebra.Field.Defs
+import Mathlib.Data.Set.Finite
 
 /-!
 # Pointwise star operation on sets
@@ -119,7 +118,7 @@ protected theorem star_inv [Group α] [StarMul α] (s : Set α) : s⁻¹⋆ = s�
 
 protected theorem star_inv' [DivisionSemiring α] [StarRing α] (s : Set α) : s⁻¹⋆ = s⋆⁻¹ := by
   ext
-  simp only [mem_star, mem_inv, star_inv₀]
+  simp only [mem_star, mem_inv, star_inv']
 
 end Set
 

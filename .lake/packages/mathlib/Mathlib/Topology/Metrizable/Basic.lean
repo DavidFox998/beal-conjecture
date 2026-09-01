@@ -12,7 +12,9 @@ In this file we define metrizable topological spaces, i.e., topological spaces f
 exists a metric space structure that generates the same topology.
 -/
 
-open Filter Set Metric Topology
+
+open Set Filter Metric
+open scoped Filter Topology
 
 namespace TopologicalSpace
 
@@ -42,13 +44,10 @@ instance pseudoMetrizableSpace_prod [PseudoMetrizableSpace X] [PseudoMetrizableS
 
 /-- Given an inducing map of a topological space into a pseudo metrizable space, the source space
 is also pseudo metrizable. -/
-theorem _root_.Topology.IsInducing.pseudoMetrizableSpace [PseudoMetrizableSpace Y] {f : X → Y}
-    (hf : IsInducing f) : PseudoMetrizableSpace X :=
+theorem _root_.Inducing.pseudoMetrizableSpace [PseudoMetrizableSpace Y] {f : X → Y}
+    (hf : Inducing f) : PseudoMetrizableSpace X :=
   letI : PseudoMetricSpace Y := pseudoMetrizableSpacePseudoMetric Y
   ⟨⟨hf.comapPseudoMetricSpace, rfl⟩⟩
-
-@[deprecated (since := "2024-10-28")]
-alias _root_.Inducing.pseudoMetrizableSpace := IsInducing.pseudoMetrizableSpace
 
 /-- Every pseudo-metrizable space is first countable. -/
 instance (priority := 100) PseudoMetrizableSpace.firstCountableTopology
@@ -60,7 +59,7 @@ instance (priority := 100) PseudoMetrizableSpace.firstCountableTopology
 
 instance PseudoMetrizableSpace.subtype [PseudoMetrizableSpace X] (s : Set X) :
     PseudoMetrizableSpace s :=
-  IsInducing.subtypeVal.pseudoMetrizableSpace
+  inducing_subtype_val.pseudoMetrizableSpace
 
 instance pseudoMetrizableSpace_pi [∀ i, PseudoMetrizableSpace (π i)] :
     PseudoMetrizableSpace (∀ i, π i) := by
@@ -99,16 +98,13 @@ instance metrizableSpace_prod [MetrizableSpace X] [MetrizableSpace Y] : Metrizab
 
 /-- Given an embedding of a topological space into a metrizable space, the source space is also
 metrizable. -/
-theorem _root_.Topology.IsEmbedding.metrizableSpace [MetrizableSpace Y] {f : X → Y}
-    (hf : IsEmbedding f) : MetrizableSpace X :=
+theorem _root_.Embedding.metrizableSpace [MetrizableSpace Y] {f : X → Y} (hf : Embedding f) :
+    MetrizableSpace X :=
   letI : MetricSpace Y := metrizableSpaceMetric Y
   ⟨⟨hf.comapMetricSpace f, rfl⟩⟩
 
-@[deprecated (since := "2024-10-26")]
-alias _root_.Embedding.metrizableSpace := IsEmbedding.metrizableSpace
-
 instance MetrizableSpace.subtype [MetrizableSpace X] (s : Set X) : MetrizableSpace s :=
-  IsEmbedding.subtypeVal.metrizableSpace
+  embedding_subtype_val.metrizableSpace
 
 instance metrizableSpace_pi [∀ i, MetrizableSpace (π i)] : MetrizableSpace (∀ i, π i) := by
   cases nonempty_fintype ι

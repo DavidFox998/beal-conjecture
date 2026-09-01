@@ -42,7 +42,7 @@ def mapTrifunctorObj {I₁ : Type*} (X₁ : GradedObject I₁ C₁) (I₂ I₃ :
     GradedObject I₂ C₂ ⥤ GradedObject I₃ C₃ ⥤ GradedObject (I₁ × I₂ × I₃) C₄ where
   obj X₂ :=
     { obj := fun X₃ x => ((F.obj (X₁ x.1)).obj (X₂ x.2.1)).obj (X₃ x.2.2)
-      map := fun {_ _} φ x => ((F.obj (X₁ x.1)).obj (X₂ x.2.1)).map (φ x.2.2) }
+      map := fun {X₃ Y₃} φ x => ((F.obj (X₁ x.1)).obj (X₂ x.2.1)).map (φ x.2.2) }
   map {X₂ Y₂} φ :=
     { app := fun X₃ x => ((F.obj (X₁ x.1)).map (φ x.2.1)).app (X₃ x.2.2) }
 
@@ -77,7 +77,7 @@ def mapTrifunctorMapNatTrans (α : F ⟶ F') (I₁ I₂ I₃ : Type*) :
     mapTrifunctor F I₁ I₂ I₃ ⟶ mapTrifunctor F' I₁ I₂ I₃ where
   app X₁ :=
     { app := fun X₂ =>
-        { app := fun _ _ => ((α.app _).app _).app _ }
+        { app := fun X₃ i => ((α.app _).app _).app _ }
       naturality := fun {X₂ Y₂} φ => by
         ext X₃ ⟨i₁, i₂, i₃⟩
         dsimp
@@ -184,7 +184,7 @@ noncomputable def mapTrifunctorMapFunctorObj (X₁ : GradedObject I₁ C₁)
     GradedObject I₂ C₂ ⥤ GradedObject I₃ C₃ ⥤ GradedObject J C₄ where
   obj X₂ :=
     { obj := fun X₃ => mapTrifunctorMapObj F p X₁ X₂ X₃
-      map := fun {_ _} φ => mapTrifunctorMapMap F p (𝟙 X₁) (𝟙 X₂) φ
+      map := fun {X₃ Y₃} φ => mapTrifunctorMapMap F p (𝟙 X₁) (𝟙 X₂) φ
       map_id := fun X₃ => by
         dsimp
         ext j i₁ i₂ i₃ h
@@ -215,6 +215,11 @@ noncomputable def mapTrifunctorMapFunctorObj (X₁ : GradedObject I₁ C₁)
       NatTrans.id_app, categoryOfGradedObjects_comp, Functor.map_comp, NatTrans.comp_app,
       id_comp, assoc, ι_mapTrifunctorMapMap_assoc]
 
+#adaptation_note
+/--
+At nightly-2024-08-08 we needed to significantly increase the maxHeartbeats here.
+-/
+set_option maxHeartbeats 800000 in
 /-- Given a trifunctor `F : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄` and a map `p : I₁ × I₂ × I₃ → J`,
 this is the functor
 `GradedObject I₁ C₁ ⥤ GradedObject I₂ C₂ ⥤ GradedObject I₃ C₃ ⥤ GradedObject J C₄`
@@ -254,7 +259,7 @@ variable (F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂) (G : C₁₂ ⥤ C₃ ⥤ C₄)
 /-- Given a map `r : I₁ × I₂ × I₃ → J`, a `BifunctorComp₁₂IndexData r` consists of the data
 of a type `I₁₂`, maps `p : I₁ × I₂ → I₁₂` and `q : I₁₂ × I₃ → J`, such that `r` is obtained
 by composition of `p` and `q`. -/
-structure BifunctorComp₁₂IndexData where
+structure BifunctorComp₁₂IndexData :=
   /-- an auxiliary type -/
   I₁₂ : Type*
   /-- a map `I₁ × I₂ → I₁₂` -/
@@ -345,7 +350,7 @@ noncomputable def isColimitCofan₃MapBifunctor₁₂BifunctorMapObj (j : J) :
   refine IsColimit.ofIsoColimit (isColimitCofanMapObjComp Z p' ρ₁₂.q r ρ₁₂.hpq j
     (fun ⟨i₁₂, i₃⟩ h => c₁₂'' ⟨⟨i₁₂, i₃⟩, h⟩) (fun ⟨i₁₂, i₃⟩ h => h₁₂'' ⟨⟨i₁₂, i₃⟩, h⟩) c hc)
     (Cocones.ext (Iso.refl _) (fun ⟨⟨i₁, i₂, i₃⟩, h⟩ => ?_))
-  dsimp [Cofan.inj, c₁₂'', Z, p']
+  dsimp [Cofan.inj, c₁₂'', Z]
   rw [comp_id, Functor.map_id, id_comp]
   rfl
 
@@ -434,7 +439,7 @@ variable (F : C₁ ⥤ C₂₃ ⥤ C₄) (G₂₃ : C₂ ⥤ C₃ ⥤ C₂₃)
 /-- Given a map `r : I₁ × I₂ × I₃ → J`, a `BifunctorComp₂₃IndexData r` consists of the data
 of a type `I₂₃`, maps `p : I₂ × I₃ → I₂₃` and `q : I₁ × I₂₃ → J`, such that `r` is obtained
 by composition of `p` and `q`. -/
-structure BifunctorComp₂₃IndexData where
+structure BifunctorComp₂₃IndexData :=
   /-- an auxiliary type -/
   I₂₃ : Type*
   /-- a map `I₂ × I₃ → I₂₃` -/
@@ -523,7 +528,7 @@ noncomputable def isColimitCofan₃MapBifunctorBifunctor₂₃MapObj (j : J) :
   refine IsColimit.ofIsoColimit (isColimitCofanMapObjComp Z p' ρ₂₃.q r ρ₂₃.hpq j
     (fun ⟨i₁, i₂₃⟩ h => c₂₃'' ⟨⟨i₁, i₂₃⟩, h⟩) (fun ⟨i₁, i₂₃⟩ h => h₂₃'' ⟨⟨i₁, i₂₃⟩, h⟩) c hc)
     (Cocones.ext (Iso.refl _) (fun ⟨⟨i₁, i₂, i₃⟩, h⟩ => ?_))
-  dsimp [Cofan.inj, c₂₃'', Z, p', e]
+  dsimp [Cofan.inj, c₂₃'']
   rw [comp_id, id_comp]
   rfl
 

@@ -50,7 +50,7 @@ instance : Bicategory (MonoidalSingleObj C) where
   Hom _ _ := C
   id _ := 𝟙_ C
   comp X Y := tensorObj X Y
-  whiskerLeft X _ _ f := X ◁ f
+  whiskerLeft X Y Z f := X ◁ f
   whiskerRight f Z := f ▷ Z
   associator X Y Z := α_ X Y Z
   leftUnitor X := λ_ X
@@ -71,23 +71,20 @@ to the original monoidal category.
 We subsequently show this is an equivalence.
 -/
 @[simps]
-def endMonoidalStarFunctor : (EndMonoidal (MonoidalSingleObj.star C)) ⥤ C where
+def endMonoidalStarFunctor : MonoidalFunctor (EndMonoidal (MonoidalSingleObj.star C)) C where
   obj X := X
   map f := f
-
-instance : (endMonoidalStarFunctor C).Monoidal :=
-  Functor.CoreMonoidal.toMonoidal
-    { εIso := Iso.refl _
-      μIso := fun _ _ ↦ Iso.refl _ }
+  ε := 𝟙 _
+  μ X Y := 𝟙 _
 
 /-- The equivalence between the endomorphisms of the single object
 when we promote a monoidal category to a single object bicategory,
 and the original monoidal category.
 -/
-@[simps]
+@[simps functor inverse_obj inverse_map unitIso counitIso]
 noncomputable def endMonoidalStarFunctorEquivalence :
     EndMonoidal (MonoidalSingleObj.star C) ≌ C where
-  functor := endMonoidalStarFunctor C
+  functor := (endMonoidalStarFunctor C).toFunctor
   inverse :=
     { obj := fun X => X
       map := fun f => f }

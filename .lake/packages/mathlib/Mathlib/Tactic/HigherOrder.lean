@@ -91,7 +91,9 @@ def higherOrderGetParam (thm : Name) (stx : Syntax) : AttrM Name := do
           levelParams := lvl
           type := hot
           value := prf }
-      addDeclarationRangesFromSyntax hothmName (← getRef) ref
+      addDeclarationRanges hothmName
+        { range := ← getDeclarationRange (← getRef)
+          selectionRange := ← getDeclarationRange ref }
       _ ← addTermInfo (isBinder := true) ref <| ← mkConstWithLevelParams hothmName
       let hsm := simpExtension.getState (← getEnv) |>.lemmaNames.contains (.decl thm)
       if hsm then

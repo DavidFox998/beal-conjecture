@@ -36,18 +36,20 @@ def dualNumberEquiv : Quaternion (DualNumber R) ≃ₐ[R] DualNumber (Quaternion
     (⟨q.re.fst, q.imI.fst, q.imJ.fst, q.imK.fst⟩, ⟨q.re.snd, q.imI.snd, q.imJ.snd, q.imK.snd⟩)
   invFun d :=
     ⟨(d.fst.re, d.snd.re), (d.fst.imI, d.snd.imI), (d.fst.imJ, d.snd.imJ), (d.fst.imK, d.snd.imK)⟩
-  left_inv := fun _ => rfl
-  right_inv := fun _ => rfl
+  left_inv := fun ⟨⟨r, rε⟩, ⟨i, iε⟩, ⟨j, jε⟩, ⟨k, kε⟩⟩ => rfl
+  right_inv := fun ⟨⟨r, i, j, k⟩, ⟨rε, iε, jε, kε⟩⟩ => rfl
   map_mul' := by
-    intros
+    rintro ⟨⟨xr, xrε⟩, ⟨xi, xiε⟩, ⟨xj, xjε⟩, ⟨xk, xkε⟩⟩
+    rintro ⟨⟨yr, yrε⟩, ⟨yi, yiε⟩, ⟨yj, yjε⟩, ⟨yk, ykε⟩⟩
     ext : 1
     · rfl
     · dsimp
       congr 1 <;> simp <;> ring
   map_add' := by
-    intros
+    rintro ⟨⟨xr, xrε⟩, ⟨xi, xiε⟩, ⟨xj, xjε⟩, ⟨xk, xkε⟩⟩
+    rintro ⟨⟨yr, yrε⟩, ⟨yi, yiε⟩, ⟨yj, yjε⟩, ⟨yk, ykε⟩⟩
     rfl
-  commutes' _ := rfl
+  commutes' r := rfl
 
 /-! Lemmas characterizing `Quaternion.dualNumberEquiv`. -/
 

@@ -38,7 +38,7 @@ variable (C : Type u) [Category.{v} C]
 namespace TopCat
 
 /-- The category of `C`-valued presheaves on a (bundled) topological space `X`. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): was @[nolint has_nonempty_instance]
+-- Porting note(#5171): was @[nolint has_nonempty_instance]
 def Presheaf (X : TopCat.{w}) : Type max u v w :=
   (Opens X)ᵒᵖ ⥤ C
 
@@ -242,7 +242,9 @@ theorem toPushforwardOfIso_app {X Y : TopCat} (H₁ : X ≅ Y) {ℱ : X.Presheaf
     (toPushforwardOfIso H₁ H₂).app U =
       ℱ.map (eqToHom (by simp [Opens.map, Set.preimage_preimage])) ≫
         H₂.app (op ((Opens.map H₁.inv).obj (unop U))) := by
-  simp [toPushforwardOfIso, Adjunction.homEquiv_unit]
+  delta toPushforwardOfIso
+  simp [-Functor.map_comp, ← Functor.map_comp_assoc]
+  rfl
 
 /-- If `H : X ≅ Y` is a homeomorphism,
 then given an `H _* ℱ ⟶ 𝒢`, we may obtain an `ℱ ⟶ H ⁻¹ _* 𝒢`.
@@ -257,7 +259,7 @@ theorem pushforwardToOfIso_app {X Y : TopCat} (H₁ : X ≅ Y) {ℱ : Y.Presheaf
     (pushforwardToOfIso H₁ H₂).app U =
       H₂.app (op ((Opens.map H₁.inv).obj (unop U))) ≫
         𝒢.map (eqToHom (by simp [Opens.map, Set.preimage_preimage])) := by
-  simp [pushforwardToOfIso, Equivalence.toAdjunction, Adjunction.homEquiv_counit]
+  simp [pushforwardToOfIso, Equivalence.toAdjunction]
 
 end Iso
 
@@ -303,7 +305,7 @@ def pullbackObjObjOfImageOpen {X Y : TopCat.{v}} (f : X ⟶ Y) (ℱ : Y.Presheaf
           exact Set.image_preimage.l_u_le (SetLike.coe s.pt.left.unop)
         · simp [eq_iff_true_of_subsingleton] }
   exact IsColimit.coconePointUniqueUpToIso
-    ((Opens.map f).op.isPointwiseLeftKanExtensionLeftKanExtensionUnit ℱ (op U))
+    ((Opens.map f).op.isPointwiseLeftKanExtensionLanUnit ℱ (op U))
     (colimitOfDiagramTerminal hx _)
 
 end

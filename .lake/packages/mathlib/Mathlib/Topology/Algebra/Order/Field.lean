@@ -3,7 +3,7 @@ Copyright (c) 2022 Benjamin Davidson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Benjamin Davidson, Devon Tuma, Eric Rodriguez, Oliver Nash
 -/
-import Mathlib.Algebra.Order.Group.Pointwise.Interval
+import Mathlib.Data.Set.Pointwise.Interval
 import Mathlib.Order.Filter.AtTopBot.Field
 import Mathlib.Topology.Algebra.Field
 import Mathlib.Topology.Algebra.Order.Group
@@ -114,81 +114,32 @@ theorem Filter.Tendsto.neg_mul_atBot {C : 𝕜} (hC : C < 0) (hf : Tendsto f l (
 @[simp]
 lemma inv_atTop₀ : (atTop : Filter 𝕜)⁻¹ = 𝓝[>] 0 :=
   (((atTop_basis_Ioi' (0 : 𝕜)).map _).comp_surjective inv_surjective).eq_of_same_basis <|
-    (nhdsGT_basis _).congr (by simp) fun a ha ↦ by simp [inv_Ioi₀ (inv_pos.2 ha)]
+    (nhdsWithin_Ioi_basis _).congr (by simp) fun a ha ↦ by simp [inv_Ioi (inv_pos.2 ha)]
 
-@[simp]
-lemma inv_nhdsGT_zero : (𝓝[>] (0 : 𝕜))⁻¹ = atTop := by rw [← inv_atTop₀, inv_inv]
-
-@[deprecated (since := "2024-12-22")] alias inv_nhdsWithin_Ioi_zero := inv_nhdsGT_zero
+@[simp] lemma inv_nhdsWithin_Ioi_zero : (𝓝[>] (0 : 𝕜))⁻¹ = atTop := by
+  rw [← inv_atTop₀, inv_inv]
 
 /-- The function `x ↦ x⁻¹` tends to `+∞` on the right of `0`. -/
-theorem tendsto_inv_nhdsGT_zero : Tendsto (fun x : 𝕜 => x⁻¹) (𝓝[>] (0 : 𝕜)) atTop :=
-  inv_nhdsGT_zero.le
-
-@[deprecated (since := "2024-12-22")]
-alias tendsto_inv_zero_atTop := tendsto_inv_nhdsGT_zero
+theorem tendsto_inv_zero_atTop : Tendsto (fun x : 𝕜 => x⁻¹) (𝓝[>] (0 : 𝕜)) atTop :=
+  inv_nhdsWithin_Ioi_zero.le
 
 /-- The function `r ↦ r⁻¹` tends to `0` on the right as `r → +∞`. -/
-theorem tendsto_inv_atTop_nhdsGT_zero : Tendsto (fun r : 𝕜 => r⁻¹) atTop (𝓝[>] (0 : 𝕜)) :=
+theorem tendsto_inv_atTop_zero' : Tendsto (fun r : 𝕜 => r⁻¹) atTop (𝓝[>] (0 : 𝕜)) :=
   inv_atTop₀.le
 
-@[deprecated (since := "2024-12-22")]
-alias tendsto_inv_atTop_zero' := tendsto_inv_atTop_nhdsGT_zero
-
 theorem tendsto_inv_atTop_zero : Tendsto (fun r : 𝕜 => r⁻¹) atTop (𝓝 0) :=
-  tendsto_inv_atTop_nhdsGT_zero.mono_right inf_le_left
+  tendsto_inv_atTop_zero'.mono_right inf_le_left
 
 theorem Filter.Tendsto.div_atTop {a : 𝕜} (h : Tendsto f l (𝓝 a)) (hg : Tendsto g l atTop) :
     Tendsto (fun x => f x / g x) l (𝓝 0) := by
   simp only [div_eq_mul_inv]
   exact mul_zero a ▸ h.mul (tendsto_inv_atTop_zero.comp hg)
 
-lemma Filter.Tendsto.const_div_atTop (hg : Tendsto g l atTop) (r : 𝕜)  :
-    Tendsto (fun n ↦ r / g n) l (𝓝 0) :=
-  tendsto_const_nhds.div_atTop hg
-
 theorem Filter.Tendsto.inv_tendsto_atTop (h : Tendsto f l atTop) : Tendsto f⁻¹ l (𝓝 0) :=
   tendsto_inv_atTop_zero.comp h
 
-theorem Filter.Tendsto.inv_tendsto_nhdsGT_zero (h : Tendsto f l (𝓝[>] 0)) : Tendsto f⁻¹ l atTop :=
-  tendsto_inv_nhdsGT_zero.comp h
-
-@[deprecated (since := "2024-12-22")]
-alias Filter.Tendsto.inv_tendsto_zero := Filter.Tendsto.inv_tendsto_nhdsGT_zero
-
-/-- If `g` tends to zero and there exists a constant `C : 𝕜` such that eventually `|f x| ≤ C`,
-  then the product `f * g` tends to zero. -/
-theorem bdd_le_mul_tendsto_zero' {f g : α → 𝕜} (C : 𝕜) (hf : ∀ᶠ x in l, |f x| ≤ C)
-    (hg : Tendsto g l (𝓝 0)) : Tendsto (fun x ↦ f x * g x) l (𝓝 0) := by
-  rw [tendsto_zero_iff_abs_tendsto_zero]
-  have hC : Tendsto (fun x ↦ |C * g x|) l (𝓝 0) := by
-    convert (hg.const_mul C).abs
-    simp_rw [mul_zero, abs_zero]
-  apply tendsto_of_tendsto_of_tendsto_of_le_of_le' tendsto_const_nhds hC
-  · filter_upwards [hf] with x _ using abs_nonneg _
-  · filter_upwards [hf] with x hx
-    simp only [comp_apply, abs_mul]
-    exact mul_le_mul_of_nonneg_right (hx.trans (le_abs_self C)) (abs_nonneg _)
-
-/-- If `g` tends to zero and there exist constants `b B : 𝕜` such that eventually `b ≤ f x| ≤ B`,
-  then the product `f * g` tends to zero. -/
-theorem bdd_le_mul_tendsto_zero {f g : α → 𝕜} {b B : 𝕜} (hb : ∀ᶠ x in l, b ≤ f x)
-    (hB : ∀ᶠ x in l, f x ≤ B) (hg : Tendsto g l (𝓝 0)) :
-    Tendsto (fun x ↦ f x * g x) l (𝓝 0) := by
-  set C := max |b| |B|
-  have hbC : -C ≤ b := neg_le.mpr (le_max_of_le_left (neg_le_abs b))
-  have hBC : B ≤ C := le_max_of_le_right (le_abs_self B)
-  apply bdd_le_mul_tendsto_zero' C _ hg
-  filter_upwards [hb, hB]
-  exact fun x hbx hBx ↦ abs_le.mpr ⟨hbC.trans hbx, hBx.trans hBC⟩
-
-/-- If `g` tends to `atTop` and there exist constants `b B : 𝕜` such that eventually
-  `b ≤ f x| ≤ B`, then the quotient `f / g` tends to zero. -/
-theorem tendsto_bdd_div_atTop_nhds_zero {f g : α → 𝕜} {b B : 𝕜}
-    (hb : ∀ᶠ x in l, b ≤ f x) (hB : ∀ᶠ x in l, f x ≤ B) (hg : Tendsto g l atTop) :
-    Tendsto (fun x => f x / g x) l (𝓝 0) := by
-  simp only [div_eq_mul_inv]
-  exact bdd_le_mul_tendsto_zero hb hB hg.inv_tendsto_atTop
+theorem Filter.Tendsto.inv_tendsto_zero (h : Tendsto f l (𝓝[>] 0)) : Tendsto f⁻¹ l atTop :=
+  tendsto_inv_zero_atTop.comp h
 
 /-- The function `x^(-n)` tends to `0` at `+∞` for any positive natural `n`.
 A version for positive real powers exists as `tendsto_rpow_neg_atTop`. -/
@@ -244,28 +195,23 @@ instance (priority := 100) LinearOrderedSemifield.toHasContinuousInv₀ {𝕜}
   · obtain ⟨x', h₀, hxx', h₁⟩ : ∃ x', 0 < x' ∧ x ≤ x' ∧ x' < 1 :=
       ⟨max x (1 / 2), one_half_pos.trans_le (le_max_right _ _), le_max_left _ _,
         max_lt hx one_half_lt_one⟩
-    filter_upwards [Ioo_mem_nhds one_pos ((one_lt_inv₀ h₀).2 h₁)] with y hy
-    exact hxx'.trans_lt <| lt_inv_of_lt_inv₀ hy.1 hy.2
-  · filter_upwards [Ioi_mem_nhds (inv_lt_one_of_one_lt₀ hx)] with y hy
-    exact inv_lt_of_inv_lt₀ (by positivity) hy
+    filter_upwards [Ioo_mem_nhds one_pos (one_lt_inv h₀ h₁)] with y hy
+    exact hxx'.trans_lt <| inv_inv x' ▸ inv_lt_inv_of_lt hy.1 hy.2
+  · filter_upwards [Ioi_mem_nhds (inv_lt_one hx)] with y hy
+    simpa only [inv_inv] using inv_lt_inv_of_lt (inv_pos.2 <| one_pos.trans hx) hy
 
 instance (priority := 100) LinearOrderedField.toTopologicalDivisionRing :
     TopologicalDivisionRing 𝕜 := ⟨⟩
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: generalize to a `GroupWithZero`
-theorem comap_mulLeft_nhdsGT_zero {x : 𝕜} (hx : 0 < x) : comap (x * ·) (𝓝[>] 0) = 𝓝[>] 0 := by
+-- Porting note (#11215): TODO: generalize to a `GroupWithZero`
+theorem nhdsWithin_pos_comap_mul_left {x : 𝕜} (hx : 0 < x) :
+    comap (x * ·) (𝓝[>] 0) = 𝓝[>] 0 := by
   rw [nhdsWithin, comap_inf, comap_principal, preimage_const_mul_Ioi _ hx, zero_div]
   congr 1
   refine ((Homeomorph.mulLeft₀ x hx.ne').comap_nhds_eq _).trans ?_
   simp
 
-@[deprecated (since := "2024-12-22")]
-alias nhdsWithin_pos_comap_mul_left := comap_mulLeft_nhdsGT_zero
-
-theorem eventually_nhdsGT_zero_mul_left {x : 𝕜} (hx : 0 < x) {p : 𝕜 → Prop}
+theorem eventually_nhdsWithin_pos_mul_left {x : 𝕜} (hx : 0 < x) {p : 𝕜 → Prop}
     (h : ∀ᶠ ε in 𝓝[>] 0, p ε) : ∀ᶠ ε in 𝓝[>] 0, p (x * ε) := by
-  rw [← comap_mulLeft_nhdsGT_zero hx]
+  rw [← nhdsWithin_pos_comap_mul_left hx]
   exact h.comap fun ε => x * ε
-
-@[deprecated (since := "2024-12-22")]
-alias eventually_nhdsWithin_pos_mul_left := eventually_nhdsGT_zero_mul_left

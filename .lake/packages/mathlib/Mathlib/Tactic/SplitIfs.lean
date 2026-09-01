@@ -3,9 +3,7 @@ Copyright (c) 2018 Gabriel Ebner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner, David Renshaw
 -/
-import Lean.Elab.Tactic.Location
-import Lean.Meta.Tactic.SplitIf
-import Lean.Elab.Tactic.Simp
+import Lean
 import Mathlib.Tactic.Core
 
 /-!
@@ -75,7 +73,7 @@ private def discharge? (e : Expr) : SimpM (Option Expr) := do
 -/
 private def reduceIfsAt (loc : Location) : TacticM Unit := do
   let ctx ← SplitIf.getSimpContext
-  let ctx := ctx.setFailIfUnchanged false
+  let ctx := { ctx with config := { ctx.config with failIfUnchanged := false } }
   let _ ← simpLocation ctx (← ({} : Simp.SimprocsArray).add `reduceCtorEq false) discharge? loc
   pure ()
 

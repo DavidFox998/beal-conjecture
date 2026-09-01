@@ -3,7 +3,7 @@
     "target": "esnext",
     "jsx": "react-jsx",
     "module": "esnext",
-    "moduleResolution": "bundler",
+    "moduleResolution": "node",
     "sourceMap": false,
     "outDir": "./dist/",
     "allowSyntheticDefaultImports": true,

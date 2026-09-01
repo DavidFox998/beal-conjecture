@@ -34,7 +34,7 @@ derivative, chain rule
 
 universe u v w
 
-open scoped Topology Filter ENNReal
+open scoped Classical Topology Filter ENNReal
 
 open Filter Asymptotics Set
 
@@ -43,11 +43,11 @@ open ContinuousLinearMap (smulRight smulRight_one_eq_iff)
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
 variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 variable {E : Type w} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable {f : 𝕜 → F}
-variable {f' : F}
+variable {f f₀ f₁ g : 𝕜 → F}
+variable {f' f₀' f₁' g' : F}
 variable {x : 𝕜}
-variable {s : Set 𝕜}
-variable {L : Filter 𝕜}
+variable {s t : Set 𝕜}
+variable {L L₁ L₂ : Filter 𝕜}
 
 section Composition
 
@@ -65,8 +65,8 @@ usual multiplication in `comp` lemmas.
 /- For composition lemmas, we put x explicit to help the elaborator, as otherwise Lean tends to
 get confused since there are too many possibilities for composition -/
 variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜'] [NormedSpace 𝕜' F]
-  [IsScalarTower 𝕜 𝕜' F] {s' t' : Set 𝕜'} {h : 𝕜 → 𝕜'} {h₂ : 𝕜' → 𝕜'} {h' h₂' : 𝕜'}
-  {g₁ : 𝕜' → F} {g₁' : F} {L' : Filter 𝕜'} {y : 𝕜'} (x)
+  [IsScalarTower 𝕜 𝕜' F] {s' t' : Set 𝕜'} {h : 𝕜 → 𝕜'} {h₁ : 𝕜 → 𝕜} {h₂ : 𝕜' → 𝕜'} {h' h₂' : 𝕜'}
+  {h₁' : 𝕜} {g₁ : 𝕜' → F} {g₁' : F} {L' : Filter 𝕜'} {y : 𝕜'} (x)
 
 theorem HasDerivAtFilter.scomp (hg : HasDerivAtFilter g₁ g₁' (h x) L')
     (hh : HasDerivAtFilter h h' x L) (hL : Tendsto h L L') :
@@ -264,33 +264,25 @@ theorem HasDerivAt.comp_hasDerivWithinAt_of_eq (hh₂ : HasDerivAt h₂ h₂' y)
     HasDerivWithinAt (h₂ ∘ h) (h₂' * h') s x := by
   rw [hy] at hh₂; exact hh₂.comp_hasDerivWithinAt x hh
 
-theorem derivWithin_comp (hh₂ : DifferentiableWithinAt 𝕜' h₂ s' (h x))
+theorem derivWithin.comp (hh₂ : DifferentiableWithinAt 𝕜' h₂ s' (h x))
     (hh : DifferentiableWithinAt 𝕜 h s x) (hs : MapsTo h s s') (hxs : UniqueDiffWithinAt 𝕜 s x) :
     derivWithin (h₂ ∘ h) s x = derivWithin h₂ s' (h x) * derivWithin h s x :=
   (hh₂.hasDerivWithinAt.comp x hh.hasDerivWithinAt hs).derivWithin hxs
 
-@[deprecated (since := "2024-10-31")] alias derivWithin.comp := derivWithin_comp
-
-theorem derivWithin_comp_of_eq (hh₂ : DifferentiableWithinAt 𝕜' h₂ s' y)
+theorem derivWithin.comp_of_eq (hh₂ : DifferentiableWithinAt 𝕜' h₂ s' y)
     (hh : DifferentiableWithinAt 𝕜 h s x) (hs : MapsTo h s s') (hxs : UniqueDiffWithinAt 𝕜 s x)
-    (hy : h x = y) :
+    (hy : y = h x) :
     derivWithin (h₂ ∘ h) s x = derivWithin h₂ s' (h x) * derivWithin h s x := by
-  subst hy; exact derivWithin_comp x hh₂ hh hs hxs
+  rw [hy] at hh₂; exact derivWithin.comp x hh₂ hh hs hxs
 
-@[deprecated (since := "2024-10-31")] alias derivWithin.comp_of_eq := derivWithin_comp_of_eq
-
-theorem deriv_comp (hh₂ : DifferentiableAt 𝕜' h₂ (h x)) (hh : DifferentiableAt 𝕜 h x) :
+theorem deriv.comp (hh₂ : DifferentiableAt 𝕜' h₂ (h x)) (hh : DifferentiableAt 𝕜 h x) :
     deriv (h₂ ∘ h) x = deriv h₂ (h x) * deriv h x :=
   (hh₂.hasDerivAt.comp x hh.hasDerivAt).deriv
 
-@[deprecated (since := "2024-10-31")] alias deriv.comp := deriv_comp
-
-theorem deriv_comp_of_eq (hh₂ : DifferentiableAt 𝕜' h₂ y) (hh : DifferentiableAt 𝕜 h x)
-    (hy : h x = y) :
+theorem deriv.comp_of_eq (hh₂ : DifferentiableAt 𝕜' h₂ y) (hh : DifferentiableAt 𝕜 h x)
+    (hy : y = h x) :
     deriv (h₂ ∘ h) x = deriv h₂ (h x) * deriv h x := by
-  subst hy; exact deriv_comp x hh₂ hh
-
-@[deprecated (since := "2024-10-31")] alias deriv.comp_of_eq := deriv_comp_of_eq
+  rw [hy] at hh₂; exact deriv.comp x hh₂ hh
 
 protected nonrec theorem HasDerivAtFilter.iterate {f : 𝕜 → 𝕜} {f' : 𝕜}
     (hf : HasDerivAtFilter f f' x L) (hL : Tendsto f L L) (hx : f x = x) (n : ℕ) :
@@ -372,36 +364,24 @@ theorem HasStrictFDerivAt.comp_hasStrictDerivAt_of_eq (hl : HasStrictFDerivAt l 
     HasStrictDerivAt (l ∘ f) (l' f') x := by
   rw [hy] at hl; exact hl.comp_hasStrictDerivAt x hf
 
-theorem fderivWithin_comp_derivWithin {t : Set F} (hl : DifferentiableWithinAt 𝕜 l t (f x))
+theorem fderivWithin.comp_derivWithin {t : Set F} (hl : DifferentiableWithinAt 𝕜 l t (f x))
     (hf : DifferentiableWithinAt 𝕜 f s x) (hs : MapsTo f s t) (hxs : UniqueDiffWithinAt 𝕜 s x) :
     derivWithin (l ∘ f) s x = (fderivWithin 𝕜 l t (f x) : F → E) (derivWithin f s x) :=
   (hl.hasFDerivWithinAt.comp_hasDerivWithinAt x hf.hasDerivWithinAt hs).derivWithin hxs
 
-@[deprecated (since := "2024-10-31")]
-alias fderivWithin.comp_derivWithin := fderivWithin_comp_derivWithin
-
-theorem fderivWithin_comp_derivWithin_of_eq {t : Set F} (hl : DifferentiableWithinAt 𝕜 l t y)
+theorem fderivWithin.comp_derivWithin_of_eq {t : Set F} (hl : DifferentiableWithinAt 𝕜 l t y)
     (hf : DifferentiableWithinAt 𝕜 f s x) (hs : MapsTo f s t) (hxs : UniqueDiffWithinAt 𝕜 s x)
     (hy : y = f x) :
     derivWithin (l ∘ f) s x = (fderivWithin 𝕜 l t (f x) : F → E) (derivWithin f s x) := by
-  rw [hy] at hl; exact fderivWithin_comp_derivWithin x hl hf hs hxs
+  rw [hy] at hl; exact fderivWithin.comp_derivWithin x hl hf hs hxs
 
-@[deprecated (since := "2024-10-31")]
-alias fderivWithin.comp_derivWithin_of_eq := fderivWithin_comp_derivWithin_of_eq
-
-theorem fderiv_comp_deriv (hl : DifferentiableAt 𝕜 l (f x)) (hf : DifferentiableAt 𝕜 f x) :
+theorem fderiv.comp_deriv (hl : DifferentiableAt 𝕜 l (f x)) (hf : DifferentiableAt 𝕜 f x) :
     deriv (l ∘ f) x = (fderiv 𝕜 l (f x) : F → E) (deriv f x) :=
   (hl.hasFDerivAt.comp_hasDerivAt x hf.hasDerivAt).deriv
 
-@[deprecated (since := "2024-10-31")]
-alias fderiv.comp_deriv := fderiv_comp_deriv
-
-theorem fderiv_comp_deriv_of_eq (hl : DifferentiableAt 𝕜 l y) (hf : DifferentiableAt 𝕜 f x)
+theorem fderiv.comp_deriv_of_eq (hl : DifferentiableAt 𝕜 l y) (hf : DifferentiableAt 𝕜 f x)
     (hy : y = f x) :
     deriv (l ∘ f) x = (fderiv 𝕜 l (f x) : F → E) (deriv f x) := by
-  rw [hy] at hl; exact fderiv_comp_deriv x hl hf
-
-@[deprecated (since := "2024-10-31")]
-alias fderiv.comp_deriv_of_eq := fderiv_comp_deriv_of_eq
+  rw [hy] at hl; exact fderiv.comp_deriv x hl hf
 
 end CompositionVector

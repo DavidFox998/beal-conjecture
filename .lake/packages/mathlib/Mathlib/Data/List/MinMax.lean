@@ -6,7 +6,6 @@ Authors: Minchao Wu, Chris Hughes, Mantas Bakšys
 import Mathlib.Data.List.Basic
 import Mathlib.Order.MinMax
 import Mathlib.Order.WithBot
-import Mathlib.Order.BoundedOrder.Lattice
 
 /-!
 # Minimum and maximum of lists
@@ -29,7 +28,7 @@ variable {α β : Type*}
 
 section ArgAux
 
-variable (r : α → α → Prop) [DecidableRel r] {l : List α} {o : Option α} {a : α}
+variable (r : α → α → Prop) [DecidableRel r] {l : List α} {o : Option α} {a m : α}
 
 /-- Auxiliary definition for `argmax` and `argmin`. -/
 def argAux (a : Option α) (b : α) : Option α :=
@@ -51,16 +50,16 @@ private theorem foldl_argAux_mem (l) : ∀ a m : α, m ∈ foldl (argAux r) (som
       intro tl hd ih a m
       simp only [foldl_append, foldl_cons, foldl_nil, argAux]
       cases hf : foldl (argAux r) (some a) tl
-      · simp +contextual
+      · simp (config := { contextual := true })
       · dsimp only
         split_ifs
-        · simp +contextual
+        · simp (config := { contextual := true })
         · -- `finish [ih _ _ hf]` closes this goal
           simp only [List.mem_cons] at ih
           rcases ih _ _ hf with rfl | H
-          · simp +contextual only [Option.mem_def, Option.some.injEq,
+          · simp (config := { contextual := true }) only [Option.mem_def, Option.some.injEq,
               find?, eq_comm, mem_cons, mem_append, mem_singleton, true_or, implies_true]
-          · simp +contextual [@eq_comm _ _ m, H])
+          · simp (config := { contextual := true }) [@eq_comm _ _ m, H])
 
 @[simp]
 theorem argAux_self (hr₀ : Irreflexive r) (a : α) : argAux r (some a) a = a :=
@@ -89,7 +88,7 @@ end ArgAux
 
 section Preorder
 
-variable [Preorder β] [DecidableRel (α := β) (· < ·)] {f : α → β} {l : List α} {a m : α}
+variable [Preorder β] [@DecidableRel β (· < ·)] {f : α → β} {l : List α} {o : Option α} {a m : α}
 
 /-- `argmax f l` returns `some a`, where `f a` is maximal among the elements of `l`, in the sense
 that there is no `b ∈ l` with `f a < f b`. If `a`, `b` are such that `f a = f b`, it returns
@@ -155,7 +154,7 @@ end Preorder
 
 section LinearOrder
 
-variable [LinearOrder β] {f : α → β} {l : List α} {a m : α}
+variable [LinearOrder β] {f : α → β} {l : List α} {o : Option α} {a m : α}
 
 theorem le_of_mem_argmax : a ∈ l → m ∈ argmax f l → f a ≤ f m := fun ha hm =>
   le_of_not_lt <| not_lt_of_mem_argmax ha hm
@@ -212,7 +211,7 @@ theorem index_of_argmin :
 theorem mem_argmax_iff :
     m ∈ argmax f l ↔
       m ∈ l ∧ (∀ a ∈ l, f a ≤ f m) ∧ ∀ a ∈ l, f m ≤ f a → l.indexOf m ≤ l.indexOf a :=
-  ⟨fun hm => ⟨argmax_mem hm, fun _ ha => le_of_mem_argmax ha hm, fun _ => index_of_argmax hm⟩,
+  ⟨fun hm => ⟨argmax_mem hm, fun a ha => le_of_mem_argmax ha hm, fun _ => index_of_argmax hm⟩,
     by
       rintro ⟨hml, ham, hma⟩
       cases' harg : argmax f l with n
@@ -243,7 +242,7 @@ section MaximumMinimum
 
 section Preorder
 
-variable [Preorder α] [DecidableRel (α := α) (· < ·)] {l : List α} {a m : α}
+variable [Preorder α] [@DecidableRel α (· < ·)] {l : List α} {a m : α}
 
 /-- `maximum l` returns a `WithBot α`, the largest element of `l` for nonempty lists, and `⊥` for
 `[]`  -/
@@ -291,23 +290,19 @@ theorem minimum_eq_top {l : List α} : l.minimum = ⊤ ↔ l = [] :=
 @[simp, deprecated minimum_eq_top "Don't mix Option and WithTop" (since := "2024-05-27")]
 theorem minimum_eq_none {l : List α} : l.minimum = none ↔ l = [] := minimum_eq_top
 
-theorem not_maximum_lt_of_mem : a ∈ l → (maximum l : WithBot α) = m → ¬m < a :=
+theorem not_lt_maximum_of_mem : a ∈ l → (maximum l : WithBot α) = m → ¬m < a :=
   not_lt_of_mem_argmax
 
-@[deprecated (since := "2024-12-29")] alias not_lt_maximum_of_mem := not_maximum_lt_of_mem
-
-theorem not_lt_minimum_of_mem : a ∈ l → (minimum l : WithTop α) = m → ¬a < m :=
+theorem minimum_not_lt_of_mem : a ∈ l → (minimum l : WithTop α) = m → ¬a < m :=
   not_lt_of_mem_argmin
 
-@[deprecated (since := "2024-12-29")] alias minimum_not_lt_of_mem := not_lt_minimum_of_mem
+theorem not_lt_maximum_of_mem' (ha : a ∈ l) : ¬maximum l < (a : WithBot α) := by
+  cases h : l.maximum
+  · simp_all
+  · simp [not_lt_maximum_of_mem ha h, not_false_iff]
 
-theorem not_maximum_lt_of_mem' (ha : a ∈ l) : ¬maximum l < (a : WithBot α) := by
-  cases h : l.maximum <;> simp_all [not_maximum_lt_of_mem ha]
-
-@[deprecated (since := "2024-12-29")] alias not_lt_maximum_of_mem' := not_maximum_lt_of_mem'
-
-theorem not_lt_minimum_of_mem' (ha : a ∈ l) : ¬(a : WithTop α) < minimum l := by
-  cases h : l.minimum <;> simp_all [not_lt_minimum_of_mem ha]
+theorem not_lt_minimum_of_mem' (ha : a ∈ l) : ¬(a : WithTop α) < minimum l :=
+  @not_lt_maximum_of_mem' αᵒᵈ _ _ _ _ ha
 
 end Preorder
 
@@ -328,10 +323,10 @@ theorem minimum_le_of_mem : a ∈ l → (minimum l : WithTop α) = m → m ≤ a
   le_of_mem_argmin
 
 theorem le_maximum_of_mem' (ha : a ∈ l) : (a : WithBot α) ≤ maximum l :=
-  le_of_not_lt <| not_maximum_lt_of_mem' ha
+  le_of_not_lt <| not_lt_maximum_of_mem' ha
 
 theorem minimum_le_of_mem' (ha : a ∈ l) : minimum l ≤ (a : WithTop α) :=
-  le_of_not_lt <| not_lt_minimum_of_mem' ha
+  @le_maximum_of_mem' αᵒᵈ _ _ _ ha
 
 theorem minimum_concat (a : α) (l : List α) : minimum (l ++ [a]) = min (minimum l) a :=
   @maximum_concat αᵒᵈ _ _ _
@@ -347,15 +342,11 @@ theorem maximum_le_of_forall_le {b : WithBot α} (h : ∀ a ∈ l, a ≤ b) : l.
   induction l with
   | nil => simp
   | cons a l ih =>
-    simp only [maximum_cons, max_le_iff]
+    simp only [maximum_cons, max_le_iff, WithBot.coe_le_coe]
     exact ⟨h a (by simp), ih fun a w => h a (mem_cons.mpr (Or.inr w))⟩
 
-theorem le_minimum_of_forall_le {b : WithTop α} (h : ∀ a ∈ l, b ≤ a) : b ≤ l.minimum := by
-  induction l with
-  | nil => simp
-  | cons a l ih =>
-    simp only [minimum_cons, le_min_iff]
-    exact ⟨h a (by simp), ih fun a w => h a (mem_cons.mpr (Or.inr w))⟩
+theorem le_minimum_of_forall_le {b : WithTop α} (h : ∀ a ∈ l, b ≤ a) : b ≤ l.minimum :=
+  maximum_le_of_forall_le (α := αᵒᵈ) h
 
 theorem maximum_eq_coe_iff : maximum l = m ↔ m ∈ l ∧ ∀ a ∈ l, a ≤ m := by
   rw [maximum, ← WithBot.some_eq_coe, argmax_eq_some_iff]
@@ -367,10 +358,13 @@ theorem minimum_eq_coe_iff : minimum l = m ↔ m ∈ l ∧ ∀ a ∈ l, m ≤ a 
   @maximum_eq_coe_iff αᵒᵈ _ _ _
 
 theorem coe_le_maximum_iff : a ≤ l.maximum ↔ ∃ b, b ∈ l ∧ a ≤ b := by
-  induction' l <;> simp [maximum_cons, *]
+  induction l with
+  | nil => simp
+  | cons h t ih =>
+    simp [maximum_cons, ih]
 
-theorem minimum_le_coe_iff : l.minimum ≤ a ↔ ∃ b, b ∈ l ∧ b ≤ a := by
-  induction' l <;> simp [minimum_cons, *]
+theorem minimum_le_coe_iff : l.minimum ≤ a ↔ ∃ b, b ∈ l ∧ b ≤ a :=
+  coe_le_maximum_iff (α := αᵒᵈ)
 
 theorem maximum_ne_bot_of_ne_nil (h : l ≠ []) : l.maximum ≠ ⊥ :=
   match l, h with | _ :: _, _ => by simp [maximum_cons]
@@ -410,7 +404,7 @@ theorem le_maximum_of_length_pos_iff {b : α} (h : 0 < l.length) :
 @[simp]
 theorem minimum_of_length_pos_le_iff {b : α} (h : 0 < l.length) :
     minimum_of_length_pos h ≤ b ↔ l.minimum ≤ b :=
-  WithTop.untop_le_iff _
+  le_maximum_of_length_pos_iff (α := αᵒᵈ) h
 
 theorem maximum_of_length_pos_mem (h : 0 < l.length) :
     maximum_of_length_pos h ∈ l := by
@@ -433,37 +427,31 @@ theorem minimum_of_length_pos_le_of_mem (h : a ∈ l) (w : 0 < l.length) :
 theorem getElem_le_maximum_of_length_pos {i : ℕ} (w : i < l.length) (h := (Nat.zero_lt_of_lt w)) :
     l[i] ≤ l.maximum_of_length_pos h := by
   apply le_maximum_of_length_pos_of_mem
-  exact getElem_mem _
+  exact get_mem l i w
 
 theorem minimum_of_length_pos_le_getElem {i : ℕ} (w : i < l.length) (h := (Nat.zero_lt_of_lt w)) :
     l.minimum_of_length_pos h ≤ l[i] :=
   getElem_le_maximum_of_length_pos (α := αᵒᵈ) w
 
-lemma getD_max?_eq_unbot'_maximum (l : List α) (d : α) :
-    l.max?.getD d = l.maximum.unbot' d := by
+lemma getD_maximum?_eq_unbot'_maximum (l : List α) (d : α) :
+    l.maximum?.getD d = l.maximum.unbot' d := by
   cases hy : l.maximum with
   | bot => simp [List.maximum_eq_bot.mp hy]
   | coe y =>
     rw [List.maximum_eq_coe_iff] at hy
     simp only [WithBot.unbot'_coe]
-    cases hz : l.max? with
-    | none => simp [List.max?_eq_none_iff.mp hz] at hy
+    cases hz : l.maximum? with
+    | none => simp [List.maximum?_eq_none_iff.mp hz] at hy
     | some z =>
-      have : Std.Antisymm (α := α) (· ≤ ·) := ⟨_root_.le_antisymm⟩
-      rw [List.max?_eq_some_iff] at hz
+      have : Antisymm (α := α) (· ≤ ·) := ⟨_root_.le_antisymm⟩
+      rw [List.maximum?_eq_some_iff] at hz
       · rw [Option.getD_some]
         exact _root_.le_antisymm (hy.right _ hz.left) (hz.right _ hy.left)
       all_goals simp [le_total]
 
-@[deprecated (since := "2024-09-29")]
-alias getD_maximum?_eq_unbot'_maximum := getD_max?_eq_unbot'_maximum
-
-lemma getD_min?_eq_untop'_minimum (l : List α) (d : α) :
-    l.min?.getD d = l.minimum.untop' d :=
-  getD_max?_eq_unbot'_maximum (α := αᵒᵈ) _ _
-
-@[deprecated (since := "2024-09-29")]
-alias getD_minimum?_eq_untop'_minimum := getD_min?_eq_untop'_minimum
+lemma getD_minimum?_eq_untop'_minimum (l : List α) (d : α) :
+    l.minimum?.getD d = l.minimum.untop' d :=
+  getD_maximum?_eq_unbot'_maximum (α := αᵒᵈ) _ _
 
 end LinearOrder
 

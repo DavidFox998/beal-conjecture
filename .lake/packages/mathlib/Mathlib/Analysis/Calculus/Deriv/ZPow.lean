@@ -21,7 +21,10 @@ derivative, power
 
 universe u v w
 
-open Topology Filter Asymptotics Set
+open scoped Classical
+open Topology Filter
+
+open Filter Asymptotics Set
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
 variable {E : Type v} [NormedAddCommGroup E] [NormedSpace 𝕜 E]

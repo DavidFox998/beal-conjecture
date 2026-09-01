@@ -28,15 +28,15 @@ namespace CategoryTheory
 variable {C : Type u} [Category.{v} C] [Abelian C]
 
 /-- The preadditive Yoneda functor on `J` preserves homology if `J` is injective. -/
-instance preservesHomology_preadditiveYonedaObj_of_injective (J : C) [hJ : Injective J] :
+instance preservesHomologyPreadditiveYonedaObjOfInjective (J : C) [hJ : Injective J] :
     (preadditiveYonedaObj J).PreservesHomology  := by
   letI := (injective_iff_preservesEpimorphisms_preadditive_yoneda_obj' J).mp hJ
-  apply Functor.preservesHomology_of_preservesEpis_and_kernels
+  apply Functor.preservesHomologyOfPreservesEpisAndKernels
 
 /-- The preadditive Yoneda functor on `J` preserves colimits if `J` is injective. -/
-instance preservesFiniteColimits_preadditiveYonedaObj_of_injective (J : C) [hP : Injective J] :
+instance preservesFiniteColimitsPreadditiveYonedaObjOfInjective (J : C) [hP : Injective J] :
     PreservesFiniteColimits (preadditiveYonedaObj J) := by
-  apply Functor.preservesFiniteColimits_of_preservesHomology
+  apply Functor.preservesFiniteColimitsOfPreservesHomology
 
 /-- An object is injective if its preadditive Yoneda functor preserves finite colimits. -/
 theorem injective_of_preservesFiniteColimits_preadditiveYonedaObj (J : C)

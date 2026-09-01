@@ -119,7 +119,7 @@ end OrderedAddCommMonoid
 
 section LinearOrderedAddCommMonoid
 variable [LinearOrderedAddCommMonoid α] [OrderedAddCommMonoid β] [SMulZeroClass α β]
-  [PosSMulReflectLE α β] [FloorDiv α β] [CeilDiv α β] {a : α} {b : β}
+  [PosSMulReflectLE α β] [FloorDiv α β] [CeilDiv α β] {a : α} {b c : β}
 
 lemma floorDiv_le_ceilDiv : b ⌊/⌋ a ≤ b ⌈/⌉ a := by
   obtain ha | ha := le_or_lt a 0
@@ -243,7 +243,7 @@ lemma floorDiv_def (f : ι →₀ β) (a : α) : f ⌊/⌋ a = f.mapRange (· �
 @[simp] lemma floorDiv_apply (f : ι →₀ β) (a : α) (i : ι) : (f ⌊/⌋ a) i = f i ⌊/⌋ a := rfl
 
 lemma support_floorDiv_subset : (f ⌊/⌋ a).support ⊆ f.support := by
-  simp +contextual [Finset.subset_iff, not_imp_not]
+  simp (config := { contextual := true}) [Finset.subset_iff, not_imp_not]
 
 end FloorDiv
 
@@ -262,7 +262,7 @@ lemma ceilDiv_def (f : ι →₀ β) (a : α) : f ⌈/⌉ a = f.mapRange (· ⌈
 @[simp] lemma ceilDiv_apply (f : ι →₀ β) (a : α) (i : ι) : (f ⌈/⌉ a) i = f i ⌈/⌉ a := rfl
 
 lemma support_ceilDiv_subset : (f ⌈/⌉ a).support ⊆ f.support := by
-  simp +contextual [Finset.subset_iff, not_imp_not]
+  simp (config := { contextual := true}) [Finset.subset_iff, not_imp_not]
 
 end CeilDiv
 end Finsupp

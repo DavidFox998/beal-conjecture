@@ -119,9 +119,6 @@ instance Pi.normedSpace {ι : Type*} {E : ι → Type*} [Fintype ι] [∀ i, Sem
       NNReal.mul_finset_sup]
     exact Finset.sup_mono_fun fun _ _ => norm_smul_le a _
 
-instance SeparationQuotient.instNormedSpace : NormedSpace 𝕜 (SeparationQuotient E) where
-  norm_smul_le := norm_smul_le
-
 instance MulOpposite.instNormedSpace : NormedSpace 𝕜 Eᵐᵒᵖ where
   norm_smul_le _ x := norm_smul_le _ x.unop
 
@@ -150,6 +147,33 @@ abbrev NormedSpace.induced {F : Type*} (𝕜 E G : Type*) [NormedField 𝕜] [Ad
   let _ := SeminormedAddCommGroup.induced E G f
   ⟨fun a b ↦ by simpa only [← map_smul f a b] using norm_smul_le a (f b)⟩
 
+section NormedAddCommGroup
+
+variable [NormedField 𝕜]
+variable [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+
+open NormedField
+
+/-- While this may appear identical to `NormedSpace.toModule`, it contains an implicit argument
+involving `NormedAddCommGroup.toSeminormedAddCommGroup` that typeclass inference has trouble
+inferring.
+
+Specifically, the following instance cannot be found without this `NormedSpace.toModule'`:
+```lean
+example
+  (𝕜 ι : Type*) (E : ι → Type*)
+  [NormedField 𝕜] [Π i, NormedAddCommGroup (E i)] [Π i, NormedSpace 𝕜 (E i)] :
+  Π i, Module 𝕜 (E i) := by infer_instance
+```
+
+[This Zulip thread](https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/Typeclass.20resolution.20under.20binders/near/245151099)
+gives some more context. -/
+instance (priority := 100) NormedSpace.toModule' : Module 𝕜 F :=
+  NormedSpace.toModule
+
+end NormedAddCommGroup
+
 section NontriviallyNormedSpace
 
 variable (𝕜 E)
@@ -162,7 +186,7 @@ theorem NormedSpace.exists_lt_norm (c : ℝ) : ∃ x : E, c < ‖x‖ := by
   rcases exists_ne (0 : E) with ⟨x, hx⟩
   rcases NormedField.exists_lt_norm 𝕜 (c / ‖x‖) with ⟨r, hr⟩
   use r • x
-  rwa [norm_smul, ← div_lt_iff₀]
+  rwa [norm_smul, ← _root_.div_lt_iff]
   rwa [norm_pos_iff]
 
 protected theorem NormedSpace.unbounded_univ : ¬Bornology.IsBounded (univ : Set E) := fun h =>
@@ -201,8 +225,8 @@ protected theorem NormedSpace.noncompactSpace : NoncompactSpace E := by
     exact ⟨fun h ↦ NormedSpace.unbounded_univ 𝕜 E h.isBounded⟩
   · push_neg at H
     rcases exists_ne (0 : E) with ⟨x, hx⟩
-    suffices IsClosedEmbedding (Infinite.natEmbedding 𝕜 · • x) from this.noncompactSpace
-    refine isClosedEmbedding_of_pairwise_le_dist (norm_pos_iff.2 hx) fun k n hne ↦ ?_
+    suffices ClosedEmbedding (Infinite.natEmbedding 𝕜 · • x) from this.noncompactSpace
+    refine closedEmbedding_of_pairwise_le_dist (norm_pos_iff.2 hx) fun k n hne ↦ ?_
     simp only [dist_eq_norm, ← sub_smul, norm_smul]
     rw [H, one_mul]
     rwa [sub_ne_zero, (Embedding.injective _).ne_iff]
@@ -240,6 +264,21 @@ instance (priority := 100) NormedAlgebra.toNormedSpace : NormedSpace 𝕜 𝕜' 
   { NormedAlgebra.toAlgebra.toModule with
   norm_smul_le := NormedAlgebra.norm_smul_le }
 
+/-- While this may appear identical to `NormedAlgebra.toNormedSpace`, it contains an implicit
+argument involving `NormedRing.toSeminormedRing` that typeclass inference has trouble inferring.
+
+Specifically, the following instance cannot be found without this `NormedSpace.toModule'`:
+```lean
+example
+  (𝕜 ι : Type*) (E : ι → Type*)
+  [NormedField 𝕜] [Π i, NormedRing (E i)] [Π i, NormedAlgebra 𝕜 (E i)] :
+  Π i, Module 𝕜 (E i) := by infer_instance
+```
+
+See `NormedSpace.toModule'` for a similar situation. -/
+instance (priority := 100) NormedAlgebra.toNormedSpace' {𝕜'} [NormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜'] :
+    NormedSpace 𝕜 𝕜' := by infer_instance
+
 theorem norm_algebraMap (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖ = ‖x‖ * ‖(1 : 𝕜')‖ := by
   rw [Algebra.algebraMap_eq_smul_one]
   exact norm_smul _ _
@@ -247,25 +286,13 @@ theorem norm_algebraMap (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖ = ‖x‖ * �
 theorem nnnorm_algebraMap (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖₊ = ‖x‖₊ * ‖(1 : 𝕜')‖₊ :=
   Subtype.ext <| norm_algebraMap 𝕜' x
 
-theorem dist_algebraMap (x y : 𝕜) :
-    (dist (algebraMap 𝕜 𝕜' x) (algebraMap 𝕜 𝕜' y)) = dist x y * ‖(1 : 𝕜')‖ := by
-  simp only [dist_eq_norm, ← map_sub, norm_algebraMap]
-
-/-- This is a simpler version of `norm_algebraMap` when `‖1‖ = 1` in `𝕜'`.-/
 @[simp]
 theorem norm_algebraMap' [NormOneClass 𝕜'] (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖ = ‖x‖ := by
   rw [norm_algebraMap, norm_one, mul_one]
 
-/-- This is a simpler version of `nnnorm_algebraMap` when `‖1‖ = 1` in `𝕜'`.-/
 @[simp]
 theorem nnnorm_algebraMap' [NormOneClass 𝕜'] (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖₊ = ‖x‖₊ :=
   Subtype.ext <| norm_algebraMap' _ _
-
-/-- This is a simpler version of `dist_algebraMap` when `‖1‖ = 1` in `𝕜'`.-/
-@[simp]
-theorem dist_algebraMap' [NormOneClass 𝕜'] (x y : 𝕜) :
-    (dist (algebraMap 𝕜 𝕜' x) (algebraMap 𝕜 𝕜' y)) = dist x y := by
-  simp only [dist_eq_norm, ← map_sub, norm_algebraMap']
 
 section NNReal
 
@@ -320,10 +347,6 @@ instance Pi.normedAlgebra {ι : Type*} {E : ι → Type*} [Fintype ι] [∀ i, S
   { Pi.normedSpace, Pi.algebra _ E with }
 
 variable [SeminormedRing E] [NormedAlgebra 𝕜 E]
-
-instance SeparationQuotient.instNormedAlgebra : NormedAlgebra 𝕜 (SeparationQuotient E) where
-  __ : NormedSpace 𝕜 (SeparationQuotient E) := inferInstance
-  __ : Algebra 𝕜 (SeparationQuotient E) := inferInstance
 
 instance MulOpposite.instNormedAlgebra {E : Type*} [SeminormedRing E] [NormedAlgebra 𝕜 E] :
     NormedAlgebra 𝕜 Eᵐᵒᵖ where

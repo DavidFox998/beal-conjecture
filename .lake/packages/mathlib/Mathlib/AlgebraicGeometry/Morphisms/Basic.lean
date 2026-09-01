@@ -86,7 +86,7 @@ For `HasAffineProperty P Q` and `f : X ⟶ Y`, we provide these API lemmas:
     `P f ↔ ∀ i, Q (f ∣_ U i)` for a family `U i` of affine open sets covering `Y`.
 - `AlgebraicGeometry.HasAffineProperty.iff_of_openCover`:
     `P f ↔ ∀ i, P (𝒰.pullbackHom f i)` for affine open covers `𝒰` of `Y`.
-- `AlgebraicGeometry.HasAffineProperty.isStableUnderBaseChange_mk`:
+- `AlgebraicGeometry.HasAffineProperty.stableUnderBaseChange_mk`:
     If `Q` is stable under affine base change, then `P` is stable under arbitrary base change.
 -/
 
@@ -137,12 +137,13 @@ protected lemma mk' {P : MorphismProperty Scheme} [P.RespectsIso]
 the target. -/
 instance inf (P Q : MorphismProperty Scheme) [IsLocalAtTarget P] [IsLocalAtTarget Q] :
     IsLocalAtTarget (P ⊓ Q) where
-  iff_of_openCover' {_ _} f 𝒰 :=
+  iff_of_openCover' {X Y} f 𝒰 :=
     ⟨fun h i ↦ ⟨(iff_of_openCover' f 𝒰).mp h.left i, (iff_of_openCover' f 𝒰).mp h.right i⟩,
      fun h ↦ ⟨(iff_of_openCover' f 𝒰).mpr (fun i ↦ (h i).left),
       (iff_of_openCover' f 𝒰).mpr (fun i ↦ (h i).right)⟩⟩
 
-variable {P} [hP : IsLocalAtTarget P] {X Y : Scheme.{u}} {f : X ⟶ Y} (𝒰 : Y.OpenCover)
+variable {P} [hP : IsLocalAtTarget P]
+variable {X Y U V : Scheme.{u}} {f : X ⟶ Y} {g : U ⟶ Y} [IsOpenImmersion g] (𝒰 : Y.OpenCover)
 
 lemma of_isPullback {UX UY : Scheme.{u}} {iY : UY ⟶ Y} [IsOpenImmersion iY]
     {iX : UX ⟶ X} {f' : UX ⟶ UY} (h : IsPullback iX f' f iY) (H : P f) : P f' := by
@@ -221,22 +222,17 @@ protected lemma mk' {P : MorphismProperty Scheme} [P.RespectsIso]
 the target. -/
 instance inf (P Q : MorphismProperty Scheme) [IsLocalAtSource P] [IsLocalAtSource Q] :
     IsLocalAtSource (P ⊓ Q) where
-  iff_of_openCover' {_ _} f 𝒰 :=
+  iff_of_openCover' {X Y} f 𝒰 :=
     ⟨fun h i ↦ ⟨(iff_of_openCover' f 𝒰).mp h.left i, (iff_of_openCover' f 𝒰).mp h.right i⟩,
      fun h ↦ ⟨(iff_of_openCover' f 𝒰).mpr (fun i ↦ (h i).left),
       (iff_of_openCover' f 𝒰).mpr (fun i ↦ (h i).right)⟩⟩
 
 variable {P} [IsLocalAtSource P]
-variable {X Y : Scheme.{u}} {f : X ⟶ Y} (𝒰 : X.OpenCover)
+variable {X Y U V : Scheme.{u}} {f : X ⟶ Y} {g : U ⟶ Y} [IsOpenImmersion g] (𝒰 : X.OpenCover)
 
 lemma comp {UX : Scheme.{u}} (H : P f) (i : UX ⟶ X) [IsOpenImmersion i] :
     P (i ≫ f) :=
   (iff_of_openCover' f (X.affineCover.add i)).mp H .none
-
-/-- If `P` is local at the source, then it respects composition on the left with open immersions. -/
-instance respectsLeft_isOpenImmersion {P : MorphismProperty Scheme}
-    [IsLocalAtSource P] : P.RespectsLeft @IsOpenImmersion where
-  precomp i _ _ hf := IsLocalAtSource.comp hf i
 
 lemma of_iSup_eq_top {ι} (U : ι → X.Opens) (hU : iSup U = ⊤)
     (H : ∀ i, P ((U i).ι ≫ f)) : P f := by
@@ -269,36 +265,10 @@ lemma isLocalAtTarget [P.IsMultiplicative]
     IsLocalAtTarget P where
   iff_of_openCover' {X Y} f 𝒰 := by
     refine (iff_of_openCover (𝒰.pullbackCover f)).trans (forall_congr' fun i ↦ ?_)
-    rw [← Scheme.Cover.pullbackHom_map]
+    rw [← Scheme.OpenCover.pullbackHom_map]
     constructor
     · exact hP _ _
     · exact fun H ↦ P.comp_mem _ _ H (of_isOpenImmersion _)
-
-section IsLocalAtSourceAndTarget
-
-/-- If `P` is local at the source and the target, then restriction on both source and target
-preserves `P`. -/
-lemma resLE [IsLocalAtTarget P] {U : Y.Opens} {V : X.Opens} (e : V ≤ f ⁻¹ᵁ U)
-    (hf : P f) : P (f.resLE U V e) :=
-  IsLocalAtSource.comp (IsLocalAtTarget.restrict hf U) _
-
-/-- If `P` is local at the source, local at the target and is stable under post-composition with
-open immersions, then `P` can be checked locally around points. -/
-lemma iff_exists_resLE [IsLocalAtTarget P] [P.RespectsRight @IsOpenImmersion] :
-    P f ↔ ∀ x : X, ∃ (U : Y.Opens) (V : X.Opens) (_ : x ∈ V.1) (e : V ≤ f ⁻¹ᵁ U),
-      P (f.resLE U V e) := by
-  refine ⟨fun hf x ↦ ⟨⊤, ⊤, trivial, by simp, resLE _ hf⟩, fun hf ↦ ?_⟩
-  choose U V hxU e hf using hf
-  rw [IsLocalAtSource.iff_of_iSup_eq_top (fun x : X ↦ V x) (P := P)]
-  · intro x
-    rw [← Scheme.Hom.resLE_comp_ι _ (e x)]
-    exact MorphismProperty.RespectsRight.postcomp (Q := @IsOpenImmersion) _ inferInstance _ (hf x)
-  · rw [eq_top_iff]
-    rintro x -
-    simp only [Opens.coe_iSup, Set.mem_iUnion, SetLike.mem_coe]
-    use x, hxU x
-
-end IsLocalAtSourceAndTarget
 
 end IsLocalAtSource
 
@@ -353,7 +323,7 @@ theorem arrow_mk_iso_iff
 
 theorem respectsIso_mk {P : AffineTargetMorphismProperty}
     (h₁ : ∀ {X Y Z} (e : X ≅ Y) (f : Y ⟶ Z) [IsAffine Z], P f → P (e.hom ≫ f))
-    (h₂ : ∀ {X Y Z} (e : Y ≅ Z) (f : X ⟶ Y) [IsAffine Y],
+    (h₂ : ∀ {X Y Z} (e : Y ≅ Z) (f : X ⟶ Y) [h : IsAffine Y],
       P f → @P _ _ (f ≫ e.hom) (isAffine_of_isIso e.inv)) :
     P.toProperty.RespectsIso := by
   apply MorphismProperty.RespectsIso.mk
@@ -397,13 +367,13 @@ instance (P : MorphismProperty Scheme) [IsLocalAtTarget P] : (of P).IsLocal wher
 
 /-- A `P : AffineTargetMorphismProperty` is stable under base change if `P` holds for `Y ⟶ S`
 implies that `P` holds for `X ×ₛ Y ⟶ X` with `X` and `S` affine schemes. -/
-def IsStableUnderBaseChange (P : AffineTargetMorphismProperty) : Prop :=
+def StableUnderBaseChange (P : AffineTargetMorphismProperty) : Prop :=
   ∀ ⦃Z X Y S : Scheme⦄ [IsAffine S] [IsAffine X] {f : X ⟶ S} {g : Y ⟶ S}
     {f' : Z ⟶ Y} {g' : Z ⟶ X}, IsPullback g' f' f g → P g → P g'
 
-lemma IsStableUnderBaseChange.mk (P : AffineTargetMorphismProperty) [P.toProperty.RespectsIso]
+lemma StableUnderBaseChange.mk (P : AffineTargetMorphismProperty) [P.toProperty.RespectsIso]
     (H : ∀ ⦃X Y S : Scheme⦄ [IsAffine S] [IsAffine X] (f : X ⟶ S) (g : Y ⟶ S),
-      P g → P (pullback.fst f g)) : P.IsStableUnderBaseChange := by
+      P g → P (pullback.fst f g)) : P.StableUnderBaseChange := by
   intros Z X Y S _ _ f g f' g' h hg
   rw [← P.cancel_left_of_respectsIso h.isoPullback.inv, h.isoPullback_inv_fst]
   exact H f g hg
@@ -436,7 +406,7 @@ instance (P : AffineTargetMorphismProperty) [P.toProperty.RespectsIso] :
     rintro ⟨U, hU : IsAffineOpen U⟩; dsimp
     haveI : IsAffine _ := hU.preimage_of_isIso e.hom
     rw [morphismRestrict_comp, P.cancel_right_of_respectsIso]
-    exact H ⟨(Opens.map e.hom.base).obj U, hU.preimage_of_isIso e.hom⟩
+    exact H ⟨(Opens.map e.hom.val.base).obj U, hU.preimage_of_isIso e.hom⟩
 
 /--
 `HasAffineProperty P Q` is a type class asserting that `P` is local at the target, and over affine
@@ -544,10 +514,9 @@ theorem iff_of_openCover (𝒰 : Y.OpenCover) [∀ i, IsAffine (𝒰.obj i)] :
 
 theorem iff_of_isAffine [IsAffine Y] : P f ↔ Q f := by
   letI := isLocal_affineProperty P
-  haveI : ∀ i, IsAffine (Scheme.Cover.obj
-      (Scheme.coverOfIsIso (P := @IsOpenImmersion) (𝟙 Y)) i) := fun i => by
+  haveI : ∀ i, IsAffine (Scheme.OpenCover.obj (Scheme.openCoverOfIsIso (𝟙 Y)) i) := fun i => by
     dsimp; infer_instance
-  rw [iff_of_openCover (P := P) (Scheme.coverOfIsIso.{0} (𝟙 Y))]
+  rw [iff_of_openCover (P := P) (Scheme.openCoverOfIsIso.{0} (𝟙 Y))]
   trans Q (pullback.snd f (𝟙 _))
   · exact ⟨fun H => H PUnit.unit, fun H _ => H⟩
   rw [← Category.comp_id (pullback.snd _ _), ← pullback.condition,
@@ -578,7 +547,7 @@ protected theorem iff {P : MorphismProperty Scheme} {Q : AffineTargetMorphismPro
   ⟨fun _ ↦ ⟨inferInstance, ext fun _ _ _ ↦ iff_of_isAffine.symm⟩,
     fun ⟨_, e⟩ ↦ e ▸ of_isLocalAtTarget P⟩
 
-private theorem pullback_fst_of_right (hP' : Q.IsStableUnderBaseChange)
+private theorem pullback_fst_of_right (hP' : Q.StableUnderBaseChange)
     {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [IsAffine S] (H : Q g) :
     P (pullback.fst f g) := by
   letI := isLocal_affineProperty P
@@ -586,15 +555,15 @@ private theorem pullback_fst_of_right (hP' : Q.IsStableUnderBaseChange)
   intro i
   let e := pullbackSymmetry _ _ ≪≫ pullbackRightPullbackFstIso f g (X.affineCover.map i)
   have : e.hom ≫ pullback.fst _ _ = X.affineCover.pullbackHom (pullback.fst _ _) i := by
-    simp [e, Scheme.Cover.pullbackHom]
+    simp [e, Scheme.OpenCover.pullbackHom]
   rw [← this, Q.cancel_left_of_respectsIso]
   apply hP' (.of_hasPullback _ _)
   exact H
 
-theorem isStableUnderBaseChange (hP' : Q.IsStableUnderBaseChange) :
-    P.IsStableUnderBaseChange :=
-  MorphismProperty.IsStableUnderBaseChange.mk'
-    (fun X Y S f g _ H => by
+theorem stableUnderBaseChange (hP' : Q.StableUnderBaseChange) :
+    P.StableUnderBaseChange :=
+  MorphismProperty.StableUnderBaseChange.mk
+    (fun X Y S f g H => by
       rw [IsLocalAtTarget.iff_of_openCover (P := P) (S.affineCover.pullbackCover f)]
       intro i
       let e : pullback (pullback.fst f g) ((S.affineCover.pullbackCover f).map i) ≅
@@ -606,7 +575,7 @@ theorem isStableUnderBaseChange (hP' : Q.IsStableUnderBaseChange) :
           (pullback.map _ _ _ _ (𝟙 _) (𝟙 _) (𝟙 _) (by simpa using pullback.condition) (by simp))
       have : e.hom ≫ pullback.fst _ _ =
           (S.affineCover.pullbackCover f).pullbackHom (pullback.fst _ _) i := by
-        simp [e, Scheme.Cover.pullbackHom]
+        simp [e, Scheme.OpenCover.pullbackHom]
       rw [← this, P.cancel_left_of_respectsIso]
       apply HasAffineProperty.pullback_fst_of_right hP'
       letI := isLocal_affineProperty P

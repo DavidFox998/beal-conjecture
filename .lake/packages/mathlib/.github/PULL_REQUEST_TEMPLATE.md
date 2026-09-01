@@ -20,7 +20,7 @@ If you are moving or deleting declarations, please include these lines at the bo
 (that is, before the `---`) using the following format:
 
 Moves:
-- Vector.* -> List.Vector.*
+- Vector.* -> Mathlib.Vector.*
 - ...
 
 Deletions:

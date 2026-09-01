@@ -16,7 +16,9 @@ bounded bilinear maps.
 -/
 
 
-open Asymptotics Topology
+open Filter Asymptotics ContinuousLinearMap Set Metric
+open scoped Classical
+open Topology NNReal Asymptotics ENNReal
 
 noncomputable section
 
@@ -27,6 +29,12 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 variable {G' : Type*} [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
+variable {f f₀ f₁ g : E → F}
+variable {f' f₀' f₁' g' : E →L[𝕜] F}
+variable (e : E →L[𝕜] F)
+variable {x : E}
+variable {s t : Set E}
+variable {L L₁ L₂ : Filter E}
 
 section BilinearMap
 
@@ -36,11 +44,11 @@ variable {b : E × F → G} {u : Set (E × F)}
 
 open NormedField
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: rewrite/golf using analytic functions?
+-- Porting note (#11215): TODO: rewrite/golf using analytic functions?
 @[fun_prop]
 theorem IsBoundedBilinearMap.hasStrictFDerivAt (h : IsBoundedBilinearMap 𝕜 b) (p : E × F) :
     HasStrictFDerivAt b (h.deriv p) p := by
-  simp only [hasStrictFDerivAt_iff_isLittleO]
+  simp only [HasStrictFDerivAt]
   simp only [← map_add_left_nhds_zero (p, p), isLittleO_map]
   set T := (E × F) × E × F
   calc
@@ -61,7 +69,7 @@ theorem IsBoundedBilinearMap.hasStrictFDerivAt (h : IsBoundedBilinearMap 𝕜 b)
       refine (isBigO_refl _ _).mul_isLittleO ((isLittleO_one_iff _).2 ?_)
       -- TODO: `continuity` fails
       exact (continuous_snd.fst.prod_mk continuous_fst.snd).norm.tendsto' _ _ (by simp)
-    _ = _ := by simp [T, Function.comp_def]
+    _ = _ := by simp [Function.comp_def]
 
 @[fun_prop]
 theorem IsBoundedBilinearMap.hasFDerivAt (h : IsBoundedBilinearMap 𝕜 b) (p : E × F) :
@@ -103,23 +111,19 @@ theorem IsBoundedBilinearMap.differentiableOn (h : IsBoundedBilinearMap 𝕜 b) 
 
 variable (B : E →L[𝕜] F →L[𝕜] G)
 
-#adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
-  need `by exact` to deal with tricky unification -/
 @[fun_prop]
 theorem ContinuousLinearMap.hasFDerivWithinAt_of_bilinear {f : G' → E} {g : G' → F}
     {f' : G' →L[𝕜] E} {g' : G' →L[𝕜] F} {x : G'} {s : Set G'} (hf : HasFDerivWithinAt f f' s x)
     (hg : HasFDerivWithinAt g g' s x) :
     HasFDerivWithinAt (fun y => B (f y) (g y))
-      (B.precompR G' (f x) g' + B.precompL G' f' (g x)) s x := by
-  exact (B.isBoundedBilinearMap.hasFDerivAt (f x, g x)).comp_hasFDerivWithinAt x (hf.prod hg)
+      (B.precompR G' (f x) g' + B.precompL G' f' (g x)) s x :=
+  (B.isBoundedBilinearMap.hasFDerivAt (f x, g x)).comp_hasFDerivWithinAt x (hf.prod hg)
 
-#adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
-  need `by exact` to deal with tricky unification -/
 @[fun_prop]
 theorem ContinuousLinearMap.hasFDerivAt_of_bilinear {f : G' → E} {g : G' → F} {f' : G' →L[𝕜] E}
     {g' : G' →L[𝕜] F} {x : G'} (hf : HasFDerivAt f f' x) (hg : HasFDerivAt g g' x) :
-    HasFDerivAt (fun y => B (f y) (g y)) (B.precompR G' (f x) g' + B.precompL G' f' (g x)) x := by
-  exact (B.isBoundedBilinearMap.hasFDerivAt (f x, g x)).comp x (hf.prod hg)
+    HasFDerivAt (fun y => B (f y) (g y)) (B.precompR G' (f x) g' + B.precompL G' f' (g x)) x :=
+  (B.isBoundedBilinearMap.hasFDerivAt (f x, g x)).comp x (hf.prod hg)
 
 @[fun_prop]
 theorem ContinuousLinearMap.hasStrictFDerivAt_of_bilinear

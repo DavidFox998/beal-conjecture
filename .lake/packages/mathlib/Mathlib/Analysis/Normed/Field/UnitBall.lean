@@ -51,7 +51,7 @@ def Subsemigroup.unitClosedBall (𝕜 : Type*) [NonUnitalSeminormedRing 𝕜] : 
   carrier := closedBall 0 1
   mul_mem' hx hy := by
     rw [mem_closedBall_zero_iff] at *
-    exact (norm_mul_le _ _).trans (mul_le_one₀ hx (norm_nonneg _) hy)
+    exact (norm_mul_le _ _).trans (mul_le_one hx (norm_nonneg _) hy)
 
 instance Metric.unitClosedBall.semigroup [NonUnitalSeminormedRing 𝕜] :
     Semigroup (closedBall (0 : 𝕜) 1) :=
@@ -183,5 +183,5 @@ instance Metric.sphere.topologicalGroup [NormedDivisionRing 𝕜] :
 
 instance Metric.sphere.commGroup [NormedField 𝕜] : CommGroup (sphere (0 : 𝕜) 1) :=
   { Metric.sphere.group,
-    Subtype.coe_injective.commMonoid _ rfl (fun _ _ => rfl) (fun _ _ => rfl) with }
+    Subtype.coe_injective.commMonoid (↑) rfl (fun _ _ => rfl) (fun _ _ => rfl) with }
   -- Porting note: Lean couldn't see past the type synonym into the subtype.

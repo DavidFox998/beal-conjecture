@@ -21,7 +21,10 @@ This file contains the usual formulas (and existence assertions) for the derivat
 -/
 
 
-open Filter Asymptotics ContinuousLinearMap
+open Filter Asymptotics ContinuousLinearMap Set Metric
+
+open scoped Classical
+open Topology NNReal Filter Asymptotics ENNReal
 
 noncomputable section
 
@@ -30,11 +33,14 @@ section
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-variable {f g : E → F}
-variable {f' g' : E →L[𝕜] F}
+variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+variable {G' : Type*} [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
+variable {f f₀ f₁ g : E → F}
+variable {f' f₀' f₁' g' : E →L[𝕜] F}
+variable (e : E →L[𝕜] F)
 variable {x : E}
-variable {s : Set E}
-variable {L : Filter E}
+variable {s t : Set E}
+variable {L L₁ L₂ : Filter E}
 
 section ConstSMul
 
@@ -84,19 +90,8 @@ theorem fderivWithin_const_smul (hxs : UniqueDiffWithinAt 𝕜 s x)
     fderivWithin 𝕜 (fun y => c • f y) s x = c • fderivWithin 𝕜 f s x :=
   (h.hasFDerivWithinAt.const_smul c).fderivWithin hxs
 
-/-- Version of `fderivWithin_const_smul` written with `c • f` instead of `fun y ↦ c • f y`. -/
-theorem fderivWithin_const_smul' (hxs : UniqueDiffWithinAt 𝕜 s x)
-    (h : DifferentiableWithinAt 𝕜 f s x) (c : R) :
-    fderivWithin 𝕜 (c • f) s x = c • fderivWithin 𝕜 f s x :=
-  fderivWithin_const_smul hxs h c
-
 theorem fderiv_const_smul (h : DifferentiableAt 𝕜 f x) (c : R) :
     fderiv 𝕜 (fun y => c • f y) x = c • fderiv 𝕜 f x :=
-  (h.hasFDerivAt.const_smul c).fderiv
-
-/-- Version of `fderiv_const_smul` written with `c • f` instead of `fun y ↦ c • f y`. -/
-theorem fderiv_const_smul' (h : DifferentiableAt 𝕜 f x) (c : R) :
-    fderiv 𝕜 (c • f) x = c • fderiv 𝕜 f x :=
   (h.hasFDerivAt.const_smul c).fderiv
 
 end ConstSMul
@@ -109,7 +104,7 @@ section Add
 @[fun_prop]
 nonrec theorem HasStrictFDerivAt.add (hf : HasStrictFDerivAt f f' x)
     (hg : HasStrictFDerivAt g g' x) : HasStrictFDerivAt (fun y => f y + g y) (f' + g') x :=
-   .of_isLittleO <| (hf.isLittleO.add hg.isLittleO).congr_left fun y => by
+  (hf.add hg).congr_left fun y => by
     simp only [LinearMap.sub_apply, LinearMap.add_apply, map_sub, map_add, add_apply]
     abel
 
@@ -152,22 +147,9 @@ theorem fderivWithin_add (hxs : UniqueDiffWithinAt 𝕜 s x) (hf : Differentiabl
     fderivWithin 𝕜 (fun y => f y + g y) s x = fderivWithin 𝕜 f s x + fderivWithin 𝕜 g s x :=
   (hf.hasFDerivWithinAt.add hg.hasFDerivWithinAt).fderivWithin hxs
 
-/-- Version of `fderivWithin_add` where the function is written as `f + g` instead
-of `fun y ↦ f y + g y`. -/
-theorem fderivWithin_add' (hxs : UniqueDiffWithinAt 𝕜 s x) (hf : DifferentiableWithinAt 𝕜 f s x)
-    (hg : DifferentiableWithinAt 𝕜 g s x) :
-    fderivWithin 𝕜 (f + g) s x = fderivWithin 𝕜 f s x + fderivWithin 𝕜 g s x :=
-  fderivWithin_add hxs hf hg
-
 theorem fderiv_add (hf : DifferentiableAt 𝕜 f x) (hg : DifferentiableAt 𝕜 g x) :
     fderiv 𝕜 (fun y => f y + g y) x = fderiv 𝕜 f x + fderiv 𝕜 g x :=
   (hf.hasFDerivAt.add hg.hasFDerivAt).fderiv
-
-/-- Version of `fderiv_add` where the function is written as `f + g` instead
-of `fun y ↦ f y + g y`. -/
-theorem fderiv_add' (hf : DifferentiableAt 𝕜 f x) (hg : DifferentiableAt 𝕜 g x) :
-    fderiv 𝕜 (f + g) x = fderiv 𝕜 f x + fderiv 𝕜 g x :=
-  fderiv_add hf hg
 
 @[fun_prop]
 theorem HasStrictFDerivAt.add_const (hf : HasStrictFDerivAt f f' x) (c : F) :
@@ -227,11 +209,10 @@ theorem differentiable_add_const_iff (c : F) :
   ⟨fun h => by simpa using h.add_const (-c), fun h => h.add_const c⟩
 
 theorem fderivWithin_add_const (hxs : UniqueDiffWithinAt 𝕜 s x) (c : F) :
-    fderivWithin 𝕜 (fun y => f y + c) s x = fderivWithin 𝕜 f s x := by
-  classical
-  by_cases hf : DifferentiableWithinAt 𝕜 f s x
-  · exact (hf.hasFDerivWithinAt.add_const c).fderivWithin hxs
-  · rw [fderivWithin_zero_of_not_differentiableWithinAt hf,
+    fderivWithin 𝕜 (fun y => f y + c) s x = fderivWithin 𝕜 f s x :=
+  if hf : DifferentiableWithinAt 𝕜 f s x then (hf.hasFDerivWithinAt.add_const c).fderivWithin hxs
+  else by
+    rw [fderivWithin_zero_of_not_differentiableWithinAt hf,
       fderivWithin_zero_of_not_differentiableWithinAt]
     simpa
 
@@ -314,7 +295,7 @@ variable {ι : Type*} {u : Finset ι} {A : ι → E → F} {A' : ι → E →L[�
 @[fun_prop]
 theorem HasStrictFDerivAt.sum (h : ∀ i ∈ u, HasStrictFDerivAt (A i) (A' i) x) :
     HasStrictFDerivAt (fun y => ∑ i ∈ u, A i y) (∑ i ∈ u, A' i) x := by
-  simp only [hasStrictFDerivAt_iff_isLittleO] at *
+  dsimp [HasStrictFDerivAt] at *
   convert IsLittleO.sum h
   simp [Finset.sum_sub_distrib, ContinuousLinearMap.sum_apply]
 
@@ -423,26 +404,16 @@ theorem differentiable_neg_iff : (Differentiable 𝕜 fun y => -f y) ↔ Differe
   ⟨fun h => by simpa only [neg_neg] using h.neg, fun h => h.neg⟩
 
 theorem fderivWithin_neg (hxs : UniqueDiffWithinAt 𝕜 s x) :
-    fderivWithin 𝕜 (fun y => -f y) s x = -fderivWithin 𝕜 f s x := by
-  classical
-  by_cases h : DifferentiableWithinAt 𝕜 f s x
-  · exact h.hasFDerivWithinAt.neg.fderivWithin hxs
-  · rw [fderivWithin_zero_of_not_differentiableWithinAt h,
+    fderivWithin 𝕜 (fun y => -f y) s x = -fderivWithin 𝕜 f s x :=
+  if h : DifferentiableWithinAt 𝕜 f s x then h.hasFDerivWithinAt.neg.fderivWithin hxs
+  else by
+    rw [fderivWithin_zero_of_not_differentiableWithinAt h,
       fderivWithin_zero_of_not_differentiableWithinAt, neg_zero]
     simpa
-
-/-- Version of `fderivWithin_neg` where the function is written `-f` instead of `fun y ↦ - f y`. -/
-theorem fderivWithin_neg' (hxs : UniqueDiffWithinAt 𝕜 s x) :
-    fderivWithin 𝕜 (-f) s x = -fderivWithin 𝕜 f s x :=
-  fderivWithin_neg hxs
 
 @[simp]
 theorem fderiv_neg : fderiv 𝕜 (fun y => -f y) x = -fderiv 𝕜 f x := by
   simp only [← fderivWithin_univ, fderivWithin_neg uniqueDiffWithinAt_univ]
-
-/-- Version of `fderiv_neg` where the function is written `-f` instead of `fun y ↦ - f y`. -/
-theorem fderiv_neg' : fderiv 𝕜 (-f) x = -fderiv 𝕜 f x :=
-  fderiv_neg
 
 end Neg
 
@@ -556,22 +527,9 @@ theorem fderivWithin_sub (hxs : UniqueDiffWithinAt 𝕜 s x) (hf : Differentiabl
     fderivWithin 𝕜 (fun y => f y - g y) s x = fderivWithin 𝕜 f s x - fderivWithin 𝕜 g s x :=
   (hf.hasFDerivWithinAt.sub hg.hasFDerivWithinAt).fderivWithin hxs
 
-/-- Version of `fderivWithin_sub` where the function is written as `f - g` instead
-of `fun y ↦ f y - g y`. -/
-theorem fderivWithin_sub' (hxs : UniqueDiffWithinAt 𝕜 s x) (hf : DifferentiableWithinAt 𝕜 f s x)
-    (hg : DifferentiableWithinAt 𝕜 g s x) :
-    fderivWithin 𝕜 (f - g) s x = fderivWithin 𝕜 f s x - fderivWithin 𝕜 g s x :=
-  fderivWithin_sub hxs hf hg
-
 theorem fderiv_sub (hf : DifferentiableAt 𝕜 f x) (hg : DifferentiableAt 𝕜 g x) :
     fderiv 𝕜 (fun y => f y - g y) x = fderiv 𝕜 f x - fderiv 𝕜 g x :=
   (hf.hasFDerivAt.sub hg.hasFDerivAt).fderiv
-
-/-- Version of `fderiv_sub` where the function is written as `f - g` instead
-of `fun y ↦ f y - g y`. -/
-theorem fderiv_sub' (hf : DifferentiableAt 𝕜 f x) (hg : DifferentiableAt 𝕜 g x) :
-    fderiv 𝕜 (f - g) x = fderiv 𝕜 f x - fderiv 𝕜 g x :=
-  fderiv_sub hf hg
 
 @[fun_prop]
 theorem HasStrictFDerivAt.sub_const (hf : HasStrictFDerivAt f f' x) (c : F) :
@@ -710,100 +668,5 @@ theorem fderiv_const_sub (c : F) : fderiv 𝕜 (fun y => c - f y) x = -fderiv �
   simp only [← fderivWithin_univ, fderivWithin_const_sub uniqueDiffWithinAt_univ]
 
 end Sub
-
-section CompAdd
-
-/-! ### Derivative of the composition with a translation -/
-
-open scoped Pointwise Topology
-
-theorem hasFDerivWithinAt_comp_add_right (a : E) :
-    HasFDerivWithinAt (fun x ↦ f (x + a)) f' s x ↔ HasFDerivWithinAt f f' (a +ᵥ s) (x + a) := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · have A : f = (fun x ↦ f (x + a)) ∘ (fun x ↦ x - a) := by ext; simp
-    rw [show x = (x + a) - a by abel] at h
-    rw [A]
-    have : HasFDerivWithinAt (fun x ↦ x - a) (ContinuousLinearMap.id 𝕜 E) (a +ᵥ s) (x + a) := by
-      simpa using (hasFDerivWithinAt_id (x + a) _).sub (hasFDerivWithinAt_const _ _ _)
-    apply h.comp (x + a) this (fun y hy ↦ ?_)
-    simpa [Set.mem_vadd_set_iff_neg_vadd_mem, add_comm, ← sub_eq_add_neg] using hy
-  · have : HasFDerivWithinAt (fun x ↦ x + a) (ContinuousLinearMap.id 𝕜 E) s x := by
-      simpa using (hasFDerivWithinAt_id x s (𝕜 := 𝕜)).add (hasFDerivWithinAt_const a x s (𝕜 := 𝕜))
-    apply h.comp x this (fun y hy ↦ ?_)
-    simp [Set.mem_vadd_set_iff_neg_vadd_mem, hy]
-
-theorem differentiableWithinAt_comp_add_right (a : E) :
-    DifferentiableWithinAt 𝕜 (fun x ↦ f (x + a)) s x ↔
-      DifferentiableWithinAt 𝕜 f (a +ᵥ s) (x + a) := by
-  simp [DifferentiableWithinAt, hasFDerivWithinAt_comp_add_right]
-
-theorem fderivWithin_comp_add_right (a : E) :
-    fderivWithin 𝕜 (fun x ↦ f (x + a)) s x = fderivWithin 𝕜 f (a +ᵥ s) (x + a) := by
-  classical
-  simp only [fderivWithin, hasFDerivWithinAt_comp_add_right, DifferentiableWithinAt]
-
-theorem hasFDerivWithinAt_comp_add_left (a : E) :
-    HasFDerivWithinAt (fun x ↦ f (a + x)) f' s x ↔ HasFDerivWithinAt f f' (a +ᵥ s) (a + x) := by
-  simpa [add_comm a] using hasFDerivWithinAt_comp_add_right a
-
-theorem differentiableWithinAt_comp_add_left (a : E) :
-    DifferentiableWithinAt 𝕜 (fun x ↦ f (a + x)) s x ↔
-      DifferentiableWithinAt 𝕜 f (a +ᵥ s) (a + x) := by
-  simp [DifferentiableWithinAt, hasFDerivWithinAt_comp_add_left]
-
-theorem fderivWithin_comp_add_left (a : E) :
-    fderivWithin 𝕜 (fun x ↦ f (a + x)) s x = fderivWithin 𝕜 f (a +ᵥ s) (a + x) := by
-  simpa [add_comm a] using fderivWithin_comp_add_right a
-
-theorem hasFDerivAt_comp_add_right (a : E) :
-    HasFDerivAt (fun x ↦ f (x + a)) f' x ↔ HasFDerivAt f f' (x + a) := by
-  simp [← hasFDerivWithinAt_univ, hasFDerivWithinAt_comp_add_right]
-
-theorem differentiableAt_comp_add_right (a : E) :
-    DifferentiableAt 𝕜 (fun x ↦ f (x + a)) x ↔ DifferentiableAt 𝕜 f (x + a) := by
-  simp [DifferentiableAt, hasFDerivAt_comp_add_right]
-
-theorem fderiv_comp_add_right (a : E) :
-    fderiv 𝕜 (fun x ↦ f (x + a)) x = fderiv 𝕜 f (x + a) := by
-  simp [← fderivWithin_univ, fderivWithin_comp_add_right]
-
-theorem hasFDerivAt_comp_add_left (a : E) :
-    HasFDerivAt (fun x ↦ f (a + x)) f' x ↔ HasFDerivAt f f' (a + x) := by
-  simpa [add_comm a] using hasFDerivAt_comp_add_right a
-
-theorem differentiableAt_comp_add_left (a : E) :
-    DifferentiableAt 𝕜 (fun x ↦ f (a + x)) x ↔ DifferentiableAt 𝕜 f (a + x) := by
-  simp [DifferentiableAt, hasFDerivAt_comp_add_left]
-
-theorem fderiv_comp_add_left (a : E) :
-    fderiv 𝕜 (fun x ↦ f (a + x)) x = fderiv 𝕜 f (a + x) := by
-  simpa [add_comm a] using fderiv_comp_add_right a
-
-theorem hasFDerivWithinAt_comp_sub (a : E) :
-    HasFDerivWithinAt (fun x ↦ f (x - a)) f' s x ↔ HasFDerivWithinAt f f' (-a +ᵥ s) (x - a) := by
-  simpa [sub_eq_add_neg] using hasFDerivWithinAt_comp_add_right (-a)
-
-theorem differentiableWithinAt_comp_sub (a : E) :
-    DifferentiableWithinAt 𝕜 (fun x ↦ f (x - a)) s x ↔
-      DifferentiableWithinAt 𝕜 f (-a +ᵥ s) (x - a) := by
-  simp [DifferentiableWithinAt, hasFDerivWithinAt_comp_sub]
-
-theorem fderivWithin_comp_sub (a : E) :
-    fderivWithin 𝕜 (fun x ↦ f (x - a)) s x = fderivWithin 𝕜 f (-a +ᵥ s) (x - a) := by
-  simpa [sub_eq_add_neg] using fderivWithin_comp_add_right (-a)
-
-theorem hasFDerivAt_comp_sub (a : E) :
-    HasFDerivAt (fun x ↦ f (x - a)) f' x ↔ HasFDerivAt f f' (x - a) := by
-  simp [← hasFDerivWithinAt_univ, hasFDerivWithinAt_comp_sub]
-
-theorem differentiableAt_comp_sub (a : E) :
-    DifferentiableAt 𝕜 (fun x ↦ f (x - a)) x ↔ DifferentiableAt 𝕜 f (x - a) := by
-  simp [DifferentiableAt, hasFDerivAt_comp_sub]
-
-theorem fderiv_comp_sub (a : E) :
-    fderiv 𝕜 (fun x ↦ f (x - a)) x = fderiv 𝕜 f (x - a) := by
-  simp [← fderivWithin_univ, fderivWithin_comp_sub]
-
-end CompAdd
 
 end

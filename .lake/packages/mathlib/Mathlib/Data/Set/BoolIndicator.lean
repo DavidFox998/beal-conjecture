@@ -35,7 +35,8 @@ theorem preimage_boolIndicator_true : s.boolIndicator ⁻¹' {true} = s :=
 theorem preimage_boolIndicator_false : s.boolIndicator ⁻¹' {false} = sᶜ :=
   ext fun x ↦ (s.not_mem_iff_boolIndicator x).symm
 
-open scoped Classical in
+open scoped Classical
+
 theorem preimage_boolIndicator_eq_union (t : Set Bool) :
     s.boolIndicator ⁻¹' t = (if true ∈ t then s else ∅) ∪ if false ∈ t then sᶜ else ∅ := by
   ext x

@@ -61,7 +61,7 @@ variable [DecidableEq α] [Fintype α]
 /-- The downward **local LYM inequality**, with cancelled denominators. `𝒜` takes up less of `α^(r)`
 (the finsets of card `r`) than `∂𝒜` takes up of `α^(r - 1)`. -/
 theorem card_mul_le_card_shadow_mul (h𝒜 : (𝒜 : Set (Finset α)).Sized r) :
-    #𝒜 * r ≤ #(∂ 𝒜) * (Fintype.card α - r + 1) := by
+    𝒜.card * r ≤ (∂ 𝒜).card * (Fintype.card α - r + 1) := by
   let i : DecidableRel ((· ⊆ ·) : Finset α → Finset α → Prop) := fun _ _ => Classical.dec _
   refine card_mul_le_card_mul' (· ⊆ ·) (fun s hs => ?_) (fun s hs => ?_)
   · rw [← h𝒜 hs, ← card_image_of_injOn s.erase_injOn]
@@ -87,13 +87,13 @@ theorem card_mul_le_card_shadow_mul (h𝒜 : (𝒜 : Set (Finset α)).Sized r) :
 /-- The downward **local LYM inequality**. `𝒜` takes up less of `α^(r)` (the finsets of card `r`)
 than `∂𝒜` takes up of `α^(r - 1)`. -/
 theorem card_div_choose_le_card_shadow_div_choose (hr : r ≠ 0)
-    (h𝒜 : (𝒜 : Set (Finset α)).Sized r) : (#𝒜 : 𝕜) / (Fintype.card α).choose r
-    ≤ #(∂ 𝒜) / (Fintype.card α).choose (r - 1) := by
+    (h𝒜 : (𝒜 : Set (Finset α)).Sized r) : (𝒜.card : 𝕜) / (Fintype.card α).choose r
+    ≤ (∂ 𝒜).card / (Fintype.card α).choose (r - 1) := by
   obtain hr' | hr' := lt_or_le (Fintype.card α) r
   · rw [choose_eq_zero_of_lt hr', cast_zero, div_zero]
     exact div_nonneg (cast_nonneg _) (cast_nonneg _)
   replace h𝒜 := card_mul_le_card_shadow_mul h𝒜
-  rw [div_le_div_iff₀] <;> norm_cast
+  rw [div_le_div_iff] <;> norm_cast
   · cases' r with r
     · exact (hr rfl).elim
     rw [tsub_add_eq_add_tsub hr', add_tsub_add_eq_tsub_right] at h𝒜
@@ -122,7 +122,7 @@ def falling : Finset (Finset α) :=
 
 variable {𝒜 k} {s : Finset α}
 
-theorem mem_falling : s ∈ falling k 𝒜 ↔ (∃ t ∈ 𝒜, s ⊆ t) ∧ #s = k := by
+theorem mem_falling : s ∈ falling k 𝒜 ↔ (∃ t ∈ 𝒜, s ⊆ t) ∧ s.card = k := by
   simp_rw [falling, mem_sup, mem_powersetCard]
   aesop
 
@@ -169,7 +169,7 @@ theorem IsAntichain.disjoint_slice_shadow_falling {m n : ℕ}
 theorem le_card_falling_div_choose [Fintype α] (hk : k ≤ Fintype.card α)
     (h𝒜 : IsAntichain (· ⊆ ·) (𝒜 : Set (Finset α))) :
     (∑ r ∈ range (k + 1),
-        (#(𝒜 # (Fintype.card α - r)) : 𝕜) / (Fintype.card α).choose (Fintype.card α - r)) ≤
+        ((𝒜 # (Fintype.card α - r)).card : 𝕜) / (Fintype.card α).choose (Fintype.card α - r)) ≤
       (falling (Fintype.card α - k) 𝒜).card / (Fintype.card α).choose (Fintype.card α - k) := by
   induction' k with k ih
   · simp only [tsub_zero, cast_one, cast_le, sum_singleton, div_one, choose_self, range_one,
@@ -188,13 +188,13 @@ theorem le_card_falling_div_choose [Fintype α] (hk : k ≤ Fintype.card α)
 
 end Falling
 
-variable {𝒜 : Finset (Finset α)}
+variable {𝒜 : Finset (Finset α)} {s : Finset α} {k : ℕ}
 
 /-- The **Lubell-Yamamoto-Meshalkin inequality**. If `𝒜` is an antichain, then the sum of the
 proportion of elements it takes from each layer is less than `1`. -/
 theorem sum_card_slice_div_choose_le_one [Fintype α]
     (h𝒜 : IsAntichain (· ⊆ ·) (𝒜 : Set (Finset α))) :
-    (∑ r ∈ range (Fintype.card α + 1), (#(𝒜 # r) : 𝕜) / (Fintype.card α).choose r) ≤ 1 := by
+    (∑ r ∈ range (Fintype.card α + 1), ((𝒜 # r).card : 𝕜) / (Fintype.card α).choose r) ≤ 1 := by
   classical
     rw [← sum_flip]
     refine (le_card_falling_div_choose le_rfl h𝒜).trans ?_
@@ -213,10 +213,10 @@ end LYM
 maximal layer in `Finset α`. This precisely means that `Finset α` is a Sperner order. -/
 theorem IsAntichain.sperner [Fintype α] {𝒜 : Finset (Finset α)}
     (h𝒜 : IsAntichain (· ⊆ ·) (𝒜 : Set (Finset α))) :
-    #𝒜 ≤ (Fintype.card α).choose (Fintype.card α / 2) := by
+    𝒜.card ≤ (Fintype.card α).choose (Fintype.card α / 2) := by
   classical
     suffices (∑ r ∈ Iic (Fintype.card α),
-        (#(𝒜 # r) : ℚ) / (Fintype.card α).choose (Fintype.card α / 2)) ≤ 1 by
+        ((𝒜 # r).card : ℚ) / (Fintype.card α).choose (Fintype.card α / 2)) ≤ 1 by
       rw [← sum_div, ← Nat.cast_sum, div_le_one] at this
       · simp only [cast_le] at this
         rwa [sum_card_slice] at this

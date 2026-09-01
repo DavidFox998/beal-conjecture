@@ -17,7 +17,10 @@ cartesian products of functions, and functions into Pi-types.
 -/
 
 
-open Filter Asymptotics ContinuousLinearMap Set Metric Topology NNReal ENNReal
+open Filter Asymptotics ContinuousLinearMap Set Metric
+
+open scoped Classical
+open Topology NNReal Filter Asymptotics ENNReal
 
 noncomputable section
 
@@ -47,7 +50,7 @@ variable {f₂ : E → G} {f₂' : E →L[𝕜] G}
 protected theorem HasStrictFDerivAt.prod (hf₁ : HasStrictFDerivAt f₁ f₁' x)
     (hf₂ : HasStrictFDerivAt f₂ f₂' x) :
     HasStrictFDerivAt (fun x => (f₁ x, f₂ x)) (f₁'.prod f₂') x :=
-  .of_isLittleO <| hf₁.isLittleO.prod_left hf₂.isLittleO
+  hf₁.prod_left hf₂
 
 theorem HasFDerivAtFilter.prod (hf₁ : HasFDerivAtFilter f₁ f₁' x L)
     (hf₂ : HasFDerivAtFilter f₂ f₂' x L) :
@@ -339,7 +342,7 @@ variable {ι : Type*} [Fintype ι] {F' : ι → Type*} [∀ i, NormedAddCommGrou
 @[simp]
 theorem hasStrictFDerivAt_pi' :
     HasStrictFDerivAt Φ Φ' x ↔ ∀ i, HasStrictFDerivAt (fun x => Φ x i) ((proj i).comp Φ') x := by
-  simp only [hasStrictFDerivAt_iff_isLittleO, ContinuousLinearMap.coe_pi]
+  simp only [HasStrictFDerivAt, ContinuousLinearMap.coe_pi]
   exact isLittleO_pi
 
 @[fun_prop]

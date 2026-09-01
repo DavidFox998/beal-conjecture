@@ -5,7 +5,6 @@ Authors: Jireh Loreaux
 -/
 import Mathlib.Algebra.Star.Subalgebra
 import Mathlib.RingTheory.Ideal.Maps
-import Mathlib.RingTheory.Ideal.Nonunits
 import Mathlib.Tactic.NoncommRing
 
 /-!
@@ -401,7 +400,7 @@ end CommSemiring
 
 section CommRing
 
-variable {F R A : Type*} [CommRing R] [Ring A] [Algebra R A]
+variable {F R A B : Type*} [CommRing R] [Ring A] [Algebra R A] [Ring B] [Algebra R B]
 variable [FunLike F A R] [AlgHomClass F R A R]
 
 local notation "σ" => spectrum R

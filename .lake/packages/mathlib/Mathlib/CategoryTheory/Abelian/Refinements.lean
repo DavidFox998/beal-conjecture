@@ -44,17 +44,17 @@ category is exact if and only if it is exact up to refinements
 (see `ShortComplex.exact_iff_exact_up_to_refinements`).
 
 As it is outlined in the documentation of the file
-`Mathlib.CategoryTheory.Abelian.Pseudoelements`, the Freyd-Mitchell
+`CategoryTheory.Abelian.Pseudoelements`, the Freyd-Mitchell
 embedding theorem implies the existence of a faithful and exact functor `ι`
 from an abelian category `C` to the category of abelian groups. If we
 define a pseudo-element of `X : C` to be an element in `ι.obj X`, one
 may do diagram chases in any abelian category using these pseudo-elements.
 However, using this approach would require proving this embedding theorem!
 Currently, mathlib contains a weaker notion of pseudo-elements
-`Mathlib.CategoryTheory.Abelian.Pseudoelements`. Some theorems can be obtained
+`CategoryTheory.Abelian.Pseudoelements`. Some theorems can be obtained
 using this notion, but there is the issue that for this notion
 of pseudo-elements a morphism `X ⟶ Y` in `C` is not determined by
-its action on pseudo-elements (see also `Counterexamples/Pseudoelement.lean`).
+its action on pseudo-elements (see also `Counterexamples/Pseudoelement`).
 On the contrary, the approach consisting of working up to refinements
 does not require the introduction of other types: we only need to work
 with morphisms `A ⟶ X` in `C` which we may consider as being

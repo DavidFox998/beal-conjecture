@@ -18,7 +18,7 @@ periodic predicates which helps determine their cardinality when filtering inter
 
 namespace Nat
 
-open Function
+open Nat Function
 
 theorem periodic_gcd (a : ℕ) : Periodic (gcd a) a := by
   simp only [forall_const, gcd_add_self_right, eq_self_iff_true, Periodic]

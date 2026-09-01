@@ -8,7 +8,6 @@ import Mathlib.Analysis.RCLike.Basic
 import Mathlib.Topology.Algebra.StarSubalgebra
 import Mathlib.Topology.ContinuousMap.ContinuousMapZero
 import Mathlib.Topology.ContinuousMap.Weierstrass
-import Mathlib.Topology.ContinuousMap.Lattice
 
 /-!
 # The Stone-Weierstrass theorem
@@ -70,7 +69,7 @@ theorem polynomial_comp_attachBound (A : Subalgebra ℝ C(X, ℝ)) (f : A) (g : 
   simp only [ContinuousMap.coe_comp, Function.comp_apply, ContinuousMap.attachBound_apply_coe,
     Polynomial.toContinuousMapOn_apply, Polynomial.aeval_subalgebra_coe,
     Polynomial.aeval_continuousMap_apply, Polynomial.toContinuousMap_apply]
-  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
+  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   erw [ContinuousMap.attachBound_apply_coe]
 
 /-- Given a continuous function `f` in a subalgebra of `C(X, ℝ)`, postcomposing by a polynomial
@@ -213,17 +212,19 @@ theorem sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
   have lt_h : ∀ x z, f z - ε < (h x : X → ℝ) z := by
     intro x z
     obtain ⟨y, ym, zm⟩ := Set.exists_set_mem_of_union_eq_top _ _ (ys_w x) z
-    dsimp [h]
+    dsimp
     simp only [Subtype.coe_mk, coe_sup', Finset.sup'_apply, Finset.lt_sup'_iff]
     exact ⟨y, ym, zm⟩
-  have h_eq : ∀ x, (h x : X → ℝ) x = f x := by intro x; simp [h, w₁]
+  have h_eq : ∀ x, (h x : X → ℝ) x = f x := by intro x; simp [w₁]
   -- For each `x`, we define `W x` to be `{z | h x z < f z + ε}`,
   let W : X → Set X := fun x => {z | (h x : X → ℝ) z < f z + ε}
   -- This is still a neighbourhood of `x`.
   have W_nhd : ∀ x, W x ∈ 𝓝 x := by
     intro x
     refine IsOpen.mem_nhds ?_ ?_
-    · apply isOpen_lt <;> fun_prop
+    · -- Porting note: mathlib3 `continuity` found `continuous_set_coe`
+      apply isOpen_lt (continuous_set_coe _ _)
+      continuity
     · dsimp only [W, Set.mem_setOf_eq]
       rw [h_eq]
       exact lt_add_of_pos_right _ pos
@@ -247,10 +248,10 @@ theorem sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
         intros; simp only [← Metric.mem_ball, Real.ball_eq_Ioo, Set.mem_Ioo, and_comm]]
   fconstructor
   · dsimp
-    simp only [k, Finset.inf'_lt_iff, ContinuousMap.inf'_apply]
+    simp only [Finset.inf'_lt_iff, ContinuousMap.inf'_apply]
     exact Set.exists_set_mem_of_union_eq_top _ _ xs_w z
   · dsimp
-    simp only [k, Finset.lt_inf'_iff, ContinuousMap.inf'_apply]
+    simp only [Finset.lt_inf'_iff, ContinuousMap.inf'_apply]
     rintro x -
     apply lt_h
 
@@ -422,39 +423,6 @@ theorem polynomialFunctions.starClosure_topologicalClosure {𝕜 : Type*} [RCLik
   ContinuousMap.starSubalgebra_topologicalClosure_eq_top_of_separatesPoints _
     (Subalgebra.separatesPoints_monotone le_sup_left (polynomialFunctions_separatesPoints s))
 
-/-- An induction principle for `C(s, 𝕜)`. -/
-@[elab_as_elim]
-theorem ContinuousMap.induction_on {𝕜 : Type*} [RCLike 𝕜] {s : Set 𝕜}
-    {p : C(s, 𝕜) → Prop} (const : ∀ r, p (.const s r)) (id : p (.restrict s <| .id 𝕜))
-    (star_id : p (star (.restrict s <| .id 𝕜)))
-    (add : ∀ f g, p f → p g → p (f + g)) (mul : ∀ f g, p f → p g → p (f * g))
-    (closure : (∀ f ∈ (polynomialFunctions s).starClosure, p f) → ∀ f, p f) (f : C(s, 𝕜)) :
-    p f := by
-  refine closure (fun f hf => ?_) f
-  rw [polynomialFunctions.starClosure_eq_adjoin_X] at hf
-  induction hf using Algebra.adjoin_induction with
-  | mem f hf =>
-    simp only [Set.mem_union, Set.mem_singleton_iff, Set.mem_star] at hf
-    rw [star_eq_iff_star_eq, eq_comm (b := f)] at hf
-    obtain (rfl | rfl) := hf
-    all_goals simpa only [toContinuousMapOnAlgHom_apply, toContinuousMapOn_X_eq_restrict_id]
-  | algebraMap r => exact const r
-  | add _ _ _ _ hf hg => exact add _ _ hf hg
-  | mul _ _ _ _ hf hg => exact mul _ _ hf hg
-
-open Topology in
-@[elab_as_elim]
-theorem ContinuousMap.induction_on_of_compact {𝕜 : Type*} [RCLike 𝕜] {s : Set 𝕜} [CompactSpace s]
-    {p : C(s, 𝕜) → Prop} (const : ∀ r, p (.const s r)) (id : p (.restrict s <| .id 𝕜))
-    (star_id : p (star (.restrict s <| .id 𝕜)))
-    (add : ∀ f g, p f → p g → p (f + g)) (mul : ∀ f g, p f → p g → p (f * g))
-    (frequently : ∀ f, (∃ᶠ g in 𝓝 f, p g) → p f) (f : C(s, 𝕜)) :
-    p f := by
-  refine f.induction_on const id star_id add mul fun h f ↦ frequently f ?_
-  have := polynomialFunctions.starClosure_topologicalClosure s ▸ mem_top (x := f)
-  rw [← SetLike.mem_coe, topologicalClosure_coe, mem_closure_iff_frequently] at this
-  exact this.mp <| .of_forall h
-
 /-- Continuous algebra homomorphisms from `C(s, ℝ)` into an `ℝ`-algebra `A` which agree
 at `X : 𝕜[X]` (interpreted as a continuous map) are, in fact, equal. -/
 @[ext (iff := false)]
@@ -487,10 +455,16 @@ end PolynomialFunctions
 
 section ContinuousMapZero
 
-variable {𝕜 : Type*} [RCLike 𝕜]
+variable {X : Type*} [TopologicalSpace X] {𝕜 : Type*} [RCLike 𝕜]
 open NonUnitalStarAlgebra Submodule
 
 namespace ContinuousMap
+
+/-
+`set_option maxSynthPendingDepth 2` after https://github.com/leanprover/lean4/pull/4119
+allows use to remove some shortcut instances.
+-/
+set_option maxSynthPendingDepth 2
 
 lemma adjoin_id_eq_span_one_union (s : Set 𝕜) :
     ((StarAlgebra.adjoin 𝕜 {(restrict s (.id 𝕜) : C(s, 𝕜))}) : Set C(s, 𝕜)) =
@@ -514,13 +488,13 @@ lemma nonUnitalStarAlgebraAdjoin_id_subset_ker_evalStarAlgHom {s : Set 𝕜} (h0
     (adjoin 𝕜 {restrict s (.id 𝕜)} : Set C(s, 𝕜)) ⊆
       RingHom.ker (evalStarAlgHom 𝕜 𝕜 (⟨0, h0⟩ : s)) := by
   intro f hf
-  induction hf using adjoin_induction with
+  induction hf using adjoin_induction' with
   | mem f hf =>
     obtain rfl := Set.mem_singleton_iff.mp hf
     rfl
-  | add f g _ _ hf hg => exact add_mem hf hg
+  | add f _ g _ hf hg => exact add_mem hf hg
   | zero => exact zero_mem _
-  | mul f g _ _ _ hg => exact Ideal.mul_mem_left _ f hg
+  | mul f _ g _ _ hg => exact Ideal.mul_mem_left _ f hg
   | smul r f _ hf =>
     rw [SetLike.mem_coe, RingHom.mem_ker] at hf ⊢
     rw [map_smul, hf, smul_zero]
@@ -576,8 +550,7 @@ lemma ker_evalStarAlgHom_eq_closure_adjoin_id (s : Set 𝕜) (h0 : 0 ∈ s) [Com
 
 end ContinuousMap
 
-open scoped ContinuousMapZero
-
+open ContinuousMapZero in
 /-- If `s : Set 𝕜` with `RCLike 𝕜` is compact and contains `0`, then the non-unital star subalgebra
 generated by the identity function in `C(s, 𝕜)₀` is dense. This can be seen as a version of the
 Weierstrass approximation theorem. -/
@@ -585,8 +558,8 @@ lemma ContinuousMapZero.adjoin_id_dense {s : Set 𝕜} [Zero s] (h0 : ((0 : s) :
     [CompactSpace s] : Dense (adjoin 𝕜 {(.id h0 : C(s, 𝕜)₀)} : Set C(s, 𝕜)₀) := by
   have h0' : 0 ∈ s := h0 ▸ (0 : s).property
   rw [dense_iff_closure_eq,
-    ← isClosedEmbedding_toContinuousMap.injective.preimage_image (closure _),
-    ← isClosedEmbedding_toContinuousMap.closure_image_eq, ← coe_toContinuousMapHom,
+    ← closedEmbedding_toContinuousMap.injective.preimage_image (closure _),
+    ← closedEmbedding_toContinuousMap.closure_image_eq, ← coe_toContinuousMapHom,
     ← NonUnitalStarSubalgebra.coe_map, NonUnitalStarAlgHom.map_adjoin_singleton,
     toContinuousMapHom_apply, toContinuousMap_id h0,
     ← ContinuousMap.ker_evalStarAlgHom_eq_closure_adjoin_id s h0']
@@ -594,67 +567,5 @@ lemma ContinuousMapZero.adjoin_id_dense {s : Set 𝕜} [Zero s] (h0 : ((0 : s) :
   simp only [Set.mem_preimage, toContinuousMapHom_apply, SetLike.mem_coe, RingHom.mem_ker,
     ContinuousMap.evalStarAlgHom_apply, ContinuousMap.coe_coe]
   rw [show ⟨0, h0'⟩ = (0 : s) by ext; exact h0.symm, _root_.map_zero f]
-
-/-- An induction principle for `C(s, 𝕜)₀`. -/
-@[elab_as_elim]
-lemma ContinuousMapZero.induction_on {s : Set 𝕜} [Zero s] (h0 : ((0 : s) : 𝕜) = 0)
-    {p : C(s, 𝕜)₀ → Prop} (zero : p 0) (id : p (.id h0)) (star_id : p (star (.id h0)))
-    (add : ∀ f g, p f → p g → p (f + g)) (mul : ∀ f g, p f → p g → p (f * g))
-    (smul : ∀ (r : 𝕜) f, p f → p (r • f))
-    (closure : (∀ f ∈ adjoin 𝕜 {(.id h0 : C(s, 𝕜)₀)}, p f) → ∀ f, p f) (f : C(s, 𝕜)₀) :
-    p f := by
-  refine closure (fun f hf => ?_) f
-  induction hf using NonUnitalAlgebra.adjoin_induction with
-  | mem f hf =>
-    simp only [Set.mem_union, Set.mem_singleton_iff, Set.mem_star] at hf
-    rw [star_eq_iff_star_eq, eq_comm (b := f)] at hf
-    obtain (rfl | rfl) := hf
-    all_goals assumption
-  | zero => exact zero
-  | add _ _ _ _ hf hg => exact add _ _ hf hg
-  | mul _ _ _ _ hf hg => exact mul _ _ hf hg
-  | smul _ _ _ hf => exact smul _ _ hf
-
-open Topology in
-@[elab_as_elim]
-theorem ContinuousMapZero.induction_on_of_compact {s : Set 𝕜} [Zero s] (h0 : ((0 : s) : 𝕜) = 0)
-    [CompactSpace s] {p : C(s, 𝕜)₀ → Prop} (zero : p 0) (id : p (.id h0))
-    (star_id : p (star (.id h0))) (add : ∀ f g, p f → p g → p (f + g))
-    (mul : ∀ f g, p f → p g → p (f * g)) (smul : ∀ (r : 𝕜) f, p f → p (r • f))
-    (frequently : ∀ f, (∃ᶠ g in 𝓝 f, p g) → p f) (f : C(s, 𝕜)₀) :
-    p f := by
-  refine f.induction_on h0 zero id star_id add mul smul fun h f ↦ frequently f ?_
-  have := (ContinuousMapZero.adjoin_id_dense h0).closure_eq ▸ Set.mem_univ (x := f)
-  exact mem_closure_iff_frequently.mp this |>.mp <| .of_forall h
-
-lemma ContinuousMapZero.nonUnitalStarAlgHom_apply_mul_eq_zero {𝕜 A : Type*}
-    [RCLike 𝕜] [NonUnitalRing A] [StarRing A] [TopologicalSpace A] [TopologicalSemiring A]
-    [T2Space A] [Module 𝕜 A] [IsScalarTower 𝕜 A A] {s : Set 𝕜} [Zero s] [CompactSpace s]
-    (h0 : (0 : s) = (0 : 𝕜)) (φ : C(s, 𝕜)₀ →⋆ₙₐ[𝕜] A) (a : A) (hmul_id : φ (.id h0) * a = 0)
-    (hmul_star_id : φ (star (.id h0)) * a = 0) (hφ : Continuous φ) (f : C(s, 𝕜)₀) :
-    φ f * a = 0 := by
-  induction f using ContinuousMapZero.induction_on_of_compact h0 with
-  | zero => simp [map_zero]
-  | id => exact hmul_id
-  | star_id => exact hmul_star_id
-  | add _ _ h₁ h₂ => simp only [map_add, add_mul, h₁, h₂, zero_add]
-  | mul _ _ _ h => simp only [map_mul, mul_assoc, h, mul_zero]
-  | smul _ _ h => rw [map_smul, smul_mul_assoc, h, smul_zero]
-  | frequently f h => exact h.mem_of_closed <| isClosed_eq (by fun_prop) continuous_zero
-
-lemma ContinuousMapZero.mul_nonUnitalStarAlgHom_apply_eq_zero {𝕜 A : Type*}
-    [RCLike 𝕜] [NonUnitalRing A] [StarRing A] [TopologicalSpace A] [TopologicalSemiring A]
-    [T2Space A] [Module 𝕜 A] [SMulCommClass 𝕜 A A] {s : Set 𝕜} [Zero s] [CompactSpace s]
-    (h0 : (0 : s) = (0 : 𝕜)) (φ : C(s, 𝕜)₀ →⋆ₙₐ[𝕜] A) (a : A) (hmul_id : a * φ (.id h0) = 0)
-    (hmul_star_id : a * φ (star (.id h0)) = 0) (hφ : Continuous φ) (f : C(s, 𝕜)₀) :
-    a * φ f = 0 := by
-  induction f using ContinuousMapZero.induction_on_of_compact h0 with
-  | zero => simp [map_zero]
-  | id => exact hmul_id
-  | star_id => exact hmul_star_id
-  | add _ _ h₁ h₂ => simp only [map_add, mul_add, h₁, h₂, zero_add]
-  | mul _ _ h _ => simp only [map_mul, ← mul_assoc, h, zero_mul]
-  | smul _ _ h => rw [map_smul, mul_smul_comm, h, smul_zero]
-  | frequently f h => exact h.mem_of_closed <| isClosed_eq (by fun_prop) continuous_zero
 
 end ContinuousMapZero

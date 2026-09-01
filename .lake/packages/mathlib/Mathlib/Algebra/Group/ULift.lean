@@ -112,9 +112,10 @@ instance instIntCast [IntCast α] : IntCast (ULift α) := ⟨(up ·)⟩
 theorem up_natCast [NatCast α] (n : ℕ) : up (n : α) = n :=
   rfl
 
+-- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem up_ofNat [NatCast α] (n : ℕ) [n.AtLeastTwo] :
-    up (ofNat(n) : α) = ofNat(n) :=
+    up (no_index (OfNat.ofNat n : α)) = OfNat.ofNat n :=
   rfl
 
 @[simp, norm_cast]
@@ -125,9 +126,10 @@ theorem up_intCast [IntCast α] (n : ℤ) : up (n : α) = n :=
 theorem down_natCast [NatCast α] (n : ℕ) : down (n : ULift α) = n :=
   rfl
 
+-- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem down_ofNat [NatCast α] (n : ℕ) [n.AtLeastTwo] :
-    down (ofNat(n) : ULift α) = ofNat(n) :=
+    down (no_index (OfNat.ofNat n : ULift α)) = OfNat.ofNat n :=
   rfl
 
 @[simp, norm_cast]

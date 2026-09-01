@@ -7,7 +7,6 @@ import Mathlib.Data.Complex.Module
 import Mathlib.Data.Complex.Order
 import Mathlib.Data.Complex.Exponential
 import Mathlib.Analysis.RCLike.Basic
-import Mathlib.Topology.Algebra.InfiniteSum.Field
 import Mathlib.Topology.Algebra.InfiniteSum.Module
 import Mathlib.Topology.Instances.RealVectorSpace
 
@@ -187,7 +186,7 @@ theorem continuous_normSq : Continuous normSq := by
 
 
 theorem nnnorm_eq_one_of_pow_eq_one {ζ : ℂ} {n : ℕ} (h : ζ ^ n = 1) (hn : n ≠ 0) : ‖ζ‖₊ = 1 :=
-  (pow_left_inj₀ zero_le' zero_le' hn).1 <| by rw [← nnnorm_pow, h, nnnorm_one, one_pow]
+  (pow_left_inj zero_le' zero_le' hn).1 <| by rw [← nnnorm_pow, h, nnnorm_one, one_pow]
 
 theorem norm_eq_one_of_pow_eq_one {ζ : ℂ} {n : ℕ} (h : ζ ^ n = 1) (hn : n ≠ 0) : ‖ζ‖ = 1 :=
   congr_arg Subtype.val (nnnorm_eq_one_of_pow_eq_one h hn)
@@ -209,14 +208,11 @@ theorem antilipschitz_equivRealProd : AntilipschitzWith (NNReal.sqrt 2) equivRea
   AddMonoidHomClass.antilipschitz_of_bound equivRealProdLm fun z ↦ by
     simpa only [Real.coe_sqrt, NNReal.coe_ofNat] using abs_le_sqrt_two_mul_max z
 
-theorem isUniformEmbedding_equivRealProd : IsUniformEmbedding equivRealProd :=
-  antilipschitz_equivRealProd.isUniformEmbedding lipschitz_equivRealProd.uniformContinuous
-
-@[deprecated (since := "2024-10-01")]
-alias uniformEmbedding_equivRealProd := isUniformEmbedding_equivRealProd
+theorem uniformEmbedding_equivRealProd : UniformEmbedding equivRealProd :=
+  antilipschitz_equivRealProd.uniformEmbedding lipschitz_equivRealProd.uniformContinuous
 
 instance : CompleteSpace ℂ :=
-  (completeSpace_congr isUniformEmbedding_equivRealProd).mpr inferInstance
+  (completeSpace_congr uniformEmbedding_equivRealProd).mpr inferInstance
 
 instance instT2Space : T2Space ℂ := TopologicalSpace.t2Space_of_metrizableSpace
 
@@ -251,10 +247,8 @@ def reCLM : ℂ →L[ℝ] ℝ :=
 theorem continuous_re : Continuous re :=
   reCLM.continuous
 
-lemma uniformlyContinuous_re : UniformContinuous re :=
+lemma uniformlyContinous_re : UniformContinuous re :=
   reCLM.uniformContinuous
-
-@[deprecated (since := "2024-11-04")] alias uniformlyContinous_re := uniformlyContinuous_re
 
 @[simp]
 theorem reCLM_coe : (reCLM : ℂ →ₗ[ℝ] ℝ) = reLm :=
@@ -272,10 +266,8 @@ def imCLM : ℂ →L[ℝ] ℝ :=
 theorem continuous_im : Continuous im :=
   imCLM.continuous
 
-lemma uniformlyContinuous_im : UniformContinuous im :=
+lemma uniformlyContinous_im : UniformContinuous im :=
   imCLM.uniformContinuous
-
-@[deprecated (since := "2024-11-04")] alias uniformlyContinous_im := uniformlyContinuous_im
 
 @[simp]
 theorem imCLM_coe : (imCLM : ℂ →ₗ[ℝ] ℝ) = imLm :=
@@ -363,19 +355,12 @@ theorem isometry_ofReal : Isometry ((↑) : ℝ → ℂ) :=
 theorem continuous_ofReal : Continuous ((↑) : ℝ → ℂ) :=
   ofRealLI.continuous
 
-theorem isUniformEmbedding_ofReal : IsUniformEmbedding ((↑) : ℝ → ℂ) :=
-  ofRealLI.isometry.isUniformEmbedding
-
-theorem _root_.Filter.tendsto_ofReal_iff {α : Type*} {l : Filter α} {f : α → ℝ} {x : ℝ} :
-    Tendsto (fun x ↦ (f x : ℂ)) l (𝓝 (x : ℂ)) ↔ Tendsto f l (𝓝 x) :=
-  isUniformEmbedding_ofReal.isClosedEmbedding.tendsto_nhds_iff.symm
-
 lemma _root_.Filter.Tendsto.ofReal {α : Type*} {l : Filter α} {f : α → ℝ} {x : ℝ}
     (hf : Tendsto f l (𝓝 x)) : Tendsto (fun x ↦ (f x : ℂ)) l (𝓝 (x : ℂ)) :=
-  tendsto_ofReal_iff.mpr hf
+  (continuous_ofReal.tendsto _).comp hf
 
 /-- The only continuous ring homomorphism from `ℝ` to `ℂ` is the identity. -/
-theorem ringHom_eq_ofReal_of_continuous {f : ℝ →+* ℂ} (h : Continuous f) : f = ofRealHom := by
+theorem ringHom_eq_ofReal_of_continuous {f : ℝ →+* ℂ} (h : Continuous f) : f = Complex.ofReal := by
   convert congr_arg AlgHom.toRingHom <| Subsingleton.elim (AlgHom.mk' f <| map_real_smul f h)
     (Algebra.ofId ℝ ℂ)
 
@@ -451,23 +436,10 @@ def _root_.RCLike.complexLinearIsometryEquiv {𝕜 : Type*} [RCLike 𝕜]
     (h : RCLike.im (RCLike.I : 𝕜) = 1) : 𝕜 ≃ₗᵢ[ℝ] ℂ where
   map_smul' _ _ := by simp [RCLike.smul_re, RCLike.smul_im, ofReal_mul]; ring
   norm_map' _ := by
-    rw [← sq_eq_sq₀ (by positivity) (by positivity), ← normSq_eq_norm_sq, ← RCLike.normSq_eq_def',
+    rw [← sq_eq_sq (by positivity) (by positivity), ← normSq_eq_norm_sq, ← RCLike.normSq_eq_def',
       RCLike.normSq_apply]
     simp [normSq_add]
   __ := RCLike.complexRingEquiv h
-
-theorem isometry_intCast : Isometry ((↑) : ℤ → ℂ) :=
-  Isometry.of_dist_eq <| by simp_rw [← Complex.ofReal_intCast,
-    Complex.isometry_ofReal.dist_eq, Int.dist_cast_real, implies_true]
-
-theorem closedEmbedding_intCast : IsClosedEmbedding ((↑) : ℤ → ℂ) :=
-  isometry_intCast.isClosedEmbedding
-
-lemma isClosed_range_intCast : IsClosed (Set.range ((↑) : ℤ → ℂ)) :=
-  Complex.closedEmbedding_intCast.isClosed_range
-
-lemma isOpen_compl_range_intCast : IsOpen (Set.range ((↑) : ℤ → ℂ))ᶜ :=
-  Complex.isClosed_range_intCast.isOpen_compl
 
 section ComplexOrder
 
@@ -581,21 +553,6 @@ end RCLike
 
 namespace Complex
 
-section tprod
-
-variable {α : Type*} {f : α → ℂ}
-
-theorem hasProd_abs {x : ℂ} (hfx : HasProd f x) : HasProd (fun i ↦ (f i).abs) x.abs :=
-  hfx.norm
-
-theorem multipliable_abs (hf : Multipliable f) : Multipliable (fun i ↦ (f i).abs) :=
-  hf.norm
-
-theorem abs_tprod (h : Multipliable f) : (∏' i, f i).abs = ∏' i, (f i).abs :=
-  norm_tprod h
-
-end tprod
-
 /-!
 We have to repeat the lemmas about `RCLike.re` and `RCLike.im` as they are not syntactic
 matches for `Complex.re` and `Complex.im`.
@@ -638,10 +595,10 @@ theorem ofReal_tsum (f : α → ℝ) : (↑(∑' a, f a) : ℂ) = ∑' a, ↑(f 
   RCLike.ofReal_tsum _ _
 
 theorem hasSum_re {f : α → ℂ} {x : ℂ} (h : HasSum f x) : HasSum (fun x => (f x).re) x.re :=
-  RCLike.hasSum_re ℂ h
+  RCLike.hasSum_re _ h
 
 theorem hasSum_im {f : α → ℂ} {x : ℂ} (h : HasSum f x) : HasSum (fun x => (f x).im) x.im :=
-  RCLike.hasSum_im ℂ h
+  RCLike.hasSum_im _ h
 
 theorem re_tsum {f : α → ℂ} (h : Summable f) : (∑' a, f a).re = ∑' a, (f a).re :=
   RCLike.re_tsum _ h
@@ -715,9 +672,5 @@ lemma mem_slitPlane_of_norm_lt_one {z : ℂ} (hz : ‖z‖ < 1) : 1 + z ∈ slit
   ball_one_subset_slitPlane <| by simpa
 
 end slitPlane
-
-lemma _root_.IsCompact.reProdIm {s t : Set ℝ} (hs : IsCompact s) (ht : IsCompact t) :
-    IsCompact (s ×ℂ t) :=
-  equivRealProdCLM.toHomeomorph.isCompact_preimage.2 (hs.prod ht)
 
 end Complex

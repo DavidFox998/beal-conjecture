@@ -1,0 +1,29 @@
+{
+  "affine_point_counts": {
+    "11": 6,
+    "3": 4,
+    "5": 8,
+    "7": 6
+  },
+  "certificate_sha256": "7ae20cae9b6c80d7c6e85aa8809b91d46f0a49b34c4c45bbba2c20d618a5a048",
+  "coefficients_descending": [
+    1,
+    -8,
+    8,
+    -18,
+    8,
+    -8,
+    1
+  ],
+  "completed_model_totals": {
+    "11": 8,
+    "3": 6,
+    "5": 10,
+    "7": 8
+  },
+  "discriminant": 2303721472,
+  "discriminant_factorization": "2^20 * 13^3",
+  "polynomial": "x^6 - 8*x^5 + 8*x^4 - 18*x^3 + 8*x^2 - 8*x + 1",
+  "producer": "CPython standard library; reference run 3.13.11",
+  "resultant_f_fprime": -2303721472
+}

@@ -123,7 +123,7 @@ def opInverse : HomologicalComplex Vᵒᵖ c.symm ⥤ (HomologicalComplex V c)�
 def opUnitIso : 𝟭 (HomologicalComplex V c)ᵒᵖ ≅ opFunctor V c ⋙ opInverse V c :=
   NatIso.ofComponents
     (fun X =>
-      (HomologicalComplex.Hom.isoOfComponents (fun _ => Iso.refl _) fun i j _ => by
+      (HomologicalComplex.Hom.isoOfComponents (fun i => Iso.refl _) fun i j _ => by
             simp only [Iso.refl_hom, Category.id_comp, unopSymm_d, op_d, Quiver.Hom.unop_op,
               Category.comp_id] :
           (Opposite.unop X).op.unopSymm ≅ unop X).op)
@@ -138,7 +138,7 @@ def opUnitIso : 𝟭 (HomologicalComplex V c)ᵒᵖ ≅ opFunctor V c ⋙ opInve
 /-- Auxiliary definition for `opEquivalence`. -/
 def opCounitIso : opInverse V c ⋙ opFunctor V c ≅ 𝟭 (HomologicalComplex Vᵒᵖ c.symm) :=
   NatIso.ofComponents
-    fun X => HomologicalComplex.Hom.isoOfComponents fun _ => Iso.refl _
+    fun X => HomologicalComplex.Hom.isoOfComponents fun i => Iso.refl _
 
 /-- Given a category of complexes with objects in `V`, there is a natural equivalence between its
 opposite category and a category of complexes with objects in `Vᵒᵖ`. -/
@@ -174,7 +174,7 @@ def unopInverse : HomologicalComplex V c.symm ⥤ (HomologicalComplex Vᵒᵖ c)
 def unopUnitIso : 𝟭 (HomologicalComplex Vᵒᵖ c)ᵒᵖ ≅ unopFunctor V c ⋙ unopInverse V c :=
   NatIso.ofComponents
     (fun X =>
-      (HomologicalComplex.Hom.isoOfComponents (fun _ => Iso.refl _) fun i j _ => by
+      (HomologicalComplex.Hom.isoOfComponents (fun i => Iso.refl _) fun i j _ => by
             simp only [Iso.refl_hom, Category.id_comp, unopSymm_d, op_d, Quiver.Hom.unop_op,
               Category.comp_id] :
           (Opposite.unop X).op.unopSymm ≅ unop X).op)
@@ -189,7 +189,7 @@ def unopUnitIso : 𝟭 (HomologicalComplex Vᵒᵖ c)ᵒᵖ ≅ unopFunctor V c 
 /-- Auxiliary definition for `unopEquivalence`. -/
 def unopCounitIso : unopInverse V c ⋙ unopFunctor V c ≅ 𝟭 (HomologicalComplex V c.symm) :=
   NatIso.ofComponents
-    fun X => HomologicalComplex.Hom.isoOfComponents fun _ => Iso.refl _
+    fun X => HomologicalComplex.Hom.isoOfComponents fun i => Iso.refl _
 
 /-- Given a category of complexes with objects in `Vᵒᵖ`, there is a natural equivalence between its
 opposite category and a category of complexes with objects in `V`. -/
@@ -213,16 +213,6 @@ instance (K : HomologicalComplex Vᵒᵖ c) (i : ι) [K.HasHomology i] :
     K.unop.HasHomology i :=
   (inferInstance : (K.sc i).unop.HasHomology)
 
-instance (K : HomologicalComplex V c) (i : ι) [K.HasHomology i] :
-    ((opFunctor _ _).obj (op K)).HasHomology i := by
-  dsimp
-  infer_instance
-
-instance (K : HomologicalComplex Vᵒᵖ c) (i : ι) [K.HasHomology i] :
-    ((unopFunctor _ _).obj (op K)).HasHomology i := by
-  dsimp
-  infer_instance
-
 variable {V c}
 
 /-- If `K` is a homological complex, then the homology of `K.op` identifies to
@@ -236,100 +226,6 @@ then the homology of `K.unop` identifies to the opposite of the homology of `K`.
 def homologyUnop (K : HomologicalComplex Vᵒᵖ c) (i : ι) [K.HasHomology i] :
     K.unop.homology i ≅ unop (K.homology i) :=
   (K.unop.homologyOp i).unop
-
-section
-
-variable (K : HomologicalComplex V c) (i : ι) [K.HasHomology i]
-
-/-- The canonical isomorphism `K.op.cycles i ≅ op (K.opcycles i)`. -/
-def cyclesOpIso : K.op.cycles i ≅ op (K.opcycles i) :=
-  (K.sc i).cyclesOpIso
-
-/-- The canonical isomorphism `K.op.opcycles i ≅ op (K.cycles i)`. -/
-def opcyclesOpIso : K.op.opcycles i ≅ op (K.cycles i) :=
-  (K.sc i).opcyclesOpIso
-
-variable (j : ι)
-
-@[reassoc (attr := simp)]
-lemma opcyclesOpIso_hom_toCycles_op :
-    (K.opcyclesOpIso i).hom ≫ (K.toCycles j i).op = K.op.fromOpcycles i j := by
-  by_cases hij : c.Rel j i
-  · obtain rfl := c.prev_eq' hij
-    exact (K.sc i).opcyclesOpIso_hom_toCycles_op
-  · rw [K.toCycles_eq_zero hij, K.op.fromOpcycles_eq_zero hij, op_zero, comp_zero]
-
-@[reassoc (attr := simp)]
-lemma fromOpcycles_op_cyclesOpIso_inv :
-    (K.fromOpcycles i j).op ≫ (K.cyclesOpIso i).inv = K.op.toCycles j i := by
-  by_cases hij : c.Rel i j
-  · obtain rfl := c.next_eq' hij
-    exact (K.sc i).fromOpcycles_op_cyclesOpIso_inv
-  · rw [K.op.toCycles_eq_zero hij, K.fromOpcycles_eq_zero hij, op_zero, zero_comp]
-
-end
-
-section
-
-variable {K L : HomologicalComplex V c} (φ : K ⟶ L) (i : ι)
-  [K.HasHomology i] [L.HasHomology i]
-
-@[reassoc]
-lemma homologyOp_hom_naturality :
-    homologyMap ((opFunctor _ _).map φ.op) _ ≫ (K.homologyOp i).hom =
-      (L.homologyOp i).hom ≫ (homologyMap φ i).op :=
-  ShortComplex.homologyOpIso_hom_naturality ((shortComplexFunctor V c i).map φ)
-
-@[reassoc]
-lemma opcyclesOpIso_hom_naturality :
-    opcyclesMap ((opFunctor _ _).map φ.op) _ ≫ (K.opcyclesOpIso i).hom =
-      (L.opcyclesOpIso i).hom ≫ (cyclesMap φ i).op :=
-  ShortComplex.opcyclesOpIso_hom_naturality ((shortComplexFunctor V c i).map φ)
-
-@[reassoc]
-lemma opcyclesOpIso_inv_naturality :
-    (cyclesMap φ i).op ≫ (K.opcyclesOpIso i).inv =
-      (L.opcyclesOpIso i).inv ≫ opcyclesMap ((opFunctor _ _).map φ.op) _ :=
-  ShortComplex.opcyclesOpIso_inv_naturality ((shortComplexFunctor V c i).map φ)
-
-@[reassoc]
-lemma cyclesOpIso_hom_naturality :
-    cyclesMap ((opFunctor _ _).map φ.op) _ ≫ (K.cyclesOpIso i).hom =
-      (L.cyclesOpIso i).hom ≫ (opcyclesMap φ i).op :=
-  ShortComplex.cyclesOpIso_hom_naturality ((shortComplexFunctor V c i).map φ)
-
-@[reassoc]
-lemma cyclesOpIso_inv_naturality :
-    (opcyclesMap φ i).op ≫ (K.cyclesOpIso i).inv =
-      (L.cyclesOpIso i).inv ≫ cyclesMap ((opFunctor _ _).map φ.op) _ :=
-  ShortComplex.cyclesOpIso_inv_naturality ((shortComplexFunctor V c i).map φ)
-
-end
-
-section
-
-variable (V c) [CategoryWithHomology V] (i : ι)
-
-/-- The natural isomorphism `K.op.cycles i ≅ op (K.opcycles i)`. -/
-@[simps!]
-def cyclesOpNatIso :
-    opFunctor V c ⋙ cyclesFunctor Vᵒᵖ c.symm i ≅ (opcyclesFunctor V c i).op :=
-  NatIso.ofComponents (fun K ↦ (unop K).cyclesOpIso i)
-    (fun _ ↦ cyclesOpIso_hom_naturality _ _)
-
-/-- The natural isomorphism `K.op.opcycles i ≅ op (K.cycles i)`. -/
-def opcyclesOpNatIso :
-    opFunctor V c ⋙ opcyclesFunctor Vᵒᵖ c.symm i ≅ (cyclesFunctor V c i).op :=
-  NatIso.ofComponents (fun K ↦ (unop K).opcyclesOpIso i)
-    (fun _ ↦ opcyclesOpIso_hom_naturality _ _)
-
-/-- The natural isomorphism `K.op.homology i ≅ op (K.homology i)`. -/
-def homologyOpNatIso :
-    opFunctor V c ⋙ homologyFunctor Vᵒᵖ c.symm i ≅ (homologyFunctor V c i).op :=
-  NatIso.ofComponents (fun K ↦ (unop K).homologyOp i)
-    (fun _ ↦ homologyOp_hom_naturality _ _)
-
-end
 
 end
 

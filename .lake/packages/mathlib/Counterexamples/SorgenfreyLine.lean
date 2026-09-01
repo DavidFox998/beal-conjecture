@@ -110,7 +110,7 @@ theorem nhds_countable_basis_Ico_inv_pnat (a : ℝₗ) :
 theorem nhds_antitone_basis_Ico_inv_pnat (a : ℝₗ) :
     (𝓝 a).HasAntitoneBasis fun n : ℕ+ => Ico a (a + (n : ℝₗ)⁻¹) :=
   ⟨nhds_basis_Ico_inv_pnat a, monotone_const.Ico <| Antitone.const_add
-    (fun k _l hkl => inv_anti₀ (Nat.cast_pos.2 k.2)
+    (fun k _l hkl => inv_le_inv_of_le (Nat.cast_pos.2 k.2)
       (Nat.mono_cast <| Subtype.coe_le_coe.2 hkl)) _⟩
 
 theorem isOpen_iff {s : Set ℝₗ} : IsOpen s ↔ ∀ x ∈ s, ∃ y > x, Ico x y ⊆ s :=
@@ -126,7 +126,7 @@ theorem exists_Ico_disjoint_closed {a : ℝₗ} {s : Set ℝₗ} (hs : IsClosed 
 @[simp]
 theorem map_toReal_nhds (a : ℝₗ) : map toReal (𝓝 a) = 𝓝[≥] toReal a := by
   refine ((nhds_basis_Ico a).map _).eq_of_same_basis ?_
-  simpa only [toReal.image_eq_preimage] using nhdsGE_basis_Ico (toReal a)
+  simpa only [toReal.image_eq_preimage] using nhdsWithin_Ici_basis_Ico (toReal a)
 
 theorem nhds_eq_map (a : ℝₗ) : 𝓝 a = map toReal.symm (𝓝[≥] (toReal a)) := by
   simp_rw [← map_toReal_nhds, map_map, Function.comp_def, toReal.symm_apply_apply, map_id']
@@ -141,7 +141,7 @@ theorem continuous_toReal : Continuous toReal :=
     exact inf_le_left
 
 instance : OrderClosedTopology ℝₗ :=
-  ⟨isClosed_le_prod.preimage (continuous_toReal.prodMap continuous_toReal)⟩
+  ⟨isClosed_le_prod.preimage (continuous_toReal.prod_map continuous_toReal)⟩
 
 instance : ContinuousAdd ℝₗ := by
   refine ⟨continuous_iff_continuousAt.2 ?_⟩
@@ -324,7 +324,7 @@ theorem not_metrizableSpace : ¬MetrizableSpace ℝₗ := by
 
 /-- Topology on the Sorgenfrey line is not second countable. -/
 theorem not_secondCountableTopology : ¬SecondCountableTopology ℝₗ :=
-  fun _ ↦ not_metrizableSpace (metrizableSpace_of_t3_secondCountable _)
+  fun _ ↦ not_metrizableSpace (metrizableSpace_of_t3_second_countable _)
 
 end SorgenfreyLine
 

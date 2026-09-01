@@ -1,39 +1,34 @@
 /-
-Copyright (c) 2022 Eric Wieser, Yaël Dillies, Andrew Yang. All rights reserved.
+Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Eric Wieser, Yaël Dillies, Andrew Yang
+Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Order.Field.Canonical.Defs
-import Mathlib.Data.Finset.Lattice.Fold
-import Mathlib.Data.Nat.Cast.Order.Ring
+import Mathlib.Algebra.Order.Ring.Defs
+import Mathlib.Data.Finset.Lattice
 
 /-!
-# `Finset.sup` of `Nat.cast`
+# Algebraic properties of finitary supremum
 -/
 
-open Finset
+namespace Finset
+variable {ι R : Type*} [LinearOrderedSemiring R] {a b : ι → R}
 
-namespace Nat
-variable {ι R : Type*}
+theorem sup_mul_le_mul_sup_of_nonneg [OrderBot R] (s : Finset ι) (ha : ∀ i ∈ s, 0 ≤ a i)
+    (hb : ∀ i ∈ s, 0 ≤ b i) : s.sup (a * b) ≤ s.sup a * s.sup b :=
+  Finset.sup_le fun _i hi ↦
+    mul_le_mul (le_sup hi) (le_sup hi) (hb _ hi) ((ha _ hi).trans <| le_sup hi)
 
-section LinearOrderedSemiring
-variable [LinearOrderedSemiring R] {s : Finset ι}
+theorem mul_inf_le_inf_mul_of_nonneg [OrderTop R] (s : Finset ι) (ha : ∀ i ∈ s, 0 ≤ a i)
+    (hb : ∀ i ∈ s, 0 ≤ b i) : s.inf a * s.inf b ≤ s.inf (a * b) :=
+  Finset.le_inf fun i hi ↦ mul_le_mul (inf_le hi) (inf_le hi) (Finset.le_inf hb) (ha i hi)
 
-set_option linter.docPrime false in
-@[simp, norm_cast]
-lemma cast_finsetSup' (f : ι → ℕ) (hs) : ((s.sup' hs f : ℕ) : R) = s.sup' hs fun i ↦ (f i : R) :=
-  comp_sup'_eq_sup'_comp _ _ cast_max
+theorem sup'_mul_le_mul_sup'_of_nonneg (s : Finset ι) (H : s.Nonempty) (ha : ∀ i ∈ s, 0 ≤ a i)
+    (hb : ∀ i ∈ s, 0 ≤ b i) : s.sup' H (a * b) ≤ s.sup' H a * s.sup' H b :=
+  (sup'_le _ _) fun _i hi ↦
+    mul_le_mul (le_sup' _ hi) (le_sup' _ hi) (hb _ hi) ((ha _ hi).trans <| le_sup' _ hi)
 
-set_option linter.docPrime false in
-@[simp, norm_cast]
-lemma cast_finsetInf' (f : ι → ℕ) (hs) : (↑(s.inf' hs f) : R) = s.inf' hs fun i ↦ (f i : R) :=
-  comp_inf'_eq_inf'_comp _ _ cast_min
+theorem inf'_mul_le_mul_inf'_of_nonneg (s : Finset ι) (H : s.Nonempty) (ha : ∀ i ∈ s, 0 ≤ a i)
+    (hb : ∀ i ∈ s, 0 ≤ b i) : s.inf' H a * s.inf' H b ≤ s.inf' H (a * b) :=
+  (le_inf' _ _) fun _i hi ↦ mul_le_mul (inf'_le _ hi) (inf'_le _ hi) (le_inf' _ _ hb) (ha _ hi)
 
-end LinearOrderedSemiring
-
-@[simp, norm_cast]
-lemma cast_finsetSup [CanonicallyLinearOrderedSemifield R] (s : Finset ι) (f : ι → ℕ) :
-    (↑(s.sup f) : R) = s.sup fun i ↦ (f i : R) :=
-  comp_sup_eq_sup_comp _ cast_max (by simp)
-
-end Nat
+end Finset

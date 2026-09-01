@@ -107,7 +107,7 @@ theorem tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto_aux
       apply Tendsto.mono_left _ nhdsWithin_le_nhds
       exact (tendsto_id.mul tendsto_const_nhds).add (tendsto_id.const_mul _)
     rw [zero_mul, zero_add, mul_zero] at A
-    have : Ioo (0 : ℝ) 1 ∈ 𝓝[>] 0 := Ioo_mem_nhdsGT zero_lt_one
+    have : Ioo (0 : ℝ) 1 ∈ 𝓝[>] 0 := Ioo_mem_nhdsWithin_Ioi ⟨le_rfl, zero_lt_one⟩
     rcases (((tendsto_order.1 A).2 ε εpos).and this).exists with ⟨δ, hδ, h'δ⟩
     exact ⟨δ, hδ, h'δ.1, h'δ.2⟩
   suffices ∀ᶠ i in l, ‖∫ x in s, φ i x • g x ∂μ‖ ≤ (δ * ∫ x in s, ‖g x‖ ∂μ) + 2 * δ by
@@ -147,7 +147,7 @@ theorem tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto_aux
         · exact Eventually.of_forall fun x => mul_nonneg (norm_nonneg _) δpos.le
         · exact Eventually.of_forall ut
       _ = ∫ x in t, φ i x * δ ∂μ := by
-        apply setIntegral_congr_fun ht fun x hx => ?_
+        apply setIntegral_congr ht fun x hx => ?_
         rw [Real.norm_of_nonneg (hφpos _ (hts hx))]
       _ = (∫ x in t, φ i x ∂μ) * δ := by rw [integral_mul_right]
       _ ≤ 2 * δ := by gcongr; linarith [(le_abs_self _).trans h'i.le]
@@ -171,7 +171,7 @@ theorem tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto_aux
     ‖∫ x in s, φ i x • g x ∂μ‖ =
       ‖(∫ x in s \ u, φ i x • g x ∂μ) + ∫ x in s ∩ u, φ i x • g x ∂μ‖ := by
       conv_lhs => rw [← diff_union_inter s u]
-      rw [setIntegral_union disjoint_sdiff_inter (hs.inter u_open.measurableSet)
+      rw [integral_union disjoint_sdiff_inter (hs.inter u_open.measurableSet)
           (h''i.mono_set diff_subset) (h''i.mono_set inter_subset_left)]
     _ ≤ ‖∫ x in s \ u, φ i x • g x ∂μ‖ + ‖∫ x in s ∩ u, φ i x • g x ∂μ‖ := norm_add_le _ _
     _ ≤ (δ * ∫ x in s, ‖g x‖ ∂μ) + 2 * δ := add_le_add C B
@@ -317,15 +317,15 @@ theorem tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_measure_n
               exact lt_of_le_of_lt (measure_mono inter_subset_right) hs.measure_lt_top
             · exact (I n).mono inter_subset_right le_rfl
             · intro x hx
-              exact pow_le_pow_left₀ t'_pos.le (hv hx).le _
+              exact pow_le_pow_left t'_pos.le (le_of_lt (hv hx)) _
           _ ≤ ∫ y in s, c y ^ n ∂μ :=
             setIntegral_mono_set (I n) (J n) (Eventually.of_forall inter_subset_right)
       simp_rw [φ, ← div_eq_inv_mul, div_pow, div_div]
-      have := ENNReal.toReal_pos (hμ v v_open x₀_v).ne'
-        ((measure_mono inter_subset_right).trans_lt hs.measure_lt_top).ne
-      gcongr
-      · exact hnc _ hx.1
-      · exact ht x hx
+      apply div_le_div (pow_nonneg t_pos n) _ _ B
+      · exact pow_le_pow_left (hnc _ hx.1) (ht x hx) _
+      · apply mul_pos (pow_pos (t_pos.trans_lt tt') _) (ENNReal.toReal_pos (hμ v v_open x₀_v).ne' _)
+        have : μ (v ∩ s) ≤ μ s := measure_mono inter_subset_right
+        exact ne_of_lt (lt_of_le_of_lt this hs.measure_lt_top)
     have N :
       Tendsto (fun n => (μ (v ∩ s)).toReal⁻¹ * (t / t') ^ n) atTop
         (𝓝 ((μ (v ∩ s)).toReal⁻¹ * 0)) := by
@@ -392,7 +392,7 @@ theorem tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_continuou
 ### Peak functions of the form `x ↦ c ^ dim * φ (c x)`
 -/
 
-open Module Bornology
+open FiniteDimensional Bornology
 
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [FiniteDimensional ℝ F]
   [MeasurableSpace F] [BorelSpace F] {μ : Measure F} [IsAddHaarMeasure μ]
@@ -438,7 +438,7 @@ theorem tendsto_integral_comp_smul_smul_of_integrable
         simp [norm_smul, abs_of_pos cpos, mul_pow]; ring
       _ < δ ^ finrank ℝ F * ε := by
         apply hM
-        rw [div_lt_iff₀ δpos] at hc
+        rw [div_lt_iff δpos] at hc
         simp only [mem_compl_iff, mem_closedBall, dist_zero_right, norm_smul, Real.norm_eq_abs,
           abs_of_nonneg cpos.le, not_le, gt_iff_lt]
         exact hc.trans_le (by gcongr)

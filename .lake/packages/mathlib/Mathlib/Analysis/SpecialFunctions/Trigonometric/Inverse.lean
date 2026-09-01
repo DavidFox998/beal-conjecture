@@ -18,7 +18,12 @@ Basic inequalities on trigonometric functions.
 
 noncomputable section
 
-open Topology Filter Set Filter Real
+open scoped Classical
+open Topology Filter
+
+open Set Filter
+
+open Real
 
 namespace Real
 variable {x y : ℝ}

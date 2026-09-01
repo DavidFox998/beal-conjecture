@@ -128,17 +128,19 @@ open Meta
 
 /-- Elaborator for the `calc` tactic mode variant with widgets. -/
 elab_rules : tactic
-| `(tactic|calc%$calcstx $steps) => do
+| `(tactic|calc%$calcstx $stx) => do
+  let steps : TSyntax ``calcSteps := ⟨stx⟩
   let some calcRange := (← getFileMap).rangeOfStx? calcstx | unreachable!
   let indent := calcRange.start.character
   let mut isFirst := true
-  for step in ← Lean.Elab.Term.mkCalcStepViews steps do
-    let some replaceRange := (← getFileMap).rangeOfStx? step.ref | unreachable!
+  for step in ← Lean.Elab.Term.getCalcSteps steps do
+    let some replaceRange := (← getFileMap).rangeOfStx? step | unreachable!
+    let `(calcStep| $(_) := $proofTerm) := step | unreachable!
     let json := json% {"replaceRange": $(replaceRange),
                         "isFirst": $(isFirst),
                         "indent": $(indent)}
-    Widget.savePanelWidgetInfo CalcPanel.javascriptHash (pure json) step.proof
+    Widget.savePanelWidgetInfo CalcPanel.javascriptHash (pure json) proofTerm
     isFirst := false
-  evalCalc (← `(tactic|calc%$calcstx $steps))
+  evalCalc (← `(tactic|calc%$calcstx $stx))
 
 end Lean.Elab.Tactic

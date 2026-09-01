@@ -17,35 +17,47 @@ open Function
 namespace OrderDual
 
 @[to_additive]
-instance mulLeftReflectLE [LE α] [Mul α] [c : MulLeftReflectLE α] : MulLeftReflectLE αᵒᵈ :=
+instance contravariantClass_mul_le [LE α] [Mul α] [c : ContravariantClass α α (· * ·) (· ≤ ·)] :
+    ContravariantClass αᵒᵈ αᵒᵈ (· * ·) (· ≤ ·) :=
   ⟨c.1.flip⟩
 
 @[to_additive]
-instance mulLeftMono [LE α] [Mul α] [c : MulLeftMono α] : MulLeftMono αᵒᵈ :=
+instance covariantClass_mul_le [LE α] [Mul α] [c : CovariantClass α α (· * ·) (· ≤ ·)] :
+    CovariantClass αᵒᵈ αᵒᵈ (· * ·) (· ≤ ·) :=
   ⟨c.1.flip⟩
 
 @[to_additive]
-instance mulRightReflectLE [LE α] [Mul α] [c : MulRightReflectLE α] : MulRightReflectLE αᵒᵈ :=
+instance contravariantClass_swap_mul_le [LE α] [Mul α]
+    [c : ContravariantClass α α (swap (· * ·)) (· ≤ ·)] :
+    ContravariantClass αᵒᵈ αᵒᵈ (swap (· * ·)) (· ≤ ·) :=
   ⟨c.1.flip⟩
 
 @[to_additive]
-instance mulRightMono [LE α] [Mul α] [c : MulRightMono α] : MulRightMono αᵒᵈ :=
+instance covariantClass_swap_mul_le [LE α] [Mul α]
+    [c : CovariantClass α α (swap (· * ·)) (· ≤ ·)] :
+    CovariantClass αᵒᵈ αᵒᵈ (swap (· * ·)) (· ≤ ·) :=
   ⟨c.1.flip⟩
 
 @[to_additive]
-instance mulLeftReflectLT [LT α] [Mul α] [c : MulLeftReflectLT α] : MulLeftReflectLT αᵒᵈ :=
+instance contravariantClass_mul_lt [LT α] [Mul α] [c : ContravariantClass α α (· * ·) (· < ·)] :
+    ContravariantClass αᵒᵈ αᵒᵈ (· * ·) (· < ·) :=
   ⟨c.1.flip⟩
 
 @[to_additive]
-instance mulLeftStrictMono [LT α] [Mul α] [c : MulLeftStrictMono α] : MulLeftStrictMono αᵒᵈ :=
+instance covariantClass_mul_lt [LT α] [Mul α] [c : CovariantClass α α (· * ·) (· < ·)] :
+    CovariantClass αᵒᵈ αᵒᵈ (· * ·) (· < ·) :=
   ⟨c.1.flip⟩
 
 @[to_additive]
-instance mulRightReflectLT [LT α] [Mul α] [c : MulRightReflectLT α] : MulRightReflectLT αᵒᵈ :=
+instance contravariantClass_swap_mul_lt [LT α] [Mul α]
+    [c : ContravariantClass α α (swap (· * ·)) (· < ·)] :
+    ContravariantClass αᵒᵈ αᵒᵈ (swap (· * ·)) (· < ·) :=
   ⟨c.1.flip⟩
 
 @[to_additive]
-instance mulRightStrictMono [LT α] [Mul α] [c : MulRightStrictMono α] : MulRightStrictMono αᵒᵈ :=
+instance covariantClass_swap_mul_lt [LT α] [Mul α]
+    [c : CovariantClass α α (swap (· * ·)) (· < ·)] :
+    CovariantClass αᵒᵈ αᵒᵈ (swap (· * ·)) (· < ·) :=
   ⟨c.1.flip⟩
 
 end OrderDual

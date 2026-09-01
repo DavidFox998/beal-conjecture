@@ -3,11 +3,11 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Filippo A. E. Nuccio, Andrew Yang
 -/
-import Mathlib.LinearAlgebra.Finsupp.SumProd
+import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.RingTheory.Ideal.Prod
 import Mathlib.RingTheory.Localization.Ideal
 import Mathlib.RingTheory.Nilpotent.Lemmas
-import Mathlib.RingTheory.Noetherian.Basic
+import Mathlib.RingTheory.Noetherian
 
 /-!
 # Prime spectrum of a commutative (semi)ring as a type
@@ -46,7 +46,7 @@ assert_not_exists TopologicalSpace
 
 noncomputable section
 
-open scoped Classical Pointwise
+open scoped Classical
 
 universe u v
 
@@ -82,14 +82,6 @@ instance [Subsingleton R] : IsEmpty (PrimeSpectrum R) :=
   ⟨fun x ↦ x.isPrime.ne_top <| SetLike.ext' <| Subsingleton.eq_univ_of_nonempty x.asIdeal.nonempty⟩
 
 variable (R S)
-
-/-- The prime spectrum is in bijection with the set of prime ideals. -/
-@[simps]
-def equivSubtype : PrimeSpectrum R ≃ {I : Ideal R // I.IsPrime} where
-  toFun I := ⟨I.asIdeal, I.2⟩
-  invFun I := ⟨I, I.2⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /-- The map from the direct sum of prime spectra to the prime spectrum of a direct product. -/
 @[simp]
@@ -373,18 +365,6 @@ theorem mem_compl_zeroLocus_iff_not_mem {f : R} {I : PrimeSpectrum R} :
     I ∈ (zeroLocus {f} : Set (PrimeSpectrum R))ᶜ ↔ f ∉ I.asIdeal := by
   rw [Set.mem_compl_iff, mem_zeroLocus, Set.singleton_subset_iff]; rfl
 
-@[simp]
-lemma zeroLocus_insert_zero (s : Set R) : zeroLocus (insert 0 s) = zeroLocus s := by
-  rw [← Set.union_singleton, zeroLocus_union, zeroLocus_singleton_zero, Set.inter_univ]
-
-@[simp]
-lemma zeroLocus_diff_singleton_zero (s : Set R) : zeroLocus (s \ {0}) = zeroLocus s := by
-  rw [← zeroLocus_insert_zero, ← zeroLocus_insert_zero (s := s)]; simp
-
-lemma zeroLocus_smul_of_isUnit {r : R} (hr : IsUnit r) (s : Set R) :
-    zeroLocus (r • s) = zeroLocus s := by
-  ext; simp [Set.subset_def, ← Set.image_smul, Ideal.unit_mul_mem_iff_mem _ hr]
-
 section Order
 
 /-!
@@ -552,20 +532,6 @@ theorem specComap_injective_of_surjective (f : R →+* S) (hf : Function.Surject
     (Ideal.comap_injective_of_surjective f hf
       (congr_arg PrimeSpectrum.asIdeal h : (f.specComap x).asIdeal = (f.specComap y).asIdeal))
 
-/-- `RingHom.specComap` of an isomorphism of rings as an equivalence of their prime spectra. -/
-@[simps apply symm_apply]
-def comapEquiv (e : R ≃+* S) : PrimeSpectrum R ≃ PrimeSpectrum S where
-  toFun := e.symm.toRingHom.specComap
-  invFun := e.toRingHom.specComap
-  left_inv x := by
-    rw [← specComap_comp_apply, RingEquiv.toRingHom_eq_coe,
-      RingEquiv.toRingHom_eq_coe, RingEquiv.symm_comp]
-    rfl
-  right_inv x := by
-    rw [← specComap_comp_apply, RingEquiv.toRingHom_eq_coe,
-      RingEquiv.toRingHom_eq_coe, RingEquiv.comp_symm]
-    rfl
-
 variable (S)
 
 theorem localization_specComap_injective [Algebra R S] (M : Submonoid R) [IsLocalization M S] :
@@ -588,59 +554,6 @@ theorem localization_specComap_range [Algebra R S] (M : Submonoid R) [IsLocaliza
     use ⟨x.asIdeal.map (algebraMap R S), IsLocalization.isPrime_of_isPrime_disjoint M S _ x.2 h⟩
     ext1
     exact IsLocalization.comap_map_of_isPrime_disjoint M S _ x.2 h
-
-section Pi
-
-variable {ι} (R : ι → Type*) [∀ i, CommSemiring (R i)]
-
-/-- The canonical map from a disjoint union of prime spectra of commutative semirings to
-the prime spectrum of the product semiring. -/
-/- TODO: show this is always a topological embedding (even when ι is infinite)
-and is a homeomorphism when ι is finite. -/
-@[simps] def sigmaToPi : (Σ i, PrimeSpectrum (R i)) → PrimeSpectrum (Π i, R i)
-  | ⟨i, p⟩ => (Pi.evalRingHom R i).specComap p
-
-theorem sigmaToPi_injective : (sigmaToPi R).Injective := fun ⟨i, p⟩ ⟨j, q⟩ eq ↦ by
-  obtain rfl | ne := eq_or_ne i j
-  · congr; ext x
-    simpa using congr_arg (Function.update (0 : ∀ i, R i) i x ∈ ·.asIdeal) eq
-  · refine (p.1.ne_top_iff_one.mp p.2.ne_top ?_).elim
-    have : Function.update (1 : ∀ i, R i) j 0 ∈ (sigmaToPi R ⟨j, q⟩).asIdeal := by simp
-    simpa [← eq, Function.update_of_ne ne]
-
-variable [Infinite ι] [∀ i, Nontrivial (R i)]
-
-/-- An infinite product of nontrivial commutative semirings has a maximal ideal outside of the
-range of `sigmaToPi`, i.e. is not of the form `πᵢ⁻¹(𝔭)` for some prime `𝔭 ⊂ R i`, where
-`πᵢ : (Π i, R i) →+* R i` is the projection. For a complete description of all prime ideals,
-see https://math.stackexchange.com/a/1563190. -/
-theorem exists_maximal_nmem_range_sigmaToPi_of_infinite :
-    ∃ (I : Ideal (Π i, R i)) (_ : I.IsMaximal), ⟨I, inferInstance⟩ ∉ Set.range (sigmaToPi R) := by
-  let J : Ideal (Π i, R i) := -- `J := Π₀ i, R i` is an ideal in `Π i, R i`
-  { __ := AddMonoidHom.mrange DFinsupp.coeFnAddMonoidHom
-    smul_mem' := by
-      rintro r _ ⟨x, rfl⟩
-      refine ⟨.mk x.support fun i ↦ r i * x i, funext fun i ↦ show dite _ _ _ = _ from ?_⟩
-      simp_rw [DFinsupp.coeFnAddMonoidHom]
-      refine dite_eq_left_iff.mpr fun h ↦ ?_
-      rw [DFinsupp.not_mem_support_iff.mp h, mul_zero] }
-  have ⟨I, max, le⟩ := J.exists_le_maximal <| (Ideal.ne_top_iff_one _).mpr <| by
-    -- take a maximal ideal I containing J
-    rintro ⟨x, hx⟩
-    have ⟨i, hi⟩ := x.support.exists_not_mem
-    simpa [DFinsupp.coeFnAddMonoidHom, DFinsupp.not_mem_support_iff.mp hi] using congr_fun hx i
-  refine ⟨I, max, fun ⟨⟨i, p⟩, eq⟩ ↦ ?_⟩
-  -- then I is not in the range of `sigmaToPi`
-  have : ⇑(DFinsupp.single i 1) ∉ (sigmaToPi R ⟨i, p⟩).asIdeal := by
-    simpa using p.1.ne_top_iff_one.mp p.2.ne_top
-  rw [eq] at this
-  exact this (le ⟨.single i 1, rfl⟩)
-
-theorem sigmaToPi_not_surjective_of_infinite : ¬ (sigmaToPi R).Surjective := fun surj ↦
-  have ⟨_, _, nmem⟩ := exists_maximal_nmem_range_sigmaToPi_of_infinite R
-  (Set.range_eq_univ.mpr surj ▸ nmem) ⟨⟩
-
-end Pi
 
 end PrimeSpectrum
 

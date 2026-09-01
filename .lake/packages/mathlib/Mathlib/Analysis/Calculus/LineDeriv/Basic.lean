@@ -176,7 +176,7 @@ theorem LineDifferentiableWithinAt.mono (h : LineDifferentiableWithinAt 𝕜 f t
 
 theorem HasLineDerivWithinAt.congr_mono (h : HasLineDerivWithinAt 𝕜 f f' s x v) (ht : EqOn f₁ f t)
     (hx : f₁ x = f x) (h₁ : t ⊆ s) : HasLineDerivWithinAt 𝕜 f₁ f' t x v :=
-  HasDerivWithinAt.congr_mono h (fun _ hy ↦ ht hy) (by simpa using hx) (preimage_mono h₁)
+  HasDerivWithinAt.congr_mono h (fun y hy ↦ ht hy) (by simpa using hx) (preimage_mono h₁)
 
 theorem HasLineDerivWithinAt.congr (h : HasLineDerivWithinAt 𝕜 f f' s x v) (hs : EqOn f₁ f s)
     (hx : f₁ x = f x) : HasLineDerivWithinAt 𝕜 f₁ f' s x v :=
@@ -199,7 +199,7 @@ theorem LineDifferentiableWithinAt.congr (h : LineDifferentiableWithinAt 𝕜 f 
 
 theorem lineDerivWithin_congr (hs : EqOn f₁ f s) (hx : f₁ x = f x) :
     lineDerivWithin 𝕜 f₁ s x v = lineDerivWithin 𝕜 f s x v :=
-  derivWithin_congr (fun _ hy ↦ hs hy) (by simpa using hx)
+  derivWithin_congr (fun y hy ↦ hs hy) (by simpa using hx)
 
 theorem lineDerivWithin_congr' (hs : EqOn f₁ f s) (hx : x ∈ s) :
     lineDerivWithin 𝕜 f₁ s x v = lineDerivWithin 𝕜 f s x v :=
@@ -215,11 +215,11 @@ alias ⟨HasLineDerivAt.tendsto_slope_zero, _⟩ := hasLineDerivAt_iff_tendsto_s
 
 theorem HasLineDerivAt.tendsto_slope_zero_right [PartialOrder 𝕜] (h : HasLineDerivAt 𝕜 f f' x v) :
     Tendsto (fun (t : 𝕜) ↦ t⁻¹ • (f (x + t • v) - f x)) (𝓝[>] 0) (𝓝 f') :=
-  h.tendsto_slope_zero.mono_left (nhdsGT_le_nhdsNE 0)
+  h.tendsto_slope_zero.mono_left (nhds_right'_le_nhds_ne 0)
 
 theorem HasLineDerivAt.tendsto_slope_zero_left [PartialOrder 𝕜] (h : HasLineDerivAt 𝕜 f f' x v) :
     Tendsto (fun (t : 𝕜) ↦ t⁻¹ • (f (x + t • v) - f x)) (𝓝[<] 0) (𝓝 f') :=
-  h.tendsto_slope_zero.mono_left (nhdsLT_le_nhdsNE 0)
+  h.tendsto_slope_zero.mono_left (nhds_left'_le_nhds_ne 0)
 
 theorem HasLineDerivWithinAt.hasLineDerivAt'
     (h : HasLineDerivWithinAt 𝕜 f f' s x v) (hs : ∀ᶠ t : 𝕜 in 𝓝 0, x + t • v ∈ s) :
@@ -237,15 +237,12 @@ Results that need a normed space structure on `E`
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   {f f₀ f₁ : E → F} {f' : F} {s t : Set E} {x v : E} {L : E →L[𝕜] F}
 
-theorem HasLineDerivWithinAt.mono_of_mem_nhdsWithin
+theorem HasLineDerivWithinAt.mono_of_mem
     (h : HasLineDerivWithinAt 𝕜 f f' t x v) (hst : t ∈ 𝓝[s] x) :
     HasLineDerivWithinAt 𝕜 f f' s x v := by
-  apply HasDerivWithinAt.mono_of_mem_nhdsWithin h
+  apply HasDerivWithinAt.mono_of_mem h
   apply ContinuousWithinAt.preimage_mem_nhdsWithin'' _ hst (by simp)
   apply Continuous.continuousWithinAt; fun_prop
-
-@[deprecated (since := "2024-10-31")]
-alias HasLineDerivWithinAt.mono_of_mem := HasLineDerivWithinAt.mono_of_mem_nhdsWithin
 
 theorem HasLineDerivWithinAt.hasLineDerivAt
     (h : HasLineDerivWithinAt 𝕜 f f' s x v) (hs : s ∈ 𝓝 x) :
@@ -274,12 +271,9 @@ lemma DifferentiableAt.lineDeriv_eq_fderiv (hf : DifferentiableAt 𝕜 f x) :
     lineDeriv 𝕜 f x v = fderiv 𝕜 f x v :=
   (hf.hasFDerivAt.hasLineDerivAt v).lineDeriv
 
-theorem LineDifferentiableWithinAt.mono_of_mem_nhdsWithin (h : LineDifferentiableWithinAt 𝕜 f s x v)
+theorem LineDifferentiableWithinAt.mono_of_mem (h : LineDifferentiableWithinAt 𝕜 f s x v)
     (hst : s ∈ 𝓝[t] x) : LineDifferentiableWithinAt 𝕜 f t x v :=
-  (h.hasLineDerivWithinAt.mono_of_mem_nhdsWithin hst).lineDifferentiableWithinAt
-
-@[deprecated (since := "2024-10-31")]
-alias LineDifferentiableWithinAt.mono_of_mem := LineDifferentiableWithinAt.mono_of_mem_nhdsWithin
+  (h.hasLineDerivWithinAt.mono_of_mem hst).lineDifferentiableWithinAt
 
 theorem lineDerivWithin_of_mem_nhds (h : s ∈ 𝓝 x) :
     lineDerivWithin 𝕜 f s x v = lineDeriv 𝕜 f x v := by
@@ -481,7 +475,7 @@ section CompRight
 
 variable {E : Type*} [AddCommGroup E] [Module 𝕜 E]
   {E' : Type*} [AddCommGroup E'] [Module 𝕜 E']
-  {f : E → F} {f' : F} {x : E'} {L : E' →ₗ[𝕜] E}
+  {f : E → F} {f' : F} {x v : E'} {L : E' →ₗ[𝕜] E}
 
 theorem HasLineDerivAt.of_comp {v : E'} (hf : HasLineDerivAt 𝕜 (f ∘ L) f' x v) :
     HasLineDerivAt 𝕜 f f' (L x) (L v) := by

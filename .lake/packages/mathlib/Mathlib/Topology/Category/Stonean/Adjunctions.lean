@@ -53,6 +53,6 @@ noncomputable def stoneCechAdjunction : typeToStonean ⊣ (forget Stonean) :=
 
 /-- The forgetful functor from Stonean spaces, being a right adjoint, preserves limits. -/
 noncomputable instance forget.preservesLimits : Limits.PreservesLimits (forget Stonean) :=
-  rightAdjoint_preservesLimits stoneCechAdjunction
+  rightAdjointPreservesLimits stoneCechAdjunction
 
 end Stonean

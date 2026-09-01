@@ -78,6 +78,7 @@ instance Monad.algebraPreadditive : Preadditive (Monad.Algebra T) where
       zsmul_succ' := by
         intros
         ext
+        dsimp
         simp only [natCast_zsmul, succ_nsmul]
         rfl
       zsmul_neg' := by
@@ -158,6 +159,7 @@ instance Comonad.coalgebraPreadditive : Preadditive (Comonad.Coalgebra U) where
       zsmul_succ' := by
         intros
         ext
+        dsimp
         simp only [natCast_zsmul, succ_nsmul]
         rfl
       zsmul_neg' := by

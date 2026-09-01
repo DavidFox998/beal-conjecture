@@ -24,8 +24,6 @@ This is the reason the `UniqueContinuousFunctionalCalculus` class exists in the 
 opposed to simply appealing directly to Stone-Weierstrass to prove `StarAlgHom.ext_continuousMap`.
 -/
 
-open Topology
-
 section UniqueUnital
 
 section RCLike
@@ -35,7 +33,7 @@ variable {𝕜 A : Type*} [RCLike 𝕜]
 theorem RCLike.uniqueContinuousFunctionalCalculus_of_compactSpace_spectrum [TopologicalSpace A]
     [T2Space A] [Ring A] [StarRing A] [Algebra 𝕜 A] [h : ∀ a : A, CompactSpace (spectrum 𝕜 a)] :
     UniqueContinuousFunctionalCalculus 𝕜 A where
-  eq_of_continuous_of_map_id s _ φ ψ hφ hψ h :=
+  eq_of_continuous_of_map_id s hs φ ψ hφ hψ h :=
     ContinuousMap.starAlgHom_ext_map_X hφ hψ <| by
       convert h using 1
       all_goals exact congr_arg _ (by ext; simp)
@@ -58,7 +56,7 @@ namespace ContinuousMap
 noncomputable def toNNReal (f : C(X, ℝ)) : C(X, ℝ≥0) := .realToNNReal |>.comp f
 
 @[fun_prop]
-lemma continuous_toNNReal : Continuous (toNNReal (X := X)) := continuous_postcomp _
+lemma continuous_toNNReal : Continuous (toNNReal (X := X)) := continuous_comp _
 
 @[simp]
 lemma toNNReal_apply (f : C(X, ℝ)) (x : X) : f.toNNReal x = (f x).toNNReal := rfl
@@ -171,7 +169,7 @@ instance NNReal.instUniqueContinuousFunctionalCalculus [UniqueContinuousFunction
     have : CompactSpace (spectrum ℝ a) := UniqueContinuousFunctionalCalculus.compactSpace_spectrum a
     rw [← isCompact_iff_compactSpace] at *
     rw [← spectrum.preimage_algebraMap ℝ]
-    exact isClosed_nonneg.isClosedEmbedding_subtypeVal.isCompact_preimage <| by assumption
+    exact closedEmbedding_subtype_val isClosed_nonneg |>.isCompact_preimage <| by assumption
   eq_of_continuous_of_map_id s hs φ ψ hφ hψ h := by
     let s' : Set ℝ := (↑) '' s
     let e : s ≃ₜ s' :=
@@ -189,7 +187,7 @@ instance NNReal.instUniqueContinuousFunctionalCalculus [UniqueContinuousFunction
         Continuous ξ' ∧ ξ' (.restrict s' <| .id ℝ) = ξ (.restrict s <| .id ℝ≥0)) := by
       intro ξ'
       refine ⟨ξ.continuous_realContinuousMapOfNNReal hξ |>.comp <|
-        ContinuousMap.continuous_precomp _, ?_⟩
+        ContinuousMap.continuous_comp_left _, ?_⟩
       exact ξ.realContinuousMapOfNNReal_apply_comp_toReal (.restrict s <| .id ℝ≥0)
     obtain ⟨hφ', hφ_id⟩ := this φ hφ
     obtain ⟨hψ', hψ_id⟩ := this ψ hψ
@@ -251,7 +249,7 @@ lemma toNNReal_apply (f : C(X, ℝ)₀) (x : X) : f.toNNReal x = Real.toNNReal (
 lemma continuous_toNNReal : Continuous (toNNReal (X := X)) := by
   rw [continuous_induced_rng]
   convert_to Continuous (ContinuousMap.toNNReal ∘ ((↑) : C(X, ℝ)₀ → C(X, ℝ))) using 1
-  exact ContinuousMap.continuous_postcomp _ |>.comp continuous_induced_dom
+  exact ContinuousMap.continuous_comp _ |>.comp continuous_induced_dom
 
 lemma toContinuousMapHom_toNNReal (f : C(X, ℝ)₀) :
     (toContinuousMapHom (X := X) (R := ℝ) f).toNNReal =
@@ -378,7 +376,7 @@ instance NNReal.instUniqueNonUnitalContinuousFunctionalCalculus
       UniqueNonUnitalContinuousFunctionalCalculus.compactSpace_quasispectrum a
     rw [← isCompact_iff_compactSpace] at *
     rw [← quasispectrum.preimage_algebraMap ℝ]
-    exact isClosed_nonneg.isClosedEmbedding_subtypeVal.isCompact_preimage <| by assumption
+    exact closedEmbedding_subtype_val isClosed_nonneg |>.isCompact_preimage <| by assumption
   eq_of_continuous_of_map_id s hs _inst h0 φ ψ hφ hψ h := by
     let s' : Set ℝ := (↑) '' s
     let e : s ≃ₜ s' :=
@@ -403,7 +401,7 @@ instance NNReal.instUniqueNonUnitalContinuousFunctionalCalculus
       intro ξ'
       refine ⟨ξ.continuous_realContinuousMapZeroOfNNReal hξ |>.comp <| ?_, ?_⟩
       · rw [continuous_induced_rng]
-        exact ContinuousMap.continuous_precomp _ |>.comp continuous_induced_dom
+        exact ContinuousMap.continuous_comp_left _ |>.comp continuous_induced_dom
       · exact ξ.realContinuousMapZeroOfNNReal_apply_comp_toReal (.id h0)
     obtain ⟨hφ', hφ_id⟩ := this φ hφ
     obtain ⟨hψ', hψ_id⟩ := this ψ hψ

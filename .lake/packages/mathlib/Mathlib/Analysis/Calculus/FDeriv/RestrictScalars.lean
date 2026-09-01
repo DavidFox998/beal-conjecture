@@ -16,7 +16,10 @@ the scalar restriction of a linear map.
 -/
 
 
-open Filter Asymptotics ContinuousLinearMap Set Metric Topology NNReal ENNReal
+open Filter Asymptotics ContinuousLinearMap Set Metric
+
+open scoped Classical
+open Topology NNReal Filter Asymptotics ENNReal
 
 noncomputable section
 
@@ -42,21 +45,21 @@ variable {f : E → F} {f' : E →L[𝕜'] F} {s : Set E} {x : E}
 @[fun_prop]
 theorem HasStrictFDerivAt.restrictScalars (h : HasStrictFDerivAt f f' x) :
     HasStrictFDerivAt f (f'.restrictScalars 𝕜) x :=
-  .of_isLittleO h.isLittleO
+  h
 
 theorem HasFDerivAtFilter.restrictScalars {L} (h : HasFDerivAtFilter f f' x L) :
     HasFDerivAtFilter f (f'.restrictScalars 𝕜) x L :=
-  .of_isLittleO h.isLittleO
+  .of_isLittleO h.1
 
 @[fun_prop]
 theorem HasFDerivAt.restrictScalars (h : HasFDerivAt f f' x) :
     HasFDerivAt f (f'.restrictScalars 𝕜) x :=
-  .of_isLittleO h.isLittleO
+  .of_isLittleO h.1
 
 @[fun_prop]
 theorem HasFDerivWithinAt.restrictScalars (h : HasFDerivWithinAt f f' s x) :
     HasFDerivWithinAt f (f'.restrictScalars 𝕜) s x :=
-  .of_isLittleO h.isLittleO
+  .of_isLittleO h.1
 
 @[fun_prop]
 theorem DifferentiableAt.restrictScalars (h : DifferentiableAt 𝕜' f x) : DifferentiableAt 𝕜 f x :=
@@ -79,13 +82,13 @@ theorem Differentiable.restrictScalars (h : Differentiable 𝕜' f) : Differenti
 theorem HasFDerivWithinAt.of_restrictScalars {g' : E →L[𝕜] F} (h : HasFDerivWithinAt f g' s x)
     (H : f'.restrictScalars 𝕜 = g') : HasFDerivWithinAt f f' s x := by
   rw [← H] at h
-  exact .of_isLittleO h.isLittleO
+  exact .of_isLittleO h.1
 
 @[fun_prop]
 theorem hasFDerivAt_of_restrictScalars {g' : E →L[𝕜] F} (h : HasFDerivAt f g' x)
     (H : f'.restrictScalars 𝕜 = g') : HasFDerivAt f f' x := by
   rw [← H] at h
-  exact .of_isLittleO h.isLittleO
+  exact .of_isLittleO h.1
 
 theorem DifferentiableAt.fderiv_restrictScalars (h : DifferentiableAt 𝕜' f x) :
     fderiv 𝕜 f x = (fderiv 𝕜' f x).restrictScalars 𝕜 :=

@@ -175,10 +175,17 @@ theorem AEStronglyMeasurable'.aeStronglyMeasurable'_of_measurableSpace_le_on {α
     hf_ind.stronglyMeasurable_of_measurableSpace_le_on hs_m hs fun x hxs =>
       Set.indicator_of_not_mem hxs _
 
-variable {α F 𝕜 : Type*} {p : ℝ≥0∞} [RCLike 𝕜]
+variable {α E' F F' 𝕜 : Type*} {p : ℝ≥0∞} [RCLike 𝕜]
   -- 𝕜 for ℝ or ℂ
+  -- E' for an inner product space on which we compute integrals
+  [NormedAddCommGroup E']
+  [InnerProductSpace 𝕜 E'] [CompleteSpace E'] [NormedSpace ℝ E']
   -- F for a Lp submodule
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  [NormedAddCommGroup F]
+  [NormedSpace 𝕜 F]
+  -- F' for integrals on a Lp submodule
+  [NormedAddCommGroup F']
+  [NormedSpace 𝕜 F'] [NormedSpace ℝ F'] [CompleteSpace F']
 
 section LpMeas
 
@@ -250,7 +257,7 @@ measure `μ.trim hm`. As a consequence, the completeness of `Lp` implies complet
 `lpMeasSubgroup` (and `lpMeas`). -/
 
 
-variable {m m0 : MeasurableSpace α} {μ : Measure α}
+variable {ι : Type*} {m m0 : MeasurableSpace α} {μ : Measure α}
 
 /-- If `f` belongs to `lpMeasSubgroup F m p μ`, then the measurable function it is almost
 everywhere equal to (given by `AEMeasurable.mk`) belongs to `ℒp` for the measure `μ.trim hm`. -/

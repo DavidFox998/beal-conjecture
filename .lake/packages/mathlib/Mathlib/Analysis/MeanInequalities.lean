@@ -135,7 +135,7 @@ theorem geom_mean_le_arith_mean_weighted (w z : ι → ℝ) (hw : ∀ i ∈ s, 0
   -- for `exp` and numbers `log (z i)` with weights `w i`.
   · simp only [not_exists, not_and, Ne, Classical.not_not] at A
     have := convexOn_exp.map_sum_le hw hw' fun i _ => Set.mem_univ <| log (z i)
-    simp only [exp_sum, smul_eq_mul, mul_comm (w _) (log _)] at this
+    simp only [exp_sum, (· ∘ ·), smul_eq_mul, mul_comm (w _) (log _)] at this
     convert this using 1 <;> [apply prod_congr rfl;apply sum_congr rfl] <;> intro i hi
     · cases' eq_or_lt_of_le (hz i hi) with hz hz
       · simp [A i hi hz.symm]
@@ -144,7 +144,7 @@ theorem geom_mean_le_arith_mean_weighted (w z : ι → ℝ) (hw : ∀ i ∈ s, 0
       · simp [A i hi hz.symm]
       · rw [exp_log hz]
 
-/-- **AM-GM inequality**: The **geometric mean is less than or equal to the arithmetic mean. -/
+/-- **AM-GM inequality**: The **geometric mean is less than or equal to the arithmetic mean. --/
 theorem geom_mean_le_arith_mean {ι : Type*} (s : Finset ι) (w : ι → ℝ) (z : ι → ℝ)
     (hw : ∀ i ∈ s, 0 ≤ w i) (hw' : 0 < ∑ i ∈ s, w i) (hz : ∀ i ∈ s, 0 ≤ z i) :
     (∏ i ∈ s, z i ^ w i) ^ (∑ i ∈ s, w i)⁻¹  ≤  (∑ i ∈ s, w i * z i) / (∑ i ∈ s, w i) := by
@@ -189,82 +189,6 @@ theorem geom_mean_eq_arith_mean_weighted_of_constant (w z : ι → ℝ) (x : ℝ
     (hw' : ∑ i ∈ s, w i = 1) (hz : ∀ i ∈ s, 0 ≤ z i) (hx : ∀ i ∈ s, w i ≠ 0 → z i = x) :
     ∏ i ∈ s, z i ^ w i = ∑ i ∈ s, w i * z i := by
   rw [geom_mean_weighted_of_constant, arith_mean_weighted_of_constant] <;> assumption
-
-/-- **AM-GM inequality - equality condition**: This theorem provides the equality condition for the
-*positive* weighted version of the AM-GM inequality for real-valued nonnegative functions. -/
-theorem geom_mean_eq_arith_mean_weighted_iff' (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 < w i)
-    (hw' : ∑ i ∈ s, w i = 1) (hz : ∀ i ∈ s, 0 ≤ z i) :
-    ∏ i ∈ s, z i ^ w i = ∑ i ∈ s, w i * z i ↔ ∀ j ∈ s, z j = ∑ i ∈ s, w i * z i := by
-  by_cases A : ∃ i ∈ s, z i = 0 ∧ w i ≠ 0
-  · rcases A with ⟨i, his, hzi, hwi⟩
-    rw [prod_eq_zero his]
-    · constructor
-      · intro h
-        rw [← h]
-        intro j hj
-        apply eq_zero_of_ne_zero_of_mul_left_eq_zero (ne_of_lt (hw j hj)).symm
-        apply (sum_eq_zero_iff_of_nonneg ?_).mp h.symm j hj
-        exact fun i hi => (mul_nonneg_iff_of_pos_left (hw i hi)).mpr (hz i hi)
-      · intro h
-        convert h i his
-        exact hzi.symm
-    · rw [hzi]
-      exact zero_rpow hwi
-  · simp only [not_exists, not_and] at A
-    have hz' := fun i h => lt_of_le_of_ne (hz i h) (fun a => (A i h a.symm) (ne_of_gt (hw i h)))
-    have := strictConvexOn_exp.map_sum_eq_iff hw hw' fun i _ => Set.mem_univ <| log (z i)
-    simp only [exp_sum, smul_eq_mul, mul_comm (w _) (log _)] at this
-    convert this using 1
-    · apply Eq.congr <;>
-      [apply prod_congr rfl; apply sum_congr rfl] <;>
-      intro i hi <;>
-      simp only [exp_mul, exp_log (hz' i hi)]
-    · constructor <;> intro h j hj
-      · rw [← arith_mean_weighted_of_constant s w _ (log (z j)) hw' fun i _ => congrFun rfl]
-        apply sum_congr rfl
-        intro x hx
-        simp only [mul_comm, h j hj, h x hx]
-      · rw [← arith_mean_weighted_of_constant s w _ (z j) hw' fun i _ => congrFun rfl]
-        apply sum_congr rfl
-        intro x hx
-        simp only [log_injOn_pos (hz' j hj) (hz' x hx), h j hj, h x hx]
-
-/-- **AM-GM inequality - equality condition**: This theorem provides the equality condition for the
-weighted version of the AM-GM inequality for real-valued nonnegative functions. -/
-theorem geom_mean_eq_arith_mean_weighted_iff (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 ≤ w i)
-    (hw' : ∑ i ∈ s, w i = 1) (hz : ∀ i ∈ s, 0 ≤ z i) :
-    ∏ i ∈ s, z i ^ w i = ∑ i ∈ s, w i * z i ↔ ∀ j ∈ s, w j ≠ 0 → z j = ∑ i ∈ s, w i * z i := by
-  have h (i) (_ : i ∈ s) : w i * z i ≠ 0 → w i ≠ 0 := by apply left_ne_zero_of_mul
-  have h' (i) (_ : i ∈ s) : z i ^ w i ≠ 1 → w i ≠ 0 := by
-    by_contra!
-    obtain ⟨h1, h2⟩ := this
-    simp only [h2, rpow_zero, ne_self_iff_false] at h1
-  rw [← sum_filter_of_ne h, ← prod_filter_of_ne h', geom_mean_eq_arith_mean_weighted_iff']
-  · simp
-  · simp +contextual [(hw _ _).gt_iff_ne]
-  · rwa [sum_filter_ne_zero]
-  · simp_all only [ne_eq, mul_eq_zero, not_or, not_false_eq_true, and_imp, implies_true, mem_filter]
-
-/-- **AM-GM inequality - strict inequality condition**: This theorem provides the strict inequality
-condition for the *positive* weighted version of the AM-GM inequality for real-valued nonnegative
-functions. -/
-theorem geom_mean_lt_arith_mean_weighted_iff_of_pos (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 < w i)
-    (hw' : ∑ i ∈ s, w i = 1) (hz : ∀ i ∈ s, 0 ≤ z i) :
-    ∏ i ∈ s, z i ^ w i < ∑ i ∈ s, w i * z i ↔ ∃ j ∈ s, ∃ k ∈ s, z j ≠ z k:= by
-  constructor
-  · intro h
-    by_contra! h_contra
-    rw [(geom_mean_eq_arith_mean_weighted_iff' s w z hw hw' hz).mpr ?_] at h
-    · exact (lt_self_iff_false _).mp h
-    · intro j hjs
-      rw [← arith_mean_weighted_of_constant s w (fun _ => z j) (z j) hw' fun _ _ => congrFun rfl]
-      apply sum_congr rfl (fun x a => congrArg (HMul.hMul (w x)) (h_contra j hjs x a))
-  · rintro ⟨j, hjs, k, hks, hzjk⟩
-    have := geom_mean_le_arith_mean_weighted s w z (fun i a => le_of_lt (hw i a)) hw' hz
-    by_contra! h
-    apply le_antisymm this at h
-    apply (geom_mean_eq_arith_mean_weighted_iff' s w z hw hw' hz).mp at h
-    simp only [h j hjs, h k hks, ne_eq, not_true_eq_false] at hzjk
 
 end Real
 
@@ -348,17 +272,17 @@ theorem harm_mean_le_geom_mean_weighted (w z : ι → ℝ) (hs : s.Nonempty) (hw
     have s_pos : 0 < ∑ i in s, w i * (z i)⁻¹ :=
       sum_pos (fun i hi => mul_pos (hw i hi) (inv_pos.2 (hz i hi))) hs
     norm_num at this
-    rw [← inv_le_inv₀ s_pos p_pos] at this
+    rw [← inv_le_inv s_pos p_pos] at this
     apply le_trans this
     have p_pos₂ : 0 < (∏ i in s, (z i) ^ w i)⁻¹ :=
       inv_pos.2 (prod_pos fun i hi => rpow_pos_of_pos ((hz i hi)) _ )
-    rw [← inv_inv (∏ i in s, z i ^ w i), inv_le_inv₀ p_pos p_pos₂, ← Finset.prod_inv_distrib]
+    rw [← inv_inv (∏ i in s, z i ^ w i), inv_le_inv p_pos p_pos₂, ← Finset.prod_inv_distrib]
     gcongr
     · exact fun i hi ↦ inv_nonneg.mpr (Real.rpow_nonneg (le_of_lt (hz i hi)) _)
     · rw [Real.inv_rpow]; apply fun i hi ↦ le_of_lt (hz i hi); assumption
 
 
-/-- **HM-GM inequality**: The **harmonic mean is less than or equal to the geometric mean. -/
+/-- **HM-GM inequality**: The **harmonic mean is less than or equal to the geometric mean. --/
 theorem harm_mean_le_geom_mean {ι : Type*} (s : Finset ι) (hs : s.Nonempty) (w : ι → ℝ)
     (z : ι → ℝ) (hw : ∀ i ∈ s, 0 < w i) (hw' : 0 < ∑ i in s, w i) (hz : ∀ i ∈ s, 0 < z i) :
     (∑ i in s, w i) / (∑ i in s, w i / z i) ≤ (∏ i in s, z i ^ w i) ^ (∑ i in s, w i)⁻¹ := by
@@ -570,7 +494,7 @@ theorem inner_le_Lp_mul_Lq_hasSum {f g : ι → ℝ≥0} {A B : ℝ≥0} {p q : 
 sum of the `p`-th powers of `f i`. Version for sums over finite sets, with `ℝ≥0`-valued functions.
 -/
 theorem rpow_sum_le_const_mul_sum_rpow (f : ι → ℝ≥0) {p : ℝ} (hp : 1 ≤ p) :
-    (∑ i ∈ s, f i) ^ p ≤ (#s : ℝ≥0) ^ (p - 1) * ∑ i ∈ s, f i ^ p := by
+    (∑ i ∈ s, f i) ^ p ≤ (card s : ℝ≥0) ^ (p - 1) * ∑ i ∈ s, f i ^ p := by
   cases' eq_or_lt_of_le hp with hp hp
   · simp [← hp]
   let q : ℝ := p / (p - 1)
@@ -696,7 +620,7 @@ theorem inner_le_Lp_mul_Lq (hpq : IsConjExponent p q) :
 /-- For `1 ≤ p`, the `p`-th power of the sum of `f i` is bounded above by a constant times the
 sum of the `p`-th powers of `f i`. Version for sums over finite sets, with `ℝ`-valued functions. -/
 theorem rpow_sum_le_const_mul_sum_rpow (hp : 1 ≤ p) :
-    (∑ i ∈ s, |f i|) ^ p ≤ (#s : ℝ) ^ (p - 1) * ∑ i ∈ s, |f i| ^ p := by
+    (∑ i ∈ s, |f i|) ^ p ≤ (card s : ℝ) ^ (p - 1) * ∑ i ∈ s, |f i| ^ p := by
   have :=
     NNReal.coe_le_coe.2
       (NNReal.rpow_sum_le_const_mul_sum_rpow s (fun i => ⟨_, abs_nonneg (f i)⟩) hp)
@@ -744,8 +668,8 @@ lemma compact_inner_le_weight_mul_Lp_of_nonneg (s : Finset ι) {p : ℝ} (hp : 1
     𝔼 i ∈ s, w i * f i ≤ (𝔼 i ∈ s, w i) ^ (1 - p⁻¹) * (𝔼 i ∈ s, w i * f i ^ p) ^ p⁻¹ := by
   simp_rw [expect_eq_sum_div_card]
   rw [div_rpow, div_rpow, div_mul_div_comm, ← rpow_add', sub_add_cancel, rpow_one]
-  · gcongr
-    exact inner_le_weight_mul_Lp_of_nonneg s hp _ _ hw hf
+  gcongr
+  · exact inner_le_weight_mul_Lp_of_nonneg s hp _ _ hw hf
   any_goals simp
   · exact sum_nonneg fun i _ ↦ by have := hw i; have := hf i; positivity
   · exact sum_nonneg fun i _ ↦ by have := hw i; positivity
@@ -760,7 +684,7 @@ theorem inner_le_Lp_mul_Lq_tsum_of_nonneg (hpq : p.IsConjExponent q) (hf : ∀ i
       ∑' i, f i * g i ≤ (∑' i, f i ^ p) ^ (1 / p) * (∑' i, g i ^ q) ^ (1 / q) := by
   lift f to ι → ℝ≥0 using hf
   lift g to ι → ℝ≥0 using hg
-  -- After https://github.com/leanprover/lean4/pull/2734, `norm_cast` needs help with beta reduction.
+  -- After leanprover/lean4#2734, `norm_cast` needs help with beta reduction.
   beta_reduce at *
   norm_cast at *
   exact NNReal.inner_le_Lp_mul_Lq_tsum hpq hf_sum hg_sum
@@ -787,7 +711,7 @@ theorem inner_le_Lp_mul_Lq_hasSum_of_nonneg (hpq : p.IsConjExponent q) {A B : �
   lift g to ι → ℝ≥0 using hg
   lift A to ℝ≥0 using hA
   lift B to ℝ≥0 using hB
-  -- After https://github.com/leanprover/lean4/pull/2734, `norm_cast` needs help with beta reduction.
+  -- After leanprover/lean4#2734, `norm_cast` needs help with beta reduction.
   beta_reduce at *
   norm_cast at hf_sum hg_sum
   obtain ⟨C, hC, H⟩ := NNReal.inner_le_Lp_mul_Lq_hasSum hpq hf_sum hg_sum
@@ -798,7 +722,7 @@ theorem inner_le_Lp_mul_Lq_hasSum_of_nonneg (hpq : p.IsConjExponent q) {A B : �
 sum of the `p`-th powers of `f i`. Version for sums over finite sets, with nonnegative `ℝ`-valued
 functions. -/
 theorem rpow_sum_le_const_mul_sum_rpow_of_nonneg (hp : 1 ≤ p) (hf : ∀ i ∈ s, 0 ≤ f i) :
-    (∑ i ∈ s, f i) ^ p ≤ (#s : ℝ) ^ (p - 1) * ∑ i ∈ s, f i ^ p := by
+    (∑ i ∈ s, f i) ^ p ≤ (card s : ℝ) ^ (p - 1) * ∑ i ∈ s, f i ^ p := by
   convert rpow_sum_le_const_mul_sum_rpow s f hp using 2 <;> apply sum_congr rfl <;> intro i hi <;>
     simp only [abs_of_nonneg, hf i hi]
 
@@ -823,7 +747,7 @@ theorem Lp_add_le_tsum_of_nonneg (hp : 1 ≤ p) (hf : ∀ i, 0 ≤ f i) (hg : �
         (∑' i, f i ^ p) ^ (1 / p) + (∑' i, g i ^ p) ^ (1 / p) := by
   lift f to ι → ℝ≥0 using hf
   lift g to ι → ℝ≥0 using hg
-  -- After https://github.com/leanprover/lean4/pull/2734, `norm_cast` needs help with beta reduction.
+  -- After leanprover/lean4#2734, `norm_cast` needs help with beta reduction.
   beta_reduce at *
   norm_cast0 at *
   exact NNReal.Lp_add_le_tsum hp hf_sum hg_sum
@@ -850,12 +774,12 @@ theorem Lp_add_le_hasSum_of_nonneg (hp : 1 ≤ p) (hf : ∀ i, 0 ≤ f i) (hg : 
   lift g to ι → ℝ≥0 using hg
   lift A to ℝ≥0 using hA
   lift B to ℝ≥0 using hB
-  -- After https://github.com/leanprover/lean4/pull/2734, `norm_cast` needs help with beta reduction.
+  -- After leanprover/lean4#2734, `norm_cast` needs help with beta reduction.
   beta_reduce at hfA hgB
   norm_cast at hfA hgB
   obtain ⟨C, hC₁, hC₂⟩ := NNReal.Lp_add_le_hasSum hp hfA hgB
   use C
-  -- After https://github.com/leanprover/lean4/pull/2734, `norm_cast` needs help with beta reduction.
+  -- After leanprover/lean4#2734, `norm_cast` needs help with beta reduction.
   beta_reduce
   norm_cast
   exact ⟨zero_le _, hC₁, hC₂⟩
@@ -897,7 +821,7 @@ lemma inner_le_weight_mul_Lp_of_nonneg (s : Finset ι) {p : ℝ} (hp : 1 ≤ p) 
   obtain rfl | hp := hp.eq_or_lt
   · simp
   have hp₀ : 0 < p := by positivity
-  have hp₁ : p⁻¹ < 1 := inv_lt_one_of_one_lt₀ hp
+  have hp₁ : p⁻¹ < 1 := inv_lt_one hp
   by_cases H : (∑ i ∈ s, w i) ^ (1 - p⁻¹) = 0 ∨ (∑ i ∈ s, w i * f i ^ p) ^ p⁻¹ = 0
   · replace H : (∀ i ∈ s, w i = 0) ∨ ∀ i ∈ s, w i = 0 ∨ f i = 0 := by
       simpa [hp₀, hp₁, hp₀.not_lt, hp₁.not_lt, sum_eq_zero_iff_of_nonneg] using H

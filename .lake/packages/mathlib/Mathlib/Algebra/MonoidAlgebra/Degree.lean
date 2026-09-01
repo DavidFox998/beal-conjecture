@@ -3,7 +3,6 @@ Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.Group.Subsemigroup.Operations
 import Mathlib.Algebra.MonoidAlgebra.Support
 import Mathlib.Order.Filter.Extr
 
@@ -94,8 +93,9 @@ end ExplicitDegrees
 
 section AddOnly
 
-variable [Add A] [Add B] [Add T] [AddLeftMono B] [AddRightMono B]
-  [AddLeftMono T] [AddRightMono T]
+variable [Add A] [Add B] [Add T] [CovariantClass B B (· + ·) (· ≤ ·)]
+  [CovariantClass B B (Function.swap (· + ·)) (· ≤ ·)] [CovariantClass T T (· + ·) (· ≤ ·)]
+  [CovariantClass T T (Function.swap (· + ·)) (· ≤ ·)]
 
 theorem sup_support_mul_le {degb : A → B} (degbm : ∀ {a b}, degb (a + b) ≤ degb a + degb b)
     (f g : R[A]) :
@@ -113,8 +113,9 @@ end AddOnly
 
 section AddMonoids
 
-variable [AddMonoid A] [AddMonoid B] [AddLeftMono B] [AddRightMono B]
-  [AddMonoid T] [AddLeftMono T] [AddRightMono T]
+variable [AddMonoid A] [AddMonoid B] [CovariantClass B B (· + ·) (· ≤ ·)]
+  [CovariantClass B B (Function.swap (· + ·)) (· ≤ ·)] [AddMonoid T]
+  [CovariantClass T T (· + ·) (· ≤ ·)] [CovariantClass T T (Function.swap (· + ·)) (· ≤ ·)]
   {degb : A → B} {degt : A → T}
 
 theorem sup_support_list_prod_le (degb0 : degb 0 ≤ 0)
@@ -158,8 +159,9 @@ end Semiring
 
 section CommutativeLemmas
 
-variable [CommSemiring R] [AddCommMonoid A] [AddCommMonoid B] [AddLeftMono B] [AddRightMono B]
-  [AddCommMonoid T] [AddLeftMono T] [AddRightMono T]
+variable [CommSemiring R] [AddCommMonoid A] [AddCommMonoid B] [CovariantClass B B (· + ·) (· ≤ ·)]
+  [CovariantClass B B (Function.swap (· + ·)) (· ≤ ·)] [AddCommMonoid T]
+  [CovariantClass T T (· + ·) (· ≤ ·)] [CovariantClass T T (Function.swap (· + ·)) (· ≤ ·)]
   {degb : A → B} {degt : A → T}
 
 theorem sup_support_multiset_prod_le (degb0 : degb 0 ≤ 0)
@@ -283,13 +285,13 @@ theorem supDegree_eq_of_max {b : B} (hb : b ∈ Set.range D) (hmem : D.invFun b 
 variable [Add B]
 
 theorem supDegree_mul_le (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2)
-    [AddLeftMono B] [AddRightMono B] :
+    [CovariantClass B B (· + ·) (· ≤ ·)] [CovariantClass B B (Function.swap (· + ·)) (· ≤ ·)] :
     (p * q).supDegree D ≤ p.supDegree D + q.supDegree D :=
   sup_support_mul_le (fun {_ _} => (hadd _ _).le) p q
 
 theorem supDegree_prod_le {R A B : Type*} [CommSemiring R] [AddCommMonoid A] [AddCommMonoid B]
     [SemilatticeSup B] [OrderBot B]
-    [AddLeftMono B] [AddRightMono B]
+    [CovariantClass B B (· + ·) (· ≤ ·)] [CovariantClass B B (Function.swap (· + ·)) (· ≤ ·)]
     {D : A → B} (hzero : D 0 = 0) (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2)
     {ι} {s : Finset ι} {f : ι → R[A]} :
     (∏ i ∈ s, f i).supDegree D ≤ ∑ i ∈ s, (f i).supDegree D := by
@@ -299,10 +301,10 @@ theorem supDegree_prod_le {R A B : Type*} [CommSemiring R] [AddCommMonoid A] [Ad
     split_ifs; exacts [bot_le, hzero.le]
   · intro i s his ih
     rw [Finset.prod_insert his, Finset.sum_insert his]
-    exact (supDegree_mul_le hadd).trans (by gcongr)
+    exact (supDegree_mul_le hadd).trans (add_le_add_left ih _)
 
 theorem apply_add_of_supDegree_le (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2)
-    [AddLeftStrictMono B] [AddRightStrictMono B]
+    [CovariantClass B B (· + ·) (· < ·)] [CovariantClass B B (Function.swap (· + ·)) (· < ·)]
     (hD : D.Injective) {ap aq : A} (hp : p.supDegree D ≤ D ap) (hq : q.supDegree D ≤ D aq) :
     (p * q) (ap + aq) = p ap * q aq := by
   classical
@@ -315,7 +317,7 @@ theorem apply_add_of_supDegree_le (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2)
   · refine fun a ha hne => Finset.sum_eq_zero (fun a' ha' => if_neg <| fun he => ?_)
     apply_fun D at he
     simp_rw [hadd] at he
-    have := addLeftMono_of_addLeftStrictMono B
+    have := covariantClass_le_of_lt B B (· + ·)
     exact (add_lt_add_of_lt_of_le (((Finset.le_sup ha).trans hp).lt_of_ne <| hD.ne_iff.2 hne)
       <| (Finset.le_sup ha').trans hq).ne he
   · refine fun h => Finset.sum_eq_zero (fun a _ => ite_eq_right_iff.mpr <| fun _ => ?_)
@@ -411,9 +413,6 @@ lemma leadingCoeff_eq_zero (hD : D.Injective) : p.leadingCoeff D = 0 ↔ p = 0 :
   rw [leadingCoeff, ← Ne, ← Finsupp.mem_support_iff]
   exact supDegree_mem_support hD h
 
-lemma leadingCoeff_ne_zero (hD : D.Injective) : p.leadingCoeff D ≠ 0 ↔ p ≠ 0 :=
-  (leadingCoeff_eq_zero hD).ne
-
 lemma supDegree_sub_lt_of_leadingCoeff_eq (hD : D.Injective) {R} [CommRing R] {p q : R[A]}
     (hd : p.supDegree D = q.supDegree D) (hc : p.leadingCoeff D = q.leadingCoeff D) :
     (p - q).supDegree D < p.supDegree D ∨ p = q := by
@@ -460,7 +459,7 @@ lemma sum_ne_zero_of_injOn_supDegree (hs : s ≠ ∅)
   sum_ne_zero_of_injOn_supDegree' ⟨i, hi, hf i hi⟩ hd
 
 variable [Add B]
-variable [AddLeftStrictMono B] [AddRightStrictMono B]
+variable [CovariantClass B B (· + ·) (· < ·)] [CovariantClass B B (Function.swap (· + ·)) (· < ·)]
 
 lemma apply_supDegree_add_supDegree (hD : D.Injective) (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2) :
     (p * q) (D.invFun (p.supDegree D + q.supDegree D)) = p.leadingCoeff D * q.leadingCoeff D := by
@@ -546,7 +545,7 @@ lemma Monic.mul
 section AddMonoid
 
 variable {A B : Type*} [AddMonoid A] [AddMonoid B] [LinearOrder B] [OrderBot B]
-  [AddLeftStrictMono B] [AddRightStrictMono B]
+  [CovariantClass B B (· + ·) (· < ·)] [CovariantClass B B (Function.swap (· + ·)) (· < ·)]
   {D : A → B} {p : R[A]} {n : ℕ}
 
 lemma Monic.pow
@@ -593,7 +592,9 @@ theorem infDegree_withTop_some_comp {s : AddMonoidAlgebra R A} (hs : s.support.N
   unfold AddMonoidAlgebra.infDegree
   rw [← Finset.coe_inf' hs, Finset.inf'_eq_inf]
 
-theorem le_infDegree_mul [AddZeroClass A] [Add T] [AddLeftMono T] [AddRightMono T]
+theorem le_infDegree_mul
+    [AddZeroClass A] [Add T]
+    [CovariantClass T T (· + ·) (· ≤ ·)] [CovariantClass T T (Function.swap (· + ·)) (· ≤ ·)]
     (D : AddHom A T) (f g : R[A]) :
     f.infDegree D + g.infDegree D ≤ (f * g).infDegree D :=
   le_inf_support_mul (fun {a b : A} => (map_add D a b).ge) _ _

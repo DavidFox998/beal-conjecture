@@ -75,12 +75,6 @@ theorem zero_apply (n : ℕ) : (0 : FormalMultilinearSeries 𝕜 E F) n = 0 := r
 @[simp]
 theorem neg_apply (f : FormalMultilinearSeries 𝕜 E F) (n : ℕ) : (-f) n = - f n := rfl
 
-@[simp]
-theorem add_apply (p q : FormalMultilinearSeries 𝕜 E F) (n : ℕ) : (p + q) n = p n + q n := rfl
-
-@[simp]
-theorem sub_apply (p q : FormalMultilinearSeries 𝕜 E F) (n : ℕ) : (p - q) n = p n - q n := rfl
-
 @[ext]
 protected theorem ext {p q : FormalMultilinearSeries 𝕜 E F} (h : ∀ n, p n = q n) : p = q :=
   funext h
@@ -131,10 +125,6 @@ theorem congr (p : FormalMultilinearSeries 𝕜 E F) {m n : ℕ} {v : Fin m → 
   congr with ⟨i, hi⟩
   exact h2 i hi hi
 
-lemma congr_zero (p : FormalMultilinearSeries 𝕜 E F) {k l : ℕ} (h : k = l) (h' : p k = 0) :
-    p l = 0 := by
-  subst h; exact h'
-
 /-- Composing each term `pₙ` in a formal multilinear series with `(u, ..., u)` where `u` is a fixed
 continuous linear map, gives a new formal multilinear series `p.compContinuousLinearMap u`. -/
 def compContinuousLinearMap (p : FormalMultilinearSeries 𝕜 F G) (u : E →L[𝕜] F) :
@@ -161,7 +151,7 @@ end
 namespace FormalMultilinearSeries
 
 variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F]
-  [NormedSpace 𝕜 F]
+  [NormedSpace 𝕜 F] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 
 variable (p : FormalMultilinearSeries 𝕜 E F)
 
@@ -178,12 +168,6 @@ function, and building a Taylor series for the function itself. -/
 def unshift (q : FormalMultilinearSeries 𝕜 E (E →L[𝕜] F)) (z : F) : FormalMultilinearSeries 𝕜 E F
   | 0 => (continuousMultilinearCurryFin0 𝕜 E F).symm z
   | n + 1 => (continuousMultilinearCurryRightEquiv' 𝕜 n E F).symm (q n)
-
-theorem unshift_shift {p : FormalMultilinearSeries 𝕜 E (E →L[𝕜] F)} {z : F} :
-    (p.unshift z).shift = p := by
-  ext1 n
-  simp [shift, unshift]
-  exact LinearIsometryEquiv.apply_symm_apply (continuousMultilinearCurryRightEquiv' 𝕜 n E F) (p n)
 
 end FormalMultilinearSeries
 
@@ -277,8 +261,8 @@ end Order
 
 section Coef
 
-variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  {p : FormalMultilinearSeries 𝕜 𝕜 E} {f : 𝕜 → E} {n : ℕ} {z : 𝕜} {y : Fin n → 𝕜}
+variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] {s : E}
+  {p : FormalMultilinearSeries 𝕜 𝕜 E} {f : 𝕜 → E} {n : ℕ} {z z₀ : 𝕜} {y : Fin n → 𝕜}
 
 /-- The `n`th coefficient of `p` when seen as a power series. -/
 def coeff (p : FormalMultilinearSeries 𝕜 𝕜 E) (n : ℕ) : E :=
@@ -376,19 +360,20 @@ def fpowerSeries (f : E →L[𝕜] F) (x : E) : FormalMultilinearSeries 𝕜 E F
   | 1 => (continuousMultilinearCurryFin1 𝕜 E F).symm f
   | _ => 0
 
-@[simp]
 theorem fpowerSeries_apply_zero (f : E →L[𝕜] F) (x : E) :
     f.fpowerSeries x 0 = ContinuousMultilinearMap.uncurry0 𝕜 _ (f x) :=
   rfl
 
-@[simp]
 theorem fpowerSeries_apply_one (f : E →L[𝕜] F) (x : E) :
     f.fpowerSeries x 1 = (continuousMultilinearCurryFin1 𝕜 E F).symm f :=
   rfl
 
-@[simp]
 theorem fpowerSeries_apply_add_two (f : E →L[𝕜] F) (x : E) (n : ℕ) : f.fpowerSeries x (n + 2) = 0 :=
   rfl
+
+attribute
+  [eqns fpowerSeries_apply_zero fpowerSeries_apply_one fpowerSeries_apply_add_two] fpowerSeries
+attribute [simp] fpowerSeries
 
 end ContinuousLinearMap
 

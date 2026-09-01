@@ -58,7 +58,7 @@ dedekind domain, dedekind ring, adic valuation
 
 noncomputable section
 
-open scoped Multiplicative
+open scoped Classical Multiplicative
 
 open Multiplicative IsDedekindDomain
 
@@ -69,7 +69,7 @@ namespace IsDedekindDomain.HeightOneSpectrum
 
 /-! ### Adic valuations on the Dedekind domain R -/
 
-open scoped Classical in
+
 /-- The additive `v`-adic valuation of `r ∈ R` is the exponent of `v` in the factorization of the
 ideal `(r)`, if `r` is nonzero, or infinity, if `r = 0`. `intValuationDef` is the corresponding
 multiplicative valuation. -/
@@ -87,7 +87,6 @@ theorem intValuationDef_if_pos {r : R} (hr : r = 0) : v.intValuationDef r = 0 :=
 theorem intValuationDef_zero : v.intValuationDef 0 = 0 :=
   if_pos rfl
 
-open scoped Classical in
 theorem intValuationDef_if_neg {r : R} (hr : r ≠ 0) :
     v.intValuationDef r =
       Multiplicative.ofAdd
@@ -132,7 +131,6 @@ alias int_valuation_le_one := intValuation_le_one
 /-- The `v`-adic valuation of `r ∈ R` is less than 1 if and only if `v` divides the ideal `(r)`. -/
 theorem intValuation_lt_one_iff_dvd (r : R) :
     v.intValuationDef r < 1 ↔ v.asIdeal ∣ Ideal.span {r} := by
-  classical
   rw [intValuationDef]
   split_ifs with hr
   · simp [hr]
@@ -150,7 +148,6 @@ alias int_valuation_lt_one_iff_dvd := intValuation_lt_one_iff_dvd
 `vⁿ` divides the ideal `(r)`. -/
 theorem intValuation_le_pow_iff_dvd (r : R) (n : ℕ) :
     v.intValuationDef r ≤ Multiplicative.ofAdd (-(n : ℤ)) ↔ v.asIdeal ^ n ∣ Ideal.span {r} := by
-  classical
   rw [intValuationDef]
   split_ifs with hr
   · simp_rw [hr, Ideal.dvd_span_singleton, zero_le', Submodule.zero_mem]
@@ -171,7 +168,6 @@ alias IntValuation.map_zero' := intValuation.map_zero'
 
 /-- The `v`-adic valuation of `1 : R` equals 1. -/
 theorem intValuation.map_one' : v.intValuationDef 1 = 1 := by
-  classical
   rw [v.intValuationDef_if_neg (zero_ne_one.symm : (1 : R) ≠ 0), Ideal.span_singleton_one, ←
     Ideal.one_eq_top, Associates.mk_one, Associates.factors_one,
     Associates.count_zero (by apply v.associates_irreducible), Int.ofNat_zero, neg_zero, ofAdd_zero,
@@ -183,7 +179,6 @@ alias IntValuation.map_one' := intValuation.map_one'
 /-- The `v`-adic valuation of a product equals the product of the valuations. -/
 theorem intValuation.map_mul' (x y : R) :
     v.intValuationDef (x * y) = v.intValuationDef x * v.intValuationDef y := by
-  classical
   simp only [intValuationDef]
   by_cases hx : x = 0
   · rw [hx, zero_mul, if_pos (Eq.refl _), zero_mul]
@@ -211,7 +206,6 @@ alias IntValuation.le_max_iff_min_le := intValuation.le_max_iff_min_le
 /-- The `v`-adic valuation of a sum is bounded above by the maximum of the valuations. -/
 theorem intValuation.map_add_le_max' (x y : R) :
     v.intValuationDef (x + y) ≤ max (v.intValuationDef x) (v.intValuationDef y) := by
-  classical
   by_cases hx : x = 0
   · rw [hx, zero_add]
     conv_rhs => rw [intValuationDef, if_pos (Eq.refl _)]
@@ -263,7 +257,6 @@ theorem intValuation_apply {r : R} (v : IsDedekindDomain.HeightOneSpectrum R) :
 /-- There exists `π ∈ R` with `v`-adic valuation `Multiplicative.ofAdd (-1)`. -/
 theorem intValuation_exists_uniformizer :
     ∃ π : R, v.intValuationDef π = Multiplicative.ofAdd (-1 : ℤ) := by
-  classical
   have hv : _root_.Irreducible (Associates.mk v.asIdeal) := v.associates_irreducible
   have hlt : v.asIdeal ^ 2 < v.asIdeal := by
     rw [← Ideal.dvdNotUnit_iff_lt]
@@ -291,7 +284,6 @@ alias int_valuation_exists_uniformizer := intValuation_exists_uniformizer
 /-- The `I`-adic valuation of a generator of `I` equals `(-1 : ℤₘ₀)` -/
 theorem intValuation_singleton {r : R} (hr : r ≠ 0) (hv : v.asIdeal = Ideal.span {r}) :
     v.intValuation r = Multiplicative.ofAdd (-1 : ℤ) := by
-  classical
   rw [intValuation_apply, v.intValuationDef_if_neg hr, ← hv, Associates.count_self, Int.ofNat_one,
     ofAdd_neg, WithZero.coe_inv]
   apply v.associates_irreducible
@@ -455,7 +447,7 @@ instance : Algebra R (v.adicCompletionIntegers K) where
         (algebraMap R (adicCompletion K v)) r = (algebraMap R K r : adicCompletion K v) := rfl
       rw [Algebra.smul_def]
       refine ValuationSubring.mul_mem _ _ _ ?_ x.2
-      --Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added instance
+      --porting note (#10754): added instance
       letI : Valued K ℤₘ₀ := adicValued v
       rw [mem_adicCompletionIntegers, h, Valued.valuedCompletion_apply]
       exact v.valuation_le_one _⟩
@@ -546,6 +538,6 @@ lemma adicCompletion.mul_nonZeroDivisor_mem_adicCompletionIntegers (v : HeightOn
         Int.natCast_natAbs, smul_eq_mul],
       ← Int.eq_natAbs_of_zero_le ha.le, smul_eq_mul]
     -- and now it's easy
-    omega
+    linarith
 
 end IsDedekindDomain.HeightOneSpectrum

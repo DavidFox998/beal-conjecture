@@ -187,7 +187,8 @@ theorem eval_matrixOfPolynomials_eq_vandermonde_mul_matrixOfPolynomials {n : ℕ
   rw [sum_eq_of_subset _ (fun j => zero_mul ((v i) ^ j)) this, ← Fin.sum_univ_eq_sum_range]
   congr
   ext k
-  rw [mul_comm, Matrix.of_apply, RingHom.id_apply, of_apply]
+  rw [mul_comm, Matrix.of_apply, RingHom.id_apply]
+  rfl
 
 theorem det_eval_matrixOfPolynomials_eq_det_vandermonde {n : ℕ} (v : Fin n → R) (p : Fin n → R[X])
     (h_deg : ∀ i, (p i).natDegree = i) (h_monic : ∀ i, Monic <| p i) :

@@ -21,7 +21,7 @@ Let `K` be a field with a valuation `v` and let `L` be a field extension of `K`.
   is helpful for defining the valuation on `L` inducing `v`.
 -/
 
-open Module minpoly Polynomial
+open FiniteDimensional minpoly Polynomial
 
 variable {K : Type*} [Field K] {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
   (v : Valuation K Γ₀) (L : Type*) [Field L] [Algebra K L]

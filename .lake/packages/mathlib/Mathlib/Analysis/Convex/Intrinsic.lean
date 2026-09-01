@@ -43,7 +43,9 @@ The main results are:
 * `x ∈ s → y ∈ intrinsicInterior 𝕜 s → openSegment 𝕜 x y ⊆ intrinsicInterior 𝕜 s`
 -/
 
-open AffineSubspace Set Topology
+
+open AffineSubspace Set
+
 open scoped Pointwise
 
 variable {𝕜 V W Q P : Type*}
@@ -94,6 +96,24 @@ theorem intrinsicFrontier_subset_intrinsicClosure : intrinsicFrontier 𝕜 s ⊆
 theorem subset_intrinsicClosure : s ⊆ intrinsicClosure 𝕜 s :=
   fun x hx => ⟨⟨x, subset_affineSpan _ _ hx⟩, subset_closure hx, rfl⟩
 
+lemma intrinsicInterior_eq_interior_of_span (hs : affineSpan 𝕜 s = ⊤) :
+    intrinsicInterior 𝕜 s = interior s := by
+  set f : affineSpan 𝕜 s ≃ₜ P := .trans (.setCongr (congr_arg SetLike.coe hs)) (.Set.univ _)
+  change f '' interior (f ⁻¹' s) = interior s
+  rw [f.image_interior, f.image_preimage]
+
+lemma intrinsicFrontier_eq_frontier_of_span (hs : affineSpan 𝕜 s = ⊤) :
+    intrinsicFrontier 𝕜 s = frontier s := by
+  set f : affineSpan 𝕜 s ≃ₜ P := .trans (.setCongr (congr_arg SetLike.coe hs)) (.Set.univ _)
+  change f '' frontier (f ⁻¹' s) = frontier s
+  rw [f.image_frontier, f.image_preimage]
+
+lemma intrinsicClosure_eq_closure_of_span (hs : affineSpan 𝕜 s = ⊤) :
+    intrinsicClosure 𝕜 s = closure s := by
+  set f : affineSpan 𝕜 s ≃ₜ P := .trans (.setCongr (congr_arg SetLike.coe hs)) (.Set.univ _)
+  change f '' closure (f ⁻¹' s) = closure s
+  rw [f.image_closure, f.image_preimage]
+
 @[simp]
 theorem intrinsicInterior_empty : intrinsicInterior 𝕜 (∅ : Set P) = ∅ := by simp [intrinsicInterior]
 
@@ -102,6 +122,15 @@ theorem intrinsicFrontier_empty : intrinsicFrontier 𝕜 (∅ : Set P) = ∅ := 
 
 @[simp]
 theorem intrinsicClosure_empty : intrinsicClosure 𝕜 (∅ : Set P) = ∅ := by simp [intrinsicClosure]
+
+@[simp] lemma intrinsicInterior_univ : intrinsicInterior 𝕜 (univ : Set P) = univ := by
+  simp [intrinsicInterior]
+
+@[simp] lemma intrinsicFrontier_univ : intrinsicFrontier 𝕜 (univ : Set P) = ∅ := by
+  simp [intrinsicFrontier]
+
+@[simp] lemma intrinsicClosure_univ : intrinsicClosure 𝕜 (univ : Set P) = univ := by
+  simp [intrinsicClosure]
 
 @[simp]
 theorem intrinsicClosure_nonempty : (intrinsicClosure 𝕜 s).Nonempty ↔ s.Nonempty :=
@@ -174,11 +203,11 @@ theorem intrinsicFrontier_union_intrinsicInterior (s : Set P) :
 
 theorem isClosed_intrinsicClosure (hs : IsClosed (affineSpan 𝕜 s : Set P)) :
     IsClosed (intrinsicClosure 𝕜 s) :=
-  hs.isClosedEmbedding_subtypeVal.isClosedMap _ isClosed_closure
+  (closedEmbedding_subtype_val hs).isClosedMap _ isClosed_closure
 
 theorem isClosed_intrinsicFrontier (hs : IsClosed (affineSpan 𝕜 s : Set P)) :
     IsClosed (intrinsicFrontier 𝕜 s) :=
-  hs.isClosedEmbedding_subtypeVal.isClosedMap _ isClosed_frontier
+  (closedEmbedding_subtype_val hs).isClosedMap _ isClosed_frontier
 
 @[simp]
 theorem affineSpan_intrinsicClosure (s : Set P) :

@@ -461,7 +461,7 @@ def orthogonalProjection : E →L[𝕜] K :=
         simp [eq_orthogonalProjectionFn_of_mem_of_inner_eq_zero hm ho] }
     1 fun x => by
     simp only [one_mul, LinearMap.coe_mk]
-    refine le_of_pow_le_pow_left₀ two_ne_zero (norm_nonneg _) ?_
+    refine le_of_pow_le_pow_left two_ne_zero (norm_nonneg _) ?_
     change ‖orthogonalProjectionFn K x‖ ^ 2 ≤ ‖x‖ ^ 2
     nlinarith [orthogonalProjectionFn_norm_sq K x]
 
@@ -621,6 +621,7 @@ section reflection
 
 variable [HasOrthogonalProjection K]
 
+-- Porting note: `bit0` is deprecated.
 /-- Auxiliary definition for `reflection`: the reflection as a linear equivalence. -/
 def reflectionLinearEquiv : E ≃ₗ[𝕜] E :=
   LinearEquiv.ofInvolutive
@@ -862,13 +863,12 @@ theorem orthogonalProjection_orthogonalProjection_of_le {U V : Submodule 𝕜 E}
 /-- Given a monotone family `U` of complete submodules of `E` and a fixed `x : E`,
 the orthogonal projection of `x` on `U i` tends to the orthogonal projection of `x` on
 `(⨆ i, U i).topologicalClosure` along `atTop`. -/
-theorem orthogonalProjection_tendsto_closure_iSup {ι : Type*} [Preorder ι]
-    (U : ι → Submodule 𝕜 E) [∀ i, HasOrthogonalProjection (U i)]
-    [HasOrthogonalProjection (⨆ i, U i).topologicalClosure] (hU : Monotone U) (x : E) :
+theorem orthogonalProjection_tendsto_closure_iSup [CompleteSpace E] {ι : Type*} [SemilatticeSup ι]
+    (U : ι → Submodule 𝕜 E) [∀ i, CompleteSpace (U i)] (hU : Monotone U) (x : E) :
     Filter.Tendsto (fun i => (orthogonalProjection (U i) x : E)) atTop
       (𝓝 (orthogonalProjection (⨆ i, U i).topologicalClosure x : E)) := by
-  refine .of_neBot_imp fun h ↦ ?_
-  cases atTop_neBot_iff.mp h
+  cases isEmpty_or_nonempty ι
+  · exact tendsto_of_isEmpty
   let y := (orthogonalProjection (⨆ i, U i).topologicalClosure x : E)
   have proj_x : ∀ i, orthogonalProjection (U i) x = orthogonalProjection (U i) y := fun i =>
     (orthogonalProjection_orthogonalProjection_of_le
@@ -890,15 +890,14 @@ theorem orthogonalProjection_tendsto_closure_iSup {ι : Type*} [Preorder ι]
 
 /-- Given a monotone family `U` of complete submodules of `E` with dense span supremum,
 and a fixed `x : E`, the orthogonal projection of `x` on `U i` tends to `x` along `at_top`. -/
-theorem orthogonalProjection_tendsto_self {ι : Type*} [Preorder ι]
-    (U : ι → Submodule 𝕜 E) [∀ t, HasOrthogonalProjection (U t)] (hU : Monotone U) (x : E)
+theorem orthogonalProjection_tendsto_self [CompleteSpace E] {ι : Type*} [SemilatticeSup ι]
+    (U : ι → Submodule 𝕜 E) [∀ t, CompleteSpace (U t)] (hU : Monotone U) (x : E)
     (hU' : ⊤ ≤ (⨆ t, U t).topologicalClosure) :
     Filter.Tendsto (fun t => (orthogonalProjection (U t) x : E)) atTop (𝓝 x) := by
-  have : HasOrthogonalProjection (⨆ i, U i).topologicalClosure := by
-    rw [top_unique hU']
-    infer_instance
+  rw [← eq_top_iff] at hU'
   convert orthogonalProjection_tendsto_closure_iSup U hU x
-  rw [eq_comm, orthogonalProjection_eq_self_iff, top_unique hU']
+  rw [orthogonalProjection_eq_self_iff.mpr _]
+  rw [hU']
   trivial
 
 /-- The orthogonal complement satisfies `Kᗮᗮᗮ = Kᗮ`. -/
@@ -978,36 +977,6 @@ theorem reflection_sub {v w : F} (h : ‖v‖ = ‖w‖) : reflection (ℝ ∙ (
 
 variable (K)
 
-section FiniteDimensional
-
-open Module
-
-variable [FiniteDimensional 𝕜 K]
-
-@[simp]
-theorem det_reflection : LinearMap.det (reflection K).toLinearMap = (-1) ^ finrank 𝕜 Kᗮ := by
-  by_cases hK : FiniteDimensional 𝕜 Kᗮ
-  swap
-  · rw [finrank_of_infinite_dimensional hK, pow_zero, LinearMap.det_eq_one_of_finrank_eq_zero]
-    exact finrank_of_infinite_dimensional fun h ↦ hK (h.finiteDimensional_submodule _)
-  let e := K.prodEquivOfIsCompl _ K.isCompl_orthogonal_of_completeSpace
-  let b := (finBasis 𝕜 K).prod (finBasis 𝕜 Kᗮ)
-  have : LinearMap.toMatrix b b (e.symm ∘ₗ (reflection K).toLinearMap ∘ₗ e.symm.symm) =
-      Matrix.fromBlocks 1 0 0 (-1) := by
-    ext (_ | _) (_ | _) <;>
-    simp [LinearMap.toMatrix_apply, b, Matrix.one_apply, Finsupp.single_apply, e, eq_comm,
-      reflection_mem_subspace_eq_self, reflection_mem_subspace_orthogonalComplement_eq_neg]
-  rw [← LinearMap.det_conj _ e.symm, ← LinearMap.det_toMatrix b, this, Matrix.det_fromBlocks_zero₂₁,
-    Matrix.det_one, one_mul, Matrix.det_neg, Fintype.card_fin, Matrix.det_one, mul_one]
-
-@[simp]
-theorem linearEquiv_det_reflection : (reflection K).det = (-1) ^ finrank 𝕜 Kᗮ := by
-  ext
-  rw [LinearEquiv.coe_det, Units.val_pow_eq_pow_val]
-  exact det_reflection K
-
-end FiniteDimensional
-
 -- Porting note: relax assumptions, swap LHS with RHS
 /-- If the orthogonal projection to `K` is well-defined, then a vector splits as the sum of its
 orthogonal projections onto a complete submodule `K` and onto the orthogonal complement of `K`. -/
@@ -1060,7 +1029,7 @@ theorem orthogonalProjection_isSymmetric [HasOrthogonalProjection K] :
     (K.subtypeL ∘L orthogonalProjection K : E →ₗ[𝕜] E).IsSymmetric :=
   inner_orthogonalProjection_left_eq_right K
 
-open Module
+open FiniteDimensional
 
 /-- Given a finite-dimensional subspace `K₂`, and a subspace `K₁`
 contained in it, the dimensions of `K₁` and the intersection of its
@@ -1069,7 +1038,7 @@ theorem Submodule.finrank_add_inf_finrank_orthogonal {K₁ K₂ : Submodule 𝕜
     [FiniteDimensional 𝕜 K₂] (h : K₁ ≤ K₂) :
     finrank 𝕜 K₁ + finrank 𝕜 (K₁ᗮ ⊓ K₂ : Submodule 𝕜 E) = finrank 𝕜 K₂ := by
   haveI : FiniteDimensional 𝕜 K₁ := Submodule.finiteDimensional_of_le h
-  haveI := FiniteDimensional.proper_rclike 𝕜 K₁
+  haveI := proper_rclike 𝕜 K₁
   have hd := Submodule.finrank_sup_add_finrank_inf_eq K₁ (K₁ᗮ ⊓ K₂)
   rw [← inf_assoc, (Submodule.orthogonal_disjoint K₁).eq_bot, bot_inf_eq, finrank_bot,
     Submodule.sup_orthogonal_inf_of_completeSpace h] at hd
@@ -1218,7 +1187,7 @@ theorem OrthogonalFamily.isInternal_iff_of_isComplete [DecidableEq ι] {V : ι �
     (hV : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ)
     (hc : IsComplete (↑(iSup V) : Set E)) : DirectSum.IsInternal V ↔ (iSup V)ᗮ = ⊥ := by
   haveI : CompleteSpace (↥(iSup V)) := hc.completeSpace_coe
-  simp only [DirectSum.isInternal_submodule_iff_iSupIndep_and_iSup_eq_top, hV.independent,
+  simp only [DirectSum.isInternal_submodule_iff_independent_and_iSup_eq_top, hV.independent,
     true_and, Submodule.orthogonal_eq_bot_iff]
 
 /-- An orthogonal family of subspaces of `E` satisfies `DirectSum.IsInternal` (that is,
@@ -1261,7 +1230,7 @@ theorem OrthogonalFamily.projection_directSum_coeAddHom [DecidableEq ι] {V : ι
   · simp
   · simp_rw [DirectSum.coeAddMonoidHom_of, DirectSum.of]
     -- Porting note: was in the previous `simp_rw`, no longer works
-    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     erw [DFinsupp.singleAddHom_apply]
     obtain rfl | hij := Decidable.eq_or_ne i j
     · rw [orthogonalProjection_mem_subspace_eq_self, DFinsupp.single_eq_same]
@@ -1285,7 +1254,7 @@ abbrev OrthogonalFamily.decomposition [DecidableEq ι] [Fintype ι] {V : ι → 
     dsimp only
     letI := fun i => Classical.decEq (V i)
     rw [DirectSum.coeAddMonoidHom, DirectSum.toAddMonoid, DFinsupp.liftAddHom_apply]
-    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     erw [DFinsupp.sumAddHom_apply]; rw [DFinsupp.sum_eq_sum_fintype]
     · simp_rw [Equiv.apply_symm_apply, AddSubmonoidClass.coe_subtype]
       exact hV.sum_projection_of_mem_iSup _ ((h.ge : _) Submodule.mem_top)
@@ -1301,7 +1270,7 @@ section OrthonormalBasis
 
 variable {v : Set E}
 
-open Module Submodule Set
+open FiniteDimensional Submodule Set
 
 /-- An orthonormal set in an `InnerProductSpace` is maximal, if and only if the orthogonal
 complement of its span is empty. -/
@@ -1314,7 +1283,7 @@ theorem maximal_orthonormal_iff_orthogonalComplement_eq_bot (hv : Orthonormal �
     rintro ⟨x, hx', hx⟩
     -- take a nonzero vector and normalize it
     let e := (‖x‖⁻¹ : 𝕜) • x
-    have he : ‖e‖ = 1 := by simp [e, norm_smul_inv_norm hx]
+    have he : ‖e‖ = 1 := by simp [norm_smul_inv_norm hx]
     have he' : e ∈ (span 𝕜 v)ᗮ := smul_mem' _ _ hx'
     have he'' : e ∉ v := by
       intro hev
@@ -1372,7 +1341,7 @@ variable [FiniteDimensional 𝕜 E]
 is a basis. -/
 theorem maximal_orthonormal_iff_basis_of_finiteDimensional (hv : Orthonormal 𝕜 ((↑) : v → E)) :
     (∀ u ⊇ v, Orthonormal 𝕜 ((↑) : u → E) → u = v) ↔ ∃ b : Basis v 𝕜 E, ⇑b = ((↑) : v → E) := by
-  haveI := FiniteDimensional.proper_rclike 𝕜 (span 𝕜 v)
+  haveI := proper_rclike 𝕜 (span 𝕜 v)
   rw [maximal_orthonormal_iff_orthogonalComplement_eq_bot hv]
   rw [Submodule.orthogonal_eq_bot_iff]
   have hv_coe : range ((↑) : v → E) = v := by simp

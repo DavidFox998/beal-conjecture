@@ -67,7 +67,7 @@ on `⨂[𝕜] i, Eᵢ`: for every `x` in `⨂[𝕜] i, Eᵢ` and every continuou
 
 * If all `Eᵢ` are separated and satisfy `SeparatingDual`, then the seminorm on
 `⨂[𝕜] i, Eᵢ` is a norm. This uses the construction of a basis of the `PiTensorProduct`, hence
-depends on PR https://github.com/leanprover-community/mathlib4/pull/11156. It should probably go in a separate file.
+depends on PR #11156. It should probably go in a separate file.
 
 * Adapt the remaining functoriality constructions/properties from `PiTensorProduct`.
 
@@ -411,32 +411,31 @@ private theorem mapL_add_smul_aux {ι : Type uι}
   symm
   rw [update_eq_iff]
   constructor
-  · simp only [update_self]
-  · exact fun _ h ↦ by simp only [ne_eq, h, not_false_eq_true, update_of_ne]
+  · simp only [update_same]
+  · exact fun _ h ↦ by simp only [ne_eq, h, not_false_eq_true, update_noteq]
 
 open Function in
 protected theorem mapL_add [DecidableEq ι] (i : ι) (u v : E i →L[𝕜] E' i) :
     mapL (update f i (u + v)) = mapL (update f i u) + mapL (update f i v) := by
   ext x
-  simp only [mapL_apply, mapL_add_smul_aux, ContinuousLinearMap.coe_add,
-    PiTensorProduct.map_update_add, LinearMap.add_apply, ContinuousLinearMap.add_apply]
+  simp only [mapL_apply, mapL_add_smul_aux, ContinuousLinearMap.coe_add, PiTensorProduct.map_add,
+    LinearMap.add_apply, ContinuousLinearMap.add_apply]
 
 open Function in
 protected theorem mapL_smul [DecidableEq ι] (i : ι) (c : 𝕜) (u : E i →L[𝕜] E' i) :
     mapL (update f i (c • u)) = c • mapL (update f i u) := by
   ext x
-  simp only [mapL_apply, mapL_add_smul_aux, ContinuousLinearMap.coe_smul,
-    PiTensorProduct.map_update_smul, LinearMap.smul_apply, ContinuousLinearMap.coe_smul',
-    Pi.smul_apply]
+  simp only [mapL_apply, mapL_add_smul_aux, ContinuousLinearMap.coe_smul, PiTensorProduct.map_smul,
+    LinearMap.smul_apply, ContinuousLinearMap.coe_smul', Pi.smul_apply]
 
 theorem mapL_opNorm : ‖mapL f‖ ≤ ∏ i, ‖f i‖ := by
-  rw [ContinuousLinearMap.opNorm_le_iff (by positivity)]
+  rw [ContinuousLinearMap.opNorm_le_iff (Finset.prod_nonneg (fun _ _ ↦ norm_nonneg _))]
   intro x
   rw [mapL, liftIsometry]
   simp only [LinearIsometryEquiv.coe_mk, liftEquiv_apply, LinearMap.mkContinuous_apply]
   refine le_trans (norm_eval_le_injectiveSeminorm _ _)
     (mul_le_mul_of_nonneg_right ?_ (norm_nonneg x))
-  rw [ContinuousMultilinearMap.opNorm_le_iff (Finset.prod_nonneg (fun _ _ ↦ norm_nonneg _))]
+  rw [ContinuousMultilinearMap.opNorm_le_iff _ (Finset.prod_nonneg (fun _ _ ↦ norm_nonneg _))]
   intro m
   simp only [ContinuousMultilinearMap.compContinuousLinearMap_apply]
   refine le_trans (injectiveSeminorm_tprod_le (fun i ↦ (f i) (m i))) ?_
@@ -453,8 +452,8 @@ noncomputable def mapLMultilinear : ContinuousMultilinearMap 𝕜 (fun (i : ι) 
     ((⨂[𝕜] i, E i) →L[𝕜] ⨂[𝕜] i, E' i) :=
   MultilinearMap.mkContinuous
   { toFun := mapL
-    map_update_smul' := fun _ _ _ _ ↦ PiTensorProduct.mapL_smul _ _ _ _
-    map_update_add' := fun _ _ _ _ ↦ PiTensorProduct.mapL_add _ _ _ _ }
+    map_smul' := fun _ _ _ _ ↦ PiTensorProduct.mapL_smul _ _ _ _
+    map_add' := fun _ _ _ _ ↦ PiTensorProduct.mapL_add _ _ _ _ }
   1 (fun f ↦ by rw [one_mul]; exact mapL_opNorm f)
 
 variable {𝕜 E E'}

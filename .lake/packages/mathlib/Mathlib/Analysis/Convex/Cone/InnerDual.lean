@@ -27,7 +27,12 @@ We prove the following theorems:
   [Farkas lemma](https://en.wikipedia.org/wiki/Farkas%27_lemma#Geometric_interpretation).
 -/
 
-open Set LinearMap Pointwise
+open Set LinearMap
+
+open scoped Classical
+open Pointwise
+
+variable {𝕜 E F G : Type*}
 
 /-! ### The dual cone -/
 

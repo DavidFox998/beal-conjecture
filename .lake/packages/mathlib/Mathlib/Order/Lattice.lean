@@ -65,17 +65,13 @@ variable {α : Type u} {β : Type v}
 /-- A `SemilatticeSup` is a join-semilattice, that is, a partial order
   with a join (a.k.a. lub / least upper bound, sup / supremum) operation
   `⊔` which is the least element larger than both factors. -/
-class SemilatticeSup (α : Type u) extends PartialOrder α where
-  /-- The binary supremum, used to derive `Max α` -/
-  sup : α → α → α
+class SemilatticeSup (α : Type u) extends Sup α, PartialOrder α where
   /-- The supremum is an upper bound on the first argument -/
-  protected le_sup_left : ∀ a b : α, a ≤ sup a b
+  protected le_sup_left : ∀ a b : α, a ≤ a ⊔ b
   /-- The supremum is an upper bound on the second argument -/
-  protected le_sup_right : ∀ a b : α, b ≤ sup a b
+  protected le_sup_right : ∀ a b : α, b ≤ a ⊔ b
   /-- The supremum is the *least* upper bound -/
-  protected sup_le : ∀ a b c : α, a ≤ c → b ≤ c → sup a b ≤ c
-
-instance SemilatticeSup.toMax [SemilatticeSup α] : Max α where max a b := SemilatticeSup.sup a b
+  protected sup_le : ∀ a b c : α, a ≤ c → b ≤ c → a ⊔ b ≤ c
 
 /--
 A type with a commutative, associative and idempotent binary `sup` operation has the structure of a
@@ -83,7 +79,7 @@ join-semilattice.
 
 The partial order is defined so that `a ≤ b` unfolds to `a ⊔ b = b`; cf. `sup_eq_right`.
 -/
-def SemilatticeSup.mk' {α : Type*} [Max α] (sup_comm : ∀ a b : α, a ⊔ b = b ⊔ a)
+def SemilatticeSup.mk' {α : Type*} [Sup α] (sup_comm : ∀ a b : α, a ⊔ b = b ⊔ a)
     (sup_assoc : ∀ a b c : α, a ⊔ b ⊔ c = a ⊔ (b ⊔ c)) (sup_idem : ∀ a : α, a ⊔ a = a) :
     SemilatticeSup α where
   sup := (· ⊔ ·)
@@ -94,6 +90,12 @@ def SemilatticeSup.mk' {α : Type*} [Max α] (sup_comm : ∀ a b : α, a ⊔ b =
   le_sup_left a b := by dsimp; rw [← sup_assoc, sup_idem]
   le_sup_right a b := by dsimp; rw [sup_comm, sup_assoc, sup_idem]
   sup_le a b c hac hbc := by dsimp; rwa [sup_assoc, hbc]
+
+instance OrderDual.instSup (α : Type*) [Inf α] : Sup αᵒᵈ :=
+  ⟨((· ⊓ ·) : α → α → α)⟩
+
+instance OrderDual.instInf (α : Type*) [Sup α] : Inf αᵒᵈ :=
+  ⟨((· ⊔ ·) : α → α → α)⟩
 
 section SemilatticeSup
 
@@ -250,11 +252,11 @@ theorem SemilatticeSup.ext_sup {α} {A B : SemilatticeSup α}
 theorem SemilatticeSup.ext {α} {A B : SemilatticeSup α}
     (H : ∀ x y : α, (haveI := A; x ≤ y) ↔ x ≤ y) :
     A = B := by
+  have ss : A.toSup = B.toSup := by ext; apply SemilatticeSup.ext_sup H
   cases A
   cases B
   cases PartialOrder.ext H
   congr
-  ext; apply SemilatticeSup.ext_sup H
 
 theorem ite_le_sup (s s' : α) (P : Prop) [Decidable P] : ite P s s' ≤ s ⊔ s' :=
   if h : P then (if_pos h).trans_le le_sup_left else (if_neg h).trans_le le_sup_right
@@ -269,28 +271,24 @@ end SemilatticeSup
 /-- A `SemilatticeInf` is a meet-semilattice, that is, a partial order
   with a meet (a.k.a. glb / greatest lower bound, inf / infimum) operation
   `⊓` which is the greatest element smaller than both factors. -/
-class SemilatticeInf (α : Type u) extends PartialOrder α where
-  /-- The binary infimum, used to derive `Min α` -/
-  inf : α → α → α
+class SemilatticeInf (α : Type u) extends Inf α, PartialOrder α where
   /-- The infimum is a lower bound on the first argument -/
-  protected inf_le_left : ∀ a b : α, inf a b ≤ a
+  protected inf_le_left : ∀ a b : α, a ⊓ b ≤ a
   /-- The infimum is a lower bound on the second argument -/
-  protected inf_le_right : ∀ a b : α, inf a b ≤ b
+  protected inf_le_right : ∀ a b : α, a ⊓ b ≤ b
   /-- The infimum is the *greatest* lower bound -/
-  protected le_inf : ∀ a b c : α, a ≤ b → a ≤ c → a ≤ inf b c
-
-instance SemilatticeInf.toMin [SemilatticeInf α] : Min α where min a b := SemilatticeInf.inf a b
+  protected le_inf : ∀ a b c : α, a ≤ b → a ≤ c → a ≤ b ⊓ c
 
 instance OrderDual.instSemilatticeSup (α) [SemilatticeInf α] : SemilatticeSup αᵒᵈ where
   __ := inferInstanceAs (PartialOrder αᵒᵈ)
-  __ := inferInstanceAs (Max αᵒᵈ)
+  __ := inferInstanceAs (Sup αᵒᵈ)
   le_sup_left := @SemilatticeInf.inf_le_left α _
   le_sup_right := @SemilatticeInf.inf_le_right α _
   sup_le := fun _ _ _ hca hcb => @SemilatticeInf.le_inf α _ _ _ _ hca hcb
 
 instance OrderDual.instSemilatticeInf (α) [SemilatticeSup α] : SemilatticeInf αᵒᵈ where
   __ := inferInstanceAs (PartialOrder αᵒᵈ)
-  __ := inferInstanceAs (Min αᵒᵈ)
+  __ := inferInstanceAs (Inf αᵒᵈ)
   inf_le_left := @le_sup_left α _
   inf_le_right := @le_sup_right α _
   le_inf := fun _ _ _ hca hcb => @sup_le α _ _ _ _ hca hcb
@@ -437,11 +435,11 @@ theorem SemilatticeInf.ext_inf {α} {A B : SemilatticeInf α}
 theorem SemilatticeInf.ext {α} {A B : SemilatticeInf α}
     (H : ∀ x y : α, (haveI := A; x ≤ y) ↔ x ≤ y) :
     A = B := by
+  have ss : A.toInf = B.toInf := by ext; apply SemilatticeInf.ext_inf H
   cases A
   cases B
   cases PartialOrder.ext H
   congr
-  ext; apply SemilatticeInf.ext_inf H
 
 theorem SemilatticeInf.dual_dual (α : Type*) [H : SemilatticeInf α] :
     OrderDual.instSemilatticeInf αᵒᵈ = H :=
@@ -458,7 +456,7 @@ meet-semilattice.
 
 The partial order is defined so that `a ≤ b` unfolds to `b ⊓ a = a`; cf. `inf_eq_right`.
 -/
-def SemilatticeInf.mk' {α : Type*} [Min α] (inf_comm : ∀ a b : α, a ⊓ b = b ⊓ a)
+def SemilatticeInf.mk' {α : Type*} [Inf α] (inf_comm : ∀ a b : α, a ⊓ b = b ⊓ a)
     (inf_assoc : ∀ a b c : α, a ⊓ b ⊓ c = a ⊓ (b ⊓ c)) (inf_idem : ∀ a : α, a ⊓ a = a) :
     SemilatticeInf α := by
   haveI : SemilatticeSup αᵒᵈ := SemilatticeSup.mk' inf_comm inf_assoc inf_idem
@@ -481,7 +479,7 @@ instance OrderDual.instLattice (α) [Lattice α] : Lattice αᵒᵈ where
 if `sup` and `inf` satisfy the lattice absorption laws `sup_inf_self` (`a ⊔ a ⊓ b = a`)
 and `inf_sup_self` (`a ⊓ (a ⊔ b) = a`). -/
 theorem semilatticeSup_mk'_partialOrder_eq_semilatticeInf_mk'_partialOrder
-    {α : Type*} [Max α] [Min α]
+    {α : Type*} [Sup α] [Inf α]
     (sup_comm : ∀ a b : α, a ⊔ b = b ⊔ a) (sup_assoc : ∀ a b c : α, a ⊔ b ⊔ c = a ⊔ (b ⊔ c))
     (sup_idem : ∀ a : α, a ⊔ a = a) (inf_comm : ∀ a b : α, a ⊓ b = b ⊓ a)
     (inf_assoc : ∀ a b c : α, a ⊓ b ⊓ c = a ⊓ (b ⊓ c)) (inf_idem : ∀ a : α, a ⊓ a = a)
@@ -497,7 +495,7 @@ laws relating the two operations has the structure of a lattice.
 
 The partial order is defined so that `a ≤ b` unfolds to `a ⊔ b = b`; cf. `sup_eq_right`.
 -/
-def Lattice.mk' {α : Type*} [Max α] [Min α] (sup_comm : ∀ a b : α, a ⊔ b = b ⊔ a)
+def Lattice.mk' {α : Type*} [Sup α] [Inf α] (sup_comm : ∀ a b : α, a ⊔ b = b ⊔ a)
     (sup_assoc : ∀ a b c : α, a ⊔ b ⊔ c = a ⊔ (b ⊔ c)) (inf_comm : ∀ a b : α, a ⊓ b = b ⊓ a)
     (inf_assoc : ∀ a b c : α, a ⊓ b ⊓ c = a ⊓ (b ⊓ c)) (sup_inf_self : ∀ a b : α, a ⊔ a ⊓ b = a)
     (inf_sup_self : ∀ a b : α, a ⊓ (a ⊔ b) = a) : Lattice α :=
@@ -530,7 +528,7 @@ def Lattice.mk' {α : Type*} [Max α] [Min α] (sup_comm : ∀ a b : α, a ⊔ b
 
 section Lattice
 
-variable [Lattice α] {a b c : α}
+variable [Lattice α] {a b c d : α}
 
 theorem inf_le_sup : a ⊓ b ≤ a ⊔ b :=
   inf_le_left.trans le_sup_left
@@ -654,18 +652,18 @@ abbrev DistribLattice.ofInfSupLe
 -- see Note [lower instance priority]
 instance (priority := 100) LinearOrder.toLattice {α : Type u} [o : LinearOrder α] : Lattice α where
   __ := o
+  sup := max
   le_sup_left := le_max_left; le_sup_right := le_max_right; sup_le _ _ _ := max_le
+  inf := min
   inf_le_left := min_le_left; inf_le_right := min_le_right; le_inf _ _ _ := le_min
 
 section LinearOrder
 
 variable [LinearOrder α] {a b c d : α}
 
-@[deprecated "is syntactical" (since := "2024-11-13"), nolint synTaut]
 theorem sup_eq_max : a ⊔ b = max a b :=
   rfl
 
-@[deprecated "is syntactical" (since := "2024-11-13"), nolint synTaut]
 theorem inf_eq_min : a ⊓ b = min a b :=
   rfl
 
@@ -739,14 +737,16 @@ theorem inf_eq_minDefault [SemilatticeInf α] [DecidableRel ((· ≤ ·) : α �
 
 See note [reducible non-instances]. -/
 abbrev Lattice.toLinearOrder (α : Type u) [Lattice α] [DecidableEq α]
-    [DecidableRel ((· ≤ ·) : α → α → Prop)] [DecidableRel ((· < ·) : α → α → Prop)]
-    [IsTotal α (· ≤ ·)] : LinearOrder α where
+    [DecidableRel ((· ≤ ·) : α → α → Prop)]
+    [DecidableRel ((· < ·) : α → α → Prop)] [IsTotal α (· ≤ ·)] : LinearOrder α where
   __ := ‹Lattice α›
   decidableLE := ‹_›
   decidableEq := ‹_›
   decidableLT := ‹_›
   le_total := total_of (· ≤ ·)
+  max := (· ⊔ ·)
   max_def := by exact congr_fun₂ sup_eq_maxDefault
+  min := (· ⊓ ·)
   min_def := by exact congr_fun₂ inf_eq_minDefault
 
 -- see Note [lower instance priority]
@@ -766,19 +766,19 @@ instance : Lattice ℤ := inferInstance
 open OrderDual
 
 @[simp]
-theorem ofDual_inf [Max α] (a b : αᵒᵈ) : ofDual (a ⊓ b) = ofDual a ⊔ ofDual b :=
+theorem ofDual_inf [Sup α] (a b : αᵒᵈ) : ofDual (a ⊓ b) = ofDual a ⊔ ofDual b :=
   rfl
 
 @[simp]
-theorem ofDual_sup [Min α] (a b : αᵒᵈ) : ofDual (a ⊔ b) = ofDual a ⊓ ofDual b :=
+theorem ofDual_sup [Inf α] (a b : αᵒᵈ) : ofDual (a ⊔ b) = ofDual a ⊓ ofDual b :=
   rfl
 
 @[simp]
-theorem toDual_inf [Min α] (a b : α) : toDual (a ⊓ b) = toDual a ⊔ toDual b :=
+theorem toDual_inf [Inf α] (a b : α) : toDual (a ⊓ b) = toDual a ⊔ toDual b :=
   rfl
 
 @[simp]
-theorem toDual_sup [Max α] (a b : α) : toDual (a ⊔ b) = toDual a ⊓ toDual b :=
+theorem toDual_sup [Sup α] (a b : α) : toDual (a ⊔ b) = toDual a ⊓ toDual b :=
   rfl
 
 section LinearOrder
@@ -810,24 +810,24 @@ namespace Pi
 
 variable {ι : Type*} {α' : ι → Type*}
 
-instance [∀ i, Max (α' i)] : Max (∀ i, α' i) :=
+instance [∀ i, Sup (α' i)] : Sup (∀ i, α' i) :=
   ⟨fun f g i => f i ⊔ g i⟩
 
 @[simp]
-theorem sup_apply [∀ i, Max (α' i)] (f g : ∀ i, α' i) (i : ι) : (f ⊔ g) i = f i ⊔ g i :=
+theorem sup_apply [∀ i, Sup (α' i)] (f g : ∀ i, α' i) (i : ι) : (f ⊔ g) i = f i ⊔ g i :=
   rfl
 
-theorem sup_def [∀ i, Max (α' i)] (f g : ∀ i, α' i) : f ⊔ g = fun i => f i ⊔ g i :=
+theorem sup_def [∀ i, Sup (α' i)] (f g : ∀ i, α' i) : f ⊔ g = fun i => f i ⊔ g i :=
   rfl
 
-instance [∀ i, Min (α' i)] : Min (∀ i, α' i) :=
+instance [∀ i, Inf (α' i)] : Inf (∀ i, α' i) :=
   ⟨fun f g i => f i ⊓ g i⟩
 
 @[simp]
-theorem inf_apply [∀ i, Min (α' i)] (f g : ∀ i, α' i) (i : ι) : (f ⊓ g) i = f i ⊓ g i :=
+theorem inf_apply [∀ i, Inf (α' i)] (f g : ∀ i, α' i) (i : ι) : (f ⊓ g) i = f i ⊓ g i :=
   rfl
 
-theorem inf_def [∀ i, Min (α' i)] (f g : ∀ i, α' i) : f ⊓ g = fun i => f i ⊓ g i :=
+theorem inf_def [∀ i, Inf (α' i)] (f g : ∀ i, α' i) : f ⊓ g = fun i => f i ⊓ g i :=
   rfl
 
 instance instSemilatticeSup [∀ i, SemilatticeSup (α' i)] : SemilatticeSup (∀ i, α' i) where
@@ -856,11 +856,11 @@ variable {ι : Type*} {π : ι → Type*} [DecidableEq ι]
 -- Porting note: Dot notation on `Function.update` broke
 theorem update_sup [∀ i, SemilatticeSup (π i)] (f : ∀ i, π i) (i : ι) (a b : π i) :
     update f i (a ⊔ b) = update f i a ⊔ update f i b :=
-  funext fun j => by obtain rfl | hji := eq_or_ne j i <;> simp [update_of_ne, *]
+  funext fun j => by obtain rfl | hji := eq_or_ne j i <;> simp [update_noteq, *]
 
 theorem update_inf [∀ i, SemilatticeInf (π i)] (f : ∀ i, π i) (i : ι) (a b : π i) :
     update f i (a ⊓ b) = update f i a ⊓ update f i b :=
-  funext fun j => by obtain rfl | hji := eq_or_ne j i <;> simp [update_of_ne, *]
+  funext fun j => by obtain rfl | hji := eq_or_ne j i <;> simp [update_noteq, *]
 
 end Function
 
@@ -1085,62 +1085,62 @@ namespace Prod
 
 variable (α β)
 
-instance [Max α] [Max β] : Max (α × β) :=
+instance [Sup α] [Sup β] : Sup (α × β) :=
   ⟨fun p q => ⟨p.1 ⊔ q.1, p.2 ⊔ q.2⟩⟩
 
-instance [Min α] [Min β] : Min (α × β) :=
+instance [Inf α] [Inf β] : Inf (α × β) :=
   ⟨fun p q => ⟨p.1 ⊓ q.1, p.2 ⊓ q.2⟩⟩
 
 @[simp]
-theorem mk_sup_mk [Max α] [Max β] (a₁ a₂ : α) (b₁ b₂ : β) :
+theorem mk_sup_mk [Sup α] [Sup β] (a₁ a₂ : α) (b₁ b₂ : β) :
     (a₁, b₁) ⊔ (a₂, b₂) = (a₁ ⊔ a₂, b₁ ⊔ b₂) :=
   rfl
 
 @[simp]
-theorem mk_inf_mk [Min α] [Min β] (a₁ a₂ : α) (b₁ b₂ : β) :
+theorem mk_inf_mk [Inf α] [Inf β] (a₁ a₂ : α) (b₁ b₂ : β) :
     (a₁, b₁) ⊓ (a₂, b₂) = (a₁ ⊓ a₂, b₁ ⊓ b₂) :=
   rfl
 
 @[simp]
-theorem fst_sup [Max α] [Max β] (p q : α × β) : (p ⊔ q).fst = p.fst ⊔ q.fst :=
+theorem fst_sup [Sup α] [Sup β] (p q : α × β) : (p ⊔ q).fst = p.fst ⊔ q.fst :=
   rfl
 
 @[simp]
-theorem fst_inf [Min α] [Min β] (p q : α × β) : (p ⊓ q).fst = p.fst ⊓ q.fst :=
+theorem fst_inf [Inf α] [Inf β] (p q : α × β) : (p ⊓ q).fst = p.fst ⊓ q.fst :=
   rfl
 
 @[simp]
-theorem snd_sup [Max α] [Max β] (p q : α × β) : (p ⊔ q).snd = p.snd ⊔ q.snd :=
+theorem snd_sup [Sup α] [Sup β] (p q : α × β) : (p ⊔ q).snd = p.snd ⊔ q.snd :=
   rfl
 
 @[simp]
-theorem snd_inf [Min α] [Min β] (p q : α × β) : (p ⊓ q).snd = p.snd ⊓ q.snd :=
+theorem snd_inf [Inf α] [Inf β] (p q : α × β) : (p ⊓ q).snd = p.snd ⊓ q.snd :=
   rfl
 
 @[simp]
-theorem swap_sup [Max α] [Max β] (p q : α × β) : (p ⊔ q).swap = p.swap ⊔ q.swap :=
+theorem swap_sup [Sup α] [Sup β] (p q : α × β) : (p ⊔ q).swap = p.swap ⊔ q.swap :=
   rfl
 
 @[simp]
-theorem swap_inf [Min α] [Min β] (p q : α × β) : (p ⊓ q).swap = p.swap ⊓ q.swap :=
+theorem swap_inf [Inf α] [Inf β] (p q : α × β) : (p ⊓ q).swap = p.swap ⊓ q.swap :=
   rfl
 
-theorem sup_def [Max α] [Max β] (p q : α × β) : p ⊔ q = (p.fst ⊔ q.fst, p.snd ⊔ q.snd) :=
+theorem sup_def [Sup α] [Sup β] (p q : α × β) : p ⊔ q = (p.fst ⊔ q.fst, p.snd ⊔ q.snd) :=
   rfl
 
-theorem inf_def [Min α] [Min β] (p q : α × β) : p ⊓ q = (p.fst ⊓ q.fst, p.snd ⊓ q.snd) :=
+theorem inf_def [Inf α] [Inf β] (p q : α × β) : p ⊓ q = (p.fst ⊓ q.fst, p.snd ⊓ q.snd) :=
   rfl
 
 instance instSemilatticeSup [SemilatticeSup α] [SemilatticeSup β] : SemilatticeSup (α × β) where
   __ := inferInstanceAs (PartialOrder (α × β))
-  sup a b := ⟨a.1 ⊔ b.1, a.2 ⊔ b.2⟩
+  __ := inferInstanceAs (Sup (α × β))
   sup_le _ _ _ h₁ h₂ := ⟨sup_le h₁.1 h₂.1, sup_le h₁.2 h₂.2⟩
   le_sup_left _ _ := ⟨le_sup_left, le_sup_left⟩
   le_sup_right _ _ := ⟨le_sup_right, le_sup_right⟩
 
 instance instSemilatticeInf [SemilatticeInf α] [SemilatticeInf β] : SemilatticeInf (α × β) where
   __ := inferInstanceAs (PartialOrder (α × β))
-  inf a b := ⟨a.1 ⊓ b.1, a.2 ⊓ b.2⟩
+  __ := inferInstanceAs (Inf (α × β))
   le_inf _ _ _ h₁ h₂ := ⟨le_inf h₁.1 h₂.1, le_inf h₁.2 h₂.2⟩
   inf_le_left _ _ := ⟨inf_le_left, inf_le_left⟩
   inf_le_right _ _ := ⟨inf_le_right, inf_le_right⟩
@@ -1222,11 +1222,11 @@ section lift
 /-- A type endowed with `⊔` is a `SemilatticeSup`, if it admits an injective map that
 preserves `⊔` to a `SemilatticeSup`.
 See note [reducible non-instances]. -/
-protected abbrev Function.Injective.semilatticeSup [Max α] [SemilatticeSup β] (f : α → β)
+protected abbrev Function.Injective.semilatticeSup [Sup α] [SemilatticeSup β] (f : α → β)
     (hf_inj : Function.Injective f) (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) :
     SemilatticeSup α where
   __ := PartialOrder.lift f hf_inj
-  sup a b := max a b
+  sup := Sup.sup
   le_sup_left a b := by
     change f a ≤ f (a ⊔ b)
     rw [map_sup]
@@ -1243,11 +1243,11 @@ protected abbrev Function.Injective.semilatticeSup [Max α] [SemilatticeSup β] 
 /-- A type endowed with `⊓` is a `SemilatticeInf`, if it admits an injective map that
 preserves `⊓` to a `SemilatticeInf`.
 See note [reducible non-instances]. -/
-protected abbrev Function.Injective.semilatticeInf [Min α] [SemilatticeInf β] (f : α → β)
+protected abbrev Function.Injective.semilatticeInf [Inf α] [SemilatticeInf β] (f : α → β)
     (hf_inj : Function.Injective f) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b) :
     SemilatticeInf α where
   __ := PartialOrder.lift f hf_inj
-  inf a b := min a b
+  inf := Inf.inf
   inf_le_left a b := by
     change f (a ⊓ b) ≤ f a
     rw [map_inf]
@@ -1264,7 +1264,7 @@ protected abbrev Function.Injective.semilatticeInf [Min α] [SemilatticeInf β] 
 /-- A type endowed with `⊔` and `⊓` is a `Lattice`, if it admits an injective map that
 preserves `⊔` and `⊓` to a `Lattice`.
 See note [reducible non-instances]. -/
-protected abbrev Function.Injective.lattice [Max α] [Min α] [Lattice β] (f : α → β)
+protected abbrev Function.Injective.lattice [Sup α] [Inf α] [Lattice β] (f : α → β)
     (hf_inj : Function.Injective f)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b) :
     Lattice α where
@@ -1274,7 +1274,7 @@ protected abbrev Function.Injective.lattice [Max α] [Min α] [Lattice β] (f : 
 /-- A type endowed with `⊔` and `⊓` is a `DistribLattice`, if it admits an injective map that
 preserves `⊔` and `⊓` to a `DistribLattice`.
 See note [reducible non-instances]. -/
-protected abbrev Function.Injective.distribLattice [Max α] [Min α] [DistribLattice β] (f : α → β)
+protected abbrev Function.Injective.distribLattice [Sup α] [Inf α] [DistribLattice β] (f : α → β)
     (hf_inj : Function.Injective f) (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b)
     (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b) :
     DistribLattice α where

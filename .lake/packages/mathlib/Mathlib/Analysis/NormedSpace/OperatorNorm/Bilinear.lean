@@ -273,6 +273,14 @@ def compSL : (F →SL[σ₂₃] G) →L[𝕜₃] (E →SL[σ₁₂] F) →SL[σ�
         Pi.smul_apply])
     1 fun f g => by simpa only [one_mul] using opNorm_comp_le f g
 
+#adaptation_note
+/--
+Before https://github.com/leanprover/lean4/pull/4119 we had to create a local instance:
+```
+letI : Norm ((F →SL[σ₂₃] G) →L[𝕜₃] (E →SL[σ₁₂] F) →SL[σ₂₃] E →SL[σ₁₃] G) :=
+  hasOpNorm (𝕜₂ := 𝕜₃) (E := F →SL[σ₂₃] G) (F := (E →SL[σ₁₂] F) →SL[σ₂₃] E →SL[σ₁₃] G)
+```
+-/
 set_option maxSynthPendingDepth 2 in
 theorem norm_compSL_le : ‖compSL E F G σ₁₂ σ₂₃‖ ≤ 1 :=
   LinearMap.mkContinuous₂_norm_le _ zero_le_one _
@@ -301,6 +309,14 @@ variable (𝕜 σ₁₂ σ₂₃ E Fₗ Gₗ)
 def compL : (Fₗ →L[𝕜] Gₗ) →L[𝕜] (E →L[𝕜] Fₗ) →L[𝕜] E →L[𝕜] Gₗ :=
   compSL E Fₗ Gₗ (RingHom.id 𝕜) (RingHom.id 𝕜)
 
+#adaptation_note
+/--
+Before https://github.com/leanprover/lean4/pull/4119 we had to create a local instance:
+```
+letI : Norm ((Fₗ →L[𝕜] Gₗ) →L[𝕜] (E →L[𝕜] Fₗ) →L[𝕜] E →L[𝕜] Gₗ) :=
+  hasOpNorm (𝕜₂ := 𝕜) (E := Fₗ →L[𝕜] Gₗ) (F := (E →L[𝕜] Fₗ) →L[𝕜] E →L[𝕜] Gₗ)
+```
+-/
 set_option maxSynthPendingDepth 2 in
 theorem norm_compL_le : ‖compL 𝕜 E Fₗ Gₗ‖ ≤ 1 :=
   norm_compSL_le _ _ _ _ _
@@ -323,6 +339,15 @@ def precompL (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) : (Eₗ →L[𝕜] E) →L[
 @[simp] lemma precompL_apply (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) (u : Eₗ →L[𝕜] E) (f : Fₗ) (g : Eₗ) :
     precompL Eₗ L u f g = L (u g) f := rfl
 
+#adaptation_note
+/--
+Before https://github.com/leanprover/lean4/pull/4119
+we had to create a local instance in the signature:
+```
+letI : SeminormedAddCommGroup ((Eₗ →L[𝕜] Fₗ) →L[𝕜] Eₗ →L[𝕜] Gₗ) := inferInstance
+letI : NormedSpace 𝕜 ((Eₗ →L[𝕜] Fₗ) →L[𝕜] Eₗ →L[𝕜] Gₗ) := inferInstance
+```
+-/
 set_option maxSynthPendingDepth 2 in
 theorem norm_precompR_le (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) : ‖precompR Eₗ L‖ ≤ ‖L‖ :=
   calc
@@ -330,6 +355,15 @@ theorem norm_precompR_le (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) : ‖precompR E
     _ ≤ 1 * ‖L‖ := mul_le_mul_of_nonneg_right (norm_compL_le _ _ _ _) (norm_nonneg L)
     _ = ‖L‖ := by rw [one_mul]
 
+#adaptation_note
+/--
+Before https://github.com/leanprover/lean4/pull/4119
+we had to create a local instance in the signature:
+```
+letI : Norm ((Eₗ →L[𝕜] E) →L[𝕜] Fₗ →L[𝕜] Eₗ →L[𝕜] Gₗ) :=
+  hasOpNorm (𝕜₂ := 𝕜) (E := Eₗ →L[𝕜] E) (F := Fₗ →L[𝕜] Eₗ →L[𝕜] Gₗ)
+```
+-/
 set_option maxSynthPendingDepth 2 in
 theorem norm_precompL_le (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) : ‖precompL Eₗ L‖ ≤ ‖L‖ := by
   rw [precompL, opNorm_flip, ← opNorm_flip L]
@@ -426,36 +460,3 @@ theorem norm_smulRightL_apply (c : E →L[𝕜] 𝕜) (f : Fₗ) : ‖smulRightL
 end ContinuousLinearMap
 
 end SemiNormed
-
-section Restrict
-
-namespace ContinuousLinearMap
-
-variable {𝕜' : Type*} [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
-  [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedSpace 𝕜' E] [IsScalarTower 𝕜 𝕜' E]
-  [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedSpace 𝕜' F] [IsScalarTower 𝕜 𝕜' F]
-  [SeminormedAddCommGroup G] [NormedSpace 𝕜 G] [NormedSpace 𝕜' G] [IsScalarTower 𝕜 𝕜' G]
-
-variable (𝕜) in
-/-- Convenience function for restricting the linearity of a bilinear map. -/
-def bilinearRestrictScalars (B : E →L[𝕜'] F →L[𝕜'] G) : E →L[𝕜] F →L[𝕜] G :=
-  (restrictScalarsL 𝕜' F G 𝕜 𝕜).comp (B.restrictScalars 𝕜)
-
-variable (B : E →L[𝕜'] F →L[𝕜'] G) (x : E) (y : F)
-
-theorem bilinearRestrictScalars_eq_restrictScalarsL_comp_restrictScalars :
-    B.bilinearRestrictScalars 𝕜 = (restrictScalarsL 𝕜' F G 𝕜 𝕜).comp (B.restrictScalars 𝕜) := rfl
-
-theorem bilinearRestrictScalars_eq_restrictScalars_restrictScalarsL_comp :
-    B.bilinearRestrictScalars 𝕜 = restrictScalars 𝕜 ((restrictScalarsL 𝕜' F G 𝕜 𝕜').comp B) := rfl
-
-variable (𝕜) in
-@[simp]
-theorem bilinearRestrictScalars_apply_apply : (B.bilinearRestrictScalars 𝕜) x y = B x y := rfl
-
-@[simp]
-theorem norm_bilinearRestrictScalars : ‖B.bilinearRestrictScalars 𝕜‖ = ‖B‖ := rfl
-
-end ContinuousLinearMap
-
-end Restrict

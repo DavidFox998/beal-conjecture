@@ -119,7 +119,7 @@ lemma P2_neg_right : P2 x₁ x₂ y ↔ P2 x₁ x₂ (-y) := by
   rw [P2, P2, quot_mul_neg, quot_mul_neg, neg_inj]
 
 lemma P4_neg_left : P4 x₁ x₂ y ↔ P4 (-x₂) (-x₁) y := by
-  simp_rw [P4, PGame.neg_lt_neg_iff, moveLeft_neg, ← P3_neg]
+  simp_rw [P4, PGame.neg_lt_neg_iff, moveLeft_neg', ← P3_neg]
 
 lemma P4_neg_right : P4 x₁ x₂ y ↔ P4 x₁ x₂ (-y) := by
   rw [P4, P4, neg_neg, and_comm]
@@ -230,7 +230,7 @@ lemma ih1_swap (ih : ∀ a, ArgsRel a (Args.P1 x y) → P124 a) : IH1 y x := ih1
 lemma P3_of_ih (hy : Numeric y) (ihyx : IH1 y x) (i k l) :
     P3 (x.moveLeft i) x (y.moveLeft k) (-(-y).moveLeft l) :=
   P3_comm.2 <| ((ihyx (IsOption.moveLeft k) (isOption_neg.1 <| .moveLeft l) <| Or.inl rfl).2
-    (by rw [moveLeft_neg, neg_neg]; apply hy.left_lt_right)).1 i
+    (by rw [← moveRight_neg_symm]; apply hy.left_lt_right)).1 i
 
 lemma P24_of_ih (ihxy : IH1 x y) (i j) : P24 (x.moveLeft i) (x.moveLeft j) y :=
   ihxy (IsOption.moveLeft i) (IsOption.moveLeft j) (Or.inl rfl)
@@ -413,8 +413,9 @@ theorem P3_of_lt {y₁ y₂} (h : ∀ i, IH3 x₁ (x₂.moveLeft i) x₂ y₁ y�
     P3 x₁ x₂ y₁ y₂ := by
   obtain (⟨i,hi⟩|⟨i,hi⟩) := lf_iff_exists_le.1 (lf_of_lt hl)
   · exact P3_of_le_left i (h i) hi
-  · apply P3_neg.2 <| P3_of_le_left _ (hs (toLeftMovesNeg i)) _
-    simpa
+  · exact P3_neg.2 <| P3_of_le_left _ (hs _) <| by
+      rw [moveLeft_neg]
+      exact neg_le_neg (le_iff_game_le.1 hi)
 
 /-- The main chunk of Theorem 8 in [Conway2001] / Theorem 3.8 in [SchleicherStoll]. -/
 theorem main (a : Args) : a.Numeric → P124 a := by
@@ -487,7 +488,7 @@ theorem P3_of_lt_of_lt (hx₁ : x₁.Numeric) (hx₂ : x₂.Numeric) (hy₁ : y�
   · have hi := hx₁.neg.moveLeft i
     exact ⟨(P24 hx₂.neg hi hy₁).1, (P24 hx₂.neg hi hy₂).1,
       P3_comm.2 <| ((P24 hy₁ hy₂ hx₁).2 hy).2 _, by
-        rw [moveLeft_neg, ← P3_neg, neg_lt_neg_iff]
+        rw [moveLeft_neg', ← P3_neg, neg_lt_neg_iff]
         exact ih _ (fst <| IsOption.moveRight _) (hx₁.moveRight _) hx₂⟩
 
 theorem Numeric.mul_pos (hx₁ : x₁.Numeric) (hx₂ : x₂.Numeric) (hp₁ : 0 < x₁) (hp₂ : 0 < x₂) :

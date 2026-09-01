@@ -3,6 +3,7 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Wen Yang
 -/
+import Mathlib.LinearAlgebra.GeneralLinearGroup
 import Mathlib.LinearAlgebra.Matrix.Adjugate
 import Mathlib.LinearAlgebra.Matrix.Transvection
 import Mathlib.RingTheory.RootsOfUnity.Basic
@@ -52,6 +53,8 @@ namespace Matrix
 
 universe u v
 
+open Matrix
+
 open LinearMap
 
 section
@@ -92,11 +95,11 @@ instance instCoeFun : CoeFun (SpecialLinearGroup n R) fun _ => n → n → R whe
 
 end CoeFnInstance
 
-theorem ext_iff (A B : SpecialLinearGroup n R) : A = B ↔ ∀ i j, A i j = B i j :=
+theorem ext_iff (A B : SpecialLinearGroup n R) : A = B ↔ ∀ i j, ↑ₘA i j = ↑ₘB i j :=
   Subtype.ext_iff.trans Matrix.ext_iff.symm
 
 @[ext]
-theorem ext (A B : SpecialLinearGroup n R) : (∀ i j, A i j = B i j) → A = B :=
+theorem ext (A B : SpecialLinearGroup n R) : (∀ i j, ↑ₘA i j = ↑ₘB i j) → A = B :=
   (SpecialLinearGroup.ext_iff A B).mpr
 
 instance subsingleton_of_subsingleton [Subsingleton n] : Subsingleton (SpecialLinearGroup n R) := by
@@ -110,19 +113,16 @@ instance hasInv : Inv (SpecialLinearGroup n R) :=
   ⟨fun A => ⟨adjugate A, by rw [det_adjugate, A.prop, one_pow]⟩⟩
 
 instance hasMul : Mul (SpecialLinearGroup n R) :=
-  ⟨fun A B => ⟨A * B, by rw [det_mul, A.prop, B.prop, one_mul]⟩⟩
+  ⟨fun A B => ⟨↑ₘA * ↑ₘB, by rw [det_mul, A.prop, B.prop, one_mul]⟩⟩
 
 instance hasOne : One (SpecialLinearGroup n R) :=
   ⟨⟨1, det_one⟩⟩
 
 instance : Pow (SpecialLinearGroup n R) ℕ where
-  pow x n := ⟨x ^ n, (det_pow _ _).trans <| x.prop.symm ▸ one_pow _⟩
+  pow x n := ⟨↑ₘx ^ n, (det_pow _ _).trans <| x.prop.symm ▸ one_pow _⟩
 
 instance : Inhabited (SpecialLinearGroup n R) :=
   ⟨1⟩
-
-instance [Fintype R] [DecidableEq R] : Fintype (SpecialLinearGroup n R) := Subtype.fintype _
-instance [Finite R] : Finite (SpecialLinearGroup n R) := Subtype.finite
 
 /-- The transpose of a matrix in `SL(n, R)` -/
 def transpose (A : SpecialLinearGroup n R) : SpecialLinearGroup n R :=
@@ -140,7 +140,7 @@ theorem coe_mk (A : Matrix n n R) (h : det A = 1) : ↑(⟨A, h⟩ : SpecialLine
   rfl
 
 @[simp]
-theorem coe_inv : ↑ₘ(A⁻¹) = adjugate A :=
+theorem coe_inv : ↑ₘA⁻¹ = adjugate A :=
   rfl
 
 @[simp]
@@ -148,7 +148,7 @@ theorem coe_mul : ↑ₘ(A * B) = ↑ₘA * ↑ₘB :=
   rfl
 
 @[simp]
-theorem coe_one : (1 : SpecialLinearGroup n R) = (1 : Matrix n n R) :=
+theorem coe_one : ↑ₘ(1 : SpecialLinearGroup n R) = (1 : Matrix n n R) :=
   rfl
 
 @[simp]
@@ -167,13 +167,13 @@ theorem det_ne_zero [Nontrivial R] (g : SpecialLinearGroup n R) : det ↑ₘg �
   rw [g.det_coe]
   norm_num
 
-theorem row_ne_zero [Nontrivial R] (g : SpecialLinearGroup n R) (i : n) : g i ≠ 0 := fun h =>
+theorem row_ne_zero [Nontrivial R] (g : SpecialLinearGroup n R) (i : n) : ↑ₘg i ≠ 0 := fun h =>
   g.det_ne_zero <| det_eq_zero_of_row_eq_zero i <| by simp [h]
 
 end CoeLemmas
 
 instance monoid : Monoid (SpecialLinearGroup n R) :=
-  Function.Injective.monoid _ Subtype.coe_injective coe_one coe_mul coe_pow
+  Function.Injective.monoid (↑) Subtype.coe_injective coe_one coe_mul coe_pow
 
 instance : Group (SpecialLinearGroup n R) :=
   { SpecialLinearGroup.monoid, SpecialLinearGroup.hasInv with
@@ -209,6 +209,14 @@ theorem toLin'_symm_to_linearMap (A : SpecialLinearGroup n R) :
 theorem toLin'_injective :
     Function.Injective ↑(toLin' : SpecialLinearGroup n R →* (n → R) ≃ₗ[R] n → R) := fun _ _ h =>
   Subtype.coe_injective <| Matrix.toLin'.injective <| LinearEquiv.toLinearMap_injective.eq_iff.mpr h
+
+/-- `toGL` is the map from the special linear group to the general linear group -/
+def toGL : SpecialLinearGroup n R →* GeneralLinearGroup R (n → R) :=
+  (GeneralLinearGroup.generalLinearEquiv _ _).symm.toMonoidHom.comp toLin'
+
+-- Porting note (#11036): broken dot notation
+theorem coe_toGL (A : SpecialLinearGroup n R) : SpecialLinearGroup.toGL A = A.toLin'.toLinearMap :=
+  rfl
 
 variable {S : Type*} [CommRing S]
 
@@ -257,16 +265,14 @@ theorem mem_center_iff {A : SpecialLinearGroup n R} :
     simpa only [coe_mul, ← hr] using (scalar_commute (n := n) r (Commute.all r) B).symm
 
 /-- An equivalence of groups, from the center of the special linear group to the roots of unity. -/
--- replaced `(Fintype.card n).mkPNat'` by `Fintype.card n` (note `n` is nonempty here)
 @[simps]
 def center_equiv_rootsOfUnity' (i : n) :
-    center (SpecialLinearGroup n R) ≃* rootsOfUnity (Fintype.card n) R where
-  toFun A :=
-    haveI : Nonempty n := ⟨i⟩
-    rootsOfUnity.mkOfPowEq (↑ₘA i i) <| by
-      obtain ⟨r, hr, hr'⟩ := mem_center_iff.mp A.property
-      replace hr' : A.val i i = r := by simp only [← hr', scalar_apply, diagonal_apply_eq]
-      simp only [hr', hr]
+    center (SpecialLinearGroup n R) ≃* rootsOfUnity (Fintype.card n).toPNat' R where
+  toFun A := rootsOfUnity.mkOfPowEq (↑ₘA i i) <| by
+    have : Nonempty n := ⟨i⟩
+    obtain ⟨r, hr, hr'⟩ := mem_center_iff.mp A.property
+    replace hr' : A.val i i = r := by simp [← hr']
+    simp [hr, hr']
   invFun a := ⟨⟨a • (1 : Matrix n n R), by aesop⟩,
     Subgroup.mem_center_iff.mpr fun B ↦ Subtype.val_injective <| by simp [coe_mul]⟩
   left_inv A := by
@@ -287,17 +293,13 @@ open scoped Classical in
 /-- An equivalence of groups, from the center of the special linear group to the roots of unity.
 
 See also `center_equiv_rootsOfUnity'`. -/
--- replaced `(Fintype.card n).mkPNat'` by what it means, avoiding `PNat`s.
 noncomputable def center_equiv_rootsOfUnity :
-    center (SpecialLinearGroup n R) ≃* rootsOfUnity (max (Fintype.card n) 1) R :=
+    center (SpecialLinearGroup n R) ≃* rootsOfUnity (Fintype.card n).toPNat' R :=
   (isEmpty_or_nonempty n).by_cases
   (fun hn ↦ by
-    rw [center_eq_bot_of_subsingleton, Fintype.card_eq_zero, max_eq_right_of_lt zero_lt_one,
-      rootsOfUnity_one]
-    exact MulEquiv.ofUnique)
-  (fun _ ↦
-    (max_eq_left (NeZero.one_le : 1 ≤ Fintype.card n)).symm ▸
-      center_equiv_rootsOfUnity' (Classical.arbitrary n))
+    rw [center_eq_bot_of_subsingleton, Fintype.card_eq_zero, Nat.toPNat'_zero, rootsOfUnity_one]
+    exact MulEquiv.mulEquivOfUnique)
+  (fun hn ↦ center_equiv_rootsOfUnity' (Classical.arbitrary n))
 
 end center
 
@@ -364,7 +366,7 @@ theorem fin_two_induction (P : SL(2, R) → Prop)
   ext i j; fin_cases i <;> fin_cases j <;> rfl
 
 theorem fin_two_exists_eq_mk_of_apply_zero_one_eq_zero {R : Type*} [Field R] (g : SL(2, R))
-    (hg : g 1 0 = 0) :
+    (hg : (g : Matrix (Fin 2) (Fin 2) R) 1 0 = 0) :
     ∃ (a b : R) (h : a ≠ 0), g = (⟨!![a, b; 0, a⁻¹], by simp [h]⟩ : SL(2, R)) := by
   induction' g using Matrix.SpecialLinearGroup.fin_two_induction with a b c d h_det
   replace hg : c = 0 := by simpa using hg
@@ -442,6 +444,9 @@ open MatrixGroups
 
 open Matrix Matrix.SpecialLinearGroup
 
+local notation:1024 "↑ₘ" A:1024 => ((A : SL(2, ℤ)) : Matrix (Fin 2) (Fin 2) ℤ)
+
+
 /-- The matrix `S = [[0, -1], [1, 0]]` as an element of `SL(2, ℤ)`.
 
 This element acts naturally on the Euclidean plane as a rotation about the origin by `π / 2`.
@@ -451,19 +456,19 @@ represents the Mobiüs transformation `z ↦ -1/z` and is an involutive elliptic
 def S : SL(2, ℤ) :=
   ⟨!![0, -1; 1, 0], by norm_num [Matrix.det_fin_two_of]⟩
 
-/-- The matrix `T = [[1, 1], [0, 1]]` as an element of `SL(2, ℤ)`. -/
+/-- The matrix `T = [[1, 1], [0, 1]]` as an element of `SL(2, ℤ)` -/
 def T : SL(2, ℤ) :=
   ⟨!![1, 1; 0, 1], by norm_num [Matrix.det_fin_two_of]⟩
 
-theorem coe_S : ↑S = !![0, -1; 1, 0] :=
+theorem coe_S : ↑ₘS = !![0, -1; 1, 0] :=
   rfl
 
-theorem coe_T : ↑T = (!![1, 1; 0, 1] : Matrix _ _ ℤ) :=
+theorem coe_T : ↑ₘT = !![1, 1; 0, 1] :=
   rfl
 
-theorem coe_T_inv : ↑(T⁻¹) = !![1, -1; 0, 1] := by simp [coe_inv, coe_T, adjugate_fin_two]
+theorem coe_T_inv : ↑ₘT⁻¹ = !![1, -1; 0, 1] := by simp [coe_inv, coe_T, adjugate_fin_two]
 
-theorem coe_T_zpow (n : ℤ) : (T ^ n).1 = !![1, n; 0, 1] := by
+theorem coe_T_zpow (n : ℤ) : ↑ₘ(T ^ n) = !![1, n; 0, 1] := by
   induction' n using Int.induction_on with n h n h
   · rw [zpow_zero, coe_one, Matrix.one_fin_two]
   · simp_rw [zpow_add, zpow_one, coe_mul, h, coe_T, Matrix.mul_fin_two]
@@ -473,26 +478,16 @@ theorem coe_T_zpow (n : ℤ) : (T ^ n).1 = !![1, n; 0, 1] := by
     congrm !![?_, ?_; _, _] <;> ring
 
 @[simp]
-theorem T_pow_mul_apply_one (n : ℤ) (g : SL(2, ℤ)) : (T ^ n * g) 1 = g 1 := by
+theorem T_pow_mul_apply_one (n : ℤ) (g : SL(2, ℤ)) : ↑ₘ(T ^ n * g) 1 = ↑ₘg 1 := by
   ext j
-  simp [coe_T_zpow, Matrix.vecMul, dotProduct, Fin.sum_univ_succ, vecTail]
+  simp [coe_T_zpow, Matrix.vecMul, Matrix.dotProduct, Fin.sum_univ_succ, vecTail]
 
 @[simp]
-theorem T_mul_apply_one (g : SL(2, ℤ)) : (T * g) 1 = g 1 := by
+theorem T_mul_apply_one (g : SL(2, ℤ)) : ↑ₘ(T * g) 1 = ↑ₘg 1 := by
   simpa using T_pow_mul_apply_one 1 g
 
 @[simp]
-theorem T_inv_mul_apply_one (g : SL(2, ℤ)) : (T⁻¹ * g) 1 = g 1 := by
+theorem T_inv_mul_apply_one (g : SL(2, ℤ)) : ↑ₘ(T⁻¹ * g) 1 = ↑ₘg 1 := by
   simpa using T_pow_mul_apply_one (-1) g
-
-lemma S_mul_S_eq : (S : Matrix (Fin 2) (Fin 2) ℤ) * S = -1 := by
-  simp only [S, Int.reduceNeg, pow_two, coe_mul, cons_mul, Nat.succ_eq_add_one, Nat.reduceAdd,
-    vecMul_cons, head_cons, zero_smul, tail_cons, neg_smul, one_smul, neg_cons, neg_zero, neg_empty,
-    empty_vecMul, add_zero, zero_add, empty_mul, Equiv.symm_apply_apply]
-  exact Eq.symm (eta_fin_two (-1))
-
-lemma T_S_rel : S • S • S • T • S • T • S = T⁻¹ := by
-  ext i j
-  fin_cases i <;> fin_cases j <;> rfl
 
 end ModularGroup

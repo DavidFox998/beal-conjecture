@@ -25,7 +25,7 @@ open Set Filter TopologicalSpace MeasureTheory Function
 
 open scoped Topology Interval Filter ENNReal MeasureTheory
 
-variable {α β ε E F : Type*} [MeasurableSpace α] [ENorm ε] [TopologicalSpace ε]
+variable {α β E F : Type*} [MeasurableSpace α]
 
 section
 
@@ -77,7 +77,7 @@ variable [NormedAddCommGroup E] {f g : α → E} {s t : Set α} {μ ν : Measure
 
 /-- A function is `IntegrableOn` a set `s` if it is almost everywhere strongly measurable on `s`
 and if the integral of its pointwise norm over `s` is less than infinity. -/
-def IntegrableOn (f : α → ε) (s : Set α) (μ : Measure α := by volume_tac) : Prop :=
+def IntegrableOn (f : α → E) (s : Set α) (μ : Measure α := by volume_tac) : Prop :=
   Integrable f (μ.restrict s)
 
 theorem IntegrableOn.integrable (h : IntegrableOn f s μ) : Integrable f (μ.restrict s) :=
@@ -128,7 +128,8 @@ theorem integrableOn_congr_fun (hst : EqOn f g s) (hs : MeasurableSet s) :
     IntegrableOn f s μ ↔ IntegrableOn g s μ :=
   ⟨fun h => h.congr_fun hst hs, fun h => h.congr_fun hst.symm hs⟩
 
-theorem Integrable.integrableOn (h : Integrable f μ) : IntegrableOn f s μ := h.restrict
+theorem Integrable.integrableOn (h : Integrable f μ) : IntegrableOn f s μ :=
+  h.mono_measure <| Measure.restrict_le_self
 
 theorem IntegrableOn.restrict (h : IntegrableOn f s μ) (hs : MeasurableSet s) :
     IntegrableOn f s (μ.restrict t) := by
@@ -187,15 +188,6 @@ theorem integrableOn_finite_iUnion [Finite β] {t : β → Set α} :
   cases nonempty_fintype β
   simpa using @integrableOn_finset_iUnion _ _ _ _ _ f μ Finset.univ t
 
-lemma IntegrableOn.finset [MeasurableSingletonClass α] {μ : Measure α} [IsFiniteMeasure μ]
-    {s : Finset α} {f : α → E} : IntegrableOn f s μ := by
-  rw [← s.toSet.biUnion_of_singleton]
-  simp [integrableOn_finset_iUnion, measure_lt_top]
-
-lemma IntegrableOn.of_finite [MeasurableSingletonClass α] {μ : Measure α} [IsFiniteMeasure μ]
-    {s : Set α} (hs : s.Finite) {f : α → E} : IntegrableOn f s μ := by
-  simpa using IntegrableOn.finset (s := hs.toFinset)
-
 theorem IntegrableOn.add_measure (hμ : IntegrableOn f s μ) (hν : IntegrableOn f s ν) :
     IntegrableOn f s (μ + ν) := by
   delta IntegrableOn; rw [Measure.restrict_add]; exact hμ.integrable.add_measure hν
@@ -234,9 +226,8 @@ theorem MeasurePreserving.integrableOn_image [MeasurableSpace β] {e : α → β
 
 theorem integrable_indicator_iff (hs : MeasurableSet s) :
     Integrable (indicator s f) μ ↔ IntegrableOn f s μ := by
-  simp_rw [IntegrableOn, Integrable, hasFiniteIntegral_iff_nnnorm,
-    nnnorm_indicator_eq_indicator_nnnorm, ENNReal.coe_indicator, lintegral_indicator hs,
-    aestronglyMeasurable_indicator_iff hs]
+  simp [IntegrableOn, Integrable, HasFiniteIntegral, nnnorm_indicator_eq_indicator_nnnorm,
+    ENNReal.coe_indicator, lintegral_indicator _ hs, aestronglyMeasurable_indicator_iff hs]
 
 theorem IntegrableOn.integrable_indicator (h : IntegrableOn f s μ) (hs : MeasurableSet s) :
     Integrable (indicator s f) μ :=
@@ -349,7 +340,7 @@ alias IntegrableOn.set_lintegral_lt_top := IntegrableOn.setLIntegral_lt_top
 
 /-- We say that a function `f` is *integrable at filter* `l` if it is integrable on some
 set `s ∈ l`. Equivalently, it is eventually integrable on `s` in `l.smallSets`. -/
-def IntegrableAtFilter (f : α → ε) (l : Filter α) (μ : Measure α := by volume_tac) :=
+def IntegrableAtFilter (f : α → E) (l : Filter α) (μ : Measure α := by volume_tac) :=
   ∃ s ∈ l, IntegrableOn f s μ
 
 variable {l l' : Filter α}
@@ -490,7 +481,7 @@ lemma IntegrableAtFilter.eq_zero_of_tendsto
     (h : IntegrableAtFilter f l μ) (h' : ∀ s ∈ l, μ s = ∞) {a : E}
     (hf : Tendsto f l (𝓝 a)) : a = 0 := by
   by_contra H
-  obtain ⟨ε, εpos, hε⟩ : ∃ (ε : ℝ), 0 < ε ∧ ε < ‖a‖ := exists_between (norm_pos_iff.mpr H)
+  obtain ⟨ε, εpos, hε⟩ : ∃ (ε : ℝ), 0 < ε ∧ ε < ‖a‖ := exists_between (norm_pos_iff'.mpr H)
   rcases h with ⟨u, ul, hu⟩
   let v := u ∩ {b | ε < ‖f b‖}
   have hv : IntegrableOn f v μ := hu.mono_set inter_subset_left
@@ -600,7 +591,7 @@ theorem ContinuousOn.stronglyMeasurableAtFilter [TopologicalSpace α] [OpensMeas
 theorem ContinuousAt.stronglyMeasurableAtFilter [TopologicalSpace α] [OpensMeasurableSpace α]
     [SecondCountableTopologyEither α E] {f : α → E} {s : Set α} {μ : Measure α} (hs : IsOpen s)
     (hf : ∀ x ∈ s, ContinuousAt f x) : ∀ x ∈ s, StronglyMeasurableAtFilter f (𝓝 x) μ :=
-  ContinuousOn.stronglyMeasurableAtFilter hs <| continuousOn_of_forall_continuousAt hf
+  ContinuousOn.stronglyMeasurableAtFilter hs <| ContinuousAt.continuousOn hf
 
 theorem Continuous.stronglyMeasurableAtFilter [TopologicalSpace α] [OpensMeasurableSpace α]
     [TopologicalSpace β] [PseudoMetrizableSpace β] [SecondCountableTopologyEither α β] {f : α → β}

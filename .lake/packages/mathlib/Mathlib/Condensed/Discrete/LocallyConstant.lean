@@ -84,7 +84,7 @@ def functorToPresheaves : Type (max u w) ⥤ ((CompHausLike.{u} P)ᵒᵖ ⥤ Typ
   obj X := {
     obj := fun ⟨S⟩ ↦ LocallyConstant S X
     map := fun f g ↦ g.comap f.unop }
-  map f := { app := fun _ t ↦ t.map f }
+  map f := { app := fun S t ↦ t.map f }
 
 /--
 Locally constant maps are the same as continuous maps when the target is equipped with the discrete
@@ -291,13 +291,13 @@ The unit of the adjunciton is given by mapping each element to the corresponding
 -/
 @[simps]
 def unit : 𝟭 _ ⟶ functor P hs ⋙ (sheafSections _ _).obj ⟨CompHausLike.of P PUnit.{u+1}⟩ where
-  app _ x := LocallyConstant.const _ x
+  app X x := LocallyConstant.const _ x
 
 /-- The unit of the adjunction is an iso. -/
 noncomputable def unitIso : 𝟭 (Type max u w) ≅ functor.{u, w} P hs ⋙
     (sheafSections _ _).obj ⟨CompHausLike.of P PUnit.{u+1}⟩ where
   hom := unit P hs
-  inv := { app := fun _ f ↦ f.toFun PUnit.unit }
+  inv := { app := fun X f ↦ f.toFun PUnit.unit }
 
 lemma adjunction_left_triangle [HasExplicitFiniteCoproducts.{u} P]
     (X : Type max u w) : functorToPresheaves.{u, w}.map ((unit P hs).app X) ≫

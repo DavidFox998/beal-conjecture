@@ -81,7 +81,7 @@ def elabRuleTermForSimpCore (goal : MVarId) (term : Term) (ctx : Simp.Context)
     elabSimpTheorems (mkSimpArgs term) ctx simprocs isSimpAll
 
 def checkElabRuleTermForSimp (term : Term) (isSimpAll : Bool) : ElabM Unit := do
-  let ctx ← Simp.mkContext (simpTheorems := #[{}] )
+  let ctx := { simpTheorems := #[{}] }
   let simprocs := #[{}]
   discard $ elabRuleTermForSimpCore (← read).goal term ctx simprocs isSimpAll
 

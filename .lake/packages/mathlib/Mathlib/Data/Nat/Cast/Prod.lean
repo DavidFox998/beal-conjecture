@@ -26,17 +26,19 @@ instance instAddMonoidWithOne : AddMonoidWithOne (α × β) :=
 @[simp]
 theorem fst_natCast (n : ℕ) : (n : α × β).fst = n := by induction n <;> simp [*]
 
+-- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem fst_ofNat (n : ℕ) [n.AtLeastTwo] :
-    (ofNat(n) : α × β).1 = (ofNat(n) : α) :=
+    (no_index (OfNat.ofNat n : α × β)).1 = (OfNat.ofNat n : α) :=
   rfl
 
 @[simp]
 theorem snd_natCast (n : ℕ) : (n : α × β).snd = n := by induction n <;> simp [*]
 
+-- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem snd_ofNat (n : ℕ) [n.AtLeastTwo] :
-    (ofNat(n) : α × β).2 = (ofNat(n) : β) :=
+    (no_index (OfNat.ofNat n : α × β)).2 = (OfNat.ofNat n : β) :=
   rfl
 
 end Prod

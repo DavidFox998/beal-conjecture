@@ -3,9 +3,7 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
 -/
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
-import Mathlib.Algebra.Ring.Subsemiring.Basic
-import Mathlib.RingTheory.Localization.Defs
+import Mathlib.RingTheory.Localization.Basic
 
 /-!
 # Integer elements of a localization
@@ -16,7 +14,7 @@ import Mathlib.RingTheory.Localization.Defs
 
 ## Implementation notes
 
-See `Mathlib/RingTheory/Localization/Basic.lean` for a design overview.
+See `RingTheory/Localization/Basic.lean` for a design overview.
 
 ## Tags
 localization, ring localization, commutative ring localization, characteristic predicate,

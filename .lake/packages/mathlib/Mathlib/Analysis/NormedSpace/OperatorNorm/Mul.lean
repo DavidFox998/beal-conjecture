@@ -97,6 +97,15 @@ theorem opNorm_mulLeftRight_apply_le (x : 𝕜') : ‖mulLeftRight 𝕜 𝕜' x�
 @[deprecated (since := "2024-02-02")]
 alias op_norm_mulLeftRight_apply_le := opNorm_mulLeftRight_apply_le
 
+#adaptation_note
+/--
+Before https://github.com/leanprover/lean4/pull/4119
+we had to create a local instance in the signature:
+```
+letI : Norm (𝕜' →L[𝕜] 𝕜' →L[𝕜] 𝕜' →L[𝕜] 𝕜') :=
+  hasOpNorm (𝕜₂ := 𝕜) (E := 𝕜') (F := 𝕜' →L[𝕜] 𝕜' →L[𝕜] 𝕜')
+```
+-/
 set_option maxSynthPendingDepth 2 in
 theorem opNorm_mulLeftRight_le :
     ‖mulLeftRight 𝕜 𝕜'‖ ≤ 1 :=
@@ -112,7 +121,7 @@ examples. Any algebra with an approximate identity (e.g., $$L^1$$) is also regul
 
 This is a useful class because it gives rise to a nice norm on the unitization; in particular it is
 a C⋆-norm when the norm on `A` is a C⋆-norm. -/
-class _root_.RegularNormedAlgebra : Prop where
+class _root_.RegularNormedAlgebra : Prop :=
   /-- The left regular representation of the algebra on itself is an isometry. -/
   isometry_mul' : Isometry (mul 𝕜 𝕜')
 
@@ -230,7 +239,7 @@ section Normed
 
 namespace ContinuousLinearMap
 
-variable [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable [NormedAddCommGroup E] [NormedSpace 𝕜 E] (c : 𝕜)
 variable (𝕜) (𝕜' : Type*)
 
 section

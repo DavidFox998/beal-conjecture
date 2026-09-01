@@ -131,7 +131,7 @@ theorem norm_extendTo𝕜' (fr : F →L[ℝ] ℝ) : ‖(fr.extendTo𝕜' : F →
 
 end ContinuousLinearMap
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): Added a new instance. This instance is needed for the rest of the file.
+-- Porting note (#10754): Added a new instance. This instance is needed for the rest of the file.
 instance : NormedSpace 𝕜 (RestrictScalars ℝ 𝕜 F) := by
   unfold RestrictScalars
   infer_instance

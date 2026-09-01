@@ -251,8 +251,8 @@ example (f : ℕ → ℕ) (x : ℕ)
     f x = x := by
   cc
 ``` -/
-elab (name := _root_.Mathlib.Tactic.cc) "cc" cfg:optConfig : tactic => do
-  let cfg ← elabCCConfig cfg
+elab (name := _root_.Mathlib.Tactic.cc) "cc" cfg:(config)? : tactic => do
+  let cfg ← elabCCConfig (mkOptionalNode cfg)
   withMainContext <| liftMetaFinishingTactic (·.cc cfg)
 
 end Mathlib.Tactic.CC

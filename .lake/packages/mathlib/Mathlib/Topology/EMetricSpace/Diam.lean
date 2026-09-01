@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
 import Mathlib.Topology.EMetricSpace.Pi
+import Mathlib.Data.ENNReal.Real
 
 /-!
 # Diameters of sets in extended metric spaces
@@ -11,7 +12,7 @@ import Mathlib.Topology.EMetricSpace.Pi
 -/
 
 
-open Set Filter
+open Set Filter Classical
 
 open scoped Uniformity Topology Filter NNReal ENNReal Pointwise
 
@@ -79,7 +80,8 @@ theorem diam_pair : diam ({x, y} : Set α) = edist x y := by
   simp only [iSup_singleton, diam_insert, diam_singleton, ENNReal.max_zero_right]
 
 theorem diam_triple : diam ({x, y, z} : Set α) = max (max (edist x y) (edist x z)) (edist y z) := by
-  simp only [diam_insert, iSup_insert, iSup_singleton, diam_singleton, ENNReal.max_zero_right]
+  simp only [diam_insert, iSup_insert, iSup_singleton, diam_singleton, ENNReal.max_zero_right,
+    ENNReal.sup_eq_max]
 
 /-- The diameter is monotonous with respect to inclusion -/
 @[gcongr]

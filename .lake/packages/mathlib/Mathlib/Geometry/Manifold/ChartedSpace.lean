@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Topology.PartialHomeomorph
-import Mathlib.Topology.Connected.PathConnected
 
 /-!
 # Charted spaces
@@ -184,7 +183,7 @@ instance (H : Type u) [TopologicalSpace H] :
   coe s := s.members
   coe_injective' N O h := by cases N; cases O; congr
 
-instance : Min (StructureGroupoid H) :=
+instance : Inf (StructureGroupoid H) :=
   ⟨fun G G' => StructureGroupoid.mk
     (members := G.members ∩ G'.members)
     (trans' := fun e e' he he' =>
@@ -367,7 +366,7 @@ def Pregroupoid.groupoid (PG : Pregroupoid H) : StructureGroupoid H where
       apply e.continuousOn_toFun.isOpen_inter_preimage e.open_source e'.open_source
     · apply PG.comp he'.2 he.2 e'.open_target e.open_target
       apply e'.continuousOn_invFun.isOpen_inter_preimage e'.open_target e.open_target
-  symm' _ he := ⟨he.2, he.1⟩
+  symm' e he := ⟨he.2, he.1⟩
   id_mem' := ⟨PG.id_mem, PG.id_mem⟩
   locality' e he := by
     constructor
@@ -446,7 +445,7 @@ instance : CompleteLattice (StructureGroupoid H) :=
     top := instStructureGroupoidOrderTop.top
     le_top := instStructureGroupoidOrderTop.le_top
     inf := (· ⊓ ·)
-    le_inf := fun _ _ _ h₁₂ h₁₃ _ hm ↦ ⟨h₁₂ hm, h₁₃ hm⟩
+    le_inf := fun N₁ N₂ N₃ h₁₂ h₁₃ m hm ↦ ⟨h₁₂ hm, h₁₃ hm⟩
     inf_le_left := fun _ _ _ ↦ And.left
     inf_le_right := fun _ _ _ ↦ And.right }
 
@@ -659,14 +658,11 @@ theorem ChartedSpace.secondCountable_of_countable_cover [SecondCountableTopology
 
 variable (M)
 
-theorem ChartedSpace.secondCountable_of_sigmaCompact [SecondCountableTopology H]
+theorem ChartedSpace.secondCountable_of_sigma_compact [SecondCountableTopology H]
     [SigmaCompactSpace M] : SecondCountableTopology M := by
   obtain ⟨s, hsc, hsU⟩ : ∃ s, Set.Countable s ∧ ⋃ (x) (_ : x ∈ s), (chartAt H x).source = univ :=
-    countable_cover_nhds_of_sigmaCompact fun x : M ↦ chart_source_mem_nhds H x
+    countable_cover_nhds_of_sigma_compact fun x : M ↦ chart_source_mem_nhds H x
   exact ChartedSpace.secondCountable_of_countable_cover H hsU hsc
-
-@[deprecated (since := "2024-11-13")] alias
-ChartedSpace.secondCountable_of_sigma_compact := ChartedSpace.secondCountable_of_sigmaCompact
 
 /-- If a topological space admits an atlas with locally compact charts, then the space itself
 is locally compact. -/
@@ -694,23 +690,6 @@ theorem ChartedSpace.locallyConnectedSpace [LocallyConnectedSpace H] : LocallyCo
   · rintro x s ⟨⟨-, -, hsconn⟩, hssubset⟩
     exact hsconn.isPreconnected.image _ ((e x).continuousOn_symm.mono hssubset)
 
-/-- If a topological space `M` admits an atlas with locally path-connected charts,
-  then `M` itself is locally path-connected. -/
-theorem ChartedSpace.locPathConnectedSpace [LocPathConnectedSpace H] : LocPathConnectedSpace M := by
-  refine ⟨fun x ↦ ⟨fun s ↦ ⟨fun hs ↦ ?_, fun ⟨u, hu⟩ ↦ Filter.mem_of_superset hu.1.1 hu.2⟩⟩⟩
-  let e := chartAt H x
-  let t := s ∩ e.source
-  have ht : t ∈ 𝓝 x := Filter.inter_mem hs (chart_source_mem_nhds _ _)
-  refine ⟨e.symm '' pathComponentIn (e x) (e '' t), ⟨?_, ?_⟩, (?_ : _ ⊆ t).trans inter_subset_left⟩
-  · nth_rewrite 1 [← e.left_inv (mem_chart_source _ _)]
-    apply e.symm.image_mem_nhds (by simp [e])
-    exact pathComponentIn_mem_nhds <| e.image_mem_nhds (mem_chart_source _ _) ht
-  · refine (isPathConnected_pathComponentIn <| mem_image_of_mem e (mem_of_mem_nhds ht)).image' ?_
-    refine e.continuousOn_symm.mono <| subset_trans ?_ e.map_source''
-    exact (pathComponentIn_mono <| image_mono inter_subset_right).trans pathComponentIn_subset
-  · exact (image_mono pathComponentIn_subset).trans
-      (PartialEquiv.symm_image_image_of_subset_source _ inter_subset_right).subset
-
 /-- If `M` is modelled on `H'` and `H'` is itself modelled on `H`, then we can consider `M` as being
 modelled on `H`. -/
 def ChartedSpace.comp (H : Type*) [TopologicalSpace H] (H' : Type*) [TopologicalSpace H']
@@ -725,18 +704,6 @@ theorem chartAt_comp (H : Type*) [TopologicalSpace H] (H' : Type*) [TopologicalS
     {M : Type*} [TopologicalSpace M] [ChartedSpace H H'] [ChartedSpace H' M] (x : M) :
     (letI := ChartedSpace.comp H H' M; chartAt H x) = chartAt H' x ≫ₕ chartAt H (chartAt H' x x) :=
   rfl
-
-/-- A charted space over a T1 space is T1. Note that this is *not* true for T2 (for instance for
-the real line with a double origin). -/
-theorem ChartedSpace.t1Space [T1Space H] : T1Space M := by
-  apply t1Space_iff_exists_open.2 (fun x y hxy ↦ ?_)
-  by_cases hy : y ∈ (chartAt H x).source
-  · refine ⟨(chartAt H x).source ∩ (chartAt H x)⁻¹' ({chartAt H x y}ᶜ), ?_, ?_, by simp⟩
-    · exact PartialHomeomorph.isOpen_inter_preimage _ isOpen_compl_singleton
-    · simp only [preimage_compl, mem_inter_iff, mem_chart_source, mem_compl_iff, mem_preimage,
-        mem_singleton_iff, true_and]
-      exact (chartAt H x).injOn.ne (ChartedSpace.mem_chart_source x) hy hxy
-  · exact ⟨(chartAt H x).source, (chartAt H x).open_source, ChartedSpace.mem_chart_source x, hy⟩
 
 end
 
@@ -791,8 +758,9 @@ section
 
 variable {ι : Type*} {Hi : ι → Type*}
 
+-- Porting note: Old proof was `Pi.inhabited _`.
 instance modelPiInhabited [∀ i, Inhabited (Hi i)] : Inhabited (ModelPi Hi) :=
-  Pi.instInhabited
+  ⟨fun _ ↦ default⟩
 
 instance [∀ i, TopologicalSpace (Hi i)] : TopologicalSpace (ModelPi Hi) :=
   Pi.topologicalSpace
@@ -858,7 +826,7 @@ end ChartedSpace
 have a topological structure, where the topology would come from the charts. For this, one needs
 charts that are only partial equivalences, and continuity properties for their composition.
 This is formalised in `ChartedSpaceCore`. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
+-- Porting note(#5171): this linter isn't ported yet.
 -- @[nolint has_nonempty_instance]
 structure ChartedSpaceCore (H : Type*) [TopologicalSpace H] (M : Type*) where
   /-- An atlas of charts, which are only `PartialEquiv`s -/
@@ -1069,10 +1037,6 @@ theorem StructureGroupoid.mem_maximalAtlas_of_mem_groupoid {f : PartialHomeomorp
   rintro e (rfl : e = PartialHomeomorph.refl H)
   exact ⟨G.trans (G.symm hf) G.id_mem, G.trans (G.symm G.id_mem) hf⟩
 
-theorem StructureGroupoid.maximalAtlas_mono {G G' : StructureGroupoid H} (h : G ≤ G') :
-    G.maximalAtlas M ⊆ G'.maximalAtlas M :=
-  fun _ he e' he' ↦ ⟨h (he e' he').1, h (he e' he').2⟩
-
 end MaximalAtlas
 
 section Singleton
@@ -1086,7 +1050,7 @@ variable (e : PartialHomeomorph α H)
 /-- If a single partial homeomorphism `e` from a space `α` into `H` has source covering the whole
 space `α`, then that partial homeomorphism induces an `H`-charted space structure on `α`.
 (This condition is equivalent to `e` being an open embedding of `α` into `H`; see
-`IsOpenEmbedding.singletonChartedSpace`.) -/
+`OpenEmbedding.singletonChartedSpace`.) -/
 def singletonChartedSpace (h : e.source = Set.univ) : ChartedSpace H α where
   atlas := {e}
   chartAt _ := e
@@ -1122,24 +1086,24 @@ theorem singleton_hasGroupoid (h : e.source = Set.univ) (G : StructureGroupoid H
 
 end PartialHomeomorph
 
-namespace Topology.IsOpenEmbedding
+namespace OpenEmbedding
 
 variable [Nonempty α]
 
 /-- An open embedding of `α` into `H` induces an `H`-charted space structure on `α`.
 See `PartialHomeomorph.singletonChartedSpace`. -/
-def singletonChartedSpace {f : α → H} (h : IsOpenEmbedding f) : ChartedSpace H α :=
+def singletonChartedSpace {f : α → H} (h : OpenEmbedding f) : ChartedSpace H α :=
   (h.toPartialHomeomorph f).singletonChartedSpace (toPartialHomeomorph_source _ _)
 
-theorem singletonChartedSpace_chartAt_eq {f : α → H} (h : IsOpenEmbedding f) {x : α} :
+theorem singletonChartedSpace_chartAt_eq {f : α → H} (h : OpenEmbedding f) {x : α} :
     ⇑(@chartAt H _ α _ h.singletonChartedSpace x) = f :=
   rfl
 
-theorem singleton_hasGroupoid {f : α → H} (h : IsOpenEmbedding f) (G : StructureGroupoid H)
+theorem singleton_hasGroupoid {f : α → H} (h : OpenEmbedding f) (G : StructureGroupoid H)
     [ClosedUnderRestriction G] : @HasGroupoid _ _ _ _ h.singletonChartedSpace G :=
   (h.toPartialHomeomorph f).singleton_hasGroupoid (toPartialHomeomorph_source _ _) G
 
-end Topology.IsOpenEmbedding
+end OpenEmbedding
 
 end Singleton
 
@@ -1230,7 +1194,7 @@ lemma StructureGroupoid.restriction_in_maximalAtlas {e : PartialHomeomorph M H}
 /-- A `G`-diffeomorphism between two charted spaces is a homeomorphism which, when read in the
 charts, belongs to `G`. We avoid the word diffeomorph as it is too related to the smooth category,
 and use structomorph instead. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
+-- Porting note(#5171): this linter isn't ported yet.
 -- @[nolint has_nonempty_instance]
 structure Structomorph (G : StructureGroupoid H) (M : Type*) (M' : Type*) [TopologicalSpace M]
   [TopologicalSpace M'] [ChartedSpace H M] [ChartedSpace H M'] extends Homeomorph M M' where

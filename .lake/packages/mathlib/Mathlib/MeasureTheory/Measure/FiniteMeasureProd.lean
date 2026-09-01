@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
 import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
-import Mathlib.MeasureTheory.Measure.Prod
+import Mathlib.MeasureTheory.Constructions.Prod.Basic
 
 /-!
 # Products of finite measures and probability measures

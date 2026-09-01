@@ -5,7 +5,7 @@ Authors: Anne Baanen
 -/
 import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Ring.Equiv
-import Mathlib.Data.Fin.Tuple.Basic
+import Mathlib.Logic.Equiv.Fin
 
 /-!
 # Rings and `Fin`

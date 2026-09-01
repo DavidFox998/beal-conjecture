@@ -224,7 +224,7 @@ theorem Hom.comm {A B : HomologicalComplex V c} (f : A.Hom B) (i j : ι) :
   · rw [A.shape i j hij, B.shape i j hij, comp_zero, zero_comp]
 
 instance (A B : HomologicalComplex V c) : Inhabited (Hom A B) :=
-  ⟨{ f := fun _ => 0 }⟩
+  ⟨{ f := fun i => 0 }⟩
 
 /-- Identity chain map. -/
 def id (A : HomologicalComplex V c) : Hom A A where f _ := 𝟙 _
@@ -244,6 +244,7 @@ instance : Category (HomologicalComplex V c) where
 
 end
 
+-- Porting note: added because `Hom.ext` is not triggered automatically
 @[ext]
 lemma hom_ext {C D : HomologicalComplex V c} (f g : C ⟶ D)
     (h : ∀ i, f.f i = g.f i) : f = g := by
@@ -272,7 +273,7 @@ theorem hom_f_injective {C₁ C₂ : HomologicalComplex V c} :
     Function.Injective fun f : Hom C₁ C₂ => f.f := by aesop_cat
 
 instance (X Y : HomologicalComplex V c) : Zero (X ⟶ Y) :=
-  ⟨{ f := fun _ => 0}⟩
+  ⟨{ f := fun i => 0}⟩
 
 @[simp]
 theorem zero_f (C D : HomologicalComplex V c) (i : ι) : (0 : C ⟶ D).f i = 0 :=
@@ -345,7 +346,7 @@ instance : (forget V c).Faithful where
 just picking out the `i`-th object. -/
 @[simps!]
 def forgetEval (i : ι) : forget V c ⋙ GradedObject.eval i ≅ eval V c i :=
-  NatIso.ofComponents fun _ => Iso.refl _
+  NatIso.ofComponents fun X => Iso.refl _
 
 end
 
@@ -548,14 +549,14 @@ theorem next_eq (f : Hom C₁ C₂) {i j : ι} (w : c.Rel i j) :
   obtain rfl := c.next_eq' w
   simp only [xNextIso, eqToIso_refl, Iso.refl_hom, Iso.refl_inv, comp_id, id_comp]
 
-@[reassoc, elementwise]
+@[reassoc, elementwise] -- @[simp] -- Porting note (#10618): simp can prove this
 theorem comm_from (f : Hom C₁ C₂) (i : ι) : f.f i ≫ C₂.dFrom i = C₁.dFrom i ≫ f.next i :=
   f.comm _ _
 
 attribute [simp 1100] comm_from_assoc
 attribute [simp] comm_from_apply
 
-@[reassoc, elementwise]
+@[reassoc, elementwise] -- @[simp] -- Porting note (#10618): simp can prove this
 theorem comm_to (f : Hom C₁ C₂) (j : ι) : f.prev j ≫ C₂.dTo j = C₁.dTo j ≫ f.f j :=
   f.comm _ _
 

@@ -5,6 +5,7 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández, Eric Wieser, 
   Yaël Dillies
 -/
 import Mathlib.Algebra.Order.Antidiag.Pi
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Data.Finsupp.Basic
 
 /-!
@@ -38,7 +39,7 @@ variable [DecidableEq ι] [AddCommMonoid μ] [HasAntidiagonal μ] [DecidableEq �
 /-- The finset of functions `ι →₀ μ` with support contained in `s` and sum equal to `n`. -/
 def finsuppAntidiag (s : Finset ι) (n : μ) : Finset (ι →₀ μ) :=
   (piAntidiag s n).attach.map ⟨fun f ↦ ⟨s.filter (f.1 · ≠ 0), f.1, by
-    simpa using (mem_piAntidiag.1 f.2).2⟩, fun _ _ hfg ↦ Subtype.ext (congr_arg (⇑) hfg)⟩
+    simpa using (mem_piAntidiag.1 f.2).2⟩, fun f g hfg ↦ Subtype.ext (congr_arg (⇑) hfg)⟩
 
 @[simp] lemma mem_finsuppAntidiag : f ∈ finsuppAntidiag s n ↔ s.sum f = n ∧ f.support ⊆ s := by
   simp [finsuppAntidiag, ← DFunLike.coe_fn_eq, subset_iff]
@@ -68,7 +69,7 @@ theorem mem_finsuppAntidiag_insert {a : ι} {s : Finset ι}
   constructor
   · rintro ⟨rfl, hsupp⟩
     refine ⟨_, _, rfl, Finsupp.erase a f, ?_, ?_, ?_⟩
-    · rw [update_erase_eq_update, Finsupp.update_self]
+    · rw [update_erase_eq_update, update_self]
     · apply sum_congr rfl
       intro x hx
       rw [Finsupp.erase_ne (ne_of_mem_of_not_mem hx h)]
@@ -77,10 +78,10 @@ theorem mem_finsuppAntidiag_insert {a : ι} {s : Finset ι}
     refine ⟨?_, (support_update_subset _ _).trans (insert_subset_insert a hgsupp)⟩
     simp only [coe_update]
     apply congr_arg₂
-    · rw [Function.update_self]
+    · rw [update_same]
     · apply sum_congr rfl
       intro x hx
-      rw [update_of_ne (ne_of_mem_of_not_mem hx h) n1 ⇑g]
+      rw [update_noteq (ne_of_mem_of_not_mem hx h) n1 ⇑g]
 
 theorem finsuppAntidiag_insert {a : ι} {s : Finset ι}
     (h : a ∉ s) (n : μ) :

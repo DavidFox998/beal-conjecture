@@ -56,13 +56,13 @@ instance bicategory : Bicategory.{max v u, max v u} Cat.{v, u} where
   id C := 𝟭 C
   comp F G := F ⋙ G
   homCategory := fun _ _ => Functor.category
-  whiskerLeft {_} {_} {_} F _ _ η := whiskerLeft F η
-  whiskerRight {_} {_} {_} _ _ η H := whiskerRight η H
-  associator {_} {_} {_} _ := Functor.associator
-  leftUnitor {_} _ := Functor.leftUnitor
-  rightUnitor {_} _ := Functor.rightUnitor
-  pentagon := fun {_} {_} {_} {_} {_}=> Functor.pentagon
-  triangle {_} {_} {_} := Functor.triangle
+  whiskerLeft {C} {D} {E} F G H η := whiskerLeft F η
+  whiskerRight {C} {D} {E} F G η H := whiskerRight η H
+  associator {A} {B} {C} D := Functor.associator
+  leftUnitor {A} B := Functor.leftUnitor
+  rightUnitor {A} B := Functor.rightUnitor
+  pentagon := fun {A} {B} {C} {D} {E}=> Functor.pentagon
+  triangle {A} {B} {C} := Functor.triangle
 
 /-- `Cat` is a strict bicategory. -/
 instance bicategory.strict : Bicategory.Strict Cat.{v, u} where

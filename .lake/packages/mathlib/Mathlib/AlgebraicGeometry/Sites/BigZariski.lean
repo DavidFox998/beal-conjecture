@@ -3,7 +3,8 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Adam Topaz
 -/
-import Mathlib.AlgebraicGeometry.Sites.MorphismProperty
+import Mathlib.AlgebraicGeometry.Pullbacks
+import Mathlib.CategoryTheory.Sites.Pretopology
 import Mathlib.CategoryTheory.Sites.Canonical
 /-!
 # The big Zariski site of schemes
@@ -35,15 +36,42 @@ namespace AlgebraicGeometry
 namespace Scheme
 
 /-- The Zariski pretopology on the category of schemes. -/
-def zariskiPretopology : Pretopology (Scheme.{u}) :=
-  pretopology @IsOpenImmersion
+def zariskiPretopology : Pretopology (Scheme.{u}) where
+  coverings Y S := ∃ (U : OpenCover.{u} Y), S = Presieve.ofArrows U.obj U.map
+  has_isos Y X f _ := ⟨openCoverOfIsIso f, (Presieve.ofArrows_pUnit _).symm⟩
+  pullbacks := by
+    rintro Y X f _ ⟨U, rfl⟩
+    exact ⟨U.pullbackCover' f, (Presieve.ofArrows_pullback _ _ _).symm⟩
+  transitive := by
+    rintro X _ T ⟨U, rfl⟩ H
+    choose V hV using H
+    use U.bind (fun j => V (U.map j) ⟨j⟩)
+    simpa only [OpenCover.bind, ← hV] using Presieve.ofArrows_bind U.obj U.map _
+      (fun _ f H => (V f H).obj) (fun _ f H => (V f H).map)
 
 /-- The Zariski topology on the category of schemes. -/
 abbrev zariskiTopology : GrothendieckTopology (Scheme.{u}) :=
   zariskiPretopology.toGrothendieck
 
-instance subcanonical_zariskiTopology : zariskiTopology.Subcanonical := by
-  apply GrothendieckTopology.Subcanonical.of_isSheaf_yoneda_obj
+lemma zariskiPretopology_openCover {Y : Scheme.{u}} (U : OpenCover.{u} Y) :
+    zariskiPretopology Y (Presieve.ofArrows U.obj U.map) :=
+  ⟨U, rfl⟩
+
+lemma zariskiTopology_openCover {Y : Scheme.{u}} (U : OpenCover.{v} Y) :
+    zariskiTopology Y (Sieve.generate (Presieve.ofArrows U.obj U.map)) := by
+  let V : OpenCover.{u} Y :=
+    { J := Y
+      obj := fun y => U.obj (U.f y)
+      map := fun y => U.map (U.f y)
+      f := id
+      covers := U.covers
+      IsOpen := fun _ => U.IsOpen _ }
+  refine ⟨_, zariskiPretopology_openCover V, ?_⟩
+  rintro _ _ ⟨y⟩
+  exact ⟨_, 𝟙 _, U.map (U.f y), ⟨_⟩, by simp⟩
+
+lemma subcanonical_zariskiTopology : Sheaf.Subcanonical zariskiTopology := by
+  apply Sheaf.Subcanonical.of_yoneda_isSheaf
   intro X
   rw [Presieve.isSheaf_pretopology]
   rintro Y S ⟨𝓤,rfl⟩ x hx

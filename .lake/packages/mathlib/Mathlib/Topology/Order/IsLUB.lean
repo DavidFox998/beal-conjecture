@@ -14,11 +14,12 @@ open Set Filter TopologicalSpace Topology Function
 
 open OrderDual (toDual ofDual)
 
-variable {α γ : Type*}
+variable {α β γ : Type*}
 
 section OrderTopology
 
-variable [TopologicalSpace α] [LinearOrder α] [OrderTopology α]
+variable [TopologicalSpace α] [TopologicalSpace β] [LinearOrder α] [LinearOrder β] [OrderTopology α]
+  [OrderTopology β]
 
 theorem IsLUB.frequently_mem {a : α} {s : Set α} (ha : IsLUB s a) (hs : s.Nonempty) :
     ∃ᶠ x in 𝓝[≤] a, x ∈ s := by
@@ -26,7 +27,7 @@ theorem IsLUB.frequently_mem {a : α} {s : Set α} (ha : IsLUB s a) (hs : s.None
   intro h
   rcases (ha.1 ha').eq_or_lt with (rfl | ha'a)
   · exact h.self_of_nhdsWithin le_rfl ha'
-  · rcases (mem_nhdsLE_iff_exists_Ioc_subset' ha'a).1 h with ⟨b, hba, hb⟩
+  · rcases (mem_nhdsWithin_Iic_iff_exists_Ioc_subset' ha'a).1 h with ⟨b, hba, hb⟩
     rcases ha.exists_between hba with ⟨b', hb's, hb'⟩
     exact hb hb' hb's
 

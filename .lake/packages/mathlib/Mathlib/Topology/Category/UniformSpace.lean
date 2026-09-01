@@ -67,7 +67,7 @@ theorem coe_comp {X Y Z : UniformSpaceCat} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ 
 theorem coe_id (X : UniformSpaceCat) : (𝟙 X : X → X) = id :=
   rfl
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): removed `simp` attribute
+-- Porting note (#11119): removed `simp` attribute
 -- due to `LEFT-HAND SIDE HAS VARIABLE AS HEAD SYMBOL.`
 theorem coe_mk {X Y : UniformSpaceCat} (f : X → Y) (hf : UniformContinuous f) :
     ((⟨f, hf⟩ : X ⟶ Y) : X → Y) = f :=
@@ -166,11 +166,11 @@ noncomputable def extensionHom {X : UniformSpaceCat} {Y : CpltSepUniformSpace}
   val := Completion.extension f
   property := Completion.uniformContinuous_extension
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added this instance to make things compile
+-- Porting note (#10754): added this instance to make things compile
 instance (X : UniformSpaceCat) : UniformSpace ((forget _).obj X) :=
   show UniformSpace X from inferInstance
 
--- This was a global instance prior to https://github.com/leanprover-community/mathlib4/pull/13170. We may experiment with removing it.
+-- This was a global instance prior to #13170. We may experiment with removing it.
 attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike in
 @[simp]
 theorem extensionHom_val {X : UniformSpaceCat} {Y : CpltSepUniformSpace}
@@ -191,7 +191,7 @@ noncomputable def adj : completionFunctor ⊣ forget₂ CpltSepUniformSpace Unif
     { homEquiv := fun X Y =>
         { toFun := fun f => completionHom X ≫ f
           invFun := fun f => extensionHom f
-          left_inv := fun f => by dsimp; rw [extension_comp_coe]
+          left_inv := fun f => by dsimp; erw [extension_comp_coe]
           right_inv := fun f => by
             apply Subtype.eq; funext x; cases f
             exact @Completion.extension_coe _ _ _ _ _ (CpltSepUniformSpace.t0Space _)

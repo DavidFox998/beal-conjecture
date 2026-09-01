@@ -122,7 +122,7 @@ theorem mem_nhdsSet_empty : s ∈ 𝓝ˢ (∅ : Set X) := by simp
 @[simp]
 theorem nhdsSet_univ : 𝓝ˢ (univ : Set X) = ⊤ := by rw [isOpen_univ.nhdsSet_eq, principal_univ]
 
-@[gcongr, mono]
+@[mono]
 theorem nhdsSet_mono (h : s ⊆ t) : 𝓝ˢ s ≤ 𝓝ˢ t :=
   sSup_le_sSup <| image_subset _ h
 
@@ -161,12 +161,6 @@ if `X` has two elements and the coarse topology and `s` and `t` are distinct sin
 `𝓝ˢ (s ∩ t) = ⊥` while `𝓝ˢ s ⊓ 𝓝ˢ t = ⊤` and those are different. -/
 theorem nhdsSet_inter_le (s t : Set X) : 𝓝ˢ (s ∩ t) ≤ 𝓝ˢ s ⊓ 𝓝ˢ t :=
   (monotone_nhdsSet (X := X)).map_inf_le s t
-
-theorem nhdsSet_iInter_le {ι : Sort*} (s : ι → Set X) : 𝓝ˢ (⋂ i, s i) ≤ ⨅ i, 𝓝ˢ (s i) :=
-  (monotone_nhdsSet (X := X)).map_iInf_le
-
-theorem nhdsSet_sInter_le (s : Set (Set X)) : 𝓝ˢ (⋂₀ s) ≤ ⨅ x ∈ s, 𝓝ˢ x :=
-  (monotone_nhdsSet (X := X)).map_sInf_le
 
 variable (s) in
 theorem IsClosed.nhdsSet_le_sup (h : IsClosed t) : 𝓝ˢ s ≤ 𝓝ˢ (s ∩ t) ⊔ 𝓟 (tᶜ) :=

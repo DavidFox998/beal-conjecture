@@ -47,7 +47,8 @@ elab_rules : tactic
   if let some h := h then throwErrorAt h (msg "'left'/'right'/'both'")
   if let some w := w then throwErrorAt w (msg "'with'")
   if let some u := u then throwErrorAt u (msg "'using'")
-  let cfg := { { : Meta.SolveByElim.ApplyRulesConfig } with
+  let cfg ← elabApplyRulesConfig <| mkNullNode #[]
+  let cfg := { cfg with
     backtracking := false
     transparency := .reducible
     exfalso := false }

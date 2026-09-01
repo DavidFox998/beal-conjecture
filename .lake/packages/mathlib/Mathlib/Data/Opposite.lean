@@ -30,7 +30,7 @@ variable (α : Sort u)
   both `unop (op X) = X` and `op (unop X) = X` are definitional equalities.
 
 -/
-structure Opposite where
+structure Opposite :=
   /-- The canonical map `α → αᵒᵖ`. -/
   op ::
   /-- The canonical map `αᵒᵖ → α`. -/

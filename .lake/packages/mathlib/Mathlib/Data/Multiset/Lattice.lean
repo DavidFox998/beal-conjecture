@@ -49,12 +49,11 @@ theorem sup_add (s₁ s₂ : Multiset α) : (s₁ + s₂).sup = s₁.sup ⊔ s�
 @[simp]
 theorem sup_le {s : Multiset α} {a : α} : s.sup ≤ a ↔ ∀ b ∈ s, b ≤ a :=
   Multiset.induction_on s (by simp)
-    (by simp +contextual [or_imp, forall_and])
+    (by simp (config := { contextual := true }) [or_imp, forall_and])
 
 theorem le_sup {s : Multiset α} {a : α} (h : a ∈ s) : a ≤ s.sup :=
   sup_le.1 le_rfl _ h
 
-@[gcongr]
 theorem sup_mono {s₁ s₂ : Multiset α} (h : s₁ ⊆ s₂) : s₁.sup ≤ s₂.sup :=
   sup_le.2 fun _ hb => le_sup (h hb)
 
@@ -120,12 +119,11 @@ theorem inf_add (s₁ s₂ : Multiset α) : (s₁ + s₂).inf = s₁.inf ⊓ s�
 @[simp]
 theorem le_inf {s : Multiset α} {a : α} : a ≤ s.inf ↔ ∀ b ∈ s, a ≤ b :=
   Multiset.induction_on s (by simp)
-    (by simp +contextual [or_imp, forall_and])
+    (by simp (config := { contextual := true }) [or_imp, forall_and])
 
 theorem inf_le {s : Multiset α} {a : α} (h : a ∈ s) : s.inf ≤ a :=
   le_inf.1 le_rfl _ h
 
-@[gcongr]
 theorem inf_mono {s₁ s₂ : Multiset α} (h : s₁ ⊆ s₂) : s₂.inf ≤ s₁.inf :=
   le_inf.2 fun _ hb => inf_le (h hb)
 

@@ -4,9 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.Data.Option.Basic
-import Batteries.Tactic.Congr
 import Mathlib.Data.Set.Basic
-import Mathlib.Tactic.Contrapose
+import Batteries.Tactic.Congr
 
 /-!
 
@@ -245,7 +244,7 @@ theorem self_trans_symm (f : α ≃. β) : f.trans f.symm = ofSet { a | (f a).is
   constructor
   · rintro ⟨b, hb₁, hb₂⟩
     exact ⟨PEquiv.inj _ hb₂ hb₁, b, hb₂⟩
-  · simp +contextual
+  · simp (config := { contextual := true })
 
 theorem symm_trans_self (f : α ≃. β) : f.symm.trans f = ofSet { b | (f.symm b).isSome } :=
   symm_injective <| by simp [symm_trans_rev, self_trans_symm, -symm_symm]
@@ -363,7 +362,7 @@ section Order
 instance instPartialOrderPEquiv : PartialOrder (α ≃. β) where
   le f g := ∀ (a : α) (b : β), b ∈ f a → b ∈ g a
   le_refl _ _ _ := id
-  le_trans _ _ _ fg gh a b := gh a b ∘ fg a b
+  le_trans f g h fg gh a b := gh a b ∘ fg a b
   le_antisymm f g fg gf :=
     ext
       (by

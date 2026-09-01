@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
 import Mathlib.MeasureTheory.Constructions.Pi
-import Mathlib.MeasureTheory.Integral.Prod
+import Mathlib.MeasureTheory.Constructions.Prod.Integral
 
 /-!
 # Integration with respect to a finite product of measures

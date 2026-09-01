@@ -48,12 +48,12 @@ instance sum : Category.{v₁} (C ⊕ D) where
     | inr X => 𝟙 X
   comp {X Y Z} f g :=
     match X, Y, Z, f, g with
-    | inl _, inl _, inl _, f, g => f ≫ g
-    | inr _, inr _, inr _, f, g => f ≫ g
+    | inl X, inl Y, inl Z, f, g => f ≫ g
+    | inr X, inr Y, inr Z, f, g => f ≫ g
   assoc {W X Y Z} f g h :=
     match X, Y, Z, W with
-    | inl _, inl _, inl _, inl _ => Category.assoc f g h
-    | inr _, inr _, inr _, inr _ => Category.assoc f g h
+    | inl X, inl Y, inl Z, inl W => Category.assoc f g h
+    | inr X, inr Y, inr Z, inr W => Category.assoc f g h
 
 @[aesop norm -10 destruct (rule_sets := [CategoryTheory])]
 theorem hom_inl_inr_false {X : C} {Y : D} (f : Sum.inl X ⟶ Sum.inr Y) : False := by
@@ -84,13 +84,13 @@ variable (C : Type u₁) [Category.{v₁} C] (D : Type u₁) [Category.{v₁} D]
 @[simps]
 def inl_ : C ⥤ C ⊕ D where
   obj X := inl X
-  map {_ _} f := f
+  map {X Y} f := f
 
 /-- `inr_` is the functor `X ↦ inr X`. -/
 @[simps]
 def inr_ : D ⥤ C ⊕ D where
   obj X := inr X
-  map {_ _} f := f
+  map {X Y} f := f
 
 /- Porting note: `aesop_cat` not firing on `map_comp` where autotac in Lean 3 did
 but `map_id` was ok. -/
@@ -160,8 +160,8 @@ def sum (F : A ⥤ B) (G : C ⥤ D) : A ⊕ C ⥤ B ⊕ D where
     | inr X => inr (G.obj X)
   map {X Y} f :=
     match X, Y, f with
-    | inl _, inl _, f => F.map f
-    | inr _, inr _, f => G.map f
+    | inl X, inl Y, f => F.map f
+    | inr X, inr Y, f => G.map f
   map_id {X} := by cases X <;> (erw [Functor.map_id]; rfl)
   map_comp {X Y Z} f g :=
     match X, Y, Z, f, g with
@@ -187,12 +187,12 @@ def sum' (F : A ⥤ C) (G : B ⥤ C) : A ⊕ B ⥤ C where
 /-- The sum `F.sum' G` precomposed with the left inclusion functor is isomorphic to `F` -/
 @[simps!]
 def inlCompSum' (F : A ⥤ C) (G : B ⥤ C) : Sum.inl_ A B ⋙ F.sum' G ≅ F :=
-  NatIso.ofComponents fun _ => Iso.refl _
+  NatIso.ofComponents fun X => Iso.refl _
 
 /-- The sum `F.sum' G` precomposed with the right inclusion functor is isomorphic to `G` -/
 @[simps!]
 def inrCompSum' (F : A ⥤ C) (G : B ⥤ C) : Sum.inr_ A B ⋙ F.sum' G ≅ G :=
-  NatIso.ofComponents fun _ => Iso.refl _
+  NatIso.ofComponents fun X => Iso.refl _
 
 @[simp]
 theorem sum_obj_inl (F : A ⥤ B) (G : C ⥤ D) (a : A) : (F.sum G).obj (inl a) = inl (F.obj a) :=

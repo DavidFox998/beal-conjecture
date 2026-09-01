@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Group.Opposite
+import Mathlib.Algebra.Group.Units.Equiv
 import Mathlib.Algebra.GroupWithZero.InjSurj
 import Mathlib.Algebra.Ring.Hom.Defs
 import Mathlib.Logic.Equiv.Set
@@ -344,14 +345,12 @@ end trans
 section unique
 
 /-- The `RingEquiv` between two semirings with a unique element. -/
-def ofUnique {M N} [Unique M] [Unique N] [Add M] [Mul M] [Add N] [Mul N] : M ≃+* N :=
-  { AddEquiv.ofUnique, MulEquiv.ofUnique with }
-
-@[deprecated (since := "2024-12-26")] alias ringEquivOfUnique := ofUnique
+def ringEquivOfUnique {M N} [Unique M] [Unique N] [Add M] [Mul M] [Add N] [Mul N] : M ≃+* N :=
+  { AddEquiv.addEquivOfUnique, MulEquiv.mulEquivOfUnique with }
 
 instance {M N} [Unique M] [Unique N] [Add M] [Mul M] [Add N] [Mul N] :
     Unique (M ≃+* N) where
-  default := .ofUnique
+  default := ringEquivOfUnique
   uniq _ := ext fun _ => Subsingleton.elim _ _
 
 end unique
@@ -410,7 +409,7 @@ end Opposite
 
 section NonUnitalSemiring
 
-variable [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring S] (f : R ≃+* S) (x : R)
+variable [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring S] (f : R ≃+* S) (x y : R)
 
 /-- A ring isomorphism sends zero to zero. -/
 protected theorem map_zero : f 0 = 0 :=
@@ -419,10 +418,10 @@ protected theorem map_zero : f 0 = 0 :=
 variable {x}
 
 protected theorem map_eq_zero_iff : f x = 0 ↔ x = 0 :=
-  EmbeddingLike.map_eq_zero_iff
+  AddEquivClass.map_eq_zero_iff f
 
 theorem map_ne_zero_iff : f x ≠ 0 ↔ x ≠ 0 :=
-  EmbeddingLike.map_ne_zero_iff
+  AddEquivClass.map_ne_zero_iff f
 
 variable [FunLike F R S]
 
@@ -534,7 +533,7 @@ end NonUnitalSemiring
 
 section Semiring
 
-variable [NonAssocSemiring R] [NonAssocSemiring S] (f : R ≃+* S) (x : R)
+variable [NonAssocSemiring R] [NonAssocSemiring S] (f : R ≃+* S) (x y : R)
 
 /-- A ring isomorphism sends one to one. -/
 protected theorem map_one : f 1 = 1 :=
@@ -543,10 +542,10 @@ protected theorem map_one : f 1 = 1 :=
 variable {x}
 
 protected theorem map_eq_one_iff : f x = 1 ↔ x = 1 :=
-  EmbeddingLike.map_eq_one_iff
+  MulEquivClass.map_eq_one_iff f
 
 theorem map_ne_one_iff : f x ≠ 1 ↔ x ≠ 1 :=
-  EmbeddingLike.map_ne_one_iff
+  MulEquivClass.map_ne_one_iff f
 
 theorem coe_monoidHom_refl : (RingEquiv.refl R : R →* R) = MonoidHom.id R :=
   rfl
@@ -605,9 +604,9 @@ end NonUnitalRing
 
 section Ring
 
-variable [NonAssocRing R] [NonAssocRing S] (f : R ≃+* S)
+variable [NonAssocRing R] [NonAssocRing S] (f : R ≃+* S) (x y : R)
 
-@[simp]
+-- Porting note (#10618): `simp` can now prove that, so we remove the `@[simp]` tag
 theorem map_neg_one : f (-1) = -1 :=
   f.map_one ▸ f.map_neg 1
 
@@ -735,10 +734,12 @@ theorem toMonoidHom_refl : (RingEquiv.refl R).toMonoidHom = MonoidHom.id R :=
 theorem toAddMonoidHom_refl : (RingEquiv.refl R).toAddMonoidHom = AddMonoidHom.id R :=
   rfl
 
+-- Porting note (#10618): Now other `simp` can do this, so removed `simp` attribute
 theorem toRingHom_apply_symm_toRingHom_apply (e : R ≃+* S) :
     ∀ y : S, e.toRingHom (e.symm.toRingHom y) = y :=
   e.toEquiv.apply_symm_apply
 
+-- Porting note (#10618): Now other `simp` can do this, so removed `simp` attribute
 theorem symm_toRingHom_apply_toRingHom_apply (e : R ≃+* S) :
     ∀ x : R, e.symm.toRingHom (e.toRingHom x) = x :=
   Equiv.symm_apply_apply e.toEquiv
@@ -748,11 +749,13 @@ theorem toRingHom_trans (e₁ : R ≃+* S) (e₂ : S ≃+* S') :
     (e₁.trans e₂).toRingHom = e₂.toRingHom.comp e₁.toRingHom :=
   rfl
 
+-- Porting note (#10618): Now other `simp` can do this, so removed `simp` attribute
 theorem toRingHom_comp_symm_toRingHom (e : R ≃+* S) :
     e.toRingHom.comp e.symm.toRingHom = RingHom.id _ := by
   ext
   simp
 
+-- Porting note (#10618): Now other `simp` can do this, so removed `simp` attribute
 theorem symm_toRingHom_comp_toRingHom (e : R ≃+* S) :
     e.symm.toRingHom.comp e.toRingHom = RingHom.id _ := by
   ext
@@ -801,6 +804,9 @@ protected theorem map_pow (f : R ≃+* S) (a) : ∀ n : ℕ, f (a ^ n) = f a ^ n
   map_pow f a
 
 end GroupPower
+
+protected theorem isUnit_iff (f : R ≃+* S) {a} : IsUnit (f a) ↔ IsUnit a :=
+  MulEquiv.map_isUnit_iff f
 
 end RingEquiv
 

@@ -3,10 +3,10 @@ Copyright (c) 2020 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Analysis.LocallyConvex.Polar
 import Mathlib.Analysis.NormedSpace.HahnBanach.Extension
 import Mathlib.Analysis.NormedSpace.RCLike
-import Mathlib.Data.Set.Finite.Lemmas
+import Mathlib.Analysis.LocallyConvex.Polar
+import Mathlib.Data.Set.Finite
 
 /-!
 # The topological dual of a normed space
@@ -41,6 +41,7 @@ dual, polar
 
 noncomputable section
 
+open scoped Classical
 open Topology Bornology
 
 universe u v
@@ -57,11 +58,11 @@ variable (F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 abbrev Dual : Type _ := E →L[𝕜] 𝕜
 
 -- TODO: helper instance for elaboration of inclusionInDoubleDual_norm_eq until
--- https://github.com/leanprover/lean4/issues/2522 is resolved; remove once fixed
+-- leanprover/lean4#2522 is resolved; remove once fixed
 instance : NormedSpace 𝕜 (Dual 𝕜 E) := inferInstance
 
 -- TODO: helper instance for elaboration of inclusionInDoubleDual_norm_le until
--- https://github.com/leanprover/lean4/issues/2522 is resolved; remove once fixed
+-- leanprover/lean4#2522 is resolved; remove once fixed
 instance : SeminormedAddCommGroup (Dual 𝕜 E) := inferInstance
 
 /-- The inclusion of a normed space in its double (topological) dual, considered
@@ -211,7 +212,7 @@ theorem polar_ball_subset_closedBall_div {c : 𝕜} (hc : 1 < ‖c‖) {r : ℝ}
   refine ContinuousLinearMap.opNorm_le_of_shell hr hcr.le hc fun x h₁ h₂ => ?_
   calc
     ‖x' x‖ ≤ 1 := hx' _ h₂
-    _ ≤ ‖c‖ / r * ‖x‖ := (inv_le_iff_one_le_mul₀' hcr).1 (by rwa [inv_div])
+    _ ≤ ‖c‖ / r * ‖x‖ := (inv_pos_le_iff_one_le_mul' hcr).1 (by rwa [inv_div])
 
 variable (𝕜)
 
@@ -244,11 +245,11 @@ theorem polar_ball {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [Normed
     intro a ha
     rw [← mem_closedBall_zero_iff, ← (mul_div_cancel_left₀ a (Ne.symm (ne_of_lt hr)))]
     rw [← RCLike.norm_of_nonneg (K := 𝕜) (le_trans zero_le_one
-      (le_of_lt ((inv_lt_iff_one_lt_mul₀' hr).mp ha)))]
+      (le_of_lt ((inv_pos_lt_iff_one_lt_mul' hr).mp ha)))]
     apply polar_ball_subset_closedBall_div _ hr hx
     rw [RCLike.norm_of_nonneg (K := 𝕜) (le_trans zero_le_one
-      (le_of_lt ((inv_lt_iff_one_lt_mul₀' hr).mp ha)))]
-    exact (inv_lt_iff_one_lt_mul₀' hr).mp ha
+      (le_of_lt ((inv_pos_lt_iff_one_lt_mul' hr).mp ha)))]
+    exact (inv_pos_lt_iff_one_lt_mul' hr).mp ha
   · rw [← polar_closedBall hr]
     exact LinearMap.polar_antitone _ ball_subset_closedBall
 

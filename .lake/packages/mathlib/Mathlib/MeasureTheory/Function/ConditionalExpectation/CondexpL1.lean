@@ -35,7 +35,7 @@ open scoped NNReal ENNReal Topology MeasureTheory
 
 namespace MeasureTheory
 
-variable {α F F' G G' 𝕜 : Type*} [RCLike 𝕜]
+variable {α β F F' G G' 𝕜 : Type*} {p : ℝ≥0∞} [RCLike 𝕜]
   -- 𝕜 for ℝ or ℂ
   -- F for a Lp submodule
   [NormedAddCommGroup F]
@@ -119,8 +119,10 @@ theorem condexpIndL1Fin_smul' [NormedSpace ℝ F] [SMulCommClass ℝ 𝕜 F] (hs
 
 theorem norm_condexpIndL1Fin_le (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x : G) :
     ‖condexpIndL1Fin hm hs hμs x‖ ≤ (μ s).toReal * ‖x‖ := by
-  rw [L1.norm_eq_integral_norm, ← ENNReal.toReal_ofReal (norm_nonneg x), ← ENNReal.toReal_mul,
-    ← ENNReal.ofReal_le_iff_le_toReal (ENNReal.mul_ne_top hμs ENNReal.ofReal_ne_top),
+  have : 0 ≤ ∫ a : α, ‖condexpIndL1Fin hm hs hμs x a‖ ∂μ := by positivity
+  rw [L1.norm_eq_integral_norm, ← ENNReal.toReal_ofReal (norm_nonneg x), ← ENNReal.toReal_mul, ←
+    ENNReal.toReal_ofReal this,
+    ENNReal.toReal_le_toReal ENNReal.ofReal_ne_top (ENNReal.mul_ne_top hμs ENNReal.ofReal_ne_top),
     ofReal_integral_norm_eq_lintegral_nnnorm]
   swap; · rw [← memℒp_one_iff_integrable]; exact Lp.memℒp _
   have h_eq :
@@ -133,12 +135,13 @@ theorem norm_condexpIndL1Fin_le (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x 
   exact lintegral_nnnorm_condexpIndSMul_le hm hs hμs x
 
 theorem condexpIndL1Fin_disjoint_union (hs : MeasurableSet s) (ht : MeasurableSet t) (hμs : μ s ≠ ∞)
-    (hμt : μ t ≠ ∞) (hst : Disjoint s t) (x : G) :
+    (hμt : μ t ≠ ∞) (hst : s ∩ t = ∅) (x : G) :
     condexpIndL1Fin hm (hs.union ht) ((measure_union_le s t).trans_lt
       (lt_top_iff_ne_top.mpr (ENNReal.add_ne_top.mpr ⟨hμs, hμt⟩))).ne x =
     condexpIndL1Fin hm hs hμs x + condexpIndL1Fin hm ht hμt x := by
   ext1
-  have hμst := measure_union_ne_top hμs hμt
+  have hμst :=
+    ((measure_union_le s t).trans_lt (lt_top_iff_ne_top.mpr (ENNReal.add_ne_top.mpr ⟨hμs, hμt⟩))).ne
   refine (condexpIndL1Fin_ae_eq_condexpIndSMul hm (hs.union ht) hμst x).trans ?_
   refine EventuallyEq.trans ?_ (Lp.coeFn_add _ _).symm
   have hs_eq := condexpIndL1Fin_ae_eq_condexpIndSMul hm hs hμs x
@@ -221,7 +224,7 @@ theorem continuous_condexpIndL1 : Continuous fun x : G => condexpIndL1 hm μ s x
   continuous_of_linear_of_bound condexpIndL1_add condexpIndL1_smul norm_condexpIndL1_le
 
 theorem condexpIndL1_disjoint_union (hs : MeasurableSet s) (ht : MeasurableSet t) (hμs : μ s ≠ ∞)
-    (hμt : μ t ≠ ∞) (hst : Disjoint s t) (x : G) :
+    (hμt : μ t ≠ ∞) (hst : s ∩ t = ∅) (x : G) :
     condexpIndL1 hm μ (s ∪ t) x = condexpIndL1 hm μ s x + condexpIndL1 hm μ t x := by
   have hμst : μ (s ∪ t) ≠ ∞ :=
     ((measure_union_le s t).trans_lt (lt_top_iff_ne_top.mpr (ENNReal.add_ne_top.mpr ⟨hμs, hμt⟩))).ne
@@ -280,12 +283,12 @@ theorem norm_condexpInd_le : ‖(condexpInd G hm μ s : G →L[ℝ] α →₁[μ
   ContinuousLinearMap.opNorm_le_bound _ ENNReal.toReal_nonneg norm_condexpInd_apply_le
 
 theorem condexpInd_disjoint_union_apply (hs : MeasurableSet s) (ht : MeasurableSet t)
-    (hμs : μ s ≠ ∞) (hμt : μ t ≠ ∞) (hst : Disjoint s t) (x : G) :
+    (hμs : μ s ≠ ∞) (hμt : μ t ≠ ∞) (hst : s ∩ t = ∅) (x : G) :
     condexpInd G hm μ (s ∪ t) x = condexpInd G hm μ s x + condexpInd G hm μ t x :=
   condexpIndL1_disjoint_union hs ht hμs hμt hst x
 
 theorem condexpInd_disjoint_union (hs : MeasurableSet s) (ht : MeasurableSet t) (hμs : μ s ≠ ∞)
-    (hμt : μ t ≠ ∞) (hst : Disjoint s t) : (condexpInd G hm μ (s ∪ t) : G →L[ℝ] α →₁[μ] G) =
+    (hμt : μ t ≠ ∞) (hst : s ∩ t = ∅) : (condexpInd G hm μ (s ∪ t) : G →L[ℝ] α →₁[μ] G) =
     condexpInd G hm μ s + condexpInd G hm μ t := by
   ext1 x; push_cast; exact condexpInd_disjoint_union_apply hs ht hμs hμt hst x
 
@@ -392,7 +395,7 @@ to the integral of `f` on that set. See also `setIntegral_condexp`, the similar 
 theorem setIntegral_condexpL1CLM (f : α →₁[μ] F') (hs : MeasurableSet[m] s) :
     ∫ x in s, condexpL1CLM F' hm μ f x ∂μ = ∫ x in s, f x ∂μ := by
   let S := spanningSets (μ.trim hm)
-  have hS_meas : ∀ i, MeasurableSet[m] (S i) := measurableSet_spanningSets (μ.trim hm)
+  have hS_meas : ∀ i, MeasurableSet[m] (S i) := measurable_spanningSets (μ.trim hm)
   have hS_meas0 : ∀ i, MeasurableSet (S i) := fun i => hm _ (hS_meas i)
   have hs_eq : s = ⋃ i, S i ∩ s := by
     simp_rw [Set.inter_comm]

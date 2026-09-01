@@ -76,12 +76,12 @@ def toComonad (h : L ⊣ R) : Comonad D where
 /-- The monad induced by the Eilenberg-Moore adjunction is the original monad. -/
 @[simps!]
 def adjToMonadIso (T : Monad C) : T.adj.toMonad ≅ T :=
-  MonadIso.mk (NatIso.ofComponents fun _ => Iso.refl _)
+  MonadIso.mk (NatIso.ofComponents fun X => Iso.refl _)
 
 /-- The comonad induced by the Eilenberg-Moore adjunction is the original comonad. -/
 @[simps!]
 def adjToComonadIso (G : Comonad C) : G.adj.toComonad ≅ G :=
-  ComonadIso.mk (NatIso.ofComponents fun _ => Iso.refl _)
+  ComonadIso.mk (NatIso.ofComponents fun X => Iso.refl _)
 
 /--
 Given an adjunction `L ⊣ R`, if `L ⋙ R` is abstractly isomorphic to the identity functor, then the
@@ -165,8 +165,8 @@ def Monad.comparison (h : L ⊣ R) : D ⥤ h.toMonad.Algebra where
 -/
 @[simps]
 def Monad.comparisonForget (h : L ⊣ R) : Monad.comparison h ⋙ h.toMonad.forget ≅ R where
-  hom := { app := fun _ => 𝟙 _ }
-  inv := { app := fun _ => 𝟙 _ }
+  hom := { app := fun X => 𝟙 _ }
+  inv := { app := fun X => 𝟙 _ }
 
 theorem Monad.left_comparison (h : L ⊣ R) : L ⋙ Monad.comparison h = h.toMonad.free :=
   rfl
@@ -210,8 +210,8 @@ def Comonad.comparison (h : L ⊣ R) : C ⥤ h.toComonad.Coalgebra where
 @[simps]
 def Comonad.comparisonForget {L : C ⥤ D} {R : D ⥤ C} (h : L ⊣ R) :
     Comonad.comparison h ⋙ h.toComonad.forget ≅ L where
-  hom := { app := fun _ => 𝟙 _ }
-  inv := { app := fun _ => 𝟙 _ }
+  hom := { app := fun X => 𝟙 _ }
+  inv := { app := fun X => 𝟙 _ }
 
 theorem Comonad.left_comparison (h : L ⊣ R) : R ⋙ Comonad.comparison h = h.toComonad.cofree :=
   rfl

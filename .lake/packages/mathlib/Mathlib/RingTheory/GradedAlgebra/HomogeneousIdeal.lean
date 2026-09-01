@@ -3,11 +3,10 @@ Copyright (c) 2021 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Eric Wieser
 -/
-import Mathlib.LinearAlgebra.Finsupp.SumProd
-import Mathlib.RingTheory.GradedAlgebra.Basic
 import Mathlib.RingTheory.Ideal.Basic
-import Mathlib.RingTheory.Ideal.BigOperators
 import Mathlib.RingTheory.Ideal.Maps
+import Mathlib.LinearAlgebra.Finsupp
+import Mathlib.RingTheory.GradedAlgebra.Basic
 
 /-!
 # Homogeneous ideals of a graded algebra
@@ -45,7 +44,7 @@ open SetLike DirectSum Set
 
 open Pointwise DirectSum
 
-variable {ι σ A : Type*}
+variable {ι σ R A : Type*}
 
 section HomogeneousDef
 
@@ -147,7 +146,7 @@ theorem Ideal.mul_homogeneous_element_mem_of_mem {I : Ideal A} (r x : A) (hx₁ 
   obtain ⟨i, hi⟩ := hx₁
   have mem₁ : (DirectSum.decompose 𝒜 r k : A) * x ∈ 𝒜 (k + i) :=
     GradedMul.mul_mem (SetLike.coe_mem _) hi
-  rw [GradedRing.proj_apply, DirectSum.decompose_of_mem 𝒜 mem₁, coe_of_apply]
+  erw [GradedRing.proj_apply, DirectSum.decompose_of_mem 𝒜 mem₁, coe_of_apply]
   split_ifs
   · exact I.mul_mem_left _ hx₂
   · exact I.zero_mem
@@ -298,10 +297,10 @@ instance : Top (HomogeneousIdeal 𝒜) :=
 instance : Bot (HomogeneousIdeal 𝒜) :=
   ⟨⟨⊥, Ideal.IsHomogeneous.bot 𝒜⟩⟩
 
-instance : Max (HomogeneousIdeal 𝒜) :=
+instance : Sup (HomogeneousIdeal 𝒜) :=
   ⟨fun I J => ⟨_, I.isHomogeneous.sup J.isHomogeneous⟩⟩
 
-instance : Min (HomogeneousIdeal 𝒜) :=
+instance : Inf (HomogeneousIdeal 𝒜) :=
   ⟨fun I J => ⟨_, I.isHomogeneous.inf J.isHomogeneous⟩⟩
 
 instance : SupSet (HomogeneousIdeal 𝒜) :=
@@ -360,10 +359,12 @@ theorem toIdeal_iInf {κ : Sort*} (s : κ → HomogeneousIdeal 𝒜) :
     (⨅ i, s i).toIdeal = ⨅ i, (s i).toIdeal := by
   rw [iInf, toIdeal_sInf, iInf_range]
 
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem toIdeal_iSup₂ {κ : Sort*} {κ' : κ → Sort*} (s : ∀ i, κ' i → HomogeneousIdeal 𝒜) :
     (⨆ (i) (j), s i j).toIdeal = ⨆ (i) (j), (s i j).toIdeal := by
   simp_rw [toIdeal_iSup]
 
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem toIdeal_iInf₂ {κ : Sort*} {κ' : κ → Sort*} (s : ∀ i, κ' i → HomogeneousIdeal 𝒜) :
     (⨅ (i) (j), s i j).toIdeal = ⨅ (i) (j), (s i j).toIdeal := by
   simp_rw [toIdeal_iInf]

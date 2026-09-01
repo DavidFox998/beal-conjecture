@@ -5,7 +5,6 @@ Authors: Christian Merten
 -/
 import Mathlib.CategoryTheory.Galois.GaloisObjects
 import Mathlib.CategoryTheory.Limits.Shapes.CombinedProducts
-import Mathlib.Data.Finite.Sum
 
 /-!
 # Decomposition of objects into connected components and applications

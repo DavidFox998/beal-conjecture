@@ -3,9 +3,8 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.Module.Submodule.Map
-import Mathlib.Algebra.Polynomial.Eval.Defs
-import Mathlib.RingTheory.Ideal.Quotient.Defs
+import Mathlib.Algebra.Polynomial.Eval
+import Mathlib.RingTheory.Ideal.Quotient
 
 /-!
 # modular equivalence for submodule
@@ -26,7 +25,7 @@ variable {N : Type*} [AddCommGroup N] [Module R N] (V V₁ V₂ : Submodule R N)
 def SModEq (x y : M) : Prop :=
   (Submodule.Quotient.mk x : M ⧸ U) = Submodule.Quotient.mk y
 
-@[inherit_doc] notation:50 x " ≡ " y " [SMOD " N "]" => SModEq N x y
+notation:50 x " ≡ " y " [SMOD " N "]" => SModEq N x y
 
 variable {U U₁ U₂}
 

@@ -3,10 +3,9 @@ Copyright (c) 2023 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth, Floris van Doorn
 -/
-import Mathlib.Geometry.Manifold.Algebra.LieGroup
 import Mathlib.Geometry.Manifold.MFDeriv.Basic
 import Mathlib.Topology.ContinuousMap.Basic
-import Mathlib.Geometry.Manifold.VectorBundle.Basic
+import Mathlib.Geometry.Manifold.Algebra.LieGroup
 
 /-!
 # Smooth sections
@@ -19,13 +18,14 @@ sections of a smooth vector bundle over a manifold `M` and prove that it's a mod
 open Bundle Filter Function
 
 open scoped Bundle Manifold
-/- Next line is necessary while the manifold smoothness class is not extended to `ω`.
-Later, replace with `open scoped ContDiff`. -/
-local notation "∞" => (⊤ : ℕ∞)
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
-  {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+  [NormedSpace 𝕜 E] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H : Type*}
+  [TopologicalSpace H] {H' : Type*} [TopologicalSpace H'] (I : ModelWithCorners 𝕜 E H)
+  (I' : ModelWithCorners 𝕜 E' H') {M : Type*} [TopologicalSpace M] [ChartedSpace H M] {M' : Type*}
+  [TopologicalSpace M'] [ChartedSpace H' M'] {E'' : Type*} [NormedAddCommGroup E'']
+  [NormedSpace 𝕜 E''] {H'' : Type*} [TopologicalSpace H''] {I'' : ModelWithCorners 𝕜 E'' H''}
+  {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H'' M'']
 
 variable (F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   -- `F` model fiber
@@ -42,13 +42,15 @@ structure ContMDiffSection where
   protected contMDiff_toFun : ContMDiff I (I.prod 𝓘(𝕜, F)) n fun x ↦
     TotalSpace.mk' F x (toFun x)
 
-@[deprecated (since := "024-11-21")] alias SmoothSection := ContMDiffSection
+/-- Bundled smooth sections of a vector bundle. -/
+abbrev SmoothSection :=
+  ContMDiffSection I F ⊤ V
 
 @[inherit_doc] scoped[Manifold] notation "Cₛ^" n "⟮" I "; " F ", " V "⟯" => ContMDiffSection I F n V
 
 namespace ContMDiffSection
 
-variable {I} {n} {F} {V}
+variable {I} {I'} {n} {F} {V}
 
 instance : DFunLike Cₛ^n⟮I; F, V⟯ M V where
   coe := ContMDiffSection.toFun
@@ -66,7 +68,9 @@ protected theorem contMDiff (s : Cₛ^n⟮I; F, V⟯) :
     ContMDiff I (I.prod 𝓘(𝕜, F)) n fun x => TotalSpace.mk' F x (s x : V x) :=
   s.contMDiff_toFun
 
-@[deprecated (since := "2024-11-21")] alias smooth := ContMDiffSection.contMDiff
+protected theorem smooth (s : Cₛ^∞⟮I; F, V⟯) :
+    Smooth I (I.prod 𝓘(𝕜, F)) fun x => TotalSpace.mk' F x (s x : V x) :=
+  s.contMDiff_toFun
 
 theorem coe_inj ⦃s t : Cₛ^n⟮I; F, V⟯⦄ (h : (s : ∀ x, V x) = t) : s = t :=
   DFunLike.ext' h
@@ -113,7 +117,7 @@ theorem coe_sub (s t : Cₛ^n⟮I; F, V⟯) : ⇑(s - t) = s - t :=
   rfl
 
 instance instZero : Zero Cₛ^n⟮I; F, V⟯ :=
-  ⟨⟨fun _ => 0, (contMDiff_zeroSection 𝕜 V).of_le le_top⟩⟩
+  ⟨⟨fun _ => 0, (smooth_zeroSection 𝕜 V).of_le le_top⟩⟩
 
 instance inhabited : Inhabited Cₛ^n⟮I; F, V⟯ :=
   ⟨0⟩

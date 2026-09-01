@@ -305,6 +305,7 @@ instance (priority := 100) mono_of_iso (f : X ⟶ Y) [IsIso f] : Mono f where
     rw [← Category.comp_id g, ← Category.comp_id h, ← IsIso.hom_inv_id f,
       ← Category.assoc, w, ← Category.assoc]
 
+-- Porting note: `@[ext]` used to accept lemmas like this. Now we add an aesop rule
 @[aesop apply safe (rule_sets := [CategoryTheory])]
 theorem inv_eq_of_hom_inv_id {f : X ⟶ Y} [IsIso f] {g : Y ⟶ X} (hom_inv_id : f ≫ g = 𝟙 X) :
     inv f = g := by
@@ -316,6 +317,7 @@ theorem inv_eq_of_inv_hom_id {f : X ⟶ Y} [IsIso f] {g : Y ⟶ X} (inv_hom_id :
   apply (cancel_mono f).mp
   simp [inv_hom_id]
 
+-- Porting note: `@[ext]` used to accept lemmas like this.
 @[aesop apply safe (rule_sets := [CategoryTheory])]
 theorem eq_inv_of_hom_inv_id {f : X ⟶ Y} [IsIso f] {g : Y ⟶ X} (hom_inv_id : f ≫ g = 𝟙 X) :
     g = inv f :=
@@ -330,7 +332,7 @@ instance id (X : C) : IsIso (𝟙 X) := ⟨⟨𝟙 X, by simp⟩⟩
 @[deprecated (since := "2024-05-15")] alias of_iso := CategoryTheory.Iso.isIso_hom
 @[deprecated (since := "2024-05-15")] alias of_iso_inv := CategoryTheory.Iso.isIso_inv
 
-variable {f : X ⟶ Y} {h : Y ⟶ Z}
+variable {f g : X ⟶ Y} {h : Y ⟶ Z}
 
 instance inv_isIso [IsIso f] : IsIso (inv f) :=
   (asIso f).isIso_inv
@@ -417,7 +419,7 @@ open IsIso
 
 theorem eq_of_inv_eq_inv {f g : X ⟶ Y} [IsIso f] [IsIso g] (p : inv f = inv g) : f = g := by
   apply (cancel_epi (inv f)).1
-  rw [inv_hom_id, p, inv_hom_id]
+  erw [inv_hom_id, p, inv_hom_id]
 
 theorem IsIso.inv_eq_inv {f g : X ⟶ Y} [IsIso f] [IsIso g] : inv f = inv g ↔ f = g :=
   Iso.inv_eq_inv (asIso f) (asIso g)
@@ -444,10 +446,12 @@ theorem isIso_of_comp_hom_eq_id (g : X ⟶ Y) [IsIso g] {f : Y ⟶ X} (h : f ≫
 
 namespace Iso
 
+-- Porting note: `@[ext]` used to accept lemmas like this.
 @[aesop apply safe (rule_sets := [CategoryTheory])]
 theorem inv_ext {f : X ≅ Y} {g : Y ⟶ X} (hom_inv_id : f.hom ≫ g = 𝟙 X) : f.inv = g :=
   ((hom_comp_eq_id f).1 hom_inv_id).symm
 
+-- Porting note: `@[ext]` used to accept lemmas like this.
 @[aesop apply safe (rule_sets := [CategoryTheory])]
 theorem inv_ext' {f : X ≅ Y} {g : Y ⟶ X} (hom_inv_id : f.hom ≫ g = 𝟙 X) : g = f.inv :=
   (hom_comp_eq_id f).1 hom_inv_id
@@ -505,7 +509,7 @@ theorem cancel_iso_inv_right_assoc {W X X' Y Z : C} (f : W ⟶ X) (g : X ⟶ Y) 
 
 section
 
-variable {D : Type*} [Category D] {X Y : C} (e : X ≅ Y)
+variable {D E : Type*} [Category D] [Category E] {X Y : C} (e : X ≅ Y)
 
 @[reassoc (attr := simp)]
 lemma map_hom_inv_id (F : C ⥤ D) :

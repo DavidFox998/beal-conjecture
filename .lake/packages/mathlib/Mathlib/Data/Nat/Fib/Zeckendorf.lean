@@ -52,7 +52,7 @@ lemma IsZeckendorfRep_nil : IsZeckendorfRep [] := by simp [IsZeckendorfRep]
 
 lemma IsZeckendorfRep.sum_fib_lt : ∀ {n l}, IsZeckendorfRep l → (∀ a ∈ (l ++ [0]).head?, a < n) →
     (l.map fib).sum < fib n
-  | _, [], _, hn => fib_pos.2 <| hn _ rfl
+  | n, [], _, hn => fib_pos.2 <| hn _ rfl
   | n, a :: l, hl, hn => by
     simp only [IsZeckendorfRep, cons_append, chain'_iff_pairwise, pairwise_cons] at hl
     have : ∀ b, b ∈ head? (l ++ [0]) → b < a - 1 :=
@@ -67,7 +67,7 @@ lemma IsZeckendorfRep.sum_fib_lt : ∀ {n l}, IsZeckendorfRep l → (∀ a ∈ (
 end List
 
 namespace Nat
-variable {m n : ℕ}
+variable {l : List ℕ} {a m n : ℕ}
 
 /-- The greatest index of a Fibonacci number less than or equal to `n`. -/
 def greatestFib (n : ℕ) : ℕ := (n + 1).findGreatest (fun k ↦ fib k ≤ n)
@@ -118,7 +118,7 @@ Note: For unfolding, you should use the equational lemmas `Nat.zeckendorf_zero` 
 def zeckendorf : ℕ → List ℕ
   | 0 => []
   | m@(_ + 1) =>
-    letI a := greatestFib m
+    let a := greatestFib m
     a :: zeckendorf (m - fib a)
 decreasing_by simp_wf; subst_vars; apply zeckendorf_aux (zero_lt_succ _)
 

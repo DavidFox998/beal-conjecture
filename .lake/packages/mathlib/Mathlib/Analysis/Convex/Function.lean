@@ -26,6 +26,8 @@ a convex set.
 * `StrictConcaveOn 𝕜 s f`: The function `f` is strictly concave on `s` with scalars `𝕜`.
 -/
 
+
+open scoped Classical
 open LinearMap Set Convex Pointwise
 
 variable {𝕜 E F α β ι : Type*}

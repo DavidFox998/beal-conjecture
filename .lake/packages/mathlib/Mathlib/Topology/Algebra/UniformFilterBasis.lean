@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
 import Mathlib.Topology.Algebra.FilterBasis
-import Mathlib.Topology.Algebra.UniformGroup.Defs
+import Mathlib.Topology.Algebra.UniformGroup
 
 /-!
 # Uniform properties of neighborhood bases in topological algebra

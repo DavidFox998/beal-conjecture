@@ -17,12 +17,10 @@ the abbreviation `CC` to view a constant in the base ring `R` as a bivariate pol
 -/
 
 /-- The notation `Y` for `X` in the `Polynomial` scope. -/
-scoped[Polynomial.Bivariate] notation3:max "Y" => Polynomial.X (R := Polynomial _)
+scoped[Polynomial] notation3:max "Y" => Polynomial.X (R := Polynomial _)
 
 /-- The notation `R[X][Y]` for `R[X][X]` in the `Polynomial` scope. -/
-scoped[Polynomial.Bivariate] notation3:max R "[X][Y]" => Polynomial (Polynomial R)
-
-open scoped Polynomial.Bivariate
+scoped[Polynomial] notation3:max R "[X][Y]" => Polynomial (Polynomial R)
 
 namespace Polynomial
 

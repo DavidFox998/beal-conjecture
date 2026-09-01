@@ -48,11 +48,12 @@ def opHomeomorph : M ≃ₜ Mᵐᵒᵖ where
   continuous_invFun := continuous_unop
 
 @[to_additive]
-instance instT2Space [T2Space M] : T2Space Mᵐᵒᵖ := opHomeomorph.t2Space
+instance instT2Space [T2Space M] : T2Space Mᵐᵒᵖ :=
+  opHomeomorph.symm.embedding.t2Space
 
 @[to_additive]
 instance instDiscreteTopology [DiscreteTopology M] : DiscreteTopology Mᵐᵒᵖ :=
-  opHomeomorph.symm.isEmbedding.discreteTopology
+  opHomeomorph.symm.embedding.discreteTopology
 
 @[to_additive (attr := simp)]
 theorem map_op_nhds (x : M) : map (op : M → Mᵐᵒᵖ) (𝓝 x) = 𝓝 (op x) :=
@@ -85,37 +86,34 @@ instance instTopologicalSpaceUnits : TopologicalSpace Mˣ :=
   TopologicalSpace.induced (embedProduct M) inferInstance
 
 @[to_additive]
-theorem isInducing_embedProduct : IsInducing (embedProduct M) := ⟨rfl⟩
-
-@[deprecated (since := "2024-10-28")] alias inducing_embedProduct := isInducing_embedProduct
-
-@[to_additive]
-theorem isEmbedding_embedProduct : IsEmbedding (embedProduct M) :=
-  ⟨isInducing_embedProduct, embedProduct_injective M⟩
-
-@[deprecated (since := "2024-10-26")]
-alias embedding_embedProduct := isEmbedding_embedProduct
+theorem inducing_embedProduct : Inducing (embedProduct M) :=
+  ⟨rfl⟩
 
 @[to_additive]
-instance instT2Space [T2Space M] : T2Space Mˣ := isEmbedding_embedProduct.t2Space
+theorem embedding_embedProduct : Embedding (embedProduct M) :=
+  ⟨inducing_embedProduct, embedProduct_injective M⟩
+
+@[to_additive]
+instance instT2Space [T2Space M] : T2Space Mˣ :=
+  embedding_embedProduct.t2Space
 
 @[to_additive]
 instance instDiscreteTopology [DiscreteTopology M] : DiscreteTopology Mˣ :=
-  isEmbedding_embedProduct.discreteTopology
+  embedding_embedProduct.discreteTopology
 
 @[to_additive] lemma topology_eq_inf :
     instTopologicalSpaceUnits =
       .induced (val : Mˣ → M) ‹_› ⊓ .induced (fun u ↦ ↑u⁻¹ : Mˣ → M) ‹_› := by
-  simp only [isInducing_embedProduct.1, instTopologicalSpaceProd, induced_inf,
+  simp only [inducing_embedProduct.1, instTopologicalSpaceProd, induced_inf,
     instTopologicalSpaceMulOpposite, induced_compose]; rfl
 
 /-- An auxiliary lemma that can be used to prove that coercion `Mˣ → M` is a topological embedding.
-Use `Units.isEmbedding_val₀`, `Units.isEmbedding_val`, or `toUnits_homeomorph` instead. -/
+Use `Units.embedding_val₀`, `Units.embedding_val`, or `toUnits_homeomorph` instead. -/
 @[to_additive "An auxiliary lemma that can be used to prove that coercion `AddUnits M → M` is a
-topological embedding. Use `AddUnits.isEmbedding_val` or `toAddUnits_homeomorph` instead."]
-lemma isEmbedding_val_mk' {M : Type*} [Monoid M] [TopologicalSpace M] {f : M → M}
+topological embedding. Use `AddUnits.embedding_val` or `toAddUnits_homeomorph` instead."]
+lemma embedding_val_mk' {M : Type*} [Monoid M] [TopologicalSpace M] {f : M → M}
     (hc : ContinuousOn f {x : M | IsUnit x}) (hf : ∀ u : Mˣ, f u.1 = ↑u⁻¹) :
-    IsEmbedding (val : Mˣ → M) := by
+    Embedding (val : Mˣ → M) := by
   refine ⟨⟨?_⟩, ext⟩
   rw [topology_eq_inf, inf_eq_left, ← continuous_iff_le_induced,
     @continuous_iff_continuousAt _ _ (.induced _ _)]
@@ -123,16 +121,13 @@ lemma isEmbedding_val_mk' {M : Type*} [Monoid M] [TopologicalSpace M] {f : M →
   simp only [← hf, nhds_induced, Filter.mem_map] at hs ⊢
   exact ⟨_, mem_inf_principal.1 (hc u u.isUnit hs), fun u' hu' ↦ hu' u'.isUnit⟩
 
-@[deprecated (since := "2024-10-26")]
-alias embedding_val_mk' := isEmbedding_val_mk'
-
 /-- An auxiliary lemma that can be used to prove that coercion `Mˣ → M` is a topological embedding.
-Use `Units.isEmbedding_val₀`, `Units.isEmbedding_val`, or `toUnits_homeomorph` instead. -/
+Use `Units.embedding_val₀`, `Units.embedding_val`, or `toUnits_homeomorph` instead. -/
 @[to_additive "An auxiliary lemma that can be used to prove that coercion `AddUnits M → M` is a
-topological embedding. Use `AddUnits.isEmbedding_val` or `toAddUnits_homeomorph` instead."]
+topological embedding. Use `AddUnits.embedding_val` or `toAddUnits_homeomorph` instead."]
 lemma embedding_val_mk {M : Type*} [DivisionMonoid M] [TopologicalSpace M]
-    (h : ContinuousOn Inv.inv {x : M | IsUnit x}) : IsEmbedding (val : Mˣ → M) :=
-  isEmbedding_val_mk' h fun u ↦ (val_inv_eq_inv_val u).symm
+    (h : ContinuousOn Inv.inv {x : M | IsUnit x}) : Embedding (val : Mˣ → M) :=
+  embedding_val_mk' h fun u ↦ (val_inv_eq_inv_val u).symm
 
 @[to_additive]
 theorem continuous_embedProduct : Continuous (embedProduct M) :=
@@ -145,8 +140,8 @@ theorem continuous_val : Continuous ((↑) : Mˣ → M) :=
 @[to_additive]
 protected theorem continuous_iff {f : X → Mˣ} :
     Continuous f ↔ Continuous (val ∘ f) ∧ Continuous (fun x => ↑(f x)⁻¹ : X → M) := by
-  simp only [isInducing_embedProduct.continuous_iff, embedProduct_apply, Function.comp_def,
-    continuous_prod_mk, opHomeomorph.symm.isInducing.continuous_iff, opHomeomorph_symm_apply,
+  simp only [inducing_embedProduct.continuous_iff, embedProduct_apply, Function.comp_def,
+    continuous_prod_mk, opHomeomorph.symm.inducing.continuous_iff, opHomeomorph_symm_apply,
     unop_op]
 
 @[to_additive]

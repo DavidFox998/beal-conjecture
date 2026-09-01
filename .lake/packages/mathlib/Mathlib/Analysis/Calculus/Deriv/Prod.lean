@@ -22,11 +22,19 @@ derivative
 
 universe u v w
 
-open Topology Filter Asymptotics Set
+open scoped Classical
+open Topology Filter
+
+open Filter Asymptotics Set
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
 variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-variable {f₁ : 𝕜 → F} {f₁' : F} {x : 𝕜} {s : Set 𝕜} {L : Filter 𝕜}
+variable {E : Type w} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {f f₀ f₁ g : 𝕜 → F}
+variable {f' f₀' f₁' g' : F}
+variable {x : 𝕜}
+variable {s t : Set 𝕜}
+variable {L L₁ L₂ : Filter 𝕜}
 
 section CartesianProduct
 

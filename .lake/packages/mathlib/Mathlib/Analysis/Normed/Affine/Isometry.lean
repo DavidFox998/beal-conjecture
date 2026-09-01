@@ -69,9 +69,9 @@ theorem linear_eq_linearIsometry : f.linear = f.linearIsometry.toLinearMap := by
   ext
   rfl
 
-instance : FunLike (P →ᵃⁱ[𝕜] P₂) P P₂ where
-  coe f := f.toFun
-  coe_injective' f g := by cases f; cases g; simp
+instance : FunLike (P →ᵃⁱ[𝕜] P₂) P P₂ :=
+  { coe := fun f => f.toFun,
+    coe_injective' := fun f g => by cases f; cases g; simp }
 
 @[simp]
 theorem coe_toAffineMap : ⇑f.toAffineMap = f := by
@@ -267,7 +267,7 @@ structure AffineIsometryEquiv extends P ≃ᵃ[𝕜] P₂ where
 variable {𝕜 P P₂}
 
 -- `≃ᵃᵢ` would be more consistent with the linear isometry equiv notation, but it is uglier
-@[inherit_doc] notation:25 P " ≃ᵃⁱ[" 𝕜:25 "] " P₂:0 => AffineIsometryEquiv 𝕜 P P₂
+notation:25 P " ≃ᵃⁱ[" 𝕜:25 "] " P₂:0 => AffineIsometryEquiv 𝕜 P P₂
 
 namespace AffineIsometryEquiv
 
@@ -282,16 +282,16 @@ theorem linear_eq_linear_isometry : e.linear = e.linearIsometryEquiv.toLinearEqu
   ext
   rfl
 
-instance : EquivLike (P ≃ᵃⁱ[𝕜] P₂) P P₂ where
-  coe f := f.toFun
-  inv f := f.invFun
-  left_inv f := f.left_inv
-  right_inv f := f.right_inv
-  coe_injective' f g h _ := by
-    cases f
-    cases g
-    congr
-    simpa [DFunLike.coe_injective.eq_iff] using h
+instance : EquivLike (P ≃ᵃⁱ[𝕜] P₂) P P₂ :=
+  { coe := fun f => f.toFun
+    inv := fun f => f.invFun
+    left_inv := fun f => f.left_inv
+    right_inv := fun f => f.right_inv,
+    coe_injective' := fun f g h _ => by
+      cases f
+      cases g
+      congr
+      simpa [DFunLike.coe_injective.eq_iff] using h }
 
 @[simp]
 theorem coe_mk (e : P ≃ᵃ[𝕜] P₂) (he : ∀ x, ‖e.linear x‖ = ‖x‖) : ⇑(mk e he) = e :=
@@ -541,6 +541,7 @@ protected theorem injective : Injective e :=
 protected theorem surjective : Surjective e :=
   e.1.surjective
 
+-- @[simp] Porting note (#10618): simp can prove this
 theorem map_eq_iff {x y : P} : e x = e y ↔ x = y :=
   e.injective.eq_iff
 
@@ -650,7 +651,7 @@ def pointReflection (x : P) : P ≃ᵃⁱ[𝕜] P :=
 
 variable {𝕜}
 
-theorem pointReflection_apply (x y : P) : (pointReflection 𝕜 x) y = (x -ᵥ y) +ᵥ x :=
+theorem pointReflection_apply (x y : P) : (pointReflection 𝕜 x) y = x -ᵥ y +ᵥ x :=
   rfl
 
 @[simp]

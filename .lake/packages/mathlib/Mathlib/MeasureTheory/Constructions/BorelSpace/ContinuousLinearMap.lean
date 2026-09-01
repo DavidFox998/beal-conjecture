@@ -90,10 +90,10 @@ variable [BorelSpace 𝕜] {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 
 
 theorem measurable_smul_const {f : α → 𝕜} {c : E} (hc : c ≠ 0) :
     (Measurable fun x => f x • c) ↔ Measurable f :=
-  (isClosedEmbedding_smul_left hc).measurableEmbedding.measurable_comp_iff
+  (closedEmbedding_smul_left hc).measurableEmbedding.measurable_comp_iff
 
 theorem aemeasurable_smul_const {f : α → 𝕜} {μ : Measure α} {c : E} (hc : c ≠ 0) :
     AEMeasurable (fun x => f x • c) μ ↔ AEMeasurable f μ :=
-  (isClosedEmbedding_smul_left hc).measurableEmbedding.aemeasurable_comp_iff
+  (closedEmbedding_smul_left hc).measurableEmbedding.aemeasurable_comp_iff
 
 end NormedSpace

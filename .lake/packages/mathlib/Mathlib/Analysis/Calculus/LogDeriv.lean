@@ -17,7 +17,7 @@ noncomputable section
 
 open Filter Function
 
-open scoped Topology
+open scoped Topology BigOperators Classical
 
 variable {𝕜 𝕜': Type*} [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜']
   [NormedAlgebra 𝕜 𝕜']
@@ -50,13 +50,6 @@ theorem logDeriv_mul {f g : 𝕜 → 𝕜'} (x : 𝕜) (hf : f x ≠ 0) (hg : g 
   simp only [logDeriv_apply, deriv_mul hdf hdg]
   field_simp [mul_comm]
 
-theorem logDeriv_div {f g : 𝕜 → 𝕜'} (x : 𝕜) (hf : f x ≠ 0) (hg : g x ≠ 0)
-    (hdf : DifferentiableAt 𝕜 f x) (hdg : DifferentiableAt 𝕜 g x) :
-    logDeriv (fun z => f z / g z) x = logDeriv f x - logDeriv g x := by
-  simp only [logDeriv_apply, deriv_div hdf hdg]
-  field_simp [mul_comm]
-  ring
-
 theorem logDeriv_mul_const {f : 𝕜 → 𝕜'} (x : 𝕜) (a : 𝕜') (ha : a ≠ 0):
     logDeriv (fun z => f z * a) x = logDeriv f x := by
   simp only [logDeriv_apply, deriv_mul_const_field, mul_div_mul_right _ _ ha]
@@ -85,7 +78,7 @@ lemma logDeriv_fun_zpow {f : 𝕜 → 𝕜'} {x : 𝕜} (hdf : DifferentiableAt 
   rcases eq_or_ne n 0 with rfl | hn; · simp
   rcases eq_or_ne (f x) 0 with hf | hf
   · simp [logDeriv_apply, zero_zpow, *]
-  · rw [logDeriv_apply, ← comp_def (·^n), deriv_comp _ (differentiableAt_zpow.2 <| .inl hf) hdf,
+  · rw [logDeriv_apply, ← comp_def (·^n), deriv.comp _ (differentiableAt_zpow.2 <| .inl hf) hdf,
       deriv_zpow, logDeriv_apply]
     field_simp [zpow_ne_zero, zpow_sub_one₀ hf]
     ring
@@ -107,5 +100,6 @@ lemma logDeriv_pow (x : 𝕜) (n : ℕ) : logDeriv (· ^ n) x = n / x :=
 
 theorem logDeriv_comp {f : 𝕜' → 𝕜'} {g : 𝕜 → 𝕜'} {x : 𝕜} (hf : DifferentiableAt 𝕜' f (g x))
     (hg : DifferentiableAt 𝕜 g x) : logDeriv (f ∘ g) x = logDeriv f (g x) * deriv g x := by
-  simp only [logDeriv, Pi.div_apply, deriv_comp _ hf hg, comp_apply]
+  simp only [logDeriv, Pi.div_apply, deriv.comp _ hf hg, comp_apply]
   ring
+

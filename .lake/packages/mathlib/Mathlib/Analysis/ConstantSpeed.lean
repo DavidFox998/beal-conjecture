@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémi Bottinelli
 -/
 import Mathlib.Data.Set.Function
-import Mathlib.Analysis.RCLike.Basic
-import Mathlib.Topology.EMetricSpace.BoundedVariation
+import Mathlib.Analysis.BoundedVariation
 
 /-!
 # Constant speed
@@ -41,7 +40,7 @@ arc-length, parameterization
 
 open scoped NNReal ENNReal
 
-open Set
+open Set MeasureTheory
 
 variable {α : Type*} [LinearOrder α] {E : Type*} [PseudoEMetricSpace E]
 variable (f : ℝ → E) (s : Set ℝ) (l : ℝ≥0)

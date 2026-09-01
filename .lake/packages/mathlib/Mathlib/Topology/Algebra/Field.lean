@@ -3,9 +3,8 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Kim Morrison
 -/
-import Mathlib.Algebra.Field.Subfield.Basic
+import Mathlib.Algebra.Field.Subfield
 import Mathlib.Algebra.GroupWithZero.Divisibility
-import Mathlib.Algebra.Order.Group.Pointwise.Interval
 import Mathlib.Topology.Algebra.GroupWithZero
 import Mathlib.Topology.Algebra.Ring.Basic
 import Mathlib.Topology.Order.LocalExtr
@@ -32,14 +31,6 @@ theorem Filter.tendsto_cocompact_mul_right₀ [ContinuousMul K] {a : K} (ha : a 
     Filter.Tendsto (fun x : K => x * a) (Filter.cocompact K) (Filter.cocompact K) :=
   Filter.tendsto_cocompact_mul_right (mul_inv_cancel₀ ha)
 
-/-- Compact hausdorff topological fields are finite. -/
-instance (priority := 100) {K} [DivisionRing K] [TopologicalSpace K]
-    [TopologicalRing K] [CompactSpace K] [T2Space K] : Finite K := by
-  suffices DiscreteTopology K by
-    exact finite_of_compact_of_discrete
-  rw [discreteTopology_iff_isOpen_singleton_zero]
-  exact GroupWithZero.isOpen_singleton_zero
-
 variable (K)
 
 /-- A topological division ring is a division ring with a topology where all operations are
@@ -59,8 +50,8 @@ def Subfield.topologicalClosure (K : Subfield α) : Subfield α :=
       dsimp only at hx ⊢
       rcases eq_or_ne x 0 with (rfl | h)
       · rwa [inv_zero]
-      · -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: Lean fails to find InvMemClass instance
-        rw [← @inv_coe_set α (Subfield α) _ _ SubfieldClass.toInvMemClass K, ← Set.image_inv_eq_inv]
+      · -- Porting note (#11215): TODO: Lean fails to find InvMemClass instance
+        rw [← @inv_coe_set α (Subfield α) _ _ SubfieldClass.toInvMemClass K, ← Set.image_inv]
         exact mem_closure_image (continuousAt_inv₀ h) hx }
 
 theorem Subfield.le_topologicalClosure (s : Subfield α) : s ≤ s.topologicalClosure :=
@@ -100,26 +91,6 @@ def affineHomeomorph (a b : 𝕜) (h : a ≠ 0) : 𝕜 ≃ₜ 𝕜 where
     exact mul_div_cancel_left₀ x h
   right_inv y := by simp [mul_div_cancel₀ _ h]
 
-theorem affineHomeomorph_image_Icc {𝕜 : Type*} [LinearOrderedField 𝕜] [TopologicalSpace 𝕜]
-    [TopologicalRing 𝕜] (a b c d : 𝕜) (h : 0 < a) :
-    affineHomeomorph a b h.ne' '' Set.Icc c d = Set.Icc (a * c + b) (a * d + b) := by
-  simp [h]
-
-theorem affineHomeomorph_image_Ico {𝕜 : Type*} [LinearOrderedField 𝕜] [TopologicalSpace 𝕜]
-    [TopologicalRing 𝕜] (a b c d : 𝕜) (h : 0 < a) :
-    affineHomeomorph a b h.ne' '' Set.Ico c d = Set.Ico (a * c + b) (a * d + b) := by
-  simp [h]
-
-theorem affineHomeomorph_image_Ioc {𝕜 : Type*} [LinearOrderedField 𝕜] [TopologicalSpace 𝕜]
-    [TopologicalRing 𝕜] (a b c d : 𝕜) (h : 0 < a) :
-    affineHomeomorph a b h.ne' '' Set.Ioc c d = Set.Ioc (a * c + b) (a * d + b) := by
-  simp [h]
-
-theorem affineHomeomorph_image_Ioo {𝕜 : Type*} [LinearOrderedField 𝕜] [TopologicalSpace 𝕜]
-    [TopologicalRing 𝕜] (a b c d : 𝕜) (h : 0 < a) :
-    affineHomeomorph a b h.ne' '' Set.Ioo c d = Set.Ioo (a * c + b) (a * d + b) := by
-  simp [h]
-
 end affineHomeomorph
 
 section LocalExtr
@@ -130,7 +101,7 @@ open Topology
 
 theorem IsLocalMin.inv {f : α → β} {a : α} (h1 : IsLocalMin f a) (h2 : ∀ᶠ z in 𝓝 a, 0 < f z) :
     IsLocalMax f⁻¹ a := by
-  filter_upwards [h1, h2] with z h3 h4 using(inv_le_inv₀ h4 h2.self_of_nhds).mpr h3
+  filter_upwards [h1, h2] with z h3 h4 using(inv_le_inv h4 h2.self_of_nhds).mpr h3
 
 end LocalExtr
 

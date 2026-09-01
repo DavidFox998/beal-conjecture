@@ -9,11 +9,8 @@ import Mathlib.Util.Notation3
 
 /-!
 # Quotient types
-
 This module extends the core library's treatment of quotient types (`Init.Core`).
-
 ## Tags
-
 quotient
 -/
 
@@ -21,17 +18,8 @@ variable {α : Sort*} {β : Sort*}
 
 namespace Setoid
 
--- Pretty print `@Setoid.r _ s a b` as `s a b`.
-run_cmd Lean.Elab.Command.liftTermElabM do
-  Lean.Meta.registerCoercion ``Setoid.r
-    (some { numArgs := 2, coercee := 1, type := .coeFun })
-
-/-- When writing a lemma about `someSetoid x y` (which uses this instance),
-call it `someSetoid_apply` not `someSetoid_r`. -/
-instance : CoeFun (Setoid α) (fun _ ↦ α → α → Prop) where
-  coe := @Setoid.r _
-
-theorem ext {α : Sort*} : ∀ {s t : Setoid α}, (∀ a b, s a b ↔ t a b) → s = t
+theorem ext {α : Sort*} : ∀ {s t : Setoid α},
+    (∀ a b, @Setoid.r α s a b ↔ @Setoid.r α t a b) → s = t
   | ⟨r, _⟩, ⟨p, _⟩, Eq =>
   by have : r = p := funext fun a ↦ funext fun b ↦ propext <| Eq a b
      subst this
@@ -68,7 +56,7 @@ protected def hrecOn₂ (qa : Quot ra) (qb : Quot rb) (f : ∀ a b, φ ⟦a⟧ �
     (cb : ∀ {a b₁ b₂}, rb b₁ b₂ → HEq (f a b₁) (f a b₂)) :
     φ qa qb :=
   Quot.hrecOn (motive := fun qa ↦ φ qa qb) qa
-    (fun a ↦ Quot.hrecOn qb (f a) (fun _ _ pb ↦ cb pb))
+    (fun a ↦ Quot.hrecOn qb (f a) (fun b₁ b₂ pb ↦ cb pb))
     fun a₁ a₂ pa ↦
       Quot.induction_on qb fun b ↦
         have h₁ : HEq (@Quot.hrecOn _ _ (φ _) ⟦b⟧ (f a₁) (@cb _)) (f a₁ b) := by
@@ -79,8 +67,8 @@ protected def hrecOn₂ (qa : Quot ra) (qb : Quot rb) (f : ∀ a b, φ ⟦a⟧ �
 
 /-- Map a function `f : α → β` such that `ra x y` implies `rb (f x) (f y)`
 to a map `Quot ra → Quot rb`. -/
-protected def map (f : α → β) (h : ∀ ⦃a b : α⦄, ra a b → rb (f a) (f b)) : Quot ra → Quot rb :=
-  Quot.lift (fun x => Quot.mk rb (f x)) fun _ _ hra ↦ Quot.sound <| h hra
+protected def map (f : α → β) (h : (ra ⇒ rb) f f) : Quot ra → Quot rb :=
+  (Quot.lift fun x ↦ ⟦f x⟧) fun x y (h₁ : ra x y) ↦ Quot.sound <| h h₁
 
 /-- If `ra` is a subrelation of `ra'`, then we have a natural map `Quot ra → Quot ra'`. -/
 protected def mapRight {ra' : α → α → Prop} (h : ∀ a₁ a₂, ra a₁ a₂ → ra' a₁ a₂) :
@@ -111,6 +99,8 @@ theorem liftOn_mk (a : α) (f : α → γ) (h : ∀ a₁ a₂, r a₁ a₂ → f
   ⟨fun hf => hf.comp Quot.exists_rep, fun hf y => let ⟨x, hx⟩ := hf y; ⟨Quot.mk _ x, hx⟩⟩
 
 /-- Descends a function `f : α → β → γ` to quotients of `α` and `β`. -/
+-- Porting note: removed `@[elab_as_elim]`, gave "unexpected resulting type γ"
+-- porting note (#11083): removed `@[reducible]` because it caused extremely slow `simp`
 protected def lift₂ (f : α → β → γ) (hr : ∀ a b₁ b₂, s b₁ b₂ → f a b₁ = f a b₂)
     (hs : ∀ a₁ a₂ b, r a₁ a₂ → f a₁ b = f a₂ b) (q₁ : Quot r) (q₂ : Quot s) : γ :=
   Quot.lift (fun a ↦ Quot.lift (f a) (hr a))
@@ -123,6 +113,8 @@ theorem lift₂_mk (f : α → β → γ) (hr : ∀ a b₁ b₂, s b₁ b₂ →
   rfl
 
 /-- Descends a function `f : α → β → γ` to quotients of `α` and `β` and applies it. -/
+-- porting note (#11083): removed `@[elab_as_elim]`, gave "unexpected resulting type γ"
+-- porting note (#11083): removed `@[reducible]` because it caused extremely slow `simp`
 protected def liftOn₂ (p : Quot r) (q : Quot s) (f : α → β → γ)
     (hr : ∀ a b₁ b₂, s b₁ b₂ → f a b₁ = f a b₂) (hs : ∀ a₁ a₂ b, r a₁ a₂ → f a₁ b = f a₂ b) : γ :=
   Quot.lift₂ f hr hs p q
@@ -149,6 +141,7 @@ theorem map₂_mk (f : α → β → γ) (hr : ∀ a b₁ b₂, s b₁ b₂ → 
   rfl
 
 /-- A binary version of `Quot.recOnSubsingleton`. -/
+-- porting note (#11083): removed `@[reducible]` because it caused extremely slow `simp`
 @[elab_as_elim]
 protected def recOnSubsingleton₂ {φ : Quot r → Quot s → Sort*}
     [h : ∀ a b, Subsingleton (φ ⟦a⟧ ⟦b⟧)] (q₁ : Quot r)
@@ -196,7 +189,7 @@ end Quot
 
 namespace Quotient
 
-variable {sa : Setoid α} {sb : Setoid β}
+variable [sa : Setoid α] [sb : Setoid β]
 variable {φ : Quotient sa → Quotient sb → Sort*}
 
 -- Porting note: in mathlib3 this notation took the Setoid as an instance-implicit argument,
@@ -227,26 +220,25 @@ protected def hrecOn₂ (qa : Quotient sa) (qb : Quotient sb) (f : ∀ a b, φ �
 
 /-- Map a function `f : α → β` that sends equivalent elements to equivalent elements
 to a function `Quotient sa → Quotient sb`. Useful to define unary operations on quotients. -/
-protected def map (f : α → β) (h : ∀ ⦃a b : α⦄, a ≈ b → f a ≈ f b) : Quotient sa → Quotient sb :=
+protected def map (f : α → β) (h : ((· ≈ ·) ⇒ (· ≈ ·)) f f) : Quotient sa → Quotient sb :=
   Quot.map f h
 
 @[simp]
-theorem map_mk (f : α → β) (h) (x : α) :
+theorem map_mk (f : α → β) (h : ((· ≈ ·) ⇒ (· ≈ ·)) f f) (x : α) :
     Quotient.map f h (⟦x⟧ : Quotient sa) = (⟦f x⟧ : Quotient sb) :=
   rfl
 
-variable {γ : Sort*} {sc : Setoid γ}
+variable {γ : Sort*} [sc : Setoid γ]
 
 /-- Map a function `f : α → β → γ` that sends equivalent elements to equivalent elements
 to a function `f : Quotient sa → Quotient sb → Quotient sc`.
 Useful to define binary operations on quotients. -/
-protected def map₂ (f : α → β → γ)
-   (h : ∀ ⦃a₁ a₂⦄, a₁ ≈ a₂ → ∀ ⦃b₁ b₂⦄, b₁ ≈ b₂ → f a₁ b₁ ≈ f a₂ b₂) :
+protected def map₂ (f : α → β → γ) (h : ((· ≈ ·) ⇒ (· ≈ ·) ⇒ (· ≈ ·)) f f) :
     Quotient sa → Quotient sb → Quotient sc :=
   Quotient.lift₂ (fun x y ↦ ⟦f x y⟧) fun _ _ _ _ h₁ h₂ ↦ Quot.sound <| h h₁ h₂
 
 @[simp]
-theorem map₂_mk (f : α → β → γ) (h) (x : α) (y : β) :
+theorem map₂_mk (f : α → β → γ) (h : ((· ≈ ·) ⇒ (· ≈ ·) ⇒ (· ≈ ·)) f f) (x : α) (y : β) :
     Quotient.map₂ f h (⟦x⟧ : Quotient sa) (⟦y⟧ : Quotient sb) = (⟦f x y⟧ : Quotient sc) :=
   rfl
 
@@ -277,11 +269,8 @@ theorem Quot.eq {α : Type*} {r : α → α → Prop} {x y : α} :
   ⟨Quot.eqvGen_exact, Quot.eqvGen_sound⟩
 
 @[simp]
-theorem Quotient.eq {r : Setoid α} {x y : α} : Quotient.mk r x = ⟦y⟧ ↔ r x y :=
+theorem Quotient.eq [r : Setoid α] {x y : α} : Quotient.mk r x = ⟦y⟧ ↔ x ≈ y :=
   ⟨Quotient.exact, Quotient.sound⟩
-
-theorem Quotient.eq_iff_equiv {r : Setoid α} {x y : α} : Quotient.mk r x = ⟦y⟧ ↔ x ≈ y :=
-  Quotient.eq
 
 theorem Quotient.forall {α : Sort*} {s : Setoid α} {p : Quotient s → Prop} :
     (∀ a, p a) ↔ ∀ a : α, p ⟦a⟧ :=
@@ -292,60 +281,43 @@ theorem Quotient.exists {α : Sort*} {s : Setoid α} {p : Quotient s → Prop} :
   ⟨fun ⟨q, hq⟩ ↦ q.ind (motive := (p · → _)) .intro hq, fun ⟨a, ha⟩ ↦ ⟨⟦a⟧, ha⟩⟩
 
 @[simp]
-theorem Quotient.lift_mk {s : Setoid α} (f : α → β) (h : ∀ a b : α, a ≈ b → f a = f b) (x : α) :
+theorem Quotient.lift_mk [s : Setoid α] (f : α → β) (h : ∀ a b : α, a ≈ b → f a = f b) (x : α) :
     Quotient.lift f h (Quotient.mk s x) = f x :=
   rfl
 
 @[simp]
-theorem Quotient.lift_comp_mk {_ : Setoid α} (f : α → β) (h : ∀ a b : α, a ≈ b → f a = f b) :
+theorem Quotient.lift_comp_mk [Setoid α] (f : α → β) (h : ∀ a b : α, a ≈ b → f a = f b) :
     Quotient.lift f h ∘ Quotient.mk _ = f :=
   rfl
 
 @[simp]
-theorem Quotient.lift₂_mk {α : Sort*} {β : Sort*} {γ : Sort*} {_ : Setoid α} {_ : Setoid β}
+theorem Quotient.lift₂_mk {α : Sort*} {β : Sort*} {γ : Sort*} [Setoid α] [Setoid β]
     (f : α → β → γ)
     (h : ∀ (a₁ : α) (a₂ : β) (b₁ : α) (b₂ : β), a₁ ≈ b₁ → a₂ ≈ b₂ → f a₁ a₂ = f b₁ b₂)
     (a : α) (b : β) :
     Quotient.lift₂ f h (Quotient.mk _ a) (Quotient.mk _ b) = f a b :=
   rfl
 
-theorem Quotient.liftOn_mk {s : Setoid α} (f : α → β) (h : ∀ a b : α, a ≈ b → f a = f b) (x : α) :
+theorem Quotient.liftOn_mk [s : Setoid α] (f : α → β) (h : ∀ a b : α, a ≈ b → f a = f b) (x : α) :
     Quotient.liftOn (Quotient.mk s x) f h = f x :=
   rfl
 
 @[simp]
-theorem Quotient.liftOn₂_mk {α : Sort*} {β : Sort*} {_ : Setoid α} (f : α → α → β)
+theorem Quotient.liftOn₂_mk {α : Sort*} {β : Sort*} [Setoid α] (f : α → α → β)
     (h : ∀ a₁ a₂ b₁ b₂ : α, a₁ ≈ b₁ → a₂ ≈ b₂ → f a₁ a₂ = f b₁ b₂) (x y : α) :
     Quotient.liftOn₂ (Quotient.mk _ x) (Quotient.mk _ y) f h = f x y :=
   rfl
 
 /-- `Quot.mk r` is a surjective function. -/
-theorem Quot.mk_surjective {r : α → α → Prop} : Function.Surjective (Quot.mk r) :=
-  Quot.exists_rep
-
-/-- `Quotient.mk` is a surjective function. -/
-theorem Quotient.mk_surjective {s : Setoid α} :
-    Function.Surjective (Quotient.mk s) :=
-  Quot.exists_rep
-
-/-- `Quotient.mk'` is a surjective function. -/
-theorem Quotient.mk'_surjective [s : Setoid α] :
-    Function.Surjective (Quotient.mk' : α → Quotient s) :=
-  Quot.exists_rep
-
-/-- `Quot.mk r` is a surjective function. -/
-@[deprecated Quot.mk_surjective (since := "2024-09-02")]
 theorem surjective_quot_mk (r : α → α → Prop) : Function.Surjective (Quot.mk r) :=
   Quot.exists_rep
 
 /-- `Quotient.mk` is a surjective function. -/
-@[deprecated Quotient.mk_surjective (since := "2024-09-02")]
 theorem surjective_quotient_mk {α : Sort*} (s : Setoid α) :
     Function.Surjective (Quotient.mk s) :=
   Quot.exists_rep
 
 /-- `Quotient.mk'` is a surjective function. -/
-@[deprecated Quotient.mk'_surjective (since := "2024-09-02")]
 theorem surjective_quotient_mk' (α : Sort*) [s : Setoid α] :
     Function.Surjective (Quotient.mk' : α → Quotient s) :=
   Quot.exists_rep
@@ -366,22 +338,22 @@ theorem Quot.out_eq {r : α → α → Prop} (q : Quot r) : Quot.mk r q.out = q 
 
 /-- Choose an element of the equivalence class using the axiom of choice.
   Sound but noncomputable. -/
-noncomputable def Quotient.out {s : Setoid α} : Quotient s → α :=
+noncomputable def Quotient.out [s : Setoid α] : Quotient s → α :=
   Quot.out
 
 @[simp]
-theorem Quotient.out_eq {s : Setoid α} (q : Quotient s) : ⟦q.out⟧ = q :=
+theorem Quotient.out_eq [s : Setoid α] (q : Quotient s) : ⟦q.out⟧ = q :=
   Quot.out_eq q
 
-theorem Quotient.mk_out {s : Setoid α} (a : α) : s (⟦a⟧ : Quotient s).out a :=
+theorem Quotient.mk_out [Setoid α] (a : α) : ⟦a⟧.out ≈ a :=
   Quotient.exact (Quotient.out_eq _)
 
-theorem Quotient.mk_eq_iff_out {s : Setoid α} {x : α} {y : Quotient s} :
+theorem Quotient.mk_eq_iff_out [s : Setoid α] {x : α} {y : Quotient s} :
     ⟦x⟧ = y ↔ x ≈ Quotient.out y := by
   refine Iff.trans ?_ Quotient.eq
   rw [Quotient.out_eq y]
 
-theorem Quotient.eq_mk_iff_out {s : Setoid α} {x : Quotient s} {y : α} :
+theorem Quotient.eq_mk_iff_out [s : Setoid α] {x : Quotient s} {y : α} :
     x = ⟦y⟧ ↔ Quotient.out x ≈ y := by
   refine Iff.trans ?_ Quotient.eq
   rw [Quotient.out_eq x]
@@ -405,31 +377,20 @@ instance piSetoid {ι : Sort*} {α : ι → Sort*} [∀ i, Setoid (α i)] : Seto
             fun h _ ↦ Setoid.symm (h _),
             fun h₁ h₂ _ ↦ Setoid.trans (h₁ _) (h₂ _)⟩
 
-/-- Given a class of functions `q : @Quotient (∀ i, α i) _`, returns the class of `i`-th projection
-`Quotient (S i)`. -/
-def Quotient.eval {ι : Type*} {α : ι → Sort*} {S : ∀ i, Setoid (α i)}
-    (q : @Quotient (∀ i, α i) (by infer_instance)) (i : ι) : Quotient (S i) :=
-  q.map (· i) fun _ _ h ↦ by exact h i
-
-@[simp]
-theorem Quotient.eval_mk {ι : Type*} {α : ι → Type*} {S : ∀ i, Setoid (α i)} (f : ∀ i, α i) :
-    Quotient.eval (S := S) ⟦f⟧ = fun i ↦ ⟦f i⟧ :=
-  rfl
-
 /-- Given a function `f : Π i, Quotient (S i)`, returns the class of functions `Π i, α i` sending
 each `i` to an element of the class `f i`. -/
-noncomputable def Quotient.choice {ι : Type*} {α : ι → Type*} {S : ∀ i, Setoid (α i)}
+noncomputable def Quotient.choice {ι : Type*} {α : ι → Type*} [S : ∀ i, Setoid (α i)]
     (f : ∀ i, Quotient (S i)) :
     @Quotient (∀ i, α i) (by infer_instance) :=
   ⟦fun i ↦ (f i).out⟧
 
 @[simp]
-theorem Quotient.choice_eq {ι : Type*} {α : ι → Type*} {S : ∀ i, Setoid (α i)} (f : ∀ i, α i) :
-    (Quotient.choice (S := S) fun i ↦ ⟦f i⟧) = ⟦f⟧ :=
+theorem Quotient.choice_eq {ι : Type*} {α : ι → Type*} [∀ i, Setoid (α i)] (f : ∀ i, α i) :
+    (Quotient.choice fun i ↦ ⟦f i⟧) = ⟦f⟧ :=
   Quotient.sound fun _ ↦ Quotient.mk_out _
 
 @[elab_as_elim]
-theorem Quotient.induction_on_pi {ι : Type*} {α : ι → Sort*} {s : ∀ i, Setoid (α i)}
+theorem Quotient.induction_on_pi {ι : Type*} {α : ι → Sort*} [s : ∀ i, Setoid (α i)]
     {p : (∀ i, Quotient (s i)) → Prop} (f : ∀ i, Quotient (s i))
     (h : ∀ a : ∀ i, α i, p fun i ↦ ⟦a i⟧) : p f := by
   rw [← (funext fun i ↦ Quotient.out_eq (f i) : (fun i ↦ ⟦(f i).out⟧) = f)]
@@ -480,6 +441,8 @@ protected theorem lift_mk (f : α → β) (c) (a : α) : lift f c (mk a) = f a :
   rfl
 
 /-- Lift a constant function on `q : Trunc α`. -/
+-- Porting note: removed `@[elab_as_elim]` because it gave "unexpected eliminator resulting type"
+-- porting note (#11083): removed `@[reducible]` because it caused extremely slow `simp`
 protected def liftOn (q : Trunc α) (f : α → β) (c : ∀ a b : α, f a = f b) : β :=
   lift f c q
 
@@ -528,6 +491,7 @@ instance : LawfulMonad Trunc where
 variable {C : Trunc α → Sort*}
 
 /-- Recursion/induction principle for `Trunc`. -/
+-- porting note (#11083): removed `@[reducible]` because it caused extremely slow `simp`
 @[elab_as_elim]
 protected def rec (f : ∀ a, C (mk a))
     (h : ∀ a b : α, (Eq.ndrec (f a) (Trunc.eq (mk a) (mk b)) : C (mk b)) = f b)
@@ -535,12 +499,14 @@ protected def rec (f : ∀ a, C (mk a))
   Quot.rec f (fun a b _ ↦ h a b) q
 
 /-- A version of `Trunc.rec` taking `q : Trunc α` as the first argument. -/
+-- porting note (#11083): removed `@[reducible]` because it caused extremely slow `simp`
 @[elab_as_elim]
 protected def recOn (q : Trunc α) (f : ∀ a, C (mk a))
     (h : ∀ a b : α, (Eq.ndrec (f a) (Trunc.eq (mk a) (mk b)) : C (mk b)) = f b) : C q :=
   Trunc.rec f h q
 
 /-- A version of `Trunc.recOn` assuming the codomain is a `Subsingleton`. -/
+-- porting note (#11083)s: removed `@[reducible]` because it caused extremely slow `simp`
 @[elab_as_elim]
 protected def recOnSubsingleton [∀ a, Subsingleton (C (mk a))] (q : Trunc α) (f : ∀ a, C (mk a)) :
     C q :=
@@ -575,19 +541,18 @@ several different quotient relations on a type, for example quotient groups, rin
 -- Porting note: Quotient.mk' is the equivalent of Lean 3's `Quotient.mk`
 /-- A version of `Quotient.mk` taking `{s : Setoid α}` as an implicit argument instead of an
 instance argument. -/
-protected abbrev mk'' (a : α) : Quotient s₁ :=
-  ⟦a⟧
+protected def mk'' (a : α) : Quotient s₁ :=
+  Quot.mk s₁.1 a
 
 /-- `Quotient.mk''` is a surjective function. -/
-theorem mk''_surjective : Function.Surjective (Quotient.mk'' : α → Quotient s₁) :=
+theorem surjective_Quotient_mk'' : Function.Surjective (Quotient.mk'' : α → Quotient s₁) :=
   Quot.exists_rep
-
-@[deprecated (since := "2024-09-02")]
-alias surjective_Quotient_mk'' := mk''_surjective
 
 /-- A version of `Quotient.liftOn` taking `{s : Setoid α}` as an implicit argument instead of an
 instance argument. -/
-protected def liftOn' (q : Quotient s₁) (f : α → φ) (h : ∀ a b, s₁ a b → f a = f b) :
+-- Porting note: removed `@[elab_as_elim]` because it gave "unexpected eliminator resulting type"
+-- porting note (#11083): removed `@[reducible]` because it caused extremely slow `simp`
+protected def liftOn' (q : Quotient s₁) (f : α → φ) (h : ∀ a b, @Setoid.r α s₁ a b → f a = f b) :
     φ :=
   Quotient.liftOn q f h
 
@@ -602,8 +567,10 @@ protected theorem liftOn'_mk'' (f : α → φ) (h) (x : α) :
 
 /-- A version of `Quotient.liftOn₂` taking `{s₁ : Setoid α} {s₂ : Setoid β}` as implicit arguments
 instead of instance arguments. -/
+-- Porting note: removed `@[elab_as_elim]` because it gave "unexpected eliminator resulting type"
+-- porting note (#11083): removed `@[reducible]` because it caused extremely slow `simp`
 protected def liftOn₂' (q₁ : Quotient s₁) (q₂ : Quotient s₂) (f : α → β → γ)
-    (h : ∀ a₁ a₂ b₁ b₂, s₁ a₁ b₁ → s₂ a₂ b₂ → f a₁ a₂ = f b₁ b₂) : γ :=
+    (h : ∀ a₁ a₂ b₁ b₂, @Setoid.r α s₁ a₁ b₁ → @Setoid.r β s₂ a₂ b₂ → f a₁ a₂ = f b₁ b₂) : γ :=
   Quotient.liftOn₂ q₁ q₂ f h
 
 @[simp]
@@ -660,6 +627,7 @@ protected def recOnSubsingleton' {φ : Quotient s₁ → Sort*} [∀ a, Subsingl
 
 /-- A version of `Quotient.recOnSubsingleton₂` taking `{s₁ : Setoid α} {s₂ : Setoid α}`
 as implicit arguments instead of instance arguments. -/
+-- porting note (#11083): removed `@[reducible]` because it caused extremely slow `simp`
 @[elab_as_elim]
 protected def recOnSubsingleton₂' {φ : Quotient s₁ → Quotient s₂ → Sort*}
     [∀ a b, Subsingleton (φ ⟦a⟧ ⟦b⟧)]
@@ -694,8 +662,7 @@ theorem hrecOn₂'_mk'' {φ : Quotient s₁ → Quotient s₂ → Sort*}
 
 /-- Map a function `f : α → β` that sends equivalent elements to equivalent elements
 to a function `Quotient sa → Quotient sb`. Useful to define unary operations on quotients. -/
-protected def map' (f : α → β) (h : ∀ a b, s₁.r a b → s₂.r (f a) (f b)) :
-    Quotient s₁ → Quotient s₂ :=
+protected def map' (f : α → β) (h : (s₁.r ⇒ s₂.r) f f) : Quotient s₁ → Quotient s₂ :=
   Quot.map f h
 
 @[simp]
@@ -704,34 +671,47 @@ theorem map'_mk'' (f : α → β) (h) (x : α) :
   rfl
 
 /-- A version of `Quotient.map₂` using curly braces and unification. -/
-@[deprecated (since := "2024-12-01")] protected alias map₂' := Quotient.map₂
+protected def map₂' (f : α → β → γ) (h : (s₁.r ⇒ s₂.r ⇒ s₃.r) f f) :
+    Quotient s₁ → Quotient s₂ → Quotient s₃ :=
+  Quotient.map₂ f h
+
+@[simp]
+theorem map₂'_mk'' (f : α → β → γ) (h) (x : α) :
+    (Quotient.mk'' x : Quotient s₁).map₂' f h =
+      (Quotient.map' (f x) (h (Setoid.refl x)) : Quotient s₂ → Quotient s₃) :=
+  rfl
 
 theorem exact' {a b : α} :
-    (Quotient.mk'' a : Quotient s₁) = Quotient.mk'' b → s₁ a b :=
+    (Quotient.mk'' a : Quotient s₁) = Quotient.mk'' b → @Setoid.r _ s₁ a b :=
   Quotient.exact
 
-theorem sound' {a b : α} : s₁ a b → @Quotient.mk'' α s₁ a = Quotient.mk'' b :=
+theorem sound' {a b : α} : @Setoid.r _ s₁ a b → @Quotient.mk'' α s₁ a = Quotient.mk'' b :=
   Quotient.sound
 
 @[simp]
-protected theorem eq' {s₁ : Setoid α} {a b : α} :
-    @Quotient.mk' α s₁ a = @Quotient.mk' α s₁ b ↔ s₁ a b :=
+protected theorem eq' [s₁ : Setoid α] {a b : α} :
+    @Quotient.mk' α s₁ a = @Quotient.mk' α s₁ b ↔ @Setoid.r _ s₁ a b :=
   Quotient.eq
 
-protected theorem eq'' {a b : α} : @Quotient.mk'' α s₁ a = Quotient.mk'' b ↔ s₁ a b :=
+@[simp]
+protected theorem eq'' {a b : α} : @Quotient.mk'' α s₁ a = Quotient.mk'' b ↔ @Setoid.r _ s₁ a b :=
   Quotient.eq
 
-@[deprecated (since := "2024-10-19")] alias out' := out
+/-- A version of `Quotient.out` taking `{s₁ : Setoid α}` as an implicit argument instead of an
+instance argument. -/
+noncomputable def out' (a : Quotient s₁) : α :=
+  Quotient.out a
 
-theorem out_eq' (q : Quotient s₁) : Quotient.mk'' q.out = q :=
+@[simp]
+theorem out_eq' (q : Quotient s₁) : Quotient.mk'' q.out' = q :=
   q.out_eq
 
-theorem mk_out' (a : α) : s₁ (Quotient.mk'' a : Quotient s₁).out a :=
+theorem mk_out' (a : α) : @Setoid.r α s₁ (Quotient.mk'' a : Quotient s₁).out' a :=
   Quotient.exact (Quotient.out_eq _)
 
 section
 
-variable {s : Setoid α}
+variable [s : Setoid α]
 
 protected theorem mk''_eq_mk : Quotient.mk'' = Quotient.mk s :=
   rfl
@@ -741,23 +721,24 @@ protected theorem liftOn'_mk (x : α) (f : α → β) (h) : (Quotient.mk s x).li
   rfl
 
 @[simp]
-protected theorem liftOn₂'_mk {t : Setoid β} (f : α → β → γ) (h) (a : α) (b : β) :
+protected theorem liftOn₂'_mk [t : Setoid β] (f : α → β → γ) (h) (a : α) (b : β) :
     Quotient.liftOn₂' (Quotient.mk s a) (Quotient.mk t b) f h = f a b :=
   Quotient.liftOn₂'_mk'' _ _ _ _
 
-theorem map'_mk {t : Setoid β} (f : α → β) (h) (x : α) :
+@[simp]
+theorem map'_mk [t : Setoid β] (f : α → β) (h) (x : α) :
     (Quotient.mk s x).map' f h = (Quotient.mk t (f x)) :=
   rfl
 
 end
 
-instance (q : Quotient s₁) (f : α → Prop) (h : ∀ a b, s₁ a b → f a = f b)
+instance (q : Quotient s₁) (f : α → Prop) (h : ∀ a b, @Setoid.r α s₁ a b → f a = f b)
     [DecidablePred f] :
     Decidable (Quotient.liftOn' q f h) :=
   Quotient.lift.decidablePred _ _ q
 
 instance (q₁ : Quotient s₁) (q₂ : Quotient s₂) (f : α → β → Prop)
-    (h : ∀ a₁ b₁ a₂ b₂, s₁ a₁ a₂ → s₂ b₁ b₂ → f a₁ b₁ = f a₂ b₂)
+    (h : ∀ a₁ b₁ a₂ b₂, @Setoid.r α s₁ a₁ a₂ → @Setoid.r β s₂ b₁ b₂ → f a₁ b₁ = f a₂ b₂)
     [∀ a, DecidablePred (f a)] :
     Decidable (Quotient.liftOn₂' q₁ q₂ f h) :=
   Quotient.lift₂.decidablePred _ h _ _

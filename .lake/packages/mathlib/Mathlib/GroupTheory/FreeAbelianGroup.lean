@@ -3,7 +3,6 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.Module.NatInt
 import Mathlib.GroupTheory.Abelianization
 import Mathlib.GroupTheory.FreeGroup.Basic
 
@@ -88,7 +87,7 @@ namespace FreeAbelianGroup
 
 /-- The canonical map from `α` to `FreeAbelianGroup α`. -/
 def of (x : α) : FreeAbelianGroup α :=
-  Additive.ofMul <| Abelianization.of <| FreeGroup.of x
+  Abelianization.of <| FreeGroup.of x
 
 /-- The map `FreeAbelianGroup α →+ A` induced by a map of types `α → A`. -/
 def lift {β : Type v} [AddCommGroup β] : (α → β) ≃ (FreeAbelianGroup α →+ β) :=
@@ -138,20 +137,6 @@ theorem of_injective : Function.Injective (of : α → FreeAbelianGroup α) :=
     have hfy1 : f (of y) = 1 := hoxy ▸ hfx1
     have hfy0 : f (of y) = 0 := (lift.of _ _).trans <| if_neg hxy
     one_ne_zero <| hfy1.symm.trans hfy0
-
-@[simp]
-theorem of_ne_zero (x : α) : of x ≠ 0 := by
-  intro h
-  let f : FreeAbelianGroup α →+ ℤ := lift 1
-  have hfx : f (of x) = 1 := lift.of _ _
-  have hf0 : f (of x) = 0 := by rw [h, map_zero]
-  exact one_ne_zero <| hfx.symm.trans hf0
-
-@[simp]
-theorem zero_ne_of (x : α) : 0 ≠ of x := of_ne_zero _ |>.symm
-
-instance [Nonempty α] : Nontrivial (FreeAbelianGroup α) where
-  exists_pair_ne := let ⟨x⟩ := ‹Nonempty α›; ⟨0, of x, zero_ne_of _⟩
 
 end
 
@@ -226,6 +211,7 @@ protected theorem map_sub (f : α → β) (x y : FreeAbelianGroup α) :
 theorem map_of (f : α → β) (y : α) : f <$> of y = of (f y) :=
   rfl
 
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem pure_bind (f : α → FreeAbelianGroup β) (x) : pure x >>= f = f x :=
   lift.of _ _
 
@@ -389,7 +375,7 @@ theorem of_mul (x y : α) : of (x * y) = of x * of y :=
 
 instance distrib : Distrib (FreeAbelianGroup α) :=
   { FreeAbelianGroup.mul α, FreeAbelianGroup.addCommGroup α with
-    left_distrib := fun _ _ _ ↦ (lift _).map_add _ _
+    left_distrib := fun x y z ↦ (lift _).map_add _ _
     right_distrib := fun x y z ↦ by simp only [(· * ·), Mul.mul, map_add, ← Pi.add_def, lift.add'] }
 
 instance nonUnitalNonAssocRing : NonUnitalNonAssocRing (FreeAbelianGroup α) :=
@@ -402,19 +388,8 @@ instance nonUnitalNonAssocRing : NonUnitalNonAssocRing (FreeAbelianGroup α) :=
 
 end Mul
 
-section One
-variable [One α]
-
-instance one : One (FreeAbelianGroup α) :=
+instance one [One α] : One (FreeAbelianGroup α) :=
   ⟨of 1⟩
-
-theorem one_def : (1 : FreeAbelianGroup α) = of 1 :=
-  rfl
-
-theorem of_one : (of 1 : FreeAbelianGroup α) = 1 :=
-  rfl
-
-end One
 
 instance nonUnitalRing [Semigroup α] : NonUnitalRing (FreeAbelianGroup α) :=
   { FreeAbelianGroup.nonUnitalNonAssocRing with
@@ -441,16 +416,21 @@ instance ring : Ring (FreeAbelianGroup α) :=
   { FreeAbelianGroup.nonUnitalRing _,
     FreeAbelianGroup.one _ with
     mul_one := fun x ↦ by
-      rw [mul_def, one_def, lift.of]
+      dsimp only [(· * ·), Mul.mul, OfNat.ofNat, One.one]
+      rw [lift.of]
       refine FreeAbelianGroup.induction_on x rfl (fun L ↦ ?_) (fun L ih ↦ ?_) fun x1 x2 ih1 ih2 ↦ ?_
-      · rw [lift.of, mul_one]
+      · erw [lift.of]
+        congr 1
+        exact mul_one L
       · rw [map_neg, ih]
       · rw [map_add, ih1, ih2]
     one_mul := fun x ↦ by
-      simp_rw [mul_def, one_def, lift.of]
+      dsimp only [(· * ·), Mul.mul, OfNat.ofNat, One.one]
       refine FreeAbelianGroup.induction_on x rfl ?_ ?_ ?_
       · intro L
-        rw [lift.of, one_mul]
+        rw [lift.of, lift.of]
+        congr 1
+        exact one_mul L
       · intro L ih
         rw [map_neg, ih]
       · intro x1 x2 ih1 ih2
@@ -461,7 +441,7 @@ variable {α}
 /-- `FreeAbelianGroup.of` is a `MonoidHom` when `α` is a `Monoid`. -/
 def ofMulHom : α →* FreeAbelianGroup α where
   toFun := of
-  map_one' := of_one _
+  map_one' := rfl
   map_mul' := of_mul
 
 @[simp]
@@ -509,6 +489,12 @@ theorem liftMonoid_coe (f : α →* R) : ⇑(liftMonoid f) = lift f :=
 -- Porting note: Added a type to `↑f`.
 theorem liftMonoid_symm_coe (f : FreeAbelianGroup α →+* R) :
     ⇑(liftMonoid.symm f) = lift.symm (↑f : FreeAbelianGroup α →+ R) :=
+  rfl
+
+theorem one_def : (1 : FreeAbelianGroup α) = of 1 :=
+  rfl
+
+theorem of_one : (of 1 : FreeAbelianGroup α) = 1 :=
   rfl
 
 end Monoid

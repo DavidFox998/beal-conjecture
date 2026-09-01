@@ -35,12 +35,13 @@ See also `Algebra.trace`, which is defined similarly as the trace of
 
 universe u v w
 
-variable {R S : Type*} [CommRing R] [Ring S]
+variable {R S T : Type*} [CommRing R] [Ring S]
 variable [Algebra R S]
-variable {K : Type*} [Field K]
+variable {K L F : Type*} [Field K] [Field L] [Field F]
+variable [Algebra K L] [Algebra K F]
 variable {ι : Type w}
 
-open Module
+open FiniteDimensional
 
 open LinearMap
 
@@ -53,7 +54,6 @@ namespace Algebra
 variable (R)
 
 /-- The norm of an element `s` of an `R`-algebra is the determinant of `(*) s`. -/
-@[stacks 0BIF "Norm"]
 noncomputable def norm : S →* R :=
   LinearMap.det.comp (lmul R S).toRingHom.toMonoidHom
 

@@ -16,7 +16,7 @@ This file proves results about angles in circles and spheres.
 
 noncomputable section
 
-open Module Complex
+open FiniteDimensional Complex
 
 open scoped EuclideanGeometry Real RealInnerProductSpace ComplexConjugate
 

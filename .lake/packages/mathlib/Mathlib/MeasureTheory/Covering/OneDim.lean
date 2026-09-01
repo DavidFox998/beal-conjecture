@@ -32,7 +32,8 @@ theorem tendsto_Icc_vitaliFamily_right (x : ℝ) :
   refine (VitaliFamily.tendsto_filterAt_iff _).2 ⟨?_, ?_⟩
   · filter_upwards [self_mem_nhdsWithin] with y hy using Icc_mem_vitaliFamily_at_right hy
   · intro ε εpos
-    filter_upwards [Icc_mem_nhdsGT <| show x < x + ε by linarith] with y hy
+    have : x ∈ Ico x (x + ε) := ⟨le_refl _, by linarith⟩
+    filter_upwards [Icc_mem_nhdsWithin_Ioi this] with y hy
     rw [closedBall_eq_Icc]
     exact Icc_subset_Icc (by linarith) hy.2
 
@@ -47,7 +48,8 @@ theorem tendsto_Icc_vitaliFamily_left (x : ℝ) :
   refine (VitaliFamily.tendsto_filterAt_iff _).2 ⟨?_, ?_⟩
   · filter_upwards [self_mem_nhdsWithin] with y hy using Icc_mem_vitaliFamily_at_left hy
   · intro ε εpos
-    filter_upwards [Icc_mem_nhdsLT <| show x - ε < x by linarith] with y hy
+    have : x ∈ Ioc (x - ε) x := ⟨by linarith, le_refl _⟩
+    filter_upwards [Icc_mem_nhdsWithin_Iio this] with y hy
     rw [closedBall_eq_Icc]
     exact Icc_subset_Icc hy.1 (by linarith)
 

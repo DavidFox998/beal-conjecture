@@ -60,9 +60,10 @@ theorem cast_natCast (n : ℕ) : ((n : ℤ) : R) = n :=
   AddGroupWithOne.intCast_ofNat _
 -- expected `n` to be implicit, and `HasLiftT`
 
+-- See note [no_index around OfNat.ofNat]
 @[simp, norm_cast]
 theorem cast_ofNat (n : ℕ) [n.AtLeastTwo] :
-    ((ofNat(n) : ℤ) : R) = ofNat(n) := by
+    ((no_index (OfNat.ofNat n) : ℤ) : R) = OfNat.ofNat n := by
   simpa only [OfNat.ofNat] using AddGroupWithOne.intCast_ofNat (R := R) n
 
 @[simp, norm_cast]
@@ -114,11 +115,3 @@ theorem cast_three : ((3 : ℤ) : R) = 3 := cast_ofNat _
 theorem cast_four : ((4 : ℤ) : R) = 4 := cast_ofNat _
 
 end Int
-
-section zsmul
-
-variable {R : Type*}
-
-@[simp] lemma zsmul_one [AddGroupWithOne R] (n : ℤ) : n • (1 : R) = n := by cases n <;> simp
-
-end zsmul

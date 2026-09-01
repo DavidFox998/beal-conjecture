@@ -4,9 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
 import Mathlib.Topology.Defs.Basic
-import Mathlib.Data.Setoid.Basic
-import Mathlib.Order.Filter.Defs
-import Mathlib.Tactic.IrreducibleDef
+import Mathlib.Order.Filter.Ultrafilter
+import Mathlib.Data.Set.Lattice
 
 /-!
 # Definitions about filters in topological spaces
@@ -109,8 +108,6 @@ as well as other definitions that rely on `Filter`s.
 * `𝓝ˢ s`: the filter `nhdsSet s` of neighborhoods of a set.
 -/
 
-assert_not_exists Ultrafilter
-
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 
 open Filter
@@ -134,20 +131,20 @@ def nhdsWithin (x : X) (s : Set X) : Filter X :=
 scoped[Topology] notation "𝓝[" s "] " x:100 => nhdsWithin x s
 
 /-- Notation for the filter of punctured neighborhoods of a point. -/
-scoped[Topology] notation3 (name := nhdsNE) "𝓝[≠] " x:100 =>
+scoped[Topology] notation3 "𝓝[≠] " x:100 =>
   nhdsWithin x (@singleton _ (Set _) Set.instSingletonSet x)ᶜ
 
 /-- Notation for the filter of right neighborhoods of a point. -/
-scoped[Topology] notation3 (name := nhdsGE) "𝓝[≥] " x:100 => nhdsWithin x (Set.Ici x)
+scoped[Topology] notation3 "𝓝[≥] " x:100 => nhdsWithin x (Set.Ici x)
 
 /-- Notation for the filter of left neighborhoods of a point. -/
-scoped[Topology] notation3 (name := nhdsLE) "𝓝[≤] " x:100 => nhdsWithin x (Set.Iic x)
+scoped[Topology] notation3 "𝓝[≤] " x:100 => nhdsWithin x (Set.Iic x)
 
 /-- Notation for the filter of punctured right neighborhoods of a point. -/
-scoped[Topology] notation3 (name := nhdsGT) "𝓝[>] " x:100 => nhdsWithin x (Set.Ioi x)
+scoped[Topology] notation3 "𝓝[>] " x:100 => nhdsWithin x (Set.Ioi x)
 
 /-- Notation for the filter of punctured left neighborhoods of a point. -/
-scoped[Topology] notation3 (name := nhdsLT) "𝓝[<] " x:100 => nhdsWithin x (Set.Iio x)
+scoped[Topology] notation3 "𝓝[<] " x:100 => nhdsWithin x (Set.Iio x)
 
 /-- The filter of neighborhoods of a set in a topological space. -/
 def nhdsSet (s : Set X) : Filter X :=
@@ -202,8 +199,8 @@ infixl:300 " ⤳ " => Specializes
 equivalent properties hold:
 
 - `𝓝 x = 𝓝 y`; we use this property as the definition;
-- for any open set `s`, `x ∈ s ↔ y ∈ s`, see `inseparable_iff_forall_isOpen`;
-- for any closed set `s`, `x ∈ s ↔ y ∈ s`, see `inseparable_iff_forall_isClosed`;
+- for any open set `s`, `x ∈ s ↔ y ∈ s`, see `inseparable_iff_open`;
+- for any closed set `s`, `x ∈ s ↔ y ∈ s`, see `inseparable_iff_closed`;
 - `x ∈ closure {y}` and `y ∈ closure {x}`, see `inseparable_iff_mem_closure`;
 - `closure {x} = closure {y}`, see `inseparable_iff_closure_eq`.
 -/
@@ -233,6 +230,13 @@ section Lim
 /-- If `f` is a filter, then `Filter.lim f` is a limit of the filter, if it exists. -/
 noncomputable def lim [Nonempty X] (f : Filter X) : X :=
   Classical.epsilon fun x => f ≤ 𝓝 x
+
+/--
+If `F` is an ultrafilter, then `Filter.Ultrafilter.lim F` is a limit of the filter, if it exists.
+Note that dot notation `F.lim` can be used for `F : Filter.Ultrafilter X`.
+-/
+noncomputable nonrec def Ultrafilter.lim (F : Ultrafilter X) : X :=
+  @lim X _ (nonempty_of_neBot F) F
 
 /-- If `f` is a filter in `α` and `g : α → X` is a function, then `limUnder f g` is a limit of `g`
 at `f`, if it exists. -/

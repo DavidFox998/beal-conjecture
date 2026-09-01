@@ -157,15 +157,15 @@ instance (priority := 100) preservesZeroMorphisms_of_preserves_terminal_object
 variable (F)
 
 /-- Preserving zero morphisms implies preserving terminal objects. -/
-lemma preservesTerminalObject_of_preservesZeroMorphisms [PreservesZeroMorphisms F] :
-    PreservesLimit (Functor.empty.{0} C) F :=
-  preservesTerminal_of_iso F <|
+def preservesTerminalObjectOfPreservesZeroMorphisms [PreservesZeroMorphisms F] :
+    PreservesLimit (Functor.empty C) F :=
+  preservesTerminalOfIso F <|
     F.mapIso HasZeroObject.zeroIsoTerminal.symm ≪≫ mapZeroObject F ≪≫ HasZeroObject.zeroIsoTerminal
 
 /-- Preserving zero morphisms implies preserving terminal objects. -/
-lemma preservesInitialObject_of_preservesZeroMorphisms [PreservesZeroMorphisms F] :
-    PreservesColimit (Functor.empty.{0} C) F :=
-  preservesInitial_of_iso F <|
+def preservesInitialObjectOfPreservesZeroMorphisms [PreservesZeroMorphisms F] :
+    PreservesColimit (Functor.empty C) F :=
+  preservesInitialOfIso F <|
     HasZeroObject.zeroIsoInitial.symm ≪≫
       (mapZeroObject F).symm ≪≫ (F.mapIso HasZeroObject.zeroIsoInitial.symm).symm
 
@@ -176,27 +176,25 @@ section
 variable [HasZeroObject D] [HasZeroMorphisms D]
   (G : C ⥤ D) (hG : IsZero G) (J : Type*) [Category J]
 
-include hG
-
 /-- A zero functor preserves limits. -/
-lemma preservesLimitsOfShape_of_isZero : PreservesLimitsOfShape J G where
-  preservesLimit {K} := ⟨fun _ => ⟨by
+def preservesLimitsOfShapeOfIsZero : PreservesLimitsOfShape J G where
+  preservesLimit {K} := ⟨fun hc => by
     rw [Functor.isZero_iff] at hG
-    exact IsLimit.ofIsZero _ ((K ⋙ G).isZero (fun X ↦ hG _)) (hG _)⟩⟩
+    exact IsLimit.ofIsZero _ ((K ⋙ G).isZero (fun X ↦ hG _)) (hG _)⟩
 
 /-- A zero functor preserves colimits. -/
-lemma preservesColimitsOfShape_of_isZero : PreservesColimitsOfShape J G where
-  preservesColimit {K} := ⟨fun _ => ⟨by
+def preservesColimitsOfShapeOfIsZero : PreservesColimitsOfShape J G where
+  preservesColimit {K} := ⟨fun hc => by
     rw [Functor.isZero_iff] at hG
-    exact IsColimit.ofIsZero _ ((K ⋙ G).isZero (fun X ↦ hG _)) (hG _)⟩⟩
+    exact IsColimit.ofIsZero _ ((K ⋙ G).isZero (fun X ↦ hG _)) (hG _)⟩
 
 /-- A zero functor preserves limits. -/
-lemma preservesLimitsOfSize_of_isZero : PreservesLimitsOfSize.{v, u} G where
-  preservesLimitsOfShape := G.preservesLimitsOfShape_of_isZero hG _
+def preservesLimitsOfSizeOfIsZero : PreservesLimitsOfSize.{v, u} G where
+  preservesLimitsOfShape := G.preservesLimitsOfShapeOfIsZero hG _
 
 /-- A zero functor preserves colimits. -/
-lemma preservesColimitsOfSize_of_isZero : PreservesColimitsOfSize.{v, u} G where
-  preservesColimitsOfShape := G.preservesColimitsOfShape_of_isZero hG _
+def preservesColimitsOfSizeOfIsZero : PreservesColimitsOfSize.{v, u} G where
+  preservesColimitsOfShape := G.preservesColimitsOfShapeOfIsZero hG _
 
 end
 

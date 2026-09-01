@@ -5,7 +5,6 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Analytic.Composition
 import Mathlib.Analysis.Analytic.Linear
-import Mathlib.Tactic.Positivity
 
 /-!
 
@@ -273,7 +272,7 @@ theorem rightInv_coeff (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] 
     congr (config := { closePost := false }) 1
     ext v
     have N : 0 < n + 2 := by norm_num
-    have : ((p 1) fun _ : Fin 1 => 0) = 0 := ContinuousMultilinearMap.map_zero _
+    have : ((p 1) fun i : Fin 1 => 0) = 0 := ContinuousMultilinearMap.map_zero _
     simp [comp_rightInv_aux1 N, lt_irrefl n, this, comp_rightInv_aux2, -Set.toFinset_setOf]
 
 /-! ### Coincidence of the left and the right inverse -/
@@ -435,7 +434,7 @@ theorem radius_rightInv_pos_of_radius_pos_aux2 {x : E} {n : ℕ} (hn : 2 ≤ n +
   calc
     ∑ k ∈ Ico 1 (n + 1), a ^ k * ‖p.rightInv i x k‖ =
         a * I + ∑ k ∈ Ico 2 (n + 1), a ^ k * ‖p.rightInv i x k‖ := by
-      simp only [I, LinearIsometryEquiv.norm_map, pow_one, rightInv_coeff_one,
+      simp only [LinearIsometryEquiv.norm_map, pow_one, rightInv_coeff_one,
         show Ico (1 : ℕ) 2 = {1} from Nat.Ico_succ_singleton 1,
         sum_singleton, ← sum_Ico_consecutive _ one_le_two hn]
     _ =
@@ -465,8 +464,8 @@ theorem radius_rightInv_pos_of_radius_pos_aux2 {x : E} {n : ℕ} (hn : 2 ≤ n +
     _ = I * a + I * C * ∑ k ∈ Ico 2 (n + 1), a ^ k *
           ∑ c ∈ ({c | 1 < Composition.length c}.toFinset : Finset (Composition k)),
             r ^ c.length * ∏ j, ‖p.rightInv i x (c.blocksFun j)‖ := by
-      simp_rw [I, mul_assoc C, ← mul_sum, ← mul_assoc, mul_comm _ ‖(i.symm : F →L[𝕜] E)‖,
-        mul_assoc, ← mul_sum, ← mul_assoc, mul_comm _ C, mul_assoc, ← mul_sum]
+      simp_rw [mul_assoc C, ← mul_sum, ← mul_assoc, mul_comm _ ‖(i.symm : F →L[𝕜] E)‖, mul_assoc,
+        ← mul_sum, ← mul_assoc, mul_comm _ C, mul_assoc, ← mul_sum]
       ring
     _ ≤ I * a + I * C *
         ∑ k ∈ Ico 2 (n + 1), (r * ∑ j ∈ Ico 1 n, a ^ j * ‖p.rightInv i x j‖) ^ k := by
@@ -513,7 +512,7 @@ theorem radius_rightInv_pos_of_radius_pos
       rw [Ico_eq_empty_of_le (le_refl 1), sum_empty]
       exact mul_nonneg (add_nonneg (norm_nonneg _) zero_le_one) apos.le
     · intro n one_le_n hn
-      have In : 2 ≤ n + 1 := by omega
+      have In : 2 ≤ n + 1 := by linarith only [one_le_n]
       have rSn : r * S n ≤ 1 / 2 :=
         calc
           r * S n ≤ r * ((I + 1) * a) := by gcongr
@@ -536,7 +535,7 @@ theorem radius_rightInv_pos_of_radius_pos
   let a' : NNReal := ⟨a, apos.le⟩
   suffices H : (a' : ENNReal) ≤ (p.rightInv i x).radius by
     apply lt_of_lt_of_le _ H
-    -- Prior to https://github.com/leanprover/lean4/pull/2734, this was `exact_mod_cast apos`.
+    -- Prior to leanprover/lean4#2734, this was `exact_mod_cast apos`.
     simpa only [ENNReal.coe_pos]
   apply le_radius_of_eventually_le _ ((I + 1) * a)
   filter_upwards [Ici_mem_atTop 1] with n (hn : 1 ≤ n)
@@ -591,7 +590,7 @@ lemma HasFPowerSeriesAt.tendsto_partialSum_prod_of_comp
         _ ≤ ‖compAlongComposition q p c‖ * (r1 : ℝ) ^ n := by
           apply mul_le_mul_of_nonneg_left _ (norm_nonneg _)
           rw [Finset.prod_const, Finset.card_fin]
-          gcongr
+          apply pow_le_pow_left (norm_nonneg _)
           rw [EMetric.mem_ball, edist_eq_coe_nnnorm] at hy
           have := le_trans (le_of_lt hy) (min_le_right _ _)
           rwa [ENNReal.coe_le_coe, ← NNReal.coe_le_coe, coe_nnnorm] at this
@@ -631,10 +630,10 @@ lemma HasFPowerSeriesAt.eventually_hasSum_of_comp  {f : E → F} {g : F → G}
     simp only [id_eq, eventually_atTop, ge_iff_le]
     rcases mem_nhds_iff.1 hu with ⟨v, vu, v_open, hv⟩
     obtain ⟨a₀, b₀, hab⟩ : ∃ a₀ b₀, ∀ (a b : ℕ), a₀ ≤ a → b₀ ≤ b →
-        q.partialSum a (p.partialSum b y - (p 0) fun _ ↦ 0) ∈ v := by
+        q.partialSum a (p.partialSum b y - (p 0) fun x ↦ 0) ∈ v := by
       simpa using hy (v_open.mem_nhds hv)
     refine ⟨a₀, fun a ha ↦ ?_⟩
-    have : Tendsto (fun b ↦ q.partialSum a (p.partialSum b y - (p 0) fun _ ↦ 0)) atTop
+    have : Tendsto (fun b ↦ q.partialSum a (p.partialSum b y - (p 0) fun x ↦ 0)) atTop
         (𝓝 (q.partialSum a (f (x + y) - f x))) := by
       have : ContinuousAt (q.partialSum a) (f (x + y) - f x) :=
         (partialSum_continuous q a).continuousAt

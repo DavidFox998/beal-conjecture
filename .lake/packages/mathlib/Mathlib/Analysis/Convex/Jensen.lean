@@ -31,7 +31,10 @@ As corollaries, we get:
 -/
 
 
-open Finset LinearMap Set Convex Pointwise
+open Finset LinearMap Set
+
+open scoped Classical
+open Convex Pointwise
 
 variable {𝕜 E F β ι : Type*}
 
@@ -107,18 +110,19 @@ lemma StrictConvexOn.map_sum_lt (hf : StrictConvexOn 𝕜 s f) (h₀ : ∀ i ∈
   have hk : k ∉ u := by simp [u]
   have ht :
       t = (u.cons k hk).cons j (mem_cons.not.2 <| not_or_intro (ne_of_apply_ne _ hjk) hj) := by
-    simp [u, insert_erase this, insert_erase ‹j ∈ t›, *]
+    simp [insert_erase this, insert_erase ‹j ∈ t›, *]
   clear_value u
   subst ht
   simp only [sum_cons]
   have := h₀ j <| by simp
   have := h₀ k <| by simp
   let c := w j + w k
-  have hc : w j / c + w k / c = 1 := by field_simp [c]
+  have hc : w j / c + w k / c = 1 := by field_simp
+  have hcj : c * (w j / c) = w j := by field_simp
+  have hck : c * (w k / c) = w k := by field_simp
   calc f (w j • p j + (w k • p k + ∑ x ∈ u, w x • p x))
     _ = f (c • ((w j / c) • p j + (w k / c) • p k) + ∑ x ∈ u, w x • p x) := by
-      congrm f ?_
-      match_scalars <;> field_simp
+      rw [smul_add, ← mul_smul, ← mul_smul, hcj, hck, add_assoc]
     _ ≤ c • f ((w j / c) • p j + (w k / c) • p k) + ∑ x ∈ u, w x • f (p x) :=
       -- apply the usual Jensen's inequality wrt the weighted average of the two distinguished
       -- points and all the other points
@@ -130,7 +134,7 @@ lemma StrictConvexOn.map_sum_lt (hf : StrictConvexOn 𝕜 s f) (h₀ : ∀ i ∈
       -- then apply the definition of strict convexity for the two distinguished points
       gcongr; refine hf.2 (hmem _ <| by simp) (hmem _ <| by simp) hjk ?_ ?_ hc <;> positivity
     _ = (w j • f (p j) + w k • f (p k)) + ∑ x ∈ u, w x • f (p x) := by
-      match_scalars <;> field_simp
+      rw [smul_add, ← mul_smul, ← mul_smul, hcj, hck]
     _ = w j • f (p j) + (w k • f (p k) + ∑ x ∈ u, w x • f (p x)) := by abel_nf
 
 /-- Concave **strict Jensen inequality**.
@@ -218,9 +222,9 @@ lemma StrictConvexOn.map_sum_eq_iff' (hf : StrictConvexOn 𝕜 s f) (h₀ : ∀ 
   have hw' (i) (_ : i ∈ t) : w i • f (p i) ≠ 0 → w i ≠ 0 := by aesop
   rw [← sum_filter_of_ne hw, ← sum_filter_of_ne hw', hf.map_sum_eq_iff]
   · simp
-  · simp +contextual [(h₀ _ _).gt_iff_ne]
+  · simp (config := { contextual := true }) [(h₀ _ _).gt_iff_ne]
   · rwa [sum_filter_ne_zero]
-  · simp +contextual [hmem _ _]
+  · simp (config := { contextual := true }) [hmem _ _]
 
 /-- Canonical form of the **equality case of Jensen's equality**.
 
@@ -268,8 +272,8 @@ lemma ConvexOn.exists_ge_of_centerMass {t : Finset ι} (h : ConvexOn 𝕜 s f)
     ∃ i ∈ t, f (t.centerMass w p) ≤ f (p i) := by
   set y := t.centerMass w p
   -- TODO: can `rsuffices` be used to write the `exact` first, then the proof of this obtain?
-  obtain ⟨i, hi, hfi⟩ : ∃ i ∈ {i ∈ t | w i ≠ 0}, w i • f y ≤ w i • (f ∘ p) i := by
-    have hw' : (0 : 𝕜) < ∑ i ∈ t with w i ≠ 0, w i := by rwa [sum_filter_ne_zero]
+  obtain ⟨i, hi, hfi⟩ : ∃ i ∈ t.filter fun i => w i ≠ 0, w i • f y ≤ w i • (f ∘ p) i := by
+    have hw' : (0 : 𝕜) < ∑ i ∈ filter (fun i => w i ≠ 0) t, w i := by rwa [sum_filter_ne_zero]
     refine exists_le_of_sum_le (nonempty_of_sum_ne_zero hw'.ne') ?_
     rw [← sum_smul, ← smul_le_smul_iff_of_pos_left (inv_pos.2 hw'), inv_smul_smul₀ hw'.ne', ←
       centerMass, centerMass_filter_ne_zero]

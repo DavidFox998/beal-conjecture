@@ -45,7 +45,7 @@ intermediate value theorem, connected space, connected set
 open Filter OrderDual TopologicalSpace Function Set
 open scoped Topology Filter Interval
 
-universe u v
+universe u v w
 
 /-!
 ### Intermediate value theorem on a (pre)connected space
@@ -122,20 +122,21 @@ theorem IsPreconnected.intermediate_value {s : Set X} (hs : IsPreconnected s) {a
 theorem IsPreconnected.intermediate_value_Ico {s : Set X} (hs : IsPreconnected s) {a : X}
     {l : Filter X} (ha : a ∈ s) [NeBot l] (hl : l ≤ 𝓟 s) {f : X → α} (hf : ContinuousOn f s) {v : α}
     (ht : Tendsto f l (𝓝 v)) : Ico (f a) v ⊆ f '' s := fun _ h =>
-  hs.intermediate_value₂_eventually₁ ha hl hf continuousOn_const h.1 (ht.eventually_const_le h.2)
+  hs.intermediate_value₂_eventually₁ ha hl hf continuousOn_const h.1
+    (eventually_ge_of_tendsto_gt h.2 ht)
 
 theorem IsPreconnected.intermediate_value_Ioc {s : Set X} (hs : IsPreconnected s) {a : X}
     {l : Filter X} (ha : a ∈ s) [NeBot l] (hl : l ≤ 𝓟 s) {f : X → α} (hf : ContinuousOn f s) {v : α}
     (ht : Tendsto f l (𝓝 v)) : Ioc v (f a) ⊆ f '' s := fun _ h =>
   (hs.intermediate_value₂_eventually₁ ha hl continuousOn_const hf h.2
-    (ht.eventually_le_const h.1)).imp fun _ h => h.imp_right Eq.symm
+    (eventually_le_of_tendsto_lt h.1 ht)).imp fun _ h => h.imp_right Eq.symm
 
 theorem IsPreconnected.intermediate_value_Ioo {s : Set X} (hs : IsPreconnected s) {l₁ l₂ : Filter X}
     [NeBot l₁] [NeBot l₂] (hl₁ : l₁ ≤ 𝓟 s) (hl₂ : l₂ ≤ 𝓟 s) {f : X → α} (hf : ContinuousOn f s)
     {v₁ v₂ : α} (ht₁ : Tendsto f l₁ (𝓝 v₁)) (ht₂ : Tendsto f l₂ (𝓝 v₂)) :
     Ioo v₁ v₂ ⊆ f '' s := fun _ h =>
   hs.intermediate_value₂_eventually₂ hl₁ hl₂ hf continuousOn_const
-    (ht₁.eventually_le_const h.1) (ht₂.eventually_const_le h.2)
+    (eventually_le_of_tendsto_lt h.1 ht₁) (eventually_ge_of_tendsto_gt h.2 ht₂)
 
 theorem IsPreconnected.intermediate_value_Ici {s : Set X} (hs : IsPreconnected s) {a : X}
     {l : Filter X} (ha : a ∈ s) [NeBot l] (hl : l ≤ 𝓟 s) {f : X → α} (hf : ContinuousOn f s)
@@ -152,19 +153,19 @@ theorem IsPreconnected.intermediate_value_Ioi {s : Set X} (hs : IsPreconnected s
     [NeBot l₁] [NeBot l₂] (hl₁ : l₁ ≤ 𝓟 s) (hl₂ : l₂ ≤ 𝓟 s) {f : X → α} (hf : ContinuousOn f s)
     {v : α} (ht₁ : Tendsto f l₁ (𝓝 v)) (ht₂ : Tendsto f l₂ atTop) : Ioi v ⊆ f '' s := fun y h =>
   hs.intermediate_value₂_eventually₂ hl₁ hl₂ hf continuousOn_const
-    (ht₁.eventually_le_const h) (ht₂.eventually_ge_atTop y)
+    (eventually_le_of_tendsto_lt h ht₁) (tendsto_atTop.1 ht₂ y)
 
 theorem IsPreconnected.intermediate_value_Iio {s : Set X} (hs : IsPreconnected s) {l₁ l₂ : Filter X}
     [NeBot l₁] [NeBot l₂] (hl₁ : l₁ ≤ 𝓟 s) (hl₂ : l₂ ≤ 𝓟 s) {f : X → α} (hf : ContinuousOn f s)
     {v : α} (ht₁ : Tendsto f l₁ atBot) (ht₂ : Tendsto f l₂ (𝓝 v)) : Iio v ⊆ f '' s := fun y h =>
-  hs.intermediate_value₂_eventually₂ hl₁ hl₂ hf continuousOn_const (ht₁.eventually_le_atBot y)
-    (ht₂.eventually_const_le h)
+  hs.intermediate_value₂_eventually₂ hl₁ hl₂ hf continuousOn_const (tendsto_atBot.1 ht₁ y)
+    (eventually_ge_of_tendsto_gt h ht₂)
 
 theorem IsPreconnected.intermediate_value_Iii {s : Set X} (hs : IsPreconnected s) {l₁ l₂ : Filter X}
     [NeBot l₁] [NeBot l₂] (hl₁ : l₁ ≤ 𝓟 s) (hl₂ : l₂ ≤ 𝓟 s) {f : X → α} (hf : ContinuousOn f s)
     (ht₁ : Tendsto f l₁ atBot) (ht₂ : Tendsto f l₂ atTop) : univ ⊆ f '' s := fun y _ =>
-  hs.intermediate_value₂_eventually₂ hl₁ hl₂ hf continuousOn_const (ht₁.eventually_le_atBot y)
-    (ht₂.eventually_ge_atTop y)
+  hs.intermediate_value₂_eventually₂ hl₁ hl₂ hf continuousOn_const (tendsto_atBot.1 ht₁ y)
+    (tendsto_atTop.1 ht₂ y)
 
 /-- **Intermediate Value Theorem** for continuous functions on connected spaces. -/
 theorem intermediate_value_univ [PreconnectedSpace X] (a b : X) {f : X → α} (hf : Continuous f) :
@@ -215,7 +216,9 @@ theorem IsPreconnected.eq_univ_of_unbounded {s : Set α} (hs : IsPreconnected s)
 
 end
 
-variable {α : Type u} [ConditionallyCompleteLinearOrder α] [TopologicalSpace α] [OrderTopology α]
+variable {α : Type u} {β : Type v} {γ : Type w} [ConditionallyCompleteLinearOrder α]
+  [TopologicalSpace α] [OrderTopology α] [ConditionallyCompleteLinearOrder β] [TopologicalSpace β]
+  [OrderTopology β] [Nonempty γ]
 
 /-- A bounded connected subset of a conditionally complete linear order includes the open interval
 `(Inf s, Sup s)`. -/
@@ -337,8 +340,9 @@ theorem IsClosed.Icc_subset_of_forall_mem_nhdsWithin {a b : α} {s : Set α}
     Icc a b ⊆ s := by
   apply hs.Icc_subset_of_forall_exists_gt ha
   rintro x ⟨hxs, hxab⟩ y hyxb
-  have : s ∩ Ioc x y ∈ 𝓝[>] x := inter_mem (hgt x ⟨hxs, hxab⟩) (Ioc_mem_nhdsGT hyxb)
-  exact (nhdsGT_neBot_of_exists_gt ⟨b, hxab.2⟩).nonempty_of_mem this
+  have : s ∩ Ioc x y ∈ 𝓝[>] x :=
+    inter_mem (hgt x ⟨hxs, hxab⟩) (Ioc_mem_nhdsWithin_Ioi ⟨le_rfl, hyxb⟩)
+  exact (nhdsWithin_Ioi_self_neBot' ⟨b, hxab.2⟩).nonempty_of_mem this
 
 theorem isPreconnected_Icc_aux (x y : α) (s t : Set α) (hxy : x ≤ y) (hs : IsClosed s)
     (ht : IsClosed t) (hab : Icc a b ⊆ s ∪ t) (hx : x ∈ Icc a b ∩ s) (hy : y ∈ Icc a b ∩ t) :
@@ -351,7 +355,7 @@ theorem isPreconnected_Icc_aux (x y : α) (s t : Set α) (hxy : x ≤ y) (hs : I
   rintro z ⟨zs, hz⟩
   have zt : z ∈ tᶜ := fun zt => hst ⟨z, xyab <| Ico_subset_Icc_self hz, zs, zt⟩
   have : tᶜ ∩ Ioc z y ∈ 𝓝[>] z := by
-    rw [← nhdsWithin_Ioc_eq_nhdsGT hz.2]
+    rw [← nhdsWithin_Ioc_eq_nhdsWithin_Ioi hz.2]
     exact mem_nhdsWithin.2 ⟨tᶜ, ht.isOpen_compl, zt, Subset.rfl⟩
   apply mem_of_superset this
   have : Ioc z y ⊆ s ∪ t := fun w hw => hab (xyab ⟨le_trans hz.1 (le_of_lt hw.1), hw.2⟩)
@@ -637,8 +641,9 @@ theorem Continuous.strictMonoOn_of_inj_rigidity {f : α → δ}
   let t := max b y
   have hsa : s ≤ a := min_le_left a x
   have hbt : b ≤ t := le_max_left b y
+  have hst : s ≤ t := hsa.trans <| hbt.trans' hab.le
   have hf_mono_st : StrictMonoOn f (Icc s t) ∨ StrictAntiOn f (Icc s t) := by
-    have : Fact (s ≤ t) := ⟨hsa.trans <| hbt.trans' hab.le⟩
+    letI := Icc.completeLinearOrder hst
     have := Continuous.strictMono_of_inj_boundedOrder' (f := Set.restrict (Icc s t) f)
       hf_c.continuousOn.restrict hf_i.injOn.injective
     exact this.imp strictMono_restrict.mp strictAntiOn_iff_strictAnti.mpr
@@ -661,7 +666,7 @@ theorem ContinuousOn.strictMonoOn_of_injOn_Icc {a b : α} {f : α → δ}
     (hab : a ≤ b) (hfab : f a ≤ f b)
     (hf_c : ContinuousOn f (Icc a b)) (hf_i : InjOn f (Icc a b)) :
     StrictMonoOn f (Icc a b) := by
-  have : Fact (a ≤ b) := ⟨hab⟩
+  letI := Icc.completeLinearOrder hab
   refine StrictMono.of_restrict ?_
   set g : Icc a b → δ := Set.restrict (Icc a b) f
   have hgab : g ⊥ ≤ g ⊤ := by aesop

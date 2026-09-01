@@ -5,7 +5,6 @@ Authors: Yakov Pechersky
 -/
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Finset.Powerset
-import Mathlib.Data.List.Permutation
 
 /-!
 

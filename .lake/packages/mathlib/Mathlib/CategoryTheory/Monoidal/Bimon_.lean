@@ -29,50 +29,7 @@ universe v₁ v₂ u₁ u₂ u
 
 open CategoryTheory MonoidalCategory
 
-variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C] [BraidedCategory C]
-
-open scoped Mon_Class Comon_Class
-
-/--
-A bimonoid object in a braided category `C` is a object that is simultaneously monoid and comonoid
-objects, and structure morphisms of them satisfy appropriate consistency conditions.
--/
-class Bimon_Class (M : C) extends Mon_Class M, Comon_Class M where
-  /- For the names of the conditions below, the unprimed names are reserved for the version where
-  the argument `M` is explicit. -/
-  mul_comul' : μ[M] ≫ Δ[M] = (Δ[M] ⊗ Δ[M]) ≫ tensorμ M M M M ≫ (μ[M] ⊗ μ[M]) := by aesop_cat
-  one_comul' : η[M] ≫ Δ[M] = η[M ⊗ M] := by aesop_cat
-  mul_counit' : μ[M] ≫ ε[M] = ε[M ⊗ M] := by aesop_cat
-  one_counit' : η[M] ≫ ε[M] = 𝟙 (𝟙_ C) := by aesop_cat
-
-namespace Bimon_Class
-
-/- The simp attribute is reserved for the unprimed versions. -/
-attribute [reassoc] mul_comul' one_comul' mul_counit' one_counit'
-
-variable (M : C) [Bimon_Class M]
-
-@[reassoc (attr := simp)]
-theorem mul_comul (M : C) [Bimon_Class M] :
-    μ[M] ≫ Δ[M] = (Δ[M] ⊗ Δ[M]) ≫ tensorμ M M M M ≫ (μ[M] ⊗ μ[M]) :=
-  mul_comul'
-
-@[reassoc (attr := simp)]
-theorem one_comul (M : C) [Bimon_Class M] : η[M] ≫ Δ[M] = η[M ⊗ M] := one_comul'
-
-@[reassoc (attr := simp)]
-theorem mul_counit (M : C) [Bimon_Class M] : μ[M] ≫ ε[M] = ε[M ⊗ M] := mul_counit'
-
-@[reassoc (attr := simp)]
-theorem one_counit (M : C) [Bimon_Class M] : η[M] ≫ ε[M] = 𝟙 (𝟙_ C) := one_counit'
-
-end Bimon_Class
-
-/-- The property that a morphism between bimonoid objects is a bimonoid morphism. -/
-class IsBimon_Hom {M N : C} [Bimon_Class M] [Bimon_Class N] (f : M ⟶ N) extends
-    IsMon_Hom f, IsComon_Hom f : Prop
-
-variable (C)
+variable (C : Type u₁) [Category.{v₁} C] [MonoidalCategory.{v₁} C] [BraidedCategory C]
 
 /--
 A bimonoid object in a braided category `C` is a comonoid object in the (monoidal)
@@ -104,11 +61,15 @@ theorem toMon_forget : toMon_ C ⋙ Mon_.forget C = forget C := rfl
 
 /-- The forgetful functor from bimonoid objects to comonoid objects. -/
 @[simps!]
-def toComon_ : Bimon_ C ⥤ Comon_ C := (Mon_.forget C).mapComon
+def toComon_ : Bimon_ C ⥤ Comon_ C := (Mon_.forgetMonoidal C).toOplaxMonoidalFunctor.mapComon
 
 @[simp]
 theorem toComon_forget : toComon_ C ⋙ Comon_.forget C = forget C := rfl
 
+-- TODO: the `set_option` is not strictly necessary, but the declaration is just a heartbeat
+-- away from using too many heartbeats.  Squeezing `(d)simp` improves the situation, but pulls
+-- out too many lemmas
+set_option maxHeartbeats 400000 in
 /-- The object level part of the forward direction of `Comon_ (Mon_ C) ≌ Mon_ (Comon_ C)` -/
 def toMon_Comon_obj (M : Bimon_ C) : Mon_ (Comon_ C) where
   X := (toComon_ C).obj M
@@ -129,7 +90,7 @@ def toMon_Comon_ : Bimon_ C ⥤ Mon_ (Comon_ C) where
 /-- The object level part of the backward direction of `Comon_ (Mon_ C) ≌ Mon_ (Comon_ C)` -/
 @[simps]
 def ofMon_Comon_obj (M : Mon_ (Comon_ C)) : Bimon_ C where
-  X := (Comon_.forget C).mapMon.obj M
+  X := (Comon_.forgetMonoidal C).toLaxMonoidalFunctor.mapMon.obj M
   counit := { hom := M.X.counit }
   comul :=
   { hom := M.X.comul,
@@ -140,7 +101,7 @@ def ofMon_Comon_obj (M : Mon_ (Comon_ C)) : Bimon_ C where
 def ofMon_Comon_ : Mon_ (Comon_ C) ⥤ Bimon_ C where
   obj := ofMon_Comon_obj C
   map f :=
-  { hom := (Comon_.forget C).mapMon.map f }
+  { hom := (Comon_.forgetMonoidal C).toLaxMonoidalFunctor.mapMon.map f }
 
 /-- The equivalence `Comon_ (Mon_ C) ≌ Mon_ (Comon_ C)` -/
 def equivMon_Comon_ : Bimon_ C ≌ Mon_ (Comon_ C) where
@@ -157,19 +118,13 @@ def trivial : Bimon_ C := Comon_.trivial (Mon_ C)
 
 /-- The bimonoid morphism from the trivial bimonoid to any bimonoid. -/
 @[simps]
-def trivialTo (A : Bimon_ C) : trivial C ⟶ A :=
+def trivial_to (A : Bimon_ C) : trivial C ⟶ A :=
   { hom := (default : Mon_.trivial C ⟶ A.X), }
-
-@[deprecated (since := "2024-12-07")] alias trivial_to := trivialTo
-@[deprecated (since := "2024-12-07")] alias trivial_to_hom := trivialTo_hom
 
 /-- The bimonoid morphism from any bimonoid to the trivial bimonoid. -/
 @[simps!]
-def toTrivial (A : Bimon_ C) : A ⟶ trivial C :=
+def to_trivial (A : Bimon_ C) : A ⟶ trivial C :=
   (default : @Quiver.Hom (Comon_ (Mon_ C)) _ A (Comon_.trivial (Mon_ C)))
-
-@[deprecated (since := "2024-12-07")] alias to_trivial := toTrivial
-@[deprecated (since := "2024-12-07")] alias to_trivial_hom := toTrivial_hom
 
 /-! # Additional lemmas -/
 
@@ -194,7 +149,7 @@ theorem mul_counit (M : Bimon_ C) :
       (M.X.mul ⊗ M.X.mul) =
     M.X.mul ≫ M.comul.hom := by
   have := (Mon_.Hom.mul_hom M.comul).symm
-  simpa [-Mon_.Hom.mul_hom, tensorμ] using this
+  simpa [-Mon_.Hom.mul_hom, tensor_μ] using this
 
 @[reassoc (attr := simp)] theorem comul_counit_hom (M : Bimon_ C) :
     M.comul.hom ≫ (_ ◁ M.counit.hom) = (ρ_ _).inv := by

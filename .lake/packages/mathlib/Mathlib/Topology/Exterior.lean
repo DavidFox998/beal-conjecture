@@ -19,7 +19,7 @@ In this file we prove basic properties of this operation.
 open Set Filter
 open scoped Topology
 
-variable {ι : Sort*} {X : Type*} [TopologicalSpace X] {s t : Set X} {x y : X}
+variable {X : Type*} [TopologicalSpace X] {s t : Set X} {x y : X}
 
 lemma exterior_singleton_eq_ker_nhds (x : X) : exterior {x} = (𝓝 x).ker := by simp [exterior]
 
@@ -49,7 +49,8 @@ lemma IsOpen.exterior_subset (ht : IsOpen t) : exterior s ⊆ t ↔ s ⊆ t :=
 @[deprecated (since := "2024-09-18")] alias IsOpen.exterior_subset_iff := IsOpen.exterior_subset
 
 @[simp]
-theorem exterior_iUnion (s : ι → Set X) : exterior (⋃ i, s i) = ⋃ i, exterior (s i) := by
+theorem exterior_iUnion {ι : Sort*} (s : ι → Set X) :
+    exterior (⋃ i, s i) = ⋃ i, exterior (s i) := by
   simp only [exterior, nhdsSet_iUnion, ker_iSup]
 
 @[simp]
@@ -82,15 +83,6 @@ theorem exterior_eq_exterior_iff_nhdsSet : exterior s = exterior t ↔ 𝓝ˢ s 
 
 lemma specializes_iff_exterior_subset : x ⤳ y ↔ exterior {x} ⊆ exterior {y} := by
   simp [Specializes]
-
-theorem exterior_iInter_subset {s : ι → Set X} : exterior (⋂ i, s i) ⊆ ⋂ i, exterior (s i) :=
-  exterior_mono.map_iInf_le
-
-theorem exterior_inter_subset {s t : Set X} : exterior (s ∩ t) ⊆ exterior s ∩ exterior t :=
-  exterior_mono.map_inf_le _ _
-
-theorem exterior_sInter_subset {s : Set (Set X)} : exterior (⋂₀ s) ⊆ ⋂ x ∈ s, exterior x :=
-  exterior_mono.map_sInf_le
 
 @[simp] lemma exterior_empty : exterior (∅ : Set X) = ∅ := isOpen_empty.exterior_eq
 @[simp] lemma exterior_univ : exterior (univ : Set X) = univ := isOpen_univ.exterior_eq

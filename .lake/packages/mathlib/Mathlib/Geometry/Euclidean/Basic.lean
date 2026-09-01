@@ -113,9 +113,8 @@ another point. -/
 theorem dist_smul_vadd_eq_dist {v : V} (p₁ p₂ : P) (hv : v ≠ 0) (r : ℝ) :
     dist (r • v +ᵥ p₁) p₂ = dist p₁ p₂ ↔ r = 0 ∨ r = -2 * ⟪v, p₁ -ᵥ p₂⟫ / ⟪v, v⟫ := by
   conv_lhs =>
-    rw [← mul_self_inj_of_nonneg dist_nonneg dist_nonneg, dist_smul_vadd_sq, mul_assoc,
-      ← sub_eq_zero, add_sub_assoc, dist_eq_norm_vsub V p₁ p₂, ← real_inner_self_eq_norm_mul_norm,
-      sub_self]
+    rw [← mul_self_inj_of_nonneg dist_nonneg dist_nonneg, dist_smul_vadd_sq, ← sub_eq_zero,
+      add_sub_assoc, dist_eq_norm_vsub V p₁ p₂, ← real_inner_self_eq_norm_mul_norm, sub_self]
   have hvi : ⟪v, v⟫ ≠ 0 := by simpa using hv
   have hd : discrim ⟪v, v⟫ (2 * ⟪v, p₁ -ᵥ p₂⟫) 0 = 2 * ⟪v, p₁ -ᵥ p₂⟫ * (2 * ⟪v, p₁ -ᵥ p₂⟫) := by
     rw [discrim]
@@ -125,7 +124,7 @@ theorem dist_smul_vadd_eq_dist {v : V} (p₁ p₂ : P) (hv : v ≠ 0) (r : ℝ) 
     mul_div_assoc]
   norm_num
 
-open AffineSubspace Module
+open AffineSubspace FiniteDimensional
 
 /-- Distances `r₁` `r₂` of `p` from two different points `c₁` `c₂` determine at
 most two points `p₁` `p₂` in a two-dimensional subspace containing those points
@@ -151,7 +150,7 @@ theorem eq_of_dist_eq_of_dist_eq_of_mem_of_finrank_eq_two {s : AffineSubspace �
       · rw [real_inner_comm]
         exact ho
   have hbs : Submodule.span ℝ (Set.range b) = s.direction := by
-    refine Submodule.eq_of_le_of_finrank_eq ?_ ?_
+    refine eq_of_le_of_finrank_eq ?_ ?_
     · rw [Submodule.span_le, Set.range_subset_iff]
       intro i
       fin_cases i
@@ -353,6 +352,7 @@ theorem orthogonalProjection_mem_subspace_eq_self {s : AffineSubspace ℝ P} [No
   exact p.2
 
 /-- Orthogonal projection is idempotent. -/
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem orthogonalProjection_orthogonalProjection (s : AffineSubspace ℝ P) [Nonempty s]
     [HasOrthogonalProjection s.direction] (p : P) :
     orthogonalProjection s (orthogonalProjection s p) = orthogonalProjection s p := by
@@ -472,14 +472,14 @@ general sense of the word that includes both those common cases. -/
 def reflection (s : AffineSubspace ℝ P) [Nonempty s] [HasOrthogonalProjection s.direction] :
     P ≃ᵃⁱ[ℝ] P :=
   AffineIsometryEquiv.mk'
-    (fun p => (↑(orthogonalProjection s p) -ᵥ p) +ᵥ (orthogonalProjection s p : P))
+    (fun p => ↑(orthogonalProjection s p) -ᵥ p +ᵥ (orthogonalProjection s p : P))
     (_root_.reflection s.direction) (↑(Classical.arbitrary s))
     (by
       intro p
       let v := p -ᵥ ↑(Classical.arbitrary s)
       let a : V := _root_.orthogonalProjection s.direction v
       let b : P := ↑(Classical.arbitrary s)
-      have key : ((a +ᵥ b) -ᵥ (v +ᵥ b)) +ᵥ (a +ᵥ b) = (a + a - v) +ᵥ (b -ᵥ b) +ᵥ b := by
+      have key : a +ᵥ b -ᵥ (v +ᵥ b) +ᵥ (a +ᵥ b) = a + a - v +ᵥ (b -ᵥ b +ᵥ b) := by
         rw [← add_vadd, vsub_vadd_eq_vsub_sub, vsub_vadd, vadd_vsub]
         congr 1
         abel
@@ -489,8 +489,7 @@ def reflection (s : AffineSubspace ℝ P) [Nonempty s] [HasOrthogonalProjection 
 
 /-- The result of reflecting. -/
 theorem reflection_apply (s : AffineSubspace ℝ P) [Nonempty s] [HasOrthogonalProjection s.direction]
-    (p : P) :
-    reflection s p = (↑(orthogonalProjection s p) -ᵥ p) +ᵥ (orthogonalProjection s p : P) :=
+    (p : P) : reflection s p = ↑(orthogonalProjection s p) -ᵥ p +ᵥ (orthogonalProjection s p : P) :=
   rfl
 
 theorem eq_reflection_of_eq_subspace {s s' : AffineSubspace ℝ P} [Nonempty s] [Nonempty s']

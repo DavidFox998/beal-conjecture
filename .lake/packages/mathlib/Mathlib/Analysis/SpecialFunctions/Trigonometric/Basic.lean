@@ -3,7 +3,6 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin Davidson
 -/
-import Mathlib.Algebra.QuadraticDiscriminant
 import Mathlib.Analysis.SpecialFunctions.Exp
 import Mathlib.Tactic.Positivity.Core
 import Mathlib.Algebra.Ring.NegOnePow
@@ -44,6 +43,7 @@ sin, cos, tan, angle
 
 noncomputable section
 
+open scoped Classical
 open Topology Filter Set
 
 namespace Complex
@@ -136,11 +136,11 @@ theorem pi_div_two_le_two : π / 2 ≤ 2 := by
   exact (Classical.choose_spec exists_cos_eq_zero).1.2
 
 theorem two_le_pi : (2 : ℝ) ≤ π :=
-  (div_le_div_iff_of_pos_right (show (0 : ℝ) < 2 by norm_num)).1
+  (div_le_div_right (show (0 : ℝ) < 2 by norm_num)).1
     (by rw [div_self (two_ne_zero' ℝ)]; exact one_le_pi_div_two)
 
 theorem pi_le_four : π ≤ 4 :=
-  (div_le_div_iff_of_pos_right (show (0 : ℝ) < 2 by norm_num)).1
+  (div_le_div_right (show (0 : ℝ) < 2 by norm_num)).1
     (calc
       π / 2 ≤ 2 := pi_div_two_le_two
       _ = 4 / 2 := by norm_num)
@@ -199,6 +199,8 @@ theorem pi_ne_zero : pi ≠ 0 :=
 end NNReal
 
 namespace Real
+
+open Real
 
 @[simp]
 theorem sin_pi : sin π = 0 := by
@@ -277,19 +279,19 @@ theorem sin_int_mul_two_pi_sub (x : ℝ) (n : ℤ) : sin (n * (2 * π) - x) = -s
   sin_neg x ▸ sin_periodic.int_mul_sub_eq n
 
 theorem sin_add_int_mul_pi (x : ℝ) (n : ℤ) : sin (x + n * π) = (-1) ^ n * sin x :=
-  n.cast_negOnePow ℝ ▸ sin_antiperiodic.add_int_mul_eq n
+  n.coe_negOnePow ℝ ▸ sin_antiperiodic.add_int_mul_eq n
 
 theorem sin_add_nat_mul_pi (x : ℝ) (n : ℕ) : sin (x + n * π) = (-1) ^ n * sin x :=
   sin_antiperiodic.add_nat_mul_eq n
 
 theorem sin_sub_int_mul_pi (x : ℝ) (n : ℤ) : sin (x - n * π) = (-1) ^ n * sin x :=
-  n.cast_negOnePow ℝ ▸ sin_antiperiodic.sub_int_mul_eq n
+  n.coe_negOnePow ℝ ▸ sin_antiperiodic.sub_int_mul_eq n
 
 theorem sin_sub_nat_mul_pi (x : ℝ) (n : ℕ) : sin (x - n * π) = (-1) ^ n * sin x :=
   sin_antiperiodic.sub_nat_mul_eq n
 
 theorem sin_int_mul_pi_sub (x : ℝ) (n : ℤ) : sin (n * π - x) = -((-1) ^ n * sin x) := by
-  simpa only [sin_neg, mul_neg, Int.cast_negOnePow] using sin_antiperiodic.int_mul_sub_eq n
+  simpa only [sin_neg, mul_neg, Int.coe_negOnePow] using sin_antiperiodic.int_mul_sub_eq n
 
 theorem sin_nat_mul_pi_sub (x : ℝ) (n : ℕ) : sin (n * π - x) = -((-1) ^ n * sin x) := by
   simpa only [sin_neg, mul_neg] using sin_antiperiodic.nat_mul_sub_eq n
@@ -360,32 +362,36 @@ theorem cos_int_mul_two_pi_sub (x : ℝ) (n : ℤ) : cos (n * (2 * π) - x) = co
   cos_neg x ▸ cos_periodic.int_mul_sub_eq n
 
 theorem cos_add_int_mul_pi (x : ℝ) (n : ℤ) : cos (x + n * π) = (-1) ^ n * cos x :=
-  n.cast_negOnePow ℝ ▸ cos_antiperiodic.add_int_mul_eq n
+  n.coe_negOnePow ℝ ▸ cos_antiperiodic.add_int_mul_eq n
 
 theorem cos_add_nat_mul_pi (x : ℝ) (n : ℕ) : cos (x + n * π) = (-1) ^ n * cos x :=
   cos_antiperiodic.add_nat_mul_eq n
 
 theorem cos_sub_int_mul_pi (x : ℝ) (n : ℤ) : cos (x - n * π) = (-1) ^ n * cos x :=
-  n.cast_negOnePow ℝ ▸ cos_antiperiodic.sub_int_mul_eq n
+  n.coe_negOnePow ℝ ▸ cos_antiperiodic.sub_int_mul_eq n
 
 theorem cos_sub_nat_mul_pi (x : ℝ) (n : ℕ) : cos (x - n * π) = (-1) ^ n * cos x :=
   cos_antiperiodic.sub_nat_mul_eq n
 
 theorem cos_int_mul_pi_sub (x : ℝ) (n : ℤ) : cos (n * π - x) = (-1) ^ n * cos x :=
-  n.cast_negOnePow ℝ ▸ cos_neg x ▸ cos_antiperiodic.int_mul_sub_eq n
+  n.coe_negOnePow ℝ ▸ cos_neg x ▸ cos_antiperiodic.int_mul_sub_eq n
 
 theorem cos_nat_mul_pi_sub (x : ℝ) (n : ℕ) : cos (n * π - x) = (-1) ^ n * cos x :=
   cos_neg x ▸ cos_antiperiodic.nat_mul_sub_eq n
 
+-- Porting note (#10618): was @[simp], but simp can prove it
 theorem cos_nat_mul_two_pi_add_pi (n : ℕ) : cos (n * (2 * π) + π) = -1 := by
   simpa only [cos_zero] using (cos_periodic.nat_mul n).add_antiperiod_eq cos_antiperiodic
 
+-- Porting note (#10618): was @[simp], but simp can prove it
 theorem cos_int_mul_two_pi_add_pi (n : ℤ) : cos (n * (2 * π) + π) = -1 := by
   simpa only [cos_zero] using (cos_periodic.int_mul n).add_antiperiod_eq cos_antiperiodic
 
+-- Porting note (#10618): was @[simp], but simp can prove it
 theorem cos_nat_mul_two_pi_sub_pi (n : ℕ) : cos (n * (2 * π) - π) = -1 := by
   simpa only [cos_zero] using (cos_periodic.nat_mul n).sub_antiperiod_eq cos_antiperiodic
 
+-- Porting note (#10618): was @[simp], but simp can prove it
 theorem cos_int_mul_two_pi_sub_pi (n : ℤ) : cos (n * (2 * π) - π) = -1 := by
   simpa only [cos_zero] using (cos_periodic.int_mul n).sub_antiperiod_eq cos_antiperiodic
 
@@ -495,7 +501,7 @@ theorem sin_eq_zero_iff {x : ℝ} : sin x = 0 ↔ ∃ n : ℤ, (n : ℝ) * π = 
           le_of_not_gt fun h₃ =>
             (sin_pos_of_pos_of_lt_pi h₃ (Int.sub_floor_div_mul_lt _ pi_pos)).ne
               (by simp [sub_eq_add_neg, sin_add, h, sin_int_mul_pi]))⟩,
-    fun ⟨_, hn⟩ => hn ▸ sin_int_mul_pi _⟩
+    fun ⟨n, hn⟩ => hn ▸ sin_int_mul_pi _⟩
 
 theorem sin_ne_zero_iff {x : ℝ} : sin x ≠ 0 ↔ ∀ n : ℤ, (n : ℝ) * π ≠ x := by
   rw [← not_exists, not_iff_not, sin_eq_zero_iff]
@@ -511,13 +517,13 @@ theorem cos_eq_one_iff (x : ℝ) : cos x = 1 ↔ ∃ n : ℤ, (n : ℝ) * (2 * �
       (Int.emod_two_eq_zero_or_one n).elim
         (fun hn0 => by
           rwa [← mul_assoc, ← @Int.cast_two ℝ, ← Int.cast_mul,
-            Int.ediv_mul_cancel (Int.dvd_iff_emod_eq_zero.2 hn0)])
+            Int.ediv_mul_cancel ((Int.dvd_iff_emod_eq_zero _ _).2 hn0)])
         fun hn1 => by
         rw [← Int.emod_add_ediv n 2, hn1, Int.cast_add, Int.cast_one, add_mul, one_mul, add_comm,
               mul_comm (2 : ℤ), Int.cast_mul, mul_assoc, Int.cast_two] at hn
         rw [← hn, cos_int_mul_two_pi_add_pi] at h
         exact absurd h (by norm_num)⟩,
-    fun ⟨_, hn⟩ => hn ▸ cos_int_mul_two_pi _⟩
+    fun ⟨n, hn⟩ => hn ▸ cos_int_mul_two_pi _⟩
 
 theorem cos_eq_one_iff_of_lt_of_lt {x : ℝ} (hx₁ : -(2 * π) < x) (hx₂ : x < 2 * π) :
     cos x = 1 ↔ x = 0 :=
@@ -655,7 +661,7 @@ theorem sqrtTwoAddSeries_monotone_left {x y : ℝ} (h : x ≤ y) :
 theorem cos_pi_over_two_pow : ∀ n : ℕ, cos (π / 2 ^ (n + 1)) = sqrtTwoAddSeries 0 n / 2
   | 0 => by simp
   | n + 1 => by
-    have A : (1 : ℝ) < 2 ^ (n + 1) := one_lt_pow₀ one_lt_two n.succ_ne_zero
+    have A : (1 : ℝ) < 2 ^ (n + 1) := one_lt_pow one_lt_two n.succ_ne_zero
     have B : π / 2 ^ (n + 1) < π := div_lt_self pi_pos A
     have C : 0 < π / 2 ^ (n + 1) := by positivity
     rw [pow_succ, div_mul_eq_div_div, cos_half, cos_pi_over_two_pow n, sqrtTwoAddSeries,
@@ -684,7 +690,7 @@ theorem sin_pi_over_two_pow_succ (n : ℕ) :
     exact (sqrtTwoAddSeries_lt_two _).le
   refine mul_nonneg (sin_nonneg_of_nonneg_of_le_pi ?_ ?_) zero_le_two
   · positivity
-  · exact div_le_self pi_pos.le <| one_le_pow₀ one_le_two
+  · exact div_le_self pi_pos.le <| one_le_pow_of_one_le one_le_two _
 
 @[simp]
 theorem cos_pi_div_four : cos (π / 4) = √2 / 2 := by
@@ -789,49 +795,6 @@ theorem sin_pi_div_three : sin (π / 3) = √3 / 2 := by
   congr
   ring
 
-theorem quadratic_root_cos_pi_div_five :
-    letI c := cos (π / 5)
-    4 * c ^ 2 - 2 * c - 1 = 0 := by
-  set θ := π / 5 with hθ
-  set c := cos θ
-  set s := sin θ
-  suffices 2 * c = 4 * c ^ 2 - 1 by simp [this]
-  have hs : s ≠ 0 := by
-    rw [ne_eq, sin_eq_zero_iff, hθ]
-    push_neg
-    intro n hn
-    replace hn : n * 5 = 1 := by field_simp [mul_comm _ π, mul_assoc] at hn; norm_cast at hn
-    omega
-  suffices s * (2 * c) = s * (4 * c ^ 2 - 1) from mul_left_cancel₀ hs this
-  calc s * (2 * c) = 2 * s * c := by rw [← mul_assoc, mul_comm 2]
-                 _ = sin (2 * θ) := by rw [sin_two_mul]
-                 _ = sin (π - 2 * θ) := by rw [sin_pi_sub]
-                 _ = sin (2 * θ + θ) := by congr; field_simp [hθ]; linarith
-                 _ = sin (2 * θ) * c + cos (2 * θ) * s := sin_add (2 * θ) θ
-                 _ = 2 * s * c * c + cos (2 * θ) * s := by rw [sin_two_mul]
-                 _ = 2 * s * c * c + (2 * c ^ 2 - 1) * s := by rw [cos_two_mul]
-                 _ = s * (2 * c * c) + s * (2 * c ^ 2 - 1) := by linarith
-                 _ = s * (4 * c ^ 2 - 1) := by linarith
-
-open Polynomial in
-theorem Polynomial.isRoot_cos_pi_div_five :
-    (4 • X ^ 2 - 2 • X - C 1 : ℝ[X]).IsRoot (cos (π / 5)) := by
-  simpa using quadratic_root_cos_pi_div_five
-
-/-- The cosine of `π / 5` is `(1 + √5) / 4`. -/
-@[simp]
-theorem cos_pi_div_five : cos (π / 5) = (1 + √5) / 4 := by
-  set c := cos (π / 5)
-  have : 4 * (c * c) + (-2) * c + (-1) = 0 := by
-    rw [← sq, neg_mul, ← sub_eq_add_neg, ← sub_eq_add_neg]
-    exact quadratic_root_cos_pi_div_five
-  have hd : discrim 4 (-2) (-1) = (2 * √5) * (2 * √5) := by norm_num [discrim, mul_mul_mul_comm]
-  rcases (quadratic_eq_zero_iff (by norm_num) hd c).mp this with h | h
-  · field_simp [h]; linarith
-  · absurd (show 0 ≤ c from cos_nonneg_of_mem_Icc <| by constructor <;> linarith [pi_pos.le])
-    rw [not_le, h]
-    exact div_neg_of_neg_of_pos (by norm_num [lt_sqrt]) (by positivity)
-
 end CosDivSq
 
 /-- `Real.sin` as an `OrderIso` between `[-(π / 2), π / 2]` and `[-1, 1]`. -/
@@ -884,7 +847,7 @@ theorem tan_nonpos_of_nonpos_of_neg_pi_div_two_le {x : ℝ} (hx0 : x ≤ 0) (hpx
 theorem strictMonoOn_tan : StrictMonoOn tan (Ioo (-(π / 2)) (π / 2)) := by
   rintro x hx y hy hlt
   rw [tan_eq_sin_div_cos, tan_eq_sin_div_cos,
-    div_lt_div_iff₀ (cos_pos_of_mem_Ioo hx) (cos_pos_of_mem_Ioo hy), mul_comm, ← sub_pos, ← sin_sub]
+    div_lt_div_iff (cos_pos_of_mem_Ioo hx) (cos_pos_of_mem_Ioo hy), mul_comm, ← sub_pos, ← sin_sub]
   exact sin_pos_of_pos_of_lt_pi (sub_pos.2 hlt) <| by linarith [hx.1, hy.2]
 
 theorem tan_lt_tan_of_lt_of_lt_pi_div_two {x y : ℝ} (hx₁ : -(π / 2) < x) (hy₂ : y < π / 2)
@@ -952,12 +915,12 @@ theorem tendsto_cos_pi_div_two : Tendsto cos (𝓝[<] (π / 2)) (𝓝[>] 0) := b
   apply tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within
   · convert continuous_cos.continuousWithinAt.tendsto
     simp
-  · filter_upwards [Ioo_mem_nhdsLT (neg_lt_self pi_div_two_pos)] with x hx
-    exact cos_pos_of_mem_Ioo hx
+  · filter_upwards [Ioo_mem_nhdsWithin_Iio
+        (right_mem_Ioc.mpr (neg_lt_self pi_div_two_pos))] with x hx using cos_pos_of_mem_Ioo hx
 
 theorem tendsto_tan_pi_div_two : Tendsto tan (𝓝[<] (π / 2)) atTop := by
-  convert tendsto_cos_pi_div_two.inv_tendsto_nhdsGT_zero.atTop_mul zero_lt_one
-    tendsto_sin_pi_div_two using 1
+  convert tendsto_cos_pi_div_two.inv_tendsto_zero.atTop_mul zero_lt_one tendsto_sin_pi_div_two
+    using 1
   simp only [Pi.inv_apply, ← div_eq_inv_mul, ← tan_eq_sin_div_cos]
 
 theorem tendsto_sin_neg_pi_div_two : Tendsto sin (𝓝[>] (-(π / 2))) (𝓝 (-1)) := by
@@ -968,11 +931,11 @@ theorem tendsto_cos_neg_pi_div_two : Tendsto cos (𝓝[>] (-(π / 2))) (𝓝[>] 
   apply tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within
   · convert continuous_cos.continuousWithinAt.tendsto
     simp
-  · filter_upwards [Ioo_mem_nhdsGT (neg_lt_self pi_div_two_pos)] with x hx
-    exact cos_pos_of_mem_Ioo hx
+  · filter_upwards [Ioo_mem_nhdsWithin_Ioi
+        (left_mem_Ico.mpr (neg_lt_self pi_div_two_pos))] with x hx using cos_pos_of_mem_Ioo hx
 
 theorem tendsto_tan_neg_pi_div_two : Tendsto tan (𝓝[>] (-(π / 2))) atBot := by
-  convert tendsto_cos_neg_pi_div_two.inv_tendsto_nhdsGT_zero.atTop_mul_neg (by norm_num)
+  convert tendsto_cos_neg_pi_div_two.inv_tendsto_zero.atTop_mul_neg (by norm_num)
       tendsto_sin_neg_pi_div_two using 1
   simp only [Pi.inv_apply, ← div_eq_inv_mul, ← tan_eq_sin_div_cos]
 

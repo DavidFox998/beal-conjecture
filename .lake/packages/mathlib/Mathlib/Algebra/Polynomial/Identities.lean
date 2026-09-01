@@ -18,6 +18,8 @@ noncomputable section
 
 namespace Polynomial
 
+open Polynomial
+
 universe u v w x y z
 
 variable {R : Type u} {S : Type v} {T : Type w} {ι : Type x} {k : Type y} {A : Type z} {a b : R}

@@ -5,7 +5,7 @@ Authors: Justus Springer
 -/
 import Mathlib.CategoryTheory.Sites.Spaces
 import Mathlib.Topology.Sheaves.Sheaf
-import Mathlib.CategoryTheory.Sites.DenseSubsite.Basic
+import Mathlib.CategoryTheory.Sites.DenseSubsite
 
 /-!
 
@@ -24,9 +24,10 @@ induce cover preserving functors, and that open embeddings induce continuous fun
 
 noncomputable section
 
-open CategoryTheory TopologicalSpace Topology
 
 universe w v u
+
+open CategoryTheory TopologicalSpace
 
 namespace TopCat.Presheaf
 
@@ -135,24 +136,21 @@ theorem coverDense_inducedFunctor {B : ι → Opens X} (h : Opens.IsBasis (Set.r
 
 end TopCat.Opens
 
-section IsOpenEmbedding
+section OpenEmbedding
 
 open TopCat.Presheaf Opposite
 
 variable {C : Type u} [Category.{v} C]
 variable {X Y : TopCat.{w}} {f : X ⟶ Y} {F : Y.Presheaf C}
 
-theorem Topology.IsOpenEmbedding.compatiblePreserving (hf : IsOpenEmbedding f) :
+theorem OpenEmbedding.compatiblePreserving (hf : OpenEmbedding f) :
     CompatiblePreserving (Opens.grothendieckTopology Y) hf.isOpenMap.functor := by
-  haveI : Mono f := (TopCat.mono_iff_injective f).mpr hf.injective
+  haveI : Mono f := (TopCat.mono_iff_injective f).mpr hf.inj
   apply compatiblePreservingOfDownwardsClosed
   intro U V i
   refine ⟨(Opens.map f).obj V, eqToIso <| Opens.ext <| Set.image_preimage_eq_of_subset fun x h ↦ ?_⟩
   obtain ⟨_, _, rfl⟩ := i.le h
   exact ⟨_, rfl⟩
-
-@[deprecated (since := "2024-10-18")]
-alias OpenEmbedding.compatiblePreserving := IsOpenEmbedding.compatiblePreserving
 
 theorem IsOpenMap.coverPreserving (hf : IsOpenMap f) :
     CoverPreserving (Opens.grothendieckTopology X) (Opens.grothendieckTopology Y) hf.functor := by
@@ -162,23 +160,17 @@ theorem IsOpenMap.coverPreserving (hf : IsOpenMap f) :
   exact ⟨_, hf.functor.map i, ⟨_, i, 𝟙 _, hV, rfl⟩, Set.mem_image_of_mem f hxV⟩
 
 
-lemma Topology.IsOpenEmbedding.functor_isContinuous (h : IsOpenEmbedding f) :
+lemma OpenEmbedding.functor_isContinuous (h : OpenEmbedding f) :
     h.isOpenMap.functor.IsContinuous (Opens.grothendieckTopology X)
       (Opens.grothendieckTopology Y) := by
   apply Functor.isContinuous_of_coverPreserving
   · exact h.compatiblePreserving
   · exact h.isOpenMap.coverPreserving
 
-@[deprecated (since := "2024-10-18")]
-alias OpenEmbedding.functor_isContinuous := IsOpenEmbedding.functor_isContinuous
-
-theorem TopCat.Presheaf.isSheaf_of_isOpenEmbedding (h : IsOpenEmbedding f) (hF : F.IsSheaf) :
+theorem TopCat.Presheaf.isSheaf_of_openEmbedding (h : OpenEmbedding f) (hF : F.IsSheaf) :
     IsSheaf (h.isOpenMap.functor.op ⋙ F) := by
   have := h.functor_isContinuous
   exact Functor.op_comp_isSheaf _ _ _ ⟨_, hF⟩
-
-@[deprecated (since := "2024-10-18")]
-alias TopCat.Presheaf.isSheaf_of_openEmbedding := TopCat.Presheaf.isSheaf_of_isOpenEmbedding
 
 variable (f)
 
@@ -211,7 +203,7 @@ instance : (Opens.map f).IsContinuous (Opens.grothendieckTopology Y)
   · exact compatiblePreserving_opens_map f
   · exact coverPreserving_opens_map f
 
-end IsOpenEmbedding
+end OpenEmbedding
 
 namespace TopCat.Sheaf
 

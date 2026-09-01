@@ -7,7 +7,6 @@ import Qq
 import Mathlib.Data.Nat.Notation
 import Mathlib.Util.AtomM
 import Mathlib.Data.List.TFAE
-import Mathlib.Tactic.ExtendDoc
 
 /-!
 # The Following Are Equivalent (TFAE)
@@ -46,15 +45,12 @@ sense in this context; we also include `" : "` after the binder to avoid breakin
 syntax (which, unlike `have`, omits `" : "`).
 -/
 
-/- We need this to ensure `<|>` in `tfaeHaveIdLhs` takes in the same number of syntax trees on
-each side. -/
-private def binder := leading_parser ppSpace >> binderIdent >> " : "
 /- See `haveIdLhs`.
 
 We omit `many (ppSpace >> letIdBinder)`, as it makes no sense to add extra arguments to a
 `tfae_have` decl.  -/
 private def tfaeHaveIdLhs := leading_parser
-  (binder <|> hygieneInfo)  >> tfaeType
+  ((ppSpace >> binderIdent >> " : ") <|> hygieneInfo)  >> tfaeType
 /- See `haveIdDecl`. E.g. `h : 1 → 3 := term`. -/
 private def tfaeHaveIdDecl   := leading_parser (withAnonymousAntiquot := false)
   atomic (tfaeHaveIdLhs >> " := ") >> termParser
@@ -78,7 +74,7 @@ open Parser
 context, where `<arrow>` can be `→`, `←`, or `↔`. Note that `i` and `j` are natural number indices
 (beginning at 1) used to specify the propositions `P₁, P₂, ...` that appear in the goal.
 
-```lean4
+```lean
 example (h : P → R) : TFAE [P, Q, R] := by
   tfae_have 1 → 3 := h
   ...
@@ -88,7 +84,7 @@ The resulting context now includes `tfae_1_to_3 : P → R`.
 Once sufficient hypotheses have been introduced by `tfae_have`, `tfae_finish` can be used to close
 the goal. For example,
 
-```lean4
+```lean
 example : TFAE [P, Q, R] := by
   tfae_have 1 → 2 := sorry /- proof of P → Q -/
   tfae_have 2 → 1 := sorry /- proof of Q → P -/
@@ -96,26 +92,27 @@ example : TFAE [P, Q, R] := by
   tfae_finish
 ```
 
-All features of `have` are supported by `tfae_have`, including naming, matching,
-destructuring, and goal creation. These are demonstrated below.
+All relevant features of `have` are supported by `tfae_have`, including naming, destructuring, goal
+creation, and matching. These are demonstrated below.
 
-```lean4
+```lean
 example : TFAE [P, Q] := by
-  -- assert `tfae_1_to_2 : P → Q`:
+  -- `tfae_1_to_2 : P → Q`:
   tfae_have 1 → 2 := sorry
-
-  -- assert `hpq : P → Q`:
+  -- `hpq : P → Q`:
   tfae_have hpq : 1 → 2 := sorry
-
-  -- match on `p : P` and prove `Q` via `f p`:
+  -- inaccessible `h✝ : P → Q`:
+  tfae_have _ : 1 → 2 := sorry
+  -- `tfae_1_to_2 : P → Q`, and `?a` is a new goal:
+  tfae_have 1 → 2 := f ?a
+  -- create a goal of type `P → Q`:
+  tfae_have 1 → 2
+  · exact (sorry : P → Q)
+  -- match on `p : P` and prove `Q`:
   tfae_have 1 → 2
   | p => f p
-
-  -- assert `pq : P → Q`, `qp : Q → P`:
+  -- introduces `pq : P → Q`, `qp : Q → P`:
   tfae_have ⟨pq, qp⟩ : 1 ↔ 2 := sorry
-
-  -- assert `h : P → Q`; `?a` is a new goal:
-  tfae_have h : 1 → 2 := f ?a
   ...
 ```
 -/
@@ -128,7 +125,7 @@ of hypotheses of the form `Pᵢ → Pⱼ` or `Pᵢ ↔ Pⱼ` have been introduce
 `tfae_have` can be used to conveniently introduce these hypotheses; see `tfae_have`.
 
 Example:
-```lean4
+```lean
 example : TFAE [P, Q, R] := by
   tfae_have 1 → 2 := sorry /- proof of P → Q -/
   tfae_have 2 → 1 := sorry /- proof of Q → P -/
@@ -251,16 +248,13 @@ def elabTFAEType (tfaeList : List Q(Prop)) : TSyntax ``tfaeType → TermElabM Ex
     let j' ← elabIndex j l
     let Pi := tfaeList.get! (i'-1)
     let Pj := tfaeList.get! (j'-1)
-    /- TODO: this is a hack to show the types `Pi`, `Pj` on hover. See [Zulip](https://leanprover.zulipchat.com/#narrow/stream/270676-lean4/topic/Pre-RFC.3A.20Forcing.20terms.20to.20be.20shown.20in.20hover.3F). -/
-    Term.addTermInfo' i q(sorry : $Pi) Pi
-    Term.addTermInfo' j q(sorry : $Pj) Pj
-    let (ty : Q(Prop)) ← match arr with
-      | `(impArrow| ← ) => pure q($Pj → $Pi)
-      | `(impArrow| → ) => pure q($Pi → $Pj)
-      | `(impArrow| ↔ ) => pure q($Pi ↔ $Pj)
-      | _ => throwUnsupportedSyntax
-    Term.addTermInfo' stx q(sorry : $ty) ty
-    return ty
+    Term.addTermInfo' i Pi q(Prop)
+    Term.addTermInfo' j Pj q(Prop)
+    match arr with
+    | `(impArrow| ← ) => Term.addTermInfo stx q($Pj → $Pi) q(Prop)
+    | `(impArrow| → ) => Term.addTermInfo stx q($Pi → $Pj) q(Prop)
+    | `(impArrow| ↔ ) => Term.addTermInfo stx q($Pi ↔ $Pj) q(Prop)
+    | _ => throwUnsupportedSyntax
   | _ => throwUnsupportedSyntax
 
 /- Convert `tfae_have i <arr> j ...` to `tfae_have tfae_i_arr_j : i <arr> j ...`. See
@@ -298,74 +292,53 @@ elab_rules : tactic
   goal.withContext do
     let (tfaeListQ, tfaeList) ← getTFAEList (← goal.getType)
     closeMainGoal `tfae_finish <|← AtomM.run .reducible do
-      let is ← tfaeList.mapM (fun e ↦ Prod.fst <$> AtomM.addAtom e)
+      let is ← tfaeList.mapM AtomM.addAtom
       let mut hyps := #[]
       for hyp in ← getLocalHyps do
         let ty ← whnfR <|← instantiateMVars <|← inferType hyp
         if let (``Iff, #[p1, p2]) := ty.getAppFnArgs then
-          let (q1, _) ← AtomM.addAtom p1
-          let (q2, _) ← AtomM.addAtom p2
+          let q1 ← AtomM.addAtom p1
+          let q2 ← AtomM.addAtom p2
           hyps := hyps.push (q1, q2, ← mkAppM ``Iff.mp #[hyp])
           hyps := hyps.push (q2, q1, ← mkAppM ``Iff.mpr #[hyp])
         else if ty.isArrow then
-          let (q1, _) ← AtomM.addAtom ty.bindingDomain!
-          let (q2, _) ← AtomM.addAtom ty.bindingBody!
+          let q1 ← AtomM.addAtom ty.bindingDomain!
+          let q2 ← AtomM.addAtom ty.bindingBody!
           hyps := hyps.push (q1, q2, hyp)
       proveTFAE hyps (← get).atoms is tfaeListQ
 
-end Mathlib.Tactic.TFAE
-
 /-!
 
-# Deprecated "Goal-style" `tfae_have`
+# "Old-style" `tfae_have`
 
-This syntax and its implementation, which behaves like "Mathlib `have`" is deprecated; we preserve
-it here to provide graceful deprecation behavior.
+We preserve the "old-style" `tfae_have` (which behaves like Mathlib `have`) for compatibility
+purposes.
 
 -/
-
-/-- Re-enables "goal-style" syntax for `tfae_have` when `true`. -/
-register_option Mathlib.Tactic.TFAE.useDeprecated : Bool := {
-  descr := "Re-enable \"goal-style\" 'tfae_have' syntax"
-  defValue := false
-}
-
-namespace Mathlib.Tactic.TFAE
-
-open Lean Parser Meta Elab Tactic
 
 @[inherit_doc tfaeHave]
 syntax (name := tfaeHave') "tfae_have " tfaeHaveIdLhs : tactic
 
-extend_docs tfaeHave'
-  before "\"Goal-style\" `tfae_have` syntax is deprecated. Now, `tfae_have ...` should be followed\
-    by  `:= ...`; see below for the new behavior. This warning can be turned off with \
-    `set_option Mathlib.Tactic.TFAE.useDeprecated true`.\n\n***"
+macro_rules
+| `(tfaeHave'|tfae_have $hy:hygieneInfo $t:tfaeType) => do
+  let id := HygieneInfo.mkIdent hy (← mkTFAEId t) (canonical := true)
+  `(tfaeHave'|tfae_have $id : $t)
 
 elab_rules : tactic
 | `(tfaeHave'|tfae_have $d:tfaeHaveIdLhs) => withMainContext do
-  -- Deprecate syntax:
-  let ref ← getRef
-  unless useDeprecated.get (← getOptions) do
-    logWarning <| .tagged ``Linter.deprecatedAttr m!"\
-      \"Goal-style\" syntax '{ref}' is deprecated in favor of '{ref} := ...'.\n\n\
-      To turn this warning off, use set_option Mathlib.Tactic.TFAE.useDeprecated true"
-
   let goal ← getMainGoal
   let (_, tfaeList) ← getTFAEList (← goal.getType)
-  let (b, t) ← liftMacroM <| match d with
-    | `(tfaeHaveIdLhs| $hy:hygieneInfo $t:tfaeType) => do
-      pure (HygieneInfo.mkIdent hy (← mkTFAEId t) (canonical := true), t)
-    | `(tfaeHaveIdLhs| $b:ident : $t:tfaeType) =>
-      pure (b, t)
-    | _ => Macro.throwUnsupported
-  let n := b.getId
-  let type ← elabTFAEType tfaeList t
-  let p ← mkFreshExprMVar type MetavarKind.syntheticOpaque n
-  let (fv, mainGoal) ← (← MVarId.assert goal n type p).intro1P
-  mainGoal.withContext do
-    Term.addTermInfo' (isBinder := true) b (mkFVar fv)
-  replaceMainGoal [p.mvarId!, mainGoal]
+  -- Note that due to the macro above, the following match is exhaustive.
+  match d with
+  | `(tfaeHaveIdLhs| $b:ident : $t:tfaeType) =>
+    let n := b.getId
+    let type ← elabTFAEType tfaeList t
+    let p ← mkFreshExprMVar type MetavarKind.syntheticOpaque n
+    let (fv, mainGoal) ← (← MVarId.assert goal n type p).intro1P
+    mainGoal.withContext do
+      Term.addTermInfo' (isBinder := true) b (mkFVar fv)
+    replaceMainGoal [p.mvarId!, mainGoal]
+  | _ => throwUnsupportedSyntax
 
 end TFAE
 

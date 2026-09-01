@@ -92,7 +92,7 @@ instance : Category (Dial C) where
     F := π₂
     le := by simp
   }
-  comp {_ _ _} (F G : Dial.Hom ..) := {
+  comp {X Y Z} (F G : Dial.Hom ..) := {
     f := F.f ≫ G.f
     F := π(π₁, prod.map F.f (𝟙 _) ≫ G.F) ≫ F.F
     le := comp_le_lemma F G

@@ -5,7 +5,7 @@ Authors: Anne Baanen
 -/
 import Mathlib.NumberTheory.ClassNumber.AdmissibleAbs
 import Mathlib.NumberTheory.ClassNumber.Finite
-import Mathlib.NumberTheory.NumberField.Discriminant.Basic
+import Mathlib.NumberTheory.NumberField.Discriminant
 
 /-!
 # Class numbers of number fields
@@ -18,6 +18,7 @@ on the class number.
 - `NumberField.classNumber`: the class number of a number field is the (finite)
 cardinality of the class group of its ring of integers
 -/
+
 
 namespace NumberField
 
@@ -40,13 +41,13 @@ variable {K}
 theorem classNumber_eq_one_iff : classNumber K = 1 ↔ IsPrincipalIdealRing (𝓞 K) :=
   card_classGroup_eq_one_iff
 
-open Module NumberField.InfinitePlace
+open FiniteDimensional NumberField.InfinitePlace
 
 open scoped nonZeroDivisors Real
 
 theorem exists_ideal_in_class_of_norm_le (C : ClassGroup (𝓞 K)) :
     ∃ I : (Ideal (𝓞 K))⁰, ClassGroup.mk0 I = C ∧
-      Ideal.absNorm (I : Ideal (𝓞 K)) ≤ (4 / π) ^ nrComplexPlaces K *
+      Ideal.absNorm (I : Ideal (𝓞 K)) ≤ (4 / π) ^ NrComplexPlaces K *
         ((finrank ℚ K).factorial / (finrank ℚ K) ^ (finrank ℚ K) * Real.sqrt |discr K|) := by
   obtain ⟨J, hJ⟩ := ClassGroup.mk0_surjective C⁻¹
   obtain ⟨_, ⟨a, ha, rfl⟩, h_nz, h_nm⟩ :=
@@ -70,11 +71,11 @@ theorem exists_ideal_in_class_of_norm_le (C : ClassGroup (𝓞 K)) :
     exact Nat.cast_pos.mpr <| Nat.pos_of_ne_zero <| Ideal.absNorm_ne_zero_of_nonZeroDivisors J
 
 theorem _root_.RingOfIntegers.isPrincipalIdealRing_of_abs_discr_lt
-    (h : |discr K| < (2 * (π / 4) ^ nrComplexPlaces K *
+    (h : |discr K| < (2 * (π / 4) ^ NrComplexPlaces K *
       ((finrank ℚ K) ^ (finrank ℚ K) / (finrank ℚ K).factorial)) ^ 2) :
     IsPrincipalIdealRing (𝓞 K) := by
   have : 0 < finrank ℚ K := finrank_pos -- Lean needs to know that for positivity to succeed
-  rw [← Real.sqrt_lt (by positivity) (by positivity), mul_assoc, ← inv_mul_lt_iff₀' (by positivity),
+  rw [← Real.sqrt_lt (by positivity) (by positivity), mul_assoc, ← inv_mul_lt_iff' (by positivity),
     mul_inv, ← inv_pow, inv_div, inv_div, mul_assoc, Int.cast_abs] at h
   rw [← classNumber_eq_one_iff, classNumber, Fintype.card_eq_one_iff]
   refine ⟨1, fun C ↦ ?_⟩

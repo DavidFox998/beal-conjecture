@@ -326,7 +326,7 @@ namespace Orientation
 
 variable [Fintype ι]
 
-open FiniteDimensional Module
+open FiniteDimensional
 
 /-- If the index type has cardinality equal to the finite dimension, any two orientations are
 equal or negations. -/

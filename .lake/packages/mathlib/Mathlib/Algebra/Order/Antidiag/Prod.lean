@@ -144,7 +144,7 @@ end CanonicallyOrderedAddCommMonoid
 
 section OrderedSub
 variable [CanonicallyOrderedAddCommMonoid A] [Sub A] [OrderedSub A]
-variable [AddLeftReflectLE A]
+variable [ContravariantClass A A (· + ·) (· ≤ ·)]
 variable [HasAntidiagonal A]
 
 theorem filter_fst_eq_antidiagonal (n m : A) [DecidablePred (· = m)] [Decidable (m ≤ n)] :
@@ -181,7 +181,7 @@ def sigmaAntidiagonalEquivProd [AddMonoid A] [HasAntidiagonal A] :
     rintro ⟨n, ⟨k, l⟩, h⟩
     rw [mem_antidiagonal] at h
     exact Sigma.subtype_ext h rfl
-  right_inv _ := rfl
+  right_inv x := rfl
 
 variable {A : Type*}
   [CanonicallyOrderedAddCommMonoid A]

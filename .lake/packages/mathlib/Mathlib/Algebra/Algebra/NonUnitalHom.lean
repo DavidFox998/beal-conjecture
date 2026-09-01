@@ -80,8 +80,12 @@ abbrev NonUnitalAlgHomClass (F : Type*) (R A B : outParam Type*)
     [DistribMulAction R A] [DistribMulAction R B] [FunLike F A B] :=
   NonUnitalAlgSemiHomClass F (MonoidHom.id R) A B
 
+-- Porting note: commented out, not dangerous
+-- attribute [nolint dangerousInstance] NonUnitalAlgHomClass.toMulHomClass
+
 namespace NonUnitalAlgHomClass
 
+-- Porting note: Made following instance non-dangerous through [...] -> [...] replacement
 -- See note [lower instance priority]
 instance (priority := 100) toNonUnitalRingHomClass
   {F R S A B : Type*} {_ : Monoid R} {_ : Monoid S} {φ : outParam (R →* S)}
@@ -152,6 +156,11 @@ variable [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
 variable [NonUnitalNonAssocSemiring B] [DistribMulAction S B]
 variable [NonUnitalNonAssocSemiring C] [DistribMulAction T C]
 
+-- Porting note: Replaced with DFunLike instance
+-- /-- see Note [function coercion] -/
+-- instance : CoeFun (A →ₙₐ[R] B) fun _ => A → B :=
+--   ⟨toFun⟩
+
 instance : DFunLike (A →ₛₙₐ[φ] B) A fun _ => B where
   coe f := f.toFun
   coe_injective' := by rintro ⟨⟨⟨f, _⟩, _⟩, _⟩ ⟨⟨⟨g, _⟩, _⟩, _⟩ h; congr
@@ -200,6 +209,12 @@ theorem coe_mk (f : A → B) (h₁ h₂ h₃ h₄) : ⇑(⟨⟨⟨f, h₁⟩, h�
 theorem mk_coe (f : A →ₛₙₐ[φ] B) (h₁ h₂ h₃ h₄) : (⟨⟨⟨f, h₁⟩, h₂, h₃⟩, h₄⟩ : A →ₛₙₐ[φ] B) = f := by
   rfl
 
+instance : CoeOut (A →ₛₙₐ[φ] B) (A →ₑ+[φ] B) :=
+  ⟨toDistribMulActionHom⟩
+
+instance : CoeOut (A →ₛₙₐ[φ] B) (A →ₙ* B) :=
+  ⟨toMulHom⟩
+
 @[simp]
 theorem toDistribMulActionHom_eq_coe (f : A →ₛₙₐ[φ] B) : f.toDistribMulActionHom = ↑f :=
   rfl
@@ -235,16 +250,19 @@ theorem coe_mulHom_mk (f : A →ₛₙₐ[φ] B) (h₁ h₂ h₃ h₄) :
     ((⟨⟨⟨f, h₁⟩, h₂, h₃⟩, h₄⟩ : A →ₛₙₐ[φ] B) : A →ₙ* B) = ⟨f, h₄⟩ := by
   rfl
 
-@[simp] -- Marked as `@[simp]` because `MulActionSemiHomClass.map_smulₛₗ` can't be.
+-- @[simp] -- Porting note (#10618) : simp can prove this
 protected theorem map_smul (f : A →ₛₙₐ[φ] B) (c : R) (x : A) : f (c • x) = (φ c) • f x :=
   map_smulₛₗ _ _ _
 
+-- @[simp] -- Porting note (#10618) : simp can prove this
 protected theorem map_add (f : A →ₛₙₐ[φ] B) (x y : A) : f (x + y) = f x + f y :=
   map_add _ _ _
 
+-- @[simp] -- Porting note (#10618) : simp can prove this
 protected theorem map_mul (f : A →ₛₙₐ[φ] B) (x y : A) : f (x * y) = f x * f y :=
   map_mul _ _ _
 
+-- @[simp] -- Porting note (#10618) : simp can prove this
 protected theorem map_zero (f : A →ₛₙₐ[φ] B) : f 0 = 0 :=
   map_zero _
 
@@ -446,6 +464,11 @@ instance NonUnitalAlgHom.hasCoe : CoeOut (A →ₐ[R] B) (A →ₙₐ[R] B) :=
 
 @[simp]
 theorem toNonUnitalAlgHom_eq_coe (f : A →ₐ[R] B) : f.toNonUnitalAlgHom = f :=
+  rfl
+
+-- Note (#6057) : tagging simpNF because linter complains
+@[simp, norm_cast, nolint simpNF]
+theorem coe_to_nonUnitalAlgHom (f : A →ₐ[R] B) : ⇑(f.toNonUnitalAlgHom) = ⇑f :=
   rfl
 
 end AlgHom

@@ -14,7 +14,12 @@ namespace Aesop
 -- Lean.Meta.unfoldLocalDecl.
 
 def mkUnfoldSimpContext : MetaM Simp.Context := do
-  Simp.mkContext Simp.neutralConfig (simpTheorems := #[]) (congrTheorems := ← getSimpCongrTheorems)
+  return {
+    simpTheorems := #[]
+    congrTheorems := ← getSimpCongrTheorems
+    config := Simp.neutralConfig
+    dischargeDepth := 0
+  }
 
 @[inline]
 def unfoldManyCore (ctx : Simp.Context) (unfold? : Name → Option (Option Name))

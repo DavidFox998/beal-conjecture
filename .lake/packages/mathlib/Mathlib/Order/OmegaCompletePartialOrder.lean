@@ -72,6 +72,7 @@ variable [Preorder α] [Preorder β] [Preorder γ]
 
 instance : FunLike (Chain α) ℕ α := inferInstanceAs <| FunLike (ℕ →o α) ℕ α
 instance : OrderHomClass (Chain α) ℕ α := inferInstanceAs <| OrderHomClass (ℕ →o α) ℕ α
+instance : CoeFun (Chain α) fun _ => ℕ → α := ⟨DFunLike.coe⟩
 
 instance [Inhabited α] : Inhabited (Chain α) :=
   ⟨⟨default, fun _ _ _ => le_rfl⟩⟩
@@ -296,7 +297,8 @@ lemma ωScottContinuous.comp (hg : ωScottContinuous g) (hf : ωScottContinuous 
 lemma ωScottContinuous.const {x : β} : ωScottContinuous (Function.const α x) := by
   simp [ωScottContinuous, ScottContinuousOn, Set.range_nonempty]
 
-set_option linter.deprecated false in
+set_option linter.deprecated false
+
 /-- A monotone function `f : α →o β` is continuous if it distributes over ωSup.
 
 In order to distinguish it from the (more commonly used) continuity from topology
@@ -307,7 +309,6 @@ in Scott topological spaces (not defined here). -/
 def Continuous (f : α →o β) : Prop :=
   ∀ c : Chain α, f (ωSup c) = ωSup (c.map f)
 
-set_option linter.deprecated false in
 /-- `Continuous' f` asserts that `f` is both monotone and continuous. -/
 @[deprecated ωScottContinuous (since := "2024-05-29")]
 def Continuous' (f : α → β) : Prop :=
@@ -318,7 +319,6 @@ lemma isLUB_of_scottContinuous {c : Chain α} {f : α → β} (hf : ScottContinu
     IsLUB (Set.range (Chain.map c ⟨f, (ScottContinuous.monotone hf)⟩)) (f (ωSup c)) :=
   ωScottContinuous.isLUB hf.scottContinuousOn
 
-set_option linter.deprecated false in
 @[deprecated ScottContinuous.ωScottContinuous (since := "2024-05-29")]
 lemma ScottContinuous.continuous' {f : α → β} (hf : ScottContinuous f) : Continuous' f := by
   constructor
@@ -326,55 +326,45 @@ lemma ScottContinuous.continuous' {f : α → β} (hf : ScottContinuous f) : Con
     rw [← (ωSup_eq_of_isLUB (isLUB_of_scottContinuous hf))]
     simp only [OrderHom.coe_mk]
 
-set_option linter.deprecated false in
 @[deprecated ωScottContinuous.monotone (since := "2024-05-29")]
 theorem Continuous'.to_monotone {f : α → β} (hf : Continuous' f) : Monotone f :=
   hf.fst
 
-set_option linter.deprecated false in
 @[deprecated ωScottContinuous.of_monotone_map_ωSup (since := "2024-05-29")]
 theorem Continuous.of_bundled (f : α → β) (hf : Monotone f) (hf' : Continuous ⟨f, hf⟩) :
     Continuous' f :=
   ⟨hf, hf'⟩
 
-set_option linter.deprecated false in
 @[deprecated ωScottContinuous.of_monotone_map_ωSup (since := "2024-05-29")]
 theorem Continuous.of_bundled' (f : α →o β) (hf' : Continuous f) : Continuous' f :=
   ⟨f.mono, hf'⟩
 
-set_option linter.deprecated false in
 @[deprecated ωScottContinuous_iff_monotone_map_ωSup (since := "2024-05-29")]
 theorem Continuous'.to_bundled (f : α → β) (hf : Continuous' f) : Continuous ⟨f, hf.to_monotone⟩ :=
   hf.snd
 
-set_option linter.deprecated false in
 @[simp, norm_cast, deprecated ωScottContinuous_iff_monotone_map_ωSup (since := "2024-05-29")]
 theorem continuous'_coe : ∀ {f : α →o β}, Continuous' f ↔ Continuous f
   | ⟨_, hf⟩ => ⟨fun ⟨_, hc⟩ => hc, fun hc => ⟨hf, hc⟩⟩
 
 variable (f : α →o β) (g : β →o γ)
 
-set_option linter.deprecated false in
 @[deprecated ωScottContinuous.id (since := "2024-05-29")]
 theorem continuous_id : Continuous (@OrderHom.id α _) := by intro c; rw [c.map_id]; rfl
 
-set_option linter.deprecated false in
 @[deprecated ωScottContinuous.comp (since := "2024-05-29")]
 theorem continuous_comp (hfc : Continuous f) (hgc : Continuous g) : Continuous (g.comp f) := by
   dsimp [Continuous] at *; intro
   rw [hfc, hgc, Chain.map_comp]
 
-set_option linter.deprecated false in
 @[deprecated ωScottContinuous.id (since := "2024-05-29")]
 theorem id_continuous' : Continuous' (@id α) :=
   continuous_id.of_bundled' _
 
-set_option linter.deprecated false in
 @[deprecated ωScottContinuous.const (since := "2024-05-29")]
 theorem continuous_const (x : β) : Continuous (OrderHom.const α x) := fun c =>
   eq_of_forall_ge_iff fun z => by rw [ωSup_le_iff, Chain.map_coe, OrderHom.const_coe_coe]; simp
 
-set_option linter.deprecated false in
 @[deprecated ωScottContinuous.const (since := "2024-05-29")]
 theorem const_continuous' (x : β) : Continuous' (Function.const α x) :=
   Continuous.of_bundled' (OrderHom.const α x) (continuous_const x)
@@ -472,11 +462,11 @@ open OmegaCompletePartialOrder OmegaCompletePartialOrder.Chain
 instance [∀ a, OmegaCompletePartialOrder (β a)] :
     OmegaCompletePartialOrder (∀ a, β a) where
   ωSup c a := ωSup (c.map (Pi.evalOrderHom a))
-  ωSup_le _ _ hf a :=
+  ωSup_le c f hf a :=
     ωSup_le _ _ <| by
       rintro i
       apply hf
-  le_ωSup _ _ _ := le_ωSup_of_le _ <| le_rfl
+  le_ωSup c i x := le_ωSup_of_le _ <| le_rfl
 
 namespace OmegaCompletePartialOrder
 
@@ -490,22 +480,22 @@ lemma ωScottContinuous.apply₂ (hf : ωScottContinuous f) (a : α) : ωScottCo
 
 lemma ωScottContinuous.of_apply₂ (hf : ∀ a, ωScottContinuous (f · a)) : ωScottContinuous f :=
   ωScottContinuous.of_monotone_map_ωSup
-    ⟨fun _ _ h a ↦ (hf a).monotone h, fun c ↦ by ext a; apply (hf a).map_ωSup c⟩
+    ⟨fun x y h a ↦ (hf a).monotone h, fun c ↦ by ext a; apply (hf a).map_ωSup c⟩
 
 lemma ωScottContinuous_iff_apply₂ : ωScottContinuous f ↔ ∀ a, ωScottContinuous (f · a) :=
   ⟨ωScottContinuous.apply₂, ωScottContinuous.of_apply₂⟩
 
-set_option linter.deprecated false in
+set_option linter.deprecated false
+
 @[deprecated ωScottContinuous.apply₂ (since := "2024-05-29")]
 theorem flip₁_continuous' (f : ∀ x : α, γ → β x) (a : α) (hf : Continuous' fun x y => f y x) :
     Continuous' (f a) :=
   Continuous.of_bundled _ (fun _ _ h => hf.to_monotone h a) fun c => congr_fun (hf.to_bundled _ c) a
 
-set_option linter.deprecated false in
 @[deprecated ωScottContinuous.of_apply₂ (since := "2024-05-29")]
 theorem flip₂_continuous' (f : γ → ∀ x, β x) (hf : ∀ x, Continuous' fun g => f g x) :
     Continuous' f :=
-  Continuous.of_bundled _ (fun _ _ h a => (hf a).to_monotone h)
+  Continuous.of_bundled _ (fun x y h a => (hf a).to_monotone h)
     (by intro c; ext a; apply (hf a).to_bundled _ c)
 
 end OmegaCompletePartialOrder
@@ -563,7 +553,7 @@ lemma ωScottContinuous.iSup {f : ι → α → β} (hf : ∀ i, ωScottContinuo
     ωScottContinuous (⨆ i, f i) := by
   refine ωScottContinuous.of_monotone_map_ωSup
     ⟨Monotone.iSup fun i ↦ (hf i).monotone, fun c ↦ eq_of_forall_ge_iff fun a ↦ ?_⟩
-  simp +contextual [ωSup_le_iff, (hf _).map_ωSup, @forall_swap ι]
+  simp (config := { contextual := true }) [ωSup_le_iff, (hf _).map_ωSup, @forall_swap ι]
 
 lemma ωScottContinuous.sSup {s : Set (α → β)} (hs : ∀ f ∈ s, ωScottContinuous f) :
     ωScottContinuous (sSup s) := by
@@ -582,7 +572,8 @@ lemma ωScottContinuous.top : ωScottContinuous (⊤ : α → β) :=
 lemma ωScottContinuous.bot : ωScottContinuous (⊥ : α → β) := by
   rw [← sSup_empty]; exact ωScottContinuous.sSup (by simp)
 
-set_option linter.deprecated false in
+set_option linter.deprecated false
+
 @[deprecated ωScottContinuous.sSup (since := "2024-05-29")]
 theorem sSup_continuous (s : Set <| α →o β) (hs : ∀ f ∈ s, Continuous f) : Continuous (sSup s) := by
   intro c
@@ -592,13 +583,11 @@ theorem sSup_continuous (s : Set <| α →o β) (hs : ∀ f ∈ s, Continuous f)
     simpa (config := { contextual := true }) [ωSup_le_iff, hs _ _ _] using this
   exact ⟨fun H n f hf => H f hf n, fun H f hf n => H n f hf⟩
 
-set_option linter.deprecated false in
 @[deprecated ωScottContinuous.iSup (since := "2024-05-29")]
 theorem iSup_continuous {ι : Sort*} {f : ι → α →o β} (h : ∀ i, Continuous (f i)) :
     Continuous (⨆ i, f i) :=
   sSup_continuous _ <| Set.forall_mem_range.2 h
 
-set_option linter.deprecated false in
 @[deprecated ωScottContinuous.sSup (since := "2024-05-29")]
 theorem sSup_continuous' (s : Set (α → β)) (hc : ∀ f ∈ s, Continuous' f) :
     Continuous' (sSup s) := by
@@ -608,21 +597,18 @@ theorem sSup_continuous' (s : Set (α → β)) (hc : ∀ f ∈ s, Continuous' f)
   norm_cast
   exact iSup_continuous fun f ↦ iSup_continuous fun hf ↦ hc hf
 
-set_option linter.deprecated false in
 @[deprecated ωScottContinuous.sup (since := "2024-05-29")]
 theorem sup_continuous {f g : α →o β} (hf : Continuous f) (hg : Continuous g) :
     Continuous (f ⊔ g) := by
   rw [← sSup_pair]; apply sSup_continuous
   rintro f (rfl | rfl | _) <;> assumption
 
-set_option linter.deprecated false in
 @[deprecated ωScottContinuous.top (since := "2024-05-29")]
 theorem top_continuous : Continuous (⊤ : α →o β) := by
   intro c; apply eq_of_forall_ge_iff; intro z
   simp only [OrderHom.instTopOrderHom_top, OrderHom.const_coe_coe, Function.const, top_le_iff,
     ωSup_le_iff, Chain.map_coe, Function.comp, forall_const]
 
-set_option linter.deprecated false in
 @[deprecated ωScottContinuous.bot (since := "2024-05-29")]
 theorem bot_continuous : Continuous (⊥ : α →o β) := by
   rw [← sSup_empty]
@@ -650,7 +636,8 @@ lemma ωScottContinuous.inf (hf : ωScottContinuous f) (hg : ωScottContinuous g
     (h (max j i)).imp (le_trans <| hf.monotone <| c.mono <| le_max_left _ _)
       (le_trans <| hg.monotone <| c.mono <| le_max_right _ _)⟩
 
-set_option linter.deprecated false in
+set_option linter.deprecated false
+
 @[deprecated ωScottContinuous.inf (since := "2024-05-29")]
 theorem inf_continuous (f g : α →o β) (hf : Continuous f) (hg : Continuous g) :
     Continuous (f ⊓ g) := by
@@ -661,7 +648,6 @@ theorem inf_continuous (f g : α →o β) (hf : Continuous f) (hg : Continuous g
     (h (max j i)).imp (le_trans <| f.mono <| c.mono <| le_max_left _ _)
       (le_trans <| g.mono <| c.mono <| le_max_right _ _)⟩
 
-set_option linter.deprecated false in
 @[deprecated ωScottContinuous.inf (since := "2024-05-29")]
 theorem inf_continuous' {f g : α → β} (hf : Continuous' f) (hg : Continuous' g) :
     Continuous' (f ⊓ g) :=
@@ -746,7 +732,7 @@ theorem apply_mono {f g : α →𝒄 β} {x y : α} (h₁ : f ≤ g) (h₂ : x �
   OrderHom.apply_mono (show (f : α →o β) ≤ g from h₁) h₂
 
 set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided." (since := "2024-07-27")]
+@[deprecated (since := "2024-07-27")]
 theorem ite_continuous' {p : Prop} [hp : Decidable p] (f g : α → β) (hf : Continuous' f)
     (hg : Continuous' g) : Continuous' fun x => if p then f x else g x := by
   split_ifs <;> simp [*]
@@ -794,7 +780,8 @@ lemma ωScottContinuous.seq {β γ} {f : α → Part (β → γ)} {g : α → Pa
   simp only [seq_eq_bind_map]
   exact ωScottContinuous.bind hf <| ωScottContinuous.of_apply₂ fun _ ↦ ωScottContinuous.map hg
 
-set_option linter.deprecated false in
+set_option linter.deprecated false
+
 @[deprecated ωScottContinuous.bind (since := "2024-05-29")]
 theorem bind_continuous' {β γ : Type v} (f : α → Part β) (g : α → β → Part γ) :
     Continuous' f → Continuous' g → Continuous' fun x => f x >>= g x
@@ -802,13 +789,11 @@ theorem bind_continuous' {β γ : Type v} (f : α → Part β) (g : α → β �
     Continuous.of_bundled' (OrderHom.partBind ⟨f, hf⟩ ⟨g, hg⟩)
       (by intro c; rw [ωSup_bind, ← hf', ← hg']; rfl)
 
-set_option linter.deprecated false in
 @[deprecated ωScottContinuous.map (since := "2024-05-29")]
 theorem map_continuous' {β γ : Type v} (f : β → γ) (g : α → Part β) (hg : Continuous' g) :
     Continuous' fun x => f <$> g x := by
   simp only [map_eq_bind_pure_comp]; apply bind_continuous' _ _ hg; apply const_continuous'
 
-set_option linter.deprecated false in
 @[deprecated ωScottContinuous.seq (since := "2024-05-29")]
 theorem seq_continuous' {β γ : Type v} (f : α → Part (β → γ)) (g : α → Part β) (hf : Continuous' f)
     (hg : Continuous' g) : Continuous' fun x => f x <*> g x := by
@@ -820,6 +805,8 @@ theorem seq_continuous' {β γ : Type v} (f : α → Part (β → γ)) (g : α �
 
 theorem continuous (F : α →𝒄 β) (C : Chain α) : F (ωSup C) = ωSup (C.map F) :=
   F.ωScottContinuous.map_ωSup _
+
+set_option linter.deprecated true
 
 /-- Construct a continuous function from a bare function, a continuous function, and a proof that
 they are equal. -/
@@ -949,7 +936,7 @@ theorem ωSup_apply_ωSup (c₀ : Chain (α →𝒄 β)) (c₁ : Chain α) :
 @[simps]
 def flip {α : Type*} (f : α → β →𝒄 γ) : β →𝒄 α → γ where
   toFun x y := f y x
-  monotone' _ _ h a := (f a).monotone h
+  monotone' x y h a := (f a).monotone h
   map_ωSup' _ := by ext x; change f _ _ = _; rw [(f _).continuous]; rfl
 
 /-- `Part.bind` as a continuous function. -/

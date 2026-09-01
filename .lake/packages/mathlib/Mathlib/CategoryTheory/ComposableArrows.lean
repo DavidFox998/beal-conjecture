@@ -143,10 +143,18 @@ lemma map_id (i : Fin 2) : map f i i (by simp) = 𝟙 _ :=
     | 1 => rfl
 
 lemma map_comp {i j k : Fin 2} (hij : i ≤ j) (hjk : j ≤ k) :
-    map f i k (hij.trans hjk) = map f i j hij ≫ map f j k hjk := by
-  obtain rfl | rfl : i = j ∨ j = k := by omega
-  · rw [map_id, id_comp]
-  · rw [map_id, comp_id]
+    map f i k (hij.trans hjk) = map f i j hij ≫ map f j k hjk :=
+  match i with
+    | 0 =>
+        match j with
+          | 0 => by rw [map_id, id_comp]
+          | 1 => by
+              obtain rfl : k = 1 := k.eq_one_of_neq_zero (by rintro rfl; simp at hjk)
+              rw [map_id, comp_id]
+    | 1 => by
+        obtain rfl := j.eq_one_of_neq_zero (by rintro rfl; simp at hij)
+        obtain rfl := k.eq_one_of_neq_zero (by rintro rfl; simp at hjk)
+        rw [map_id, id_comp]
 
 end Mk₁
 
@@ -204,7 +212,7 @@ lemma ext {F G : ComposableArrows C n} (h : ∀ i, F.obj i = G.obj i)
     (w : ∀ (i : ℕ) (hi : i < n), F.map' i (i + 1) =
       eqToHom (h _) ≫ G.map' i (i + 1) ≫ eqToHom (h _).symm) : F = G :=
   Functor.ext_of_iso
-    (isoMk (fun i => eqToIso (h i)) (fun i hi => by simp [w i hi])) h (fun _ => rfl)
+    (isoMk (fun i => eqToIso (h i)) (fun i hi => by simp [w i hi])) h (fun i => rfl)
 
 /-- Constructor for morphisms in `ComposableArrows C 0`. -/
 @[simps!]
@@ -442,7 +450,7 @@ def whiskerLeftFunctor (Φ : Fin (n + 1) ⥤ Fin (m + 1)) :
 @[simps]
 def _root_.Fin.succFunctor (n : ℕ) : Fin n ⥤ Fin (n + 1) where
   obj i := i.succ
-  map {_ _} hij := homOfLE (Fin.succ_le_succ_iff.2 (leOfHom hij))
+  map {i j} hij := homOfLE (Fin.succ_le_succ_iff.2 (leOfHom hij))
 
 /-- The functor `ComposableArrows C (n + 1) ⥤ ComposableArrows C n` which forgets
 the first arrow. -/
@@ -542,14 +550,14 @@ lemma ext_succ {F G : ComposableArrows C (n + 1)} (h₀ : F.obj' 0 = G.obj' 0)
   exact Functor.ext_of_iso (isoMkSucc (eqToIso h₀) (eqToIso h) (by
       rw [w]
       dsimp [app']
-      rw [eqToHom_app, assoc, assoc, eqToHom_trans, eqToHom_refl, comp_id])) this (by
+      erw [eqToHom_app, assoc, assoc, eqToHom_trans, eqToHom_refl, comp_id])) this (by
     rintro ⟨i, hi⟩
     dsimp
     cases' i with i
     · erw [homMkSucc_app_zero]
-    · rw [homMkSucc_app_succ]
+    · erw [homMkSucc_app_succ]
       dsimp [app']
-      rw [eqToHom_app])
+      erw [eqToHom_app])
 
 lemma precomp_surjective (F : ComposableArrows C (n + 1)) :
     ∃ (F₀ : ComposableArrows C n) (X₀ : C) (f₀ : X₀ ⟶ F₀.left), F = F₀.precomp f₀ :=

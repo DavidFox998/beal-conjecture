@@ -11,7 +11,7 @@ import Mathlib.Data.Rat.Cast.Lemmas
 -/
 
 namespace Mathlib
-open Lean
+open Lean hiding Rat mkRat
 open Meta
 
 namespace Meta.NormNum

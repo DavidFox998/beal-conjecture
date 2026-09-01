@@ -1,15 +1,12 @@
-# This is the Dockerfile for `leanprovercommunity/gitpod4`.
+# This is the Dockerfile for `leanprovercommunity/mathlib:gitpod`.
 
-# This container does not come with a pre-installed version of mathlib.
-# When a gitpod container is spawned, elan will be updated and mathlib will be downloaded:
-# see the .gitpod.yml file for more information.
-
+# gitpod doesn't support multiple FROM statements, (or rather, you can't copy from one to another)
+# so we just install everything in one go
 FROM ubuntu:jammy
 
 USER root
 
-ENV DEBIAN_FRONTEND=noninteractive
-RUN apt-get update && apt-get install sudo git curl git bash-completion python3 python3-pip python3-requests -y && apt-get clean
+RUN apt-get update && apt-get install sudo git curl git bash-completion python3 python3-requests -y && apt-get clean
 
 RUN useradd -l -u 33333 -G sudo -md /home/gitpod -s /bin/bash -p gitpod gitpod \
     # passwordless sudo for users in the 'sudo' group

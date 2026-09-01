@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
 import Mathlib.Data.Fin.Tuple.Basic
+import Mathlib.Data.List.Range
 
 /-!
 # Matrix and vector notation
@@ -31,7 +32,7 @@ The main new notation is `![a, b]`, which gets expanded to `vecCons a (vecCons b
 
 ## Examples
 
-Examples of usage can be found in the `MathlibTest/matrix.lean` file.
+Examples of usage can be found in the `test/matrix.lean` file.
 -/
 
 
@@ -107,7 +108,7 @@ instance _root_.PiFin.hasRepr [Repr α] : Repr (Fin n → α) where
 
 end MatrixNotation
 
-variable {m n o : ℕ}
+variable {m n o : ℕ} {m' n' o' : Type*}
 
 theorem empty_eq (v : Fin 0 → α) : v = ![] :=
   Subsingleton.elim _ _
@@ -159,14 +160,16 @@ theorem range_cons (x : α) (u : Fin n → α) : Set.range (vecCons x u) = {x} �
 theorem range_empty (u : Fin 0 → α) : Set.range u = ∅ :=
   Set.range_eq_empty _
 
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem range_cons_empty (x : α) (u : Fin 0 → α) : Set.range (Matrix.vecCons x u) = {x} := by
   rw [range_cons, range_empty, Set.union_empty]
 
--- simp can prove this (up to commutativity)
+-- @[simp] -- Porting note (#10618): simp can prove this (up to commutativity)
 theorem range_cons_cons_empty (x y : α) (u : Fin 0 → α) :
     Set.range (vecCons x <| vecCons y u) = {x, y} := by
   rw [range_cons, range_cons_empty, Set.singleton_union]
 
+@[simp]
 theorem vecCons_const (a : α) : (vecCons a fun _ : Fin n => a) = fun _ => a :=
   funext <| Fin.forall_iff_succ.2 ⟨rfl, cons_val_succ _ _⟩
 

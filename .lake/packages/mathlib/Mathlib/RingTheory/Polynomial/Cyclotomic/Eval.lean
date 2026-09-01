@@ -29,6 +29,7 @@ theorem eval_one_cyclotomic_prime {R : Type*} [CommRing R] {p : ℕ} [hn : Fact 
   simp only [cyclotomic_prime, eval_X, one_pow, Finset.sum_const, eval_pow, eval_finset_sum,
     Finset.card_range, smul_one_eq_cast]
 
+-- @[simp] -- Porting note (#10618): simp already proves this
 theorem eval₂_one_cyclotomic_prime {R S : Type*} [CommRing R] [Semiring S] (f : R →+* S) {p : ℕ}
     [Fact p.Prime] : eval₂ f 1 (cyclotomic p R) = p := by simp
 
@@ -38,6 +39,7 @@ theorem eval_one_cyclotomic_prime_pow {R : Type*} [CommRing R] {p : ℕ} (k : �
   simp only [cyclotomic_prime_pow_eq_geom_sum hn.out, eval_X, one_pow, Finset.sum_const, eval_pow,
     eval_finset_sum, Finset.card_range, smul_one_eq_cast]
 
+-- @[simp] -- Porting note (#10618): simp already proves this
 theorem eval₂_one_cyclotomic_prime_pow {R S : Type*} [CommRing R] [Semiring S] (f : R →+* S)
     {p : ℕ} (k : ℕ) [Fact p.Prime] : eval₂ f 1 (cyclotomic (p ^ (k + 1)) R) = p := by simp
 
@@ -210,7 +212,7 @@ theorem sub_one_pow_totient_le_cyclotomic_eval {q : ℝ} (hq' : 1 < q) :
     ∀ n, (q - 1) ^ totient n ≤ (cyclotomic n ℝ).eval q
   | 0 => by simp only [totient_zero, _root_.pow_zero, cyclotomic_zero, eval_one, le_refl]
   | 1 => by simp only [totient_one, pow_one, cyclotomic_one, eval_sub, eval_X, eval_one, le_refl]
-  | _ + 2 => (sub_one_pow_totient_lt_cyclotomic_eval le_add_self hq').le
+  | n + 2 => (sub_one_pow_totient_lt_cyclotomic_eval le_add_self hq').le
 
 theorem cyclotomic_eval_lt_add_one_pow_totient {n : ℕ} {q : ℝ} (hn' : 3 ≤ n) (hq' : 1 < q) :
     (cyclotomic n ℝ).eval q < (q + 1) ^ totient n := by
@@ -283,7 +285,7 @@ theorem cyclotomic_eval_le_add_one_pow_totient {q : ℝ} (hq' : 1 < q) :
   | 0 => by simp
   | 1 => by simp [add_assoc, add_nonneg, zero_le_one]
   | 2 => by simp
-  | _ + 3 => (cyclotomic_eval_lt_add_one_pow_totient le_add_self hq').le
+  | n + 3 => (cyclotomic_eval_lt_add_one_pow_totient le_add_self hq').le
 
 theorem sub_one_pow_totient_lt_natAbs_cyclotomic_eval {n : ℕ} {q : ℕ} (hn' : 1 < n) (hq : q ≠ 1) :
     (q - 1) ^ totient n < ((cyclotomic n ℤ).eval ↑q).natAbs := by

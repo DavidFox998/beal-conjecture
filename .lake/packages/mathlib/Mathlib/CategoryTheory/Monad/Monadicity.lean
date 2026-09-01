@@ -79,13 +79,6 @@ def comparisonLeftAdjointObj (A : adj.toMonad.Algebra)
     [HasCoequalizer (F.map A.a) (adj.counit.app _)] : D :=
   coequalizer (F.map A.a) (adj.counit.app _)
 
-#adaptation_note
-/--
-The new unused variable linter in
-https://github.com/leanprover/lean4/pull/5338
-flags `{ f : F.obj A.A ⟶ B // _ }`.
--/
-set_option linter.unusedVariables false in
 /--
 We have a bijection of homsets which will be used to construct the left adjoint to the comparison
 functor.
@@ -130,7 +123,7 @@ def leftAdjointComparison
     -- `Category.assoc`.
     -- dsimp [comparisonLeftAdjointHomEquiv]
     -- rw [← adj.homEquiv_naturality_right, Category.assoc]
-    simp [Cofork.IsColimit.homIso, Adjunction.homEquiv_unit]
+    simp [Cofork.IsColimit.homIso]
 
 /-- Provided we have the appropriate coequalizers, we have an adjunction to the comparison functor.
 -/
@@ -160,7 +153,9 @@ def unitCofork (A : adj.toMonad.Algebra)
     [HasCoequalizer (F.map A.a) (adj.counit.app (F.obj A.A))] :
     Cofork (G.map (F.map A.a)) (G.map (adj.counit.app (F.obj A.A))) :=
   Cofork.ofπ (G.map (coequalizer.π (F.map A.a) (adj.counit.app (F.obj A.A))))
-    (by rw [← G.map_comp, coequalizer.condition, G.map_comp])
+    (by
+      change _ = G.map _ ≫ _
+      rw [← G.map_comp, coequalizer.condition, G.map_comp])
 
 @[simp]
 theorem unitCofork_π (A : adj.toMonad.Algebra)
@@ -223,7 +218,7 @@ theorem comparisonAdjunction_counit_app
   change
     coequalizer.π _ _ ≫ coequalizer.desc ((adj.homEquiv _ B).symm (𝟙 _)) _ =
       coequalizer.π _ _ ≫ coequalizer.desc _ _
-  simp [Adjunction.homEquiv_counit]
+  simp
 
 end MonadicityInternal
 
@@ -242,14 +237,16 @@ def createsGSplitCoequalizersOfMonadic [MonadicRightAdjoint G] ⦃A B⦄ (f g : 
     [G.IsSplitPair f g] : CreatesColimit (parallelPair f g) G := by
   apply (config := {allowSynthFailures := true}) monadicCreatesColimitOfPreservesColimit
     -- Porting note: oddly (config := {allowSynthFailures := true}) had no effect here and below
-  all_goals
-    apply @preservesColimit_of_iso_diagram _ _ _ _ _ _ _ _ _ (diagramIsoParallelPair.{v₁} _).symm ?_
+  · apply @preservesColimitOfIsoDiagram _ _ _ _ _ _ _ _ _ (diagramIsoParallelPair.{v₁} _).symm ?_
+    dsimp
+    infer_instance
+  · apply @preservesColimitOfIsoDiagram _ _ _ _ _ _ _ _ _ (diagramIsoParallelPair.{v₁} _).symm ?_
     dsimp
     infer_instance
 
 section BeckMonadicity
 
--- Porting note: added these to replace parametric instances https://github.com/leanprover/lean4/issues/2311
+-- Porting note: added these to replace parametric instances lean4#2311
 -- When this is fixed the proofs below that struggle with instances should be reviewed.
 -- [∀ ⦃A B⦄ (f g : A ⟶ B) [G.IsSplitPair f g], HasCoequalizer f g]
 class HasCoequalizerOfIsSplitPair (G : D ⥤ C) : Prop where
@@ -264,7 +261,7 @@ instance [HasCoequalizerOfIsSplitPair G] : ∀ (A : Algebra adj.toMonad),
       (adj.counit.app (F.obj A.A)) :=
   fun _ => HasCoequalizerOfIsSplitPair.out G _ _
 
--- Porting note: added these to replace parametric instances https://github.com/leanprover/lean4/issues/2311
+-- Porting note: added these to replace parametric instances lean4#2311
 -- [∀ ⦃A B⦄ (f g : A ⟶ B) [G.IsSplitPair f g], PreservesColimit (parallelPair f g) G]
 class PreservesColimitOfIsSplitPair (G : D ⥤ C) where
   out : ∀ {A B} (f g : A ⟶ B) [G.IsSplitPair f g], PreservesColimit (parallelPair f g) G
@@ -277,7 +274,7 @@ instance [PreservesColimitOfIsSplitPair G] : ∀ (A : Algebra adj.toMonad),
       (NatTrans.app adj.counit (F.obj A.A))) G :=
   fun _ => PreservesColimitOfIsSplitPair.out _ _
 
--- Porting note: added these to replace parametric instances https://github.com/leanprover/lean4/issues/2311
+-- Porting note: added these to replace parametric instances lean4#2311
 -- [∀ ⦃A B⦄ (f g : A ⟶ B) [G.IsSplitPair f g], ReflectsColimit (parallelPair f g) G] :
 class ReflectsColimitOfIsSplitPair (G : D ⥤ C) where
   out : ∀ {A B} (f g : A ⟶ B) [G.IsSplitPair f g], ReflectsColimit (parallelPair f g) G
@@ -323,7 +320,7 @@ def monadicOfHasPreservesReflectsGSplitCoequalizers [HasCoequalizerOfIsSplitPair
       infer_instance
     exact (comparisonAdjunction adj).toEquivalence.isEquivalence_inverse
 
--- Porting note: added these to replace parametric instances https://github.com/leanprover/lean4/issues/2311
+-- Porting note: added these to replace parametric instances lean4#2311
 -- [∀ ⦃A B⦄ (f g : A ⟶ B) [G.IsSplitPair f g], CreatesColimit (parallelPair f g) G] :
 class CreatesColimitOfIsSplitPair (G : D ⥤ C) where
   out : ∀ {A B} (f g : A ⟶ B) [G.IsSplitPair f g], CreatesColimit (parallelPair f g) G
@@ -359,7 +356,7 @@ def monadicOfHasPreservesGSplitCoequalizersOfReflectsIsomorphisms [G.ReflectsIso
     MonadicRightAdjoint G := by
   have : ReflectsColimitOfIsSplitPair G := ⟨fun f g _ => by
     have := HasCoequalizerOfIsSplitPair.out G f g
-    apply reflectsColimit_of_reflectsIsomorphisms⟩
+    apply reflectsColimitOfReflectsIsomorphisms⟩
   apply monadicOfHasPreservesReflectsGSplitCoequalizers adj
 
 end BeckMonadicity
@@ -368,7 +365,7 @@ section ReflexiveMonadicity
 
 variable [HasReflexiveCoequalizers D] [G.ReflectsIsomorphisms]
 
--- Porting note: added these to replace parametric instances https://github.com/leanprover/lean4/issues/2311
+-- Porting note: added these to replace parametric instances lean4#2311
 -- [∀ ⦃A B⦄ (f g : A ⟶ B) [G.IsReflexivePair f g], PreservesColimit (parallelPair f g) G] :
 class PreservesColimitOfIsReflexivePair (G : C ⥤ D) where
   out : ∀ ⦃A B⦄ (f g : A ⟶ B) [IsReflexivePair f g], PreservesColimit (parallelPair f g) G
@@ -405,7 +402,7 @@ def monadicOfHasPreservesReflexiveCoequalizersOfReflectsIsomorphisms : MonadicRi
       infer_instance
       -- Porting note: passing instances through
       apply @counitCoequalizerOfReflectsCoequalizer _ _ _ _ _ _ _ _ ?_
-      apply reflectsColimit_of_reflectsIsomorphisms
+      apply reflectsColimitOfReflectsIsomorphisms
     exact (comparisonAdjunction adj).toEquivalence.isEquivalence_inverse
 
 end ReflexiveMonadicity

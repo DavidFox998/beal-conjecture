@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Moritz Doll
 -/
 import Mathlib.LinearAlgebra.Prod
+import Mathlib.Algebra.Module.Basic
 
 /-!
 # Partially defined linear maps
@@ -110,7 +111,7 @@ noncomputable def mkSpanSingleton' (x : E) (y : F) (H : ∀ c : R, c • x = 0 �
       rw [← sub_eq_zero, ← sub_smul] at h ⊢
       exact H _ h
     { toFun := fun z => Classical.choose (mem_span_singleton.1 z.prop) • y
-      -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
+      -- Porting note(#12129): additional beta reduction needed
       -- Porting note: Were `Classical.choose_spec (mem_span_singleton.1 _)`.
       map_add' := fun y z => by
         beta_reduce
@@ -211,6 +212,9 @@ def eqLocus (f g : E →ₗ.[R] F) : Submodule R E where
       ⟨smul_mem _ c hfx, smul_mem _ c hgx,
         by erw [f.map_smul c ⟨x, hfx⟩, g.map_smul c ⟨x, hgx⟩, hx]⟩
 
+instance inf : Inf (E →ₗ.[R] F) :=
+  ⟨fun f g => ⟨f.eqLocus g, f.toFun.comp <| inclusion fun _x hx => hx.fst⟩⟩
+
 instance bot : Bot (E →ₗ.[R] F) :=
   ⟨⟨⊥, 0⟩⟩
 
@@ -219,15 +223,16 @@ instance inhabited : Inhabited (E →ₗ.[R] F) :=
 
 instance semilatticeInf : SemilatticeInf (E →ₗ.[R] F) where
   le := (· ≤ ·)
-  le_refl f := ⟨le_refl f.domain, fun _ _ h => Subtype.eq h ▸ rfl⟩
-  le_trans := fun _ _ _ ⟨fg_le, fg_eq⟩ ⟨gh_le, gh_eq⟩ =>
-    ⟨le_trans fg_le gh_le, fun x _ hxz =>
+  le_refl f := ⟨le_refl f.domain, fun x y h => Subtype.eq h ▸ rfl⟩
+  le_trans := fun f g h ⟨fg_le, fg_eq⟩ ⟨gh_le, gh_eq⟩ =>
+    ⟨le_trans fg_le gh_le, fun x z hxz =>
       have hxy : (x : E) = inclusion fg_le x := rfl
       (fg_eq hxy).trans (gh_eq <| hxy.symm.trans hxz)⟩
-  le_antisymm _ _ fg gf := eq_of_le_of_domain_eq fg (le_antisymm fg.1 gf.1)
-  inf f g := ⟨f.eqLocus g, f.toFun.comp <| inclusion fun _x hx => hx.fst⟩
+  le_antisymm f g fg gf := eq_of_le_of_domain_eq fg (le_antisymm fg.1 gf.1)
+  inf := (· ⊓ ·)
+  -- Porting note: `by rintro` is required, or error of a metavariable happens.
   le_inf := by
-    intro f g h ⟨fg_le, fg_eq⟩ ⟨fh_le, fh_eq⟩
+    rintro f g h ⟨fg_le, fg_eq⟩ ⟨fh_le, fh_eq⟩
     exact ⟨fun x hx =>
       ⟨fg_le hx, fh_le hx, by
         -- Porting note: `[exact ⟨x, hx⟩, rfl, rfl]` → `[skip, exact ⟨x, hx⟩, skip] <;> rfl`
@@ -235,9 +240,9 @@ instance semilatticeInf : SemilatticeInf (E →ₗ.[R] F) where
       fun x ⟨y, yg, hy⟩ h => by
         apply fg_eq
         exact h⟩
-  inf_le_left f _ := ⟨fun _ hx => hx.fst, fun _ _ h => congr_arg f <| Subtype.eq <| h⟩
-  inf_le_right _ g :=
-    ⟨fun _ hx => hx.snd.fst, fun ⟨_, _, _, hx⟩ _ h => hx.trans <| congr_arg g <| Subtype.eq <| h⟩
+  inf_le_left f g := ⟨fun x hx => hx.fst, fun x y h => congr_arg f <| Subtype.eq <| h⟩
+  inf_le_right f g :=
+    ⟨fun x hx => hx.snd.fst, fun ⟨x, xf, xg, hx⟩ y h => hx.trans <| congr_arg g <| Subtype.eq <| h⟩
 
 instance orderBot : OrderBot (E →ₗ.[R] F) where
   bot := ⊥
@@ -671,7 +676,7 @@ theorem domRestrict_apply {f : E →ₗ.[R] F} {S : Submodule R E} ⦃x : ↥(S 
   exact LinearPMap.mk_apply _ _ _
 
 theorem domRestrict_le {f : E →ₗ.[R] F} {S : Submodule R E} : f.domRestrict S ≤ f :=
-  ⟨by simp, fun _ _ hxy => domRestrict_apply hxy⟩
+  ⟨by simp, fun x y hxy => domRestrict_apply hxy⟩
 
 /-! ### Graph -/
 
@@ -867,7 +872,7 @@ section SubmoduleToLinearPMap
 theorem existsUnique_from_graph {g : Submodule R (E × F)}
     (hg : ∀ {x : E × F} (_hx : x ∈ g) (_hx' : x.fst = 0), x.snd = 0) {a : E}
     (ha : a ∈ g.map (LinearMap.fst R E F)) : ∃! b : F, (a, b) ∈ g := by
-  refine existsUnique_of_exists_of_unique ?_ ?_
+  refine exists_unique_of_exists_of_unique ?_ ?_
   · convert ha
     simp
   intro y₁ y₂ hy₁ hy₂

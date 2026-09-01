@@ -5,6 +5,7 @@ Authors: David Wärn, Antoine Labelle, Rémi Bottinelli
 -/
 import Mathlib.Combinatorics.Quiver.Path
 import Mathlib.Combinatorics.Quiver.Push
+import Batteries.Data.Sum.Lemmas
 
 /-!
 ## Symmetric quivers and arrow reversal

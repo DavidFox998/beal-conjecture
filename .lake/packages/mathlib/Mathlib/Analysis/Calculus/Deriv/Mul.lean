@@ -34,11 +34,11 @@ variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
 variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 variable {E : Type w} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
-variable {f : 𝕜 → F}
-variable {f' : F}
+variable {f f₀ f₁ g : 𝕜 → F}
+variable {f' f₀' f₁' g' : F}
 variable {x : 𝕜}
-variable {s : Set 𝕜}
-variable {L : Filter 𝕜}
+variable {s t : Set 𝕜}
+variable {L L₁ L₂ : Filter 𝕜}
 
 /-! ### Derivative of bilinear maps -/
 
@@ -169,6 +169,7 @@ lemma deriv_const_smul' {f : 𝕜 → F} {x : 𝕜} {R : Type*} [Field R] [Modul
     · simp only [zero_smul, deriv_const']
     · have H : ¬DifferentiableAt 𝕜 (fun y ↦ c • f y) x := by
         contrapose! hf
+        change DifferentiableAt 𝕜 (fun y ↦ f y) x
         conv => enter [2, y]; rw [← inv_smul_smul₀ hc (f y)]
         exact DifferentiableAt.const_smul hf c⁻¹
       rw [deriv_zero_of_not_differentiableAt hf, deriv_zero_of_not_differentiableAt H, smul_zero]
@@ -321,28 +322,24 @@ theorem derivWithin_finset_prod (hxs : UniqueDiffWithinAt 𝕜 s x)
 end HasDeriv
 
 variable {ι : Type*} {𝔸' : Type*} [NormedCommRing 𝔸'] [NormedAlgebra 𝕜 𝔸']
-  {u : Finset ι} {f : ι → 𝕜 → 𝔸'}
+  {u : Finset ι} {f : ι → 𝕜 → 𝔸'} {f' : ι → 𝔸'}
 
-@[fun_prop]
 theorem DifferentiableAt.finset_prod (hd : ∀ i ∈ u, DifferentiableAt 𝕜 (f i) x) :
     DifferentiableAt 𝕜 (∏ i ∈ u, f i ·) x := by
   classical
   exact
     (HasDerivAt.finset_prod (fun i hi ↦ DifferentiableAt.hasDerivAt (hd i hi))).differentiableAt
 
-@[fun_prop]
 theorem DifferentiableWithinAt.finset_prod (hd : ∀ i ∈ u, DifferentiableWithinAt 𝕜 (f i) s x) :
     DifferentiableWithinAt 𝕜 (∏ i ∈ u, f i ·) s x := by
   classical
   exact (HasDerivWithinAt.finset_prod (fun i hi ↦
     DifferentiableWithinAt.hasDerivWithinAt (hd i hi))).differentiableWithinAt
 
-@[fun_prop]
 theorem DifferentiableOn.finset_prod (hd : ∀ i ∈ u, DifferentiableOn 𝕜 (f i) s) :
     DifferentiableOn 𝕜 (∏ i ∈ u, f i ·) s :=
   fun x hx ↦ .finset_prod (fun i hi ↦ hd i hi x hx)
 
-@[fun_prop]
 theorem Differentiable.finset_prod (hd : ∀ i ∈ u, Differentiable 𝕜 (f i)) :
     Differentiable 𝕜 (∏ i ∈ u, f i ·) :=
   fun x ↦ .finset_prod (fun i hi ↦ hd i hi x)
@@ -351,7 +348,7 @@ end Prod
 
 section Div
 
-variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜'] {c : 𝕜 → 𝕜'} {c' : 𝕜'}
+variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜'] {c d : 𝕜 → 𝕜'} {c' d' : 𝕜'}
 
 theorem HasDerivAt.div_const (hc : HasDerivAt c c' x) (d : 𝕜') :
     HasDerivAt (fun x => c x / d) (c' / d) x := by
@@ -365,21 +362,19 @@ theorem HasStrictDerivAt.div_const (hc : HasStrictDerivAt c c' x) (d : 𝕜') :
     HasStrictDerivAt (fun x => c x / d) (c' / d) x := by
   simpa only [div_eq_mul_inv] using hc.mul_const d⁻¹
 
-@[fun_prop]
 theorem DifferentiableWithinAt.div_const (hc : DifferentiableWithinAt 𝕜 c s x) (d : 𝕜') :
     DifferentiableWithinAt 𝕜 (fun x => c x / d) s x :=
   (hc.hasDerivWithinAt.div_const _).differentiableWithinAt
 
-@[simp, fun_prop]
+@[simp]
 theorem DifferentiableAt.div_const (hc : DifferentiableAt 𝕜 c x) (d : 𝕜') :
     DifferentiableAt 𝕜 (fun x => c x / d) x :=
   (hc.hasDerivAt.div_const _).differentiableAt
 
-@[fun_prop]
 theorem DifferentiableOn.div_const (hc : DifferentiableOn 𝕜 c s) (d : 𝕜') :
     DifferentiableOn 𝕜 (fun x => c x / d) s := fun x hx => (hc x hx).div_const d
 
-@[simp, fun_prop]
+@[simp]
 theorem Differentiable.div_const (hc : Differentiable 𝕜 c) (d : 𝕜') :
     Differentiable 𝕜 fun x => c x / d := fun x => (hc x).div_const d
 

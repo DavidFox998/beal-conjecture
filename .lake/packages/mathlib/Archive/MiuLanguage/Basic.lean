@@ -106,7 +106,9 @@ instance : Repr MiuAtom :=
 
 /-- For simplicity, an `Miustr` is just a list of elements of type `MiuAtom`.
 -/
-abbrev Miustr := List MiuAtom
+def Miustr :=
+  List MiuAtom
+deriving Append
 
 instance : Membership MiuAtom Miustr := by unfold Miustr; infer_instance
 

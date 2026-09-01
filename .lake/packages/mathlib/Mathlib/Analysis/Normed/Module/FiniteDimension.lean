@@ -48,13 +48,14 @@ universe u v w x
 
 noncomputable section
 
-open Asymptotics Filter Module Metric Module NNReal Set TopologicalSpace Topology
+open Set FiniteDimensional TopologicalSpace Filter Asymptotics Topology NNReal Metric
 
 namespace LinearIsometry
 
 open LinearMap
 
-variable {F E₁ : Type*} [SeminormedAddCommGroup F] [NormedAddCommGroup E₁]
+variable {R : Type*} [Semiring R]
+variable {F E₁ : Type*} [SeminormedAddCommGroup F] [NormedAddCommGroup E₁] [Module R E₁]
 variable {R₁ : Type*} [Field R₁] [Module R₁ E₁] [Module R₁ F] [FiniteDimensional R₁ E₁]
   [FiniteDimensional R₁ F]
 
@@ -109,7 +110,9 @@ end AffineIsometry
 section CompleteField
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Type v} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {F : Type w} [NormedAddCommGroup F] [NormedSpace 𝕜 F] [CompleteSpace 𝕜]
+  [NormedSpace 𝕜 E] {F : Type w} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {F' : Type x}
+  [AddCommGroup F'] [Module 𝕜 F'] [TopologicalSpace F'] [TopologicalAddGroup F']
+  [ContinuousSMul 𝕜 F'] [CompleteSpace 𝕜]
 
 section Affine
 
@@ -320,14 +323,14 @@ theorem Basis.exists_opNorm_le {ι : Type*} [Finite ι] (v : Basis ι 𝕜 E) :
 
 instance [FiniteDimensional 𝕜 E] [SecondCountableTopology F] :
     SecondCountableTopology (E →L[𝕜] F) := by
-  set d := Module.finrank 𝕜 E
+  set d := FiniteDimensional.finrank 𝕜 E
   suffices
     ∀ ε > (0 : ℝ), ∃ n : (E →L[𝕜] F) → Fin d → ℕ, ∀ f g : E →L[𝕜] F, n f = n g → dist f g ≤ ε from
     Metric.secondCountable_of_countable_discretization fun ε ε_pos =>
       ⟨Fin d → ℕ, by infer_instance, this ε ε_pos⟩
   intro ε ε_pos
   obtain ⟨u : ℕ → F, hu : DenseRange u⟩ := exists_dense_seq F
-  let v := Module.finBasis 𝕜 E
+  let v := FiniteDimensional.finBasis 𝕜 E
   obtain
     ⟨C : ℝ, C_pos : 0 < C, hC :
       ∀ {φ : E →L[𝕜] F} {M : ℝ}, 0 ≤ M → (∀ i, ‖φ (v i)‖ ≤ M) → ‖φ‖ ≤ C * M⟩ :=
@@ -507,15 +510,21 @@ lemma ProperSpace.of_locallyCompactSpace (𝕜 : Type*) [NontriviallyNormedField
     Tendsto.atTop_mul_const rpos (tendsto_pow_atTop_atTop_of_one_lt hc)
   exact .of_seq_closedBall hTop (Eventually.of_forall hC)
 
+@[deprecated (since := "2024-01-31")]
+alias properSpace_of_locallyCompactSpace := ProperSpace.of_locallyCompactSpace
+
 variable (E)
 lemma ProperSpace.of_locallyCompact_module [Nontrivial E] [LocallyCompactSpace E] :
     ProperSpace 𝕜 :=
   have : LocallyCompactSpace 𝕜 := by
     obtain ⟨v, hv⟩ : ∃ v : E, v ≠ 0 := exists_ne 0
     let L : 𝕜 → E := fun t ↦ t • v
-    have : IsClosedEmbedding L := isClosedEmbedding_smul_left hv
-    apply IsClosedEmbedding.locallyCompactSpace this
+    have : ClosedEmbedding L := closedEmbedding_smul_left hv
+    apply ClosedEmbedding.locallyCompactSpace this
   .of_locallyCompactSpace 𝕜
+
+@[deprecated (since := "2024-01-31")]
+alias properSpace_of_locallyCompact_module := ProperSpace.of_locallyCompact_module
 
 end Riesz
 
@@ -638,7 +647,7 @@ theorem summable_norm_iff {α E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ
   refine ⟨Summable.of_norm, fun hf ↦ ?_⟩
   -- First we use a finite basis to reduce the problem to the case `E = Fin N → ℝ`
   suffices ∀ {N : ℕ} {g : α → Fin N → ℝ}, Summable g → Summable fun x => ‖g x‖ by
-    obtain v := Module.finBasis ℝ E
+    obtain v := finBasis ℝ E
     set e := v.equivFunL
     have H : Summable fun x => ‖e (f x)‖ := this (e.summable.2 hf)
     refine .of_norm_bounded _ (H.mul_left ↑‖(e.symm : (Fin (finrank ℝ E) → ℝ) →L[ℝ] E)‖₊) fun i ↦ ?_

@@ -22,16 +22,19 @@ derivative, inverse function
 -/
 
 
-universe u v
+universe u v w
 
-open scoped Topology
-open Filter Set
+open scoped Classical Topology ENNReal
+open Filter Asymptotics Set
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
 variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-variable {f : 𝕜 → F}
-variable {f' : F}
+variable {E : Type w} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {f f₀ f₁ g : 𝕜 → F}
+variable {f' f₀' f₁' g' : F}
 variable {x : 𝕜}
+variable {s t : Set 𝕜}
+variable {L L₁ L₂ : Filter 𝕜}
 
 theorem HasStrictDerivAt.hasStrictFDerivAt_equiv {f : 𝕜 → 𝕜} {f' x : 𝕜}
     (hf : HasStrictDerivAt f f' x) (hf' : f' ≠ 0) :

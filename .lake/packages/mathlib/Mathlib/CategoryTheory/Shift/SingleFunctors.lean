@@ -118,7 +118,7 @@ attribute [local simp] comm comm_assoc
 /-- The identity morphism in `SingleFunctors C D A`. -/
 @[simps]
 def id : Hom F F where
-  hom _ := 𝟙 _
+  hom a := 𝟙 _
 
 variable {F G H}
 
@@ -168,7 +168,7 @@ variable (C D)
 @[simps]
 def evaluation (a : A) : SingleFunctors C D A ⥤ C ⥤ D where
   obj F := F.functor a
-  map {_ _} φ := φ.hom a
+  map {F G} φ := φ.hom a
 
 variable {C D}
 
@@ -237,7 +237,7 @@ variable {C E' A}
 @[simps!]
 def postcompPostcompIso (G : D ⥤ E) (G' : E ⥤ E') [G.CommShift A] [G'.CommShift A] :
     (F.postcomp G).postcomp G' ≅ F.postcomp (G ⋙ G') :=
-  isoMk (fun _ => Functor.associator _ _ _) (fun n a a' ha' => by
+  isoMk (fun a => Functor.associator _ _ _) (fun n a a' ha' => by
     ext X
     simp [Functor.commShiftIso_comp_inv_app])
 
@@ -250,7 +250,7 @@ def postcompIsoOfIso {G G' : D ⥤ E} (e : G ≅ G') [G.CommShift A] [G'.CommShi
   isoMk (fun a => isoWhiskerLeft (F.functor a) e) (fun n a a' ha' => by
     ext X
     dsimp
-    simp [NatTrans.shift_app e.hom n])
+    simp [NatTrans.CommShift.shift_app e.hom n])
 
 end SingleFunctors
 

@@ -53,6 +53,7 @@ instance starRing (s : StarSubsemiring R) : StarRing s :=
 instance semiring (s : StarSubsemiring R) : NonAssocSemiring s :=
   s.toSubsemiring.toNonAssocSemiring
 
+@[simp, nolint simpNF]
 theorem mem_carrier {s : StarSubsemiring R} {x : R} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
 

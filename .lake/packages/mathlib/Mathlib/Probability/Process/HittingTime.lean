@@ -121,7 +121,7 @@ theorem le_hitting_of_exists {m : ι} (h_exists : ∃ j ∈ Set.Icc n m, u j ω 
 theorem hitting_mem_Icc {m : ι} (hnm : n ≤ m) (ω : Ω) : hitting u s n m ω ∈ Set.Icc n m :=
   ⟨le_hitting hnm ω, hitting_le ω⟩
 
-theorem hitting_mem_set [WellFoundedLT ι] {m : ι} (h_exists : ∃ j ∈ Set.Icc n m, u j ω ∈ s) :
+theorem hitting_mem_set [IsWellOrder ι (· < ·)] {m : ι} (h_exists : ∃ j ∈ Set.Icc n m, u j ω ∈ s) :
     u (hitting u s n m ω) ω ∈ s := by
   simp_rw [hitting, if_pos h_exists]
   have h_nonempty : (Set.Icc n m ∩ {i : ι | u i ω ∈ s}).Nonempty := by
@@ -131,7 +131,7 @@ theorem hitting_mem_set [WellFoundedLT ι] {m : ι} (h_exists : ∃ j ∈ Set.Ic
   rw [Set.mem_inter_iff] at h_mem
   exact h_mem.2
 
-theorem hitting_mem_set_of_hitting_lt [WellFoundedLT ι] {m : ι} (hl : hitting u s n m ω < m) :
+theorem hitting_mem_set_of_hitting_lt [IsWellOrder ι (· < ·)] {m : ι} (hl : hitting u s n m ω < m) :
     u (hitting u s n m ω) ω ∈ s := by
   by_cases h : ∃ j ∈ Set.Icc n m, u j ω ∈ s
   · exact hitting_mem_set h
@@ -144,7 +144,7 @@ theorem hitting_le_of_mem {m : ι} (hin : n ≤ i) (him : i ≤ m) (his : u i ω
   simp_rw [hitting, if_pos h_exists]
   exact csInf_le (BddBelow.inter_of_left bddBelow_Icc) (Set.mem_inter ⟨hin, him⟩ his)
 
-theorem hitting_le_iff_of_exists [WellFoundedLT ι] {m : ι}
+theorem hitting_le_iff_of_exists [IsWellOrder ι (· < ·)] {m : ι}
     (h_exists : ∃ j ∈ Set.Icc n m, u j ω ∈ s) :
     hitting u s n m ω ≤ i ↔ ∃ j ∈ Set.Icc n i, u j ω ∈ s := by
   constructor <;> intro h'
@@ -158,7 +158,7 @@ theorem hitting_le_iff_of_exists [WellFoundedLT ι] {m : ι}
     refine le_trans ?_ (hk₁.2.trans (min_le_right _ _))
     exact hitting_le_of_mem hk₁.1 (hk₁.2.trans (min_le_left _ _)) hk₂
 
-theorem hitting_le_iff_of_lt [WellFoundedLT ι] {m : ι} (i : ι) (hi : i < m) :
+theorem hitting_le_iff_of_lt [IsWellOrder ι (· < ·)] {m : ι} (i : ι) (hi : i < m) :
     hitting u s n m ω ≤ i ↔ ∃ j ∈ Set.Icc n i, u j ω ∈ s := by
   by_cases h_exists : ∃ j ∈ Set.Icc n m, u j ω ∈ s
   · rw [hitting_le_iff_of_exists h_exists]
@@ -167,7 +167,7 @@ theorem hitting_le_iff_of_lt [WellFoundedLT ι] {m : ι} (i : ι) (hi : i < m) :
     simp only [not_le.mpr hi, Set.mem_Icc, false_iff, not_exists, not_and, and_imp]
     exact fun k hkn hki => h_exists k ⟨hkn, hki.trans hi.le⟩
 
-theorem hitting_lt_iff [WellFoundedLT ι] {m : ι} (i : ι) (hi : i ≤ m) :
+theorem hitting_lt_iff [IsWellOrder ι (· < ·)] {m : ι} (i : ι) (hi : i ≤ m) :
     hitting u s n m ω < i ↔ ∃ j ∈ Set.Ico n i, u j ω ∈ s := by
   constructor <;> intro h'
   · have h : ∃ j ∈ Set.Icc n m, u j ω ∈ s := by
@@ -209,7 +209,7 @@ theorem hitting_mono {m₁ m₂ : ι} (hm : m₁ ≤ m₂) : hitting u s n m₁ 
 end Inequalities
 
 /-- A discrete hitting time is a stopping time. -/
-theorem hitting_isStoppingTime [ConditionallyCompleteLinearOrder ι] [WellFoundedLT ι]
+theorem hitting_isStoppingTime [ConditionallyCompleteLinearOrder ι] [IsWellOrder ι (· < ·)]
     [Countable ι] [TopologicalSpace β] [PseudoMetrizableSpace β] [MeasurableSpace β] [BorelSpace β]
     {f : Filtration ι m} {u : ι → Ω → β} {s : Set β} {n n' : ι} (hu : Adapted f u)
     (hs : MeasurableSet s) : IsStoppingTime f (hitting u s n n') := by
@@ -225,7 +225,7 @@ theorem hitting_isStoppingTime [ConditionallyCompleteLinearOrder ι] [WellFounde
     exact MeasurableSet.iUnion fun j =>
       MeasurableSet.iUnion fun hj => f.mono hj.2 _ ((hu j).measurable hs)
 
-theorem stoppedValue_hitting_mem [ConditionallyCompleteLinearOrder ι] [WellFoundedLT ι]
+theorem stoppedValue_hitting_mem [ConditionallyCompleteLinearOrder ι] [IsWellOrder ι (· < ·)]
     {u : ι → Ω → β} {s : Set β} {n m : ι} {ω : Ω} (h : ∃ j ∈ Set.Icc n m, u j ω ∈ s) :
     stoppedValue u (hitting u s n m) ω ∈ s := by
   simp only [stoppedValue, hitting, if_pos h]
@@ -237,7 +237,7 @@ theorem stoppedValue_hitting_mem [ConditionallyCompleteLinearOrder ι] [WellFoun
 /-- The hitting time of a discrete process with the starting time indexed by a stopping time
 is a stopping time. -/
 theorem isStoppingTime_hitting_isStoppingTime [ConditionallyCompleteLinearOrder ι]
-    [WellFoundedLT ι] [Countable ι] [TopologicalSpace ι] [OrderTopology ι]
+    [IsWellOrder ι (· < ·)] [Countable ι] [TopologicalSpace ι] [OrderTopology ι]
     [FirstCountableTopology ι] [TopologicalSpace β] [PseudoMetrizableSpace β] [MeasurableSpace β]
     [BorelSpace β] {f : Filtration ι m} {u : ι → Ω → β} {τ : Ω → ι} (hτ : IsStoppingTime f τ)
     {N : ι} (hτbdd : ∀ x, τ x ≤ N) {s : Set β} (hs : MeasurableSet s) (hf : Adapted f u) :
@@ -260,7 +260,7 @@ theorem isStoppingTime_hitting_isStoppingTime [ConditionallyCompleteLinearOrder 
 
 section CompleteLattice
 
-variable [CompleteLattice ι] {u : ι → Ω → β} {s : Set β}
+variable [CompleteLattice ι] {u : ι → Ω → β} {s : Set β} {f : Filtration ι m}
 
 theorem hitting_eq_sInf (ω : Ω) : hitting u s ⊥ ⊤ ω = sInf {i : ι | u i ω ∈ s} := by
   simp only [hitting, Set.mem_Icc, bot_le, le_top, and_self_iff, exists_true_left, Set.Icc_bot,
@@ -275,8 +275,8 @@ end CompleteLattice
 
 section ConditionallyCompleteLinearOrderBot
 
-variable [ConditionallyCompleteLinearOrderBot ι] [WellFoundedLT ι]
-variable {u : ι → Ω → β} {s : Set β}
+variable [ConditionallyCompleteLinearOrderBot ι] [IsWellOrder ι (· < ·)]
+variable {u : ι → Ω → β} {s : Set β} {f : Filtration ℕ m}
 
 theorem hitting_bot_le_iff {i n : ι} {ω : Ω} (hx : ∃ j, j ≤ n ∧ u j ω ∈ s) :
     hitting u s ⊥ n ω ≤ i ↔ ∃ j ≤ i, u j ω ∈ s := by

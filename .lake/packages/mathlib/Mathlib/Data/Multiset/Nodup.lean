@@ -60,7 +60,7 @@ theorem nodup_iff_le {s : Multiset α} : Nodup s ↔ ∀ a : α, ¬a ::ₘ a ::�
 
 theorem nodup_iff_ne_cons_cons {s : Multiset α} : s.Nodup ↔ ∀ a t, s ≠ a ::ₘ a ::ₘ t :=
   nodup_iff_le.trans
-    ⟨fun h a _ s_eq => h a (s_eq.symm ▸ cons_le_cons a (cons_le_cons a (zero_le _))), fun h a le =>
+    ⟨fun h a t s_eq => h a (s_eq.symm ▸ cons_le_cons a (cons_le_cons a (zero_le _))), fun h a le =>
       let ⟨t, s_eq⟩ := le_iff_exists_add.mp le
       h a t (by rwa [cons_add, cons_add, zero_add] at s_eq)⟩
 
@@ -95,7 +95,7 @@ theorem Pairwise.forall (H : Symmetric r) (hs : Pairwise r s) :
   hl₁.symm ▸ hl₂.forall H
 
 theorem nodup_add {s t : Multiset α} : Nodup (s + t) ↔ Nodup s ∧ Nodup t ∧ Disjoint s t :=
-  Quotient.inductionOn₂ s t fun _ _ => by simp [nodup_append]
+  Quotient.inductionOn₂ s t fun _ _ => nodup_append
 
 theorem disjoint_of_nodup_add {s t : Multiset α} (d : Nodup (s + t)) : Disjoint s t :=
   (nodup_add.1 d).2.2
@@ -167,12 +167,15 @@ protected theorem Nodup.filterMap (f : α → Option β) (H : ∀ a a' b, b ∈ 
 theorem nodup_range (n : ℕ) : Nodup (range n) :=
   List.nodup_range _
 
-lemma Nodup.inter_left [DecidableEq α] (t) : Nodup s → Nodup (s ∩ t) := nodup_of_le inter_le_left
-lemma Nodup.inter_right [DecidableEq α] (s) : Nodup t → Nodup (s ∩ t) := nodup_of_le inter_le_right
+theorem Nodup.inter_left [DecidableEq α] (t) : Nodup s → Nodup (s ∩ t) :=
+  nodup_of_le <| inter_le_left _ _
+
+theorem Nodup.inter_right [DecidableEq α] (s) : Nodup t → Nodup (s ∩ t) :=
+  nodup_of_le <| inter_le_right _ _
 
 @[simp]
 theorem nodup_union [DecidableEq α] {s t : Multiset α} : Nodup (s ∪ t) ↔ Nodup s ∧ Nodup t :=
-  ⟨fun h => ⟨nodup_of_le le_union_left h, nodup_of_le le_union_right h⟩, fun ⟨h₁, h₂⟩ =>
+  ⟨fun h => ⟨nodup_of_le (le_union_left _ _) h, nodup_of_le (le_union_right _ _) h⟩, fun ⟨h₁, h₂⟩ =>
     nodup_iff_count_le_one.2 fun a => by
       rw [count_union]
       exact max_le (nodup_iff_count_le_one.1 h₁ a) (nodup_iff_count_le_one.1 h₂ a)⟩

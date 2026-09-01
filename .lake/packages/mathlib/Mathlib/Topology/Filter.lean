@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Order.Filter.Lift
+import Mathlib.Topology.Separation
 import Mathlib.Order.Interval.Set.Monotone
-import Mathlib.Topology.Separation.Basic
 
 /-!
 # Topology on the set of filters on a type
@@ -57,7 +57,7 @@ theorem isTopologicalBasis_Iic_principal :
   { exists_subset_inter := by
       rintro _ ⟨s, rfl⟩ _ ⟨t, rfl⟩ l hl
       exact ⟨Iic (𝓟 s) ∩ Iic (𝓟 t), ⟨s ∩ t, by simp⟩, hl, Subset.rfl⟩
-    sUnion_eq := sUnion_eq_univ_iff.2 fun _ => ⟨Iic ⊤, ⟨univ, congr_arg Iic principal_univ⟩,
+    sUnion_eq := sUnion_eq_univ_iff.2 fun l => ⟨Iic ⊤, ⟨univ, congr_arg Iic principal_univ⟩,
       mem_Iic.2 le_top⟩
     eq_generateFrom := rfl }
 
@@ -183,18 +183,16 @@ theorem nhds_nhds (x : X) :
     𝓝 (𝓝 x) = ⨅ (s : Set X) (_ : IsOpen s) (_ : x ∈ s), 𝓟 (Iic (𝓟 s)) := by
   simp only [(nhds_basis_opens x).nhds.eq_biInf, iInf_and, @iInf_comm _ (_ ∈ _)]
 
-theorem isInducing_nhds : IsInducing (𝓝 : X → Filter X) :=
-  isInducing_iff_nhds.2 fun x =>
+theorem inducing_nhds : Inducing (𝓝 : X → Filter X) :=
+  inducing_iff_nhds.2 fun x =>
     (nhds_def' _).trans <| by
-      simp +contextual only [nhds_nhds, comap_iInf, comap_principal,
+      simp (config := { contextual := true }) only [nhds_nhds, comap_iInf, comap_principal,
         Iic_principal, preimage_setOf_eq, ← mem_interior_iff_mem_nhds, setOf_mem_eq,
         IsOpen.interior_eq]
 
-@[deprecated (since := "2024-10-28")] alias inducing_nhds := isInducing_nhds
-
 @[continuity]
 theorem continuous_nhds : Continuous (𝓝 : X → Filter X) :=
-  isInducing_nhds.continuous
+  inducing_nhds.continuous
 
 protected theorem Tendsto.nhds {f : α → X} {l : Filter α} {x : X} (h : Tendsto f l (𝓝 x)) :
     Tendsto (𝓝 ∘ f) l (𝓝 (𝓝 x)) :=

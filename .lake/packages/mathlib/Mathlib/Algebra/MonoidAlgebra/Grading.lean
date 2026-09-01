@@ -3,11 +3,11 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.DirectSum.Internal
-import Mathlib.Algebra.MonoidAlgebra.Basic
+import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.Algebra.MonoidAlgebra.Support
-import Mathlib.LinearAlgebra.Finsupp.SumProd
+import Mathlib.Algebra.DirectSum.Internal
 import Mathlib.RingTheory.GradedAlgebra.Basic
+import Mathlib.Algebra.MonoidAlgebra.Basic
 
 /-!
 # Internal grading of an `AddMonoidAlgebra`
@@ -48,7 +48,7 @@ abbrev gradeBy (f : M → ι) (i : ι) : Submodule R R[M] where
   zero_mem' m h := by cases h
   add_mem' {a b} ha hb m h := by
     classical exact (Finset.mem_union.mp (Finsupp.support_add h)).elim (ha m) (hb m)
-  smul_mem' _ _ h := Set.Subset.trans Finsupp.support_smul h
+  smul_mem' a m h := Set.Subset.trans Finsupp.support_smul h
 
 /-- The submodule corresponding to each grade. -/
 abbrev grade (m : M) : Submodule R R[M] :=
@@ -110,8 +110,8 @@ variable [AddMonoid M] [DecidableEq ι] [AddMonoid ι] [CommSemiring R] (f : M �
 def decomposeAux : R[M] →ₐ[R] ⨁ i : ι, gradeBy R f i :=
   AddMonoidAlgebra.lift R M _
     { toFun := fun m =>
-        DirectSum.of (fun i : ι => gradeBy R f i) (f m.toAdd)
-          ⟨Finsupp.single m.toAdd 1, single_mem_gradeBy _ _ _⟩
+        DirectSum.of (fun i : ι => gradeBy R f i) (f (Multiplicative.toAdd m))
+          ⟨Finsupp.single (Multiplicative.toAdd m) 1, single_mem_gradeBy _ _ _⟩
       map_one' :=
         DirectSum.of_eq_of_gradedMonoid_eq
           (by congr 2 <;> simp)
@@ -132,7 +132,7 @@ theorem decomposeAux_single (m : M) (r : R) :
   refine (DirectSum.of_smul R _ _ _).symm.trans ?_
   apply DirectSum.of_eq_of_gradedMonoid_eq
   refine Sigma.subtype_ext rfl ?_
-  refine (smul_single' _ _ _).trans ?_
+  refine (Finsupp.smul_single' _ _ _).trans ?_
   rw [mul_one]
   rfl
 

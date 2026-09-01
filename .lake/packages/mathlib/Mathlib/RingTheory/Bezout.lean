@@ -51,7 +51,7 @@ theorem TFAE [IsBezout R] [IsDomain R] :
     [IsNoetherianRing R, IsPrincipalIdealRing R, UniqueFactorizationMonoid R, WfDvdMonoid R] := by
   classical
     tfae_have 1 → 2
-    | _ => inferInstance
+    | H => ⟨fun I => isPrincipal_of_FG _ (IsNoetherian.noetherian _)⟩
     tfae_have 2 → 3
     | _ => inferInstance
     tfae_have 3 → 4

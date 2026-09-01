@@ -74,8 +74,8 @@ convergence in distribution, convergence in law, weak convergence of measures, p
 
 noncomputable section
 
-open Set Filter BoundedContinuousFunction Topology
-open scoped ENNReal NNReal
+open MeasureTheory Set Filter BoundedContinuousFunction
+open scoped Topology ENNReal NNReal BoundedContinuousFunction
 
 namespace MeasureTheory
 
@@ -252,19 +252,16 @@ theorem continuous_testAgainstNN_eval (f : Ω →ᵇ ℝ≥0) :
   (FiniteMeasure.continuous_testAgainstNN_eval f).comp toFiniteMeasure_continuous
 
 -- The canonical mapping from probability measures to finite measures is an embedding.
-theorem toFiniteMeasure_isEmbedding (Ω : Type*) [MeasurableSpace Ω] [TopologicalSpace Ω]
+theorem toFiniteMeasure_embedding (Ω : Type*) [MeasurableSpace Ω] [TopologicalSpace Ω]
     [OpensMeasurableSpace Ω] :
-    IsEmbedding (toFiniteMeasure : ProbabilityMeasure Ω → FiniteMeasure Ω) where
-  eq_induced := rfl
-  injective _μ _ν h := Subtype.eq <| congr_arg FiniteMeasure.toMeasure h
-
-@[deprecated (since := "2024-10-26")]
-alias toFiniteMeasure_embedding := toFiniteMeasure_isEmbedding
+    Embedding (toFiniteMeasure : ProbabilityMeasure Ω → FiniteMeasure Ω) :=
+  { induced := rfl
+    inj := fun _μ _ν h ↦ Subtype.eq <| congr_arg FiniteMeasure.toMeasure h }
 
 theorem tendsto_nhds_iff_toFiniteMeasure_tendsto_nhds {δ : Type*} (F : Filter δ)
     {μs : δ → ProbabilityMeasure Ω} {μ₀ : ProbabilityMeasure Ω} :
     Tendsto μs F (𝓝 μ₀) ↔ Tendsto (toFiniteMeasure ∘ μs) F (𝓝 μ₀.toFiniteMeasure) :=
-  (toFiniteMeasure_isEmbedding Ω).tendsto_nhds_iff
+  Embedding.tendsto_nhds_iff (toFiniteMeasure_embedding Ω)
 
 /-- A characterization of weak convergence of probability measures by the condition that the
 integrals of every continuous bounded nonnegative function converge to the integral of the function
@@ -289,14 +286,6 @@ theorem tendsto_iff_forall_integral_tendsto {γ : Type*} {F : Filter γ}
   rw [FiniteMeasure.tendsto_iff_forall_integral_tendsto]
   rfl
 
-lemma continuous_integral_boundedContinuousFunction
-    {α : Type*} [TopologicalSpace α] [MeasurableSpace α] [OpensMeasurableSpace α] (f : α →ᵇ ℝ) :
-    Continuous fun μ : ProbabilityMeasure α ↦ ∫ x, f x ∂μ := by
-  rw [continuous_iff_continuousAt]
-  intro μ
-  exact continuousAt_of_tendsto_nhds
-    (ProbabilityMeasure.tendsto_iff_forall_integral_tendsto.mp tendsto_id f)
-
 end convergence_in_distribution -- section
 
 section Hausdorff
@@ -307,7 +296,8 @@ variable (Ω)
 /-- On topological spaces where indicators of closed sets have decreasing approximating sequences of
 continuous functions (`HasOuterApproxClosed`), the topology of convergence in distribution of Borel
 probability measures is Hausdorff (`T2Space`). -/
-instance t2Space : T2Space (ProbabilityMeasure Ω) := (toFiniteMeasure_isEmbedding Ω).t2Space
+instance t2Space : T2Space (ProbabilityMeasure Ω) :=
+  Embedding.t2Space (toFiniteMeasure_embedding Ω)
 
 end Hausdorff -- section
 

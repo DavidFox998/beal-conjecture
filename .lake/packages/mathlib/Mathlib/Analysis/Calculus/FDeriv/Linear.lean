@@ -17,18 +17,26 @@ bounded linear maps.
 -/
 
 
-open Asymptotics
+open Filter Asymptotics ContinuousLinearMap Set Metric
+
+open scoped Classical
+open Topology NNReal Filter Asymptotics ENNReal
+
+noncomputable section
 
 section
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-variable {f : E → F}
+variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+variable {G' : Type*} [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
+variable {f f₀ f₁ g : E → F}
+variable {f' f₀' f₁' g' : E →L[𝕜] F}
 variable (e : E →L[𝕜] F)
 variable {x : E}
-variable {s : Set E}
-variable {L : Filter E}
+variable {s t : Set E}
+variable {L L₁ L₂ : Filter E}
 
 section ContinuousLinearMap
 
@@ -42,7 +50,7 @@ predicate `IsBoundedLinearMap`). We give statements for both versions. -/
 
 @[fun_prop]
 protected theorem ContinuousLinearMap.hasStrictFDerivAt {x : E} : HasStrictFDerivAt e e x :=
-  .of_isLittleO <| (isLittleO_zero _ _).congr_left fun x => by simp only [e.map_sub, sub_self]
+  (isLittleO_zero _ _).congr_left fun x => by simp only [e.map_sub, sub_self]
 
 protected theorem ContinuousLinearMap.hasFDerivAtFilter : HasFDerivAtFilter e e x L :=
   .of_isLittleO <| (isLittleO_zero _ _).congr_left fun x => by simp only [e.map_sub, sub_self]

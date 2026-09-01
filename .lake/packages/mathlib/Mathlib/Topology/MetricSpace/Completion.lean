@@ -143,7 +143,7 @@ protected theorem uniformity_dist' :
   · simp [Completion.mem_uniformity_dist, subset_def]
   · rintro ⟨r, hr⟩ ⟨p, hp⟩
     use ⟨min r p, lt_min hr hp⟩
-    simp +contextual [lt_min_iff]
+    simp (config := { contextual := true }) [lt_min_iff]
 
 protected theorem uniformity_dist : 𝓤 (Completion α) = ⨅ ε > 0, 𝓟 { p | dist p.1 p.2 < ε } := by
   simpa [iInf_subtype] using @Completion.uniformity_dist' α _

@@ -3,9 +3,8 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Data.Finset.Lattice.Fold
+import Mathlib.Data.Finset.Lattice
 import Mathlib.Data.Set.Sigma
-import Mathlib.Order.CompleteLattice.Finset
 
 /-!
 # Finite sets in a sigma type

@@ -56,7 +56,7 @@ theorem lhopital_zero_right_on_Ioo (hab : a < b) (hff' : ∀ x ∈ Ioo a b, HasD
   have hg : ∀ x ∈ Ioo a b, g x ≠ 0 := by
     intro x hx h
     have : Tendsto g (𝓝[<] x) (𝓝 0) := by
-      rw [← h, ← nhdsWithin_Ioo_eq_nhdsLT hx.1]
+      rw [← h, ← nhdsWithin_Ioo_eq_nhdsWithin_Iio hx.1]
       exact ((hgg' x hx).continuousAt.continuousWithinAt.mono <| sub x hx).tendsto
     obtain ⟨y, hyx, hy⟩ : ∃ c ∈ Ioo a x, g' c = 0 :=
       exists_hasDerivAt_eq_zero' hx.1 hga this fun y hy => hgg' y <| sub x hx hy
@@ -76,7 +76,7 @@ theorem lhopital_zero_right_on_Ioo (hab : a < b) (hff' : ∀ x ∈ Ioo a b, HasD
     simp only [h₂]
     rw [mul_comm]
   have cmp : ∀ x ∈ Ioo a b, a < c x ∧ c x < x := fun x hx => (hc x hx).1
-  rw [← nhdsWithin_Ioo_eq_nhdsGT hab]
+  rw [← nhdsWithin_Ioo_eq_nhdsWithin_Ioi hab]
   apply tendsto_nhdsWithin_congr this
   apply hdiv.comp
   refine tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _
@@ -95,9 +95,9 @@ theorem lhopital_zero_right_on_Ico (hab : a < b) (hff' : ∀ x ∈ Ioo a b, HasD
     (hdiv : Tendsto (fun x => f' x / g' x) (𝓝[>] a) l) :
     Tendsto (fun x => f x / g x) (𝓝[>] a) l := by
   refine lhopital_zero_right_on_Ioo hab hff' hgg' hg' ?_ ?_ hdiv
-  · rw [← hfa, ← nhdsWithin_Ioo_eq_nhdsGT hab]
+  · rw [← hfa, ← nhdsWithin_Ioo_eq_nhdsWithin_Ioi hab]
     exact ((hcf a <| left_mem_Ico.mpr hab).mono Ioo_subset_Ico_self).tendsto
-  · rw [← hga, ← nhdsWithin_Ioo_eq_nhdsGT hab]
+  · rw [← hga, ← nhdsWithin_Ioo_eq_nhdsWithin_Ioi hab]
     exact ((hcg a <| left_mem_Ico.mpr hab).mono Ioo_subset_Ico_self).tendsto
 
 theorem lhopital_zero_left_on_Ioo (hab : a < b) (hff' : ∀ x ∈ Ioo a b, HasDerivAt f (f' x) x)
@@ -110,17 +110,17 @@ theorem lhopital_zero_left_on_Ioo (hab : a < b) (hff' : ∀ x ∈ Ioo a b, HasDe
     comp x (hff' (-x) hx) (hasDerivAt_neg x)
   have hdng : ∀ x ∈ -Ioo a b, HasDerivAt (g ∘ Neg.neg) (g' (-x) * -1) x := fun x hx =>
     comp x (hgg' (-x) hx) (hasDerivAt_neg x)
-  rw [neg_Ioo] at hdnf
-  rw [neg_Ioo] at hdng
+  rw [preimage_neg_Ioo] at hdnf
+  rw [preimage_neg_Ioo] at hdng
   have := lhopital_zero_right_on_Ioo (neg_lt_neg hab) hdnf hdng (by
     intro x hx h
-    apply hg' _ (by rw [← neg_Ioo] at hx; exact hx)
+    apply hg' _ (by rw [← preimage_neg_Ioo] at hx; exact hx)
     rwa [mul_comm, ← neg_eq_neg_one_mul, neg_eq_zero] at h)
-    (hfb.comp tendsto_neg_nhdsGT_neg) (hgb.comp tendsto_neg_nhdsGT_neg)
+    (hfb.comp tendsto_neg_nhdsWithin_Ioi_neg) (hgb.comp tendsto_neg_nhdsWithin_Ioi_neg)
     (by
       simp only [neg_div_neg_eq, mul_one, mul_neg]
-      exact (tendsto_congr fun x => rfl).mp (hdiv.comp tendsto_neg_nhdsGT_neg))
-  have := this.comp tendsto_neg_nhdsLT
+      exact (tendsto_congr fun x => rfl).mp (hdiv.comp tendsto_neg_nhdsWithin_Ioi_neg))
+  have := this.comp tendsto_neg_nhdsWithin_Iio
   unfold Function.comp at this
   simpa only [neg_neg]
 
@@ -130,9 +130,9 @@ theorem lhopital_zero_left_on_Ioc (hab : a < b) (hff' : ∀ x ∈ Ioo a b, HasDe
     (hdiv : Tendsto (fun x => f' x / g' x) (𝓝[<] b) l) :
     Tendsto (fun x => f x / g x) (𝓝[<] b) l := by
   refine lhopital_zero_left_on_Ioo hab hff' hgg' hg' ?_ ?_ hdiv
-  · rw [← hfb, ← nhdsWithin_Ioo_eq_nhdsLT hab]
+  · rw [← hfb, ← nhdsWithin_Ioo_eq_nhdsWithin_Iio hab]
     exact ((hcf b <| right_mem_Ioc.mpr hab).mono Ioo_subset_Ioc_self).tendsto
-  · rw [← hgb, ← nhdsWithin_Ioo_eq_nhdsLT hab]
+  · rw [← hgb, ← nhdsWithin_Ioo_eq_nhdsWithin_Iio hab]
     exact ((hcg b <| right_mem_Ioc.mpr hab).mono Ioo_subset_Ioc_self).tendsto
 
 theorem lhopital_zero_atTop_on_Ioi (hff' : ∀ x ∈ Ioi a, HasDerivAt f (f' x) x)
@@ -143,7 +143,7 @@ theorem lhopital_zero_atTop_on_Ioi (hff' : ∀ x ∈ Ioi a, HasDerivAt f (f' x) 
     ⟨lt_of_le_of_lt (le_max_left a 0) (lt_one_add _),
       lt_of_le_of_lt (le_max_right a 0) (lt_one_add _)⟩⟩
   have fact1 : ∀ x : ℝ, x ∈ Ioo 0 a'⁻¹ → x ≠ 0 := fun _ hx => (ne_of_lt hx.1).symm
-  have fact2 (x) (hx : x ∈ Ioo 0 a'⁻¹) : a < x⁻¹ := lt_trans haa' ((lt_inv_comm₀ ha' hx.1).mpr hx.2)
+  have fact2 : ∀ x ∈ Ioo 0 a'⁻¹, a < x⁻¹ := fun _ hx => lt_trans haa' ((lt_inv ha' hx.1).mpr hx.2)
   have hdnf : ∀ x ∈ Ioo 0 a'⁻¹, HasDerivAt (f ∘ Inv.inv) (f' x⁻¹ * -(x ^ 2)⁻¹) x := fun x hx =>
     comp x (hff' x⁻¹ <| fact2 x hx) (hasDerivAt_inv <| fact1 x hx)
   have hdng : ∀ x ∈ Ioo 0 a'⁻¹, HasDerivAt (g ∘ Inv.inv) (g' x⁻¹ * -(x ^ 2)⁻¹) x := fun x hx =>
@@ -153,17 +153,17 @@ theorem lhopital_zero_atTop_on_Ioi (hff' : ∀ x ∈ Ioi a, HasDerivAt f (f' x) 
       intro x hx
       refine mul_ne_zero ?_ (neg_ne_zero.mpr <| inv_ne_zero <| pow_ne_zero _ <| fact1 x hx)
       exact hg' _ (fact2 x hx))
-    (hftop.comp tendsto_inv_nhdsGT_zero) (hgtop.comp tendsto_inv_nhdsGT_zero)
+    (hftop.comp tendsto_inv_zero_atTop) (hgtop.comp tendsto_inv_zero_atTop)
     (by
-      refine (tendsto_congr' ?_).mp (hdiv.comp tendsto_inv_nhdsGT_zero)
+      refine (tendsto_congr' ?_).mp (hdiv.comp tendsto_inv_zero_atTop)
       rw [eventuallyEq_iff_exists_mem]
       use Ioi 0, self_mem_nhdsWithin
       intro x hx
       unfold Function.comp
       simp only
-      rw [mul_div_mul_right]
+      erw [mul_div_mul_right]
       exact neg_ne_zero.mpr (inv_ne_zero <| pow_ne_zero _ <| ne_of_gt hx))
-  have := this.comp tendsto_inv_atTop_nhdsGT_zero
+  have := this.comp tendsto_inv_atTop_zero'
   unfold Function.comp at this
   simpa only [inv_inv]
 
@@ -176,12 +176,12 @@ theorem lhopital_zero_atBot_on_Iio (hff' : ∀ x ∈ Iio a, HasDerivAt f (f' x) 
     comp x (hff' (-x) hx) (hasDerivAt_neg x)
   have hdng : ∀ x ∈ -Iio a, HasDerivAt (g ∘ Neg.neg) (g' (-x) * -1) x := fun x hx =>
     comp x (hgg' (-x) hx) (hasDerivAt_neg x)
-  rw [neg_Iio] at hdnf
-  rw [neg_Iio] at hdng
+  rw [preimage_neg_Iio] at hdnf
+  rw [preimage_neg_Iio] at hdng
   have := lhopital_zero_atTop_on_Ioi hdnf hdng
     (by
       intro x hx h
-      apply hg' _ (by rw [← neg_Iio] at hx; exact hx)
+      apply hg' _ (by rw [← preimage_neg_Iio] at hx; exact hx)
       rwa [mul_comm, ← neg_eq_neg_one_mul, neg_eq_zero] at h)
     (hfbot.comp tendsto_neg_atTop_atBot) (hgbot.comp tendsto_neg_atTop_atBot)
     (by
@@ -213,9 +213,9 @@ theorem lhopital_zero_right_on_Ico (hab : a < b) (hdf : DifferentiableOn ℝ f (
     (hdiv : Tendsto (fun x => (deriv f) x / (deriv g) x) (𝓝[>] a) l) :
     Tendsto (fun x => f x / g x) (𝓝[>] a) l := by
   refine lhopital_zero_right_on_Ioo hab hdf hg' ?_ ?_ hdiv
-  · rw [← hfa, ← nhdsWithin_Ioo_eq_nhdsGT hab]
+  · rw [← hfa, ← nhdsWithin_Ioo_eq_nhdsWithin_Ioi hab]
     exact ((hcf a <| left_mem_Ico.mpr hab).mono Ioo_subset_Ico_self).tendsto
-  · rw [← hga, ← nhdsWithin_Ioo_eq_nhdsGT hab]
+  · rw [← hga, ← nhdsWithin_Ioo_eq_nhdsWithin_Ioi hab]
     exact ((hcg a <| left_mem_Ico.mpr hab).mono Ioo_subset_Ico_self).tendsto
 
 theorem lhopital_zero_left_on_Ioo (hab : a < b) (hdf : DifferentiableOn ℝ f (Ioo a b))
@@ -276,7 +276,7 @@ theorem lhopital_zero_nhds_right (hff' : ∀ᶠ x in 𝓝[>] a, HasDerivAt f (f'
   rcases hg' with ⟨s₃, hs₃, hg'⟩
   let s := s₁ ∩ s₂ ∩ s₃
   have hs : s ∈ 𝓝[>] a := inter_mem (inter_mem hs₁ hs₂) hs₃
-  rw [mem_nhdsGT_iff_exists_Ioo_subset] at hs
+  rw [mem_nhdsWithin_Ioi_iff_exists_Ioo_subset] at hs
   rcases hs with ⟨u, hau, hu⟩
   refine lhopital_zero_right_on_Ioo hau ?_ ?_ ?_ hfa hga hdiv <;>
     intro x hx <;> apply_assumption <;>
@@ -294,7 +294,7 @@ theorem lhopital_zero_nhds_left (hff' : ∀ᶠ x in 𝓝[<] a, HasDerivAt f (f' 
   rcases hg' with ⟨s₃, hs₃, hg'⟩
   let s := s₁ ∩ s₂ ∩ s₃
   have hs : s ∈ 𝓝[<] a := inter_mem (inter_mem hs₁ hs₂) hs₃
-  rw [mem_nhdsLT_iff_exists_Ioo_subset] at hs
+  rw [mem_nhdsWithin_Iio_iff_exists_Ioo_subset] at hs
   rcases hs with ⟨l, hal, hl⟩
   refine lhopital_zero_left_on_Ioo hal ?_ ?_ ?_ hfa hga hdiv <;> intro x hx <;> apply_assumption <;>
     first | exact (hl hx).1.1| exact (hl hx).1.2| exact (hl hx).2

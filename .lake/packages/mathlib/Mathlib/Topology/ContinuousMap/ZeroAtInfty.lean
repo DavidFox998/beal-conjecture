@@ -3,7 +3,7 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Topology.ContinuousMap.Bounded.Star
+import Mathlib.Topology.ContinuousMap.Bounded
 import Mathlib.Topology.ContinuousMap.CocompactMap
 
 /-!
@@ -95,13 +95,6 @@ theorem coe_toContinuousMap (f : C₀(α, β)) : (f.toContinuousMap : α → β)
 @[ext]
 theorem ext {f g : C₀(α, β)} (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext _ _ h
-
-@[simp]
-lemma coe_mk {f : α → β} (hf : Continuous f) (hf' : Tendsto f (cocompact α) (𝓝 0)) :
-    { toFun := f,
-      continuous_toFun := hf,
-      zero_at_infty' := hf' : ZeroAtInftyContinuousMap α β} = f :=
-  rfl
 
 /-- Copy of a `ZeroAtInftyContinuousMap` with a new `toFun` equal to the old one. Useful
 to fix definitional equalities. -/
@@ -388,7 +381,7 @@ theorem toBCF_injective : Function.Injective (toBCF : C₀(α, β) → α →ᵇ
 
 end
 
-variable {f g : C₀(α, β)}
+variable {C : ℝ} {f g : C₀(α, β)}
 
 /-- The type of continuous functions vanishing at infinity, with the uniform distance induced by the
 inclusion `ZeroAtInftyContinuousMap.toBCF`, is a pseudo-metric space. -/
@@ -435,7 +428,7 @@ theorem isClosed_range_toBCF : IsClosed (range (toBCF : C₀(α, β) → α →�
 /-- Continuous functions vanishing at infinity taking values in a complete space form a
 complete space. -/
 instance instCompleteSpace [CompleteSpace β] : CompleteSpace C₀(α, β) :=
-  (completeSpace_iff_isComplete_range isometry_toBCF.isUniformInducing).mpr
+  (completeSpace_iff_isComplete_range isometry_toBCF.uniformInducing).mpr
     isClosed_range_toBCF.isComplete
 
 end Metric

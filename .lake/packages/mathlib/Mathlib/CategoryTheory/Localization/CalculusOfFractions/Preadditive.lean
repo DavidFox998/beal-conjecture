@@ -6,7 +6,7 @@ Authors: Joël Riou
 import Mathlib.CategoryTheory.Localization.CalculusOfFractions.Fractions
 import Mathlib.CategoryTheory.Localization.HasLocalization
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-import Mathlib.Algebra.Equiv.TransferInstance
+import Mathlib.Logic.Equiv.TransferInstance
 
 /-!
 # The preadditive category structure on the localized category

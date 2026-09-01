@@ -6,7 +6,6 @@ Authors: Aaron Anderson, Jesse Michael Han, Floris van Doorn
 import Mathlib.Data.Set.Prod
 import Mathlib.Logic.Equiv.Fin
 import Mathlib.ModelTheory.LanguageMap
-import Mathlib.Algebra.Order.Ring.Nat
 
 /-!
 # Basics on First-Order Syntax
@@ -62,7 +61,8 @@ namespace FirstOrder
 namespace Language
 
 variable (L : Language.{u, v}) {L' : Language}
-variable {M : Type w} {α : Type u'} {β : Type v'} {γ : Type*}
+variable {M : Type w} {N P : Type*} [L.Structure M] [L.Structure N] [L.Structure P]
+variable {α : Type u'} {β : Type v'} {γ : Type*}
 
 open FirstOrder
 
@@ -86,7 +86,7 @@ instance instDecidableEq [DecidableEq α] [∀ n, DecidableEq (L.Functions n)] :
         letI : DecidableEq (L.Term α) := instDecidableEq
         decidable_of_iff (f = h ▸ g ∧ ∀ i : Fin m, xs i = ys (Fin.cast h i)) <| by
           subst h
-          simp [funext_iff]
+          simp [Function.funext_iff]
       else
         .isFalse <| by simp [h]
   | .var _, .func _ _ | .func _ _, .var _ => .isFalse <| by simp
@@ -366,10 +366,10 @@ protected def ex (φ : L.BoundedFormula α (n + 1)) : L.BoundedFormula α n :=
 instance : Top (L.BoundedFormula α n) :=
   ⟨BoundedFormula.not ⊥⟩
 
-instance : Min (L.BoundedFormula α n) :=
+instance : Inf (L.BoundedFormula α n) :=
   ⟨fun f g => (f.imp g.not).not⟩
 
-instance : Max (L.BoundedFormula α n) :=
+instance : Sup (L.BoundedFormula α n) :=
   ⟨fun f g => f.not.imp g⟩
 
 /-- The biimplication between two bounded formulas. -/
@@ -472,8 +472,8 @@ def mapTermRel {g : ℕ → ℕ} (ft : ∀ n, L.Term (α ⊕ (Fin n)) → L'.Ter
 
 /-- Raises all of the `Fin`-indexed variables of a formula greater than or equal to `m` by `n'`. -/
 def liftAt : ∀ {n : ℕ} (n' _m : ℕ), L.BoundedFormula α n → L.BoundedFormula α (n + n') :=
-  fun {_} n' m φ =>
-  φ.mapTermRel (fun _ t => t.liftAt n' m) (fun _ => id) fun _ =>
+  fun {n} n' m φ =>
+  φ.mapTermRel (fun k t => t.liftAt n' m) (fun _ => id) fun _ =>
     castLE (by rw [add_assoc, add_comm 1, add_assoc])
 
 @[simp]
@@ -576,8 +576,8 @@ theorem relabel_sum_inl (φ : L.BoundedFormula α n) :
   | falsum => rfl
   | equal => simp [Fin.natAdd_zero, castLE_of_eq, mapTermRel]
   | rel => simp [Fin.natAdd_zero, castLE_of_eq, mapTermRel]; rfl
-  | imp _ _ ih1 ih2 => simp_all [mapTermRel]
-  | all _ ih3 => simp_all [mapTermRel]
+  | imp _ _ ih1 ih2 => simp [mapTermRel, ih1, ih2]
+  | all _ ih3 => simp [mapTermRel, ih3, castLE]
 
 /-- Substitutes the variables in a given formula with terms. -/
 def subst {n : ℕ} (φ : L.BoundedFormula α n) (f : α → L.Term β) : L.BoundedFormula β n :=
@@ -601,14 +601,12 @@ def toFormula : ∀ {n : ℕ}, L.BoundedFormula α n → L.Formula (α ⊕ (Fin 
         (Sum.elim (Sum.inl ∘ Sum.inl) (Sum.map Sum.inr id ∘ finSumFinEquiv.symm))).all
 
 /-- take the disjunction of a finite set of formulas -/
-noncomputable def iSup [Finite β] (f : β → L.BoundedFormula α n) : L.BoundedFormula α n :=
-  let _ := Fintype.ofFinite β
-  ((Finset.univ : Finset β).toList.map f).foldr (· ⊔ ·) ⊥
+noncomputable def iSup (s : Finset β) (f : β → L.BoundedFormula α n) : L.BoundedFormula α n :=
+  (s.toList.map f).foldr (· ⊔ ·) ⊥
 
 /-- take the conjunction of a finite set of formulas -/
-noncomputable def iInf [Finite β] (f : β → L.BoundedFormula α n) : L.BoundedFormula α n :=
-  let _ := Fintype.ofFinite β
-  ((Finset.univ : Finset β).toList.map f).foldr (· ⊓ ·) ⊤
+noncomputable def iInf (s : Finset β) (f : β → L.BoundedFormula α n) : L.BoundedFormula α n :=
+  (s.toList.map f).foldr (· ⊓ ·) ⊤
 
 end BoundedFormula
 
@@ -644,7 +642,7 @@ theorem comp_onBoundedFormula {L'' : Language} (φ : L' →ᴸ L'') (ψ : L →�
   ext f
   induction f with
   | falsum => rfl
-  | equal => simp [Term.bdEqual]
+  | equal => simp only [onBoundedFormula, comp_onTerm, Function.comp_apply]
   | rel => simp only [onBoundedFormula, comp_onRelation, comp_onTerm, Function.comp_apply]; rfl
   | imp _ _ ih1 ih2 =>
     simp only [onBoundedFormula, Function.comp_apply, ih1, ih2, eq_self_iff_true, and_self_iff]
@@ -709,7 +707,7 @@ def onSentence (φ : L ≃ᴸ L') : L.Sentence ≃ L'.Sentence :=
 
 end LEquiv
 
-@[inherit_doc] scoped[FirstOrder] infixl:88 " =' " => FirstOrder.Language.Term.bdEqual
+scoped[FirstOrder] infixl:88 " =' " => FirstOrder.Language.Term.bdEqual
 -- input \~- or \simeq
 
 scoped[FirstOrder] infixr:62 " ⟹ " => FirstOrder.Language.BoundedFormula.imp
@@ -717,13 +715,13 @@ scoped[FirstOrder] infixr:62 " ⟹ " => FirstOrder.Language.BoundedFormula.imp
 
 scoped[FirstOrder] prefix:110 "∀'" => FirstOrder.Language.BoundedFormula.all
 
-@[inherit_doc] scoped[FirstOrder] prefix:arg "∼" => FirstOrder.Language.BoundedFormula.not
+scoped[FirstOrder] prefix:arg "∼" => FirstOrder.Language.BoundedFormula.not
 -- input \~, the ASCII character ~ has too low precedence
 
-@[inherit_doc] scoped[FirstOrder] infixl:61 " ⇔ " => FirstOrder.Language.BoundedFormula.iff
+scoped[FirstOrder] infixl:61 " ⇔ " => FirstOrder.Language.BoundedFormula.iff
 -- input \<=>
 
-@[inherit_doc] scoped[FirstOrder] prefix:110 "∃'" => FirstOrder.Language.BoundedFormula.ex
+scoped[FirstOrder] prefix:110 "∃'" => FirstOrder.Language.BoundedFormula.ex
 -- input \ex
 
 namespace Formula
@@ -744,20 +742,21 @@ protected nonrec abbrev not (φ : L.Formula α) : L.Formula α :=
 protected abbrev imp : L.Formula α → L.Formula α → L.Formula α :=
   BoundedFormula.imp
 
-
-variable (β) in
-/-- `iAlls f φ` transforms a `L.Formula (α ⊕ β)` into a `L.Formula β` by universally
+/-- Given a map `f : α → β ⊕ γ`, `iAlls f φ` transforms a `L.Formula α`
+into a `L.Formula β` by renaming variables with the map `f` and then universally
 quantifying over all variables `Sum.inr _`. -/
-noncomputable def iAlls [Finite β] (φ : L.Formula (α ⊕ β)) : L.Formula α :=
-  let e := Classical.choice (Classical.choose_spec (Finite.exists_equiv_fin β))
-  (BoundedFormula.relabel (fun a => Sum.map id e a) φ).alls
+noncomputable def iAlls [Finite γ] (f : α → β ⊕ γ)
+    (φ : L.Formula α) : L.Formula β :=
+  let e := Classical.choice (Classical.choose_spec (Finite.exists_equiv_fin γ))
+  (BoundedFormula.relabel (fun a => Sum.map id e (f a)) φ).alls
 
-variable (β) in
-/-- `iExs f φ` transforms a `L.Formula (α ⊕ β)` into a `L.Formula β` by existentially
+/-- Given a map `f : α → β ⊕ γ`, `iExs f φ` transforms a `L.Formula α`
+into a `L.Formula β` by renaming variables with the map `f` and then universally
 quantifying over all variables `Sum.inr _`. -/
-noncomputable def iExs [Finite β] (φ : L.Formula (α ⊕ β)) : L.Formula α :=
-  let e := Classical.choice (Classical.choose_spec (Finite.exists_equiv_fin β))
-  (BoundedFormula.relabel (fun a => Sum.map id e a) φ).exs
+noncomputable def iExs [Finite γ] (f : α → β ⊕ γ)
+    (φ : L.Formula α) : L.Formula β :=
+  let e := Classical.choice (Classical.choose_spec (Finite.exists_equiv_fin γ))
+  (BoundedFormula.relabel (fun a => Sum.map id e (f a)) φ).exs
 
 /-- The biimplication between formulas, as a formula. -/
 protected nonrec abbrev iff (φ ψ : L.Formula α) : L.Formula α :=

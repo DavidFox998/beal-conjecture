@@ -56,7 +56,7 @@ commute with the maps in the diagram (the green arrows), which is just a lengthy
 
 noncomputable section
 
-open TopologicalSpace CategoryTheory Opposite Topology
+open TopologicalSpace CategoryTheory Opposite
 
 open CategoryTheory.Limits AlgebraicGeometry.PresheafedSpace
 
@@ -90,9 +90,9 @@ such that
 We can then glue the spaces `U i` together by identifying `V i j` with `V j i`, such
 that the `U i`'s are open subspaces of the glued space.
 -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
+-- Porting note(#5171): this linter isn't ported yet.
 -- @[nolint has_nonempty_instance]
-structure GlueData extends CategoryTheory.GlueData (PresheafedSpace.{u, v, v} C) where
+structure GlueData extends GlueData (PresheafedSpace.{u, v, v} C) where
   f_open : ∀ i j, IsOpenImmersion (f i j)
 
 attribute [instance] GlueData.f_open
@@ -121,15 +121,14 @@ abbrev toTopGlueData : TopCat.GlueData :=
   { f_open := fun i j => (D.f_open i j).base_open
     toGlueData := 𝖣.mapGlueData (forget C) }
 
-theorem ι_isOpenEmbedding [HasLimits C] (i : D.J) : IsOpenEmbedding (𝖣.ι i).base := by
+theorem ι_openEmbedding [HasLimits C] (i : D.J) : OpenEmbedding (𝖣.ι i).base := by
   rw [← show _ = (𝖣.ι i).base from 𝖣.ι_gluedIso_inv (PresheafedSpace.forget _) _]
   -- Porting note: added this erewrite
   erw [coe_comp]
-  exact (TopCat.homeoOfIso (𝖣.gluedIso (PresheafedSpace.forget _)).symm).isOpenEmbedding.comp
-      (D.toTopGlueData.ι_isOpenEmbedding i)
-
-@[deprecated (since := "2024-10-18")]
-alias ι_openEmbedding := ι_isOpenEmbedding
+  refine
+    OpenEmbedding.comp
+      (TopCat.homeoOfIso (𝖣.gluedIso (PresheafedSpace.forget _)).symm).openEmbedding
+      (D.toTopGlueData.ι_openEmbedding i)
 
 theorem pullback_base (i j k : D.J) (S : Set (D.V (i, j)).carrier) :
     (π₂ i, j, k) '' ((π₁ i, j, k) ⁻¹' S) = D.f i k ⁻¹' (D.f i j '' S) := by
@@ -141,15 +140,16 @@ theorem pullback_base (i j k : D.J) (S : Set (D.V (i, j)).carrier) :
   rw [Set.image_comp]
   -- Porting note: `rw` to `erw` on `coe_comp`
   erw [coe_comp]
-  rw [Set.preimage_comp, Set.image_preimage_eq, TopCat.pullback_snd_image_fst_preimage]
+  erw [Set.preimage_comp, Set.image_preimage_eq, TopCat.pullback_snd_image_fst_preimage]
+   -- now `erw` after #13170
   · rfl
-  rw [← TopCat.epi_iff_surjective]
+  erw [← TopCat.epi_iff_surjective] -- now `erw` after #13170
   infer_instance
 
 /-- The red and the blue arrows in ![this diagram](https://i.imgur.com/0GiBUh6.png) commute. -/
 @[simp, reassoc]
 theorem f_invApp_f_app (i j k : D.J) (U : Opens (D.V (i, j)).carrier) :
-    (D.f_open i j).invApp _ U ≫ (D.f i k).c.app _ =
+    (D.f_open i j).invApp U ≫ (D.f i k).c.app _ =
       (π₁ i, j, k).c.app (op U) ≫
         (π₂⁻¹ i, j, k) (unop _) ≫
           (D.V _).presheaf.map
@@ -161,7 +161,7 @@ theorem f_invApp_f_app (i j k : D.J) (U : Opens (D.V (i, j)).carrier) :
                 apply pullback_base)) := by
   have := PresheafedSpace.congr_app (@pullback.condition _ _ _ _ _ (D.f i j) (D.f i k) _)
   dsimp only [comp_c_app] at this
-  rw [← cancel_epi (inv ((D.f_open i j).invApp _ U)), IsIso.inv_hom_id_assoc,
+  rw [← cancel_epi (inv ((D.f_open i j).invApp U)), IsIso.inv_hom_id_assoc,
     IsOpenImmersion.inv_invApp]
   simp_rw [Category.assoc]
   erw [(π₁ i, j, k).c.naturality_assoc, reassoc_of% this, ← Functor.map_comp_assoc,
@@ -191,18 +191,20 @@ theorem snd_invApp_t_app' (i j k : D.J) (U : Opens (pullback (D.f i j) (D.f i k)
     replace this := (congr_arg ((PresheafedSpace.Hom.base ·)) this).symm
     replace this := congr_arg (ContinuousMap.toFun ·) this
     dsimp at this
-    rw [coe_comp, coe_comp] at this
-    rw [this, Set.image_comp, Set.image_comp, Set.preimage_image_eq]
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [coe_comp, coe_comp] at this
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [this, Set.image_comp, Set.image_comp, Set.preimage_image_eq]
     swap
     · refine Function.HasLeftInverse.injective ⟨(D.t i k).base, fun x => ?_⟩
-      rw [← comp_apply, ← comp_base, D.t_inv, id_base, id_apply]
+      erw [← comp_apply, ← comp_base, D.t_inv, id_base, id_apply] -- now `erw` after #13170
     refine congr_arg (_ '' ·) ?_
     refine congr_fun ?_ _
     refine Set.image_eq_preimage_of_inverse ?_ ?_
     · intro x
-      rw [← comp_apply, ← comp_base, IsIso.inv_hom_id, id_base, id_apply]
+      erw [← comp_apply, ← comp_base, IsIso.inv_hom_id, id_base, id_apply] -- now `erw` after #13170
     · intro x
-      rw [← comp_apply, ← comp_base, IsIso.hom_inv_id, id_base, id_apply]
+      erw [← comp_apply, ← comp_base, IsIso.hom_inv_id, id_base, id_apply] -- now `erw` after #13170
   · rw [← IsIso.eq_inv_comp, IsOpenImmersion.inv_invApp, Category.assoc,
       (D.t' k i j).c.naturality_assoc]
     simp_rw [← Category.assoc]
@@ -238,14 +240,14 @@ theorem snd_invApp_t_app (i j k : D.J) (U : Opens (pullback (D.f i j) (D.f i k))
 variable [HasLimits C]
 
 theorem ι_image_preimage_eq (i j : D.J) (U : Opens (D.U i).carrier) :
-    (Opens.map (𝖣.ι j).base).obj ((D.ι_isOpenEmbedding i).isOpenMap.functor.obj U) =
+    (Opens.map (𝖣.ι j).base).obj ((D.ι_openEmbedding i).isOpenMap.functor.obj U) =
       (opensFunctor (D.f j i)).obj
         ((Opens.map (𝖣.t j i).base).obj ((Opens.map (𝖣.f i j).base).obj U)) := by
   ext1
-  dsimp only [Opens.map_coe, IsOpenMap.coe_functor_obj]
+  dsimp only [Opens.map_coe, IsOpenMap.functor_obj_coe]
   rw [← show _ = (𝖣.ι i).base from 𝖣.ι_gluedIso_inv (PresheafedSpace.forget _) i, ←
     show _ = (𝖣.ι j).base from 𝖣.ι_gluedIso_inv (PresheafedSpace.forget _) j]
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11224): change `rw` to `erw` on `coe_comp`
+  -- Porting note (#11224): change `rw` to `erw` on `coe_comp`
   erw [coe_comp, coe_comp, coe_comp]
   rw [Set.image_comp, Set.preimage_comp]
   erw [Set.preimage_image_eq]
@@ -259,17 +261,17 @@ theorem ι_image_preimage_eq (i j : D.J) (U : Opens (D.U i).carrier) :
     change (D.t i j ≫ D.t j i).base '' _ = _
     rw [𝖣.t_inv]
     simp
-  · rw [← coe_comp, ← TopCat.mono_iff_injective]
+  · erw [← coe_comp, ← TopCat.mono_iff_injective] -- now `erw` after #13170
     infer_instance
 
 /-- (Implementation). The map `Γ(𝒪_{U_i}, U) ⟶ Γ(𝒪_{U_j}, 𝖣.ι j ⁻¹' (𝖣.ι i '' U))` -/
 def opensImagePreimageMap (i j : D.J) (U : Opens (D.U i).carrier) :
     (D.U i).presheaf.obj (op U) ⟶
     (D.U j).presheaf.obj (op <|
-      (Opens.map (𝖣.ι j).base).obj ((D.ι_isOpenEmbedding i).isOpenMap.functor.obj U)) :=
+      (Opens.map (𝖣.ι j).base).obj ((D.ι_openEmbedding i).isOpenMap.functor.obj U)) :=
   (D.f i j).c.app (op U) ≫
     (D.t j i).c.app _ ≫
-      (D.f_open j i).invApp _ (unop _) ≫
+      (D.f_open j i).invApp (unop _) ≫
         (𝖣.U j).presheaf.map (eqToHom (D.ι_image_preimage_eq i j U)).op
 
 theorem opensImagePreimageMap_app' (i j k : D.J) (U : Opens (D.U i).carrier) :
@@ -312,7 +314,7 @@ the image `ι '' U` in the glued space is the limit of this diagram. -/
 abbrev diagramOverOpen {i : D.J} (U : Opens (D.U i).carrier) :
     -- Porting note : ↓ these need to be explicit
     (WalkingMultispan D.diagram.fstFrom D.diagram.sndFrom)ᵒᵖ ⥤ C :=
-  componentwiseDiagram 𝖣.diagram.multispan ((D.ι_isOpenEmbedding i).isOpenMap.functor.obj U)
+  componentwiseDiagram 𝖣.diagram.multispan ((D.ι_openEmbedding i).isOpenMap.functor.obj U)
 
 /-- (Implementation)
 The projection from the limit of `diagram_over_open` to a component of `D.U j`. -/
@@ -328,13 +330,13 @@ def ιInvAppπApp {i : D.J} (U : Opens (D.U i).carrier) (j) :
       D.opensImagePreimageMap i j U ≫ (D.f j k).c.app _ ≫ (D.V (j, k)).presheaf.map (eqToHom ?_)
     rw [Functor.op_obj]
     congr 1; ext1
-    dsimp only [Functor.op_obj, Opens.map_coe, unop_op, IsOpenMap.coe_functor_obj]
+    dsimp only [Functor.op_obj, Opens.map_coe, unop_op, IsOpenMap.functor_obj_coe]
     rw [Set.preimage_preimage]
     change (D.f j k ≫ 𝖣.ι j).base ⁻¹' _ = _
     -- Porting note: used to be `congr 3`
-    suffices D.f j k ≫ D.ι j = colimit.ι D.diagram.multispan (WalkingMultispan.left (j, k)) by
-      rw [this]
-      rfl
+    refine congr_arg (· ⁻¹' _) ?_
+    convert congr_arg (ContinuousMap.toFun (α := D.V ⟨j, k⟩) (β := D.glued) ·) ?_
+    refine congr_arg (PresheafedSpace.Hom.base (C := C) ·) ?_
     exact colimit.w 𝖣.diagram.multispan (WalkingMultispan.Hom.fst (j, k))
   · exact D.opensImagePreimageMap i j U
 
@@ -366,11 +368,11 @@ def ιInvApp {i : D.J} (U : Opens (D.U i).carrier) :
                   (D.f j k).c.app _ ≫ (D.V (j, k)).presheaf.map (eqToHom _) =
                 D.opensImagePreimageMap _ _ _ ≫
                   ((D.f k j).c.app _ ≫ (D.t j k).c.app _) ≫ (D.V (j, k)).presheaf.map (eqToHom _)
-            rw [opensImagePreimageMap_app_assoc]
+            erw [opensImagePreimageMap_app_assoc]
             simp_rw [Category.assoc]
-            rw [opensImagePreimageMap_app_assoc, (D.t j k).c.naturality_assoc,
-                snd_invApp_t_app_assoc,
-                ← PresheafedSpace.comp_c_app_assoc]
+            erw [opensImagePreimageMap_app_assoc, (D.t j k).c.naturality_assoc]
+            rw [snd_invApp_t_app_assoc]
+            erw [← PresheafedSpace.comp_c_app_assoc]
             -- light-blue = green is relatively easy since the part that differs does not involve
             -- partial inverses.
             have :
@@ -378,21 +380,19 @@ def ιInvApp {i : D.J} (U : Opens (D.U i).carrier) :
                 (pullbackSymmetry _ _).hom ≫ (π₁ j, i, k) ≫ D.t j i ≫ D.f i j := by
               rw [← 𝖣.t_fac_assoc, 𝖣.t'_comp_eq_pullbackSymmetry_assoc,
                 pullbackSymmetry_hom_comp_snd_assoc, pullback.condition, 𝖣.t_fac_assoc]
-            rw [congr_app this,
-                PresheafedSpace.comp_c_app_assoc (pullbackSymmetry _ _).hom]
+            rw [congr_app this]
+            erw [PresheafedSpace.comp_c_app_assoc (pullbackSymmetry _ _).hom]
             simp_rw [Category.assoc]
             congr 1
-            rw [← IsIso.eq_inv_comp,
-                IsOpenImmersion.inv_invApp]
+            rw [← IsIso.eq_inv_comp]
+            erw [IsOpenImmersion.inv_invApp]
             simp_rw [Category.assoc]
             erw [NatTrans.naturality_assoc, ← PresheafedSpace.comp_c_app_assoc,
               congr_app (pullbackSymmetry_hom_comp_snd _ _)]
             simp_rw [Category.assoc]
             erw [IsOpenImmersion.inv_naturality_assoc, IsOpenImmersion.inv_naturality_assoc,
               IsOpenImmersion.inv_naturality_assoc, IsOpenImmersion.app_invApp_assoc]
-            rw [← (D.V (j, k)).presheaf.map_comp]
-            erw [← (D.V (j, k)).presheaf.map_comp]
-            repeat rw [← (D.V (j, k)).presheaf.map_comp]
+            repeat' erw [← (D.V (j, k)).presheaf.map_comp]
             -- Porting note: was just `congr`
             exact congr_arg ((D.V (j, k)).presheaf.map ·) rfl } }
 
@@ -411,9 +411,9 @@ theorem ιInvApp_π {i : D.J} (U : Opens (D.U i).carrier) :
     · exact h2.symm
     · have := D.ι_gluedIso_inv (PresheafedSpace.forget _) i
       dsimp at this
-      rw [← this, coe_comp]
+      erw [← this, coe_comp] -- now `erw` after #13170
       refine Function.Injective.comp ?_ (TopCat.GlueData.ι_injective D.toTopGlueData i)
-      rw [← TopCat.mono_iff_injective]
+      erw [← TopCat.mono_iff_injective] -- now `erw` after #13170
       infer_instance
   delta ιInvApp
   rw [limit.lift_π]
@@ -423,7 +423,7 @@ theorem ιInvApp_π {i : D.J} (U : Opens (D.U i).carrier) :
   erw [IsOpenImmersion.inv_naturality_assoc, IsOpenImmersion.app_inv_app'_assoc]
   · simp only [eqToHom_op, eqToHom_trans, eqToHom_map (Functor.op _), ← Functor.map_comp]
     rfl
-  · rw [Set.range_eq_univ.mpr _]
+  · rw [Set.range_iff_surjective.mpr _]
     · simp
     · rw [← TopCat.epi_iff_surjective]
       infer_instance
@@ -436,27 +436,11 @@ abbrev ιInvAppπEqMap {i : D.J} (U : Opens (D.U i).carrier) :=
 theorem π_ιInvApp_π (i j : D.J) (U : Opens (D.U i).carrier) :
     D.diagramOverOpenπ U i ≫ D.ιInvAppπEqMap U ≫ D.ιInvApp U ≫ D.diagramOverOpenπ U j =
       D.diagramOverOpenπ U j := by
-  rw [← @cancel_mono
-          (f := (componentwiseDiagram 𝖣.diagram.multispan _).map
-            (Quiver.Hom.op (WalkingMultispan.Hom.snd (i, j))) ≫ 𝟙 _) ..]
-  · simp_rw [Category.assoc]
-    rw [limit.w_assoc]
-    erw [limit.lift_π_assoc]
-    rw [Category.comp_id, Category.comp_id]
-    change _ ≫ _ ≫ (_ ≫ _) ≫ _ = _
-    rw [congr_app (D.t_id _), id_c_app]
-    simp_rw [Category.assoc]
-    rw [← Functor.map_comp_assoc]
-    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11224): change `rw` to `erw`
-    erw [IsOpenImmersion.inv_naturality_assoc]
-    erw [IsOpenImmersion.app_invApp_assoc]
-    iterate 3 rw [← Functor.map_comp_assoc]
-    rw [NatTrans.naturality_assoc]
-    erw [← (D.V (i, j)).presheaf.map_comp]
-    convert
-      limit.w (componentwiseDiagram 𝖣.diagram.multispan _)
-        (Quiver.Hom.op (WalkingMultispan.Hom.fst (i, j)))
-  · rw [Category.comp_id]
+  -- Porting note: originally, the proof of monotonicity was left a blank and proved in the end
+  -- but Lean 4 doesn't like this any more, so the proof is restructured
+  rw [← @cancel_mono (f := (componentwiseDiagram 𝖣.diagram.multispan _).map
+    (Quiver.Hom.op (WalkingMultispan.Hom.snd (i, j))) ≫ 𝟙 _) _ _ (by
+    rw [Category.comp_id]
     apply (config := { allowSynthFailures := true }) mono_comp
     change Mono ((_ ≫ D.f j i).c.app _)
     rw [comp_c_app]
@@ -464,7 +448,24 @@ theorem π_ιInvApp_π (i j : D.J) (U : Opens (D.U i).carrier) :
     · erw [D.ι_image_preimage_eq i j U]
       infer_instance
     · have : IsIso (D.t i j).c := by apply c_isIso_of_iso
-      infer_instance
+      infer_instance)]
+  simp_rw [Category.assoc]
+  rw [limit.w_assoc]
+  erw [limit.lift_π_assoc]
+  rw [Category.comp_id, Category.comp_id]
+  change _ ≫ _ ≫ (_ ≫ _) ≫ _ = _
+  rw [congr_app (D.t_id _), id_c_app]
+  simp_rw [Category.assoc]
+  rw [← Functor.map_comp_assoc]
+  -- Porting note (#11224): change `rw` to `erw`
+  erw [IsOpenImmersion.inv_naturality_assoc]
+  erw [IsOpenImmersion.app_invApp_assoc]
+  iterate 3 rw [← Functor.map_comp_assoc]
+  rw [NatTrans.naturality_assoc]
+  erw [← (D.V (i, j)).presheaf.map_comp]
+  convert
+    limit.w (componentwiseDiagram 𝖣.diagram.multispan _)
+      (Quiver.Hom.op (WalkingMultispan.Hom.fst (i, j)))
 
 /-- `ιInvApp` is the inverse of `D.ι i` on `U`. -/
 theorem π_ιInvApp_eq_id (i : D.J) (U : Opens (D.U i).carrier) :
@@ -491,7 +492,7 @@ instance componentwise_diagram_π_isIso (i : D.J) (U : Opens (D.U i).carrier) :
     exact Iso.inv_hom_id ((D.U i).presheaf.mapIso (eqToIso _))
 
 instance ιIsOpenImmersion (i : D.J) : IsOpenImmersion (𝖣.ι i) where
-  base_open := D.ι_isOpenEmbedding i
+  base_open := D.ι_openEmbedding i
   c_iso U := by erw [← colimitPresheafObjIsoComponentwiseLimit_hom_π]; infer_instance
 
 /-- The following diagram is a pullback, i.e. `Vᵢⱼ` is the intersection of `Uᵢ` and `Uⱼ` in `X`.
@@ -516,7 +517,7 @@ def vPullbackConeIsLimit (i j : D.J) : IsLimit (𝖣.vPullbackCone i j) :=
         replace this := reassoc_of% this
         exact this _
       rw [← Set.image_subset_iff, ← Set.image_univ, ← Set.image_comp, Set.image_univ]
-      -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11224): change `rw` to `erw`
+      -- Porting note (#11224): change `rw` to `erw`
       erw [← coe_comp]
       rw [this, coe_comp, ← Set.image_univ, Set.image_comp]
       exact Set.image_subset_range _ _
@@ -553,7 +554,7 @@ such that
 We can then glue the spaces `U i` together by identifying `V i j` with `V j i`, such
 that the `U i`'s are open subspaces of the glued space.
 -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
+-- Porting note(#5171): this linter isn't ported yet.
 -- @[nolint has_nonempty_instance]
 structure GlueData extends CategoryTheory.GlueData (SheafedSpace.{u, v, v} C) where
   f_open : ∀ i j, SheafedSpace.IsOpenImmersion (f i j)
@@ -626,7 +627,7 @@ such that
 We can then glue the spaces `U i` together by identifying `V i j` with `V j i`, such
 that the `U i`'s are open subspaces of the glued space.
 -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
+-- Porting note(#5171): this linter isn't ported yet.
 -- @[nolint has_nonempty_instance]
 structure GlueData extends CategoryTheory.GlueData LocallyRingedSpace where
   f_open : ∀ i j, LocallyRingedSpace.IsOpenImmersion (f i j)
@@ -661,7 +662,7 @@ instance ι_isOpenImmersion (i : D.J) : IsOpenImmersion (𝖣.ι i) := by
 instance (i j k : D.J) : PreservesLimit (cospan (𝖣.f i j) (𝖣.f i k)) forgetToSheafedSpace :=
   inferInstance
 
-theorem ι_jointly_surjective (x : 𝖣.glued) : ∃ (i : D.J) (y : D.U i), (𝖣.ι i).base y = x :=
+theorem ι_jointly_surjective (x : 𝖣.glued) : ∃ (i : D.J) (y : D.U i), (𝖣.ι i).1.base y = x :=
   𝖣.ι_jointly_surjective
     ((LocallyRingedSpace.forgetToSheafedSpace.{u} ⋙ SheafedSpace.forget CommRingCatMax.{u, u}) ⋙
       forget TopCat.{u}) x

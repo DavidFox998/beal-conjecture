@@ -249,7 +249,7 @@ protected theorem range_linearIsometry [∀ i, CompleteSpace (G i)] :
       rintro i x ⟨x, rfl⟩
       use lp.single 2 i x
       exact hV.linearIsometry_apply_single x
-    exact hV.linearIsometry.isometry.isUniformInducing.isComplete_range.isClosed
+    exact hV.linearIsometry.isometry.uniformInducing.isComplete_range.isClosed
 
 end OrthogonalFamily
 
@@ -340,7 +340,7 @@ protected theorem IsHilbertSum.linearIsometryEquiv_apply_dfinsupp_sum_single
   rw [← hV.linearIsometryEquiv_symm_apply_dfinsupp_sum_single]
   rw [LinearIsometryEquiv.apply_symm_apply]
   ext i
-  simp +contextual [DFinsupp.sum, lp.single_apply]
+  simp (config := { contextual := true }) [DFinsupp.sum, lp.single_apply]
 
 /-- Given a total orthonormal family `v : ι → E`, `E` is a Hilbert sum of `fun i : ι => 𝕜`
 relative to the family of linear isometries `fun i k => k • v i`. -/

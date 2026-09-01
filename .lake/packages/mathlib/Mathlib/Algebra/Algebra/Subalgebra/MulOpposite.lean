@@ -22,23 +22,25 @@ section Semiring
 variable {ι : Sort*} {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
 
 /-- Pull a subalgebra back to an opposite subalgebra along `MulOpposite.unop` -/
-@[simps! coe toSubsemiring]
+@[simps toSubsemiring]
 protected def op (S : Subalgebra R A) : Subalgebra R Aᵐᵒᵖ where
   toSubsemiring := S.toSubsemiring.op
   algebraMap_mem' := S.algebraMap_mem
 
-attribute [norm_cast] coe_op
+@[simp, norm_cast]
+theorem op_coe (S : Subalgebra R A) : S.op = MulOpposite.unop ⁻¹' (S : Set A) := rfl
 
 @[simp]
 theorem mem_op {x : Aᵐᵒᵖ} {S : Subalgebra R A} : x ∈ S.op ↔ x.unop ∈ S := Iff.rfl
 
 /-- Pull an subalgebra subring back to a subalgebra along `MulOpposite.op` -/
-@[simps! coe toSubsemiring]
+@[simps toSubsemiring]
 protected def unop (S : Subalgebra R Aᵐᵒᵖ) : Subalgebra R A where
   toSubsemiring := S.toSubsemiring.unop
   algebraMap_mem' := S.algebraMap_mem
 
-attribute [norm_cast] coe_unop
+@[simp, norm_cast]
+theorem unop_coe (S : Subalgebra R Aᵐᵒᵖ) : S.unop = MulOpposite.op ⁻¹' (S : Set Aᵐᵒᵖ) := rfl
 
 @[simp]
 theorem mem_unop {x : A} {S : Subalgebra R Aᵐᵒᵖ} : x ∈ S.unop ↔ MulOpposite.op x ∈ S := Iff.rfl

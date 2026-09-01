@@ -5,7 +5,6 @@ Authors: Jz Pan
 -/
 import Mathlib.Algebra.Group.Submonoid.MulOpposite
 import Mathlib.Algebra.Ring.Subsemiring.Basic
-import Mathlib.Algebra.Ring.Opposite
 
 /-!
 
@@ -20,26 +19,28 @@ namespace Subsemiring
 variable {ι : Sort*} {R : Type*} [NonAssocSemiring R]
 
 /-- Pull a subsemiring back to an opposite subsemiring along `MulOpposite.unop` -/
-@[simps! coe toSubmonoid]
+@[simps toSubmonoid]
 protected def op (S : Subsemiring R) : Subsemiring Rᵐᵒᵖ where
   toSubmonoid := S.toSubmonoid.op
   add_mem' {x} {y} hx hy := add_mem (show x.unop ∈ S from hx) (show y.unop ∈ S from hy)
   zero_mem' := zero_mem S
 
-attribute [norm_cast] coe_op
+@[simp, norm_cast]
+theorem op_coe (S : Subsemiring R) : S.op = MulOpposite.unop ⁻¹' (S : Set R) := rfl
 
 @[simp]
 theorem mem_op {x : Rᵐᵒᵖ} {S : Subsemiring R} : x ∈ S.op ↔ x.unop ∈ S := Iff.rfl
 
 /-- Pull an opposite subsemiring back to a subsemiring along `MulOpposite.op` -/
-@[simps! coe toSubmonoid]
+@[simps toSubmonoid]
 protected def unop (S : Subsemiring Rᵐᵒᵖ) : Subsemiring R where
   toSubmonoid := S.toSubmonoid.unop
   add_mem' {x} {y} hx hy := add_mem
     (show MulOpposite.op x ∈ S from hx) (show MulOpposite.op y ∈ S from hy)
   zero_mem' := zero_mem S
 
-attribute [norm_cast] coe_unop
+@[simp, norm_cast]
+theorem unop_coe (S : Subsemiring Rᵐᵒᵖ) : S.unop = MulOpposite.op ⁻¹' (S : Set Rᵐᵒᵖ) := rfl
 
 @[simp]
 theorem mem_unop {x : R} {S : Subsemiring Rᵐᵒᵖ} : x ∈ S.unop ↔ MulOpposite.op x ∈ S := Iff.rfl
@@ -140,7 +141,7 @@ theorem unop_iInf (S : ι → Subsemiring Rᵐᵒᵖ) : (iInf S).unop = ⨅ i, (
   opEquiv.symm.map_iInf _
 
 theorem op_closure (s : Set R) : (closure s).op = closure (MulOpposite.unop ⁻¹' s) := by
-  simp_rw [closure, op_sInf, Set.preimage_setOf_eq, coe_unop]
+  simp_rw [closure, op_sInf, Set.preimage_setOf_eq, unop_coe]
   congr with a
   exact MulOpposite.unop_surjective.forall
 

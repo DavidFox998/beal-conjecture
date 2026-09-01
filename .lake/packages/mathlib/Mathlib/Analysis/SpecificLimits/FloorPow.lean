@@ -64,7 +64,7 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
     filter_upwards [Ici_mem_atTop M] with n hn
     have exN : ∃ N, n < c N := by
       rcases (tendsto_atTop.1 ctop (n + 1)).exists with ⟨N, hN⟩
-      exact ⟨N, by omega⟩
+      exact ⟨N, by linarith only [hN]⟩
     let N := Nat.find exN
     have ncN : n < c N := Nat.find_spec exN
     have aN : a + 1 ≤ N := by
@@ -119,7 +119,7 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
     filter_upwards [Ici_mem_atTop M] with n hn
     have exN : ∃ N, n < c N := by
       rcases (tendsto_atTop.1 ctop (n + 1)).exists with ⟨N, hN⟩
-      exact ⟨N, by omega⟩
+      exact ⟨N, by linarith only [hN]⟩
     let N := Nat.find exN
     have ncN : n < c N := Nat.find_spec exN
     have aN : a + 1 ≤ N := by
@@ -195,7 +195,8 @@ theorem tendsto_div_of_monotone_of_tendsto_div_floor_pow (u : ℕ → ℝ) (l : 
   have H : ∀ n : ℕ, (0 : ℝ) < ⌊c k ^ n⌋₊ := by
     intro n
     refine zero_lt_one.trans_le ?_
-    simp only [Real.rpow_natCast, Nat.one_le_cast, Nat.one_le_floor_iff, one_le_pow₀ (cone k).le]
+    simp only [Real.rpow_natCast, Nat.one_le_cast, Nat.one_le_floor_iff,
+      one_le_pow_of_one_le (cone k).le n]
   have A :
     Tendsto (fun n : ℕ => (⌊c k ^ (n + 1)⌋₊ : ℝ) / c k ^ (n + 1) * c k / (⌊c k ^ n⌋₊ / c k ^ n))
       atTop (𝓝 (1 * c k / 1)) := by
@@ -216,27 +217,27 @@ theorem tendsto_div_of_monotone_of_tendsto_div_floor_pow (u : ℕ → ℝ) (l : 
 /-- The sum of `1/(c^i)^2` above a threshold `j` is comparable to `1/j^2`, up to a multiplicative
 constant. -/
 theorem sum_div_pow_sq_le_div_sq (N : ℕ) {j : ℝ} (hj : 0 < j) {c : ℝ} (hc : 1 < c) :
-    (∑ i ∈ range N with j < c ^ i, (1 : ℝ) / (c ^ i) ^ 2) ≤ c ^ 3 * (c - 1)⁻¹ / j ^ 2 := by
+    (∑ i ∈ (range N).filter (j < c ^ ·), (1 : ℝ) / (c ^ i) ^ 2) ≤ c ^ 3 * (c - 1)⁻¹ / j ^ 2 := by
   have cpos : 0 < c := zero_lt_one.trans hc
   have A : (0 : ℝ) < c⁻¹ ^ 2 := sq_pos_of_pos (inv_pos.2 cpos)
   have B : c ^ 2 * ((1 : ℝ) - c⁻¹ ^ 2)⁻¹ ≤ c ^ 3 * (c - 1)⁻¹ := by
-    rw [← div_eq_mul_inv, ← div_eq_mul_inv, div_le_div_iff₀ _ (sub_pos.2 hc)]
+    rw [← div_eq_mul_inv, ← div_eq_mul_inv, div_le_div_iff _ (sub_pos.2 hc)]
     swap
-    · exact sub_pos.2 (pow_lt_one₀ (inv_nonneg.2 cpos.le) (inv_lt_one_of_one_lt₀ hc) two_ne_zero)
+    · exact sub_pos.2 (pow_lt_one (inv_nonneg.2 cpos.le) (inv_lt_one hc) two_ne_zero)
     have : c ^ 3 = c ^ 2 * c := by ring
     simp only [mul_sub, this, mul_one, inv_pow, sub_le_sub_iff_left]
     rw [mul_assoc, mul_comm c, ← mul_assoc, mul_inv_cancel₀ (sq_pos_of_pos cpos).ne', one_mul]
-    simpa using pow_right_mono₀ hc.le one_le_two
-  have C : c⁻¹ ^ 2 < 1 := pow_lt_one₀ (inv_nonneg.2 cpos.le) (inv_lt_one_of_one_lt₀ hc) two_ne_zero
+    simpa using pow_le_pow_right hc.le one_le_two
+  have C : c⁻¹ ^ 2 < 1 := pow_lt_one (inv_nonneg.2 cpos.le) (inv_lt_one hc) two_ne_zero
   calc
-    (∑ i ∈ range N with j < c ^ i, (1 : ℝ) / (c ^ i) ^ 2) ≤
+    (∑ i ∈ (range N).filter (j < c ^ ·), (1 : ℝ) / (c ^ i) ^ 2) ≤
         ∑ i ∈ Ico ⌊Real.log j / Real.log c⌋₊ N, (1 : ℝ) / (c ^ i) ^ 2 := by
       refine sum_le_sum_of_subset_of_nonneg (fun i hi ↦ ?_) (by intros; positivity)
       simp only [mem_filter, mem_range] at hi
       simp only [hi.1, mem_Ico, and_true]
       apply Nat.floor_le_of_le
       apply le_of_lt
-      rw [div_lt_iff₀ (Real.log_pos hc), ← Real.log_pow]
+      rw [div_lt_iff (Real.log_pos hc), ← Real.log_pow]
       exact Real.log_lt_log hj hi.2
     _ = ∑ i ∈ Ico ⌊Real.log j / Real.log c⌋₊ N, (c⁻¹ ^ 2) ^ i := by
       congr 1 with i
@@ -257,7 +258,7 @@ theorem sum_div_pow_sq_le_div_sq (N : ℕ) {j : ℝ} (hj : 0 < j) {c : ℝ} (hc 
         field_simp [(Real.log_pos hc).ne']
         ring
       rw [Real.rpow_sub A, I]
-      have : c ^ 2 - 1 ≠ 0 := (sub_pos.2 (one_lt_pow₀ hc two_ne_zero)).ne'
+      have : c ^ 2 - 1 ≠ 0 := (sub_pos.2 (one_lt_pow hc two_ne_zero)).ne'
       field_simp [hj.ne', (zero_lt_one.trans hc).ne']
       ring
     _ ≤ c ^ 3 * (c - 1)⁻¹ / j ^ 2 := by gcongr
@@ -270,27 +271,28 @@ theorem mul_pow_le_nat_floor_pow {c : ℝ} (hc : 1 < c) (i : ℕ) : (1 - c⁻¹)
     (1 - c⁻¹) * c ^ i = c ^ i - c ^ i * c⁻¹ := by ring
     _ ≤ c ^ i - 1 := by
       gcongr
-      simpa only [← div_eq_mul_inv, one_le_div cpos, pow_one] using le_self_pow₀ hc.le hi
+      simpa only [← div_eq_mul_inv, one_le_div cpos, pow_one] using le_self_pow hc.le hi
     _ ≤ ⌊c ^ i⌋₊ := (Nat.sub_one_lt_floor _).le
 
 /-- The sum of `1/⌊c^i⌋₊^2` above a threshold `j` is comparable to `1/j^2`, up to a multiplicative
 constant. -/
 theorem sum_div_nat_floor_pow_sq_le_div_sq (N : ℕ) {j : ℝ} (hj : 0 < j) {c : ℝ} (hc : 1 < c) :
-    (∑ i ∈ range N with j < ⌊c ^ i⌋₊, (1 : ℝ) / (⌊c ^ i⌋₊ : ℝ) ^ 2) ≤
+    (∑ i ∈ (range N).filter (j < ⌊c ^ ·⌋₊), (1 : ℝ) / (⌊c ^ i⌋₊ : ℝ) ^ 2) ≤
       c ^ 5 * (c - 1)⁻¹ ^ 3 / j ^ 2 := by
   have cpos : 0 < c := zero_lt_one.trans hc
-  have A : 0 < 1 - c⁻¹ := sub_pos.2 (inv_lt_one_of_one_lt₀ hc)
+  have A : 0 < 1 - c⁻¹ := sub_pos.2 (inv_lt_one hc)
   calc
-    (∑ i ∈ range N with j < ⌊c ^ i⌋₊, (1 : ℝ) / (⌊c ^ i⌋₊ : ℝ) ^ 2) ≤
-        ∑ i ∈ range N with j < c ^ i, (1 : ℝ) / (⌊c ^ i⌋₊ : ℝ) ^ 2 := by
-      gcongr
-      exact fun k hk ↦ hk.trans_le <| Nat.floor_le (by positivity)
-    _ ≤ ∑ i ∈ range N with j < c ^ i, (1 - c⁻¹)⁻¹ ^ 2 * ((1 : ℝ) / (c ^ i) ^ 2) := by
+    (∑ i ∈ (range N).filter (j < ⌊c ^ ·⌋₊), (1 : ℝ) / (⌊c ^ i⌋₊ : ℝ) ^ 2) ≤
+        ∑ i ∈ (range N).filter (j < c ^ ·), (1 : ℝ) / (⌊c ^ i⌋₊ : ℝ) ^ 2 := by
+      apply sum_le_sum_of_subset_of_nonneg
+      · exact monotone_filter_right _ fun k hk ↦ hk.trans_le <| Nat.floor_le (by positivity)
+      · intros; positivity
+    _ ≤ ∑ i ∈ (range N).filter (j < c ^ ·), (1 - c⁻¹)⁻¹ ^ 2 * ((1 : ℝ) / (c ^ i) ^ 2) := by
       refine sum_le_sum fun i _hi => ?_
-      rw [mul_div_assoc', mul_one, div_le_div_iff₀]; rotate_left
+      rw [mul_div_assoc', mul_one, div_le_div_iff]; rotate_left
       · apply sq_pos_of_pos
         refine zero_lt_one.trans_le ?_
-        simp only [Nat.le_floor, one_le_pow₀, hc.le, Nat.one_le_cast, Nat.cast_one]
+        simp only [Nat.le_floor, one_le_pow_of_one_le, hc.le, Nat.one_le_cast, Nat.cast_one]
       · exact sq_pos_of_pos (pow_pos cpos _)
       rw [one_mul, ← mul_pow]
       gcongr

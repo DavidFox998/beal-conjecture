@@ -50,7 +50,7 @@ theorem riesz_lemma {F : Subspace 𝕜 E} (hFc : IsClosed (F : Set E)) (hF : ∃
       simp only [r', max_lt_iff, hr, true_and]
       norm_num
     have hlt : 0 < r' := lt_of_lt_of_le (by norm_num) (le_max_right r 2⁻¹)
-    have hdlt : d < d / r' := (lt_div_iff₀ hlt).mpr ((mul_lt_iff_lt_one_right hdp).2 hr')
+    have hdlt : d < d / r' := (lt_div_iff hlt).mpr ((mul_lt_iff_lt_one_right hdp).2 hr')
     obtain ⟨y₀, hy₀F, hxy₀⟩ : ∃ y ∈ F, dist x y < d / r' := (Metric.infDist_lt_iff hFn).mp hdlt
     have x_ne_y₀ : x - y₀ ∉ F := by
       by_contra h
@@ -63,7 +63,7 @@ theorem riesz_lemma {F : Subspace 𝕜 E} (hFc : IsClosed (F : Set E)) (hF : ∃
       r * ‖x - y₀‖ ≤ r' * ‖x - y₀‖ := by gcongr; apply le_max_left
       _ < d := by
         rw [← dist_eq_norm]
-        exact (lt_div_iff₀' hlt).1 hxy₀
+        exact (lt_div_iff' hlt).1 hxy₀
       _ ≤ dist x (y₀ + y) := Metric.infDist_le_dist_of_mem hy₀y
       _ = ‖x - y₀ - y‖ := by rw [sub_sub, dist_eq_norm]
 
@@ -82,7 +82,7 @@ theorem riesz_lemma_of_norm_lt {c : 𝕜} (hc : 1 < ‖c‖) {R : ℝ} (hR : ‖
     ∃ x₀ : E, ‖x₀‖ ≤ R ∧ ∀ y ∈ F, 1 ≤ ‖x₀ - y‖ := by
   have Rpos : 0 < R := (norm_nonneg _).trans_lt hR
   have : ‖c‖ / R < 1 := by
-    rw [div_lt_iff₀ Rpos]
+    rw [div_lt_iff Rpos]
     simpa using hR
   rcases riesz_lemma hFc hF this with ⟨x, xF, hx⟩
   have x0 : x ≠ 0 := fun H => by simp [H] at xF
@@ -98,7 +98,7 @@ theorem riesz_lemma_of_norm_lt {c : 𝕜} (hc : 1 < ‖c‖) {R : ℝ} (hR : ‖
     _ = ‖d‖ * (‖c‖ / R * ‖x‖) := by
       simp only [norm_smul]
       ring
-    _ ≤ ‖d‖ * ‖x - y'‖ := by gcongr; exact hx y' (by simp [y', Submodule.smul_mem _ _ hy])
+    _ ≤ ‖d‖ * ‖x - y'‖ := by gcongr; exact hx y' (by simp [Submodule.smul_mem _ _ hy])
     _ = ‖d • x - y‖ := by rw [yy', ← smul_sub, norm_smul]
 
 theorem Metric.closedBall_infDist_compl_subset_closure {x : F} {s : Set F} (hx : x ∈ s) :

@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa, Adomas Baliuka
 -/
 import Lean.Elab.Command
-import Mathlib.Init
 
 /-!
 # The "admit" linter
@@ -54,4 +53,3 @@ def admitLinter : Linter where run := withSetOptionIn fun stx => do
 initialize addLinter admitLinter
 
 end AdmitLinter
-end Mathlib.Linter

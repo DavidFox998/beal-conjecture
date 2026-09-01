@@ -6,7 +6,6 @@ Authors: Frédéric Marbach
 import Mathlib.Algebra.Lie.Basic
 import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.Algebra.Lie.Subalgebra
-import Mathlib.RingTheory.Noetherian.Basic
 
 /-!
 # Lie derivations
@@ -105,7 +104,7 @@ lemma apply_lie_eq_add (D : LieDerivation R L L) (a b : L) :
 /-- Two Lie derivations equal on a set are equal on its Lie span. -/
 theorem eqOn_lieSpan {s : Set L} (h : Set.EqOn D1 D2 s) :
     Set.EqOn D1 D2 (LieSubalgebra.lieSpan R L s) :=
-    fun _ hz =>
+    fun z hz =>
       have zero : D1 0 = D2 0 := by simp only [map_zero]
       have smul : ∀ (r : R), ∀ {x : L}, D1 x = D2 x → D1 (r • x) = D2 (r • x) :=
         fun _ _ hx => by simp only [map_smul, hx]
@@ -292,7 +291,7 @@ instance instBracket : Bracket (LieDerivation R L L) (LieDerivation R L L) where
       LinearMap.sub_apply, LinearMap.mul_apply, map_add, sub_lie, lie_sub, ← lie_skew b]
     abel)
 
-variable {D1 D2 : LieDerivation R L L}
+variable (D : LieDerivation R L L) {D1 D2 : LieDerivation R L L}
 
 @[simp]
 lemma commutator_coe_linear_map : ↑⁅D1, D2⁆ = ⁅(D1 : Module.End R L), (D2 : Module.End R L)⁆ :=

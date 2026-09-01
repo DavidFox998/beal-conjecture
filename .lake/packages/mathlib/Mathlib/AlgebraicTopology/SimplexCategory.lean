@@ -3,7 +3,6 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kim Morrison, Adam Topaz
 -/
-import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.Linarith
 import Mathlib.CategoryTheory.Skeletal
 import Mathlib.Data.Fintype.Sort
@@ -82,7 +81,7 @@ theorem mk_len (n : SimplexCategory) : ([n.len] : SimplexCategory) = n :=
 protected def rec {F : SimplexCategory → Sort*} (h : ∀ n : ℕ, F [n]) : ∀ X, F X := fun n =>
   h n.len
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
+-- porting note (#5171): removed @[nolint has_nonempty_instance]
 /-- Morphisms in the `SimplexCategory`. -/
 protected def Hom (a b : SimplexCategory) :=
   Fin (a.len + 1) →o Fin (b.len + 1)
@@ -132,7 +131,7 @@ end Hom
 
 instance smallCategory : SmallCategory.{0} SimplexCategory where
   Hom n m := SimplexCategory.Hom n m
-  id _ := SimplexCategory.Hom.id _
+  id m := SimplexCategory.Hom.id _
   comp f g := SimplexCategory.Hom.comp g f
 
 @[simp]
@@ -143,6 +142,7 @@ lemma id_toOrderHom (a : SimplexCategory) :
 lemma comp_toOrderHom {a b c : SimplexCategory} (f : a ⟶ b) (g : b ⟶ c) :
     (f ≫ g).toOrderHom = g.toOrderHom.comp f.toOrderHom := rfl
 
+-- Porting note: added because `Hom.ext'` is not triggered automatically
 @[ext]
 theorem Hom.ext {a b : SimplexCategory} (f g : a ⟶ b) :
     f.toOrderHom = g.toOrderHom → f = g :=
@@ -165,55 +165,6 @@ theorem const_comp (x : SimplexCategory) {y z : SimplexCategory}
     const x y i ≫ f = const x z (f.toOrderHom i) :=
   rfl
 
-theorem const_fac_thru_zero (n m : SimplexCategory) (i : Fin (m.len + 1)) :
-    const n m i = const n [0] 0 ≫ SimplexCategory.const [0] m i := by
-  rw [const_comp]; rfl
-
-theorem Hom.ext_zero_left {n : SimplexCategory} (f g : ([0] : SimplexCategory) ⟶ n)
-    (h0 : f.toOrderHom 0 = g.toOrderHom 0 := by rfl) : f = g := by
-  ext i; match i with | 0 => exact h0 ▸ rfl
-
-theorem eq_const_of_zero {n : SimplexCategory} (f : ([0] : SimplexCategory) ⟶ n) :
-    f = const _ n (f.toOrderHom 0) := by
-  ext x; match x with | 0 => rfl
-
-theorem exists_eq_const_of_zero {n : SimplexCategory} (f : ([0] : SimplexCategory) ⟶ n) :
-    ∃ a, f = const _ n a := ⟨_, eq_const_of_zero _⟩
-
-theorem eq_const_to_zero {n : SimplexCategory} (f : n ⟶ [0]) :
-    f = const n _ 0 := by
-  ext : 3
-  apply @Subsingleton.elim (Fin 1)
-
-theorem Hom.ext_one_left {n : SimplexCategory} (f g : ([1] : SimplexCategory) ⟶ n)
-    (h0 : f.toOrderHom 0 = g.toOrderHom 0 := by rfl)
-    (h1 : f.toOrderHom 1 = g.toOrderHom 1 := by rfl) : f = g := by
-  ext i
-  match i with
-  | 0 => exact h0 ▸ rfl
-  | 1 => exact h1 ▸ rfl
-
-theorem eq_of_one_to_one (f : ([1] : SimplexCategory) ⟶ [1]) :
-    (∃ a, f = const [1] _ a) ∨ f = 𝟙 _ := by
-  match e0 : f.toOrderHom 0, e1 : f.toOrderHom 1 with
-  | 0, 0 | 1, 1 =>
-    refine .inl ⟨f.toOrderHom 0, ?_⟩
-    ext i : 3
-    match i with
-    | 0 => rfl
-    | 1 => exact e1.trans e0.symm
-  | 0, 1 =>
-    right
-    ext i : 3
-    match i with
-    | 0 => exact e0
-    | 1 => exact e1
-  | 1, 0 =>
-    have := f.toOrderHom.monotone (by decide : (0 : Fin 2) ≤ 1)
-    rw [e0, e1] at this
-    exact Not.elim (by decide) this
-
-
 /-- Make a morphism `[n] ⟶ [m]` from a monotone map between fin's.
 This is useful for constructing morphisms between `[n]` directly
 without identifying `n` with `[n].len`.
@@ -221,111 +172,6 @@ without identifying `n` with `[n].len`.
 @[simp]
 def mkHom {n m : ℕ} (f : Fin (n + 1) →o Fin (m + 1)) : ([n] : SimplexCategory) ⟶ [m] :=
   SimplexCategory.Hom.mk f
-
-/-- The morphism `[1] ⟶ [n]` that picks out a specified `h : i ≤ j` in `Fin (n+1)`.-/
-def mkOfLe {n} (i j : Fin (n+1)) (h : i ≤ j) : ([1] : SimplexCategory) ⟶ [n] :=
-  SimplexCategory.mkHom {
-    toFun := fun | 0 => i | 1 => j
-    monotone' := fun
-      | 0, 0, _ | 1, 1, _ => le_rfl
-      | 0, 1, _ => h
-  }
-
-@[simp]
-lemma mkOfLe_refl {n} (j : Fin (n + 1)) :
-    mkOfLe j j (by omega) = [1].const [n] j := Hom.ext_one_left _ _
-
-/-- The morphism `[1] ⟶ [n]` that picks out the "diagonal composite" edge-/
-def diag (n : ℕ) : ([1] : SimplexCategory) ⟶ [n] :=
-  mkOfLe 0 n (Fin.zero_le _)
-
-/-- The morphism `[1] ⟶ [n]` that picks out the edge spanning the interval from `j` to `j + l`.-/
-def intervalEdge {n} (j l : ℕ) (hjl : j + l ≤ n) : ([1] : SimplexCategory) ⟶ [n] :=
-  mkOfLe ⟨j, (by omega)⟩ ⟨j + l, (by omega)⟩ (Nat.le_add_right j l)
-
-/-- The morphism `[1] ⟶ [n]` that picks out the arrow `i ⟶ i+1` in `Fin (n+1)`.-/
-def mkOfSucc {n} (i : Fin n) : ([1] : SimplexCategory) ⟶ [n] :=
-  SimplexCategory.mkHom {
-    toFun := fun | 0 => i.castSucc | 1 => i.succ
-    monotone' := fun
-      | 0, 0, _ | 1, 1, _ => le_rfl
-      | 0, 1, _ => Fin.castSucc_le_succ i
-  }
-
-@[simp]
-lemma mkOfSucc_homToOrderHom_zero {n} (i : Fin n) :
-    DFunLike.coe (F := Fin 2 →o Fin (n+1)) (Hom.toOrderHom (mkOfSucc i)) 0 = i.castSucc := rfl
-
-@[simp]
-lemma mkOfSucc_homToOrderHom_one {n} (i : Fin n) :
-    DFunLike.coe (F := Fin 2 →o Fin (n+1)) (Hom.toOrderHom (mkOfSucc i)) 1 = i.succ := rfl
-
-
-/-- The morphism `[2] ⟶ [n]` that picks out a specified composite of morphisms in `Fin (n+1)`.-/
-def mkOfLeComp {n} (i j k : Fin (n + 1)) (h₁ : i ≤ j) (h₂ : j ≤ k) :
-    ([2] : SimplexCategory) ⟶ [n] :=
-  SimplexCategory.mkHom {
-    toFun := fun | 0 => i | 1 => j | 2 => k
-    monotone' := fun
-      | 0, 0, _ | 1, 1, _ | 2, 2, _  => le_rfl
-      | 0, 1, _ => h₁
-      | 1, 2, _ => h₂
-      | 0, 2, _ => Fin.le_trans h₁ h₂
-  }
-
-/-- The "inert" morphism associated to a subinterval `j ≤ i ≤ j + l` of `Fin (n + 1)`.-/
-def subinterval {n} (j l : ℕ) (hjl : j + l ≤ n) :
-    ([l] : SimplexCategory) ⟶ [n] :=
-  SimplexCategory.mkHom {
-    toFun := fun i => ⟨i.1 + j, (by omega)⟩
-    monotone' := fun i i' hii' => by simpa only [Fin.mk_le_mk, add_le_add_iff_right] using hii'
-  }
-
-lemma const_subinterval_eq {n} (j l : ℕ) (hjl : j + l ≤ n) (i : Fin (l + 1)) :
-    [0].const [l] i ≫ subinterval j l hjl =
-    [0].const [n] ⟨j + i.1, lt_add_of_lt_add_right (Nat.add_lt_add_left i.2 j) hjl⟩  := by
-  rw [const_comp]
-  congr
-  ext
-  dsimp [subinterval]
-  rw [add_comm]
-
-@[simp]
-lemma mkOfSucc_subinterval_eq {n} (j l : ℕ) (hjl : j + l ≤ n) (i : Fin l) :
-    mkOfSucc i ≫ subinterval j l hjl =
-    mkOfSucc ⟨j + i.1, Nat.lt_of_lt_of_le (Nat.add_lt_add_left i.2 j) hjl⟩ := by
-  unfold subinterval mkOfSucc
-  ext i
-  match i with
-  | 0 =>
-    simp only [len_mk, Nat.reduceAdd, mkHom, comp_toOrderHom, Hom.toOrderHom_mk,
-      OrderHom.mk_comp_mk, Fin.isValue, OrderHom.coe_mk, Function.comp_apply, Fin.castSucc_mk,
-      Fin.succ_mk]
-    rw [add_comm]
-    rfl
-  | 1 =>
-    simp only [len_mk, Nat.reduceAdd, mkHom, comp_toOrderHom, Hom.toOrderHom_mk,
-      OrderHom.mk_comp_mk, Fin.isValue, OrderHom.coe_mk, Function.comp_apply, Fin.castSucc_mk,
-      Fin.succ_mk]
-    rw [← Nat.add_comm j _]
-    rfl
-
-@[simp]
-lemma diag_subinterval_eq {n} (j l : ℕ) (hjl : j + l ≤ n) :
-    diag l ≫ subinterval j l hjl = intervalEdge j l hjl := by
-  unfold subinterval intervalEdge diag mkOfLe
-  ext i
-  match i with
-  | 0 =>
-    simp only [len_mk, Nat.reduceAdd, mkHom, Fin.natCast_eq_last, comp_toOrderHom,
-      Hom.toOrderHom_mk, OrderHom.mk_comp_mk, Fin.isValue, OrderHom.coe_mk, Function.comp_apply]
-    rw [Nat.add_comm]
-    rfl
-  | 1 =>
-    simp only [len_mk, Nat.reduceAdd, mkHom, Fin.natCast_eq_last, comp_toOrderHom,
-      Hom.toOrderHom_mk, OrderHom.mk_comp_mk, Fin.isValue, OrderHom.coe_mk, Function.comp_apply]
-    rw [Nat.add_comm]
-    rfl
 
 instance (Δ : SimplexCategory) : Subsingleton (Δ ⟶ [0]) where
   allEq f g := by ext : 3; apply Subsingleton.elim (α := Fin 1)
@@ -359,7 +205,7 @@ def σ {n} (i : Fin (n + 1)) : ([n + 1] : SimplexCategory) ⟶ [n] :=
 
 /-- The generic case of the first simplicial identity -/
 theorem δ_comp_δ {n} {i j : Fin (n + 2)} (H : i ≤ j) :
-    δ i ≫ δ j.succ = δ j ≫ δ i.castSucc := by
+    δ i ≫ δ j.succ = δ j ≫ δ (Fin.castSucc i) := by
   ext k
   dsimp [δ, Fin.succAbove]
   rcases i with ⟨i, _⟩
@@ -367,7 +213,7 @@ theorem δ_comp_δ {n} {i j : Fin (n + 2)} (H : i ≤ j) :
   rcases k with ⟨k, _⟩
   split_ifs <;> · simp at * <;> omega
 
-theorem δ_comp_δ' {n} {i : Fin (n + 2)} {j : Fin (n + 3)} (H : i.castSucc < j) :
+theorem δ_comp_δ' {n} {i : Fin (n + 2)} {j : Fin (n + 3)} (H : Fin.castSucc i < j) :
     δ i ≫ δ j =
       δ (j.pred fun (hj : j = 0) => by simp [hj, Fin.not_lt_zero] at H) ≫
         δ (Fin.castSucc i) := by
@@ -385,19 +231,19 @@ theorem δ_comp_δ'' {n} {i : Fin (n + 3)} {j : Fin (n + 2)} (H : i ≤ Fin.cast
 
 /-- The special case of the first simplicial identity -/
 @[reassoc]
-theorem δ_comp_δ_self {n} {i : Fin (n + 2)} : δ i ≫ δ i.castSucc = δ i ≫ δ i.succ :=
+theorem δ_comp_δ_self {n} {i : Fin (n + 2)} : δ i ≫ δ (Fin.castSucc i) = δ i ≫ δ i.succ :=
   (δ_comp_δ (le_refl i)).symm
 
 @[reassoc]
-theorem δ_comp_δ_self' {n} {i : Fin (n + 2)} {j : Fin (n + 3)} (H : j = i.castSucc) :
+theorem δ_comp_δ_self' {n} {i : Fin (n + 2)} {j : Fin (n + 3)} (H : j = Fin.castSucc i) :
     δ i ≫ δ j = δ i ≫ δ i.succ := by
   subst H
   rw [δ_comp_δ_self]
 
 /-- The second simplicial identity -/
 @[reassoc]
-theorem δ_comp_σ_of_le {n} {i : Fin (n + 2)} {j : Fin (n + 1)} (H : i ≤ j.castSucc) :
-    δ i.castSucc ≫ σ j.succ = σ j ≫ δ i := by
+theorem δ_comp_σ_of_le {n} {i : Fin (n + 2)} {j : Fin (n + 1)} (H : i ≤ Fin.castSucc j) :
+    δ (Fin.castSucc i) ≫ σ j.succ = σ j ≫ δ i := by
   ext k : 3
   dsimp [σ, δ]
   rcases le_or_lt i k with (hik | hik)
@@ -429,7 +275,7 @@ theorem δ_comp_σ_self {n} {i : Fin (n + 1)} :
   all_goals omega
 
 @[reassoc]
-theorem δ_comp_σ_self' {n} {j : Fin (n + 2)} {i : Fin (n + 1)} (H : j = i.castSucc) :
+theorem δ_comp_σ_self' {n} {j : Fin (n + 2)} {i : Fin (n + 1)} (H : j = Fin.castSucc i) :
     δ j ≫ σ i = 𝟙 ([n] : SimplexCategory) := by
   subst H
   rw [δ_comp_σ_self]
@@ -444,15 +290,15 @@ theorem δ_comp_σ_succ {n} {i : Fin (n + 1)} : δ i.succ ≫ σ i = 𝟙 ([n] :
   split_ifs <;> simp <;> simp at * <;> omega
 
 @[reassoc]
-theorem δ_comp_σ_succ' {n} {j : Fin (n + 2)} {i : Fin (n + 1)} (H : j = i.succ) :
+theorem δ_comp_σ_succ' {n} (j : Fin (n + 2)) (i : Fin (n + 1)) (H : j = i.succ) :
     δ j ≫ σ i = 𝟙 ([n] : SimplexCategory) := by
   subst H
   rw [δ_comp_σ_succ]
 
 /-- The fourth simplicial identity -/
 @[reassoc]
-theorem δ_comp_σ_of_gt {n} {i : Fin (n + 2)} {j : Fin (n + 1)} (H : j.castSucc < i) :
-    δ i.succ ≫ σ j.castSucc = σ j ≫ δ i := by
+theorem δ_comp_σ_of_gt {n} {i : Fin (n + 2)} {j : Fin (n + 1)} (H : Fin.castSucc j < i) :
+    δ i.succ ≫ σ (Fin.castSucc j) = σ j ≫ δ i := by
   ext k : 3
   dsimp [δ, σ]
   rcases le_or_lt k i with (hik | hik)
@@ -554,97 +400,6 @@ lemma factor_δ_spec {m n : ℕ} (f : ([m] : SimplexCategory) ⟶ [n+1]) (j : Fi
       · rwa [succ_le_castSucc_iff, lt_pred_iff]
       rw [succ_pred]
 
-@[simp]
-lemma δ_zero_mkOfSucc {n : ℕ} (i : Fin n) :
-    δ 0 ≫ mkOfSucc i = SimplexCategory.const _ [n] i.succ := by
-  ext x
-  fin_cases x
-  rfl
-
-@[simp]
-lemma δ_one_mkOfSucc {n : ℕ} (i : Fin n) :
-    δ 1 ≫ mkOfSucc i = SimplexCategory.const _ _ i.castSucc := by
-  ext x
-  fin_cases x
-  aesop
-
-/-- If `i + 1 < j`, `mkOfSucc i ≫ δ j` is the morphism `[1] ⟶ [n]` that
-sends `0` and `1` to `i` and `i + 1`, respectively. -/
-lemma mkOfSucc_δ_lt {n : ℕ} {i : Fin n} {j : Fin (n + 2)}
-    (h : i.succ.castSucc < j) :
-    mkOfSucc i ≫ δ j = mkOfSucc i.castSucc := by
-  ext x
-  fin_cases x
-  · simp [δ, Fin.succAbove_of_castSucc_lt _ _ (Nat.lt_trans _ h)]
-  · simp [δ, Fin.succAbove_of_castSucc_lt _ _ h]
-
-/-- If `i + 1 > j`, `mkOfSucc i ≫ δ j` is the morphism `[1] ⟶ [n]` that
-sends `0` and `1` to `i + 1` and `i + 2`, respectively. -/
-lemma mkOfSucc_δ_gt {n : ℕ} {i : Fin n} {j : Fin (n + 2)}
-    (h : j < i.succ.castSucc) :
-    mkOfSucc i ≫ δ j = mkOfSucc i.succ := by
-  ext x
-  simp only [δ, len_mk, mkHom, comp_toOrderHom, Hom.toOrderHom_mk, OrderHom.comp_coe,
-    OrderEmbedding.toOrderHom_coe, Function.comp_apply, Fin.succAboveOrderEmb_apply]
-  fin_cases x <;> rw [Fin.succAbove_of_le_castSucc]
-  · rfl
-  · exact Nat.le_of_lt_succ h
-  · rfl
-  · exact Nat.le_of_lt h
-
-/-- If `i + 1 = j`, `mkOfSucc i ≫ δ j` is the morphism `[1] ⟶ [n]` that
-sends `0` and `1` to `i` and `i + 2`, respectively. -/
-lemma mkOfSucc_δ_eq {n : ℕ} {i : Fin n} {j : Fin (n + 2)}
-    (h : j = i.succ.castSucc) :
-    mkOfSucc i ≫ δ j = intervalEdge i 2 (by omega) := by
-  ext x
-  fin_cases x
-  · subst h
-    simp only [δ, len_mk, Nat.reduceAdd, mkHom, comp_toOrderHom, Hom.toOrderHom_mk,
-      Fin.zero_eta, OrderHom.comp_coe, OrderEmbedding.toOrderHom_coe, Function.comp_apply,
-      mkOfSucc_homToOrderHom_zero, Fin.succAboveOrderEmb_apply,
-      Fin.castSucc_succAbove_castSucc, Fin.succAbove_succ_self]
-    rfl
-  · simp only [δ, len_mk, Nat.reduceAdd, mkHom, comp_toOrderHom, Hom.toOrderHom_mk, Fin.mk_one,
-      OrderHom.comp_coe, OrderEmbedding.toOrderHom_coe, Function.comp_apply,
-      mkOfSucc_homToOrderHom_one, Fin.succAboveOrderEmb_apply]
-    subst h
-    rw [Fin.succAbove_castSucc_self]
-    rfl
-
-theorem eq_of_one_to_two (f : ([1] : SimplexCategory) ⟶ [2]) :
-    f = (δ (n := 1) 0) ∨ f = (δ (n := 1) 1) ∨ f = (δ (n := 1) 2) ∨
-      ∃ a, f = SimplexCategory.const _ _ a := by
-  have : f.toOrderHom 0 ≤ f.toOrderHom 1 := f.toOrderHom.monotone (by decide : (0 : Fin 2) ≤ 1)
-  match e0 : f.toOrderHom 0, e1 : f.toOrderHom 1 with
-  | 1, 2 =>
-    left
-    ext i : 3
-    match i with
-    | 0 => exact e0
-    | 1 => exact e1
-  | 0, 2 =>
-    right; left
-    ext i : 3
-    match i with
-    | 0 => exact e0
-    | 1 => exact e1
-  | 0, 1 =>
-    right; right; left
-    ext i : 3
-    match i with
-    | 0 => exact e0
-    | 1 => exact e1
-  | 0, 0 | 1, 1 | 2, 2 =>
-    right; right; right; use f.toOrderHom 0
-    ext i : 3
-    match i with
-    | 0 => rfl
-    | 1 => exact e1.trans e0.symm
-  | 1, 0 | 2, 0 | 2, 1 =>
-    rw [e0, e1] at this
-    exact Not.elim (by decide) this
-
 end Generators
 
 section Skeleton
@@ -729,19 +484,11 @@ instance {n} : Inhabited (Truncated n) :=
 /-- The fully faithful inclusion of the truncated simplex category into the usual
 simplex category.
 -/
-def inclusion (n : ℕ) : SimplexCategory.Truncated n ⥤ SimplexCategory :=
+def inclusion {n : ℕ} : SimplexCategory.Truncated n ⥤ SimplexCategory :=
   fullSubcategoryInclusion _
 
-instance (n : ℕ) : (inclusion n : Truncated n ⥤ _).Full := FullSubcategory.full _
-instance (n : ℕ) : (inclusion n : Truncated n ⥤ _).Faithful := FullSubcategory.faithful _
-
-/-- A proof that the full subcategory inclusion is fully faithful.-/
-noncomputable def inclusion.fullyFaithful (n : ℕ) :
-    (inclusion n : Truncated n ⥤ _).op.FullyFaithful := Functor.FullyFaithful.ofFullyFaithful _
-
-@[ext]
-theorem Hom.ext {n} {a b : Truncated n} (f g : a ⟶ b) :
-    f.toOrderHom = g.toOrderHom → f = g := SimplexCategory.Hom.ext _ _
+instance (n : ℕ) : (inclusion : Truncated n ⥤ _).Full := FullSubcategory.full _
+instance (n : ℕ) : (inclusion : Truncated n ⥤ _).Faithful := FullSubcategory.faithful _
 
 end Truncated
 
@@ -803,12 +550,12 @@ instance {n : ℕ} {i : Fin (n + 1)} : Epi (σ i) := by
   simp only [σ, mkHom, Hom.toOrderHom_mk, OrderHom.coe_mk]
   by_cases h : b ≤ i
   · use b
-    -- This was not needed before https://github.com/leanprover/lean4/pull/2644
+    -- This was not needed before leanprover/lean4#2644
     dsimp
     rw [Fin.predAbove_of_le_castSucc i b (by simpa only [Fin.coe_eq_castSucc] using h)]
     simp only [len_mk, Fin.coe_eq_castSucc, Fin.castPred_castSucc]
   · use b.succ
-    -- This was not needed before https://github.com/leanprover/lean4/pull/2644
+    -- This was not needed before leanprover/lean4#2644
     dsimp
     rw [Fin.predAbove_of_castSucc_lt i b.succ _, Fin.pred_succ]
     rw [not_le] at h
@@ -861,7 +608,7 @@ theorem iso_eq_iso_refl {x : SimplexCategory} (e : x ≅ x) : e = Iso.refl x := 
   have eq₁ := Finset.orderEmbOfFin_unique' h fun i => Finset.mem_univ ((orderIsoOfIso e) i)
   have eq₂ :=
     Finset.orderEmbOfFin_unique' h fun i => Finset.mem_univ ((orderIsoOfIso (Iso.refl x)) i)
-  -- Porting note: the proof was rewritten from this point in https://github.com/leanprover-community/mathlib4/pull/3414 (reenableeta)
+  -- Porting note: the proof was rewritten from this point in #3414 (reenableeta)
   -- It could be investigated again to see if the original can be restored.
   ext x
   replace eq₁ := congr_arg (· x) eq₁
@@ -879,18 +626,18 @@ theorem eq_σ_comp_of_not_injective' {n : ℕ} {Δ' : SimplexCategory} (θ : mk 
   simp only [len_mk, σ, mkHom, comp_toOrderHom, Hom.toOrderHom_mk, OrderHom.comp_coe,
     OrderHom.coe_mk, Function.comp_apply]
   by_cases h' : x ≤ Fin.castSucc i
-  · -- This was not needed before https://github.com/leanprover/lean4/pull/2644
+  · -- This was not needed before leanprover/lean4#2644
     dsimp
     rw [Fin.predAbove_of_le_castSucc i x h']
     dsimp [δ]
-    rw [Fin.succAbove_of_castSucc_lt _ _ _]
+    erw [Fin.succAbove_of_castSucc_lt _ _ _]
     · rw [Fin.castSucc_castPred]
     · exact (Fin.castSucc_lt_succ_iff.mpr h')
   · simp only [not_le] at h'
     let y := x.pred <| by rintro (rfl : x = 0); simp at h'
     have hy : x = y.succ := (Fin.succ_pred x _).symm
     rw [hy] at h' ⊢
-    -- This was not needed before https://github.com/leanprover/lean4/pull/2644
+    -- This was not needed before leanprover/lean4#2644
     conv_rhs => dsimp
     rw [Fin.predAbove_of_castSucc_lt i y.succ h', Fin.pred_succ]
     by_cases h'' : y = i
@@ -898,10 +645,10 @@ theorem eq_σ_comp_of_not_injective' {n : ℕ} {Δ' : SimplexCategory} (θ : mk 
       refine hi.symm.trans ?_
       congr 1
       dsimp [δ]
-      rw [Fin.succAbove_of_castSucc_lt i.succ]
+      erw [Fin.succAbove_of_castSucc_lt i.succ]
       exact Fin.lt_succ
     · dsimp [δ]
-      rw [Fin.succAbove_of_le_castSucc i.succ _]
+      erw [Fin.succAbove_of_le_castSucc i.succ _]
       simp only [Fin.lt_iff_val_lt_val, Fin.le_iff_val_le_val, Fin.val_succ, Fin.coe_castSucc,
         Nat.lt_succ_iff, Fin.ext_iff] at h' h'' ⊢
       cases' Nat.le.dest h' with c hc
@@ -946,17 +693,18 @@ theorem eq_comp_δ_of_not_surjective' {n : ℕ} {Δ : SimplexCategory} (θ : Δ 
     simp only [len_mk, Category.assoc, comp_toOrderHom, OrderHom.comp_coe, Function.comp_apply]
     by_cases h' : θ.toOrderHom x ≤ i
     · simp only [σ, mkHom, Hom.toOrderHom_mk, OrderHom.coe_mk]
-      rw [Fin.predAbove_of_le_castSucc _ _ (by rwa [Fin.castSucc_castPred])]
+      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+      erw [Fin.predAbove_of_le_castSucc _ _ (by rwa [Fin.castSucc_castPred])]
       dsimp [δ]
-      rw [Fin.succAbove_of_castSucc_lt i]
+      erw [Fin.succAbove_of_castSucc_lt i]
       · rw [Fin.castSucc_castPred]
       · rw [(hi x).le_iff_lt] at h'
         exact h'
     · simp only [not_le] at h'
       dsimp [σ, δ]
-      rw [Fin.predAbove_of_castSucc_lt _ _ (by rwa [Fin.castSucc_castPred])]
+      erw [Fin.predAbove_of_castSucc_lt _ _ (by rwa [Fin.castSucc_castPred])]
       rw [Fin.succAbove_of_le_castSucc i _]
-      · rw [Fin.succ_pred]
+      · erw [Fin.succ_pred]
       · exact Nat.le_sub_one_of_lt (Fin.lt_iff_val_lt_val.mp h')
   · obtain rfl := le_antisymm (Fin.le_last i) (not_lt.mp h)
     use θ ≫ σ (Fin.last _)

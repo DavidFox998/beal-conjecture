@@ -33,6 +33,8 @@ scoped notation "sf" n:60 => Nat.superFactorial n
 
 section SuperFactorial
 
+variable {n : ℕ}
+
 @[simp]
 theorem superFactorial_zero : sf 0 = 1 :=
   rfl

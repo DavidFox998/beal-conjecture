@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Yaël Dillies
 -/
 import Mathlib.Algebra.Group.Pi.Basic
-import Mathlib.Algebra.Group.Units.Basic
+import Mathlib.Algebra.Group.Units
 import Mathlib.Algebra.GroupWithZero.NeZero
 import Mathlib.Algebra.Order.Group.Unbundled.Basic
 import Mathlib.Algebra.Order.GroupWithZero.Unbundled
@@ -126,7 +126,7 @@ variable {α : Type u} {β : Type*}
 `zero_le_one` field. -/
 
 
-theorem add_one_le_two_mul [LE α] [Semiring α] [AddLeftMono α] {a : α}
+theorem add_one_le_two_mul [LE α] [Semiring α] [CovariantClass α α (· + ·) (· ≤ ·)] {a : α}
     (a1 : 1 ≤ a) : a + 1 ≤ 2 * a :=
   calc
     a + 1 ≤ a + a := add_le_add_left a1 a
@@ -137,7 +137,7 @@ section OrderedSemiring
 variable [Semiring α] [Preorder α] {a b c d : α}
 
 -- Porting note: it's unfortunate we need to write `(@one_le_two α)` here.
-theorem add_le_mul_two_add [ZeroLEOneClass α] [MulPosMono α] [AddLeftMono α]
+theorem add_le_mul_two_add [ZeroLEOneClass α] [MulPosMono α] [CovariantClass α α (· + ·) (· ≤ ·)]
     (a2 : 2 ≤ a) (b0 : 0 ≤ b) : a + (2 + b) ≤ a * (2 + b) :=
   calc
     a + (2 + b) ≤ a + (a + a * b) :=
@@ -145,7 +145,7 @@ theorem add_le_mul_two_add [ZeroLEOneClass α] [MulPosMono α] [AddLeftMono α]
     _ ≤ a * (2 + b) := by rw [mul_add, mul_two, add_assoc]
 
 theorem mul_le_mul_of_nonpos_left [ExistsAddOfLE α] [PosMulMono α]
-    [AddRightMono α] [AddRightReflectLE α]
+    [CovariantClass α α (swap (· + ·)) (· ≤ ·)] [ContravariantClass α α (swap (· + ·)) (· ≤ ·)]
     (h : b ≤ a) (hc : c ≤ 0) : c * a ≤ c * b := by
   obtain ⟨d, hcd⟩ := exists_add_of_le hc
   refine le_of_add_le_add_right (a := d * b + d * a) ?_
@@ -155,7 +155,7 @@ theorem mul_le_mul_of_nonpos_left [ExistsAddOfLE α] [PosMulMono α]
     _ = _ := by rw [← add_assoc, ← add_mul, ← hcd, zero_mul, zero_add]
 
 theorem mul_le_mul_of_nonpos_right [ExistsAddOfLE α] [MulPosMono α]
-    [AddRightMono α] [AddRightReflectLE α]
+    [CovariantClass α α (swap (· + ·)) (· ≤ ·)] [ContravariantClass α α (swap (· + ·)) (· ≤ ·)]
     (h : b ≤ a) (hc : c ≤ 0) : a * c ≤ b * c := by
   obtain ⟨d, hcd⟩ := exists_add_of_le hc
   refine le_of_add_le_add_right (a := b * d + a * d) ?_
@@ -165,61 +165,61 @@ theorem mul_le_mul_of_nonpos_right [ExistsAddOfLE α] [MulPosMono α]
     _ = _ := by rw [← add_assoc, ← mul_add, ← hcd, mul_zero, zero_add]
 
 theorem mul_nonneg_of_nonpos_of_nonpos [ExistsAddOfLE α] [MulPosMono α]
-    [AddRightMono α] [AddRightReflectLE α]
+    [CovariantClass α α (swap (· + ·)) (· ≤ ·)] [ContravariantClass α α (swap (· + ·)) (· ≤ ·)]
     (ha : a ≤ 0) (hb : b ≤ 0) : 0 ≤ a * b := by
   simpa only [zero_mul] using mul_le_mul_of_nonpos_right ha hb
 
 theorem mul_le_mul_of_nonneg_of_nonpos [ExistsAddOfLE α] [MulPosMono α] [PosMulMono α]
-    [AddRightMono α] [AddRightReflectLE α]
+    [CovariantClass α α (swap (· + ·)) (· ≤ ·)] [ContravariantClass α α (swap (· + ·)) (· ≤ ·)]
     (hca : c ≤ a) (hbd : b ≤ d) (hc : 0 ≤ c) (hb : b ≤ 0) : a * b ≤ c * d :=
   (mul_le_mul_of_nonpos_right hca hb).trans <| mul_le_mul_of_nonneg_left hbd hc
 
 theorem mul_le_mul_of_nonneg_of_nonpos' [ExistsAddOfLE α] [PosMulMono α] [MulPosMono α]
-    [AddRightMono α] [AddRightReflectLE α]
+    [CovariantClass α α (swap (· + ·)) (· ≤ ·)] [ContravariantClass α α (swap (· + ·)) (· ≤ ·)]
     (hca : c ≤ a) (hbd : b ≤ d) (ha : 0 ≤ a) (hd : d ≤ 0) : a * b ≤ c * d :=
   (mul_le_mul_of_nonneg_left hbd ha).trans <| mul_le_mul_of_nonpos_right hca hd
 
 theorem mul_le_mul_of_nonpos_of_nonneg [ExistsAddOfLE α] [MulPosMono α] [PosMulMono α]
-    [AddRightMono α] [AddRightReflectLE α]
+    [CovariantClass α α (swap (· + ·)) (· ≤ ·)] [ContravariantClass α α (swap (· + ·)) (· ≤ ·)]
     (hac : a ≤ c) (hdb : d ≤ b) (hc : c ≤ 0) (hb : 0 ≤ b) : a * b ≤ c * d :=
   (mul_le_mul_of_nonneg_right hac hb).trans <| mul_le_mul_of_nonpos_left hdb hc
 
 theorem mul_le_mul_of_nonpos_of_nonneg' [ExistsAddOfLE α] [PosMulMono α] [MulPosMono α]
-    [AddRightMono α] [AddRightReflectLE α]
+    [CovariantClass α α (swap (· + ·)) (· ≤ ·)] [ContravariantClass α α (swap (· + ·)) (· ≤ ·)]
     (hca : c ≤ a) (hbd : b ≤ d) (ha : 0 ≤ a) (hd : d ≤ 0) : a * b ≤ c * d :=
   (mul_le_mul_of_nonneg_left hbd ha).trans <| mul_le_mul_of_nonpos_right hca hd
 
 theorem mul_le_mul_of_nonpos_of_nonpos [ExistsAddOfLE α] [MulPosMono α] [PosMulMono α]
-    [AddRightMono α] [AddRightReflectLE α]
+    [CovariantClass α α (swap (· + ·)) (· ≤ ·)] [ContravariantClass α α (swap (· + ·)) (· ≤ ·)]
     (hca : c ≤ a) (hdb : d ≤ b) (hc : c ≤ 0) (hb : b ≤ 0) : a * b ≤ c * d :=
   (mul_le_mul_of_nonpos_right hca hb).trans <| mul_le_mul_of_nonpos_left hdb hc
 
 theorem mul_le_mul_of_nonpos_of_nonpos' [ExistsAddOfLE α] [PosMulMono α] [MulPosMono α]
-    [AddRightMono α] [AddRightReflectLE α]
+    [CovariantClass α α (swap (· + ·)) (· ≤ ·)] [ContravariantClass α α (swap (· + ·)) (· ≤ ·)]
     (hca : c ≤ a) (hdb : d ≤ b) (ha : a ≤ 0) (hd : d ≤ 0) : a * b ≤ c * d :=
   (mul_le_mul_of_nonpos_left hdb ha).trans <| mul_le_mul_of_nonpos_right hca hd
 
 /-- Variant of `mul_le_of_le_one_left` for `b` non-positive instead of non-negative. -/
 theorem le_mul_of_le_one_left [ExistsAddOfLE α] [MulPosMono α]
-    [AddRightMono α] [AddRightReflectLE α]
+    [CovariantClass α α (swap (· + ·)) (· ≤ ·)] [ContravariantClass α α (swap (· + ·)) (· ≤ ·)]
     (hb : b ≤ 0) (h : a ≤ 1) : b ≤ a * b := by
   simpa only [one_mul] using mul_le_mul_of_nonpos_right h hb
 
 /-- Variant of `le_mul_of_one_le_left` for `b` non-positive instead of non-negative. -/
 theorem mul_le_of_one_le_left [ExistsAddOfLE α] [MulPosMono α]
-    [AddRightMono α] [AddRightReflectLE α]
+    [CovariantClass α α (swap (· + ·)) (· ≤ ·)] [ContravariantClass α α (swap (· + ·)) (· ≤ ·)]
     (hb : b ≤ 0) (h : 1 ≤ a) : a * b ≤ b := by
   simpa only [one_mul] using mul_le_mul_of_nonpos_right h hb
 
 /-- Variant of `mul_le_of_le_one_right` for `a` non-positive instead of non-negative. -/
 theorem le_mul_of_le_one_right [ExistsAddOfLE α] [PosMulMono α]
-    [AddRightMono α] [AddRightReflectLE α]
+    [CovariantClass α α (swap (· + ·)) (· ≤ ·)] [ContravariantClass α α (swap (· + ·)) (· ≤ ·)]
     (ha : a ≤ 0) (h : b ≤ 1) : a ≤ a * b := by
   simpa only [mul_one] using mul_le_mul_of_nonpos_left h ha
 
 /-- Variant of `le_mul_of_one_le_right` for `a` non-positive instead of non-negative. -/
 theorem mul_le_of_one_le_right [ExistsAddOfLE α] [PosMulMono α]
-    [AddRightMono α] [AddRightReflectLE α]
+    [CovariantClass α α (swap (· + ·)) (· ≤ ·)] [ContravariantClass α α (swap (· + ·)) (· ≤ ·)]
     (ha : a ≤ 0) (h : 1 ≤ b) : a * b ≤ a := by
   simpa only [mul_one] using mul_le_mul_of_nonpos_left h ha
 
@@ -228,49 +228,49 @@ section Monotone
 variable [Preorder β] {f g : β → α}
 
 theorem antitone_mul_left [ExistsAddOfLE α] [PosMulMono α]
-    [AddRightMono α] [AddRightReflectLE α]
+    [CovariantClass α α (swap (· + ·)) (· ≤ ·)] [ContravariantClass α α (swap (· + ·)) (· ≤ ·)]
     {a : α} (ha : a ≤ 0) : Antitone (a * ·) := fun _ _ b_le_c =>
   mul_le_mul_of_nonpos_left b_le_c ha
 
 theorem antitone_mul_right [ExistsAddOfLE α] [MulPosMono α]
-    [AddRightMono α] [AddRightReflectLE α]
+    [CovariantClass α α (swap (· + ·)) (· ≤ ·)] [ContravariantClass α α (swap (· + ·)) (· ≤ ·)]
     {a : α} (ha : a ≤ 0) : Antitone fun x => x * a := fun _ _ b_le_c =>
   mul_le_mul_of_nonpos_right b_le_c ha
 
 theorem Monotone.const_mul_of_nonpos [ExistsAddOfLE α] [PosMulMono α]
-    [AddRightMono α] [AddRightReflectLE α]
+    [CovariantClass α α (swap (· + ·)) (· ≤ ·)] [ContravariantClass α α (swap (· + ·)) (· ≤ ·)]
     (hf : Monotone f) (ha : a ≤ 0) : Antitone fun x => a * f x :=
   (antitone_mul_left ha).comp_monotone hf
 
 theorem Monotone.mul_const_of_nonpos [ExistsAddOfLE α] [MulPosMono α]
-    [AddRightMono α] [AddRightReflectLE α]
+    [CovariantClass α α (swap (· + ·)) (· ≤ ·)] [ContravariantClass α α (swap (· + ·)) (· ≤ ·)]
     (hf : Monotone f) (ha : a ≤ 0) : Antitone fun x => f x * a :=
   (antitone_mul_right ha).comp_monotone hf
 
 theorem Antitone.const_mul_of_nonpos [ExistsAddOfLE α] [PosMulMono α]
-    [AddRightMono α] [AddRightReflectLE α]
+    [CovariantClass α α (swap (· + ·)) (· ≤ ·)] [ContravariantClass α α (swap (· + ·)) (· ≤ ·)]
     (hf : Antitone f) (ha : a ≤ 0) : Monotone fun x => a * f x :=
   (antitone_mul_left ha).comp hf
 
 theorem Antitone.mul_const_of_nonpos [ExistsAddOfLE α] [MulPosMono α]
-    [AddRightMono α] [AddRightReflectLE α]
+    [CovariantClass α α (swap (· + ·)) (· ≤ ·)] [ContravariantClass α α (swap (· + ·)) (· ≤ ·)]
     (hf : Antitone f) (ha : a ≤ 0) : Monotone fun x => f x * a :=
   (antitone_mul_right ha).comp hf
 
 theorem Antitone.mul_monotone [ExistsAddOfLE α] [PosMulMono α] [MulPosMono α]
-    [AddRightMono α] [AddRightReflectLE α]
+    [CovariantClass α α (swap (· + ·)) (· ≤ ·)] [ContravariantClass α α (swap (· + ·)) (· ≤ ·)]
     (hf : Antitone f) (hg : Monotone g) (hf₀ : ∀ x, f x ≤ 0)
     (hg₀ : ∀ x, 0 ≤ g x) : Antitone (f * g) := fun _ _ h =>
   mul_le_mul_of_nonpos_of_nonneg (hf h) (hg h) (hf₀ _) (hg₀ _)
 
 theorem Monotone.mul_antitone [ExistsAddOfLE α] [PosMulMono α] [MulPosMono α]
-    [AddRightMono α] [AddRightReflectLE α]
+    [CovariantClass α α (swap (· + ·)) (· ≤ ·)] [ContravariantClass α α (swap (· + ·)) (· ≤ ·)]
     (hf : Monotone f) (hg : Antitone g) (hf₀ : ∀ x, 0 ≤ f x)
     (hg₀ : ∀ x, g x ≤ 0) : Antitone (f * g) := fun _ _ h =>
   mul_le_mul_of_nonneg_of_nonpos (hf h) (hg h) (hf₀ _) (hg₀ _)
 
 theorem Antitone.mul [ExistsAddOfLE α] [PosMulMono α] [MulPosMono α]
-    [AddRightMono α] [AddRightReflectLE α]
+    [CovariantClass α α (swap (· + ·)) (· ≤ ·)] [ContravariantClass α α (swap (· + ·)) (· ≤ ·)]
     (hf : Antitone f) (hg : Antitone g) (hf₀ : ∀ x, f x ≤ 0) (hg₀ : ∀ x, g x ≤ 0) :
     Monotone (f * g) := fun _ _ h => mul_le_mul_of_nonpos_of_nonpos (hf h) (hg h) (hf₀ _) (hg₀ _)
 
@@ -284,11 +284,11 @@ section StrictOrderedSemiring
 variable [Semiring α] [PartialOrder α] {a b c d : α}
 
 theorem lt_two_mul_self [ZeroLEOneClass α] [MulPosStrictMono α] [NeZero (R := α) 1]
-    [AddLeftStrictMono α] (ha : 0 < a) : a < 2 * a :=
+    [CovariantClass α α (· + ·) (· < ·)] (ha : 0 < a) : a < 2 * a :=
   lt_mul_of_one_lt_left ha one_lt_two
 
 theorem mul_lt_mul_of_neg_left [ExistsAddOfLE α] [PosMulStrictMono α]
-    [AddRightStrictMono α] [AddRightReflectLT α]
+    [CovariantClass α α (swap (· + ·)) (· < ·)] [ContravariantClass α α (swap (· + ·)) (· < ·)]
     (h : b < a) (hc : c < 0) : c * a < c * b := by
   obtain ⟨d, hcd⟩ := exists_add_of_le hc.le
   refine (add_lt_add_iff_right (d * b + d * a)).1 ?_
@@ -298,7 +298,7 @@ theorem mul_lt_mul_of_neg_left [ExistsAddOfLE α] [PosMulStrictMono α]
     _ = _ := by rw [← add_assoc, ← add_mul, ← hcd, zero_mul, zero_add]
 
 theorem mul_lt_mul_of_neg_right [ExistsAddOfLE α] [MulPosStrictMono α]
-    [AddRightStrictMono α] [AddRightReflectLT α]
+    [CovariantClass α α (swap (· + ·)) (· < ·)] [ContravariantClass α α (swap (· + ·)) (· < ·)]
     (h : b < a) (hc : c < 0) : a * c < b * c := by
   obtain ⟨d, hcd⟩ := exists_add_of_le hc.le
   refine (add_lt_add_iff_right (b * d + a * d)).1 ?_
@@ -308,65 +308,65 @@ theorem mul_lt_mul_of_neg_right [ExistsAddOfLE α] [MulPosStrictMono α]
     _ = _ := by rw [← add_assoc, ← mul_add, ← hcd, mul_zero, zero_add]
 
 theorem mul_pos_of_neg_of_neg [ExistsAddOfLE α] [MulPosStrictMono α]
-    [AddRightStrictMono α] [AddRightReflectLT α]
+    [CovariantClass α α (swap (· + ·)) (· < ·)] [ContravariantClass α α (swap (· + ·)) (· < ·)]
     {a b : α} (ha : a < 0) (hb : b < 0) : 0 < a * b := by
   simpa only [zero_mul] using mul_lt_mul_of_neg_right ha hb
 
 /-- Variant of `mul_lt_of_lt_one_left` for `b` negative instead of positive. -/
 theorem lt_mul_of_lt_one_left [ExistsAddOfLE α] [MulPosStrictMono α]
-    [AddRightStrictMono α] [AddRightReflectLT α]
+    [CovariantClass α α (swap (· + ·)) (· < ·)] [ContravariantClass α α (swap (· + ·)) (· < ·)]
     (hb : b < 0) (h : a < 1) : b < a * b := by
   simpa only [one_mul] using mul_lt_mul_of_neg_right h hb
 
 /-- Variant of `lt_mul_of_one_lt_left` for `b` negative instead of positive. -/
 theorem mul_lt_of_one_lt_left [ExistsAddOfLE α] [MulPosStrictMono α]
-    [AddRightStrictMono α] [AddRightReflectLT α]
+    [CovariantClass α α (swap (· + ·)) (· < ·)] [ContravariantClass α α (swap (· + ·)) (· < ·)]
     (hb : b < 0) (h : 1 < a) : a * b < b := by
   simpa only [one_mul] using mul_lt_mul_of_neg_right h hb
 
 /-- Variant of `mul_lt_of_lt_one_right` for `a` negative instead of positive. -/
 theorem lt_mul_of_lt_one_right [ExistsAddOfLE α] [PosMulStrictMono α]
-    [AddRightStrictMono α] [AddRightReflectLT α]
+    [CovariantClass α α (swap (· + ·)) (· < ·)] [ContravariantClass α α (swap (· + ·)) (· < ·)]
     (ha : a < 0) (h : b < 1) : a < a * b := by
   simpa only [mul_one] using mul_lt_mul_of_neg_left h ha
 
 /-- Variant of `lt_mul_of_lt_one_right` for `a` negative instead of positive. -/
 theorem mul_lt_of_one_lt_right [ExistsAddOfLE α] [PosMulStrictMono α]
-    [AddRightStrictMono α] [AddRightReflectLT α]
+    [CovariantClass α α (swap (· + ·)) (· < ·)] [ContravariantClass α α (swap (· + ·)) (· < ·)]
     (ha : a < 0) (h : 1 < b) : a * b < a := by
   simpa only [mul_one] using mul_lt_mul_of_neg_left h ha
 
 section Monotone
 
-variable [Preorder β] {f : β → α}
+variable [Preorder β] {f g : β → α}
 
 theorem strictAnti_mul_left [ExistsAddOfLE α] [PosMulStrictMono α]
-    [AddRightStrictMono α] [AddRightReflectLT α]
+    [CovariantClass α α (swap (· + ·)) (· < ·)] [ContravariantClass α α (swap (· + ·)) (· < ·)]
     {a : α} (ha : a < 0) : StrictAnti (a * ·) := fun _ _ b_lt_c =>
   mul_lt_mul_of_neg_left b_lt_c ha
 
 theorem strictAnti_mul_right [ExistsAddOfLE α] [MulPosStrictMono α]
-    [AddRightStrictMono α] [AddRightReflectLT α]
+    [CovariantClass α α (swap (· + ·)) (· < ·)] [ContravariantClass α α (swap (· + ·)) (· < ·)]
     {a : α} (ha : a < 0) : StrictAnti fun x => x * a := fun _ _ b_lt_c =>
   mul_lt_mul_of_neg_right b_lt_c ha
 
 theorem StrictMono.const_mul_of_neg [ExistsAddOfLE α] [PosMulStrictMono α]
-    [AddRightStrictMono α] [AddRightReflectLT α]
+    [CovariantClass α α (swap (· + ·)) (· < ·)] [ContravariantClass α α (swap (· + ·)) (· < ·)]
     (hf : StrictMono f) (ha : a < 0) : StrictAnti fun x => a * f x :=
   (strictAnti_mul_left ha).comp_strictMono hf
 
 theorem StrictMono.mul_const_of_neg [ExistsAddOfLE α] [MulPosStrictMono α]
-    [AddRightStrictMono α] [AddRightReflectLT α]
+    [CovariantClass α α (swap (· + ·)) (· < ·)] [ContravariantClass α α (swap (· + ·)) (· < ·)]
     (hf : StrictMono f) (ha : a < 0) : StrictAnti fun x => f x * a :=
   (strictAnti_mul_right ha).comp_strictMono hf
 
 theorem StrictAnti.const_mul_of_neg [ExistsAddOfLE α] [PosMulStrictMono α]
-    [AddRightStrictMono α] [AddRightReflectLT α]
+    [CovariantClass α α (swap (· + ·)) (· < ·)] [ContravariantClass α α (swap (· + ·)) (· < ·)]
     (hf : StrictAnti f) (ha : a < 0) : StrictMono fun x => a * f x :=
   (strictAnti_mul_left ha).comp hf
 
 theorem StrictAnti.mul_const_of_neg [ExistsAddOfLE α] [MulPosStrictMono α]
-    [AddRightStrictMono α] [AddRightReflectLT α]
+    [CovariantClass α α (swap (· + ·)) (· < ·)] [ContravariantClass α α (swap (· + ·)) (· < ·)]
     (hf : StrictAnti f) (ha : a < 0) : StrictMono fun x => f x * a :=
   (strictAnti_mul_right ha).comp hf
 
@@ -374,7 +374,7 @@ end Monotone
 
 /-- Binary **rearrangement inequality**. -/
 lemma mul_add_mul_le_mul_add_mul [ExistsAddOfLE α] [MulPosMono α]
-    [AddLeftMono α] [AddLeftReflectLE α]
+    [CovariantClass α α (· + ·) (· ≤ ·)] [ContravariantClass α α (· + ·) (· ≤ ·)]
     (hab : a ≤ b) (hcd : c ≤ d) : a * d + b * c ≤ a * c + b * d := by
   obtain ⟨b, rfl⟩ := exists_add_of_le hab
   obtain ⟨d, hd, rfl⟩ := exists_nonneg_add_of_le hcd
@@ -383,15 +383,15 @@ lemma mul_add_mul_le_mul_add_mul [ExistsAddOfLE α] [MulPosMono α]
 
 /-- Binary **rearrangement inequality**. -/
 lemma mul_add_mul_le_mul_add_mul' [ExistsAddOfLE α] [MulPosMono α]
-    [AddLeftMono α] [AddLeftReflectLE α]
+    [CovariantClass α α (· + ·) (· ≤ ·)] [ContravariantClass α α (· + ·) (· ≤ ·)]
     (hba : b ≤ a) (hdc : d ≤ c) : a * d + b * c ≤ a * c + b * d := by
   rw [add_comm (a * d), add_comm (a * c)]; exact mul_add_mul_le_mul_add_mul hba hdc
 
-variable [AddLeftReflectLT α]
+variable [ContravariantClass α α (· + ·) (· < ·)]
 
 /-- Binary strict **rearrangement inequality**. -/
 lemma mul_add_mul_lt_mul_add_mul [ExistsAddOfLE α] [MulPosStrictMono α]
-    [AddLeftStrictMono α]
+    [CovariantClass α α (· + ·) (· < ·)]
     (hab : a < b) (hcd : c < d) : a * d + b * c < a * c + b * d := by
   obtain ⟨b, rfl⟩ := exists_add_of_le hab.le
   obtain ⟨d, hd, rfl⟩ := exists_pos_add_of_lt' hcd
@@ -400,7 +400,7 @@ lemma mul_add_mul_lt_mul_add_mul [ExistsAddOfLE α] [MulPosStrictMono α]
 
 /-- Binary **rearrangement inequality**. -/
 lemma mul_add_mul_lt_mul_add_mul' [ExistsAddOfLE α] [MulPosStrictMono α]
-    [AddLeftStrictMono α]
+    [CovariantClass α α (· + ·) (· < ·)]
     (hba : b < a) (hdc : d < c) : a * d + b * c < a * c + b * d := by
   rw [add_comm (a * d), add_comm (a * c)]
   exact mul_add_mul_lt_mul_add_mul hba hdc
@@ -409,7 +409,7 @@ end StrictOrderedSemiring
 
 section LinearOrderedSemiring
 
-variable [Semiring α] [LinearOrder α] {a b c : α}
+variable [Semiring α] [LinearOrder α] {a b c d : α}
 
 theorem nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nonneg
     [MulPosStrictMono α] [PosMulStrictMono α]
@@ -449,7 +449,7 @@ theorem mul_nonneg_iff_of_pos_right [MulPosStrictMono α]
   simpa using (mul_le_mul_right h : 0 * c ≤ b * c ↔ 0 ≤ b)
 
 theorem add_le_mul_of_left_le_right [ZeroLEOneClass α] [NeZero (R := α) 1]
-    [MulPosStrictMono α] [AddLeftMono α]
+    [MulPosStrictMono α] [CovariantClass α α (· + ·) (· ≤ ·)]
     (a2 : 2 ≤ a) (ab : a ≤ b) : a + b ≤ a * b :=
   have : 0 < b :=
     calc
@@ -463,7 +463,7 @@ theorem add_le_mul_of_left_le_right [ZeroLEOneClass α] [NeZero (R := α) 1]
 
 -- Porting note: we used to not need the type annotation on `(0 : α)` at the start of the `calc`.
 theorem add_le_mul_of_right_le_left [ZeroLEOneClass α] [NeZero (R := α) 1]
-    [AddLeftMono α] [PosMulStrictMono α]
+    [CovariantClass α α (· + ·) (· ≤ ·)] [PosMulStrictMono α]
     (b2 : 2 ≤ b) (ba : b ≤ a) : a + b ≤ a * b :=
   have : 0 < a :=
     calc (0 : α)
@@ -476,13 +476,13 @@ theorem add_le_mul_of_right_le_left [ZeroLEOneClass α] [NeZero (R := α) 1]
     _ ≤ a * b := (mul_le_mul_left this).mpr b2
 
 theorem add_le_mul [ZeroLEOneClass α] [NeZero (R := α) 1]
-    [MulPosStrictMono α] [PosMulStrictMono α] [AddLeftMono α]
+    [MulPosStrictMono α] [PosMulStrictMono α] [CovariantClass α α (· + ·) (· ≤ ·)]
     (a2 : 2 ≤ a) (b2 : 2 ≤ b) : a + b ≤ a * b :=
   if hab : a ≤ b then add_le_mul_of_left_le_right a2 hab
   else add_le_mul_of_right_le_left b2 (le_of_not_le hab)
 
 theorem add_le_mul' [ZeroLEOneClass α] [NeZero (R := α) 1]
-    [MulPosStrictMono α] [PosMulStrictMono α] [AddLeftMono α]
+    [MulPosStrictMono α] [PosMulStrictMono α] [CovariantClass α α (· + ·) (· ≤ ·)]
     (a2 : 2 ≤ a) (b2 : 2 ≤ b) : a + b ≤ b * a :=
   (le_of_eq (add_comm _ _)).trans (add_le_mul b2 a2)
 
@@ -570,20 +570,20 @@ lemma sign_cases_of_C_mul_pow_nonneg [PosMulStrictMono α]
   simpa only [pow_one] using h 1
 
 theorem mul_pos_iff [ExistsAddOfLE α] [PosMulStrictMono α] [MulPosStrictMono α]
-    [AddLeftStrictMono α] [AddLeftReflectLT α] :
+    [CovariantClass α α (· + ·) (· < ·)] [ContravariantClass α α (· + ·) (· < ·)] :
     0 < a * b ↔ 0 < a ∧ 0 < b ∨ a < 0 ∧ b < 0 :=
   ⟨pos_and_pos_or_neg_and_neg_of_mul_pos, fun h =>
     h.elim (and_imp.2 mul_pos) (and_imp.2 mul_pos_of_neg_of_neg)⟩
 
 theorem mul_nonneg_iff [ExistsAddOfLE α] [MulPosStrictMono α] [PosMulStrictMono α]
-    [AddLeftReflectLE α] [AddLeftMono α]:
+    [ContravariantClass α α (· + ·) (· ≤ ·)] [CovariantClass α α (· + ·) (· ≤ ·)]:
     0 ≤ a * b ↔ 0 ≤ a ∧ 0 ≤ b ∨ a ≤ 0 ∧ b ≤ 0 :=
   ⟨nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nonneg, fun h =>
     h.elim (and_imp.2 mul_nonneg) (and_imp.2 mul_nonneg_of_nonpos_of_nonpos)⟩
 
 /-- Out of three elements of a `LinearOrderedRing`, two must have the same sign. -/
 theorem mul_nonneg_of_three [ExistsAddOfLE α] [MulPosStrictMono α] [PosMulStrictMono α]
-    [AddLeftMono α] [AddLeftReflectLE α]
+    [CovariantClass α α (· + ·) (· ≤ ·)] [ContravariantClass α α (· + ·) (· ≤ ·)]
     (a b c : α) : 0 ≤ a * b ∨ 0 ≤ b * c ∨ 0 ≤ c * a := by
   iterate 3 rw [mul_nonneg_iff]
   have or_a := le_total 0 a
@@ -609,7 +609,7 @@ theorem mul_nonneg_of_three [ExistsAddOfLE α] [MulPosStrictMono α] [PosMulStri
               (fun (h6 : a ≤ 0) => Or.inl (Or.inr ⟨h6, h4⟩))))
 
 lemma mul_nonneg_iff_pos_imp_nonneg [ExistsAddOfLE α] [PosMulStrictMono α] [MulPosStrictMono α]
-    [AddLeftMono α] [AddLeftReflectLE α] :
+    [CovariantClass α α (· + ·) (· ≤ ·)] [ContravariantClass α α (· + ·) (· ≤ ·)] :
     0 ≤ a * b ↔ (0 < a → 0 ≤ b) ∧ (0 < b → 0 ≤ a) := by
   refine mul_nonneg_iff.trans ?_
   simp_rw [← not_le, ← or_iff_not_imp_left]
@@ -619,51 +619,51 @@ lemma mul_nonneg_iff_pos_imp_nonneg [ExistsAddOfLE α] [PosMulStrictMono α] [Mu
 
 @[simp]
 theorem mul_le_mul_left_of_neg [ExistsAddOfLE α] [PosMulStrictMono α]
-    [AddRightMono α] [AddRightReflectLE α]
+    [CovariantClass α α (swap (· + ·)) (· ≤ ·)] [ContravariantClass α α (swap (· + ·)) (· ≤ ·)]
     {a b c : α} (h : c < 0) : c * a ≤ c * b ↔ b ≤ a :=
   (strictAnti_mul_left h).le_iff_le
 
 @[simp]
 theorem mul_le_mul_right_of_neg [ExistsAddOfLE α] [MulPosStrictMono α]
-    [AddRightMono α] [AddRightReflectLE α]
+    [CovariantClass α α (swap (· + ·)) (· ≤ ·)] [ContravariantClass α α (swap (· + ·)) (· ≤ ·)]
     {a b c : α} (h : c < 0) : a * c ≤ b * c ↔ b ≤ a :=
   (strictAnti_mul_right h).le_iff_le
 
 @[simp]
 theorem mul_lt_mul_left_of_neg [ExistsAddOfLE α] [PosMulStrictMono α]
-    [AddRightStrictMono α] [AddRightReflectLT α]
+    [CovariantClass α α (swap (· + ·)) (· < ·)] [ContravariantClass α α (swap (· + ·)) (· < ·)]
     {a b c : α} (h : c < 0) : c * a < c * b ↔ b < a :=
   (strictAnti_mul_left h).lt_iff_lt
 
 @[simp]
 theorem mul_lt_mul_right_of_neg [ExistsAddOfLE α] [MulPosStrictMono α]
-    [AddRightStrictMono α] [AddRightReflectLT α]
+    [CovariantClass α α (swap (· + ·)) (· < ·)] [ContravariantClass α α (swap (· + ·)) (· < ·)]
     {a b c : α} (h : c < 0) : a * c < b * c ↔ b < a :=
   (strictAnti_mul_right h).lt_iff_lt
 
 theorem lt_of_mul_lt_mul_of_nonpos_left [ExistsAddOfLE α] [PosMulMono α]
-    [AddRightMono α] [AddRightReflectLE α]
+    [CovariantClass α α (swap (· + ·)) (· ≤ ·)] [ContravariantClass α α (swap (· + ·)) (· ≤ ·)]
     (h : c * a < c * b) (hc : c ≤ 0) : b < a :=
   (antitone_mul_left hc).reflect_lt h
 
 theorem lt_of_mul_lt_mul_of_nonpos_right [ExistsAddOfLE α] [MulPosMono α]
-    [AddRightMono α] [AddRightReflectLE α]
+    [CovariantClass α α (swap (· + ·)) (· ≤ ·)] [ContravariantClass α α (swap (· + ·)) (· ≤ ·)]
     (h : a * c < b * c) (hc : c ≤ 0) : b < a :=
   (antitone_mul_right hc).reflect_lt h
 
 theorem cmp_mul_neg_left [ExistsAddOfLE α] [PosMulStrictMono α]
-    [AddRightReflectLT α] [AddRightStrictMono α]
+    [ContravariantClass α α (swap (· + ·)) (· < ·)] [CovariantClass α α (swap (· + ·)) (· < ·)]
     {a : α} (ha : a < 0) (b c : α) : cmp (a * b) (a * c) = cmp c b :=
   (strictAnti_mul_left ha).cmp_map_eq b c
 
 theorem cmp_mul_neg_right [ExistsAddOfLE α] [MulPosStrictMono α]
-    [AddRightReflectLT α] [AddRightStrictMono α]
+    [ContravariantClass α α (swap (· + ·)) (· < ·)] [CovariantClass α α (swap (· + ·)) (· < ·)]
     {a : α} (ha : a < 0) (b c : α) : cmp (b * a) (c * a) = cmp c b :=
   (strictAnti_mul_right ha).cmp_map_eq b c
 
 @[simp]
 theorem mul_self_pos [ExistsAddOfLE α] [PosMulStrictMono α] [MulPosStrictMono α]
-    [AddLeftStrictMono α] [AddLeftReflectLT α]
+    [CovariantClass α α (· + ·) (· < ·)] [ContravariantClass α α (· + ·) (· < ·)]
     {a : α} : 0 < a * a ↔ a ≠ 0 := by
   constructor
   · rintro h rfl
@@ -674,37 +674,37 @@ theorem mul_self_pos [ExistsAddOfLE α] [PosMulStrictMono α] [MulPosStrictMono 
     exacts [mul_pos_of_neg_of_neg h h, mul_pos h h]
 
 theorem nonneg_of_mul_nonpos_left [ExistsAddOfLE α] [MulPosStrictMono α]
-    [AddRightMono α] [AddRightReflectLE α]
+    [CovariantClass α α (swap (· + ·)) (· ≤ ·)] [ContravariantClass α α (swap (· + ·)) (· ≤ ·)]
     {a b : α} (h : a * b ≤ 0) (hb : b < 0) : 0 ≤ a :=
   le_of_not_gt fun ha => absurd h (mul_pos_of_neg_of_neg ha hb).not_le
 
 theorem nonneg_of_mul_nonpos_right [ExistsAddOfLE α] [MulPosStrictMono α]
-    [AddRightMono α] [AddRightReflectLE α]
+    [CovariantClass α α (swap (· + ·)) (· ≤ ·)] [ContravariantClass α α (swap (· + ·)) (· ≤ ·)]
     {a b : α} (h : a * b ≤ 0) (ha : a < 0) : 0 ≤ b :=
   le_of_not_gt fun hb => absurd h (mul_pos_of_neg_of_neg ha hb).not_le
 
 theorem pos_of_mul_neg_left [ExistsAddOfLE α] [MulPosMono α]
-    [AddRightMono α] [AddRightReflectLE α]
+    [CovariantClass α α (swap (· + ·)) (· ≤ ·)] [ContravariantClass α α (swap (· + ·)) (· ≤ ·)]
     {a b : α} (h : a * b < 0) (hb : b ≤ 0) : 0 < a :=
   lt_of_not_ge fun ha => absurd h (mul_nonneg_of_nonpos_of_nonpos ha hb).not_lt
 
 theorem pos_of_mul_neg_right [ExistsAddOfLE α] [MulPosMono α]
-    [AddRightMono α] [AddRightReflectLE α]
+    [CovariantClass α α (swap (· + ·)) (· ≤ ·)] [ContravariantClass α α (swap (· + ·)) (· ≤ ·)]
     {a b : α} (h : a * b < 0) (ha : a ≤ 0) : 0 < b :=
   lt_of_not_ge fun hb => absurd h (mul_nonneg_of_nonpos_of_nonpos ha hb).not_lt
 
 theorem neg_iff_pos_of_mul_neg [ExistsAddOfLE α] [PosMulMono α] [MulPosMono α]
-    [AddRightMono α] [AddRightReflectLE α]
+    [CovariantClass α α (swap (· + ·)) (· ≤ ·)] [ContravariantClass α α (swap (· + ·)) (· ≤ ·)]
     (hab : a * b < 0) : a < 0 ↔ 0 < b :=
   ⟨pos_of_mul_neg_right hab ∘ le_of_lt, neg_of_mul_neg_left hab ∘ le_of_lt⟩
 
 theorem pos_iff_neg_of_mul_neg [ExistsAddOfLE α] [PosMulMono α] [MulPosMono α]
-    [AddRightMono α] [AddRightReflectLE α]
+    [CovariantClass α α (swap (· + ·)) (· ≤ ·)] [ContravariantClass α α (swap (· + ·)) (· ≤ ·)]
     (hab : a * b < 0) : 0 < a ↔ b < 0 :=
   ⟨neg_of_mul_neg_right hab ∘ le_of_lt, pos_of_mul_neg_left hab ∘ le_of_lt⟩
 
 lemma sq_nonneg [IsRightCancelAdd α]
-    [ZeroLEOneClass α] [ExistsAddOfLE α] [PosMulMono α] [AddLeftStrictMono α]
+    [ZeroLEOneClass α] [ExistsAddOfLE α] [PosMulMono α] [CovariantClass α α (· + ·) (· < ·)]
     (a : α) : 0 ≤ a ^ 2 := by
   obtain ha | ha := le_total 0 a
   · exact pow_nonneg ha _
@@ -720,20 +720,20 @@ lemma sq_nonneg [IsRightCancelAdd α]
 alias pow_two_nonneg := sq_nonneg
 
 lemma mul_self_nonneg [IsRightCancelAdd α]
-    [ZeroLEOneClass α] [ExistsAddOfLE α] [PosMulMono α] [AddLeftStrictMono α]
+    [ZeroLEOneClass α] [ExistsAddOfLE α] [PosMulMono α] [CovariantClass α α (· + ·) (· < ·)]
     (a : α) : 0 ≤ a * a := by simpa only [sq] using sq_nonneg a
 
 /-- The sum of two squares is zero iff both elements are zero. -/
 lemma mul_self_add_mul_self_eq_zero [IsRightCancelAdd α] [NoZeroDivisors α]
     [ZeroLEOneClass α] [ExistsAddOfLE α] [PosMulMono α]
-    [AddLeftMono α] [AddLeftStrictMono α] :
+    [CovariantClass α α (· + ·) (· ≤ ·)] [CovariantClass α α (· + ·) (· < ·)] :
     a * a + b * b = 0 ↔ a = 0 ∧ b = 0 := by
   rw [add_eq_zero_iff_of_nonneg, mul_self_eq_zero (M₀ := α), mul_self_eq_zero (M₀ := α)] <;>
     apply mul_self_nonneg
 
 lemma eq_zero_of_mul_self_add_mul_self_eq_zero [IsRightCancelAdd α] [NoZeroDivisors α]
     [ZeroLEOneClass α] [ExistsAddOfLE α] [PosMulMono α]
-    [AddLeftMono α] [AddLeftStrictMono α]
+    [CovariantClass α α (· + ·) (· ≤ ·)] [CovariantClass α α (· + ·) (· < ·)]
     (h : a * a + b * b = 0) : a = 0 :=
   (mul_self_add_mul_self_eq_zero.mp h).left
 
@@ -741,7 +741,7 @@ end LinearOrderedSemiring
 
 section LinearOrderedCommSemiring
 
-variable [CommSemiring α] [LinearOrder α] {a d : α}
+variable [CommSemiring α] [LinearOrder α] {a b c d : α}
 
 lemma max_mul_mul_le_max_mul_max [PosMulMono α] [MulPosMono α] (b c : α) (ha : 0 ≤ a) (hd : 0 ≤ d) :
     max (a * b) (d * c) ≤ max a c * max d b :=
@@ -751,38 +751,15 @@ lemma max_mul_mul_le_max_mul_max [PosMulMono α] [MulPosMono α] (b c : α) (ha 
     mul_le_mul (le_max_right a c) (le_max_right b d) hd (le_trans ha (le_max_left a c))
   max_le (by simpa [mul_comm, max_comm] using ba) (by simpa [mul_comm, max_comm] using cd)
 
-/-- Binary, squared, and division-free **arithmetic mean-geometric mean inequality**
-(aka AM-GM inequality) for linearly ordered commutative semirings. -/
+/-- Binary **arithmetic mean-geometric mean inequality** (aka AM-GM inequality) for linearly ordered
+commutative semirings. -/
 lemma two_mul_le_add_sq [ExistsAddOfLE α] [MulPosStrictMono α]
-    [AddLeftReflectLE α] [AddLeftMono α]
+    [ContravariantClass α α (· + ·) (· ≤ ·)] [CovariantClass α α (· + ·) (· ≤ ·)]
     (a b : α) : 2 * a * b ≤ a ^ 2 + b ^ 2 := by
   simpa [fn_min_add_fn_max (fun x ↦ x * x), sq, two_mul, add_mul]
     using mul_add_mul_le_mul_add_mul (@min_le_max _ _ a b) (@min_le_max _ _ a b)
 
 alias two_mul_le_add_pow_two := two_mul_le_add_sq
-
-/-- Binary, squared, and division-free **arithmetic mean-geometric mean inequality**
-(aka AM-GM inequality) for linearly ordered commutative semirings. -/
-lemma four_mul_le_sq_add [ExistsAddOfLE α] [MulPosStrictMono α]
-    [AddLeftReflectLE α] [AddLeftMono α]
-    (a b : α) : 4 * a * b ≤ (a + b) ^ 2 := by
-  calc 4 * a * b
-    _ = 2 * a * b + 2 * a * b := by rw [mul_assoc, two_add_two_eq_four.symm, add_mul, mul_assoc]
-    _ ≤ a ^ 2 + b ^ 2 + 2 * a * b := by gcongr; exact two_mul_le_add_sq _ _
-    _ = a ^ 2 + 2 * a * b + b ^ 2 := by rw [add_right_comm]
-    _ = (a + b) ^ 2 := (add_sq a b).symm
-
-alias four_mul_le_pow_two_add := four_mul_le_sq_add
-
-/-- Binary and division-free **arithmetic mean-geometric mean inequality**
-(aka AM-GM inequality) for linearly ordered commutative semirings. -/
-lemma two_mul_le_add_of_sq_eq_mul [ExistsAddOfLE α] [MulPosStrictMono α] [PosMulStrictMono α]
-    [AddLeftReflectLE α] [AddLeftMono α] {a b r : α}
-    (ha : 0 ≤ a) (hb : 0 ≤ b) (ht : r ^ 2 = a * b) : 2 * r ≤ a + b := by
-  apply nonneg_le_nonneg_of_sq_le_sq (Left.add_nonneg ha hb)
-  conv_rhs => rw [← pow_two]
-  convert four_mul_le_sq_add a b using 1
-  rw [mul_mul_mul_comm, two_mul, two_add_two_eq_four, ← pow_two, ht, mul_assoc]
 
 end LinearOrderedCommSemiring
 
@@ -794,46 +771,52 @@ variable [Ring α] [LinearOrder α] {a b : α}
 -- `[Semiring α] [LinearOrder α] [ExistsAddOfLE α] ..`?
 
 lemma mul_neg_iff [PosMulStrictMono α] [MulPosStrictMono α]
-    [AddLeftReflectLT α] [AddLeftStrictMono α] :
+    [ContravariantClass α α (· + ·) (· < ·)] [CovariantClass α α (· + ·) (· < ·)] :
     a * b < 0 ↔ 0 < a ∧ b < 0 ∨ a < 0 ∧ 0 < b := by
   rw [← neg_pos, neg_mul_eq_mul_neg, mul_pos_iff (α := α), neg_pos, neg_lt_zero]
 
 lemma mul_nonpos_iff [MulPosStrictMono α] [PosMulStrictMono α]
-    [AddLeftReflectLE α] [AddLeftMono α] :
+    [ContravariantClass α α (· + ·) (· ≤ ·)] [CovariantClass α α (· + ·) (· ≤ ·)] :
     a * b ≤ 0 ↔ 0 ≤ a ∧ b ≤ 0 ∨ a ≤ 0 ∧ 0 ≤ b := by
   rw [← neg_nonneg, neg_mul_eq_mul_neg, mul_nonneg_iff (α := α), neg_nonneg, neg_nonpos]
 
 lemma mul_nonneg_iff_neg_imp_nonpos [PosMulStrictMono α] [MulPosStrictMono α]
-    [AddLeftMono α] [AddLeftReflectLE α] :
+    [CovariantClass α α (· + ·) (· ≤ ·)] [ContravariantClass α α (· + ·) (· ≤ ·)] :
     0 ≤ a * b ↔ (a < 0 → b ≤ 0) ∧ (b < 0 → a ≤ 0) := by
   rw [← neg_mul_neg, mul_nonneg_iff_pos_imp_nonneg (α := α)]; simp only [neg_pos, neg_nonneg]
 
 lemma mul_nonpos_iff_pos_imp_nonpos [PosMulStrictMono α] [MulPosStrictMono α]
-    [AddLeftMono α] [AddLeftReflectLE α] :
+    [CovariantClass α α (· + ·) (· ≤ ·)] [ContravariantClass α α (· + ·) (· ≤ ·)] :
     a * b ≤ 0 ↔ (0 < a → b ≤ 0) ∧ (b < 0 → 0 ≤ a) := by
   rw [← neg_nonneg, ← mul_neg, mul_nonneg_iff_pos_imp_nonneg (α := α)]
   simp only [neg_pos, neg_nonneg]
 
 lemma mul_nonpos_iff_neg_imp_nonneg [PosMulStrictMono α] [MulPosStrictMono α]
-    [AddLeftMono α] [AddLeftReflectLE α] :
+    [CovariantClass α α (· + ·) (· ≤ ·)] [ContravariantClass α α (· + ·) (· ≤ ·)] :
     a * b ≤ 0 ↔ (a < 0 → 0 ≤ b) ∧ (0 < b → a ≤ 0) := by
   rw [← neg_nonneg, ← neg_mul, mul_nonneg_iff_pos_imp_nonneg (α := α)]
   simp only [neg_pos, neg_nonneg]
 
 lemma neg_one_lt_zero
-    [ZeroLEOneClass α] [NeZero (R := α) 1] [AddLeftStrictMono α] :
+    [ZeroLEOneClass α] [NeZero (R := α) 1] [CovariantClass α α (· + ·) (· < ·)] :
     -1 < (0 : α) := neg_lt_zero.2 zero_lt_one
 
 lemma sub_one_lt [ZeroLEOneClass α] [NeZero (R := α) 1]
-    [AddLeftStrictMono α]
+    [CovariantClass α α (· + ·) (· < ·)]
     (a : α) : a - 1 < a := sub_lt_iff_lt_add.2 <| lt_add_one a
 
 lemma mul_self_le_mul_self_of_le_of_neg_le
-    [MulPosMono α] [PosMulMono α] [AddLeftMono α]
+    [MulPosMono α] [PosMulMono α] [CovariantClass α α (· + ·) (· ≤ ·)]
     (h₁ : a ≤ b) (h₂ : -a ≤ b) : a * a ≤ b * b :=
   (le_total 0 a).elim (mul_self_le_mul_self · h₁) fun h ↦
     (neg_mul_neg a a).symm.trans_le <|
       mul_le_mul h₂ h₂ (neg_nonneg.2 h) <| (neg_nonneg.2 h).trans h₂
 
 end LinearOrderedRing
+
+@[deprecated (since := "2023-12-23")] alias zero_le_mul_left := mul_nonneg_iff_of_pos_left
+@[deprecated (since := "2023-12-23")] alias zero_le_mul_right := mul_nonneg_iff_of_pos_right
+@[deprecated (since := "2023-12-23")] alias zero_lt_mul_left := mul_pos_iff_of_pos_left
+@[deprecated (since := "2023-12-23")] alias zero_lt_mul_right := mul_pos_iff_of_pos_right
+
 end OrderedCommRing

@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Eric Wieser
 -/
 import Mathlib.Algebra.Group.Fin.Tuple
+import Mathlib.Data.Matrix.Basic
 import Mathlib.Data.Matrix.RowCol
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Tactic.FinCases
-import Mathlib.Algebra.BigOperators.Fin
 
 /-!
 # Matrix and vector notation
@@ -34,7 +34,7 @@ This file provide notation `!![a, b; c, d]` for matrices, which corresponds to
 
 ## Examples
 
-Examples of usage can be found in the `MathlibTest/matrix.lean` file.
+Examples of usage can be found in the `test/matrix.lean` file.
 -/
 
 namespace Matrix
@@ -111,7 +111,7 @@ macro_rules
   | `(!![$[,%$commas]*]) => `(@Matrix.of (Fin 0) (Fin $(quote commas.size)) _ ![])
 
 /-- Delaborator for the `!![]` notation. -/
-@[app_delab DFunLike.coe]
+@[delab app.DFunLike.coe]
 def delabMatrixNotation : Delab := whenNotPPOption getPPExplicit <| whenPPOption getPPNotation <|
   withOverApp 6 do
     let mkApp3 (.const ``Matrix.of _) (.app (.const ``Fin _) em) (.app (.const ``Fin _) en) _ :=
@@ -180,6 +180,7 @@ theorem dotProduct_cons (v : Fin n.succ → α) (x : α) (w : Fin n → α) :
     dotProduct v (vecCons x w) = vecHead v * x + dotProduct (vecTail v) w := by
   simp [dotProduct, Fin.sum_univ_succ, vecHead, vecTail]
 
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem cons_dotProduct_cons (x : α) (v : Fin n → α) (y : α) (w : Fin n → α) :
     dotProduct (vecCons x v) (vecCons y w) = x * y + dotProduct v w := by simp
 
@@ -291,6 +292,7 @@ theorem vecMul_cons (v : Fin n.succ → α) (w : o' → α) (B : Fin n → o' �
   ext i
   simp [vecMul]
 
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem cons_vecMul_cons (x : α) (v : Fin n → α) (w : o' → α) (B : Fin n → o' → α) :
     vecCons x v ᵥ* of (vecCons w B) = x • w + v ᵥ* of B := by simp
 
@@ -350,9 +352,11 @@ section SMul
 
 variable [NonUnitalNonAssocSemiring α]
 
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem smul_mat_empty {m' : Type*} (x : α) (A : Fin 0 → m' → α) : x • A = ![] :=
   empty_eq _
 
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem smul_mat_cons (x : α) (v : n' → α) (A : Fin m → n' → α) :
     x • vecCons v A = vecCons (x • v) (x • A) := by
   ext i
@@ -381,12 +385,9 @@ theorem submatrix_updateRow_succAbove (A : Matrix (Fin m.succ) n' α) (v : n' �
 
 /-- Updating a column then removing it is the same as removing it. -/
 @[simp]
-theorem submatrix_updateCol_succAbove (A : Matrix m' (Fin n.succ) α) (v : m' → α) (f : o' → m')
-    (i : Fin n.succ) : (A.updateCol i v).submatrix f i.succAbove = A.submatrix f i.succAbove :=
-  ext fun _r s => updateCol_ne (Fin.succAbove_ne i s)
-
-@[deprecated (since := "2024-12-11")]
-alias submatrix_updateColumn_succAbove := submatrix_updateCol_succAbove
+theorem submatrix_updateColumn_succAbove (A : Matrix m' (Fin n.succ) α) (v : m' → α) (f : o' → m')
+    (i : Fin n.succ) : (A.updateColumn i v).submatrix f i.succAbove = A.submatrix f i.succAbove :=
+  ext fun _r s => updateColumn_ne (Fin.succAbove_ne i s)
 
 end Submatrix
 

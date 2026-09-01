@@ -31,11 +31,8 @@ variable {ι : Type uι} {E : Type uE} [NormedAddCommGroup E] [NormedSpace ℝ E
   [FiniteDimensional ℝ E] {H : Type uH} [TopologicalSpace H] {I : ModelWithCorners ℝ E H}
   {M : Type uM} [TopologicalSpace M] [ChartedSpace H M] [SmoothManifoldWithCorners I M]
 
-open Function Filter Module Set Topology
+open Function Filter FiniteDimensional Set
 open scoped Manifold
-/- Next line is necessary while the manifold smoothness class is not extended to `ω`.
-Later, replace with `open scoped ContDiff`. -/
-local notation "∞" => (⊤ : ℕ∞)
 
 noncomputable section
 
@@ -55,7 +52,7 @@ def embeddingPiTangent : C^∞⟮I, M; 𝓘(ℝ, ι → E × ℝ), ι → E × �
   val x i := (f i x • extChartAt I (f.c i) x, f i x)
   property :=
     contMDiff_pi_space.2 fun i =>
-      ((f i).contMDiff_smul contMDiffOn_extChartAt).prod_mk_space (f i).contMDiff
+      ((f i).smooth_smul contMDiffOn_extChartAt).prod_mk_space (f i).smooth
 
 @[local simp]
 theorem embeddingPiTangent_coe :
@@ -84,10 +81,9 @@ theorem comp_embeddingPiTangent_mfderiv (x : M) (hx : x ∈ s) :
   set L :=
     (ContinuousLinearMap.fst ℝ E ℝ).comp
       (@ContinuousLinearMap.proj ℝ _ ι (fun _ => E × ℝ) _ _ (fun _ => inferInstance) (f.ind x hx))
-  have := L.hasMFDerivAt.comp x
-    (f.embeddingPiTangent.contMDiff.mdifferentiableAt le_top).hasMFDerivAt
+  have := L.hasMFDerivAt.comp x f.embeddingPiTangent.smooth.mdifferentiableAt.hasMFDerivAt
   convert hasMFDerivAt_unique this _
-  refine (hasMFDerivAt_extChartAt (f.mem_chartAt_ind_source x hx)).congr_of_eventuallyEq ?_
+  refine (hasMFDerivAt_extChartAt I (f.mem_chartAt_ind_source x hx)).congr_of_eventuallyEq ?_
   refine (f.eventuallyEq_one x hx).mono fun y hy => ?_
   simp only [L, embeddingPiTangent_coe, ContinuousLinearMap.coe_comp', (· ∘ ·),
     ContinuousLinearMap.coe_fst', ContinuousLinearMap.proj_apply]
@@ -96,7 +92,7 @@ theorem comp_embeddingPiTangent_mfderiv (x : M) (hx : x ∈ s) :
 theorem embeddingPiTangent_ker_mfderiv (x : M) (hx : x ∈ s) :
     LinearMap.ker (mfderiv I 𝓘(ℝ, ι → E × ℝ) f.embeddingPiTangent x) = ⊥ := by
   apply bot_unique
-  rw [← (mdifferentiable_chart (f.c (f.ind x hx))).ker_mfderiv_eq_bot
+  rw [← (mdifferentiable_chart I (f.c (f.ind x hx))).ker_mfderiv_eq_bot
       (f.mem_chartAt_ind_source x hx),
     ← comp_embeddingPiTangent_mfderiv]
   exact LinearMap.ker_le_ker_comp _ _
@@ -110,7 +106,7 @@ supports of bump functions, then for some `n` it can be immersed into the `n`-di
 Euclidean space. -/
 theorem exists_immersion_euclidean {ι : Type*} [Finite ι] (f : SmoothBumpCovering ι I M) :
     ∃ (n : ℕ) (e : M → EuclideanSpace ℝ (Fin n)),
-      ContMDiff I (𝓡 n) ⊤ e ∧ Injective e ∧ ∀ x : M, Injective (mfderiv I (𝓡 n) e x) := by
+      Smooth I (𝓡 n) e ∧ Injective e ∧ ∀ x : M, Injective (mfderiv I (𝓡 n) e x) := by
   cases nonempty_fintype ι
   set F := EuclideanSpace ℝ (Fin <| finrank ℝ (ι → E × ℝ))
   letI : IsNoetherian ℝ (E × ℝ) := IsNoetherian.iff_fg.2 inferInstance
@@ -118,10 +114,10 @@ theorem exists_immersion_euclidean {ι : Type*} [Finite ι] (f : SmoothBumpCover
   set eEF : (ι → E × ℝ) ≃L[ℝ] F :=
     ContinuousLinearEquiv.ofFinrankEq finrank_euclideanSpace_fin.symm
   refine ⟨_, eEF ∘ f.embeddingPiTangent,
-    eEF.toDiffeomorph.contMDiff.comp f.embeddingPiTangent.contMDiff,
+    eEF.toDiffeomorph.smooth.comp f.embeddingPiTangent.smooth,
     eEF.injective.comp f.embeddingPiTangent_injective, fun x => ?_⟩
   rw [mfderiv_comp _ eEF.differentiableAt.mdifferentiableAt
-      (f.embeddingPiTangent.contMDiff.mdifferentiableAt le_top),
+      f.embeddingPiTangent.smooth.mdifferentiableAt,
     eEF.mfderiv_eq]
   exact eEF.injective.comp (f.embeddingPiTangent_injective_mfderiv _ trivial)
 
@@ -132,9 +128,9 @@ supports of bump functions, then for some `n` it can be embedded into the `n`-di
 Euclidean space. -/
 theorem exists_embedding_euclidean_of_compact [T2Space M] [CompactSpace M] :
     ∃ (n : ℕ) (e : M → EuclideanSpace ℝ (Fin n)),
-      ContMDiff I (𝓡 n) ⊤ e ∧ IsClosedEmbedding e ∧ ∀ x : M, Injective (mfderiv I (𝓡 n) e x) := by
+      Smooth I (𝓡 n) e ∧ ClosedEmbedding e ∧ ∀ x : M, Injective (mfderiv I (𝓡 n) e x) := by
   rcases SmoothBumpCovering.exists_isSubordinate I isClosed_univ fun (x : M) _ => univ_mem with
     ⟨ι, f, -⟩
   haveI := f.fintype
   rcases f.exists_immersion_euclidean with ⟨n, e, hsmooth, hinj, hinj_mfderiv⟩
-  exact ⟨n, e, hsmooth, hsmooth.continuous.isClosedEmbedding hinj, hinj_mfderiv⟩
+  exact ⟨n, e, hsmooth, hsmooth.continuous.closedEmbedding hinj, hinj_mfderiv⟩

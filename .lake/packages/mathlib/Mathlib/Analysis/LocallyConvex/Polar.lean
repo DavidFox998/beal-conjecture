@@ -34,6 +34,7 @@ any bilinear form `B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜`, where `𝕜` is a no
 polar
 -/
 
+
 variable {𝕜 E F : Type*}
 
 open Topology

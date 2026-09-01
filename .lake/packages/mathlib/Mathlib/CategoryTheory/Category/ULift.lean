@@ -66,12 +66,12 @@ def ULift.equivalence : C ≌ ULift.{u₂} C where
       inv := 𝟙 _ }
   counitIso :=
     { hom :=
-        { app := fun _ => 𝟙 _
+        { app := fun X => 𝟙 _
           naturality := fun X Y f => by
             change f ≫ 𝟙 _ = 𝟙 _ ≫ f
             simp }
       inv :=
-        { app := fun _ => 𝟙 _
+        { app := fun X => 𝟙 _
           naturality := fun X Y f => by
             change f ≫ 𝟙 _ = 𝟙 _ ≫ f
             simp }
@@ -118,7 +118,7 @@ theorem objUp_objDown {C} (A : ULiftHom C) : ULiftHom.objUp A.objDown = A :=
 
 instance ULiftHom.category : Category.{max v₂ v₁} (ULiftHom.{v₂} C) where
   Hom A B := ULift.{v₂} <| A.objDown ⟶ B.objDown
-  id _ := ⟨𝟙 _⟩
+  id A := ⟨𝟙 _⟩
   comp f g := ⟨f.down ≫ g.down⟩
 
 /-- One half of the quivalence between `C` and `ULiftHom C`. -/
@@ -137,8 +137,8 @@ def ULiftHom.down : ULiftHom C ⥤ C where
 def ULiftHom.equiv : C ≌ ULiftHom C where
   functor := ULiftHom.up
   inverse := ULiftHom.down
-  unitIso := NatIso.ofComponents fun _ => eqToIso rfl
-  counitIso := NatIso.ofComponents fun _ => eqToIso rfl
+  unitIso := NatIso.ofComponents fun A => eqToIso rfl
+  counitIso := NatIso.ofComponents fun A => eqToIso rfl
 
 end ULiftHom
 /- Porting note: we want to keep around the category instance on `D`
@@ -159,7 +159,7 @@ def AsSmall.{w, v, u} (D : Type u) [Category.{v} D] := ULift.{max w v} D
 
 instance : SmallCategory (AsSmall.{w₁} C) where
   Hom X Y := ULift.{max w₁ u₁} <| X.down ⟶ Y.down
-  id _ := ⟨𝟙 _⟩
+  id X := ⟨𝟙 _⟩
   comp f g := ⟨f.down ≫ g.down⟩
 
 /-- One half of the equivalence between `C` and `AsSmall C`. -/
@@ -174,23 +174,13 @@ def AsSmall.down : AsSmall C ⥤ C where
   obj X := ULift.down X
   map f := f.down
 
-@[reassoc]
-theorem down_comp {X Y Z : AsSmall C} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g).down = f.down ≫ g.down :=
-  rfl
-
-@[simp]
-theorem eqToHom_down {X Y : AsSmall C} (h : X = Y) :
-    (eqToHom h).down = eqToHom (congrArg ULift.down h) := by
-  subst h
-  rfl
-
 /-- The equivalence between `C` and `AsSmall C`. -/
 @[simps]
 def AsSmall.equiv : C ≌ AsSmall C where
   functor := AsSmall.up
   inverse := AsSmall.down
-  unitIso := NatIso.ofComponents fun _ => eqToIso rfl
-  counitIso := NatIso.ofComponents fun _ => eqToIso <| ULift.ext _ _ rfl
+  unitIso := NatIso.ofComponents fun X => eqToIso rfl
+  counitIso := NatIso.ofComponents fun X => eqToIso <| ULift.ext _ _ rfl
 
 instance [Inhabited C] : Inhabited (AsSmall C) :=
   ⟨⟨default⟩⟩

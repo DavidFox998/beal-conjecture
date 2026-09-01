@@ -21,6 +21,7 @@ This file contains proofs of the integrals of various specific functions. This i
 * Integrals of the form `sin x ^ m * cos x ^ n`
 
 With these lemmas, many simple integrals can be computed by `simp` or `norm_num`.
+See `test/integration.lean` for specific examples.
 
 This file also contains some facts about the interval integrability of specific functions.
 
@@ -32,7 +33,7 @@ integrate, integration, integrable, integrability
 -/
 
 
-open Real Set Finset
+open Real Nat Set Finset
 
 open scoped Real Interval
 
@@ -42,7 +43,7 @@ namespace intervalIntegral
 
 open MeasureTheory
 
-variable {f : ℝ → ℝ} {μ : Measure ℝ} [IsLocallyFiniteMeasure μ] (c d : ℝ)
+variable {f : ℝ → ℝ} {μ ν : Measure ℝ} [IsLocallyFiniteMeasure μ] (c d : ℝ)
 
 /-! ### Interval integrability -/
 
@@ -114,7 +115,7 @@ theorem intervalIntegrable_cpow {r : ℂ} (h : 0 ≤ r.re ∨ (0 : ℝ) ∉ [[a,
     IntervalIntegrable (fun x : ℝ => (x : ℂ) ^ r) μ a b := by
   by_cases h2 : (0 : ℝ) ∉ [[a, b]]
   · -- Easy case #1: 0 ∉ [a, b] -- use continuity.
-    refine (continuousOn_of_forall_continuousAt fun x hx => ?_).intervalIntegrable
+    refine (ContinuousAt.continuousOn fun x hx => ?_).intervalIntegrable
     exact Complex.continuousAt_ofReal_cpow_const _ _ (Or.inr <| ne_of_mem_of_not_mem hx h2)
   rw [eq_false h2, or_false] at h
   rcases lt_or_eq_of_le h with (h' | h')
@@ -123,7 +124,7 @@ theorem intervalIntegrable_cpow {r : ℂ} (h : 0 ≤ r.re ∨ (0 : ℝ) ∉ [[a,
   -- Now the hard case: re r = 0 and 0 is in the interval.
   refine (IntervalIntegrable.intervalIntegrable_norm_iff ?_).mp ?_
   · refine (measurable_of_continuousOn_compl_singleton (0 : ℝ) ?_).aestronglyMeasurable
-    exact continuousOn_of_forall_continuousAt fun x hx =>
+    exact ContinuousAt.continuousOn fun x hx =>
       Complex.continuousAt_ofReal_cpow_const x r (Or.inr hx)
   -- reduce to case of integral over `[0, c]`
   suffices ∀ c : ℝ, IntervalIntegrable (fun x : ℝ => ‖(x : ℂ) ^ r‖) μ 0 c from
@@ -139,7 +140,10 @@ theorem intervalIntegrable_cpow {r : ℂ} (h : 0 ≤ r.re ∨ (0 : ℝ) ∉ [[a,
   · -- case `c < 0`: integrand is identically constant, *except* at `x = 0` if `r ≠ 0`.
     apply IntervalIntegrable.symm
     rw [intervalIntegrable_iff_integrableOn_Ioc_of_le hc.le]
-    rw [← Ioo_union_right hc, integrableOn_union, and_comm]; constructor
+    have : Ioc c 0 = Ioo c 0 ∪ {(0 : ℝ)} := by
+      rw [← Ioo_union_Icc_eq_Ioc hc (le_refl 0), ← Icc_def]
+      simp_rw [← le_antisymm_iff, setOf_eq_eq_singleton']
+    rw [this, integrableOn_union, and_comm]; constructor
     · refine integrableOn_singleton_iff.mpr (Or.inr ?_)
       exact isFiniteMeasureOnCompacts_of_isLocallyFiniteMeasure.lt_top_of_isCompact
         isCompact_singleton
@@ -171,7 +175,7 @@ theorem intervalIntegrable_cpow' {r : ℂ} (h : -1 < r.re) :
         rw [Complex.norm_eq_abs, Complex.abs_cpow_eq_rpow_re_of_pos hx.1]
       · exact measurableSet_uIoc
     · refine ContinuousOn.aestronglyMeasurable ?_ measurableSet_uIoc
-      refine continuousOn_of_forall_continuousAt fun x hx => ?_
+      refine ContinuousAt.continuousOn fun x hx => ?_
       rw [uIoc_of_le hc] at hx
       refine (continuousAt_cpow_const (Or.inl ?_)).comp Complex.continuous_ofReal.continuousAt
       rw [Complex.ofReal_re]
@@ -202,6 +206,7 @@ theorem integrableOn_Ioo_cpow_iff {s : ℂ} {t : ℝ} (ht : 0 < t) :
 theorem intervalIntegrable_id : IntervalIntegrable (fun x => x) μ a b :=
   continuous_id.intervalIntegrable a b
 
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem intervalIntegrable_const : IntervalIntegrable (fun _ => c) μ a b :=
   continuous_const.intervalIntegrable a b
 
@@ -404,6 +409,7 @@ theorem integral_id : ∫ x in a..b, x = (b ^ 2 - a ^ 2) / 2 := by
   norm_num at this
   exact this
 
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem integral_one : (∫ _ in a..b, (1 : ℝ)) = b - a := by
   simp only [mul_one, smul_eq_mul, integral_const]
 
@@ -497,7 +503,7 @@ theorem integral_cos_mul_complex {z : ℂ} (hz : z ≠ 0) (a b : ℝ) :
   intro x _
   have a := Complex.hasDerivAt_sin (↑x * z)
   have b : HasDerivAt (fun y => y * z : ℂ → ℂ) z ↑x := hasDerivAt_mul_const _
-  have c : HasDerivAt (Complex.sin ∘ fun y : ℂ => (y * z)) _ ↑x := HasDerivAt.comp (𝕜 := ℂ) x a b
+  have c : HasDerivAt (fun y : ℂ => Complex.sin (y * z)) _ ↑x := HasDerivAt.comp (𝕜 := ℂ) x a b
   have d := HasDerivAt.comp_ofReal (c.div_const z)
   simp only [mul_comm] at d
   convert d using 1
@@ -574,9 +580,8 @@ theorem integral_mul_rpow_one_add_sq {t : ℝ} (ht : t ≠ -1) :
 
 end RpowCpow
 
-open Nat
-
 /-! ### Integral of `sin x ^ n` -/
+
 
 theorem integral_sin_pow_aux :
     (∫ x in a..b, sin x ^ (n + 2)) =
@@ -660,7 +665,7 @@ theorem integral_cos_pow_aux :
   · calc
       (∫ x in a..b, cos x ^ (n + 2)) = ∫ x in a..b, cos x ^ (n + 1) * cos x := by
         simp only [_root_.pow_succ]
-      _ = C + (n + 1) * ∫ x in a..b, sin x ^ 2 * cos x ^ n := by simp [C, H, h, sq, -neg_add_rev]
+      _ = C + (n + 1) * ∫ x in a..b, sin x ^ 2 * cos x ^ n := by simp [H, h, sq, -neg_add_rev]
       _ = C + (n + 1) * ∫ x in a..b, cos x ^ n - cos x ^ (n + 2) := by
         simp [sin_sq, sub_mul, ← pow_add, add_comm]
       _ = (C + (n + 1) * ∫ x in a..b, cos x ^ n) - (n + 1) * ∫ x in a..b, cos x ^ (n + 2) := by

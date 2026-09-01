@@ -27,7 +27,7 @@ def IsMetricSeparated {X : Type*} [EMetricSpace X] (s t : Set X) :=
 
 namespace IsMetricSeparated
 
-variable {X : Type*} [EMetricSpace X] {s t : Set X}
+variable {X : Type*} [EMetricSpace X] {s t : Set X} {x y : X}
 
 @[symm]
 theorem symm (h : IsMetricSeparated s t) : IsMetricSeparated t s :=

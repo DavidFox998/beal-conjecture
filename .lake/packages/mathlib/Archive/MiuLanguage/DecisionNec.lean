@@ -5,7 +5,9 @@ Authors: Gihan Marasingha
 -/
 import Archive.MiuLanguage.Basic
 import Mathlib.Data.List.Basic
+import Mathlib.Data.List.Count
 import Mathlib.Data.Nat.ModEq
+import Mathlib.Tactic.Ring
 
 /-!
 # Decision procedure: necessary condition
@@ -154,7 +156,9 @@ theorem goodm_of_rule3 (as bs : Miustr) (h₁ : Derivable (as ++ ↑[I, I, I] ++
     exact mhead
   · contrapose! nmtail
     rcases exists_cons_of_ne_nil k with ⟨x, xs, rfl⟩
-    simp_rw [cons_append] at nmtail ⊢
+    -- Porting note: `simp_rw [cons_append]` didn't work
+    rw [cons_append] at nmtail; rw [cons_append, cons_append]
+    dsimp only [tail] at nmtail ⊢
     simpa using nmtail
 
 /-!
@@ -172,7 +176,9 @@ theorem goodm_of_rule4 (as bs : Miustr) (h₁ : Derivable (as ++ ↑[U, U] ++ bs
     exact mhead
   · contrapose! nmtail
     rcases exists_cons_of_ne_nil k with ⟨x, xs, rfl⟩
-    simp_rw [cons_append] at nmtail ⊢
+    -- Porting note: `simp_rw [cons_append]` didn't work
+    rw [cons_append] at nmtail; rw [cons_append, cons_append]
+    dsimp only [tail] at nmtail ⊢
     simpa using nmtail
 
 /-- Any derivable string must begin with `M` and have no `M` in its tail.

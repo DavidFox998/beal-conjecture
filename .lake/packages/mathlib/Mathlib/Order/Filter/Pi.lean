@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Alex Kontorovich
 -/
 import Mathlib.Order.Filter.Bases
-import Mathlib.Order.Filter.Tendsto
 
 /-!
 # (Co)product of a family of filters
@@ -29,6 +28,14 @@ variable {ι : Type*} {α : ι → Type*} {f f₁ f₂ : (i : ι) → Filter (α
   {p : ∀ i, α i → Prop}
 
 section Pi
+
+/-- The product of an indexed family of filters. -/
+def pi (f : ∀ i, Filter (α i)) : Filter (∀ i, α i) :=
+  ⨅ i, comap (eval i) (f i)
+
+instance pi.isCountablyGenerated [Countable ι] [∀ i, IsCountablyGenerated (f i)] :
+    IsCountablyGenerated (pi f) :=
+  iInf.isCountablyGenerated _
 
 theorem tendsto_eval_pi (f : ∀ i, Filter (α i)) (i : ι) : Tendsto (eval i) (pi f) (f i) :=
   tendsto_iInf' i tendsto_comap
@@ -145,7 +152,7 @@ theorem pi_inf_principal_pi_neBot [∀ i, NeBot (f i)] {I : Set ι} :
 instance PiInfPrincipalPi.neBot [h : ∀ i, NeBot (f i ⊓ 𝓟 (s i))] {I : Set ι} :
     NeBot (pi f ⊓ 𝓟 (I.pi s)) :=
   (pi_inf_principal_univ_pi_neBot.2 ‹_›).mono <|
-    inf_le_inf_left _ <| principal_mono.2 fun _ hx i _ => hx i trivial
+    inf_le_inf_left _ <| principal_mono.2 fun x hx i _ => hx i trivial
 
 @[simp]
 theorem pi_eq_bot : pi f = ⊥ ↔ ∃ i, f i = ⊥ := by
@@ -176,11 +183,6 @@ theorem pi_inj [∀ i, NeBot (f₁ i)] : pi f₁ = pi f₂ ↔ f₁ = f₂ := by
   have hle : f₁ ≤ f₂ := pi_le_pi.1 h.le
   haveI : ∀ i, NeBot (f₂ i) := fun i => neBot_of_le (hle i)
   exact hle.antisymm (pi_le_pi.1 h.ge)
-
-theorem tendsto_piMap_pi {β : ι → Type*} {f : ∀ i, α i → β i} {l : ∀ i, Filter (α i)}
-    {l' : ∀ i, Filter (β i)} (h : ∀ i, Tendsto (f i) (l i) (l' i)) :
-    Tendsto (Pi.map f) (pi l) (pi l') :=
-  tendsto_pi.2 fun i ↦ (h i).comp (tendsto_eval_pi _ _)
 
 end Pi
 

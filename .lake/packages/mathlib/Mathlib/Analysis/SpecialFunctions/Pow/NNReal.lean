@@ -18,7 +18,10 @@ We also prove basic properties of these functions.
 
 noncomputable section
 
-open Real NNReal ENNReal ComplexConjugate Finset Function Set
+open scoped Classical
+open Real NNReal ENNReal ComplexConjugate
+
+open Finset Function Set
 
 namespace NNReal
 variable {x : ℝ≥0} {w y z : ℝ}
@@ -76,7 +79,7 @@ theorem one_rpow (x : ℝ) : (1 : ℝ≥0) ^ x = 1 :=
   NNReal.eq <| Real.one_rpow _
 
 theorem rpow_add {x : ℝ≥0} (hx : x ≠ 0) (y z : ℝ) : x ^ (y + z) = x ^ y * x ^ z :=
-  NNReal.eq <| Real.rpow_add ((NNReal.coe_pos.trans pos_iff_ne_zero).mpr hx) _ _
+  NNReal.eq <| Real.rpow_add (pos_iff_ne_zero.2 hx) _ _
 
 theorem rpow_add' (h : y + z ≠ 0) (x : ℝ≥0) : x ^ (y + z) = x ^ y * x ^ z :=
   NNReal.eq <| Real.rpow_add' x.2 h
@@ -143,7 +146,7 @@ lemma rpow_mul_intCast (x : ℝ≥0) (y : ℝ) (n : ℤ) : x ^ (y * n) = (x ^ y)
 theorem rpow_neg_one (x : ℝ≥0) : x ^ (-1 : ℝ) = x⁻¹ := by simp [rpow_neg]
 
 theorem rpow_sub {x : ℝ≥0} (hx : x ≠ 0) (y z : ℝ) : x ^ (y - z) = x ^ y / x ^ z :=
-  NNReal.eq <| Real.rpow_sub ((NNReal.coe_pos.trans pos_iff_ne_zero).mpr hx) y z
+  NNReal.eq <| Real.rpow_sub (pos_iff_ne_zero.2 hx) y z
 
 theorem rpow_sub' (h : y - z ≠ 0) (x : ℝ≥0) : x ^ (y - z) = x ^ y / x ^ z :=
   NNReal.eq <| Real.rpow_sub' x.2 h
@@ -677,7 +680,6 @@ theorem coe_mul_rpow (x y : ℝ≥0) (z : ℝ) : ((x : ℝ≥0∞) * y) ^ z = (x
 
 theorem prod_coe_rpow {ι} (s : Finset ι) (f : ι → ℝ≥0) (r : ℝ) :
     ∏ i ∈ s, (f i : ℝ≥0∞) ^ r = ((∏ i ∈ s, f i : ℝ≥0) : ℝ≥0∞) ^ r := by
-  classical
   induction s using Finset.induction with
   | empty => simp
   | insert hi ih => simp_rw [prod_insert hi, ih, ← coe_mul_rpow, coe_mul]
@@ -690,7 +692,6 @@ theorem mul_rpow_of_nonneg (x y : ℝ≥0∞) {z : ℝ} (hz : 0 ≤ z) : (x * y)
 
 theorem prod_rpow_of_ne_top {ι} {s : Finset ι} {f : ι → ℝ≥0∞} (hf : ∀ i ∈ s, f i ≠ ∞) (r : ℝ) :
     ∏ i ∈ s, f i ^ r = (∏ i ∈ s, f i) ^ r := by
-  classical
   induction s using Finset.induction with
   | empty => simp
   | @insert i s hi ih =>
@@ -700,7 +701,6 @@ theorem prod_rpow_of_ne_top {ι} {s : Finset ι} {f : ι → ℝ≥0∞} (hf : �
 
 theorem prod_rpow_of_nonneg {ι} {s : Finset ι} {f : ι → ℝ≥0∞} {r : ℝ} (hr : 0 ≤ r) :
     ∏ i ∈ s, f i ^ r = (∏ i ∈ s, f i) ^ r := by
-  classical
   induction s using Finset.induction with
   | empty => simp
   | insert hi ih => simp_rw [prod_insert hi, ih, ← mul_rpow_of_nonneg _ _ hr]

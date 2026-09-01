@@ -81,6 +81,8 @@ attribute [reassoc (attr := simp)] MonoFactorisation.fac
 
 attribute [instance] MonoFactorisation.m_mono
 
+attribute [instance] MonoFactorisation.m_mono
+
 namespace MonoFactorisation
 
 /-- The obvious factorisation of a monomorphism through itself. -/
@@ -756,7 +758,7 @@ end HasImageMap
 
 section
 
-variable (C) [HasImages C]
+variable (C) [Category.{v} C] [HasImages C]
 
 /-- If a category `has_image_maps`, then all commutative squares induce morphisms on images. -/
 class HasImageMaps : Prop where
@@ -830,7 +832,7 @@ end StrongEpiMonoFactorisation
 
 section HasStrongEpiImages
 
-variable (C) [HasImages C]
+variable (C) [Category.{v} C] [HasImages C]
 
 /-- A category has strong epi images if it has all images and `factorThruImage f` is a strong
     epimorphism for all `f`. -/

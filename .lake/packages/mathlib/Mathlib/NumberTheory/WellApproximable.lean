@@ -274,7 +274,7 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
       exact fun contra => h_ndiv (mul_dvd_mul_left p contra)
     replace h_div : n / p * p = n := Nat.div_mul_cancel h_div
     have hf : f = (fun y => x + y) ∘ fun y => p • y := by
-      ext; simp [f, add_comm x]
+      ext; simp [add_comm x]
     simp_rw [Function.comp_apply, le_eq_subset]
     rw [sSupHom.setImage_toFun, hf, image_comp]
     have := @monotone_image 𝕊 𝕊 fun y => x + y
@@ -307,10 +307,9 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
     rw [hE₁ p]
     cases hp
     · cases' hA p with _ h; · contradiction
-      simp only [μ, h, union_ae_eq_univ_of_ae_eq_univ_left]
+      simp only [h, union_ae_eq_univ_of_ae_eq_univ_left]
     · cases' hB p with _ h; · contradiction
-      simp only [μ, h, union_ae_eq_univ_of_ae_eq_univ_left,
-        union_ae_eq_univ_of_ae_eq_univ_right]
+      simp only [h, union_ae_eq_univ_of_ae_eq_univ_left, union_ae_eq_univ_of_ae_eq_univ_right]
 
 /-- A general version of **Dirichlet's approximation theorem**.
 
@@ -336,7 +335,7 @@ lemma _root_.NormedAddCommGroup.exists_norm_nsmul_le {A : Type*}
     rw [← (isClosed_iUnion_of_finite hB).measure_eq_univ_iff_eq (μ := μ)]
     refine le_antisymm (μ.mono (subset_univ _)) ?_
     simp_rw [measure_iUnion h (fun _ ↦ measurableSet_closedBall), tsum_fintype,
-      B, μ.addHaar_closedBall_center, Finset.sum_const, Finset.card_univ, Nat.card_fintypeIcc,
+      μ.addHaar_closedBall_center, Finset.sum_const, Finset.card_univ, Nat.card_fintypeIcc,
       tsub_zero]
     exact hδ
   replace hδ : 0 ≤ δ/2 := by

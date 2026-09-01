@@ -46,7 +46,7 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 theorem aestronglyMeasurable_smul_const_iff {f : α → 𝕜} {c : E} (hc : c ≠ 0) :
     AEStronglyMeasurable (fun x => f x • c) μ ↔ AEStronglyMeasurable f μ :=
-  (isClosedEmbedding_smul_left hc).isEmbedding.aestronglyMeasurable_comp_iff
+  (closedEmbedding_smul_left hc).toEmbedding.aestronglyMeasurable_comp_iff
 
 end NormedSpace
 
