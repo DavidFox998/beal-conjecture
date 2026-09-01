@@ -231,7 +231,9 @@ jobs:
           #print axioms Beal17Mazur.galoisAction
           #print axioms Beal17Mazur.RationalPIsogenyKernel
           #print axioms Beal17Mazur.FreyResidualRepresentationReducible
-          #print axioms Beal17Mazur.frey_irreducibility_external
+          #print axioms Beal17Mazur.MazurIrreducibilityBoundary
+          #print axioms Beal17Mazur.MazurRationalIsogenyClassification
+          #print axioms Beal17Mazur.frey_irreducible_of_mazur
           #print axioms Beal17Mazur.frey_mazur_irreducibility_boundary
           #print axioms Beal17Mazur.prime_not_dvd_conductor
           #print axioms Beal17Mazur.remove_exact_divisor
@@ -308,7 +310,9 @@ jobs:
           #print axioms Beal17Mazur.galoisAction
           #print axioms Beal17Mazur.RationalPIsogenyKernel
           #print axioms Beal17Mazur.FreyResidualRepresentationReducible
-          #print axioms Beal17Mazur.frey_irreducibility_external
+          #print axioms Beal17Mazur.MazurIrreducibilityBoundary
+          #print axioms Beal17Mazur.MazurRationalIsogenyClassification
+          #print axioms Beal17Mazur.frey_irreducible_of_mazur
           #print axioms Beal17Mazur.frey_mazur_irreducibility_boundary
           EOF
           lake env lean /tmp/beal_b17_mazur_audit.lean 2>&1 |
@@ -317,20 +321,19 @@ jobs:
             echo "FAIL: B17 Mazur boundary depends on sorryAx"
             exit 1
           fi
-          if ! grep -Fq \
-              "'Beal17Mazur.frey_irreducibility_external' depends on axioms: [Beal17Mazur.frey_irreducibility_external]" \
-              /tmp/beal_b17_mazur_audit.txt; then
-            echo "FAIL: the named Mazur specialization axiom changed unexpectedly"
+          if grep -Eq \
+              '^[[:space:]]*axiom[[:space:]]+frey_irreducibility_external([[:space:]]|$)' \
+              lean/Beal/B17_MazurIrreducible.lean; then
+            echo "FAIL: B17 restored the deleted global Mazur axiom"
             exit 1
           fi
           if ! grep -A5 -F \
-              "'Beal17Mazur.frey_mazur_irreducibility_boundary' depends on axioms:" \
-              /tmp/beal_b17_mazur_audit.txt |
-              grep -Fq 'Beal17Mazur.frey_irreducibility_external'; then
-            echo "FAIL: the instantiated B17 boundary must expose the named Mazur input"
+              "'Beal17Mazur.frey_irreducible_of_mazur' depends on axioms:" \
+              /tmp/beal_b17_mazur_audit.txt >/dev/null; then
+            echo "FAIL: the theorem-valued Mazur supplier boundary is missing"
             exit 1
           fi
-          echo "OK: B17 uses genuine geometric p-torsion and exposes one named Mazur input"
+          echo "OK: B17 uses genuine geometric p-torsion and an explicit theorem-valued Mazur supplier"
 
       - name: Test the B20 axiom-output parser
         run: bash scripts/test-check-b20-axioms.sh
