@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+title: "Beal Conjecture — typed patching and Tate-certified descent"
+message: "If you use this software, please cite this release or its Zenodo record."
+type: software
+authors:
+  - family-names: Fox
+    given-names: David
+    affiliation: "Opera Numerorum"
+version: "v8.3.0"
+date-released: 2026-08-30
+doi: "10.5281/zenodo.22041831"
+license: MIT
+repository-code: "https://github.com/DavidFox998/beal-conjecture"
+keywords:
+  - Beal Conjecture
+  - Lean 4
+  - Formal Mathematics
+  - Frey Curve
+  - Tate Algorithm
+  - Ribet Level Lowering
+  - Taylor-Wiles Patching
+abstract: "A Lean 4 formalization of a conditional route toward the Beal Conjecture. Version 8.3.0 carries typed Taylor-Wiles patching data, derives odd-prime exact conductor divisibility from a canonical Frey model through an explicit Tate boundary, and exposes the terminal 2-adic exponent-one certificate as data. The final theorem remains conditional on three named mathematical interfaces and two explicit data suppliers; this release does not claim an unconditional proof of Beal's Conjecture."

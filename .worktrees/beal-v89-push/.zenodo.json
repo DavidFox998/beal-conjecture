@@ -1,0 +1,30 @@
+{
+  "title": "Beal Conjecture — Typed Patching and Tate-Certified Descent — v8.3.0",
+  "upload_type": "software",
+  "description": "Version 8.3.0 records an audited conditional milestone in Lean 4. Exact-divisibility proofs no longer live in the Wiles plan or Galois edge witnesses: the odd-prime Tate interface derives each edge from the canonical Frey model and its conductor. The terminal 2-adic exponent-one premise is explicit model-indexed data. The patching layer carries residual-representation, Hecke-attachment, deformation, comparison, finite-level action, and diamond-specialization data. The final route remains conditional on exactly three named mathematical interfaces—frey_conductor_data, tate_step2_odd_prime_external, and wiles_modularity—and two unconstructed data suppliers, TwoAdicExponentOneSupplier and EnrichedPlanSupplier. This is not an unconditional proof of the Beal Conjecture.",
+  "creators": [
+    {
+      "name": "Fox, David",
+      "affiliation": "Opera Numerorum"
+    }
+  ],
+  "license": "MIT",
+  "keywords": [
+    "Beal Conjecture",
+    "Lean 4",
+    "Frey curve",
+    "Tate algorithm",
+    "Ribet level lowering",
+    "Taylor-Wiles patching",
+    "formal mathematics",
+    "Opera Numerorum"
+  ],
+  "access_right": "open",
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/DavidFox998/beal-conjecture",
+      "relation": "isSupplementTo",
+      "resource_type": "software"
+    }
+  ]
+}

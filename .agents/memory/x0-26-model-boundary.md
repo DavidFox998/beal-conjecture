@@ -45,3 +45,18 @@ honestly on named propositions without turning transcript evidence into proof.
 **How to apply:** Preserve the conditional hypotheses visibly, keep
 `IsFreeRankZero` as “every rational point is torsion,” and do not introduce an
 unconditional rank theorem, `True`/Boolean surrogate, `sorry`, or new axiom.
+
+The available bad-prime evaluator is independent of the S-unit representative:
+all eight representatives paired with all ten quartics pass at both `2` and
+`13`.  This eighty-entry audit is evidence about the current ledger, not a
+singleton 2-Selmer computation.
+
+**Why:** Filtering the audit to the identity representative would assume the
+desired conclusion rather than derive it.  The local checks contain no
+S-unit-dependent covering map or obstruction table capable of eliminating the
+other seven representatives.
+
+**How to apply:** Preserve the second-descent hypothesis as a conditional
+boundary.  Any future singleton theorem must add and verify genuinely
+S-unit-dependent covering data; never infer it from the current all-passing
+bad-prime table.
