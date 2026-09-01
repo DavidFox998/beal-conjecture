@@ -25,6 +25,27 @@ are formalized.
 together with the existing Phase B+C+D certificates; it does not assert an
 unconditional Beal theorem.
 
+## Phase B real finite decomposition evidence
+
+`Jacobian/J0_26_Decomp.lean` now records the two LMFDB level-26 newform class
+q-expansions through `a₁₀₀`. The legacy twenty-coefficient declarations are
+preserved, and a decided theorem records their historical factor-label ordering
+against the LMFDB `26.a` and `26.b` class rows instead of silently conflating
+the labels.
+
+An explicit 57-row multiplication table checks
+`a_(pn) = a_p a_n` for every `2n ≤ 100` and `13n ≤ 100`. Kernel-decided
+theorems verify normalization, the bad-prime Hecke recurrences, distinctness at
+`a₂`, and the finite dimension token `dim S₂(26) = 2`, reusing the existing
+genus-two certificate. The combined
+`JacobianTransportCertificate_Real_26` also replays the degree-six,
+nonzero-discriminant, genus-two, and mod-3 determinant checks.
+
+This is real finite evidence for Phase B, not the final isogeny. Mathlib 4.12
+does not provide the required genus-two Jacobian or abelian-variety isogeny
+API, so `JacobianTransportCertificate_26` remains a separate explicit
+Prop-valued boundary.
+
 ## Structure
 
 - `KernelToX0.lean` transports a genuine Galois-stable cyclic kernel to the

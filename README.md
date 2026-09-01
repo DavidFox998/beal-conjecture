@@ -1,4 +1,4 @@
-[![Concept DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22041831.svg)](https://doi.org/10.5281/zenodo.22041831) [![CI](https://github.com/DavidFox998/beal-conjecture/actions/workflows/main.yml/badge.svg)](https://github.com/DavidFox998/beal-conjecture/actions/workflows/main.yml)
+[![v8.9.0 DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22238572.svg)](https://doi.org/10.5281/zenodo.22238572) [![v8.6.0 DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22220130.svg)](https://doi.org/10.5281/zenodo.22220130) [![Concept DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22041831.svg)](https://doi.org/10.5281/zenodo.22041831) [![CI](https://github.com/DavidFox998/beal-conjecture/actions/workflows/main.yml/badge.svg)](https://github.com/DavidFox998/beal-conjecture/actions/workflows/main.yml)
 
 # Beal Conjecture — a formal instrument in *Opera Numerorum*
 
@@ -119,6 +119,13 @@ The audited declarations contain no `sorry`, `admit`, `sorryAx`, or
 `Lean.ofReduceBool`; their remaining Lean foundation dependencies are
 `propext`, `Classical.choice`, and `Quot.sound`. This remains conditional
 mathematics, not an unconditional proof of Beal's Conjecture.
+
+The immutable release archive
+`beal-conjecture-v8.9.0.tar.gz` is 175,208 bytes with SHA-256
+`61362de15bd0c2ea9f64fea47ce91e958c9eafd2a6aa034147fda68099266672`.
+The same bytes are attached to the
+[GitHub release](https://github.com/DavidFox998/beal-conjecture/releases/tag/v8.9.0)
+and [Zenodo v8.9.0](https://doi.org/10.5281/zenodo.22238572).
 
 ### Historical v8.8.0 conditional Phase D endgame
 
@@ -472,7 +479,7 @@ Tate, or Ribet from first principles.
 | **v8.7.0 formal-immersion release** | `v8.7.0` | [Zenodo v8.7.0](https://doi.org/10.5281/zenodo.22226053) | Conditional Phase A–C formal-immersion and four-cusp release. |
 | **v8.7.1 certificate guards** | `v8.7.1` | [Zenodo v8.7.1](https://doi.org/10.5281/zenodo.22226446) | GitHub-first certificate-guard hardening for the existing Phase A–C chain. |
 | **v8.8.0 conditional Phase D** | `v8.8.0` / `881926a` | [Zenodo v8.8.0](https://doi.org/10.5281/zenodo.22235410) | Conditional level-26 Frey endgame with explicit construction, modularity, level-lowering, descent, transport, and formal-immersion boundaries. |
-| **v8.9.0 Real 80-Check Audit** | `v8.9.0` | Pending Zenodo version mint | Honest level-26 finite Phase A audit: 80 S-unit/ledger pairs pass the available `p = 2` and `p = 13` checks; all eight candidates remain, so the second-descent hypothesis stays conditional. |
+| **v8.9.0 Real 80-Check Audit** | `v8.9.0` | [Zenodo v8.9.0](https://doi.org/10.5281/zenodo.22238572) | Honest level-26 finite Phase A audit: 80 S-unit/ledger pairs pass the available `p = 2` and `p = 13` checks; all eight candidates remain, so the second-descent hypothesis stays conditional. |
 
 The v4.0.0 Zenodo landing page retains an older v0.4-style display title; its
 release tag, archive, and audited boundary are the v4.0.0 row above. The

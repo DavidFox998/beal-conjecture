@@ -1,7 +1,7 @@
 {
-  "title": "Beal Conjecture — Typed Patching and Tate-Certified Descent — v8.3.0",
+  "title": "Beal Conjecture — v8.9.0 Real 80-Check Audit",
   "upload_type": "software",
-  "description": "Version 8.3.0 records an audited conditional milestone in Lean 4. Exact-divisibility proofs no longer live in the Wiles plan or Galois edge witnesses: the odd-prime Tate interface derives each edge from the canonical Frey model and its conductor. The terminal 2-adic exponent-one premise is explicit model-indexed data. The patching layer carries residual-representation, Hecke-attachment, deformation, comparison, finite-level action, and diamond-specialization data. The final route remains conditional on exactly three named mathematical interfaces—frey_conductor_data, tate_step2_odd_prime_external, and wiles_modularity—and two unconstructed data suppliers, TwoAdicExponentOneSupplier and EnrichedPlanSupplier. This is not an unconditional proof of the Beal Conjecture.",
+  "description": "Version 8.9.0 records an honest executable Phase A finite audit for the level-26 route in Lean 4. The complete grid of eight S-unit representatives against ten quartics gives 80 entries. All 80 entries pass the available local checks at p = 2 and p = 13, so all eight representatives remain. This is not a singleton 2-Selmer computation and not an unconditional proof of the Beal Conjecture. SecondDescentHypothesis_26, Jacobian transport, formal immersion, modularity, and level lowering remain explicit conditional boundaries.",
   "creators": [
     {
       "name": "Fox, David",
@@ -13,7 +13,9 @@
     "Beal Conjecture",
     "Lean 4",
     "Frey curve",
-    "Tate algorithm",
+    "X0(26)",
+    "second descent",
+    "finite audit",
     "Ribet level lowering",
     "Taylor-Wiles patching",
     "formal mathematics",

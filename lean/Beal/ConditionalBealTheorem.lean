@@ -49,6 +49,13 @@ theorem finite_level_26_certificates :
   exact ⟨rfl, X0_26_discriminant_ne_zero, X0_26_genus,
     mod3_det_nonzero, sUnits_26_card_8_decide, ledger_length⟩
 
+/-- The new finite Phase B layer is theorem-backed evidence for the
+decomposition, but does not inhabit the conditional Jacobian isogeny
+certificate used by the Beal chain. -/
+theorem phase_b_transport_evidence_real :
+    JacobianTransportCertificate_Real_26 :=
+  j0_26_transport_evidence_real s2_26_decomp_real_decided
+
 /-- A noncuspidal rational point on the displayed model. -/
 def NoncuspidalLevel26Point : Prop :=
   ∃ point : X0_26_RationalPoint,
@@ -128,6 +135,7 @@ theorem conditional_beal_of_certificates
   exact beal_house_chain hCounterexample hNoncuspidal hFourCusps
 
 #print axioms finite_level_26_certificates
+#print axioms phase_b_transport_evidence_real
 #print axioms beal_house_chain
 #print axioms conditional_beal_of_certificates
 
