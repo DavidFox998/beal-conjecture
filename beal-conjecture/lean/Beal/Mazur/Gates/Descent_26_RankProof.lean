@@ -240,6 +240,24 @@ def SelmerCandidates (rows : List BinaryQuartic) :
       IntegrallySoluble candidate ∧
       EverywhereLocallySoluble candidate.quartic}
 
+/-! ## Public finite certificate guards -/
+
+/-- Indices for the exact eight signed squarefree representatives in `Q_S2_13`. -/
+abbrev SUnits_26 := Fin Q_S2_13.length
+
+/-- The Phase A S-unit search space has exactly eight representatives. -/
+theorem sUnits_26_card_8_decide :
+    Fintype.card SUnits_26 = 8 := by
+  decide
+
+/-- The combined Phase A quartic ledger contains the four `26a1` rows and the
+six `26b1` rows. -/
+def ledger : List BinaryQuartic :=
+  E26a1MwrankQuartics ++ E26b1MwrankQuartics
+
+theorem ledger_length : ledger.length = 10 := by
+  decide
+
 def oneSUnit : SUnitRepresentative :=
   ⟨1, by simp [Q_S2_13]⟩
 
@@ -303,6 +321,8 @@ theorem freeRankZero_of_secondDescent :
       certificate.second_descent_sound_26b1
         certificate.selmer_26b1_singleton certificate.descent_26b1⟩
 
+#print axioms sUnits_26_card_8_decide
+#print axioms ledger_length
 #print axioms E26a1_twoTorsionPolynomial
 #print axioms E26b1_twoTorsionPolynomial
 #print axioms E26a1_twoDivision_no_rational_root

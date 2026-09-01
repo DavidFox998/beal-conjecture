@@ -63,6 +63,11 @@ theorem finite_formal_immersion_at_3_26 :
   exact ⟨rfl, X0_26_discriminant_ne_zero, X0_26_genus,
     formal_immersion_at_3⟩
 
+/-- The mod-3 determinant certificate is a kernel-checked finite decision. -/
+theorem mod3_det_nonzero :
+    Matrix.det dAJ_matrix_mod_3 ≠ 0 := by
+  decide
+
 theorem four_cusps_subset_rational_points_26 :
     (four_cusps : Set X0_26_RationalPoint) ⊆ X0_26_Q :=
   four_cusps_subset_XQ
@@ -116,6 +121,7 @@ theorem cusps_only_of_rank_zero
   exact rational_points_eq_four_cusps_of_rank_zero
     ⟨transport, hRank⟩ ⟨transport⟩ hFormal
 
+#print axioms mod3_det_nonzero
 #print axioms finite_formal_immersion_at_3_26
 #print axioms rational_points_eq_four_cusps_of_rank_zero
 #print axioms cusps_only_of_rank_zero
