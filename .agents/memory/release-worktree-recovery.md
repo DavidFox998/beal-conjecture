@@ -31,3 +31,18 @@ instead of only the intended patch.
 **How to apply:** Validate external repository work in a temporary path outside
 the main checkout, then apply only the reviewed task diff to the declared
 workspace paths before completion.
+
+## GitHub-first DOI rule
+
+For Beal releases, GitHub `main` is the source of truth. Push the reviewed
+source commit first, require green GitHub-hosted CI, create an annotated tag on
+that exact public commit, and let Zenodo import or archive that GitHub tag.
+Never mint a DOI from a nested workspace directory.
+
+**Why:** A nested directory can contain correct files while belonging to a
+mixed parent Git history. Local build success does not prove that GitHub has
+the commit or that an archive excludes workspace-only paths.
+
+**How to apply:** Before tagging, verify the public branch tip and changed-path
+set. After Zenodo publishes, download its archive and compare critical files
+byte-for-byte with the tagged GitHub tree before declaring the release done.

@@ -64,6 +64,11 @@ verified independently. The GitHub hook did not mint this version
 automatically, so it was created through Zenodo's new-version flow. Do not
 mint another DOI for v8.7.0.
 
+The GitHub-first v8.7.1 Phase A–C certificate-guard release has version DOI
+`10.5281/zenodo.22226446` (Zenodo record 22226446), under concept DOI
+`10.5281/zenodo.22041831`. Zenodo imported its ZIP directly from the annotated
+GitHub tag after green GitHub-hosted CI. Do not mint another DOI for v8.7.1.
+
 The inherited v4.1.0 titles and descriptions on Zenodo records
 `10.5281/zenodo.22110949` (`v7.0.0-genuine-provider`),
 `10.5281/zenodo.22123696` (`v7.1.0`), and
