@@ -133,6 +133,25 @@ theorem E26b1Fp13Results_checked :
     E26b1Fp13Results = [true, true, true, true, true, true] := by
   decide
 
+/-! ## Exact finite search spaces -/
+
+/-- Indices for the exact eight signed squarefree representatives in
+`Q_S2_13`. -/
+abbrev SUnits_26 := Fin Q_S2_13.length
+
+/-- The Phase A S-unit search space has exactly eight representatives. -/
+theorem sUnits_26_card_8_decide :
+    Fintype.card SUnits_26 = 8 := by
+  decide
+
+/-- The combined Phase A quartic ledger contains the four `26a1` rows and the
+six `26b1` rows. -/
+def ledger : List BinaryQuartic :=
+  E26a1MwrankQuartics ++ E26b1MwrankQuartics
+
+theorem ledger_length : ledger.length = 10 := by
+  decide
+
 /-!
 ## The missing descent-to-rank bridge
 
@@ -162,5 +181,8 @@ theorem no_unconditional_rank_claim_26a1 :
 theorem no_unconditional_rank_claim_26b1 :
     SelmerToRankGate_26b1.statement = IsFreeRankZero E26b1W :=
   rfl
+
+#print axioms sUnits_26_card_8_decide
+#print axioms ledger_length
 
 end Beal17Mazur.Gates
