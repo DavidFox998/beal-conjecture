@@ -3,6 +3,7 @@
 - [Lean tsum even-odd rewriting direction](lean-tsum-even-odd.md) — tsum_even_add_odd rewrites even+odd→full; use ← only when full tsum is in goal
 - [SiegelZeroFreeElementary status](brothers-desert-proof-step-a.md) — eta_pos proves pair-sum tsum > 0 (0 sorry); connecting to ζ<0 needs eta identity (pending); eta_hasSum sorry was removed by restructuring to pair sums only
 - [Lean 4.15 HasSum API quirks](lean-hassum-api-quirks.md) — HasSum.congr_fun direction, zero_add needs explicit f, tendsto_rpow_neg_atTop, simp on partial defs
+- [Lean decide on finite certificates](lean-decide-finite-certificates.md) — named finite Props may block Decidable synthesis; expose Bool equality or construct the bundle
 - [Lean typeclass transparency](lean-fintype-transparency.md) — use abbrev when a derived Fin type must expose inherited Fintype instances
 - [Lean core axiom audit](lean-core-axiom-audit.md) — in Lean 4.12, Nat.gcd brings propext even without imports; use a relational core predicate when zero axioms matter
 - [Constructive principal submodules](lean-principal-submodule-audit.md) — Lean 4.12 `Submodule.span` adds `Classical.choice`; use an explicit one-generator carrier when the audit forbids it.
