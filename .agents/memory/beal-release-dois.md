@@ -44,10 +44,18 @@ and Typed R=T Patching — v8.4.0”; do not mint another DOI.
 
 The v8.5 Level-26 conditional rank interface has version DOI
 `10.5281/zenodo.22216841` (Zenodo record 22216841), under concept DOI
-`10.5281/zenodo.22041831`. It archives the exact GitHub v8.5 tag and retains the
-explicit second-descent, Selmer-to-Mordell–Weil, and odd-torsion hypotheses; it
-does not claim unconditional factor or Jacobian rank zero. The GitHub release
-links this DOI without moving the annotated tag. Do not mint another DOI.
+`10.5281/zenodo.22041831`. Its immutable tag and archive came from a mixed
+Replit workspace, not a clean Beal checkout. Keep the record as historical
+evidence, but do not use it as the canonical Beal source archive or mint a
+duplicate DOI for v8.5.
+
+The clean v8.6.0 Level-26 conditional Phases A–C release has version DOI
+`10.5281/zenodo.22220130` (Zenodo record 22220130), under concept DOI
+`10.5281/zenodo.22041831`. It archives the green GitHub v8.6.0 tag from the
+actual Beal repository, contains zero Lean `sorry` terms, and keeps all
+unproved arithmetic-geometry steps as explicit hypotheses or theorem-valued
+supplier boundaries. This is the canonical clean archive superseding the v8.5
+packaging error; do not mint another DOI for v8.6.0.
 
 The inherited v4.1.0 titles and descriptions on Zenodo records
 `10.5281/zenodo.22110949` (`v7.0.0-genuine-provider`),

@@ -14,8 +14,8 @@ and `BSD_HeegnerPoint_CLOSED.lean`, this file keeps a fixed complex function,
 an explicit model point with a height, and a rank value as data.  The concrete
 `143a1` anchors are not reused for the different object `J₀(26)`.
 
-There is exactly one localized `sorry`: the genuine
-Gross--Zagier/Kolyvagin rank implication.  There are no imports from the RH or
+There is exactly one localized proof boundary: the genuine
+Gross--Zagier/Kolyvagin rank implication. There are no imports from the RH or
 BSD repositories.
 -/
 
@@ -64,32 +64,43 @@ structure J0_26_RankData where
 def J0_26_RankZero (data : J0_26_RankData) : Prop :=
   data.rank = 0
 
-/-- The one analytic soundness wall in this module.
+/-- The explicit Gross--Zagier/Kolyvagin soundness boundary.
 
-This is precisely the unavailable Gross--Zagier/Kolyvagin implication.  The
-`L`-value and Heegner-height hypotheses remain explicit; this theorem does not
-claim that M1/M2 construct either object. -/
+The `L`-value and Heegner-height hypotheses remain explicit. Supplying this
+proposition requires the unavailable arithmetic-geometry theorem; the finite
+M1/M2 inequalities do not inhabit it. -/
+def KolyvaginRankImplication : Prop :=
+  ∀ (lData : LValueData) (heightData : HeegnerPointData)
+      (rankData : J0_26_RankData),
+    L_J0_26_ne_zero lData →
+    HeegnerHeightNonzero heightData →
+    J0_26_RankZero rankData
+
+/-- Apply an explicitly supplied Gross--Zagier/Kolyvagin implication. -/
 theorem Kolyvagin_rank_zero_J0_26
+    (hKolyvagin : KolyvaginRankImplication)
     (lData : LValueData)
     (heightData : HeegnerPointData)
     (rankData : J0_26_RankData)
     (hL : L_J0_26_ne_zero lData)
     (hHeeg : HeegnerHeightNonzero heightData) :
-    J0_26_RankZero rankData := by
-  sorry
+    J0_26_RankZero rankData :=
+  hKolyvagin lData heightData rankData hL hHeeg
 
 def J0_26_rank_zero_local
+    (hKolyvagin : KolyvaginRankImplication)
     (lData : LValueData)
     (heightData : HeegnerPointData)
     (rankData : J0_26_RankData)
     (hLWall : M1_M2_to_L_nonzero_wall lData)
     (hHeeg : HeegnerHeightNonzero heightData) :
     J0_26_RankZero rankData :=
-  Kolyvagin_rank_zero_J0_26 lData heightData rankData
+  Kolyvagin_rank_zero_J0_26 hKolyvagin lData heightData rankData
     (L_J0_26_ne_zero_of_M1_M2 lData hLWall) hHeeg
 
 #print axioms M1_M2_threshold_proved
 #print axioms L_J0_26_ne_zero_of_M1_M2
+#print axioms KolyvaginRankImplication
 #print axioms Kolyvagin_rank_zero_J0_26
 #print axioms J0_26_rank_zero_local
 
