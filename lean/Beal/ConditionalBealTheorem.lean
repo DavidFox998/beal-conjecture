@@ -56,6 +56,13 @@ theorem phase_b_transport_evidence_real :
     JacobianTransportCertificate_Real_26 :=
   j0_26_transport_evidence_real s2_26_decomp_real_decided
 
+/-- The finite Phase C layer is theorem-backed matrix-rank evidence, but does
+not inhabit the conditional geometric formal-immersion supplier used by the
+four-cusp theorem. -/
+theorem phase_c_formal_immersion_evidence_real :
+    FormalImmersionAt3_Real_26 :=
+  formal_immersion_real_evidence
+
 /-- A noncuspidal rational point on the displayed model. -/
 def NoncuspidalLevel26Point : Prop :=
   ∃ point : X0_26_RationalPoint,
@@ -136,6 +143,7 @@ theorem conditional_beal_of_certificates
 
 #print axioms finite_level_26_certificates
 #print axioms phase_b_transport_evidence_real
+#print axioms phase_c_formal_immersion_evidence_real
 #print axioms beal_house_chain
 #print axioms conditional_beal_of_certificates
 
