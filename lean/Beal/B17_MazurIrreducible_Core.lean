@@ -3,7 +3,8 @@
 -- This file deliberately separates two logically different facts:
 --   1. removing an exactly-dividing prime from a natural number, proved below;
 --   2. irreducibility of a Frey residual representation, whose concrete
---      geometric predicate and one named Mazur input live in the wrapper.
+--      geometric predicate and explicit Mazur-classification supplier live in
+--      the wrapper.
 
 def Dvd17Core (d n : Nat) : Prop := ∃ k : Nat, n = d * k
 
@@ -15,12 +16,13 @@ def ExactDivisor17Core (p N : Nat) : Prop :=
 def RemovedPrimeFactor17Core (p N M : Nat) : Prop :=
   0 < M ∧ M * p = N ∧ ¬ Dvd17Core p M
 
-/-- Shape of the unavailable Mazur input.
+/-- Shape of the Mazur irreducibility conclusion.
 
 `Context` is supplied by the Mathlib wrapper and fixes one Frey model, one
-prime, and its conductor data. The wrapper supplies the proved full rational
-two-torsion predicate and defines residual reducibility using a Galois-stable
-order-`p` subgroup of geometric `p`-torsion.
+prime, and its conductor data. The wrapper proves full rational two-torsion,
+defines residual reducibility using a Galois-stable order-`p` subgroup of
+geometric `p`-torsion, and derives this boundary from an explicit
+classification supplier rather than a declared axiom.
 -/
 def MazurIrreducibilityBoundary17Core
     (Context : Type)
