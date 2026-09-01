@@ -18,6 +18,14 @@ only the small data interface required to state the proposed dependency:
 - the 35-number desert-brothers list, without recomputing its popcount proof;
 - a data-valued `EutheosJitter` carrying a strict reciprocal-distance witness.
 
+## v8.9.0 release context
+
+The v8.9.0 Real 80-Check Audit does not modify this compatibility interface.
+The Level-26 Phase A audit is independent of the desert-brothers arithmetic;
+its all-passing `p = 2` and `p = 13` ledger checks do not construct the
+S-unit-dependent covering data, the Eutheos geometry, or the conditional
+Phase B+C+D certificates.
+
 ## Formal status
 
 `JitterInterface.lean` clears denominators and stores the strict

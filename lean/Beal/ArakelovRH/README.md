@@ -19,6 +19,13 @@ is the downstream geometric supplier. It records the old/new module,
 degeneracy-map, coverage, and jitter-indexed separation data without claiming
 that the arithmetic certificate alone proves modular geometry.
 
+## v8.9.0 release context
+
+The v8.9.0 Real 80-Check Audit is confined to the Level-26 Phase A
+bad-prime ledger. It does not alter these Arakelov/Eutheos interfaces, and
+none of the finite `p = 2` or `p = 13` checks supplies the missing modular
+geometry or the conditional Phase B+C+D inputs.
+
 ## v7.3.1 audit clarification
 
 The phrase **“0 axiom” is scoped to the typed Eutheos focused boundary**. It

@@ -1,4 +1,4 @@
-[![v8.8.0 DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22235410.svg)](https://doi.org/10.5281/zenodo.22235410) [![Concept DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22041831.svg)](https://doi.org/10.5281/zenodo.22041831) [![CI](https://github.com/DavidFox998/beal-conjecture/actions/workflows/main.yml/badge.svg)](https://github.com/DavidFox998/beal-conjecture/actions/workflows/main.yml)
+[![Concept DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22041831.svg)](https://doi.org/10.5281/zenodo.22041831) [![CI](https://github.com/DavidFox998/beal-conjecture/actions/workflows/main.yml/badge.svg)](https://github.com/DavidFox998/beal-conjecture/actions/workflows/main.yml)
 
 # Beal Conjecture — a formal instrument in *Opera Numerorum*
 
@@ -89,9 +89,40 @@ and `tate_step2_odd_prime_external`, plus the explicit
 entries such as `propext`, `Classical.choice`, and `Quot.sound` are Lean
 foundations, not additional mathematical theorems.
 
-### v8.8.0 conditional Phase D endgame
+### v8.9.0 Real 80-Check Audit
 
-The current release adds `Mazur/Frey/LevelLowering_26.lean`. Its
+The v8.9.0 release is the first honest executable Phase A computation for the
+level-26 route. `Mazur/Gates/SecondDescent_Real_26.lean` evaluates the complete
+finite grid of eight S-unit representatives against ten quartics at the two
+bad primes, `2` and `13`: `8 × 10 = 80` entries. The existing finite-field
+result tables are checked by `decide`, and all eighty entries pass both local
+checks.
+
+This result is intentionally not presented as a singleton 2-Selmer
+calculation. The available evaluator is independent of the S-unit index, so
+the audit retains all eight representatives and proves that its candidate set
+is not a singleton. A future genuine singleton theorem must supply an
+S-unit-dependent covering map and a verified local obstruction table; filtering
+to the identity representative would be circular.
+
+The release also moves the eight-element S-unit index and ten-row ledger into
+`Descent_26_PhaseA.lean`, preserves `SecondDescentHypothesis_26` as an explicit
+conditional boundary, and adds `ConditionalBealTheorem.lean` as the aggregator
+for the conditional Phase B+C+D chain. The exact focused builds pass:
+
+```text
+lake build Beal.Mazur.Gates.SecondDescent_Real_26
+lake build Beal.ConditionalBealTheorem
+```
+
+The audited declarations contain no `sorry`, `admit`, `sorryAx`, or
+`Lean.ofReduceBool`; their remaining Lean foundation dependencies are
+`propext`, `Classical.choice`, and `Quot.sound`. This remains conditional
+mathematics, not an unconditional proof of Beal's Conjecture.
+
+### Historical v8.8.0 conditional Phase D endgame
+
+The v8.8.0 release added `Mazur/Frey/LevelLowering_26.lean`. Its
 proof-relevant interface carries a primitive Beal counterexample through
 explicit Frey-construction, modularity, level-lowering, and displayed-model
 boundaries to a noncuspidal rational point on the level-26 model. The existing
@@ -441,6 +472,7 @@ Tate, or Ribet from first principles.
 | **v8.7.0 formal-immersion release** | `v8.7.0` | [Zenodo v8.7.0](https://doi.org/10.5281/zenodo.22226053) | Conditional Phase A–C formal-immersion and four-cusp release. |
 | **v8.7.1 certificate guards** | `v8.7.1` | [Zenodo v8.7.1](https://doi.org/10.5281/zenodo.22226446) | GitHub-first certificate-guard hardening for the existing Phase A–C chain. |
 | **v8.8.0 conditional Phase D** | `v8.8.0` / `881926a` | [Zenodo v8.8.0](https://doi.org/10.5281/zenodo.22235410) | Conditional level-26 Frey endgame with explicit construction, modularity, level-lowering, descent, transport, and formal-immersion boundaries. |
+| **v8.9.0 Real 80-Check Audit** | `v8.9.0` | Pending Zenodo version mint | Honest level-26 finite Phase A audit: 80 S-unit/ledger pairs pass the available `p = 2` and `p = 13` checks; all eight candidates remain, so the second-descent hypothesis stays conditional. |
 
 The v4.0.0 Zenodo landing page retains an older v0.4-style display title; its
 release tag, archive, and audited boundary are the v4.0.0 row above. The

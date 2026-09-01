@@ -9,7 +9,25 @@ This README is a map of the directory. It does not replace the file-level
 comments or the more specialized
 [`Galois/README.md`](Galois/README.md).
 
-## v7.3.0 mathematical boundary
+## v8.9.0 mathematical boundary
+
+The current Level-26 milestone is v8.9.0, the Real 80-Check Audit. Phase A now
+contains the exact eight-element S-unit index and ten-row quartic ledger, and
+`Mazur/Gates/SecondDescent_Real_26.lean` checks every one of the resulting
+eighty pairs at `p = 2` and `p = 13`.
+
+All eighty available bad-prime checks pass. Because the evaluator is
+independent of the S-unit representative, the finite audit retains all eight
+representatives and proves that its candidate set is not a singleton. This is
+not a proof that the 2-Selmer group is `{1}`. The missing S-unit-dependent
+covering map and local obstruction table remain explicit future proof
+obligations, and `SecondDescentHypothesis_26` remains conditional.
+
+The new `ConditionalBealTheorem.lean` module aggregates the existing
+conditional Phase B+C+D certificates into the public `BealConjecture`
+predicate. It does not make the Beal result unconditional.
+
+## Historical v7.3.0 mathematical boundary
 
 On `beal-4.12-ihra-eutheos`, extending the v7.2 V-specific eigenline edge, the
 B15 edge no longer accepts an opaque or textual
