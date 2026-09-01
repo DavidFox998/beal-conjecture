@@ -4,9 +4,17 @@ This directory contains the typed Galois-representation, mod-ℓ form, level-low
 
 It is intentionally a **boundary layer**, not an unconditional proof of Beal's Conjecture. The files provide data structures, propositions, coefficient operations, and small transport lemmas. They do not silently turn the classical theorems of Wiles, Tate, or Ribet into Lean theorems.
 
-## v7.3.0 typed Eutheos edge status
+## v8.9.0 release context
 
-The release branch is `beal-4.12-ihra-eutheos`, extending the v7.2
+The v8.9.0 Real 80-Check Audit is a Level-26 Phase A computation outside this
+directory. It leaves the Galois/Hecke boundary unchanged: the 80-entry
+bad-prime audit does not construct modular forms, prove level lowering, or
+discharge any of the Wiles, Tate, Ribet, support, or transport interfaces
+described here. The Phase B+C+D Beal chain remains conditional.
+
+## Historical v7.3.0 typed Eutheos edge status
+
+The historical v7.3.0 branch `beal-4.12-ihra-eutheos` extended the v7.2
 V-specific eigenline edge. The boundary is explicit and data-valued:
 
 - The old B15 declaration `ribet_single_step : Prop` has been deleted from

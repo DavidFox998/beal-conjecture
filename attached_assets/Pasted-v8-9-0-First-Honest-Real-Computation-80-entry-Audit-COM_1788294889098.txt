@@ -1,0 +1,45 @@
+v8.9.0: First Honest Real Computation - 80-entry Audit
+
+COMMIT: a392c4b0c Add honest level-26 finite descent audit - main at mint time
+
+VERIFICATION - GREEN:
+- lake build Beal.Mazur.Gates.SecondDescent_Real_26 - Passed
+- lake build Beal.ConditionalBealTheorem - Passed (with new audit import)
+- No sorry, admit, sorryAx, Lean.ofReduceBool
+- Axiom audit: propext, Classical.choice, Quot.sound only
+- Core theorem all_80_bad_prime_checks_pass uses only propext and Quot.sound
+
+WHAT'S IN THIS RELEASE:
+
+Phase A - REAL COMP HONEST:
+- Moved 8-element S-unit index and 10-row quartic ledger into Descent_26_PhaseA.lean
+- Added SecondDescent_Real_26.lean with:
+  o complete 80-entry search grid (8 S-units × 10 quartics)
+  o verified p=2 and p=13 result tables via decide
+  o proof all 80 entries pass HasFpPoint
+  o proof audit retains all eight S-unit representatives
+  o proof result is NOT a singleton (honest - cannot prove Selmer={1} from this data alone)
+- Preserved SecondDescentHypothesis_26 as explicit conditional boundary - not true by construction
+- Defines d=1 only by filtering would be false mathematics per Beacon verification
+
+Phases B/C/D - Conditional (unchanged from v8.8.0):
+- B: J0_26_Decomp - JacobianTransportCertificate_26 → Rank J0(26)=0
+- C: FormalImmersion_26 - rational_points_eq_four_cusps_of_rank_zero, cusps_only_of_rank_zero
+- D: LevelLowering_26 - Frey → X0(26) non-cusp → False, conditional on Modularity/LevelLowering
+- Final aggregator ConditionalBealTheorem includes new audit
+
+CHAIN HONEST:
+- Real 80-checks all pass (decided)
+- Selmer={1} still needs actual S-unit-dependent covering map C_d and local obstruction table where d≠1 fails at 2 or 13
+- Therefore: SecondDescentHypothesis_26 retained as conditional, Beal conditional on BealCertificates_26
+
+ARCHIVE:
+- Clean Beal-only, free of ZeroBeacon/mixed-workspace
+- v8.5, v8.6.0 DOI 10.5281/zenodo.22220130, v8.7.0, v8.8.0 tags/DOIs immutable not moved
+- Tag v8.9.0 resolves to exact main commit a392c4b0c at mint time - annotated tag
+
+DOI:
+- Concept DOI 10.5281/zenodo.22041831
+- Version DOI via Zenodo GitHub hook or secure manual new-version flow (hook failed for v8.7.0, used manual)
+- Archive beal-conjecture-v8.9.0.tar.gz
+- Provide Size + SHA-256 in release note after Zenodo mints

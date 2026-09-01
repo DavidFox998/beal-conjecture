@@ -9,7 +9,28 @@ The project-level [`README.md`](../README.md) explains the mathematical
 motivation and the current formal status. This document explains how the
 source tree is organized and how to read it as a Lean project.
 
-## v7.3.0 source snapshot
+## v8.9.0 source snapshot
+
+The current source snapshot is v8.9.0, the Real 80-Check Audit. The new
+`Beal/Mazur/Gates/SecondDescent_Real_26.lean` module checks the complete
+`8 × 10 = 80` S-unit/ledger grid at `p = 2` and `p = 13`. All available
+bad-prime checks pass, so the audit retains all eight S-unit representatives;
+it does not prove a singleton Selmer group. `SecondDescentHypothesis_26` remains
+the explicit conditional boundary.
+
+The snapshot also includes the conditional aggregator
+`Beal/ConditionalBealTheorem.lean`. Both focused targets compile:
+
+```text
+lake build Beal.Mazur.Gates.SecondDescent_Real_26
+lake build Beal.ConditionalBealTheorem
+```
+
+The new audit introduces no `sorry`, `admit`, `sorryAx`, or
+`Lean.ofReduceBool`; its declarations use only the ordinary Lean foundation
+dependencies already present in the concrete project.
+
+## Historical v7.3.0 source snapshot
 
 The v7.3.0 Task #440 branch extends the v7.2 eigenline edge with a typed
 `EutheosGeometryInterface`. It targets Lean and Mathlib 4.12.0. The active B15

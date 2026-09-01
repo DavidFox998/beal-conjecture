@@ -6,6 +6,15 @@ an honest interface for the mathematics that is not yet constructed in
 Mathlib 4.12; it is not a claim that the desert-brothers inequality proves
 Taylor–Wiles patching.
 
+## v8.9.0 release context
+
+The v8.9.0 Level-26 Real 80-Check Audit does not change this patching layer.
+Its Phase A computation checks the available `p = 2` and `p = 13` ledger
+outcomes, while the patching, modularity, and level-lowering interfaces remain
+conditional suppliers. In particular, the audit does not supply the
+S-unit-dependent descent theorem or turn the Phase B+C+D Beal chain into an
+unconditional proof.
+
 ## Module map
 
 | Module | Role |
