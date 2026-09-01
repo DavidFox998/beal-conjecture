@@ -1,4 +1,4 @@
-[![v7.3.1 DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22150033.svg)](https://doi.org/10.5281/zenodo.22150033) [![Concept DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22041831.svg)](https://doi.org/10.5281/zenodo.22041831) [![CI](https://github.com/DavidFox998/beal-conjecture/actions/workflows/main.yml/badge.svg)](https://github.com/DavidFox998/beal-conjecture/actions/workflows/main.yml)
+[![v8.6.0 DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22220130.svg)](https://doi.org/10.5281/zenodo.22220130) [![v7.3.1 DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22150033.svg)](https://doi.org/10.5281/zenodo.22150033) [![Concept DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22041831.svg)](https://doi.org/10.5281/zenodo.22041831) [![CI](https://github.com/DavidFox998/beal-conjecture/actions/workflows/main.yml/badge.svg)](https://github.com/DavidFox998/beal-conjecture/actions/workflows/main.yml)
 
 # Beal Conjecture — a formal instrument in *Opera Numerorum*
 
@@ -53,6 +53,28 @@ formalization makes this coupling explicit rather than gestural.
 ---
 
 ## Current formal status
+
+### v8.6.0 conditional boundary table
+
+The Level-26 route is recorded as explicit proposition-valued boundaries. The
+table is a dependency map, not a claim that any row has been discharged
+unconditionally:
+
+**v8.6.0 archival record:** Version DOI
+[`10.5281/zenodo.22220130`](https://doi.org/10.5281/zenodo.22220130);
+Concept DOI [`10.5281/zenodo.22041831`](https://doi.org/10.5281/zenodo.22041831);
+[Zenodo record](https://zenodo.org/records/22220130).
+
+| Phase | Boundary | Formal status |
+|---|---|---|
+| **Phase A** | `SecondDescentHypothesis_26`, `TorsionOdd_26` | `Prop` inputs for the conditional rank step |
+| **Phase B** | `JacobianTransportCertificate_26` | `Prop` boundary for transporting the elliptic-curve information to the Jacobian |
+| **Phase C** | `FormalImmersionAt3` *(upcoming)* | `Prop` formal-immersion boundary for the rational-point step |
+| **Phase D** | Modularity/level-lowering interface | `Prop` boundary for the remaining modularity route |
+
+All four entries are proposition-valued boundaries. In particular, this table
+does not claim an unconditional Jacobian rank computation or an unconditional
+rank-zero theorem.
 
 > **v8.3.0 typed patching and Tate-certified descent — conditional, audited, and model-indexed**
 >
