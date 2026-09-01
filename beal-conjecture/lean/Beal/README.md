@@ -150,15 +150,24 @@ retains no named certificate axioms:
 | M1/M2 to `L(J₀(26),1) ≠ 0` | Explicit analytic bridge hypothesis |
 | Gross--Zagier/Kolyvagin rank zero | Explicit local implication hypothesis |
 | Mod-3 `2 × 2` determinant | Lean-proved finite calculation |
-| Rank/formal immersion to four-cusp exhaustiveness | Explicit Chabauty hypothesis |
+| Rank/formal immersion to four-cusp exhaustiveness | Conditional Phase A/B rank transport plus explicit Abel--Jacobi, reduction-at-3, and formal-immersion inputs |
 
 `Mazur/Gates/Kolyvagin_J0_26_NoSorry.lean` and
 `Mazur/Gates/FormalImmersion_J0_26_NoSorry.lean` are Beal-local and import no
-RH or BSD repository. They contain no `sorry` or declared axiom. Rational model
-points are subtypes carrying their equation certificates; the M1/M2 thresholds
-and finite `2 × 2` determinant are checked in Lean. The unavailable L-value
-interpretation, Heegner height, Kolyvagin implication, torsion identification,
-global exhaustiveness, and Frey modular realization remain typed hypotheses.
+RH or BSD repository. The Phase C formal-immersion module contains no `sorry`
+or declared axiom and does not import the separate analytic Kolyvagin route.
+Rational model points are subtypes carrying their equation certificates; the
+M1/M2 thresholds and finite `2 × 2` determinant are checked in Lean. The
+unavailable L-value interpretation, Heegner height, Kolyvagin implication,
+torsion identification, global exhaustiveness, and Frey modular realization
+remain typed hypotheses.
+
+The four-cusp conclusion now composes the conditional Phase A descent and
+torsion certificates with `JacobianTransport_26`, then consumes explicit
+proof-relevant Phase C data: a genuine Abel--Jacobi map into the supplied
+Jacobian group, reduction at `3` with specialization injective on rational
+torsion, and the formal-immersion implication. No value of those geometric
+interfaces is fabricated, so the theorem remains conditional.
 `X0_26GlobalClassificationCertificate` packages the exact rank-zero,
 order-21 torsion, four-cusp exhaustiveness, and Frey-realization obligations;
 the repository constructs no value of it. The verified finite set remains the

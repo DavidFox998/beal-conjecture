@@ -12,9 +12,10 @@ namespace Beal17Mazur
 
 This module deliberately separates proved certificate-shaped inputs from the
 missing arithmetic proof.  The Bost--Connes and `X₀(143)` threshold gates are
-reconstructed in the compact local `Gates/` modules.  Exactly two localized
-gate theorems carry `sorryAx`: the genuine Gross--Zagier/Kolyvagin implication
-and the formal-immersion/global-exhaustiveness implication.
+reconstructed in the compact local `Gates/` modules.  The genuine
+Gross--Zagier/Kolyvagin implication remains outside the Phase A route used
+below.  The formal-immersion/global-exhaustiveness step is now a typed
+geometric input rather than a theorem placeholder.
 `Mazur/Jacobian/E26.lean` now constructs the two corrected elliptic factors
 and verifies their discriminants and `j`-invariants.  Its copied mwrank
 quartics remain transcript data: no `decide` theorem promotes them to a
@@ -250,31 +251,35 @@ theorem Frey_13_exclusion_of_global_certificate
   rw [certificate.rational_points_exact] at hpoint
   exact hpoint
 
-/-- The Frey `p = 13` consequence composed through the two Beal-local gates.
+/-- The Frey `p = 13` consequence composed through Phases A, B, and C.
 
-The finite determinant calculation is proved.  The analytic `L`-value bridge,
-Heegner-height input, Kolyvagin implication, Chabauty exhaustiveness, and Frey
-realization remain visible hypotheses.
--/
-theorem Frey_13_exclusion_of_local_gates
-    (lData : Gates.KolyvaginNoSorry.LValueData)
-    (heightData : Gates.KolyvaginNoSorry.HeegnerPointData)
-    (rankData : Gates.KolyvaginNoSorry.J0_26_RankData)
-    (hLWall : Gates.KolyvaginNoSorry.M1_M2_to_L_nonzero_wall lData)
-    (hHeeg :
-      Gates.KolyvaginNoSorry.HeegnerHeightNonzero heightData)
+The finite determinant calculation is proved.  The second descent, exact
+factor torsion, Jacobian transport, genuine Abel--Jacobi map, reduction at
+`3`, formal-immersion implication, and Frey realization remain visible
+hypotheses.  In particular, this theorem does not claim unconditional
+rational-point exhaustiveness. -/
+theorem Frey_13_exclusion_of_level_26_phases
+    {J0_26 : Type*} [AddCommGroup J0_26]
+    (transport :
+      Jacobian.J0_26_Decomp.JacobianTransport_26 J0_26)
+    (hPhaseA :
+      Gates.Descent26RankProof.SecondDescentHypothesis_26 ∧
+        Gates.Descent26RankProof.TorsionOdd_26)
+    (abelJacobi :
+      Gates.FormalImmersionNoSorry.AbelJacobiData J0_26)
+    (reduction :
+      Gates.FormalImmersionNoSorry.ReductionAt3Data abelJacobi)
+    (immersion :
+      Gates.FormalImmersionNoSorry.FormalImmersionAt3Data
+        abelJacobi reduction)
     (hRealization : Frey13ToX0_26Realization) :
     FreyPIsogenyExclusion 13 := by
-  have hRank : Gates.KolyvaginNoSorry.J0_26_RankZero rankData :=
-    Gates.KolyvaginNoSorry.J0_26_rank_zero_local
-      lData heightData rankData hLWall hHeeg
   have hLocal :
       Gates.FormalImmersionNoSorry.X0_26_Q ⊆
         (Gates.FormalImmersionNoSorry.four_cusps :
           Set X0_26_RationalPoint) :=
     Gates.FormalImmersionNoSorry.X0_26_Q_subset_four_cusps
-      rankData hRank
-      Gates.FormalImmersionNoSorry.formal_immersion_at_3
+      transport hPhaseA abelJacobi reduction immersion
   have hExhaustive :
       X0_26_Q ⊆
         (X0_26_rational_points : Set X0_26_RationalPoint) := by
@@ -297,6 +302,6 @@ theorem Frey_13_exclusion_of_local_gates
 #print axioms X0_26_rational_points_exhaustive
 #print axioms Frey_13_exclusion_of_X0_26
 #print axioms Frey_13_exclusion_of_global_certificate
-#print axioms Frey_13_exclusion_of_local_gates
+#print axioms Frey_13_exclusion_of_level_26_phases
 
 end Beal17Mazur
