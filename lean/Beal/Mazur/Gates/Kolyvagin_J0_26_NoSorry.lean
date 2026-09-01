@@ -14,8 +14,8 @@ and `BSD_HeegnerPoint_CLOSED.lean`, this file keeps a fixed complex function,
 an explicit model point with a height, and a rank value as data.  The concrete
 `143a1` anchors are not reused for the different object `J₀(26)`.
 
-There is exactly one localized `sorry`: the genuine
-Gross--Zagier/Kolyvagin rank implication.  There are no imports from the RH or
+There is exactly one localized proof boundary: the genuine
+Gross--Zagier/Kolyvagin rank implication. There are no imports from the RH or
 BSD repositories.
 -/
 
