@@ -57,6 +57,13 @@ unproved arithmetic-geometry steps as explicit hypotheses or theorem-valued
 supplier boundaries. This is the canonical clean archive superseding the v8.5
 packaging error; do not mint another DOI for v8.6.0.
 
+The clean v8.7.0 conditional Phases A–C formal-immersion release has version
+DOI `10.5281/zenodo.22226053` (Zenodo record 22226053), under concept DOI
+`10.5281/zenodo.22041831`. Its annotated GitHub tag and Beal-only archive were
+verified independently. The GitHub hook did not mint this version
+automatically, so it was created through Zenodo's new-version flow. Do not
+mint another DOI for v8.7.0.
+
 The inherited v4.1.0 titles and descriptions on Zenodo records
 `10.5281/zenodo.22110949` (`v7.0.0-genuine-provider`),
 `10.5281/zenodo.22123696` (`v7.1.0`), and
