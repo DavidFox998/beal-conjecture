@@ -25,6 +25,22 @@ are formalized.
 together with the existing Phase B+C+D certificates; it does not assert an
 unconditional Beal theorem.
 
+## v9.2.0 external mwrank certificate boundary
+
+The archived `sagemath/GENUINE_26_CERT_v9.2.0.txt` reports rank zero and
+2-Selmer rank zero for both elliptic factors.  Lean now records the exact two
+models, the four-plus-six quartic rows, and all four reported zero values in
+`Gates/SecondDescent_Real_26.lean`; these finite transcript fields are checked
+by `decide`.
+
+`SecondDescentHypothesis_26_real` is an axiom-free conditional wrapper.  Its
+single `MwrankCertificateSoundness_26` premise states the external trust
+boundary connecting mwrank's zero Selmer-rank reports to the proof-relevant
+`CompleteTwoDescent` data required by the existing rank interface.  The source
+certificate itself explicitly assumes mwrank correctness and does not contain
+successful `ℚ₂` or `ℚ₁₃` local-point calls, so this premise is not silently
+discharged.  No unconditional rank-zero theorem is claimed.
+
 ## Phase B real finite decomposition evidence
 
 `Jacobian/J0_26_Decomp.lean` now records the two LMFDB level-26 newform class

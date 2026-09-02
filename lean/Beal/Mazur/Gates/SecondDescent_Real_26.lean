@@ -108,6 +108,59 @@ theorem finiteCandidateAudit_not_singleton :
   rw [finiteCandidateAudit_card_8, Finset.card_singleton] at hCard
   omega
 
+/-! ## v9.2.0 external mwrank transcript -/
+
+/-- The finite data reported by the external mwrank run archived at
+`sagemath/GENUINE_26_CERT_v9.2.0.txt`.
+
+This structure records only data that Lean can compare by computation.  In
+particular, the two zero Selmer ranks are transcript fields, not internally
+verified statements about a formal Lean Selmer group. -/
+structure MwrankTranscript_26 where
+  curve26a1Model : List Int
+  curve26b1Model : List Int
+  curve26a1Quartics : List BinaryQuartic
+  curve26b1Quartics : List BinaryQuartic
+  curve26a1ReportedRank : Nat
+  curve26b1ReportedRank : Nat
+  curve26a1ReportedSelmerRank : Nat
+  curve26b1ReportedSelmerRank : Nat
+  deriving DecidableEq, Repr
+
+/-- Normalized transcript data in the same factor-label ordering as `E26.lean`.
+
+The source text contains inconsistent prose labels inherited from the earlier
+log.  The models are therefore paired here by their coefficients and
+discriminants, not by those prose labels. -/
+def genuineMwrankTranscript_26 : MwrankTranscript_26 where
+  curve26a1Model := [1, -1, 1, -3, 3]
+  curve26b1Model := [1, 0, 1, -5, -8]
+  curve26a1Quartics := E26a1MwrankQuartics
+  curve26b1Quartics := E26b1MwrankQuartics
+  curve26a1ReportedRank := 0
+  curve26b1ReportedRank := 0
+  curve26a1ReportedSelmerRank := 0
+  curve26b1ReportedSelmerRank := 0
+
+theorem genuineMwrankTranscript_models_checked :
+    genuineMwrankTranscript_26.curve26a1Model = [1, -1, 1, -3, 3] ∧
+      genuineMwrankTranscript_26.curve26b1Model = [1, 0, 1, -5, -8] := by
+  decide
+
+theorem genuineMwrankTranscript_quartics_checked :
+    genuineMwrankTranscript_26.curve26a1Quartics =
+        E26a1MwrankQuartics ∧
+      genuineMwrankTranscript_26.curve26b1Quartics =
+        E26b1MwrankQuartics := by
+  decide
+
+theorem genuineMwrankTranscript_zero_reports_checked :
+    genuineMwrankTranscript_26.curve26a1ReportedRank = 0 ∧
+      genuineMwrankTranscript_26.curve26b1ReportedRank = 0 ∧
+      genuineMwrankTranscript_26.curve26a1ReportedSelmerRank = 0 ∧
+      genuineMwrankTranscript_26.curve26b1ReportedSelmerRank = 0 := by
+  decide
+
 #print axioms secondDescentCheckEntry_card_80
 #print axioms ledgerFp2Results_checked
 #print axioms ledgerFp13Results_checked
@@ -115,5 +168,8 @@ theorem finiteCandidateAudit_not_singleton :
 #print axioms finiteCandidateAudit_eq_univ
 #print axioms finiteCandidateAudit_card_8
 #print axioms finiteCandidateAudit_not_singleton
+#print axioms genuineMwrankTranscript_models_checked
+#print axioms genuineMwrankTranscript_quartics_checked
+#print axioms genuineMwrankTranscript_zero_reports_checked
 
 end Beal17Mazur.Gates.SecondDescentReal26
