@@ -18,12 +18,14 @@ open scoped Polynomial
 noncomputable section
 
 /-!
-# The maximal honest level-26 rank interface
+# The maximal honest level-26 Selmer/rank interface
 
 The two rational 2-torsion exclusions below are kernel-checked.  The second
 descent and the Selmer-to-Mordell--Weil theorem are not available in Mathlib
-4.12, so this module packages their exact proof obligations in an uninhabited
-certificate.  No unconditional free-rank theorem is claimed.
+4.12.  This module therefore exposes the abstract 2-Selmer carriers and
+packages their exact covering and local-solubility obligations in a
+proof-relevant certificate.  No unconditional Selmer-cardinality or
+free-rank theorem is claimed.
 -/
 
 /-! ## The genuine two-division cubics -/
@@ -242,6 +244,154 @@ def EverywhereLocallySoluble {rows : List BinaryQuartic}
   HasRealPoint candidate ∧
     ∀ p : Nat, ∀ hp : Nat.Prime p, HasQpPoint candidate p hp
 
+/-! ## Abstract 2-Selmer carriers and their covering semantics -/
+
+/-- An externally supplied cohomological model of the full 2-Selmer group of
+a rational elliptic curve.
+
+Mathlib 4.12 has no `H¹(ℚ, E[2])` or 2-Selmer API.  The carrier is consequently
+defined here from externally supplied cohomological data rather than being
+silently replaced by the finite coefficient list: `H1` is the ambient
+cohomology carrier and `localKummerConditions` is the subgroup cut out by all
+local Kummer images.  The full Selmer carrier is definitionally that subgroup.
+Supplying these fields from actual Galois cohomology remains the visible
+Mathlib boundary. -/
+structure AbstractTwoSelmer (E : WeierstrassCurve ℚ) where
+  H1 : Type
+  h1Group : AddCommGroup H1
+  localKummerConditions : @AddSubgroup H1 h1Group.toAddGroup
+  exponent_two : ∀ s : localKummerConditions, 2 • s = 0
+  kummerMap : MordellWeilGroup E →+ localKummerConditions
+  kummer_kills_doubles :
+    ∀ P : MordellWeilGroup E, kummerMap (2 • P) = 0
+
+attribute [instance] AbstractTwoSelmer.h1Group
+
+/-- The full Selmer carrier cut out inside the supplied cohomology model by
+the local Kummer conditions. -/
+abbrev AbstractTwoSelmer.Carrier
+    {E : WeierstrassCurve ℚ} (selmer : AbstractTwoSelmer E) : Type :=
+  selmer.localKummerConditions
+
+/-- The abstract 2-Selmer object slot for the `26a1` factor. -/
+abbrev Selmer2_26a1 := AbstractTwoSelmer E26a1W
+
+/-- The abstract 2-Selmer object slot for the `26b1` factor. -/
+abbrev Selmer2_26b1 := AbstractTwoSelmer E26b1W
+
+/-- The exact semantic bridge from a coefficient ledger to an externally
+supplied full 2-Selmer model.
+
+`represents` is kept separate from coefficient equality: it is the arithmetic
+assertion that a twisted quartic represents a particular cohomological Selmer
+class.  Its existence is equivalent to genuine everywhere local solubility.
+The final field records the assertion that the coefficient ledger represents
+every class in the supplied full Selmer model. -/
+structure SelmerLedgerIdentification
+    (E : WeierstrassCurve ℚ) (rows : List BinaryQuartic)
+    (selmer : AbstractTwoSelmer E) where
+  coveringClass : CoefficientCovering rows → selmer.Carrier
+  represents :
+    CoefficientCovering rows → selmer.Carrier → Prop
+  represents_iff :
+    ∀ candidate : CoefficientCovering rows, ∀ s : selmer.Carrier,
+      represents candidate s ↔
+        coveringClass candidate = s ∧ EverywhereLocallySoluble candidate
+  integral_implies_local :
+    ∀ candidate : CoefficientCovering rows,
+      IntegrallySoluble candidate → EverywhereLocallySoluble candidate
+  every_selmer_class_has_covering :
+    ∀ s : selmer.Carrier,
+      ∃ candidate : CoefficientCovering rows,
+        represents candidate s
+
+/-- Compatibility of a particular coefficient descent with the Kummer map
+into the supplied cohomological 2-Selmer model. -/
+structure SelmerDescentCompatibility
+    (E : WeierstrassCurve ℚ) (rows : List BinaryQuartic)
+    (selmer : AbstractTwoSelmer E)
+    (identification : SelmerLedgerIdentification E rows selmer)
+    (descent : CompleteTwoDescent E rows) where
+  descent_matches_kummer :
+    ∀ P : MordellWeilGroup E,
+      identification.coveringClass (descent.descentMap P) =
+        selmer.kummerMap P
+
+/-- The separate local-to-global input needed to make rational-point descent
+surjective onto the full 2-Selmer group.
+
+This is not part of the definition of Selmer membership.  It is the
+curve-specific assertion that the locally soluble ledger coverings relevant
+here have global primitive points; equivalently, it is where the required
+vanishing of the represented `Sha(E/ℚ)[2]` classes must be proved. -/
+structure SelmerExhaustionCertificate
+    (E : WeierstrassCurve ℚ) (rows : List BinaryQuartic)
+    (selmer : AbstractTwoSelmer E)
+    (identification : SelmerLedgerIdentification E rows selmer) where
+  sha_two_class_vanishes :
+    ∀ candidate : CoefficientCovering rows,
+      EverywhereLocallySoluble candidate → IntegrallySoluble candidate
+
+/-- The abstract Selmer class attached to a rational point by a complete
+coefficient-defined descent. -/
+def descentClass
+    {E : WeierstrassCurve ℚ} {rows : List BinaryQuartic}
+    {selmer : AbstractTwoSelmer E}
+    (descent : CompleteTwoDescent E rows)
+    (identification : SelmerLedgerIdentification E rows selmer)
+    (P : MordellWeilGroup E) : selmer.Carrier :=
+  selmer.kummerMap P
+
+/-- The covering attached to a point represents the resulting full
+2-Selmer class. -/
+theorem descentMap_lands_in_abstractSelmer
+    {E : WeierstrassCurve ℚ} {rows : List BinaryQuartic}
+    {selmer : AbstractTwoSelmer E}
+    (descent : CompleteTwoDescent E rows)
+    (identification : SelmerLedgerIdentification E rows selmer)
+    (compatibility :
+      SelmerDescentCompatibility E rows selmer identification descent) :
+    ∀ P : MordellWeilGroup E,
+      identification.represents (descent.descentMap P)
+        (descentClass descent identification P) := by
+  intro P
+  apply (identification.represents_iff
+    (descent.descentMap P)
+    (descentClass descent identification P)).2
+  refine ⟨compatibility.descent_matches_kummer P, ?_⟩
+  exact identification.integral_implies_local (descent.descentMap P)
+    (descent.map_is_integrallySoluble P)
+
+/-- The complete descent map exhausts the abstract 2-Selmer carrier.
+
+This is a cardinality-free statement: it proves surjectivity onto the
+Selmer carrier, but it does not identify that carrier with
+`MordellWeilGroup E / 2 * MordellWeilGroup E` or infer a Mordell--Weil rank. -/
+theorem descentMap_exhausts_abstractSelmer
+    {E : WeierstrassCurve ℚ} {rows : List BinaryQuartic}
+    {selmer : AbstractTwoSelmer E}
+    (descent : CompleteTwoDescent E rows)
+    (identification : SelmerLedgerIdentification E rows selmer)
+    (compatibility :
+      SelmerDescentCompatibility E rows selmer identification descent)
+    (exhaustion :
+      SelmerExhaustionCertificate E rows selmer identification) :
+    ∀ s : selmer.Carrier,
+      ∃ P : MordellWeilGroup E, descentClass descent identification P = s := by
+  intro s
+  obtain ⟨candidate, hRepresents⟩ :=
+    identification.every_selmer_class_has_covering s
+  have hRepresentation :=
+    (identification.represents_iff candidate s).1 hRepresents
+  obtain ⟨hClass, hLocal⟩ := hRepresentation
+  obtain ⟨P, hCovering⟩ := descent.exhaustive candidate
+    (exhaustion.sha_two_class_vanishes candidate hLocal)
+  refine ⟨P, ?_⟩
+  dsimp [descentClass]
+  rw [← compatibility.descent_matches_kummer P, hCovering, hClass]
+
+/-! ## Locally soluble coefficient classes -/
+
 /-- Locally soluble classes among the proof-relevant transcript ledger.
 
 The `SUnitRepresentative` component is the eight-element representative list
@@ -352,10 +502,30 @@ structure SecondDescentCertificate_26 where
     SelmerCandidates E26a1MwrankQuartics = {oneSUnit}
   selmer_26b1_singleton :
     SelmerCandidates E26b1MwrankQuartics = {oneSUnit}
+  selmer_26a1 :
+    Selmer2_26a1
+  selmer_26b1 :
+    Selmer2_26b1
+  selmer_identification_26a1 :
+    SelmerLedgerIdentification E26a1W E26a1MwrankQuartics selmer_26a1
+  selmer_identification_26b1 :
+    SelmerLedgerIdentification E26b1W E26b1MwrankQuartics selmer_26b1
   descent_26a1 :
     CompleteTwoDescent E26a1W E26a1MwrankQuartics
   descent_26b1 :
     CompleteTwoDescent E26b1W E26b1MwrankQuartics
+  selmer_descent_compatibility_26a1 :
+    SelmerDescentCompatibility E26a1W E26a1MwrankQuartics
+      selmer_26a1 selmer_identification_26a1 descent_26a1
+  selmer_descent_compatibility_26b1 :
+    SelmerDescentCompatibility E26b1W E26b1MwrankQuartics
+      selmer_26b1 selmer_identification_26b1 descent_26b1
+  selmer_exhaustion_26a1 :
+    SelmerExhaustionCertificate E26a1W E26a1MwrankQuartics
+      selmer_26a1 selmer_identification_26a1
+  selmer_exhaustion_26b1 :
+    SelmerExhaustionCertificate E26b1W E26b1MwrankQuartics
+      selmer_26b1 selmer_identification_26b1
   second_descent_sound_26a1 :
     CurveSecondDescentSoundness E26a1W E26a1MwrankQuartics
   second_descent_sound_26b1 :
@@ -373,6 +543,58 @@ theorem coefficient_coverings_derived_from_secondDescent
         (certificate.descent_26b1.descentMap P))) :=
   ⟨certificate.descent_26a1.descentMap_has_twisted_equation,
     certificate.descent_26b1.descentMap_has_twisted_equation⟩
+
+/-! ## Curve-specific Selmer landing and exhaustion -/
+
+/-- The `26a1` descent map lands in its supplied abstract 2-Selmer carrier. -/
+theorem completeDescent_26a1_lands_in_selmer
+    (certificate : SecondDescentCertificate_26) :
+    ∀ P : MordellWeilGroup E26a1W,
+      certificate.selmer_identification_26a1.represents
+        (certificate.descent_26a1.descentMap P)
+        (descentClass certificate.descent_26a1
+          certificate.selmer_identification_26a1 P) :=
+  descentMap_lands_in_abstractSelmer certificate.descent_26a1
+    certificate.selmer_identification_26a1
+    certificate.selmer_descent_compatibility_26a1
+
+/-- The `26b1` descent map lands in its supplied abstract 2-Selmer carrier. -/
+theorem completeDescent_26b1_lands_in_selmer
+    (certificate : SecondDescentCertificate_26) :
+    ∀ P : MordellWeilGroup E26b1W,
+      certificate.selmer_identification_26b1.represents
+        (certificate.descent_26b1.descentMap P)
+        (descentClass certificate.descent_26b1
+          certificate.selmer_identification_26b1 P) :=
+  descentMap_lands_in_abstractSelmer certificate.descent_26b1
+    certificate.selmer_identification_26b1
+    certificate.selmer_descent_compatibility_26b1
+
+/-- The `26a1` coefficient descent exhausts the supplied abstract Selmer
+carrier. -/
+theorem completeDescent_26a1_exhausts_selmer
+    (certificate : SecondDescentCertificate_26) :
+    ∀ s : certificate.selmer_26a1.Carrier,
+      ∃ P : MordellWeilGroup E26a1W,
+        descentClass certificate.descent_26a1
+          certificate.selmer_identification_26a1 P = s :=
+  descentMap_exhausts_abstractSelmer certificate.descent_26a1
+    certificate.selmer_identification_26a1
+    certificate.selmer_descent_compatibility_26a1
+    certificate.selmer_exhaustion_26a1
+
+/-- The `26b1` coefficient descent exhausts the supplied abstract Selmer
+carrier. -/
+theorem completeDescent_26b1_exhausts_selmer
+    (certificate : SecondDescentCertificate_26) :
+    ∀ s : certificate.selmer_26b1.Carrier,
+      ∃ P : MordellWeilGroup E26b1W,
+        descentClass certificate.descent_26b1
+          certificate.selmer_identification_26b1 P = s :=
+  descentMap_exhausts_abstractSelmer certificate.descent_26b1
+    certificate.selmer_identification_26b1
+    certificate.selmer_descent_compatibility_26b1
+    certificate.selmer_exhaustion_26b1
 
 def SecondDescentHypothesis_26 : Prop :=
   Nonempty SecondDescentCertificate_26
@@ -408,7 +630,7 @@ theorem SecondDescentHypothesis_26_real
   · exact genuineMwrankTranscript_zero_reports_checked.2.2.2
 
 def secondDescentStatus : String :=
-  "CONDITIONAL: coefficient ledger exhaustive; descent-map, Selmer, p-adic proof, and Selmer-to-rank soundness explicit"
+  "CONDITIONAL: abstract Selmer carriers and exhaustive ledger identification explicit; p-adic proof and Selmer-to-rank soundness explicit"
 
 def torsionStatus : String :=
   "CONDITIONAL: exact rational torsion orders 7 and 3 are not kernel-checked"
@@ -436,6 +658,12 @@ theorem freeRankZero_of_secondDescent :
 #print axioms completeDescent_connects_26a1_ledger_coverage
 #print axioms completeDescent_connects_26b1_ledger_coverage
 #print axioms coefficient_coverings_derived_from_secondDescent
+#print axioms descentMap_lands_in_abstractSelmer
+#print axioms descentMap_exhausts_abstractSelmer
+#print axioms completeDescent_26a1_lands_in_selmer
+#print axioms completeDescent_26b1_lands_in_selmer
+#print axioms completeDescent_26a1_exhausts_selmer
+#print axioms completeDescent_26b1_exhausts_selmer
 #print axioms SecondDescentHypothesis_26_real
 #print axioms freeRankZero_of_secondDescent
 

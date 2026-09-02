@@ -18,6 +18,15 @@ bad-prime checks pass, so the audit retains all eight S-unit representatives;
 it does not prove a singleton Selmer group. `SecondDescentHypothesis_26` remains
 the explicit conditional boundary.
 
+The level-26 rank interface now also gives the two elliptic factors distinct
+exponent-two abelian-group models for their full 2-Selmer groups.
+`SelmerLedgerIdentification` records the coefficient-covering map, genuine
+local-solubility semantics, and representation of every Selmer class. Landing
+of the curve-specific descent maps follows from those fields. Exhaustion also
+requires a separate `SelmerExhaustionCertificate`, where the required
+curve-specific `Sha[2]`-vanishing/local-to-global statement is explicit. This
+supplies no Selmer cardinality and remains separate from Mordell--Weil rank.
+
 The snapshot also includes the conditional aggregator
 `Beal/ConditionalBealTheorem.lean`. Both focused targets compile:
 

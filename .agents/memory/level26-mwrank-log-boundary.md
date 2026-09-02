@@ -22,3 +22,18 @@ primitiveness, the strict Hensel inequality, and every squareclass-row pair
 independently. Keep JSON out of Lean's trusted theorem boundary, and preserve
 explicit obligations for curve-specific descent soundness, abstract Selmer
 semantics, and rank soundness.
+
+Model a full 2-Selmer object as the subgroup of an ambient cohomology group
+cut out by local Kummer conditions. Its Kummer map must be an additive
+homomorphism that kills doubles. Keep local-to-global surjectivity separate as
+the curve-specific vanishing of the represented `Sha[2]` classes.
+
+**Why:** An arbitrary exponent-two group or an arbitrary function can mimic a
+finite ledger without being a Selmer group or Kummer map. Moreover, local
+solubility does not imply a global point unless the relevant Tate--Shafarevich
+class vanishes.
+
+**How to apply:** Prove ledger representation and descent/Kummer compatibility
+against the cohomological local-condition subgroup. Require a separately named
+`Sha[2]`-vanishing certificate for exhaustion. Derive Selmer cardinality and
+Mordell--Weil rank only in later, distinct theorems.

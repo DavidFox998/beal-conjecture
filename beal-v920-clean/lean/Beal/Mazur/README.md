@@ -42,9 +42,16 @@ separate, uncommitted Sage log.  It cannot overwrite the checked congruence
 log. This prevents the old Lean/LMFDB label conflation.
 `SecondDescentHypothesis_26_real`
 accepts a proof-relevant `GenuinePAdicCertificate_26`; JSON is never imported
-as a theorem. The remaining `Level26ExternalComputationInterface` covers only
-covering completeness, Selmer identification, and Selmer-to-rank soundness.
-No unconditional rank-zero theorem is claimed.
+as a theorem. `Descent_26_RankProof.lean` now gives the two factors distinct
+exponent-two abelian-group models for their full 2-Selmer groups and packages
+the exact ledger identification: covering classes, genuine local-solubility
+semantics, and representation of every Selmer class. The descent maps land in
+those models. Exhaustion uses a separate `SelmerExhaustionCertificate`, making
+the required curve-specific `Sha[2]`-vanishing/local-to-global assertion
+visible rather than building it into Selmer membership. The remaining
+`Level26ExternalComputationInterface` supplies those semantic fields and the
+separate Selmer-to-rank soundness theorem. No Selmer cardinality or
+unconditional rank-zero theorem is claimed.
 
 ## Phase B real finite decomposition evidence
 

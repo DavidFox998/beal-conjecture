@@ -20,8 +20,16 @@ All eighty available bad-prime checks pass. Because the evaluator is
 independent of the S-unit representative, the finite audit retains all eight
 representatives and proves that its candidate set is not a singleton. This is
 not a proof that the 2-Selmer group is `{1}`. The missing S-unit-dependent
-covering map and local obstruction table remain explicit future proof
-obligations, and `SecondDescentHypothesis_26` remains conditional.
+covering and local-solubility semantics remain separate from the transcript.
+The rank interface now names exponent-two abelian-group models of the full
+2-Selmer groups for both factors and packages ledger identification as
+proof-relevant data. The curve-specific descent maps land in those models;
+their exhaustion additionally uses an explicitly named curve-specific
+`Sha[2]`-vanishing/local-to-global certificate. The semantic identifications
+and independent rank obligations remain fields of
+`SecondDescentCertificate_26`, so `SecondDescentHypothesis_26` remains
+conditional and no Selmer-cardinality or rank theorem follows from the finite
+audit alone.
 
 The new `ConditionalBealTheorem.lean` module aggregates the existing
 conditional Phase B+C+D certificates into the public `BealConjecture`
