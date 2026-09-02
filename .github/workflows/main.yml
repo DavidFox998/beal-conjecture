@@ -66,6 +66,12 @@ jobs:
       - name: Build J0(26) decomposition bridge
         run: lake build Beal.Mazur.Gates.J0_26_Decomp
 
+      - name: Check formal-immersion witness
+        run: python3 scripts/formal_immersion_26_certificate.py --check
+
+      - name: Build formal-immersion bridge
+        run: lake build Beal.Mazur.Gates.FormalImmersion_26
+
       - name: Check Lake manifest for dependency drift
         run: |
           set -euo pipefail

@@ -1,0 +1,76 @@
+{
+  "boundary": {
+    "checked": [
+      "the immutable source hashes",
+      "the exact 2 x 6 integer matrix",
+      "rank two over QQ by exact rational elimination",
+      "rank two over GF(2) by exact modular elimination",
+      "rank M3 equals the recorded dimension of J0(26)"
+    ],
+    "external_premises": [
+      "Sage ModularSymbols/q-expansion correctness",
+      "rank-two matrix semantics for the geometric cotangent map",
+      "Mazur formal-immersion criterion at 2",
+      "J0(26) decomposition and mwrank/second-descent soundness"
+    ]
+  },
+  "certificate_sha256": "5f24969b311c30fe33e9cdadfe1f1b985fb8c8d9bdf7540b50c59f74b479f90d",
+  "environment": {
+    "level": 26,
+    "reduction_prime": 2,
+    "sage_version_reported": "10.5"
+  },
+  "matrix": {
+    "columns": 6,
+    "entries": [
+      [
+        1,
+        0,
+        1,
+        0,
+        1,
+        1
+      ],
+      [
+        0,
+        1,
+        1,
+        1,
+        0,
+        1
+      ]
+    ],
+    "name": "M3",
+    "rows": 2
+  },
+  "rank_check": {
+    "equation": "rank(M3) = 2 = dim J0(26)",
+    "jacobian_dimension": 2,
+    "over_GF_2": {
+      "computed": 2,
+      "reported": 2,
+      "verified": true
+    },
+    "over_QQ": {
+      "computed": 2,
+      "reported": 2,
+      "verified": true
+    },
+    "verified": true
+  },
+  "reported_criterion": {
+    "conclusion": "surjective",
+    "cotangent_map": "Cot_0(J0(26)) -> Cot_infinity(X0(26))",
+    "prime": 2,
+    "transcript_line": "Formal immersion criterion reported: rank M3 = dim J0(26)"
+  },
+  "schema": "beal.formal-immersion-26-certificate.v1",
+  "source": {
+    "lean_data": "lean/Beal/Mazur/Gates/FormalImmersion_26_Cert.lean",
+    "lean_data_sha256": "06d3638be13bf18dff20657a95a00a06944359254829c048071da855aa14ecfa",
+    "log": "sagemath/formal_immersion_26.log",
+    "log_sha256": "4d9cb6bbbee8b4acd0878439b843bb6102186fc3526e8c5f0fa93cc75e90fecb",
+    "narrative": "sagemath/GENUINE_FORMAL_IMMERSION_26_CERT_v9.4.0.txt",
+    "narrative_sha256": "fe3a0d54f24c0e28387acfebf4db795c88afb7271b4f20efb7eb6e185a5efcb9"
+  }
+}

@@ -1,57 +1,87 @@
-/-
-  GENUINE CERT FOR v9.4.0 — Formal Immersion X0(26) -> J0(26) at 2 — M3 rank 2
-  Houses exact q-expansion matrix and bridges v9.2.0 + v9.3.0
--/
-
 import Mathlib
 
-namespace Beal.Mazur.Gates.FormalImmersion_26
+namespace Beal17Mazur.Gates.FormalImmersion26Cert
 
--- Reuse v9.3.0 identifiers
+/-!
+# Finite v9.4.0 formal-immersion certificate data
+
+This module checks the exact `2 × 6` matrix archived in
+`sagemath/formal_immersion_26.log`.  A nonzero `2 × 2` pivot minor certifies
+row rank two over both `ℚ` and `ZMod 2`.  No geometric interpretation is made
+here: the connection with an Abel--Jacobi cotangent map and Mazur's criterion
+is an explicit proposition-valued premise in `FormalImmersion_26.lean`.
+-/
+
 def E26a1_aInvariants : List Int := [1, 0, 1, -5, -8]
 def E26b1_aInvariants : List Int := [1, -1, 1, -3, 3]
-def J0_26_level : Nat := 26
-def J0_26_dim : Nat := 2
 
--- M3 matrix from v9.1.0 phase C — formal immersion matrix at 2
--- This is the matrix whose rank =2 proves surjectivity of cotangent map
--- Paste your real M3 from v9.1.0 here — below is placeholder shape 2x6 with rank 2, replace with actual entries from log
-def M3 : List (List Int) :=
-  [ [1, 0, 1, 0, 1, 1]
-  , [0, 1, 1, 1, 0, 1] ]
+def M3Row0 : List Int := [1, 0, 1, 0, 1, 1]
+def M3Row1 : List Int := [0, 1, 1, 1, 0, 1]
+def M3 : List (List Int) := [M3Row0, M3Row1]
 
-def M3_rows : Nat := 2
-def M3_cols : Nat := 6
-def M3_rank_claim : Nat := 2
+def M3_rows : Nat := M3.length
+def M3_cols : Nat := M3Row0.length
 
--- q-expansion basis of S2(26) from Sage ModularSymbols(26)
+def M3PivotQQ : Matrix (Fin 2) (Fin 2) ℚ :=
+  !![1, 0; 0, 1]
+
+def M3PivotMod2 : Matrix (Fin 2) (Fin 2) (ZMod 2) :=
+  !![1, 0; 0, 1]
+
+/-- For a matrix with exactly two rows, a nonzero `2 × 2` minor certifies
+row rank two. -/
+def certifiedTwoRowRank
+    {R : Type*} [CommRing R] [DecidableEq R]
+    (pivotMinor : Matrix (Fin 2) (Fin 2) R) : Nat :=
+  if Matrix.det pivotMinor = 0 then 0 else 2
+
+def M3_rank_QQ : Nat :=
+  certifiedTwoRowRank M3PivotQQ
+
+def M3_rank_mod2 : Nat :=
+  certifiedTwoRowRank M3PivotMod2
+
 def S2_26_basis_dim : Nat := 2
-def f_26a_qexp : List Int := [0, 1, -1, 0, 0, 1] -- q - q^2 + ...
-def f_26b_qexp : List Int := [0, 1, 1, 0, 0, -1] -- q + q^2 + ...
+def f_26a_qexp : List Int := [0, 1, -1, 0, 0, 1]
+def f_26b_qexp : List Int := [0, 1, 1, 0, 0, -1]
 
-def formal_immersion_log : String :=
-  "M3 = [[1 0 1 0 1 1] [0 1 1 1 0 1]]\n" ++
-  "Rank M3 = 2\n" ++
-  "Formal immersion holds at 2 for X0(26) -> J0(26)\n" ++
-  "Genus X0(26)=2, dim J0(26)=2"
+theorem M3_rows_eq_two : M3_rows = 2 := by
+  rfl
 
--- Explicit external premises — not global axioms
-axiom MwrankCertificateSoundness_26 : Prop
-axiom J0DecompositionSoundness_26 : Prop
-axiom FormalImmersionSoundness_26 : Prop
+theorem M3_cols_eq_six : M3_cols = 6 := by
+  rfl
 
--- Checks
-theorem M3_rank_check : M3.length = M3_rows := rfl
-theorem M3_full_rank : M3_rank_claim = J0_26_dim := rfl
-theorem S2_dim_check : S2_26_basis_dim = J0_26_dim := rfl
+theorem M3_all_rows_have_six_columns :
+    M3.map List.length = [6, 6] := by
+  rfl
 
--- Main theorems for v9.4.0
-theorem formal_immersion_at_2_real
-  (h1 : J0DecompositionSoundness_26) (h2 : MwrankCertificateSoundness_26) (h3 : FormalImmersionSoundness_26) :
-  M3_rank_claim = J0_26_dim := rfl
+theorem M3_first_two_columns_are_identity :
+    M3.map (List.take 2) = [[1, 0], [0, 1]] := by
+  rfl
 
-theorem X0_26_Q_finite_of_rank_zero_and_immersion
-  (h1 : J0DecompositionSoundness_26) (h2 : MwrankCertificateSoundness_26) (h3 : FormalImmersionSoundness_26) :
-  True := trivial
+theorem M3_rank_QQ_eq_two : M3_rank_QQ = 2 := by
+  norm_num [M3_rank_QQ, certifiedTwoRowRank, M3PivotQQ,
+    Matrix.det_fin_two]
 
-end Beal.Mazur.Gates.FormalImmersion_26
+theorem M3_rank_mod2_eq_two : M3_rank_mod2 = 2 := by
+  norm_num [M3_rank_mod2, certifiedTwoRowRank, M3PivotMod2,
+    Matrix.det_fin_two]
+
+theorem S2_26_basis_dim_eq_two : S2_26_basis_dim = 2 := rfl
+
+theorem finite_certificate_checked :
+    M3_rows = 2 ∧
+      M3_cols = 6 ∧
+      M3_rank_QQ = 2 ∧
+      M3_rank_mod2 = 2 ∧
+      S2_26_basis_dim = 2 :=
+  ⟨M3_rows_eq_two, M3_cols_eq_six, M3_rank_QQ_eq_two,
+    M3_rank_mod2_eq_two, S2_26_basis_dim_eq_two⟩
+
+#print axioms M3_rows_eq_two
+#print axioms M3_cols_eq_six
+#print axioms M3_rank_QQ_eq_two
+#print axioms M3_rank_mod2_eq_two
+#print axioms finite_certificate_checked
+
+end Beal17Mazur.Gates.FormalImmersion26Cert
