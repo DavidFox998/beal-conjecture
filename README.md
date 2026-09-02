@@ -179,6 +179,38 @@ The Phase A and Phase B evidence remains as documented below. In particular,
 the 80-entry audit does not claim a singleton Selmer group, and the Phase B
 finite tables do not by themselves prove the missing Jacobian/isogeny theorem.
 
+### v9.3.0 — Reproducible J₀(26) decomposition certificate
+
+The v9.3.0 release replaces the external `J₀(26)` decomposition trust
+boundary with a reproducible certificate. The committed Sage transcript and
+JSON witness record:
+
+- $\dim J_0(26)=2=1+1$;
+- the reported isogeny
+  $J_0(26)\sim E_{26a1}\times E_{26b1}$;
+- the exact models $(1,0,1,-5,-8)$ and $(1,-1,1,-3,3)$; and
+- the explicit source-to-Lean factor correspondence, including its
+  intentionally preserved factor-order difference.
+
+The Lean bridge exposes `J0DecompositionSoundness_26` and
+`MwrankCertificateSoundness_26` as visible proposition-valued arguments, not
+global axioms. The finite model, dimension, transcript, and certificate
+integrity checks are kernel-checked; Sage decomposition semantics and
+mwrank/second-descent rank semantics remain explicit mathematical premises.
+
+Verification for this release:
+
+```text
+python3 scripts/j0_26_decomp_certificate.py --check
+lake build Beal.Mazur.Gates.J0_26_Decomp
+Main CI passed in 2m42s
+```
+
+The JSON witness check and focused Lean build passed, and no new
+`axiom`, `sorry`, or `admit` was introduced. This is reproducible evidence
+for the level-26 bridge, not an unconditional proof of Beal's Conjecture or
+of the still-missing global $X_0(26)(\mathbb Q)$ exhaustiveness argument.
+
 The immutable release archive
 `beal-conjecture-v8.9.0.tar.gz` is 175,208 bytes with SHA-256
 `61362de15bd0c2ea9f64fea47ce91e958c9eafd2a6aa034147fda68099266672`.

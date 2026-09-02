@@ -357,6 +357,33 @@ Selmer-to-rank soundness remain explicit certificate interfaces. This is the
 Opera Numerorum practice throughout: a checked brick is preserved as a brick,
 and an absent bridge is named rather than painted over.
 
+## v9.3.0 — Reproducible J₀(26) decomposition bridge
+
+`Beal/Mazur/Gates/J0_26_Decomp_Cert.lean` checks the exact level-26
+decomposition data: $\dim J_0(26)=2=1+1$, with coefficient models
+`(1,0,1,-5,-8)` and `(1,-1,1,-3,3)`. The corresponding bridge module records
+the reported isogeny
+$J_0(26)\sim E_{26a1}\times E_{26b1}$ while preserving the explicit
+source-versus-Lean factor ordering.
+
+`J0DecompositionSoundness_26` and `MwrankCertificateSoundness_26` are
+proposition-valued arguments supplied to ordinary theorems. They are not
+global axioms. The certificate data and finite checks are kernel-checked;
+Sage's decomposition semantics and mwrank/second-descent rank semantics
+remain visible external premises.
+
+The release verification passed:
+
+```text
+python3 scripts/j0_26_decomp_certificate.py --check
+lake build Beal.Mazur.Gates.J0_26_Decomp
+Main CI passed in 2m42s
+```
+
+No new `axiom`, `sorry`, or `admit` was introduced. This bridge documents
+reproducible level-26 evidence and its formal boundary; it does not claim an
+unconditional proof of the global $X_0(26)(\mathbb Q)$ result.
+
 The neighboring READMEs describe the mathematical rooms below this source
 root. In particular, [`Beal/Mazur/`](Beal/Mazur/) is the current Level-26
 chapter, while [`Beal/Galois/`](Beal/Galois/) and
