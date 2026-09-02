@@ -1,0 +1,788 @@
+name: beal-conjecture CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install elan
+        run: |
+          curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> $GITHUB_PATH
+
+      - name: Restore Lean toolchain and Mathlib cache
+        id: lean-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.elan/toolchains
+            ~/.elan/update-hashes
+            .lake/packages
+          key: lean-${{ runner.os }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}
+
+      - name: Get Mathlib binary cache
+        if: steps.lean-cache.outputs.cache-hit != 'true'
+        run: lake exe cache get
+
+      - name: Verify Opera Numerorum is in the release build
+        run: |
+          set -euo pipefail
+          module='lean/Beal/B00_OperaNumerorum.lean'
+          entrypoint='lean/Beal.lean'
+
+          if [ ! -f "$module" ]; then
+            echo "FAIL: $module is missing."
+            echo "Restore the Opera Numerorum module before running the release build."
+            exit 1
+          fi
+
+          if ! grep -qE '^[[:space:]]*import[[:space:]]+Beal\.B00_OperaNumerorum([[:space:]]|$)' "$entrypoint"; then
+            echo "FAIL: $entrypoint does not import Beal.B00_OperaNumerorum."
+            echo "Add 'import Beal.B00_OperaNumerorum' to $entrypoint so the release build includes the module."
+            exit 1
+          fi
+
+          echo "OK: Opera Numerorum is present and imported by the release entrypoint"
+
+      - name: Build all bricks
+        run: lake build +Beal.B00_OperaNumerorum Beal
+
+      - name: Check level-26 external transcript integrity
+        run: python3 scripts/check_level26_replay.py
+
+      - name: Build level-26 p-adic certificate interface
+        run: lake build Beal.Mazur.Gates.Descent_26_PadicCertificates
+
+      - name: Check J0(26) decomposition witness
+        run: python3 scripts/j0_26_decomp_certificate.py --check
+
+      - name: Build J0(26) decomposition bridge
+        run: lake build Beal.Mazur.Gates.J0_26_Decomp
+
+      - name: Check Lake manifest for dependency drift
+        run: |
+          set -euo pipefail
+
+          if git diff --quiet -- lake-manifest.json; then
+            echo "OK: lake-manifest.json stayed unchanged during the build"
+            exit 0
+          fi
+
+          echo "FAIL: lake-manifest.json changed during the normal build"
+          echo
+          python3 - <<'PY'
+          import json
+          import subprocess
+          import sys
+
+          manifest_path = "lake-manifest.json"
+
+          try:
+              committed = json.loads(
+                  subprocess.check_output(
+                      ["git", "show", f"HEAD:{manifest_path}"],
+                      text=True,
+                  )
+              )
+              with open(manifest_path, encoding="utf-8") as manifest_file:
+                  current = json.load(manifest_file)
+          except (OSError, subprocess.CalledProcessError, json.JSONDecodeError) as error:
+              print(f"Unable to summarize dependency revisions: {error}")
+              sys.exit(0)
+
+          def package_map(manifest):
+              return {
+                  (package.get("name"), package.get("url")): package
+                  for package in manifest.get("packages", [])
+                  if isinstance(package, dict)
+              }
+
+          committed_packages = package_map(committed)
+          current_packages = package_map(current)
+
+          changes = []
+          for package_key in sorted(
+              set(committed_packages) | set(current_packages),
+              key=lambda key: (str(key[0]), str(key[1])),
+          ):
+              old = committed_packages.get(package_key)
+              new = current_packages.get(package_key)
+              package_name = package_key[0] or package_key[1] or "<unnamed package>"
+
+              if old is None:
+                  changes.append(
+                      f"  added {package_name}: "
+                      f"rev={new.get('rev', '<missing>')} "
+                      f"inputRev={new.get('inputRev', '<missing>')}"
+                  )
+              elif new is None:
+                  changes.append(
+                      f"  removed {package_name}: "
+                      f"rev={old.get('rev', '<missing>')} "
+                      f"inputRev={old.get('inputRev', '<missing>')}"
+                  )
+              elif (
+                  old.get("rev") != new.get("rev")
+                  or old.get("inputRev") != new.get("inputRev")
+              ):
+                  changes.append(
+                      f"  {package_name}: "
+                      f"rev {old.get('rev', '<missing>')} -> "
+                      f"{new.get('rev', '<missing>')}; "
+                      f"inputRev {old.get('inputRev', '<missing>')} -> "
+                      f"{new.get('inputRev', '<missing>')}"
+                  )
+
+          if changes:
+              print("Dependency revision changes:")
+              print("\n".join(changes))
+          else:
+              print("No package revision changed; the manifest has a structural or formatting drift.")
+          PY
+
+          echo
+          echo "Full lake-manifest.json diff:"
+          git --no-pager diff -- lake-manifest.json
+          echo
+          echo "An intentional dependency update must update lakefile.lean and lake-manifest.json together,"
+          echo "review every pinned revision, and go through the normal release/dependency review before merge."
+          exit 1
+
+      - name: Check NO sorry
+        run: |
+          ! grep -R --include="*.lean" "^\s*sorry" lean || (echo "FAIL: sorry found" && exit 1)
+          echo "OK: 0 sorry"
+
+      - name: No Prop := True stubs in Core files
+        run: |
+          set -euo pipefail
+          fail=0
+          if grep -rnE ':\s*Prop\s*:=\s*True\b' lean/Beal/*_Core.lean; then
+            echo "FAIL: Core file contains a trivial 'Prop := True' stub"
+            fail=1
+          fi
+          if grep -rnE ':\s*Prop\s*:=\s*¬\s*False\b' lean/Beal/*_Core.lean; then
+            echo "FAIL: Core file contains 'Prop := ¬ False' (equivalent to True)"
+            fail=1
+          fi
+          if grep -nE ':\s*Prop\s*:=\s*True\b|:=\s*trivial\b|:=\s*by[[:space:]]+trivial\b' \
+              lean/Beal/B17_FreyRationalTwoTorsion.lean \
+              lean/Beal/B17_FullE2.lean \
+              lean/Beal/B17_MazurIrreducible_Core.lean \
+              lean/Beal/B17_MazurIrreducible.lean; then
+            echo "FAIL: B17 must not reintroduce True/trivial irreducibility placeholders"
+            fail=1
+          fi
+          if [ $fail -ne 0 ]; then exit 1; fi
+          echo "OK: no trivial Prop stubs in Core files"
+
+      - name: Audit every core and wrapper theorem
+        run: |
+          set -euo pipefail
+
+          for core in lean/Beal/*_Core.lean; do
+            if grep -nE '^[[:space:]]*import[[:space:]]' "$core"; then
+              echo "FAIL: $core must remain import-free"
+              exit 1
+            fi
+            if ! grep -qE '^#print axioms ' "$core"; then
+              echo "FAIL: $core must audit each declaration with #print axioms"
+              exit 1
+            fi
+          done
+
+          {
+            echo 'import Beal'
+            grep -hE '^#print axioms ' lean/Beal/*_Core.lean
+            cat <<'EOF'
+          #print axioms BealFrey.freyΔ_ne_zero_of_solution
+          #print axioms primitiveTripleCore_of_gcd_eq_one
+          #print axioms gcd_eq_one_of_primitiveTripleCore
+          #print axioms isBealSolution_wrapper_to_core
+          #print axioms isBealSolutionCore_to_wrapper
+          #print axioms bealConjecture_wrapper_to_core
+          #print axioms bealConjectureCore_to_wrapper
+          #print axioms frey_modular_of_pos
+          #print axioms modularity_holds
+          #print axioms qexp_implies_hecke
+          #print axioms BealHasseWiles.hasse_bound_143a1_all
+          #print axioms beal_bridge_proved
+          #print axioms BealConjecture_trio_bridge
+          #print axioms BealGalois.frey_galois_rep_of_pos
+          #print axioms BealGalois.frey_irreducible_trivial
+          #print axioms dimS2Gamma0_2_eq_zero
+          #print axioms S2_vanishing_proved
+          #print axioms ribet_open_trivial
+          #print axioms beal_final_contradiction_of_S2
+          #print axioms BealEpsilon.mazur_epsilon_trivial
+          #print axioms BealEpsilon.frey_conductor_trivial
+          #print axioms BealRibet12.beal_modular_contradiction_trivial
+          #print axioms BealRibet12.ribet_contradiction_from_S2_vanishing
+          #print axioms BealRibetReal.ribet_realDefs_trivial
+          #print axioms BealRibetReal.level_to_2_trivial
+          #print axioms BealFreyConductor.beal_primes_not_divide_conductor_trivial
+          #print axioms BealLevelTo2.ribet_chain_to_2_gives_False
+          #print axioms Beal16Final.beal_if_wiles_tate_ribet
+          #print axioms Beal17Mazur.freyRationalCurve_discriminant
+          #print axioms Beal17Mazur.freyRationalCurve_discriminant_ne_zero
+          #print axioms Beal17Mazur.freyThreeDistinctRationalTwoTorsion
+          #print axioms Beal17Mazur.Frey_E2_exhaustive
+          #print axioms Beal17Mazur.freyTwoTorsion_affine_y_eq_zero
+          #print axioms Beal17Mazur.freyFullE2_exhaustive
+          #print axioms Beal17Mazur.freyFullE2_eq
+          #print axioms Beal17Mazur.FreyMazurContext.hasThreeDistinctRationalTwoTorsion
+          #print axioms Beal17Mazur.FreyMazurContext.hasFullRationalTwoTorsion
+          #print axioms Beal17Mazur.FreyPTorsion
+          #print axioms Beal17Mazur.galoisAction
+          #print axioms Beal17Mazur.RationalPIsogenyKernel
+          #print axioms Beal17Mazur.FreyResidualRepresentationReducible
+          #print axioms Beal17Mazur.MazurIrreducibilityBoundary
+          #print axioms Beal17Mazur.MazurRationalIsogenyClassification
+          #print axioms Beal17Mazur.frey_irreducible_of_mazur
+          #print axioms Beal17Mazur.frey_mazur_irreducibility_boundary
+          #print axioms Beal17Mazur.prime_not_dvd_conductor
+          #print axioms Beal17Mazur.remove_exact_divisor
+          #print axioms Beal17Mazur.remove_exact_context_conductor_divisor
+          #print axioms Beal18Frey.frey_disc_nonzero_trivial
+          #print axioms Beal19Final.beal_proof_assembled
+          #print axioms Beal19Final.beal_from_S2
+          #print axioms Beal20Done.beal_conjecture_conditional_on_enriched_plan
+          #print axioms Beal20Done.twenty_bricks_conditional
+          #print axioms Beal21Fermat.beal_implies_fermat
+          #print axioms Beal21Fermat.beal_conjecture_to_21_core
+          #print axioms Beal21Fermat.beal_implies_fermat_full_core
+          #print axioms Beal21Fermat.beal_implies_fermat_full
+          EOF
+          } > /tmp/beal_axiom_audit.lean
+
+          lake env lean /tmp/beal_axiom_audit.lean 2>&1 | tee /tmp/beal_axiom_audit.txt
+
+          while read -r _ _ declaration; do
+            if ! grep -Fq "'$declaration' does not depend on any axioms" /tmp/beal_axiom_audit.txt; then
+              echo "FAIL: core declaration $declaration is not zero-axiom"
+              exit 1
+            fi
+          done < <(grep -hE '^#print axioms ' lean/Beal/*_Core.lean)
+
+          if grep -Fq 'sorryAx' /tmp/beal_axiom_audit.txt; then
+            echo "FAIL: wrapper theorem depends on sorryAx"
+            exit 1
+          fi
+
+          # Foundational Lean dependencies (propext, Classical.choice, Quot.sound) are
+          # not mathematical assumptions. Audit the final theorem's named domain axioms exactly.
+          cat > /tmp/beal_final_axiom_audit.lean <<'EOF'
+          import Beal
+          #check fun
+            (h : Beal20Done.BealConjectureConditionalOnEnrichedPlan)
+            (enriched : Beal.RibetIterate.EnrichedPlanSupplier)
+            (twoAdic : Beal20Done.TwoAdicExponentOneSupplier) =>
+              h enriched twoAdic
+          #print axioms Beal20Done.beal_conjecture_conditional_on_enriched_plan
+          #print axioms Beal20Done.twenty_bricks_conditional
+          EOF
+          lake env lean /tmp/beal_final_axiom_audit.lean 2>&1 | tee /tmp/beal_final_axiom_audit.txt
+          if grep -Fq 'sorryAx' /tmp/beal_final_axiom_audit.txt; then
+            echo "FAIL: final theorem depends on sorryAx"
+            exit 1
+          fi
+          printf '%s\n' \
+            'Beal.FreyTate.TateStep2.frey_conductor_data' \
+            'Beal.FreyTate.TateStep2.tate_step2_odd_prime_external' \
+            'Beal.FreyTate.wiles_modularity' |
+            sort -u > /tmp/beal_expected_domain_axioms.txt
+          grep -oE 'Beal\.FreyTate(\.TateStep2)?\.[A-Za-z0-9_]+' \
+            /tmp/beal_final_axiom_audit.txt |
+            sort -u > /tmp/beal_actual_domain_axioms.txt
+          if ! cmp -s \
+            /tmp/beal_actual_domain_axioms.txt \
+            /tmp/beal_expected_domain_axioms.txt; then
+            echo "FAIL: final theorem must use exactly the three approved domain axioms"
+            diff -u \
+              /tmp/beal_expected_domain_axioms.txt \
+              /tmp/beal_actual_domain_axioms.txt || true
+            exit 1
+          fi
+          echo "OK: final theorem retains both explicit suppliers and uses exactly three approved domain axioms"
+          echo "OK: all cores are import-free and zero-axiom; wrappers use no sorryAx"
+
+      - name: Audit the genuine B17 Mazur boundary
+        run: |
+          set -euo pipefail
+          cat > /tmp/beal_b17_mazur_audit.lean <<'EOF'
+          import Beal.B17_MazurIrreducible
+          #print axioms Beal17Mazur.FreyPTorsion
+          #print axioms Beal17Mazur.galoisAction
+          #print axioms Beal17Mazur.RationalPIsogenyKernel
+          #print axioms Beal17Mazur.FreyResidualRepresentationReducible
+          #print axioms Beal17Mazur.MazurIrreducibilityBoundary
+          #print axioms Beal17Mazur.MazurRationalIsogenyClassification
+          #print axioms Beal17Mazur.frey_irreducible_of_mazur
+          #print axioms Beal17Mazur.frey_mazur_irreducibility_boundary
+          EOF
+          lake env lean /tmp/beal_b17_mazur_audit.lean 2>&1 |
+            tee /tmp/beal_b17_mazur_audit.txt
+          if grep -Fq 'sorryAx' /tmp/beal_b17_mazur_audit.txt; then
+            echo "FAIL: B17 Mazur boundary depends on sorryAx"
+            exit 1
+          fi
+          if grep -Eq \
+              '^[[:space:]]*axiom[[:space:]]+frey_irreducibility_external([[:space:]]|$)' \
+              lean/Beal/B17_MazurIrreducible.lean; then
+            echo "FAIL: B17 restored the deleted global Mazur axiom"
+            exit 1
+          fi
+          if ! grep -A5 -F \
+              "'Beal17Mazur.frey_irreducible_of_mazur' depends on axioms:" \
+              /tmp/beal_b17_mazur_audit.txt >/dev/null; then
+            echo "FAIL: the theorem-valued Mazur supplier boundary is missing"
+            exit 1
+          fi
+          echo "OK: B17 uses genuine geometric p-torsion and an explicit theorem-valued Mazur supplier"
+
+      - name: Test the B20 axiom-output parser
+        run: bash scripts/test-check-b20-axioms.sh
+
+      - name: Confirm B20 transitive axiom graph
+        run: bash scripts/check-b20-axioms.sh
+
+      - name: Audit the trusted real-number transport boundary
+        run: |
+          set -euo pipefail
+          cat > /tmp/beal_real_boundary.lean <<'EOF'
+          import Beal.B05_HasseWiles
+          #print axioms BealHasseWiles.BSD_HasseFull_143_CLOSED
+          EOF
+          lake env lean /tmp/beal_real_boundary.lean 2>&1 | tee /tmp/beal_real_boundary.txt
+          if grep -E 'sorryAx' /tmp/beal_real_boundary.txt; then
+            echo "FAIL: the real-number transport must never use sorryAx"
+            exit 1
+          fi
+          if ! grep -Fq "'BealHasseWiles.BSD_HasseFull_143_CLOSED' depends on axioms: [propext, Classical.choice, Quot.sound]" /tmp/beal_real_boundary.txt; then
+            echo "FAIL: unexpected axiom budget for the documented real-number transport"
+            exit 1
+          fi
+          echo "OK: real-number transport has its documented Mathlib quotient boundary"
+
+      - name: Audit the desert-brothers real bridge boundary
+        run: |
+          set -euo pipefail
+          cat > /tmp/beal_desert_real_bridge.lean <<'EOF'
+          import Beal.Galois.«07h_DesertInfra»
+          #print axioms Beal.ArakelovRH.DesertBrothers.EutheosJitter
+          #print axioms Beal.ArakelovRH.DesertBrothers.realJitter_of_fixedPoint
+          #print axioms Beal.Galois.EutheosComplementSketch
+          #print axioms Beal.Galois.OldNewDecompHyp_from_EutheosSketch
+          #print axioms Beal.Galois.EutheosGeometryInterface
+          #print axioms Beal.Galois.separation_kernel
+          #print axioms Beal.Galois.OldNewDecompHyp_from_Eutheos
+          EOF
+          lake env lean /tmp/beal_desert_real_bridge.lean 2>&1 |
+            tee /tmp/beal_desert_real_bridge.txt
+          if grep -E 'sorryAx' /tmp/beal_desert_real_bridge.txt; then
+            echo "FAIL: the desert-brothers bridge must never use sorryAx"
+            exit 1
+          fi
+          if grep -Fq "'Beal.ArakelovRH.DesertBrothers.EutheosJitter' depends on axioms" \
+              /tmp/beal_desert_real_bridge.txt; then
+            echo "FAIL: the fixed-point jitter certificate must remain axiom-free"
+            exit 1
+          fi
+          if ! grep -Fq "'Beal.ArakelovRH.DesertBrothers.realJitter_of_fixedPoint' depends on axioms: [propext, Classical.choice, Quot.sound]" \
+              /tmp/beal_desert_real_bridge.txt; then
+            echo "FAIL: unexpected axiom budget for the real jitter bridge"
+            exit 1
+          fi
+          if ! grep -Fq "'Beal.Galois.EutheosComplementSketch' depends on axioms: [propext, Quot.sound]" \
+              /tmp/beal_desert_real_bridge.txt; then
+            echo "FAIL: the 07h sketch must remain choice-free"
+            exit 1
+          fi
+          if ! grep -Fq "'Beal.Galois.OldNewDecompHyp_from_EutheosSketch' depends on axioms: [propext, Quot.sound]" \
+              /tmp/beal_desert_real_bridge.txt; then
+            echo "FAIL: the 07h supplier must remain choice-free"
+            exit 1
+          fi
+          if ! grep -Fq "'Beal.Galois.EutheosGeometryInterface' depends on axioms: [propext, Quot.sound]" \
+              /tmp/beal_desert_real_bridge.txt; then
+            echo "FAIL: the typed Eutheos geometry interface must remain choice-free"
+            exit 1
+          fi
+          if ! grep -Fq "'Beal.Galois.separation_kernel' depends on axioms: [propext, Quot.sound]" \
+              /tmp/beal_desert_real_bridge.txt; then
+            echo "FAIL: the Eutheos separation kernel must remain choice-free"
+            exit 1
+          fi
+          if ! grep -Fq "'Beal.Galois.OldNewDecompHyp_from_Eutheos' depends on axioms: [propext, Quot.sound]" \
+              /tmp/beal_desert_real_bridge.txt; then
+            echo "FAIL: the Eutheos old/new supplier must remain choice-free"
+            exit 1
+          fi
+          echo "OK: real jitter transport is isolated from the choice-free 07h boundary"
+
+      - name: Audit the Taylor-Wiles patching boundary
+        run: |
+          set -euo pipefail
+          if grep -R --include='*.lean' -nE \
+              '^[[:space:]]*(sorry|opaque|axiom)[[:space:]]' lean/Beal/Patching; then
+            echo "FAIL: patching modules must not introduce sorry, opaque declarations, or axioms"
+            exit 1
+          fi
+          if grep -nE '^[[:space:]]*hRank[[:space:]]*:' lean/Beal/B15_RibetIterate.lean; then
+            echo "FAIL: B15 must derive localized rank one from patching data"
+            exit 1
+          fi
+          cat > /tmp/beal_patching_audit.lean <<'EOF'
+          import Beal.Patching.RankOne
+          #print axioms Beal.Patching.RankOneCoordinates.toLinearEquiv
+          #print axioms Beal.Patching.PatchingSpecializationData.toRankOneCoordinates
+          #print axioms Beal.Patching.finite_level_free
+          #print axioms Beal.Patching.M_infty_free
+          #print axioms Beal.Patching.depth_module_ge_ring
+          #print axioms Beal.Patching.LocalizedRankOne_from_Patching
+          EOF
+          lake env lean /tmp/beal_patching_audit.lean 2>&1 |
+            tee /tmp/beal_patching_audit.txt
+          if grep -E 'sorryAx|Classical\.choice|Beal\.[A-Za-z0-9_.]*axiom' \
+              /tmp/beal_patching_audit.txt; then
+            echo "FAIL: patching-to-rank-one must remain choice-free and use no named axiom"
+            exit 1
+          fi
+          for declaration in \
+            Beal.Patching.RankOneCoordinates.toLinearEquiv \
+            Beal.Patching.PatchingSpecializationData.toRankOneCoordinates \
+            Beal.Patching.finite_level_free \
+            Beal.Patching.M_infty_free \
+            Beal.Patching.depth_module_ge_ring \
+            Beal.Patching.LocalizedRankOne_from_Patching; do
+            if ! grep -Fq "'$declaration' depends on axioms: [propext, Quot.sound]" \
+                /tmp/beal_patching_audit.txt; then
+              echo "FAIL: unexpected axiom budget for $declaration"
+              exit 1
+            fi
+          done
+          echo "OK: explicit patching data constructs rank one within [propext, Quot.sound]"
+
+      - name: Verify B01 core has zero imports and zero axioms
+        run: |
+          if grep -nE '^[[:space:]]*import[[:space:]]' lean/Beal/B01_Def_Core.lean; then
+            echo "FAIL: B01_Def_Core must remain import-free"
+            exit 1
+          fi
+          cat > /tmp/check_b01_axioms.lean <<'EOF'
+          import Beal.B01_Def_Core
+          import Beal.B01_Def
+          #print axioms IsBealSolutionCore
+          #print axioms BealConjectureCore
+          #print axioms IsBealSolution
+          #print axioms BealConjecture
+          #print axioms primitiveTripleCore_of_gcd_eq_one
+          #print axioms gcd_eq_one_of_primitiveTripleCore
+          #print axioms isBealSolution_wrapper_to_core
+          #print axioms isBealSolutionCore_to_wrapper
+          #print axioms bealConjecture_wrapper_to_core
+          #print axioms bealConjectureCore_to_wrapper
+          EOF
+          lake env lean /tmp/check_b01_axioms.lean 2>&1 | tee /tmp/check_b01_axioms.txt
+          if grep -E "'(IsBealSolutionCore|BealConjectureCore)' depends on axioms" /tmp/check_b01_axioms.txt; then
+            echo "FAIL: B01 core definitions must not depend on axioms"
+            exit 1
+          fi
+          if grep -E 'Classical\.choice|Quot\.sound|sorryAx' /tmp/check_b01_axioms.txt; then
+            echo "FAIL: B01 wrapper must not use forbidden axioms"
+            exit 1
+          fi
+          echo "OK: B01 core is zero-axiom; gcd compatibility stays within the wrapper budget"
+
+      - name: Verify B02 core is zero-axiom and proof uses only propext
+        run: |
+          if grep -nE '^[[:space:]]*import[[:space:]]' lean/Beal/B02_Frey_Core.lean; then
+            echo "FAIL: B02_Frey_Core must remain import-free"
+            exit 1
+          fi
+          cat > /tmp/check_b02_axioms.lean <<'EOF'
+          import Beal.B02_Frey_Core
+          import Beal.B02_Frey
+          #print axioms FreyDeltaCore
+          #print axioms FreyNonzeroCore
+          #print axioms BealFrey.freyΔ
+          #print axioms BealFrey.freyΔ_ne_zero_of_solution
+          EOF
+          lake env lean /tmp/check_b02_axioms.lean 2>&1 | tee /tmp/check_b02_axioms.txt
+          if grep -E "'Frey(Delta|Nonzero)Core' depends on axioms" /tmp/check_b02_axioms.txt; then
+            echo "FAIL: B02 core must have no axioms"
+            exit 1
+          fi
+          if grep -E "'BealFrey\.(freyΔ|freyΔ_ne_zero_of_solution)' depends on axioms:" /tmp/check_b02_axioms.txt | grep -Ev '\[propext\]'; then
+            echo "FAIL: B02 proof may depend only on propext"
+            exit 1
+          fi
+          if grep -E "Classical\.choice|Quot\.sound|sorryAx" /tmp/check_b02_axioms.txt; then
+            echo "FAIL: forbidden B02 axiom dependency"
+            exit 1
+          fi
+          echo "OK: B02 core is axiom-free; B02 proof uses only propext"
+
+      - name: Verify Layer 5 Hecke boundary
+        run: |
+          set -euo pipefail
+          hecke_file=lean/Beal/Galois/05_Hecke.lean
+          hecke_code=/tmp/layer5_hecke_code.lean
+
+          # Remove Lean comments before checking the source itself. The boundary
+          # documentation intentionally names excluded concepts, but those names
+          # must not occur in executable declarations.
+          python3 - "$hecke_file" > "$hecke_code" <<'PY'
+          import pathlib
+          import sys
+
+          source = pathlib.Path(sys.argv[1]).read_text()
+          output = []
+          index = 0
+          comment_depth = 0
+          while index < len(source):
+              if comment_depth:
+                  if source.startswith("/-", index):
+                      comment_depth += 1
+                      output.extend("  ")
+                      index += 2
+                  elif source.startswith("-/", index):
+                      comment_depth -= 1
+                      output.extend("  ")
+                      index += 2
+                  else:
+                      output.append("\n" if source[index] == "\n" else " ")
+                      index += 1
+              elif source.startswith("--", index):
+                  while index < len(source) and source[index] != "\n":
+                      output.append(" ")
+                      index += 1
+              elif source.startswith("/-", index):
+                  comment_depth = 1
+                  output.extend("  ")
+                  index += 2
+              else:
+                  output.append(source[index])
+                  index += 1
+          print("".join(output), end="")
+          PY
+
+          if grep -nE '(^|[^[:alnum:]_])(axiom|sorryAx|sorry)([^[:alnum:]_]|$)' "$hecke_code"; then
+            echo "FAIL: Layer 5 contains an axiom, sorry, or sorryAx declaration/reference"
+            exit 1
+          fi
+
+          imports=$(grep -nE '^[[:space:]]*import[[:space:]]' "$hecke_code" || true)
+          if ! printf '%s\n' "$imports" | grep -Fq \
+              'import Beal.Galois.«03_ModLForm»'; then
+            echo "FAIL: Layer 5 must import exactly Beal.Galois.«03_ModLForm»"
+            exit 1
+          fi
+          unexpected_imports=$(printf '%s\n' "$imports" | grep -vF \
+            'import Beal.Galois.«03_ModLForm»' || true)
+          if [ -n "$unexpected_imports" ]; then
+            echo "FAIL: Layer 5 has an import outside its audited boundary:"
+            printf '%s\n' "$unexpected_imports"
+            exit 1
+          fi
+
+          excluded_boundary='04_LevelLowering|06_MaximalIdeal|07_NewformSupport|08_RibetProof|B16_BealFinal|B17_MazurIrreducible|B18_FreyIsElliptic|B19_BealFinalAssembly|B20_BealConjectureDone|B21_FermatCorollary|level.?lowering|Ribet|Wiles|TateStep2|beal_(final|proof|conjecture)'
+          if grep -nEi "$excluded_boundary" "$hecke_code"; then
+            echo "FAIL: Layer 5 references an excluded level-lowering or final-proof boundary"
+            exit 1
+          fi
+
+          cat > /tmp/layer5_hecke_axioms.lean <<'EOF'
+          import Beal.Galois.«05_Hecke»
+          #print axioms Beal.Galois.HeckeOp
+          #print axioms Beal.Galois.HeckeOp_level_divides_conductor
+          #print axioms Beal.Galois.DegeneracyMap
+          #print axioms Beal.Galois.OldSubspace
+          #print axioms Beal.Galois.IsNewform
+          #print axioms Beal.Galois.HeckeSequenceOp
+          #print axioms Beal.Galois.HeckeAlgebra
+          #print axioms Beal.Galois.heckeSequenceOp_mem_HeckeAlgebra
+          EOF
+          lake --old env lean /tmp/layer5_hecke_axioms.lean \
+            2>&1 | tee /tmp/layer5_hecke_axioms.txt
+
+          declarations=(
+            Beal.Galois.HeckeOp
+            Beal.Galois.HeckeOp_level_divides_conductor
+            Beal.Galois.DegeneracyMap
+            Beal.Galois.OldSubspace
+            Beal.Galois.IsNewform
+            Beal.Galois.HeckeSequenceOp
+            Beal.Galois.HeckeAlgebra
+            Beal.Galois.heckeSequenceOp_mem_HeckeAlgebra
+          )
+          for declaration in "${declarations[@]}"; do
+            if ! grep -Fq "'$declaration'" /tmp/layer5_hecke_axioms.txt; then
+              echo "FAIL: missing Layer 5 axiom report for $declaration"
+              exit 1
+            fi
+          done
+
+          unexpected_axioms=$(grep -E "depends on axioms:" \
+            /tmp/layer5_hecke_axioms.txt | grep -Ev \
+            'depends on axioms: \[(propext(, Quot\.sound)?|Quot\.sound)\]' || true)
+          if [ -n "$unexpected_axioms" ]; then
+            echo "FAIL: Layer 5 declarations exceed the [propext, Quot.sound] axiom budget:"
+            printf '%s\n' "$unexpected_axioms"
+            exit 1
+          fi
+          if grep -E 'Classical\.choice|sorryAx' /tmp/layer5_hecke_axioms.txt; then
+            echo "FAIL: Layer 5 axiom report contains a forbidden dependency"
+            exit 1
+          fi
+          echo "OK: Layer 5 builds with lake --old, stays within its import boundary, and uses only propext/Quot.sound"
+
+      - name: Verify Layer 6 maximal-ideal boundary
+        run: |
+          set -euo pipefail
+          layer6_file=lean/Beal/Galois/06_MaximalIdeal.lean
+          layer4_file=lean/Beal/Galois/04_LevelLowering.lean
+          layer5_file=lean/Beal/Galois/05_Hecke.lean
+          layer6_code=/tmp/layer6_maximalideal_code.lean
+
+          # Remove Lean comments before checking the source itself. The boundary
+          # documentation intentionally names excluded concepts, but those names
+          # must not occur in executable declarations.
+          python3 - "$layer6_file" > "$layer6_code" <<'PY'
+          import pathlib
+          import sys
+
+          source = pathlib.Path(sys.argv[1]).read_text()
+          output = []
+          index = 0
+          comment_depth = 0
+          while index < len(source):
+              if comment_depth:
+                  if source.startswith("/-", index):
+                      comment_depth += 1
+                      output.extend("  ")
+                      index += 2
+                  elif source.startswith("-/", index):
+                      comment_depth -= 1
+                      output.extend("  ")
+                      index += 2
+                  else:
+                      output.append("\n" if source[index] == "\n" else " ")
+                      index += 1
+              elif source.startswith("--", index):
+                  while index < len(source) and source[index] != "\n":
+                      output.append(" ")
+                      index += 1
+              elif source.startswith("/-", index):
+                  comment_depth = 1
+                  output.extend("  ")
+                  index += 2
+              else:
+                  output.append(source[index])
+                  index += 1
+          print("".join(output), end="")
+          PY
+
+          if grep -nE '(^|[^[:alnum:]_])(axiom|opaque|sorryAx|sorry|admit)([^[:alnum:]_]|$)' \
+              "$layer6_code"; then
+            echo "FAIL: Layer 6 contains an axiom, opaque, sorry, sorryAx, or admit declaration/reference"
+            exit 1
+          fi
+
+          imports=$(grep -E '^[[:space:]]*import[[:space:]]' "$layer6_code" || true)
+          expected_imports=$'import Beal.Galois.«04_LevelLowering»\nimport Beal.Galois.«05_Hecke»'
+          if [ "$imports" != "$expected_imports" ]; then
+            echo "FAIL: Layer 6 imports changed outside its audited boundary:"
+            printf '%s\n' "$imports"
+            exit 1
+          fi
+
+          # Layers 4 and 5 are the only local dependencies of Layer 6. Keep
+          # their import edges explicit too, so a final-proof or unrelated
+          # boundary cannot enter Layer 6 transitively.
+          layer4_imports=$(grep -E '^[[:space:]]*import[[:space:]]' "$layer4_file" || true)
+          expected_layer4_imports=$'import Beal.Galois.«01_Absolute»\nimport Beal.Galois.«02_ResidualRep»\nimport Beal.Galois.«03_ModLForm»\nimport Beal.B14_FreyTate\nimport Beal.B03_Conductor_Core'
+          if [ "$layer4_imports" != "$expected_layer4_imports" ]; then
+            echo "FAIL: Layer 4 imports changed under the Layer 6 dependency boundary:"
+            printf '%s\n' "$layer4_imports"
+            exit 1
+          fi
+          layer5_imports=$(grep -E '^[[:space:]]*import[[:space:]]' "$layer5_file" || true)
+          expected_layer5_imports='import Beal.Galois.«03_ModLForm»'
+          if [ "$layer5_imports" != "$expected_layer5_imports" ]; then
+            echo "FAIL: Layer 5 imports changed under the Layer 6 dependency boundary:"
+            printf '%s\n' "$layer5_imports"
+            exit 1
+          fi
+
+          # Imports are checked above, so exclude them from the reference scan.
+          # This lets Layer 6 import the explicitly approved level-lowering
+          # interface while rejecting references to downstream proof paths.
+          implementation_code=/tmp/layer6_maximalideal_implementation.lean
+          grep -vE '^[[:space:]]*import[[:space:]]' "$layer6_code" > "$implementation_code"
+          excluded_boundary='07[b-k]_|07_NewformSupport|08_RibetProof|B15_|B16_|B17_|B18_|B19_|B20_|B21_|BSD|Birch|Swinnerton|Ribet|Wiles|TateStep2|beal_(final|proof|conjecture)|descent|level.?lowering'
+          if grep -nEi "$excluded_boundary" "$implementation_code"; then
+            echo "FAIL: Layer 6 references an excluded final-proof or unrelated boundary"
+            exit 1
+          fi
+
+          cat > /tmp/layer6_maximalideal_axioms.lean <<'EOF'
+          import Beal.Galois.«06_MaximalIdeal»
+          #print axioms Beal.Galois.HeckeIdealLike
+          #print axioms Beal.Galois.IsMaximalIdeal
+          #print axioms Beal.Galois.MaximalIdeal
+          #print axioms Beal.Galois.ResidueFieldData
+          #print axioms Beal.Galois.ResidueFieldIsZMod
+          #print axioms Beal.Galois.HeckeIdealLike.IsMaximal
+          #print axioms Beal.Galois.FreyHeckeAttachment
+          #print axioms Beal.Galois.MaximalIdealAttachedToRep
+          #print axioms Beal.Galois.HeckeIdealAnnihilatesForm
+          #print axioms Beal.Galois.IsSupportedInNewSubspace
+          #print axioms Beal.Galois.frey_unramified_implies_maximalIdeal_support
+          EOF
+          lake --old env lean /tmp/layer6_maximalideal_axioms.lean \
+            2>&1 | tee /tmp/layer6_maximalideal_axioms.txt
+
+          declarations=(
+            Beal.Galois.HeckeIdealLike
+            Beal.Galois.IsMaximalIdeal
+            Beal.Galois.MaximalIdeal
+            Beal.Galois.ResidueFieldData
+            Beal.Galois.ResidueFieldIsZMod
+            Beal.Galois.HeckeIdealLike.IsMaximal
+            Beal.Galois.FreyHeckeAttachment
+            Beal.Galois.MaximalIdealAttachedToRep
+            Beal.Galois.HeckeIdealAnnihilatesForm
+            Beal.Galois.IsSupportedInNewSubspace
+            Beal.Galois.frey_unramified_implies_maximalIdeal_support
+          )
+          for declaration in "${declarations[@]}"; do
+            if ! grep -Fq "'$declaration'" /tmp/layer6_maximalideal_axioms.txt; then
+              echo "FAIL: missing Layer 6 axiom report for $declaration"
+              exit 1
+            fi
+          done
+
+          unexpected_axioms=$(grep -E "depends on axioms:" \
+            /tmp/layer6_maximalideal_axioms.txt | grep -Ev \
+            'depends on axioms: \[(propext(, Quot\.sound)?|Quot\.sound)\]' || true)
+          if [ -n "$unexpected_axioms" ]; then
+            echo "FAIL: Layer 6 declarations exceed the [propext, Quot.sound] axiom budget:"
+            printf '%s\n' "$unexpected_axioms"
+            exit 1
+          fi
+          if grep -E 'Classical\.choice|sorryAx' /tmp/layer6_maximalideal_axioms.txt; then
+            echo "FAIL: Layer 6 axiom report contains a forbidden dependency"
+            exit 1
+          fi
+          echo "OK: Layer 6 builds with lake --old, stays within its dependency boundary, and uses only propext/Quot.sound"
+
+      - name: Lake exe check
+        run: lake exe cache get || true

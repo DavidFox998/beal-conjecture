@@ -1,0 +1,69 @@
+{
+  "boundary": {
+    "checked": [
+      "the immutable source hashes",
+      "the exact factor labels and a-invariants",
+      "the two one-dimensional factors exhaust dimension two",
+      "the transcript reports a nonsimple J0(26) and the displayed isogeny"
+    ],
+    "external_premises": [
+      "Sage J0(26).decomposition() correctness and its isogeny semantics",
+      "mwrank/second-descent correctness and rank transport semantics"
+    ]
+  },
+  "certificate_sha256": "9bc3a8a3fc0f01902102eec7f099bb21e3b24981f45aab06f40b21869a20b535",
+  "dimension_check": {
+    "equation": "2 = 1 + 1",
+    "factor_dimension_sum": 2,
+    "factor_dimensions": [
+      1,
+      1
+    ],
+    "jacobian_dimension": 2,
+    "verified": true
+  },
+  "factors": [
+    {
+      "a_invariants": [
+        1,
+        0,
+        1,
+        -5,
+        -8
+      ],
+      "dimension": 1,
+      "lean_model_match": "E26b1",
+      "source_orbit": "26a(1,26)"
+    },
+    {
+      "a_invariants": [
+        1,
+        -1,
+        1,
+        -3,
+        3
+      ],
+      "dimension": 1,
+      "lean_model_match": "E26a1",
+      "source_orbit": "26b(1,26)"
+    }
+  ],
+  "jacobian": {
+    "dimension": 2,
+    "is_simple_reported": false,
+    "label": "J0(26)",
+    "level": 26
+  },
+  "reported_decomposition": {
+    "kind": "isogeny",
+    "target": "E26a1 x E26b1",
+    "transcript_line": "Is simple? No \u2014 isog to 26a1 x 26b1"
+  },
+  "schema": "beal.j0-26-decomposition-certificate.v1",
+  "source": {
+    "log": "sagemath/j0_26_decomp.log",
+    "log_sha256": "2ec53df024553ab04bc7791f0c0cc5d4354eabaf341d0987291fbec1911942c6",
+    "narrative": "sagemath/GENUINE_J0_26_CERT_v9.3.0.txt",
+    "narrative_sha256": "24b949fcc86616837592c13d77207b5f7b9957349133e0ac757ec87ce5bf14f6"
+  }
+}
