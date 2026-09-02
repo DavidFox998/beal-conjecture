@@ -343,3 +343,23 @@ Prime selection and construction of the patched tower remain honest,
 Type-valued boundaries. The jitter inequality indexes the data but does not
 prove their existence.
 
+## The Lean chamber in *Opera Numerorum*
+
+`lean/` is the formal spine of the Beal chamber. Read it from the import
+manifest to the numbered `Beal/` modules: elementary predicates become Frey
+arithmetic, then conductor and Galois interfaces, then the Level-26 Mazur
+route, and finally the conditional B14–B21 assembly.
+
+The v9.2.0 level-26 work adds a reproducible computational layer without
+collapsing it into a theorem. Finite congruence checks can be replayed and
+decided in Lean; the `ℚ₂`/`ℚ₁₃` lifting, covering completeness, and
+Selmer-to-rank soundness remain explicit certificate interfaces. This is the
+Opera Numerorum practice throughout: a checked brick is preserved as a brick,
+and an absent bridge is named rather than painted over.
+
+The neighboring READMEs describe the mathematical rooms below this source
+root. In particular, [`Beal/Mazur/`](Beal/Mazur/) is the current Level-26
+chapter, while [`Beal/Galois/`](Beal/Galois/) and
+[`Beal/Patching/`](Beal/Patching/) describe the modular and Taylor–Wiles
+boundaries that the final conditional chain still consumes.
+

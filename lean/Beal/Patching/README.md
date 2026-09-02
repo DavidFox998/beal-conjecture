@@ -92,3 +92,16 @@ Taylor–Wiles claim.
 The active final theorem retains its separate named Wiles and Tate boundaries
 and its explicit enriched-plan supplier. The theorem-level R=T bridge does not
 make the conditional Beal scaffold unconditional.
+
+## The patching room in *Opera Numerorum*
+
+Patching is the chamber where local and modular data would become a coherent
+global descent. The files here make that hoped-for passage inspectable:
+prime systems, finite patched modules, deformation/Hecke comparisons,
+depth bookkeeping, and the rank-one specialization are separate pieces.
+
+That architecture matters for the current Beal story. The v9.2.0 Level-26
+descent certificate concerns a different, earlier gate; it does not construct
+Taylor–Wiles primes or turn the finite Level-26 evidence into an unconditional
+modularity theorem. The patching interfaces remain explicit suppliers in the
+final chain until their mathematical existence is proved in Lean.

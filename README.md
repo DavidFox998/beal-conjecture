@@ -678,3 +678,31 @@ an inspiration for formalization, not a dependency of this repository.
 Maintained by DavidFox998 as part of *Opera Numerorum*: mathematics made
 auditable, with the beauty left visible.
 
+## The Beal chamber in *Opera Numerorum*
+
+This repository is one chamber in *Opera Numerorum*, a connected Lean
+development whose rooms share a method rather than a claim of finished
+mathematics: state the arithmetic explicitly, make the connective steps
+machine-checkable, and leave every imported theorem or missing construction
+visible at the boundary.
+
+The Beal route begins with primitive divisibility, builds the Frey curve, and
+then passes through conductor data, Galois representations, modular forms,
+level lowering, and the terminal fact that
+`S₂(Γ₀(2)) = 0`. The current level-26 work adds finite, reproducible evidence
+around the residual prime `13` while keeping the global Jacobian, Selmer, Tate,
+Wiles, and Ribet steps conditional where they are not yet constructed.
+
+The v9.2.0 documentation and source are organized as a small audit trail:
+
+- [`lean/`](lean/) contains the numbered formal development;
+- [`lean/Beal/Mazur/`](lean/Beal/Mazur/) contains the level-26 route;
+- [`certificates/`](certificates/) contains committed certificate data;
+- [`sagemath/`](sagemath/) contains reproducibility transcripts and replay
+  programs; and
+- [`docs/`](docs/) contains model, rational-point, and release documentation.
+
+“Green” means that the stated Lean programs and audits elaborate. It does not
+mean that Beal's Conjecture has been proved unconditionally. The project
+records that distinction as part of the mathematics.
+

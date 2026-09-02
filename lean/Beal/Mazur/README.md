@@ -69,3 +69,25 @@ evidence only. They do not construct a Jacobian isogeny, prove Mordell–Weil
 rank transport, or establish rational-point exhaustiveness by themselves.
 Those unavailable geometry and descent steps remain explicit proof-relevant
 inputs. No unconditional rank-zero or four-cusp theorem is claimed.
+
+## The Level-26 chapter in *Opera Numerorum*
+
+This directory is the residual-`13` chapter of the Beal story. It brings
+together the explicit `X₀(26)` model, its elliptic factors, finite Phase A and
+Phase B evidence, the formal-immersion data, and the conditional bridge back
+to the Frey/Mazur argument.
+
+The v9.2.0 boundary is intentionally two-layered:
+
+1. Python, Sage, mwrank, and Lean replay the concrete models and finite
+   congruence data; and
+2. `Descent_26_PadicCertificates.lean` defines what a genuine
+   `ℚ₂`/`ℚ₁₃` certificate must contain and proves the singleton consequence
+   from that certificate.
+
+The repository does not manufacture such a certificate from the old
+transcript. External mwrank soundness, local lifting, covering completeness,
+Selmer-to-rank soundness, Jacobian transport, and rational-point
+exhaustiveness remain explicit obligations. This is the Level-26 form of the
+Opera Numerorum rule: evidence may open a door, but it cannot be mistaken for
+the room beyond it.
