@@ -1,0 +1,9 @@
+{
+  "level": 26,
+  "curve": "X0(26)",
+  "residue_prime": 3,
+  "cotangent_basis": ["dx/y", "x dx/y"],
+  "m3_rows_mod_3": [[1, 1], [0, 2]],
+  "determinant_mod_3": 2,
+  "status": "finite rows and determinant only; geometric formal-immersion soundness remains an explicit premise"
+}

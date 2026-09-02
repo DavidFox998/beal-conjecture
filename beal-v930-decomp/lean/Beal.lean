@@ -59,6 +59,7 @@ import Beal.B17_X0Moduli
 import Beal.Mazur.KernelToX0
 import Beal.Mazur.X0_26_Model
 import Beal.Mazur.X0_26_RationalPoints
+import Beal.Mazur.Gates.FormalImmersion_26_Cert
 import Beal.B17_MazurPrimeCoverage
     import Beal.B18_FreyIsElliptic_Core
     import Beal.B18_FreyIsElliptic

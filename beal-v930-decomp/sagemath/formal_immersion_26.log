@@ -1,0 +1,15 @@
+Formal-immersion witness for X0(26)
+===================================
+level: 26
+residue prime: 3
+cotangent basis: omega1 = dx/y, omega2 = x*dx/y
+M3 rows modulo 3:
+  [1, 1]
+  [0, 2]
+determinant modulo 3: 2
+
+The rows are replayed in Lean as archivedM3Rows and connected to
+formalImmersionMatrixMod3 by archivedM3Rows_eq_formalImmersionMatrix.
+This transcript is finite evidence only.  It does not assert that the
+displayed matrix is a scheme-theoretic Abel--Jacobi cotangent map; that
+interpretation is the explicit FormalImmersionSoundness_26 premise.

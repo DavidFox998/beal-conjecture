@@ -13,3 +13,11 @@ mwrank correctness premise, local lifting, covering completeness, and
 Selmer-to-rank soundness visible. Re-run the documented script when checking
 the transcript; do not overwrite the checked congruence data with a new
 machine log.
+
+The v9.4.0 finite formal-immersion witness follows the same rule:
+`formal_immersion_26.log` and
+`certs/formal_immersion_26_certificate.json` archive the matrix
+`[[1,1],[0,2]]` modulo `3`. Run
+`python3 scripts/formal_immersion_26_certificate.py` to compare both files and
+recompute the determinant. This verifies the finite M3 data only; the
+scheme-level Abel--Jacobi interpretation remains a named Lean premise.
