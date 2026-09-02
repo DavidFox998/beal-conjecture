@@ -18,11 +18,11 @@ module does not promote those finite-field points to p-adic points.  Instead it
 defines the actual twisted homogeneous quartic predicates over `ℚ_[2]` and
 `ℚ_[13]`, and gives a proof-relevant certificate shape containing:
 
-* local points for the identity S-unit on every ledger row; and
-* a genuine local obstruction for every nonidentity S-unit.
+* local points for every S-unit/ledger pair at both bad primes.
 
-No certificate value is constructed here.  The external Sage/mwrank transcript
-does not contain the witnesses required by this structure.
+The JSON producer supplies integer Hensel approximations, but JSON is not a
+theorem.  Lean therefore accepts only the resulting proof-relevant p-adic
+points; a checker or transcript cannot inhabit this structure by itself.
 -/
 
 def HasQpTwistedPoint
@@ -49,36 +49,20 @@ def identitySUnitIndex_26 : SUnits_26 :=
   ⟨0, by decide⟩
 
 structure GenuinePAdicCertificate_26 where
-  identity_points :
-    ∀ row : Fin ledger.length,
+  all_points :
+    ∀ sUnit : SUnits_26, ∀ row : Fin ledger.length,
       HasRequiredBadPrimePoints
-        (Q_S2_13.get identitySUnitIndex_26) (ledger.get row)
-  nonidentity_obstructions :
-    ∀ sUnit : SUnits_26, sUnit ≠ identitySUnitIndex_26 →
-      ∃ row : Fin ledger.length,
-        ¬ HasQpTwistedPoint (Q_S2_13.get sUnit) (ledger.get row) 2 (by norm_num) ∨
-        ¬ HasQpTwistedPoint (Q_S2_13.get sUnit) (ledger.get row) 13 (by norm_num)
+        (Q_S2_13.get sUnit) (ledger.get row)
 
-theorem pAdicSingleton_of_genuineCertificate
+theorem pAdicAdmissible_univ_of_genuineCertificate
     (certificate : GenuinePAdicCertificate_26) :
     {sUnit : SUnits_26 | IsPAdicallyAdmissible_26 sUnit} =
-      {identitySUnitIndex_26} := by
+      Set.univ := by
   ext sUnit
-  constructor
-  · intro hAdmissible
-    have hSame : sUnit = identitySUnitIndex_26 := by
-      by_contra hNonidentity
-      obtain ⟨row, hAtTwo | hAtThirteen⟩ :=
-        certificate.nonidentity_obstructions sUnit hNonidentity
-      · exact hAtTwo (hAdmissible row).1
-      · exact hAtThirteen (hAdmissible row).2
-    simpa [hSame]
-  · intro hIdentity
-    have hSame : sUnit = identitySUnitIndex_26 := by
-      simpa using hIdentity
-    simpa [hSame] using certificate.identity_points
+  simp only [Set.mem_setOf_eq, Set.mem_univ, iff_true]
+  exact certificate.all_points sUnit
 
-#print axioms pAdicSingleton_of_genuineCertificate
+#print axioms pAdicAdmissible_univ_of_genuineCertificate
 
 end
 

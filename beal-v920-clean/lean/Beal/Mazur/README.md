@@ -30,18 +30,21 @@ unconditional Beal theorem.
 
 The dependency-free producer `scripts/level26_descent_certificate.py` records
 the exact coefficient-defined Lean models and checks all 160 twisted
-congruences (eight S-units, ten rows, and two bad-prime moduli).  Lean repeats
-the same genuinely S-unit-dependent checks by `decide`.
+coverings (eight S-units, ten rows, and two bad primes). For each one it
+recomputes a primitive integer approximation, a selected partial derivative,
+and the strong Hensel inequality
+`v_p(F(a)) > 2 v_p(∂F/∂u(a))`. Thus every listed covering has a checkable
+`Q_2` and `Q_13` lift; none of these 160 cases uses a claimed obstruction.
 
 `sagemath/reproduce_level26_descent.sage` prints exact Sage/mwrank versions and
 database-returned models before replaying rank and two-descent commands into a
 separate, uncommitted Sage log.  It cannot overwrite the checked congruence
 log. This prevents the old Lean/LMFDB label conflation.
 `SecondDescentHypothesis_26_real`
-uses one narrow `Level26ExternalComputationInterface`: full `ℚ₂`/`ℚ₁₃`
-lifting, covering completeness, and Selmer-to-rank soundness remain explicit
-because the finite congruence witnesses do not prove them.  No unconditional
-rank-zero theorem is claimed.
+accepts a proof-relevant `GenuinePAdicCertificate_26`; JSON is never imported
+as a theorem. The remaining `Level26ExternalComputationInterface` covers only
+covering completeness, Selmer identification, and Selmer-to-rank soundness.
+No unconditional rank-zero theorem is claimed.
 
 ## Phase B real finite decomposition evidence
 

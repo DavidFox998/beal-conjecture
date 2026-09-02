@@ -44,6 +44,5 @@
 - [Lean merge protection](lean-merge-protection.md) — brothers-desert-proof/main requires only the exact Lean job check; workspace origin is not the target.
 - [Frey isogeny repository audit](frey-isogeny-repository-audit.md) — all DavidFox998 Lean repos were searched; no reusable Mazur/Kenku supplier exists outside Beal.
 - [Mixed X₀(2p) level boundary](mixed-x0-level-boundary.md) — choose one rational order-two line; full E[2] is not itself cyclic X₀(2p) level.
-- [Level-26 descent certificate boundary](level26-mwrank-log-boundary.md) — keep twisted congruence evidence separate from Sage logs and Qp/completeness/Selmer semantics.
+- [Level-26 descent certificate boundary](level26-mwrank-log-boundary.md) — all listed bad-prime cases have Hensel lifts; completeness and Selmer/rank semantics remain explicit.
 - [J0(26) decomposition certificate](j0-26-decomposition-certificate.md) — preserve the source/Lean factor-order mismatch and keep isogeny and rank soundness as explicit premises.
-- [Level-26 formal immersion boundary](level26-formal-immersion-boundary.md) — rank-two M3 is finite evidence; cotangent and Mazur semantics remain an explicit Prop argument.

@@ -1,2253 +1,3532 @@
 {
   "boundary": {
     "not_proved": [
-      "Q_p solubility",
       "covering-ledger completeness",
       "identification with a 2-Selmer group",
       "Selmer-to-Mordell-Weil rank soundness"
     ],
-    "proved": "primitive congruence witnesses for every listed twist, row, and modulus"
+    "proved": "a checked p-adic Hensel lift for every listed twist, row, and bad prime"
   },
-  "certificate_sha256": "c3ae8f3cc2a3acf96c55f2c1a338530d1b59cebe348eb5eb1ad2392afe9ddadb",
+  "certificate_sha256": "51800e72a0cac6c790148cf009289847bc11642f99d4acc721a16a2dc8ce89c4",
   "checks": [
     {
       "curve": "lean_E26a1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 0,
       "twist": 1,
       "witness": {
-        "x": 0,
-        "y": 0,
-        "z": 1
+        "approximation": {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        },
+        "derivative": -16,
+        "derivative_valuation": 4,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26a1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 0,
       "twist": 1,
       "witness": {
-        "x": 0,
-        "y": 0,
-        "z": 1
+        "approximation": {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        },
+        "derivative": -16,
+        "derivative_valuation": 0,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26a1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 1,
       "twist": 1,
       "witness": {
-        "x": 1,
-        "y": 1,
-        "z": 0
+        "approximation": {
+          "x": 1,
+          "y": 1,
+          "z": 0
+        },
+        "derivative": -4,
+        "derivative_valuation": 2,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26a1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 1,
       "twist": 1,
       "witness": {
-        "x": 0,
-        "y": 47,
-        "z": 1
+        "approximation": {
+          "x": 0,
+          "y": 47,
+          "z": 1
+        },
+        "derivative": -4,
+        "derivative_valuation": 0,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 2197,
+        "residual_valuation": 3
       }
     },
     {
       "curve": "lean_E26a1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 2,
       "twist": 1,
       "witness": {
-        "x": 0,
-        "y": 4,
-        "z": 1
+        "approximation": {
+          "x": 0,
+          "y": 4,
+          "z": 1
+        },
+        "derivative": -24,
+        "derivative_valuation": 3,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26a1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 2,
       "twist": 1,
       "witness": {
-        "x": 0,
-        "y": 4,
-        "z": 1
+        "approximation": {
+          "x": 0,
+          "y": 4,
+          "z": 1
+        },
+        "derivative": -24,
+        "derivative_valuation": 0,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26a1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 3,
       "twist": 1,
       "witness": {
-        "x": 0,
-        "y": 2,
-        "z": 1
+        "approximation": {
+          "x": 0,
+          "y": 2,
+          "z": 1
+        },
+        "derivative": -4,
+        "derivative_valuation": 2,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26a1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 3,
       "twist": 1,
       "witness": {
-        "x": 0,
-        "y": 2,
-        "z": 1
+        "approximation": {
+          "x": 0,
+          "y": 2,
+          "z": 1
+        },
+        "derivative": -4,
+        "derivative_valuation": 0,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26a1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 0,
       "twist": -1,
       "witness": {
-        "x": 0,
-        "y": 0,
-        "z": 1
+        "approximation": {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        },
+        "derivative": -16,
+        "derivative_valuation": 4,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26a1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 0,
       "twist": -1,
       "witness": {
-        "x": 0,
-        "y": 0,
-        "z": 1
+        "approximation": {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        },
+        "derivative": -16,
+        "derivative_valuation": 0,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26a1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 1,
       "twist": -1,
       "witness": {
-        "x": 1,
-        "y": 0,
-        "z": 5
+        "approximation": {
+          "x": 1,
+          "y": 16,
+          "z": 5
+        },
+        "derivative": -32,
+        "derivative_valuation": 5,
+        "hensel_inequality": true,
+        "lift_variable": "y",
+        "residual": -8192,
+        "residual_valuation": 13
       }
     },
     {
       "curve": "lean_E26a1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 1,
       "twist": -1,
       "witness": {
-        "x": 0,
-        "y": 79,
-        "z": 1
+        "approximation": {
+          "x": 0,
+          "y": 79,
+          "z": 1
+        },
+        "derivative": -4,
+        "derivative_valuation": 0,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": -6253,
+        "residual_valuation": 2
       }
     },
     {
       "curve": "lean_E26a1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 2,
       "twist": -1,
       "witness": {
-        "x": 1,
-        "y": 4,
-        "z": 3
+        "approximation": {
+          "x": 1,
+          "y": 4,
+          "z": 3
+        },
+        "derivative": -8,
+        "derivative_valuation": 3,
+        "hensel_inequality": true,
+        "lift_variable": "y",
+        "residual": -2048,
+        "residual_valuation": 11
       }
     },
     {
       "curve": "lean_E26a1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 2,
       "twist": -1,
       "witness": {
-        "x": 0,
-        "y": 58,
-        "z": 1
+        "approximation": {
+          "x": 0,
+          "y": 58,
+          "z": 1
+        },
+        "derivative": -24,
+        "derivative_valuation": 0,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": -3380,
+        "residual_valuation": 2
       }
     },
     {
       "curve": "lean_E26a1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 3,
       "twist": -1,
       "witness": {
-        "x": 2,
-        "y": 0,
-        "z": 1
+        "approximation": {
+          "x": 2,
+          "y": 32,
+          "z": 13
+        },
+        "derivative": -64,
+        "derivative_valuation": 6,
+        "hensel_inequality": true,
+        "lift_variable": "y",
+        "residual": -131072,
+        "residual_valuation": 17
       }
     },
     {
       "curve": "lean_E26a1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 3,
       "twist": -1,
       "witness": {
-        "x": 0,
-        "y": 29,
-        "z": 1
+        "approximation": {
+          "x": 0,
+          "y": 29,
+          "z": 1
+        },
+        "derivative": -4,
+        "derivative_valuation": 0,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": -845,
+        "residual_valuation": 2
       }
     },
     {
       "curve": "lean_E26a1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 0,
       "twist": 2,
       "witness": {
-        "x": 0,
-        "y": 0,
-        "z": 1
+        "approximation": {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        },
+        "derivative": -16,
+        "derivative_valuation": 4,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26a1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 0,
       "twist": 2,
       "witness": {
-        "x": 0,
-        "y": 0,
-        "z": 1
+        "approximation": {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        },
+        "derivative": -16,
+        "derivative_valuation": 0,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26a1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 1,
       "twist": 2,
       "witness": {
-        "x": 1,
-        "y": 0,
-        "z": 5
+        "approximation": {
+          "x": 1,
+          "y": 0,
+          "z": 21
+        },
+        "derivative": -34528,
+        "derivative_valuation": 5,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": -2369536,
+        "residual_valuation": 11
       }
     },
     {
       "curve": "lean_E26a1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 1,
       "twist": 2,
       "witness": {
-        "x": 1,
-        "y": 19,
-        "z": 3
+        "approximation": {
+          "x": 1,
+          "y": 19,
+          "z": 3
+        },
+        "derivative": -76,
+        "derivative_valuation": 0,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": -338,
+        "residual_valuation": 2
       }
     },
     {
       "curve": "lean_E26a1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 2,
       "twist": 2,
       "witness": {
-        "x": 1,
-        "y": 0,
-        "z": 7
+        "approximation": {
+          "x": 1,
+          "y": 0,
+          "z": 7
+        },
+        "derivative": -9160,
+        "derivative_valuation": 3,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": -47104,
+        "residual_valuation": 11
       }
     },
     {
       "curve": "lean_E26a1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 2,
       "twist": 2,
       "witness": {
-        "x": 1,
-        "y": 41,
-        "z": 2
+        "approximation": {
+          "x": 1,
+          "y": 41,
+          "z": 2
+        },
+        "derivative": -280,
+        "derivative_valuation": 0,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 2873,
+        "residual_valuation": 2
       }
     },
     {
       "curve": "lean_E26a1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 3,
       "twist": 2,
       "witness": {
-        "x": 2,
-        "y": 0,
-        "z": 1
+        "approximation": {
+          "x": 2,
+          "y": 0,
+          "z": 29
+        },
+        "derivative": -88256,
+        "derivative_valuation": 6,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": -3014656,
+        "residual_valuation": 17
       }
     },
     {
       "curve": "lean_E26a1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 3,
       "twist": 2,
       "witness": {
-        "x": 1,
-        "y": 57,
-        "z": 3
+        "approximation": {
+          "x": 1,
+          "y": 57,
+          "z": 3
+        },
+        "derivative": -84,
+        "derivative_valuation": 0,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 6084,
+        "residual_valuation": 2
       }
     },
     {
       "curve": "lean_E26a1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 0,
       "twist": -2,
       "witness": {
-        "x": 0,
-        "y": 0,
-        "z": 1
+        "approximation": {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        },
+        "derivative": -16,
+        "derivative_valuation": 4,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26a1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 0,
       "twist": -2,
       "witness": {
-        "x": 0,
-        "y": 0,
-        "z": 1
+        "approximation": {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        },
+        "derivative": -16,
+        "derivative_valuation": 0,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26a1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 1,
       "twist": -2,
       "witness": {
-        "x": 1,
-        "y": 0,
-        "z": 5
+        "approximation": {
+          "x": 1,
+          "y": 0,
+          "z": 21
+        },
+        "derivative": -34528,
+        "derivative_valuation": 5,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": -2369536,
+        "residual_valuation": 11
       }
     },
     {
       "curve": "lean_E26a1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 1,
       "twist": -2,
       "witness": {
-        "x": 1,
-        "y": 22,
-        "z": 3
+        "approximation": {
+          "x": 1,
+          "y": 22,
+          "z": 3
+        },
+        "derivative": -76,
+        "derivative_valuation": 0,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": -2028,
+        "residual_valuation": 2
       }
     },
     {
       "curve": "lean_E26a1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 2,
       "twist": -2,
       "witness": {
-        "x": 1,
-        "y": 0,
-        "z": 7
+        "approximation": {
+          "x": 1,
+          "y": 0,
+          "z": 7
+        },
+        "derivative": -9160,
+        "derivative_valuation": 3,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": -47104,
+        "residual_valuation": 11
       }
     },
     {
       "curve": "lean_E26a1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 2,
       "twist": -2,
       "witness": {
-        "x": 1,
-        "y": 3,
-        "z": 2
+        "approximation": {
+          "x": 1,
+          "y": 3,
+          "z": 2
+        },
+        "derivative": -280,
+        "derivative_valuation": 0,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": -507,
+        "residual_valuation": 2
       }
     },
     {
       "curve": "lean_E26a1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 3,
       "twist": -2,
       "witness": {
-        "x": 1,
-        "y": 7,
-        "z": 3
+        "approximation": {
+          "x": 1,
+          "y": 7,
+          "z": 3
+        },
+        "derivative": -84,
+        "derivative_valuation": 2,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": -512,
+        "residual_valuation": 9
       }
     },
     {
       "curve": "lean_E26a1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 3,
       "twist": -2,
       "witness": {
-        "x": 1,
-        "y": 66,
-        "z": 3
+        "approximation": {
+          "x": 1,
+          "y": 66,
+          "z": 3
+        },
+        "derivative": -84,
+        "derivative_valuation": 0,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": -9126,
+        "residual_valuation": 2
       }
     },
     {
       "curve": "lean_E26a1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 0,
       "twist": 13,
       "witness": {
-        "x": 0,
-        "y": 0,
-        "z": 1
+        "approximation": {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        },
+        "derivative": -16,
+        "derivative_valuation": 4,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26a1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 0,
       "twist": 13,
       "witness": {
-        "x": 0,
-        "y": 0,
-        "z": 1
+        "approximation": {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        },
+        "derivative": -16,
+        "derivative_valuation": 0,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26a1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 1,
       "twist": 13,
       "witness": {
-        "x": 1,
-        "y": 4,
-        "z": 1
+        "approximation": {
+          "x": 1,
+          "y": 8,
+          "z": 13
+        },
+        "derivative": -7856,
+        "derivative_valuation": 4,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": -350208,
+        "residual_valuation": 11
       }
     },
     {
       "curve": "lean_E26a1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 1,
       "twist": 13,
       "witness": {
-        "x": 1,
-        "y": 5,
-        "z": 8
+        "approximation": {
+          "x": 1,
+          "y": 57,
+          "z": 8
+        },
+        "derivative": -1716,
+        "derivative_valuation": 1,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": -8788,
+        "residual_valuation": 3
       }
     },
     {
       "curve": "lean_E26a1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 2,
       "twist": 13,
       "witness": {
-        "x": 0,
-        "y": 4,
-        "z": 1
+        "approximation": {
+          "x": 1,
+          "y": 2,
+          "z": 1
+        },
+        "derivative": -52,
+        "derivative_valuation": 2,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26a1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 2,
       "twist": 13,
       "witness": {
-        "x": 1,
-        "y": 2,
-        "z": 1
+        "approximation": {
+          "x": 1,
+          "y": 2,
+          "z": 1
+        },
+        "derivative": -52,
+        "derivative_valuation": 1,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26a1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 3,
       "twist": 13,
       "witness": {
-        "x": 2,
-        "y": 0,
-        "z": 1
+        "approximation": {
+          "x": 2,
+          "y": 16,
+          "z": 5
+        },
+        "derivative": -416,
+        "derivative_valuation": 5,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26a1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 3,
       "twist": 13,
       "witness": {
-        "x": 1,
-        "y": 4,
-        "z": 9
+        "approximation": {
+          "x": 1,
+          "y": 69,
+          "z": 9
+        },
+        "derivative": -2496,
+        "derivative_valuation": 1,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 32955,
+        "residual_valuation": 3
       }
     },
     {
       "curve": "lean_E26a1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 0,
       "twist": -13,
       "witness": {
-        "x": 0,
-        "y": 0,
-        "z": 1
+        "approximation": {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        },
+        "derivative": -16,
+        "derivative_valuation": 4,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26a1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 0,
       "twist": -13,
       "witness": {
-        "x": 0,
-        "y": 0,
-        "z": 1
+        "approximation": {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        },
+        "derivative": -16,
+        "derivative_valuation": 0,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26a1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 1,
       "twist": -13,
       "witness": {
-        "x": 0,
-        "y": 2,
-        "z": 1
+        "approximation": {
+          "x": 0,
+          "y": 2,
+          "z": 1
+        },
+        "derivative": -4,
+        "derivative_valuation": 2,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": -64,
+        "residual_valuation": 6
       }
     },
     {
       "curve": "lean_E26a1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 1,
       "twist": -13,
       "witness": {
-        "x": 1,
-        "y": 1,
-        "z": 8
+        "approximation": {
+          "x": 1,
+          "y": 66,
+          "z": 8
+        },
+        "derivative": -1716,
+        "derivative_valuation": 1,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": -107653,
+        "residual_valuation": 3
       }
     },
     {
       "curve": "lean_E26a1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 2,
       "twist": -13,
       "witness": {
-        "x": 1,
-        "y": 4,
-        "z": 3
+        "approximation": {
+          "x": 1,
+          "y": 0,
+          "z": 7
+        },
+        "derivative": -9160,
+        "derivative_valuation": 3,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": -47104,
+        "residual_valuation": 11
       }
     },
     {
       "curve": "lean_E26a1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 2,
       "twist": -13,
       "witness": {
-        "x": 1,
-        "y": 3,
-        "z": 1
+        "approximation": {
+          "x": 1,
+          "y": 29,
+          "z": 1
+        },
+        "derivative": -52,
+        "derivative_valuation": 1,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": -10985,
+        "residual_valuation": 3
       }
     },
     {
       "curve": "lean_E26a1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 3,
       "twist": -13,
       "witness": {
-        "x": 1,
-        "y": 7,
-        "z": 0
+        "approximation": {
+          "x": 1,
+          "y": 7,
+          "z": 0
+        },
+        "derivative": -12,
+        "derivative_valuation": 2,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": -640,
+        "residual_valuation": 7
       }
     },
     {
       "curve": "lean_E26a1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 3,
       "twist": -13,
       "witness": {
-        "x": 1,
-        "y": 6,
-        "z": 9
+        "approximation": {
+          "x": 1,
+          "y": 71,
+          "z": 9
+        },
+        "derivative": -2496,
+        "derivative_valuation": 1,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": -94471,
+        "residual_valuation": 3
       }
     },
     {
       "curve": "lean_E26a1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 0,
       "twist": 26,
       "witness": {
-        "x": 0,
-        "y": 0,
-        "z": 1
+        "approximation": {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        },
+        "derivative": -16,
+        "derivative_valuation": 4,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26a1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 0,
       "twist": 26,
       "witness": {
-        "x": 0,
-        "y": 0,
-        "z": 1
+        "approximation": {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        },
+        "derivative": -16,
+        "derivative_valuation": 0,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26a1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 1,
       "twist": 26,
       "witness": {
-        "x": 1,
-        "y": 0,
-        "z": 5
+        "approximation": {
+          "x": 1,
+          "y": 0,
+          "z": 21
+        },
+        "derivative": -34528,
+        "derivative_valuation": 5,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": -2369536,
+        "residual_valuation": 11
       }
     },
     {
       "curve": "lean_E26a1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 1,
       "twist": 26,
       "witness": {
-        "x": 1,
-        "y": 4,
-        "z": 4
+        "approximation": {
+          "x": 1,
+          "y": 4,
+          "z": 4
+        },
+        "derivative": -188,
+        "derivative_valuation": 0,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": -2873,
+        "residual_valuation": 2
       }
     },
     {
       "curve": "lean_E26a1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 2,
       "twist": 26,
       "witness": {
-        "x": 1,
-        "y": 0,
-        "z": 7
+        "approximation": {
+          "x": 1,
+          "y": 0,
+          "z": 7
+        },
+        "derivative": -9160,
+        "derivative_valuation": 3,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": -47104,
+        "residual_valuation": 11
       }
     },
     {
       "curve": "lean_E26a1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 2,
       "twist": 26,
       "witness": {
-        "x": 1,
-        "y": 3,
-        "z": 12
+        "approximation": {
+          "x": 1,
+          "y": 3,
+          "z": 12
+        },
+        "derivative": -44140,
+        "derivative_valuation": 0,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": -374335,
+        "residual_valuation": 2
       }
     },
     {
       "curve": "lean_E26a1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 3,
       "twist": 26,
       "witness": {
-        "x": 1,
-        "y": 5,
-        "z": 1
+        "approximation": {
+          "x": 1,
+          "y": 5,
+          "z": 1
+        },
+        "derivative": -24,
+        "derivative_valuation": 3,
+        "hensel_inequality": true,
+        "lift_variable": "z",
+        "residual": 640,
+        "residual_valuation": 7
       }
     },
     {
       "curve": "lean_E26a1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 3,
       "twist": 26,
       "witness": {
-        "x": 1,
-        "y": 6,
-        "z": 2
+        "approximation": {
+          "x": 1,
+          "y": 6,
+          "z": 2
+        },
+        "derivative": -32,
+        "derivative_valuation": 0,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 845,
+        "residual_valuation": 2
       }
     },
     {
       "curve": "lean_E26a1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 0,
       "twist": -26,
       "witness": {
-        "x": 0,
-        "y": 0,
-        "z": 1
+        "approximation": {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        },
+        "derivative": -16,
+        "derivative_valuation": 4,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26a1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 0,
       "twist": -26,
       "witness": {
-        "x": 0,
-        "y": 0,
-        "z": 1
+        "approximation": {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        },
+        "derivative": -16,
+        "derivative_valuation": 0,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26a1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 1,
       "twist": -26,
       "witness": {
-        "x": 1,
-        "y": 0,
-        "z": 5
+        "approximation": {
+          "x": 1,
+          "y": 0,
+          "z": 21
+        },
+        "derivative": -34528,
+        "derivative_valuation": 5,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": -2369536,
+        "residual_valuation": 11
       }
     },
     {
       "curve": "lean_E26a1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 1,
       "twist": -26,
       "witness": {
-        "x": 1,
-        "y": 6,
-        "z": 4
+        "approximation": {
+          "x": 1,
+          "y": 6,
+          "z": 4
+        },
+        "derivative": -188,
+        "derivative_valuation": 0,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": -4225,
+        "residual_valuation": 2
       }
     },
     {
       "curve": "lean_E26a1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 2,
       "twist": -26,
       "witness": {
-        "x": 1,
-        "y": 0,
-        "z": 7
+        "approximation": {
+          "x": 1,
+          "y": 0,
+          "z": 7
+        },
+        "derivative": -9160,
+        "derivative_valuation": 3,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": -47104,
+        "residual_valuation": 11
       }
     },
     {
       "curve": "lean_E26a1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 2,
       "twist": -26,
       "witness": {
-        "x": 1,
-        "y": 2,
-        "z": 12
+        "approximation": {
+          "x": 1,
+          "y": 2,
+          "z": 12
+        },
+        "derivative": -44140,
+        "derivative_valuation": 0,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": -374673,
+        "residual_valuation": 2
       }
     },
     {
       "curve": "lean_E26a1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 3,
       "twist": -26,
       "witness": {
-        "x": 2,
-        "y": 0,
-        "z": 1
+        "approximation": {
+          "x": 2,
+          "y": 0,
+          "z": 29
+        },
+        "derivative": -88256,
+        "derivative_valuation": 6,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": -3014656,
+        "residual_valuation": 17
       }
     },
     {
       "curve": "lean_E26a1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 3,
       "twist": -26,
       "witness": {
-        "x": 1,
-        "y": 4,
-        "z": 2
+        "approximation": {
+          "x": 1,
+          "y": 4,
+          "z": 2
+        },
+        "derivative": -32,
+        "derivative_valuation": 0,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": -507,
+        "residual_valuation": 2
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 0,
       "twist": 1,
       "witness": {
-        "x": 1,
-        "y": 1,
-        "z": 0
+        "approximation": {
+          "x": 1,
+          "y": 1,
+          "z": 0
+        },
+        "derivative": -4,
+        "derivative_valuation": 2,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 0,
       "twist": 1,
       "witness": {
-        "x": 0,
-        "y": 79,
-        "z": 1
+        "approximation": {
+          "x": 0,
+          "y": 79,
+          "z": 1
+        },
+        "derivative": -28,
+        "derivative_valuation": 0,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 6253,
+        "residual_valuation": 2
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 1,
       "twist": 1,
       "witness": {
-        "x": 1,
-        "y": 2,
-        "z": 1
+        "approximation": {
+          "x": 1,
+          "y": 2,
+          "z": 1
+        },
+        "derivative": -12,
+        "derivative_valuation": 2,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 1,
       "twist": 1,
       "witness": {
-        "x": 0,
-        "y": 58,
-        "z": 1
+        "approximation": {
+          "x": 0,
+          "y": 58,
+          "z": 1
+        },
+        "derivative": 64,
+        "derivative_valuation": 0,
+        "hensel_inequality": true,
+        "lift_variable": "z",
+        "residual": 3380,
+        "residual_valuation": 2
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 2,
       "twist": 1,
       "witness": {
-        "x": 1,
-        "y": 0,
-        "z": 1
+        "approximation": {
+          "x": 1,
+          "y": 0,
+          "z": 1
+        },
+        "derivative": -16,
+        "derivative_valuation": 4,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 2,
       "twist": 1,
       "witness": {
-        "x": 1,
-        "y": 70,
-        "z": 0
+        "approximation": {
+          "x": 1,
+          "y": 70,
+          "z": 0
+        },
+        "derivative": 4,
+        "derivative_valuation": 0,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 4901,
+        "residual_valuation": 2
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 3,
       "twist": 1,
       "witness": {
-        "x": 1,
-        "y": 4,
-        "z": 1
+        "approximation": {
+          "x": 1,
+          "y": 4,
+          "z": 1
+        },
+        "derivative": -40,
+        "derivative_valuation": 3,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 3,
       "twist": 1,
       "witness": {
-        "x": 0,
-        "y": 43,
-        "z": 1
+        "approximation": {
+          "x": 0,
+          "y": 43,
+          "z": 1
+        },
+        "derivative": -12,
+        "derivative_valuation": 0,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 1859,
+        "residual_valuation": 2
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 4,
       "twist": 1,
       "witness": {
-        "x": 1,
-        "y": 2,
-        "z": 1
+        "approximation": {
+          "x": 1,
+          "y": 2,
+          "z": 1
+        },
+        "derivative": 4,
+        "derivative_valuation": 2,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 4,
       "twist": 1,
       "witness": {
-        "x": 0,
-        "y": 29,
-        "z": 1
+        "approximation": {
+          "x": 0,
+          "y": 29,
+          "z": 1
+        },
+        "derivative": -12,
+        "derivative_valuation": 0,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 845,
+        "residual_valuation": 2
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 5,
       "twist": 1,
       "witness": {
-        "x": 0,
-        "y": 0,
-        "z": 1
+        "approximation": {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        },
+        "derivative": -13,
+        "derivative_valuation": 0,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 5,
       "twist": 1,
       "witness": {
-        "x": 0,
-        "y": 0,
-        "z": 1
+        "approximation": {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        },
+        "derivative": -13,
+        "derivative_valuation": 1,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 0,
       "twist": -1,
       "witness": {
-        "x": 1,
-        "y": 2,
-        "z": 1
+        "approximation": {
+          "x": 1,
+          "y": 2,
+          "z": 1
+        },
+        "derivative": 8,
+        "derivative_valuation": 3,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 0,
       "twist": -1,
       "witness": {
-        "x": 0,
-        "y": 47,
-        "z": 1
+        "approximation": {
+          "x": 0,
+          "y": 47,
+          "z": 1
+        },
+        "derivative": -28,
+        "derivative_valuation": 0,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": -2197,
+        "residual_valuation": 3
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 1,
       "twist": -1,
       "witness": {
-        "x": 0,
-        "y": 4,
-        "z": 1
+        "approximation": {
+          "x": 0,
+          "y": 4,
+          "z": 1
+        },
+        "derivative": -26,
+        "derivative_valuation": 1,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 1,
       "twist": -1,
       "witness": {
-        "x": 0,
-        "y": 4,
-        "z": 1
+        "approximation": {
+          "x": 0,
+          "y": 4,
+          "z": 1
+        },
+        "derivative": -26,
+        "derivative_valuation": 1,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 2,
       "twist": -1,
       "witness": {
-        "x": 1,
-        "y": 1,
-        "z": 0
+        "approximation": {
+          "x": 1,
+          "y": 1,
+          "z": 0
+        },
+        "derivative": 4,
+        "derivative_valuation": 2,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 2,
       "twist": -1,
       "witness": {
-        "x": 1,
-        "y": 1,
-        "z": 0
+        "approximation": {
+          "x": 1,
+          "y": 1,
+          "z": 0
+        },
+        "derivative": 4,
+        "derivative_valuation": 0,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 3,
       "twist": -1,
       "witness": {
-        "x": 1,
-        "y": 1,
-        "z": 0
+        "approximation": {
+          "x": 1,
+          "y": 1,
+          "z": 0
+        },
+        "derivative": 4,
+        "derivative_valuation": 2,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 3,
       "twist": -1,
       "witness": {
-        "x": 0,
-        "y": 32,
-        "z": 1
+        "approximation": {
+          "x": 0,
+          "y": 32,
+          "z": 1
+        },
+        "derivative": -12,
+        "derivative_valuation": 0,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": -1014,
+        "residual_valuation": 2
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 4,
       "twist": -1,
       "witness": {
-        "x": 0,
-        "y": 2,
-        "z": 1
+        "approximation": {
+          "x": 0,
+          "y": 2,
+          "z": 1
+        },
+        "derivative": -12,
+        "derivative_valuation": 2,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 4,
       "twist": -1,
       "witness": {
-        "x": 0,
-        "y": 2,
-        "z": 1
+        "approximation": {
+          "x": 0,
+          "y": 2,
+          "z": 1
+        },
+        "derivative": -12,
+        "derivative_valuation": 0,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 5,
       "twist": -1,
       "witness": {
-        "x": 0,
-        "y": 0,
-        "z": 1
+        "approximation": {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        },
+        "derivative": -13,
+        "derivative_valuation": 0,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 5,
       "twist": -1,
       "witness": {
-        "x": 0,
-        "y": 0,
-        "z": 1
+        "approximation": {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        },
+        "derivative": -13,
+        "derivative_valuation": 1,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 0,
       "twist": 2,
       "witness": {
-        "x": 1,
-        "y": 4,
-        "z": 3
+        "approximation": {
+          "x": 1,
+          "y": 4,
+          "z": 3
+        },
+        "derivative": -364,
+        "derivative_valuation": 2,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 448,
+        "residual_valuation": 6
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 0,
       "twist": 2,
       "witness": {
-        "x": 1,
-        "y": 0,
-        "z": 9
+        "approximation": {
+          "x": 1,
+          "y": 26,
+          "z": 9
+        },
+        "derivative": -16744,
+        "derivative_valuation": 1,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 61516,
+        "residual_valuation": 3
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 1,
       "twist": 2,
       "witness": {
-        "x": 1,
-        "y": 0,
-        "z": 3
+        "approximation": {
+          "x": 1,
+          "y": 8,
+          "z": 19
+        },
+        "derivative": 32,
+        "derivative_valuation": 5,
+        "hensel_inequality": true,
+        "lift_variable": "y",
+        "residual": 1908736,
+        "residual_valuation": 13
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 1,
       "twist": 2,
       "witness": {
-        "x": 1,
-        "y": 0,
-        "z": 7
+        "approximation": {
+          "x": 1,
+          "y": 52,
+          "z": 7
+        },
+        "derivative": -8424,
+        "derivative_valuation": 1,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 35152,
+        "residual_valuation": 3
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 2,
       "twist": 2,
       "witness": {
-        "x": 1,
-        "y": 0,
-        "z": 1
+        "approximation": {
+          "x": 1,
+          "y": 0,
+          "z": 1
+        },
+        "derivative": -16,
+        "derivative_valuation": 4,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 2,
       "twist": 2,
       "witness": {
-        "x": 1,
-        "y": 0,
-        "z": 1
+        "approximation": {
+          "x": 1,
+          "y": 0,
+          "z": 1
+        },
+        "derivative": -16,
+        "derivative_valuation": 0,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 3,
       "twist": 2,
       "witness": {
-        "x": 1,
-        "y": 0,
-        "z": 5
+        "approximation": {
+          "x": 1,
+          "y": 0,
+          "z": 13
+        },
+        "derivative": -30832,
+        "derivative_valuation": 4,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 257024,
+        "residual_valuation": 10
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 3,
       "twist": 2,
       "witness": {
-        "x": 1,
-        "y": 0,
-        "z": 8
+        "approximation": {
+          "x": 1,
+          "y": 78,
+          "z": 8
+        },
+        "derivative": -7852,
+        "derivative_valuation": 1,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 46137,
+        "residual_valuation": 3
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 4,
       "twist": 2,
       "witness": {
-        "x": 1,
-        "y": 0,
-        "z": 3
+        "approximation": {
+          "x": 1,
+          "y": 0,
+          "z": 3
+        },
+        "derivative": -312,
+        "derivative_valuation": 3,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 4,
       "twist": 2,
       "witness": {
-        "x": 1,
-        "y": 0,
-        "z": 3
+        "approximation": {
+          "x": 1,
+          "y": 0,
+          "z": 3
+        },
+        "derivative": -312,
+        "derivative_valuation": 1,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 5,
       "twist": 2,
       "witness": {
-        "x": 0,
-        "y": 0,
-        "z": 1
+        "approximation": {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        },
+        "derivative": -13,
+        "derivative_valuation": 0,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 5,
       "twist": 2,
       "witness": {
-        "x": 0,
-        "y": 0,
-        "z": 1
+        "approximation": {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        },
+        "derivative": -13,
+        "derivative_valuation": 1,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 0,
       "twist": -2,
       "witness": {
-        "x": 1,
-        "y": 4,
-        "z": 3
+        "approximation": {
+          "x": 1,
+          "y": 4,
+          "z": 3
+        },
+        "derivative": -364,
+        "derivative_valuation": 2,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 384,
+        "residual_valuation": 7
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 0,
       "twist": -2,
       "witness": {
-        "x": 1,
-        "y": 0,
-        "z": 9
+        "approximation": {
+          "x": 1,
+          "y": 39,
+          "z": 9
+        },
+        "derivative": -16744,
+        "derivative_valuation": 1,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 57122,
+        "residual_valuation": 4
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 1,
       "twist": -2,
       "witness": {
-        "x": 1,
-        "y": 0,
-        "z": 3
+        "approximation": {
+          "x": 2,
+          "y": 0,
+          "z": 1
+        },
+        "derivative": 26,
+        "derivative_valuation": 1,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 1,
       "twist": -2,
       "witness": {
-        "x": 1,
-        "y": 0,
-        "z": 7
+        "approximation": {
+          "x": 1,
+          "y": 78,
+          "z": 7
+        },
+        "derivative": -8424,
+        "derivative_valuation": 1,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 17576,
+        "residual_valuation": 3
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 2,
       "twist": -2,
       "witness": {
-        "x": 1,
-        "y": 0,
-        "z": 1
+        "approximation": {
+          "x": 1,
+          "y": 0,
+          "z": 1
+        },
+        "derivative": -16,
+        "derivative_valuation": 4,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 2,
       "twist": -2,
       "witness": {
-        "x": 1,
-        "y": 0,
-        "z": 1
+        "approximation": {
+          "x": 1,
+          "y": 0,
+          "z": 1
+        },
+        "derivative": -16,
+        "derivative_valuation": 0,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 3,
       "twist": -2,
       "witness": {
-        "x": 1,
-        "y": 0,
-        "z": 5
+        "approximation": {
+          "x": 1,
+          "y": 0,
+          "z": 13
+        },
+        "derivative": -30832,
+        "derivative_valuation": 4,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 257024,
+        "residual_valuation": 10
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 3,
       "twist": -2,
       "witness": {
-        "x": 1,
-        "y": 0,
-        "z": 8
+        "approximation": {
+          "x": 1,
+          "y": 52,
+          "z": 8
+        },
+        "derivative": -7852,
+        "derivative_valuation": 1,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 28561,
+        "residual_valuation": 4
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 4,
       "twist": -2,
       "witness": {
-        "x": 1,
-        "y": 0,
-        "z": 3
+        "approximation": {
+          "x": 1,
+          "y": 0,
+          "z": 3
+        },
+        "derivative": -312,
+        "derivative_valuation": 3,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 4,
       "twist": -2,
       "witness": {
-        "x": 1,
-        "y": 0,
-        "z": 3
+        "approximation": {
+          "x": 1,
+          "y": 0,
+          "z": 3
+        },
+        "derivative": -312,
+        "derivative_valuation": 1,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 5,
       "twist": -2,
       "witness": {
-        "x": 0,
-        "y": 0,
-        "z": 1
+        "approximation": {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        },
+        "derivative": -13,
+        "derivative_valuation": 0,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 5,
       "twist": -2,
       "witness": {
-        "x": 0,
-        "y": 0,
-        "z": 1
+        "approximation": {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        },
+        "derivative": -13,
+        "derivative_valuation": 1,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 0,
       "twist": 13,
       "witness": {
-        "x": 0,
-        "y": 2,
-        "z": 1
+        "approximation": {
+          "x": 0,
+          "y": 2,
+          "z": 1
+        },
+        "derivative": -28,
+        "derivative_valuation": 2,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 64,
+        "residual_valuation": 6
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 0,
       "twist": 13,
       "witness": {
-        "x": 1,
-        "y": 0,
-        "z": 9
+        "approximation": {
+          "x": 1,
+          "y": 0,
+          "z": 61
+        },
+        "derivative": -6184672,
+        "derivative_valuation": 1,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 159880084,
+        "residual_valuation": 3
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 1,
       "twist": 13,
       "witness": {
-        "x": 1,
-        "y": 0,
-        "z": 3
+        "approximation": {
+          "x": 1,
+          "y": 4,
+          "z": 7
+        },
+        "derivative": -8424,
+        "derivative_valuation": 3,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 29952,
+        "residual_valuation": 8
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 1,
       "twist": 13,
       "witness": {
-        "x": 1,
-        "y": 0,
-        "z": 7
+        "approximation": {
+          "x": 1,
+          "y": 0,
+          "z": 59
+        },
+        "derivative": -5305040,
+        "derivative_valuation": 1,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 188555328,
+        "residual_valuation": 3
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 2,
       "twist": 13,
       "witness": {
-        "x": 1,
-        "y": 0,
-        "z": 1
+        "approximation": {
+          "x": 1,
+          "y": 0,
+          "z": 1
+        },
+        "derivative": -16,
+        "derivative_valuation": 4,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 2,
       "twist": 13,
       "witness": {
-        "x": 1,
-        "y": 0,
-        "z": 1
+        "approximation": {
+          "x": 1,
+          "y": 0,
+          "z": 1
+        },
+        "derivative": -16,
+        "derivative_valuation": 0,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 3,
       "twist": 13,
       "witness": {
-        "x": 1,
-        "y": 4,
-        "z": 1
+        "approximation": {
+          "x": 1,
+          "y": 6,
+          "z": 3
+        },
+        "derivative": -572,
+        "derivative_valuation": 2,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 832,
+        "residual_valuation": 6
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 3,
       "twist": 13,
       "witness": {
-        "x": 1,
-        "y": 0,
-        "z": 8
+        "approximation": {
+          "x": 1,
+          "y": 0,
+          "z": 21
+        },
+        "derivative": -122720,
+        "derivative_valuation": 1,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 1827904,
+        "residual_valuation": 4
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 4,
       "twist": 13,
       "witness": {
-        "x": 1,
-        "y": 7,
-        "z": 0
+        "approximation": {
+          "x": 1,
+          "y": 7,
+          "z": 0
+        },
+        "derivative": 12,
+        "derivative_valuation": 2,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 640,
+        "residual_valuation": 7
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 4,
       "twist": 13,
       "witness": {
-        "x": 1,
-        "y": 0,
-        "z": 3
+        "approximation": {
+          "x": 1,
+          "y": 0,
+          "z": 3
+        },
+        "derivative": -312,
+        "derivative_valuation": 1,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 5,
       "twist": 13,
       "witness": {
-        "x": 0,
-        "y": 0,
-        "z": 1
+        "approximation": {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        },
+        "derivative": -13,
+        "derivative_valuation": 0,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 5,
       "twist": 13,
       "witness": {
-        "x": 0,
-        "y": 0,
-        "z": 1
+        "approximation": {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        },
+        "derivative": -13,
+        "derivative_valuation": 1,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 0,
       "twist": -13,
       "witness": {
-        "x": 1,
-        "y": 6,
-        "z": 5
+        "approximation": {
+          "x": 1,
+          "y": 6,
+          "z": 5
+        },
+        "derivative": -2384,
+        "derivative_valuation": 4,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 4096,
+        "residual_valuation": 12
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 0,
       "twist": -13,
       "witness": {
-        "x": 1,
-        "y": 0,
-        "z": 9
+        "approximation": {
+          "x": 1,
+          "y": 0,
+          "z": 61
+        },
+        "derivative": -6184672,
+        "derivative_valuation": 1,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 159880084,
+        "residual_valuation": 3
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 1,
       "twist": -13,
       "witness": {
-        "x": 0,
-        "y": 4,
-        "z": 1
+        "approximation": {
+          "x": 0,
+          "y": 4,
+          "z": 1
+        },
+        "derivative": -26,
+        "derivative_valuation": 1,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": -192,
+        "residual_valuation": 6
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 1,
       "twist": -13,
       "witness": {
-        "x": 1,
-        "y": 0,
-        "z": 7
+        "approximation": {
+          "x": 1,
+          "y": 0,
+          "z": 59
+        },
+        "derivative": -5305040,
+        "derivative_valuation": 1,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 188555328,
+        "residual_valuation": 3
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 2,
       "twist": -13,
       "witness": {
-        "x": 1,
-        "y": 0,
-        "z": 1
+        "approximation": {
+          "x": 1,
+          "y": 0,
+          "z": 1
+        },
+        "derivative": -16,
+        "derivative_valuation": 4,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 2,
       "twist": -13,
       "witness": {
-        "x": 1,
-        "y": 0,
-        "z": 1
+        "approximation": {
+          "x": 1,
+          "y": 0,
+          "z": 1
+        },
+        "derivative": -16,
+        "derivative_valuation": 0,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 3,
       "twist": -13,
       "witness": {
-        "x": 1,
-        "y": 0,
-        "z": 5
+        "approximation": {
+          "x": 1,
+          "y": 8,
+          "z": 5
+        },
+        "derivative": -208,
+        "derivative_valuation": 4,
+        "hensel_inequality": true,
+        "lift_variable": "y",
+        "residual": 3584,
+        "residual_valuation": 9
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 3,
       "twist": -13,
       "witness": {
-        "x": 1,
-        "y": 0,
-        "z": 8
+        "approximation": {
+          "x": 1,
+          "y": 0,
+          "z": 21
+        },
+        "derivative": -122720,
+        "derivative_valuation": 1,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 1827904,
+        "residual_valuation": 4
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 4,
       "twist": -13,
       "witness": {
-        "x": 1,
-        "y": 0,
-        "z": 3
+        "approximation": {
+          "x": 1,
+          "y": 0,
+          "z": 3
+        },
+        "derivative": -312,
+        "derivative_valuation": 3,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 4,
       "twist": -13,
       "witness": {
-        "x": 1,
-        "y": 0,
-        "z": 3
+        "approximation": {
+          "x": 1,
+          "y": 0,
+          "z": 3
+        },
+        "derivative": -312,
+        "derivative_valuation": 1,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 5,
       "twist": -13,
       "witness": {
-        "x": 0,
-        "y": 0,
-        "z": 1
+        "approximation": {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        },
+        "derivative": -13,
+        "derivative_valuation": 0,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 5,
       "twist": -13,
       "witness": {
-        "x": 0,
-        "y": 0,
-        "z": 1
+        "approximation": {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        },
+        "derivative": -13,
+        "derivative_valuation": 1,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 0,
       "twist": 26,
       "witness": {
-        "x": 1,
-        "y": 4,
-        "z": 3
+        "approximation": {
+          "x": 1,
+          "y": 4,
+          "z": 3
+        },
+        "derivative": -364,
+        "derivative_valuation": 2,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 832,
+        "residual_valuation": 6
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 0,
       "twist": 26,
       "witness": {
-        "x": 1,
-        "y": 6,
-        "z": 3
+        "approximation": {
+          "x": 1,
+          "y": 58,
+          "z": 3
+        },
+        "derivative": -364,
+        "derivative_valuation": 1,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 87880,
+        "residual_valuation": 3
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 1,
       "twist": 26,
       "witness": {
-        "x": 1,
-        "y": 0,
-        "z": 3
+        "approximation": {
+          "x": 2,
+          "y": 0,
+          "z": 1
+        },
+        "derivative": 26,
+        "derivative_valuation": 1,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 1,
       "twist": 26,
       "witness": {
-        "x": 1,
-        "y": 4,
-        "z": 6
+        "approximation": {
+          "x": 1,
+          "y": 61,
+          "z": 6
+        },
+        "derivative": -5252,
+        "derivative_valuation": 1,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 112047,
+        "residual_valuation": 3
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 2,
       "twist": 26,
       "witness": {
-        "x": 1,
-        "y": 0,
-        "z": 1
+        "approximation": {
+          "x": 1,
+          "y": 0,
+          "z": 1
+        },
+        "derivative": -16,
+        "derivative_valuation": 4,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 2,
       "twist": 26,
       "witness": {
-        "x": 0,
-        "y": 5,
-        "z": 1
+        "approximation": {
+          "x": 0,
+          "y": 5,
+          "z": 1
+        },
+        "derivative": -36,
+        "derivative_valuation": 0,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 676,
+        "residual_valuation": 2
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 3,
       "twist": 26,
       "witness": {
-        "x": 1,
-        "y": 0,
-        "z": 5
+        "approximation": {
+          "x": 1,
+          "y": 0,
+          "z": 13
+        },
+        "derivative": -30832,
+        "derivative_valuation": 4,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 257024,
+        "residual_valuation": 10
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 3,
       "twist": 26,
       "witness": {
-        "x": 1,
-        "y": 5,
-        "z": 3
+        "approximation": {
+          "x": 1,
+          "y": 18,
+          "z": 3
+        },
+        "derivative": -572,
+        "derivative_valuation": 1,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 8788,
+        "residual_valuation": 3
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 4,
       "twist": 26,
       "witness": {
-        "x": 1,
-        "y": 0,
-        "z": 3
+        "approximation": {
+          "x": 1,
+          "y": 0,
+          "z": 3
+        },
+        "derivative": -312,
+        "derivative_valuation": 3,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 4,
       "twist": 26,
       "witness": {
-        "x": 1,
-        "y": 0,
-        "z": 3
+        "approximation": {
+          "x": 1,
+          "y": 0,
+          "z": 3
+        },
+        "derivative": -312,
+        "derivative_valuation": 1,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 5,
       "twist": 26,
       "witness": {
-        "x": 0,
-        "y": 0,
-        "z": 1
+        "approximation": {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        },
+        "derivative": -13,
+        "derivative_valuation": 0,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 5,
       "twist": 26,
       "witness": {
-        "x": 0,
-        "y": 0,
-        "z": 1
+        "approximation": {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        },
+        "derivative": -13,
+        "derivative_valuation": 1,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 0,
       "twist": -26,
       "witness": {
-        "x": 1,
-        "y": 4,
-        "z": 3
+        "approximation": {
+          "x": 1,
+          "y": 4,
+          "z": 3
+        },
+        "derivative": -364,
+        "derivative_valuation": 2,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 0,
       "twist": -26,
       "witness": {
-        "x": 1,
-        "y": 4,
-        "z": 3
+        "approximation": {
+          "x": 1,
+          "y": 4,
+          "z": 3
+        },
+        "derivative": -364,
+        "derivative_valuation": 1,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 1,
       "twist": -26,
       "witness": {
-        "x": 1,
-        "y": 0,
-        "z": 3
+        "approximation": {
+          "x": 1,
+          "y": 24,
+          "z": 3
+        },
+        "derivative": -608,
+        "derivative_valuation": 5,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": -14336,
+        "residual_valuation": 11
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 1,
       "twist": -26,
       "witness": {
-        "x": 1,
-        "y": 6,
-        "z": 6
+        "approximation": {
+          "x": 1,
+          "y": 45,
+          "z": 6
+        },
+        "derivative": -5252,
+        "derivative_valuation": 1,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": -37349,
+        "residual_valuation": 3
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 2,
       "twist": -26,
       "witness": {
-        "x": 0,
-        "y": 1,
-        "z": 1
+        "approximation": {
+          "x": 0,
+          "y": 1,
+          "z": 1
+        },
+        "derivative": -36,
+        "derivative_valuation": 2,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 2,
       "twist": -26,
       "witness": {
-        "x": 0,
-        "y": 1,
-        "z": 1
+        "approximation": {
+          "x": 0,
+          "y": 1,
+          "z": 1
+        },
+        "derivative": -36,
+        "derivative_valuation": 0,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 3,
       "twist": -26,
       "witness": {
-        "x": 0,
-        "y": 5,
-        "z": 1
+        "approximation": {
+          "x": 0,
+          "y": 5,
+          "z": 1
+        },
+        "derivative": -12,
+        "derivative_valuation": 2,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": -640,
+        "residual_valuation": 7
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 3,
       "twist": -26,
       "witness": {
-        "x": 1,
-        "y": 1,
-        "z": 3
+        "approximation": {
+          "x": 1,
+          "y": 77,
+          "z": 3
+        },
+        "derivative": -572,
+        "derivative_valuation": 1,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": -153790,
+        "residual_valuation": 3
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 4,
       "twist": -26,
       "witness": {
-        "x": 1,
-        "y": 0,
-        "z": 3
+        "approximation": {
+          "x": 1,
+          "y": 0,
+          "z": 3
+        },
+        "derivative": -312,
+        "derivative_valuation": 3,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 4,
       "twist": -26,
       "witness": {
-        "x": 1,
-        "y": 0,
-        "z": 3
+        "approximation": {
+          "x": 1,
+          "y": 0,
+          "z": 3
+        },
+        "derivative": -312,
+        "derivative_valuation": 1,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 6,
+      "kind": "hensel_lift",
       "modulus": 64,
       "prime": 2,
-      "residue": 0,
       "row": 5,
       "twist": -26,
       "witness": {
-        "x": 0,
-        "y": 0,
-        "z": 1
+        "approximation": {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        },
+        "derivative": -13,
+        "derivative_valuation": 0,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     },
     {
       "curve": "lean_E26b1",
       "exponent": 2,
+      "kind": "hensel_lift",
       "modulus": 169,
       "prime": 13,
-      "residue": 0,
       "row": 5,
       "twist": -26,
       "witness": {
-        "x": 0,
-        "y": 0,
-        "z": 1
+        "approximation": {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        },
+        "derivative": -13,
+        "derivative_valuation": 1,
+        "hensel_inequality": true,
+        "lift_variable": "x",
+        "residual": 0,
+        "residual_valuation": null
       }
     }
   ],
@@ -2345,7 +3624,12 @@
       ]
     }
   },
-  "equation": "twist*y^2 = a*x^4+b*x^3*z+c*x^2*z^2+d*x*z^3+e*z^4 (mod p^k)",
+  "equation": "F(x,z,y)=twist*y^2-(a*x^4+b*x^3*z+c*x^2*z^2+d*x*z^3+e*z^4)",
+  "lifting_theorem": {
+    "conclusion": "holding the other two coordinates fixed, the selected coordinate lifts in Z_p",
+    "hypothesis": "v_p(F(a)) > 2*v_p(partial_variable F(a)); F(a)=0 is allowed",
+    "name": "strong one-variable Hensel lemma"
+  },
   "producer": "CPython standard library",
   "s_units": [
     1,
@@ -2357,5 +3641,5 @@
     26,
     -26
   ],
-  "schema": "beal.level26.twisted-congruence-certificate.v1"
+  "schema": "beal.level26.padic-hensel-certificate.v2"
 }

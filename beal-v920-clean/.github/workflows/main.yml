@@ -55,7 +55,9 @@ jobs:
         run: lake build +Beal.B00_OperaNumerorum Beal
 
       - name: Check level-26 external transcript integrity
-        run: python3 scripts/check_level26_replay.py
+        run: |
+          python3 scripts/level26_descent_certificate.py --check
+          python3 scripts/check_level26_replay.py
 
       - name: Build level-26 p-adic certificate interface
         run: lake build Beal.Mazur.Gates.Descent_26_PadicCertificates

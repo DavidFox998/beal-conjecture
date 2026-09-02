@@ -5,20 +5,24 @@ namespace Beal17Mazur.Gates.SecondDescentReal26
 
 open Beal17Mazur.Jacobian
 open Beal17Mazur.Gates
+open Beal17Mazur.Gates.Descent26Bridge
 
 /-!
 # Executable level-26 bad-prime audit
 
-This module performs the complete finite computation currently justified by
-the Phase A data: every pair in the eight-element S-unit index set and the
-ten-row quartic ledger is checked at `p = 2` and `p = 13`.
+This module performs the complete finite computation currently justified
+inside Lean: every pair in the eight-element S-unit index set and the ten-row
+quartic ledger is checked at `p = 2` and `p = 13`.
 
 The quartic evaluator does not depend on the S-unit index, and every ledger row
 has a finite-field point at both primes.  Consequently all eighty pairs pass.
 This is an honest replay of the available finite data, not a proof that the
 abstract 2-Selmer group is `{1}`.  The genuine
-`SecondDescentHypothesis_26` therefore remains an explicit conditional
-boundary in `Descent_26_RankProof`.
+The independently checked JSON certificate now records strong Hensel
+approximations at `2^6` and `13^2`.  Lean does not parse JSON as a theorem:
+their p-adic conclusions enter through the proof-relevant
+`GenuinePAdicCertificate_26` interface, while covering completeness and
+Selmer-to-rank soundness remain explicit in `Descent_26_RankProof`.
 -/
 
 /-- One entry in the complete finite Phase A search grid. -/
@@ -129,7 +133,8 @@ def sUnitValue (d : SUnits_26) : Int :=
 
 /-- Every listed S-unit/covering pair has a primitive congruence witness after
 reduction modulo `2` and `13`.  The JSON certificate independently checks the
-stronger `2^6` and `13^2` congruences. -/
+strong Hensel inequality for integer approximations found modulo `2^6` and
+`13^2`; this theorem deliberately proves only the reductions visible here. -/
 theorem all_twisted_congruence_witnesses_checked :
     ∀ entry : SecondDescentCheckEntry_26,
       twistedCongruenceHasPoint (sUnitValue entry.1) (quarticOfEntry entry) 2 1 = true ∧

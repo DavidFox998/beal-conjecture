@@ -1,4 +1,5 @@
 import Beal.Mazur.Gates.Descent_26_Bridge
+import Beal.Mazur.Gates.Descent_26_PadicCertificates
 import Beal.Mazur.Gates.SecondDescent_Real_26
 import Mathlib.NumberTheory.Padics.PadicNumbers
 import Mathlib.RingTheory.Polynomial.RationalRoot
@@ -9,6 +10,7 @@ namespace Beal17Mazur.Gates.Descent26RankProof
 open Beal17Mazur.Jacobian
 open Beal17Mazur.Gates
 open Beal17Mazur.Gates.Descent26Bridge
+open Beal17Mazur.Gates.Descent26PadicCertificates
 open Beal17Mazur.Gates.SecondDescentReal26
 open Polynomial
 open scoped Polynomial
@@ -293,16 +295,13 @@ def SecondDescentHypothesis_26 : Prop :=
 mwrank report fields.
 
 Lean checks the exact model, quartic, rank, and Selmer-rank fields of the
-report in `SecondDescent_Real_26.lean` and the S-unit-dependent residue
-calculation.  This interface is the remaining mathematical assertion that
-those finite facts and mwrank's externally reported zero Selmer ranks produce
-the proof-relevant complete descents and soundness maps required by
-`SecondDescentHypothesis_26`. -/
+report in `SecondDescent_Real_26.lean`.  Genuine bad-prime solubility is a
+separate proof-relevant input, so the JSON checker is never treated as a Lean
+theorem.  This interface retains exactly the remaining covering-completeness,
+Selmer-identification, and rank-soundness assertions. -/
 structure Level26ExternalComputationInterface where
   complete_two_descents :
-    (∀ entry : SecondDescentCheckEntry_26,
-      twistedCongruenceHasPoint (sUnitValue entry.1) (quarticOfEntry entry) 2 1 = true ∧
-      twistedCongruenceHasPoint (sUnitValue entry.1) (quarticOfEntry entry) 13 1 = true) →
+    GenuinePAdicCertificate_26 →
     genuineMwrankTranscript_26.curve26a1ReportedSelmerRank = 0 →
     genuineMwrankTranscript_26.curve26b1ReportedSelmerRank = 0 →
     SecondDescentHypothesis_26
@@ -313,15 +312,16 @@ The theorem itself is axiom-free.  Its explicit premise is the external
 computation trust boundary; it does not claim that genuine `ℚ₂` or `ℚ₁₃`
 solubility is decided inside Lean. -/
 theorem SecondDescentHypothesis_26_real
+    (pAdic : GenuinePAdicCertificate_26)
     (external : Level26ExternalComputationInterface) :
     SecondDescentHypothesis_26 := by
   apply external.complete_two_descents
-  · exact all_twisted_congruence_witnesses_checked
+  · exact pAdic
   · exact genuineMwrankTranscript_zero_reports_checked.2.2.1
   · exact genuineMwrankTranscript_zero_reports_checked.2.2.2
 
 def secondDescentStatus : String :=
-  "CONDITIONAL: congruences checked; Qp lifting, completeness, and mwrank soundness external"
+  "CONDITIONAL: Hensel data checked externally; Lean p-adic proof, completeness, and Selmer-to-rank soundness explicit"
 
 def torsionStatus : String :=
   "CONDITIONAL: exact rational torsion orders 7 and 3 are not kernel-checked"
