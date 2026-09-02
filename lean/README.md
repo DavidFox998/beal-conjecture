@@ -9,9 +9,9 @@ The project-level [`README.md`](../README.md) explains the mathematical
 motivation and the current formal status. This document explains how the
 source tree is organized and how to read it as a Lean project.
 
-## v8.9.0 source snapshot
+## Historical v8.9.0 source snapshot
 
-The current source snapshot is v8.9.0, the Real 80-Check Audit. The new
+The v8.9.0 release was the Real 80-Check Audit. Its
 `Beal/Mazur/Gates/SecondDescent_Real_26.lean` module checks the complete
 `8 × 10 = 80` S-unit/ledger grid at `p = 2` and `p = 13`. All available
 bad-prime checks pass, so the audit retains all eight S-unit representatives;
@@ -29,6 +29,39 @@ lake build Beal.ConditionalBealTheorem
 The new audit introduces no `sorry`, `admit`, `sorryAx`, or
 `Lean.ofReduceBool`; its declarations use only the ordinary Lean foundation
 dependencies already present in the concrete project.
+
+## v9.4.0 — Formal immersion bridge at `2`
+
+The current Level-26 Gates modules add:
+
+- `Beal/Mazur/Gates/FormalImmersion_26_Cert.lean`, which houses the finite
+  `M₃` matrix, its exact `2 × 6` shape, and kernel-checked rank-two
+  certificates over `ℚ` and `GF(2)`;
+- `Beal/Mazur/Gates/FormalImmersion_26.lean`, which connects that finite
+  evidence to the abstract cotangent-map and Mazur-criterion boundary.
+
+The matrix rank is finite evidence. The construction of the actual
+scheme-level cotangent map and the implication from its surjectivity to the
+four-cusp conclusion remain the proposition-valued
+`FormalImmersionSoundness_26` premise. The v9.4.0 bridge also takes
+`J0DecompositionSoundness_26` and `MwrankCertificateSoundness_26` explicitly.
+No new mathematical assumptions are declared as global Lean axioms.
+
+## Level-26 Gates history
+
+The focused Level-26 modules form a three-version chain:
+
+- **v9.2.0:** `SecondDescent_Singleton_26_Reproducible`, the rank-zero
+  second-descent endpoint with its explicit Selmer certificate boundary.
+- **v9.3.0:** `J0_26_Decomp_Cert.lean` and `J0_26_Decomp.lean`, the finite
+  `J₀(26)` dimension/isogeny certificate and its visible decomposition and
+  mwrank premises.
+- **v9.4.0:** `FormalImmersion_26_Cert.lean` and
+  `FormalImmersion_26.lean`, the `M₃` rank-two certificate and formal-
+  immersion bridge at `2`.
+
+Across all three versions, finite data is checked where Lean can check it and
+external geometric or arithmetic soundness remains an explicit `Prop` argument.
 
 ## Historical v7.3.0 source snapshot
 

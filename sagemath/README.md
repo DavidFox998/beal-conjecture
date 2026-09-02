@@ -14,6 +14,18 @@ Selmer-to-rank soundness visible. Re-run the documented script when checking
 the transcript; do not overwrite the checked congruence data with a new
 machine log.
 
+## v9.2.0 — Rank-zero second-descent certificate
+
+The v9.2.0 replay is anchored by:
+
+- `certs_26a1_26b1.log`, the Sage/mwrank transcript;
+- `GENUINE_26_CERT_v9.2.0.txt`, the six-point certificate checklist; and
+- the SecondDescent JSON witness consumed by the Lean reproducibility bridge.
+
+It records the finite local evidence used for the rank-zero route while
+keeping the Selmer-to-rank soundness and any covering-completeness claim as
+explicit certificate boundaries.
+
 ## v9.3.0 — J₀(26) decomposition certificate
 
 The v9.3.0 evidence records
@@ -38,3 +50,29 @@ Verification passed:
 
 The certificate is evidence for the level-26 bridge, not an unconditional
 claim about the global rational points of $X_0(26)$.
+
+## v9.4.0 — Formal immersion at `2`
+
+The v9.4.0 evidence is anchored by:
+
+- `formal_immersion_26.log`, the archived `M₃` matrix transcript;
+- `GENUINE_FORMAL_IMMERSION_26_CERT_v9.4.0.txt`, the six-point checklist; and
+- `certs/formal_immersion_26_certificate.json`, the immutable rank witness.
+
+The JSON verifier independently checks the transcript hash, exact `2 × 6`
+matrix shape, and rank `2` over both `ℚ` and `GF(2)`. The corresponding Lean
+certificate checks the same finite data in the kernel. The geometric
+identification with the cotangent map and Mazur's cusp criterion remains an
+explicit proposition-valued soundness premise in the focused bridge.
+
+## Reproducibility path
+
+Each version follows the same auditable path:
+
+**SageCell replay** → **committed source log** → **six-point genuine
+certificate checklist** → **immutable JSON witness** → **focused Lean
+certificate or bridge**.
+
+The transcript is preserved as external computational evidence, while the
+JSON and Lean layers check its integrity and finite claims without pretending
+to reconstruct Sage, mwrank, or scheme-level modular-curve semantics.

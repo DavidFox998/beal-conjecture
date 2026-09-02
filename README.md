@@ -89,6 +89,42 @@ and `tate_step2_odd_prime_external`, plus the explicit
 entries such as `propext`, `Classical.choice`, and `Quot.sound` are Lean
 foundations, not additional mathematical theorems.
 
+### v9.4.0 — Formal immersion `X₀(26) → J₀(26)` at `2` via `M₃` rank `2`
+
+The v9.4.0 release adds a reproducible finite formal-immersion witness at the
+prime `2`. Its source triad is:
+
+- `sagemath/formal_immersion_26.log`, the archived matrix transcript;
+- `sagemath/GENUINE_FORMAL_IMMERSION_26_CERT_v9.4.0.txt`, the six-point
+  evidence checklist; and
+- `lean/Beal/Mazur/Gates/FormalImmersion_26_Cert.lean`, which houses the
+  kernel-checked `M₃` data and rank certificates.
+
+The witness checks that the displayed `2 × 6` matrix has rank `2` over both
+`ℚ` and `GF(2)`, matching the verified dimension `dim J₀(26) = 2`.
+
+Verification passed:
+
+- formal-immersion JSON witness;
+- existing `J₀(26)` JSON witness;
+- focused Lean build of `Beal.Mazur.Gates.FormalImmersion_26`;
+- full main CI; and
+- axiom audit with only the standard Lean foundations
+  `propext`, `Classical.choice`, and `Quot.sound`.
+
+The three soundness inputs remain explicit proposition-valued arguments:
+`J0DecompositionSoundness_26`, `MwrankCertificateSoundness_26`, and
+`FormalImmersionSoundness_26`. They are not global axioms. In particular, the
+finite matrix rank does not by itself construct the scheme-level cotangent map
+or prove Mazur's criterion; those geometric interpretations remain visible at
+the formal boundary.
+
+The current conditional level-26 chain is:
+
+**v9.2.0 rank `0` (`Selmer = {1}`)** → **v9.3.0 `dim J₀(26) = 2 = 1 + 1`
+isogeny** → **v9.4.0 `M₃` rank `2` formal immersion** → **`X₀(26)(ℚ)`
+finite**.
+
 ### v8.9.0 Real 80-Check Audit
 
 The v8.9.0 release is the first honest executable Phase A computation for the
@@ -210,6 +246,17 @@ The JSON witness check and focused Lean build passed, and no new
 `axiom`, `sorry`, or `admit` was introduced. This is reproducible evidence
 for the level-26 bridge, not an unconditional proof of Beal's Conjecture or
 of the still-missing global $X_0(26)(\mathbb Q)$ exhaustiveness argument.
+
+### Historical v9.2.0 — Rank-zero second-descent certificate
+
+The v9.2.0 evidence records the finite local checks and the explicit
+Selmer-to-rank boundary for the level-26 route. Its Sage-facing artifacts and
+Lean endpoint are documented in `sagemath/README.md` and
+`SecondDescent_Singleton_26_Reproducible`.
+
+The rank-zero conclusion is retained as an explicit certificate premise in the
+v9.3.0 and v9.4.0 bridges; it is not silently promoted into an unconditional
+Selmer theorem.
 
 The immutable release archive
 `beal-conjecture-v8.9.0.tar.gz` is 175,208 bytes with SHA-256
