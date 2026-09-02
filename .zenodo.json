@@ -1,32 +1,39 @@
 {
-  "title": "Beal Conjecture — v8.9.0 Real 80-Check Audit",
+  "title": "Beal Conjecture — Opera Numerorum — v9.3.0 J0(26) decomposition",
   "upload_type": "software",
-  "description": "Version 8.9.0 records an honest executable Phase A finite audit for the level-26 route in Lean 4. The complete grid of eight S-unit representatives against ten quartics gives 80 entries. All 80 entries pass the available local checks at p = 2 and p = 13, so all eight representatives remain. This is not a singleton 2-Selmer computation and not an unconditional proof of the Beal Conjecture. SecondDescentHypothesis_26, Jacobian transport, formal immersion, modularity, and level lowering remain explicit conditional boundaries.",
+  "version": "9.3.0",
+  "description": "Reproducible J0(26) decomposition evidence for the Beal Conjecture formalization. The certificate records dim J0(26) = 2 = 1 + 1, the reported isogeny J0(26) ~ E26a1 x E26b1, and the exact coefficient models (1,0,1,-5,-8) and (1,-1,1,-3,3). Sage decomposition semantics and mwrank/second-descent rank semantics remain explicit proposition-valued premises in Lean rather than global axioms.",
   "creators": [
     {
-      "name": "Fox, David",
+      "name": "DavidFox998",
       "affiliation": "Opera Numerorum"
     }
   ],
   "license": "MIT",
   "keywords": [
+    "Beal",
     "Beal Conjecture",
-    "Lean 4",
-    "Frey curve",
-    "X0(26)",
-    "second descent",
-    "finite audit",
-    "Ribet level lowering",
-    "Taylor-Wiles patching",
-    "formal mathematics",
-    "Opera Numerorum"
+    "J0(26)",
+    "modular curve",
+    "Lean4",
+    "SageMath",
+    "reproducible certificate",
+    "version 9.3.0"
   ],
   "access_right": "open",
   "related_identifiers": [
+    {
+      "identifier": "https://github.com/DavidFox998/beal-conjecture/releases/tag/v9.3.0",
+      "relation": "isIdenticalTo",
+      "resource_type": "software"
+    },
     {
       "identifier": "https://github.com/DavidFox998/beal-conjecture",
       "relation": "isSupplementTo",
       "resource_type": "software"
     }
-  ]
+  ],
+  "doi": "10.5281/zenodo.22247099",
+  "conceptdoi": "10.5281/zenodo.22247098",
+  "zenodo_record": 22247099
 }
