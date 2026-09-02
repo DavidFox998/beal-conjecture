@@ -1,4 +1,5 @@
 import Beal.Mazur.Gates.Descent_26_Bridge
+import Beal.Mazur.Gates.SecondDescent_Real_26
 import Mathlib.NumberTheory.Padics.PadicNumbers
 import Mathlib.RingTheory.Polynomial.RationalRoot
 import Mathlib.Tactic
@@ -8,6 +9,7 @@ namespace Beal17Mazur.Gates.Descent26RankProof
 open Beal17Mazur.Jacobian
 open Beal17Mazur.Gates
 open Beal17Mazur.Gates.Descent26Bridge
+open Beal17Mazur.Gates.SecondDescentReal26
 open Polynomial
 open scoped Polynomial
 
@@ -287,8 +289,39 @@ structure SecondDescentCertificate_26 where
 def SecondDescentHypothesis_26 : Prop :=
   Nonempty SecondDescentCertificate_26
 
+/-- The external soundness boundary for the checked congruences and historical
+mwrank report fields.
+
+Lean checks the exact model, quartic, rank, and Selmer-rank fields of the
+report in `SecondDescent_Real_26.lean` and the S-unit-dependent residue
+calculation.  This interface is the remaining mathematical assertion that
+those finite facts and mwrank's externally reported zero Selmer ranks produce
+the proof-relevant complete descents and soundness maps required by
+`SecondDescentHypothesis_26`. -/
+structure Level26ExternalComputationInterface where
+  complete_two_descents :
+    (∀ entry : SecondDescentCheckEntry_26,
+      twistedCongruenceHasPoint (sUnitValue entry.1) (quarticOfEntry entry) 2 1 = true ∧
+      twistedCongruenceHasPoint (sUnitValue entry.1) (quarticOfEntry entry) 13 1 = true) →
+    genuineMwrankTranscript_26.curve26a1ReportedSelmerRank = 0 →
+    genuineMwrankTranscript_26.curve26b1ReportedSelmerRank = 0 →
+    SecondDescentHypothesis_26
+
+/-- Honest v9.2.0 wrapper around the archived external mwrank certificate.
+
+The theorem itself is axiom-free.  Its explicit premise is the external
+computation trust boundary; it does not claim that genuine `ℚ₂` or `ℚ₁₃`
+solubility is decided inside Lean. -/
+theorem SecondDescentHypothesis_26_real
+    (external : Level26ExternalComputationInterface) :
+    SecondDescentHypothesis_26 := by
+  apply external.complete_two_descents
+  · exact all_twisted_congruence_witnesses_checked
+  · exact genuineMwrankTranscript_zero_reports_checked.2.2.1
+  · exact genuineMwrankTranscript_zero_reports_checked.2.2.2
+
 def secondDescentStatus : String :=
-  "CONDITIONAL: second descent, needs mwrank 2-descent soundness"
+  "CONDITIONAL: congruences checked; Qp lifting, completeness, and mwrank soundness external"
 
 def torsionStatus : String :=
   "CONDITIONAL: exact rational torsion orders 7 and 3 are not kernel-checked"
@@ -311,6 +344,7 @@ theorem freeRankZero_of_secondDescent :
 #print axioms E26b1_twoDivision_no_rational_root
 #print axioms no_rational_two_torsion_26a1W
 #print axioms no_rational_two_torsion_26b1W
+#print axioms SecondDescentHypothesis_26_real
 #print axioms freeRankZero_of_secondDescent
 
 end

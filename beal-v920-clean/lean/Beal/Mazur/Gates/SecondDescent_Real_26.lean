@@ -1,4 +1,4 @@
-import Beal.Mazur.Gates.Descent_26_PhaseA
+import Beal.Mazur.Gates.Descent_26_Bridge
 import Beal.Mazur.Jacobian.E26
 
 namespace Beal17Mazur.Gates.SecondDescentReal26
@@ -108,6 +108,87 @@ theorem finiteCandidateAudit_not_singleton :
   rw [finiteCandidateAudit_card_8, Finset.card_singleton] at hCard
   omega
 
+/-! ## S-unit-dependent reproducible congruence certificate -/
+
+/-- The actual twisted covering congruence used by the reproducible producer:
+`twist * y² = q(x,z) (mod p^k)`.  Unlike the old evaluator, this depends on
+the S-unit representative. -/
+def twistedCongruenceHasPoint (twist : Int) (q : BinaryQuartic)
+    (p exponent : Nat) : Bool :=
+  let modulus := p ^ exponent
+  (List.range modulus).any fun x =>
+    (List.range modulus).any fun z =>
+      (decide (x % p ≠ 0 ∨ z % p ≠ 0)) &&
+        (List.range modulus).any fun y =>
+          decide (
+            (twist * (y : Int) ^ 2 - HomogQuartic q (x : Int) (z : Int)) %
+                (modulus : Int) = 0)
+
+def sUnitValue (d : SUnits_26) : Int :=
+  Q_S2_13.get d
+
+/-- Every listed S-unit/covering pair has a primitive congruence witness after
+reduction modulo `2` and `13`.  The JSON certificate independently checks the
+stronger `2^6` and `13^2` congruences. -/
+theorem all_twisted_congruence_witnesses_checked :
+    ∀ entry : SecondDescentCheckEntry_26,
+      twistedCongruenceHasPoint (sUnitValue entry.1) (quarticOfEntry entry) 2 1 = true ∧
+      twistedCongruenceHasPoint (sUnitValue entry.1) (quarticOfEntry entry) 13 1 = true := by
+  decide
+
+/-! ## Historical external mwrank report fields -/
+
+/-- The normalized finite fields copied from the historical external report.
+
+This structure records only data that Lean can compare by computation.  In
+particular, the two zero Selmer ranks are transcript fields, not internally
+verified statements about a formal Lean Selmer group or outputs of the
+dependency-free congruence producer. -/
+structure MwrankTranscript_26 where
+  curve26a1Model : List Int
+  curve26b1Model : List Int
+  curve26a1Quartics : List BinaryQuartic
+  curve26b1Quartics : List BinaryQuartic
+  curve26a1ReportedRank : Nat
+  curve26b1ReportedRank : Nat
+  curve26a1ReportedSelmerRank : Nat
+  curve26b1ReportedSelmerRank : Nat
+  deriving DecidableEq, Repr
+
+/-- Normalized transcript data in the same factor-label ordering as `E26.lean`.
+
+The source text contains inconsistent prose labels inherited from the earlier
+log.  The models are therefore paired here by their coefficients and
+discriminants, not by those prose labels. -/
+def genuineMwrankTranscript_26 : MwrankTranscript_26 where
+  curve26a1Model := [1, -1, 1, -3, 3]
+  curve26b1Model := [1, 0, 1, -5, -8]
+  curve26a1Quartics := E26a1MwrankQuartics
+  curve26b1Quartics := E26b1MwrankQuartics
+  curve26a1ReportedRank := 0
+  curve26b1ReportedRank := 0
+  curve26a1ReportedSelmerRank := 0
+  curve26b1ReportedSelmerRank := 0
+
+theorem genuineMwrankTranscript_models_checked :
+    genuineMwrankTranscript_26.curve26a1Model = [1, -1, 1, -3, 3] ∧
+      genuineMwrankTranscript_26.curve26b1Model = [1, 0, 1, -5, -8] := by
+  decide
+
+theorem genuineMwrankTranscript_quartics_checked :
+    genuineMwrankTranscript_26.curve26a1Quartics =
+        E26a1MwrankQuartics ∧
+      genuineMwrankTranscript_26.curve26b1Quartics =
+        E26b1MwrankQuartics := by
+  decide
+
+theorem genuineMwrankTranscript_zero_reports_checked :
+    genuineMwrankTranscript_26.curve26a1ReportedRank = 0 ∧
+      genuineMwrankTranscript_26.curve26b1ReportedRank = 0 ∧
+      genuineMwrankTranscript_26.curve26a1ReportedSelmerRank = 0 ∧
+      genuineMwrankTranscript_26.curve26b1ReportedSelmerRank = 0 := by
+  decide
+
 #print axioms secondDescentCheckEntry_card_80
 #print axioms ledgerFp2Results_checked
 #print axioms ledgerFp13Results_checked
@@ -115,5 +196,9 @@ theorem finiteCandidateAudit_not_singleton :
 #print axioms finiteCandidateAudit_eq_univ
 #print axioms finiteCandidateAudit_card_8
 #print axioms finiteCandidateAudit_not_singleton
+#print axioms all_twisted_congruence_witnesses_checked
+#print axioms genuineMwrankTranscript_models_checked
+#print axioms genuineMwrankTranscript_quartics_checked
+#print axioms genuineMwrankTranscript_zero_reports_checked
 
 end Beal17Mazur.Gates.SecondDescentReal26

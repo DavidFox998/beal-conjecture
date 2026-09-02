@@ -25,6 +25,24 @@ are formalized.
 together with the existing Phase B+C+D certificates; it does not assert an
 unconditional Beal theorem.
 
+
+## v9.2.0 reproducible level-26 certificate boundary
+
+The dependency-free producer `scripts/level26_descent_certificate.py` records
+the exact coefficient-defined Lean models and checks all 160 twisted
+congruences (eight S-units, ten rows, and two bad-prime moduli).  Lean repeats
+the same genuinely S-unit-dependent checks by `decide`.
+
+`sagemath/reproduce_level26_descent.sage` prints exact Sage/mwrank versions and
+database-returned models before replaying rank and two-descent commands into a
+separate, uncommitted Sage log.  It cannot overwrite the checked congruence
+log. This prevents the old Lean/LMFDB label conflation.
+`SecondDescentHypothesis_26_real`
+uses one narrow `Level26ExternalComputationInterface`: full `ℚ₂`/`ℚ₁₃`
+lifting, covering completeness, and Selmer-to-rank soundness remain explicit
+because the finite congruence witnesses do not prove them.  No unconditional
+rank-zero theorem is claimed.
+
 ## Phase B real finite decomposition evidence
 
 `Jacobian/J0_26_Decomp.lean` now records the two LMFDB level-26 newform class
