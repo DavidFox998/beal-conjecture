@@ -14,13 +14,30 @@ Selmer-to-rank soundness visible. Re-run the documented script when checking
 the transcript; do not overwrite the checked congruence data with a new
 machine log.
 
+## v10.0.0 — Final conditional assembly
+
+The v10.0.0 theorem is assembled in
+`lean/Beal/Final/ConditionalBealTheorem.lean`. This folder supplies the
+reproducible computational inputs consumed by the v9.2--v9.4 Gates chain:
+
+- v9.2 rank-zero second-descent replay and its explicit Selmer soundness
+  boundary;
+- v9.3 `J₀(26)` decomposition JSON and transcript; and
+- v9.4 formal-immersion `M₃` JSON and transcript.
+
+The focused Lean theorem adds no computational claim to these files. It keeps
+`FreyCurveExists` and `LevelLowering_26` as explicit Phase-D inputs, with the
+actual cotangent-map construction still tracked for v10.0.1.
+
 ## v9.2.0 — Rank-zero second-descent certificate
 
 The v9.2.0 replay is anchored by:
 
 - `certs_26a1_26b1.log`, the Sage/mwrank transcript;
 - `GENUINE_26_CERT_v9.2.0.txt`, the six-point certificate checklist; and
-- the SecondDescent JSON witness consumed by the Lean reproducibility bridge.
+- `scripts/check_level26_replay.py`, the replay/checker consumed by the Lean
+  reproducibility bridge. There is no standalone v9.2 JSON witness in the
+  committed artifact set.
 
 It records the finite local evidence used for the rank-zero route while
 keeping the Selmer-to-rank soundness and any covering-completeness claim as

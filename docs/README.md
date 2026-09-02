@@ -12,7 +12,9 @@ the conditional Frey/Mazur endgame.
 [`OperaNumerorum_v10.md`](OperaNumerorum_v10.md) is the narrative map for the
 v10.0.0 final assembly. It follows a hypothetical primitive Beal
 counterexample through the Frey, modularity, level-lowering, rank-zero, and
-formal-immersion interfaces to the four-cusp contradiction.
+formal-immersion interfaces to the four-cusp contradiction. It records the
+five explicit premises, the v9.2--v9.4 certificate chain, and the
+`FreyCurveExists`/`LevelLowering_26` Phase-D boundary.
 
 The standing rule is simple: executable evidence, external computation, and
 unproved mathematical interfaces are described separately. A green build

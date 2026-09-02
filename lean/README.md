@@ -9,6 +9,25 @@ The project-level [`README.md`](../README.md) explains the mathematical
 motivation and the current formal status. This document explains how the
 source tree is organized and how to read it as a Lean project.
 
+## v10.0.0 — Final conditional assembly
+
+`Beal/Final/ConditionalBealTheorem.lean` is the v10.0.0 endpoint. It proves
+the public `BealConjecture` proposition from five explicit premises:
+
+- `J0DecompositionSoundness_26 J0_26`;
+- `MwrankCertificateSoundness_26`;
+- `FormalImmersionSoundness_26 J0_26 cotangent`;
+- `FreyCurveExists`, reusing `FreyCurveConstruction_26`; and
+- `LevelLowering_26`, packaging the indexed modularity supplier and
+  `LevelLoweringCertificate_26`.
+
+The proof constructs a `BealCounterexampleData`, obtains a noncuspidal
+level-26 point, and contradicts the four-cusp conclusion from the v9.2--v9.4
+chain. Focused CI passes, and the axiom audit is only
+`propext`, `Classical.choice`, and `Quot.sound`. No new global axiom, `sorry`,
+`admit`, or `True` stub is introduced. The actual cotangent-map construction
+behind `M₃` remains the v10.0.1 follow-up.
+
 ## Historical v8.9.0 source snapshot
 
 The v8.9.0 release was the Real 80-Check Audit. Its
@@ -59,6 +78,8 @@ The focused Level-26 modules form a three-version chain:
 - **v9.4.0:** `FormalImmersion_26_Cert.lean` and
   `FormalImmersion_26.lean`, the `M₃` rank-two certificate and formal-
   immersion bridge at `2`.
+- **v10.0.0:** `Final/ConditionalBealTheorem.lean`, the five-premise
+  conditional assembly from the level-26 Gates chain to `BealConjecture`.
 
 Across all three versions, finite data is checked where Lean can check it and
 external geometric or arithmetic soundness remains an explicit `Prop` argument.

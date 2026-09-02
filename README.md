@@ -13,6 +13,15 @@ make every mathematical dependency visible, inspectable, and worthy of trust.
 
 ---
 
+> **v10.0.0 — Conditional Beal — Explicit premises, no global axioms**
+>
+> The final assembly
+> [`Beal.Final.ConditionalBealTheorem`](lean/Beal/Final/ConditionalBealTheorem.lean)
+> compiles in focused CI. Its axiom audit is only
+> `propext`, `Classical.choice`, and `Quot.sound`; no new `axiom`, `sorry`,
+> `admit`, or `True` stub is introduced. The theorem joins the v9.2, v9.3,
+> and v9.4 level-26 evidence through five explicit premises.
+
 ## The conjecture
 
 Andrew Beal (1997) observed and offered a prize for the following:
@@ -109,6 +118,18 @@ the missing geometry.
 | Focused Lean | passed | `Beal.Final.ConditionalBealTheorem` |
 | Full CI | passed | complete project and certificate audit |
 | Axiom audit | passed | only `propext`, `Classical.choice`, and `Quot.sound` |
+
+The release chain, with its historical anchors, is:
+
+- **v9.2.0:** rank `0`, with the recorded Selmer conclusion `{1}` and the
+  explicit second-descent soundness boundary;
+- **v9.3.0:** merge `b06254c`, with
+  `dim J₀(26) = 2 = 1 + 1` and the displayed isogeny;
+- **v9.4.0:** documentation/verification commits `e665e0d` and `e3e1e84`,
+  with `M₃` rank `2`, the formal-immersion bridge, DOI badge, and CI run
+  `33652336887`; and
+- **v10.0.0:** `ConditionalBealTheorem`, with five explicit premises and no
+  new global axioms.
 
 The five explicit premises are:
 
@@ -750,14 +771,42 @@ descent-plan supplier.
 
 ---
 
+## The Beal chamber in *Opera Numerorum*
+
+This repository is one chamber in *Opera Numerorum*, a connected Lean
+development whose rooms share a method rather than a claim of finished
+mathematics: state the arithmetic explicitly, make the connective steps
+machine-checkable, and leave every imported theorem or missing construction
+visible at the boundary.
+
+The Beal route begins with primitive divisibility, builds the Frey curve, and
+then passes through conductor data, Galois representations, modular forms,
+level lowering, and the terminal fact that
+`S₂(Γ₀(2)) = 0`. The current level-26 work adds finite, reproducible evidence
+around the residual prime `13` while keeping the global Jacobian, Selmer, Tate,
+Wiles, and Ribet steps conditional where they are not yet constructed.
+
+The v9.2.0 documentation and source are organized as a small audit trail:
+
+- [`lean/`](lean/) contains the numbered formal development;
+- [`lean/Beal/Mazur/`](lean/Beal/Mazur/) contains the level-26 route;
+- [`certificates/`](certificates/) contains committed certificate data;
+- [`sagemath/`](sagemath/) contains reproducibility transcripts and replay
+  programs; and
+- [`docs/`](docs/) contains model, rational-point, and release documentation.
+
+“Green” means that the stated Lean programs and audits elaborate. It does not
+mean that Beal's Conjecture has been proved unconditionally. The project
+records that distinction as part of the mathematics.
+
 ## The wider work: *Opera Numerorum* and related repositories
 
 The Beal development is not itself a proof of the Riemann Hypothesis. It is one
 chamber of *Opera Numerorum*, a wider program in which different mathematical
 languages approach the same landscape: Arakelov geometry, automorphic forms,
 spectral gaps, arithmetic dynamics, and the analytic behavior of zeta
-functions. These related repositories are kept together here, at the bottom of
-the document, so the formal Beal account above remains self-contained.
+functions. These related repositories are kept at the bottom so the formal
+Beal account above remains self-contained.
 
 ### Route A — positivity
 
@@ -791,32 +840,4 @@ an inspiration for formalization, not a dependency of this repository.
 
 Maintained by DavidFox998 as part of *Opera Numerorum*: mathematics made
 auditable, with the beauty left visible.
-
-## The Beal chamber in *Opera Numerorum*
-
-This repository is one chamber in *Opera Numerorum*, a connected Lean
-development whose rooms share a method rather than a claim of finished
-mathematics: state the arithmetic explicitly, make the connective steps
-machine-checkable, and leave every imported theorem or missing construction
-visible at the boundary.
-
-The Beal route begins with primitive divisibility, builds the Frey curve, and
-then passes through conductor data, Galois representations, modular forms,
-level lowering, and the terminal fact that
-`S₂(Γ₀(2)) = 0`. The current level-26 work adds finite, reproducible evidence
-around the residual prime `13` while keeping the global Jacobian, Selmer, Tate,
-Wiles, and Ribet steps conditional where they are not yet constructed.
-
-The v9.2.0 documentation and source are organized as a small audit trail:
-
-- [`lean/`](lean/) contains the numbered formal development;
-- [`lean/Beal/Mazur/`](lean/Beal/Mazur/) contains the level-26 route;
-- [`certificates/`](certificates/) contains committed certificate data;
-- [`sagemath/`](sagemath/) contains reproducibility transcripts and replay
-  programs; and
-- [`docs/`](docs/) contains model, rational-point, and release documentation.
-
-“Green” means that the stated Lean programs and audits elaborate. It does not
-mean that Beal's Conjecture has been proved unconditionally. The project
-records that distinction as part of the mathematics.
 
