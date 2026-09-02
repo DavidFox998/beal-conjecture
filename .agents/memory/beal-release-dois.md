@@ -91,6 +91,15 @@ asset. The automatic hook record `10.5281/zenodo.22238975` is an immutable
 historical mistake with an inherited v8.9 title and generated ZIP; use the
 corrected DOI for v9.0.0.
 
+The v9.1.0 Real Formal Immersion Matrix release has version DOI
+`10.5281/zenodo.22240445` under concept DOI
+`10.5281/zenodo.22041831`. The GitHub hook inherited stale v8.9 metadata, but
+the owner edit action allowed the title, description, keywords, and links to be
+corrected in place. Its post-publication file bucket stayed locked, so Zenodo
+retains the generated source ZIP while GitHub carries the canonical named
+tarball; release-critical files in the ZIP were verified byte-for-byte against
+the annotated tag. Do not mint another DOI for v9.1.0.
+
 The inherited v4.1.0 titles and descriptions on Zenodo records
 `10.5281/zenodo.22110949` (`v7.0.0-genuine-provider`),
 `10.5281/zenodo.22123696` (`v7.1.0`), and
@@ -125,5 +134,10 @@ metadata, and republishing it. Use this only when the record exposes that edit
 action and the archived file is already correct. If the record is immutable and
 the file itself is wrong, preserve it and publish a corrected new version in the
 same concept chain.
+
+GitHub-hook records may expose metadata editing while keeping their file bucket
+locked. In that case, repair and republish the metadata, verify the generated
+ZIP's release-critical files against the tag, and identify any separately
+attached GitHub tarball as canonical rather than creating a duplicate DOI.
 
 **How to apply:** Keep the release sequence as `v4.0.0` three-axiom lock, then `v4.1.0` Tate truthful model after its build, `v5.0.0` for the typed preserved-form `ribet_single_step` boundary, `v7.3.0` for the typed Eutheos old/new bridge, and `v7.3.1` for its audit clarification. Verify a tag, release, and `#print axioms` footprint before minting each new DOI; inspect both the archived file and display metadata before creating another version.
