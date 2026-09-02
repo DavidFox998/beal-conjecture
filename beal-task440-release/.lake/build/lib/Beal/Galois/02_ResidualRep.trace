@@ -1,8 +1,0 @@
-{"log":
- [{"message":
-   ".> LEAN_PATH=././.lake/packages/batteries/.lake/build/lib:././.lake/packages/Qq/.lake/build/lib:././.lake/packages/aesop/.lake/build/lib:././.lake/packages/proofwidgets/.lake/build/lib:././.lake/packages/Cli/.lake/build/lib:././.lake/packages/importGraph/.lake/build/lib:././.lake/packages/LeanSearchClient/.lake/build/lib:././.lake/packages/mathlib/.lake/build/lib:././.lake/build/lib LD_LIBRARY_PATH= /home/runner/.elan/toolchains/leanprover--lean4---v4.12.0/bin/lean ./././lean/Beal/Galois/02_ResidualRep.lean -R ./././lean -o ././.lake/build/lib/Beal/Galois/02_ResidualRep.olean -i ././.lake/build/lib/Beal/Galois/02_ResidualRep.ilean -c ././.lake/build/ir/Beal/Galois/02_ResidualRep.c --json",
-   "level": "trace"},
-  {"message":
-   "./././lean/Beal/Galois/02_ResidualRep.lean:60:0: 'Beal.Galois.IsFreyUnramifiedAt' depends on axioms: [propext, Quot.sound]",
-   "level": "info"}],
- "depHash": "560855134320927656"}

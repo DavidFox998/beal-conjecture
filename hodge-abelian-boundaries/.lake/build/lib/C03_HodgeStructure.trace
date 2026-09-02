@@ -1,5 +1,0 @@
-{"log":
- [{"message":
-   ".> LEAN_PATH=././.lake/packages/batteries/.lake/build/lib:././.lake/packages/Qq/.lake/build/lib:././.lake/packages/aesop/.lake/build/lib:././.lake/packages/proofwidgets/.lake/build/lib:././.lake/packages/Cli/.lake/build/lib:././.lake/packages/importGraph/.lake/build/lib:././.lake/packages/LeanSearchClient/.lake/build/lib:././.lake/packages/mathlib/.lake/build/lib:././.lake/build/lib LD_LIBRARY_PATH= /home/runner/.elan/toolchains/leanprover--lean4---v4.12.0/bin/lean ./././lean/C03_HodgeStructure.lean -R ./././lean -o ././.lake/build/lib/C03_HodgeStructure.olean -i ././.lake/build/lib/C03_HodgeStructure.ilean -c ././.lake/build/ir/C03_HodgeStructure.c --json",
-   "level": "trace"}],
- "depHash": "7925561256524982586"}
