@@ -18,14 +18,15 @@ open scoped Polynomial
 noncomputable section
 
 /-!
-# The maximal honest level-26 Selmer/rank interface
+# The formal level-26 Selmer-to-rank bridge
 
 The two rational 2-torsion exclusions below are kernel-checked.  The second
-descent and the Selmer-to-Mordell--Weil theorem are not available in Mathlib
-4.12.  This module therefore exposes the abstract 2-Selmer carriers and
-packages their exact covering and local-solubility obligations in a
-proof-relevant certificate.  No unconditional Selmer-cardinality or
-free-rank theorem is claimed.
+descent and cohomological 2-Selmer objects are not available in Mathlib 4.12,
+so this module exposes those arithmetic inputs in proof-relevant structures.
+The final Selmer-to-Mordell--Weil step is proved here: exactness of the Kummer
+map, triviality of the full 2-Selmer carrier, and finite-rank coordinates imply
+that every rational point is torsion.  No unconditional Selmer-cardinality
+claim is made.
 -/
 
 /-! ## The genuine two-division cubics -/
@@ -264,6 +265,9 @@ structure AbstractTwoSelmer (E : WeierstrassCurve ℚ) where
   kummerMap : MordellWeilGroup E →+ localKummerConditions
   kummer_kills_doubles :
     ∀ P : MordellWeilGroup E, kummerMap (2 • P) = 0
+  kummer_kernel_is_doubles :
+    ∀ P : MordellWeilGroup E,
+      kummerMap P = 0 → ∃ Q : MordellWeilGroup E, P = 2 • Q
 
 attribute [instance] AbstractTwoSelmer.h1Group
 
@@ -278,6 +282,95 @@ abbrev Selmer2_26a1 := AbstractTwoSelmer E26a1W
 
 /-- The abstract 2-Selmer object slot for the `26b1` factor. -/
 abbrev Selmer2_26b1 := AbstractTwoSelmer E26b1W
+
+/-! ## The exact Kummer sequence and finite-rank dimension argument -/
+
+/-- A proof-relevant free-coordinate model for the Mordell--Weil group.
+
+`freeCoordinates` is the projection to the free quotient `ℤ^r`.  Surjectivity
+records that all free-coordinate vectors occur, while
+`torsion_of_coordinates_zero` identifies the kernel with torsion.  This is the
+precise finite-generation/structure-theorem input needed below; it is not a
+field asserting the desired rank-zero conclusion. -/
+structure MordellWeilRankModel (E : WeierstrassCurve ℚ) where
+  freeRank : Nat
+  freeCoordinates : MordellWeilGroup E →+ (Fin freeRank → Int)
+  coordinates_surjective : Function.Surjective freeCoordinates
+  torsion_of_coordinates_zero :
+    ∀ P : MordellWeilGroup E, freeCoordinates P = 0 →
+      ∃ n : Nat, 0 < n ∧ n • P = 0
+
+/-- The left half of the Kummer exact sequence
+
+`0 → E(ℚ)[2] → E(ℚ) --[2]→ E(ℚ) → Sel₂(E/ℚ)`
+
+is exact: absence of rational 2-torsion makes doubling injective, while a
+trivial full Selmer group and exactness of the Kummer kernel make doubling
+surjective. -/
+theorem doubling_bijective_of_trivial_twoSelmer
+    {E : WeierstrassCurve ℚ}
+    (selmer : AbstractTwoSelmer E)
+    (noTwoTorsion : NoRationalTwoTorsion E)
+    (selmerTrivial : Subsingleton selmer.Carrier) :
+    Function.Bijective (fun P : MordellWeilGroup E => 2 • P) := by
+  constructor
+  · intro P Q hPQ
+    have hTwo : 2 • (P - Q) = 0 := by
+      rw [smul_sub]
+      change (2 • P) - (2 • Q) = 0
+      change 2 • P = 2 • Q at hPQ
+      rw [hPQ, sub_self]
+    exact sub_eq_zero.mp (noTwoTorsion (P - Q) hTwo)
+  · intro P
+    have hKummer : selmer.kummerMap P = 0 :=
+      Subsingleton.elim _ _
+    obtain ⟨Q, hQ⟩ := selmer.kummer_kernel_is_doubles P hKummer
+    exact ⟨Q, hQ.symm⟩
+
+/-- A finitely generated abelian group with surjective doubling has no free
+coordinate.  The proof is the mod-2 dimension argument: a coordinate vector
+whose first entry is one cannot be twice an integral vector. -/
+theorem freeRank_eq_zero_of_doubling_surjective
+    {E : WeierstrassCurve ℚ}
+    (rankModel : MordellWeilRankModel E)
+    (doublingSurjective :
+      Function.Surjective (fun P : MordellWeilGroup E => 2 • P)) :
+    rankModel.freeRank = 0 := by
+  by_contra hRank
+  have hRankPos : 0 < rankModel.freeRank := Nat.pos_of_ne_zero hRank
+  let first : Fin rankModel.freeRank := ⟨0, hRankPos⟩
+  let unitVector : Fin rankModel.freeRank → Int :=
+    fun i => if i = first then 1 else 0
+  obtain ⟨P, hP⟩ := rankModel.coordinates_surjective unitVector
+  obtain ⟨Q, hQ⟩ := doublingSurjective P
+  have hCoordinate :=
+    congrFun (congrArg rankModel.freeCoordinates hQ) first
+  rw [rankModel.freeCoordinates.map_nsmul] at hCoordinate
+  simp [hP, unitVector] at hCoordinate
+  omega
+
+/-- Exact Kummer semantics plus a trivial full 2-Selmer group force the free
+Mordell--Weil rank to vanish.  The no-2-torsion theorem supplies injectivity in
+the displayed exact sequence rather than remaining unused metadata. -/
+theorem freeRankZero_of_trivial_twoSelmer
+    {E : WeierstrassCurve ℚ}
+    (selmer : AbstractTwoSelmer E)
+    (rankModel : MordellWeilRankModel E)
+    (noTwoTorsion : NoRationalTwoTorsion E)
+    (selmerTrivial : Subsingleton selmer.Carrier) :
+    IsFreeRankZero E := by
+  have hDoubling :=
+    doubling_bijective_of_trivial_twoSelmer selmer noTwoTorsion selmerTrivial
+  have hRankZero :=
+    freeRank_eq_zero_of_doubling_surjective rankModel hDoubling.2
+  intro P
+  apply rankModel.torsion_of_coordinates_zero P
+  have hCoordinates :
+      rankModel.freeCoordinates P = (0 : Fin rankModel.freeRank → Int) := by
+    funext i
+    have hi : Fin 0 := hRankZero ▸ i
+    exact Fin.elim0 hi
+  exact hCoordinates
 
 /-- The exact semantic bridge from a coefficient ledger to an externally
 supplied full 2-Selmer model.
@@ -397,7 +490,7 @@ theorem descentMap_exhausts_abstractSelmer
 The `SUnitRepresentative` component is the eight-element representative list
 from `E26.lean`; this definition does not assert that the list has already been
 proved equivalent to the abstract squareclass quotient `ℚ(S,2)`.  That
-identification is part of `CurveSecondDescentSoundness` below. -/
+identification remains part of the explicit Selmer ledger data below. -/
 def SelmerCandidates (rows : List BinaryQuartic) :
     Set SUnitRepresentative :=
   {d | ∃ candidate : LedgerClass rows,
@@ -488,15 +581,6 @@ structure TorsionOdd_26_Certificate where
 def TorsionOdd_26 : Prop :=
   Nonempty TorsionOdd_26_Certificate
 
-/-- The missing theorem that connects this exact local ledger computation to
-the Mordell--Weil quotient.  Its premise makes the singleton Selmer result
-logically relevant; no arbitrary status record can inhabit it. -/
-def CurveSecondDescentSoundness
-    (E : WeierstrassCurve ℚ) (rows : List BinaryQuartic) : Prop :=
-  SelmerCandidates rows = {oneSUnit} →
-    CompleteTwoDescent E rows →
-      IsFreeRankZero E
-
 structure SecondDescentCertificate_26 where
   selmer_26a1_singleton :
     SelmerCandidates E26a1MwrankQuartics = {oneSUnit}
@@ -506,6 +590,14 @@ structure SecondDescentCertificate_26 where
     Selmer2_26a1
   selmer_26b1 :
     Selmer2_26b1
+  rank_model_26a1 :
+    MordellWeilRankModel E26a1W
+  rank_model_26b1 :
+    MordellWeilRankModel E26b1W
+  selmer_26a1_trivial :
+    Subsingleton selmer_26a1.Carrier
+  selmer_26b1_trivial :
+    Subsingleton selmer_26b1.Carrier
   selmer_identification_26a1 :
     SelmerLedgerIdentification E26a1W E26a1MwrankQuartics selmer_26a1
   selmer_identification_26b1 :
@@ -526,10 +618,6 @@ structure SecondDescentCertificate_26 where
   selmer_exhaustion_26b1 :
     SelmerExhaustionCertificate E26b1W E26b1MwrankQuartics
       selmer_26b1 selmer_identification_26b1
-  second_descent_sound_26a1 :
-    CurveSecondDescentSoundness E26a1W E26a1MwrankQuartics
-  second_descent_sound_26b1 :
-    CurveSecondDescentSoundness E26b1W E26b1MwrankQuartics
 
 /-- Both curve-specific descent maps produce primitive points on their actual
 twisted coefficient equations. -/
@@ -606,8 +694,10 @@ Lean checks the exact model, quartic, rank, and Selmer-rank fields of the
 report in `SecondDescent_Real_26.lean`.  Genuine bad-prime solubility is a
 separate proof-relevant input, so the JSON checker is never treated as a Lean
 theorem.  The finite coefficient ledger is exhaustive by the theorems above.
-This interface retains exactly the remaining curve-specific descent-map
-soundness, Selmer-identification, and rank-soundness assertions. -/
+This interface retains exactly the remaining curve-specific descent-map,
+Selmer-identification, Selmer-cardinality, Kummer-exactness, and
+Mordell--Weil finite-rank assertions.  It has no proposition-valued
+Selmer-to-rank field. -/
 structure Level26ExternalComputationInterface where
   complete_two_descents :
     GenuinePAdicCertificate_26 →
@@ -630,20 +720,30 @@ theorem SecondDescentHypothesis_26_real
   · exact genuineMwrankTranscript_zero_reports_checked.2.2.2
 
 def secondDescentStatus : String :=
-  "CONDITIONAL: abstract Selmer carriers and exhaustive ledger identification explicit; p-adic proof and Selmer-to-rank soundness explicit"
+  "CONDITIONAL: full Selmer identification/cardinality and p-adic arithmetic explicit; Selmer-to-rank implication kernel-checked"
 
 def torsionStatus : String :=
   "CONDITIONAL: exact rational torsion orders 7 and 3 are not kernel-checked"
 
 theorem freeRankZero_of_secondDescent :
-    SecondDescentHypothesis_26 ∧ TorsionOdd_26 →
+    SecondDescentHypothesis_26 →
       IsFreeRankZero E26a1W ∧ IsFreeRankZero E26b1W := by
-  rintro ⟨⟨certificate⟩, _⟩
+  rintro ⟨certificate⟩
   exact
-    ⟨certificate.second_descent_sound_26a1
-        certificate.selmer_26a1_singleton certificate.descent_26a1,
-      certificate.second_descent_sound_26b1
-        certificate.selmer_26b1_singleton certificate.descent_26b1⟩
+    ⟨freeRankZero_of_trivial_twoSelmer certificate.selmer_26a1
+        certificate.rank_model_26a1 no_rational_two_torsion_26a1W
+        certificate.selmer_26a1_trivial,
+      freeRankZero_of_trivial_twoSelmer certificate.selmer_26b1
+        certificate.rank_model_26b1 no_rational_two_torsion_26b1W
+        certificate.selmer_26b1_trivial⟩
+
+/-- Backward-compatible wrapper for callers that also carry the historical
+exact odd-torsion cardinality certificate.  Rank zero itself no longer depends
+on those external cardinalities. -/
+theorem freeRankZero_of_secondDescent_and_torsion :
+    SecondDescentHypothesis_26 ∧ TorsionOdd_26 →
+      IsFreeRankZero E26a1W ∧ IsFreeRankZero E26b1W :=
+  fun h => freeRankZero_of_secondDescent h.1
 
 #print axioms sUnits_26_card_8_decide
 #print axioms ledger_length
@@ -653,6 +753,9 @@ theorem freeRankZero_of_secondDescent :
 #print axioms E26b1_twoDivision_no_rational_root
 #print axioms no_rational_two_torsion_26a1W
 #print axioms no_rational_two_torsion_26b1W
+#print axioms doubling_bijective_of_trivial_twoSelmer
+#print axioms freeRank_eq_zero_of_doubling_surjective
+#print axioms freeRankZero_of_trivial_twoSelmer
 #print axioms E26a1_recorded_ledger_covers_all_squareclasses
 #print axioms E26b1_recorded_ledger_covers_all_squareclasses
 #print axioms completeDescent_connects_26a1_ledger_coverage
@@ -666,6 +769,7 @@ theorem freeRankZero_of_secondDescent :
 #print axioms completeDescent_26b1_exhausts_selmer
 #print axioms SecondDescentHypothesis_26_real
 #print axioms freeRankZero_of_secondDescent
+#print axioms freeRankZero_of_secondDescent_and_torsion
 
 end
 

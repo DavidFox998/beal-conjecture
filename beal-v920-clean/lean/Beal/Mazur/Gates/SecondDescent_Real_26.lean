@@ -17,12 +17,13 @@ quartic ledger is checked at `p = 2` and `p = 13`.
 The quartic evaluator does not depend on the S-unit index, and every ledger row
 has a finite-field point at both primes.  Consequently all eighty pairs pass.
 This is an honest replay of the available finite data, not a proof that the
-abstract 2-Selmer group is `{1}`.  The genuine
-The independently checked JSON certificate now records strong Hensel
+abstract 2-Selmer group is `{1}`.  The independently checked JSON certificate
+records strong Hensel
 approximations at `2^6` and `13^2`.  Lean does not parse JSON as a theorem:
 their p-adic conclusions enter through the proof-relevant
 `GenuinePAdicCertificate_26` interface, while covering completeness and
-Selmer-to-rank soundness remain explicit in `Descent_26_RankProof`.
+full-Selmer cardinality remain explicit in `Descent_26_RankProof`; the
+Selmer-to-rank implication itself is proved there.
 -/
 
 /-- One entry in the complete finite Phase A search grid. -/

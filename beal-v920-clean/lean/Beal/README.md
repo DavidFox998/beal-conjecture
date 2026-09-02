@@ -26,10 +26,10 @@ The rank interface now names exponent-two abelian-group models of the full
 proof-relevant data. The curve-specific descent maps land in those models;
 their exhaustion additionally uses an explicitly named curve-specific
 `Sha[2]`-vanishing/local-to-global certificate. The semantic identifications
-and independent rank obligations remain fields of
-`SecondDescentCertificate_26`, so `SecondDescentHypothesis_26` remains
-conditional and no Selmer-cardinality or rank theorem follows from the finite
-audit alone.
+and full-Selmer cardinalities remain fields of `SecondDescentCertificate_26`,
+so `SecondDescentHypothesis_26` remains conditional. The exact Kummer sequence
+and finite-rank coordinate argument now derive rank zero inside Lean; no
+Selmer-cardinality or rank theorem follows from the finite audit alone.
 
 The new `ConditionalBealTheorem.lean` module aggregates the existing
 conditional Phase B+C+D certificates into the public `BealConjecture`

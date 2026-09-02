@@ -301,7 +301,7 @@ theorem rank_J0_zero_of_PhaseA
     SecondDescentHypothesis_26 ∧ TorsionOdd_26 →
       transport.rank_J0 = 0 := by
   intro hPhaseA
-  obtain ⟨ha, hb⟩ := freeRankZero_of_secondDescent hPhaseA
+  obtain ⟨ha, hb⟩ := freeRankZero_of_secondDescent hPhaseA.1
   rw [rank_J0_eq_sum transport,
     transport.rank_E26a1_zero_of_free_rank_zero ha,
     transport.rank_E26b1_zero_of_free_rank_zero hb,

@@ -22,25 +22,30 @@ Magma output alone is not a kernel-checkable completeness certificate.
 The relevant elliptic factors use the models `[1,-1,1,-3,3]` and
 `[1,0,1,-5,-8]`. In pinned Mathlib 4.12, elliptic-curve invariants and point
 groups exist, but Mordell--Weil rank, 2-Selmer groups, full 2-descent
-soundness, and a genus-two Jacobian/isogeny API do not.
+soundness, and a genus-two Jacobian/isogeny API do not. A formal bridge now
+derives free-rank zero from explicit full-Selmer triviality, exact Kummer
+kernel data, finite-rank coordinates, and the checked no-rational-2-torsion
+theorems; the bridge is no longer an opaque rank-soundness proposition.
 
 **Why:** Sage/mwrank output is evidence, not a Lean term; a finite table cannot
 prove rank zero unless Lean also verifies completeness, local conditions, and
 the Selmer-to-rank theorem.
 
 **How to apply:** Certify curve invariants and finite replay data directly.
-Keep rank zero and `J₀(26) ∼ E26a1 × E26b1` transport explicit until those
-missing semantic links are formalized; never define them from transcript
-fields or a product alias.
+Keep full-Selmer identification/cardinality, Kummer exactness, finite-rank
+structure, and `J₀(26) ∼ E26a1 × E26b1` transport explicit; derive rank zero
+from those inputs rather than from transcript fields or a rank-soundness axiom.
 
 The accepted intermediate milestone is an explicitly conditional implication:
-singleton locally-soluble ledger classes, complete descent, descent soundness,
-and exact odd torsion remain proof obligations, while rational two-torsion is
-excluded by a kernel-checked two-division-polynomial argument.
+singleton locally-soluble ledger classes, complete descent, full-Selmer
+triviality, exact Kummer semantics, and finite-rank structure remain proof
+obligations, while rational two-torsion is excluded by a kernel-checked
+two-division-polynomial argument. Exact odd torsion is not needed for the
+factor free-rank-zero conclusion.
 
 **Why:** Pinned Mathlib does not yet supply the missing Selmer and
-Mordell--Weil foundations, but downstream Jacobian transport can depend
-honestly on named propositions without turning transcript evidence into proof.
+Mordell--Weil foundations, but the elementary exact-sequence and mod-2
+dimension argument can be checked once those structures are supplied.
 
 **How to apply:** Preserve the conditional hypotheses visibly, keep
 `IsFreeRankZero` as “every rational point is torsion,” and do not introduce an

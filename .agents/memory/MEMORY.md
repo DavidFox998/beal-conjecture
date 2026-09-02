@@ -42,7 +42,7 @@
 - [Lean parent namespace exposure](lean-parent-namespace-exposure.md) — opening a child namespace does not expose declarations from its parent; open the parent explicitly.
 - [Lean Lake source directories](lean-lake-source-dir.md) — a library in a `lean/` source tree needs an explicit `srcDir := "lean"` in its Lake declaration.
 - [X₀(10) source boundary](x0-10-source-boundary.md) — GJ–L Proposition 17/Table 31 classify Faltings-minimal vertices; they do not prove a no-Frey exclusion.
-- [X₀(26) finite-model boundary](x0-26-model-boundary.md) — four rational cusps; J₀(26)(ℚ) target is Z/21, but model checks do not prove rank or exhaustiveness.
+- [X₀(26) finite-model boundary](x0-26-model-boundary.md) — four rational cusps; rank now follows formally from explicit Selmer/Kummer/finiteness inputs, not finite model checks.
 - [Lean merge protection](lean-merge-protection.md) — brothers-desert-proof/main requires only the exact Lean job check; workspace origin is not the target.
 - [Frey isogeny repository audit](frey-isogeny-repository-audit.md) — all DavidFox998 Lean repos were searched; no reusable Mazur/Kenku supplier exists outside Beal.
 - [Mixed X₀(2p) level boundary](mixed-x0-level-boundary.md) — choose one rational order-two line; full E[2] is not itself cyclic X₀(2p) level.

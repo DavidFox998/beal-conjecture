@@ -50,8 +50,9 @@ those models. Exhaustion uses a separate `SelmerExhaustionCertificate`, making
 the required curve-specific `Sha[2]`-vanishing/local-to-global assertion
 visible rather than building it into Selmer membership. The remaining
 `Level26ExternalComputationInterface` supplies those semantic fields and the
-separate Selmer-to-rank soundness theorem. No Selmer cardinality or
-unconditional rank-zero theorem is claimed.
+exact Kummer, full-Selmer cardinality, and finite-rank coordinate inputs. The
+Selmer-to-rank implication is now kernel-checked rather than externally
+asserted. No unconditional Selmer-cardinality or rank-zero theorem is claimed.
 
 ## Phase B real finite decomposition evidence
 

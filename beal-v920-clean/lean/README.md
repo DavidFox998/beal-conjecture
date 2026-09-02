@@ -25,7 +25,9 @@ local-solubility semantics, and representation of every Selmer class. Landing
 of the curve-specific descent maps follows from those fields. Exhaustion also
 requires a separate `SelmerExhaustionCertificate`, where the required
 curve-specific `Sha[2]`-vanishing/local-to-global statement is explicit. This
-supplies no Selmer cardinality and remains separate from Mordell--Weil rank.
+supplies no Selmer cardinality by itself. Given explicit full-Selmer
+triviality, Kummer-kernel exactness, and finite-rank coordinates, the
+Selmer-to-Mordell--Weil rank-zero implication is now proved in Lean.
 
 The snapshot also includes the conditional aggregator
 `Beal/ConditionalBealTheorem.lean`. Both focused targets compile:
