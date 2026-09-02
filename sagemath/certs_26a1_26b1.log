@@ -1,0 +1,90 @@
+===== 26a1 (1, 0, 1, -5, -8) =====
+Torsion 3, Rank 0
+Basic pair: I=217, J=12742
+disc=-121485312
+2-adic index bound = 2
+By Lemma 5.1(b), 2-adic index = 1
+2-adic index = 1
+One (I,J) pair
+*** BSD give two (I,J) pairs
+Basic pair: I=217, J=12742
+disc=-121485312
+2-adic index bound = 2
+By Lemma 5.1(b), 2-adic index = 1
+2-adic index = 1
+One (I,J) pair
+*** BSD give two (I,J) pairs
+Looking for quartics with I = 217, J = 12742
+Looking for Type 3 quartics:
+Trying positive a from 1 up to 2 (square a first...)
+(1,2,-23,28,-12)	--trivial
+Trying positive a from 1 up to 2 (...then non-square a)
+Trying negative a from -1 down to -6
+(-1,0,-5,26,-16)	--trivial
+(-1,2,-11,36,-26)	--trivial
+(-1,2,13,12,-10)	--trivial
+(-3,-2,1,12,-4)	--trivial
+(-4,-3,10,13,0)	--trivial
+Finished looking for Type 3 quartics.
+Mordell rank contribution from B=im(eps) = 0
+Selmer  rank contribution from B=im(eps) = 0
+Sha     rank contribution from B=im(eps) = 0
+Mordell rank contribution from A=ker(eps) = 0
+Selmer  rank contribution from A=ker(eps) = 0
+Sha     rank contribution from A=ker(eps) = 0
+Processing points found during 2-descent...done:
+  now regulator = 1
+two_descent raw: True
+26a1 d=  1: Q2=error 'EllipticCurve_rational_field_with_category' object has no attribute 'has_local_point' Q13=error 'EllipticCurve_rational_field_with_category' object has no attribute 'has_local_point' -> FAILS
+26a1 d= -1: Q2=error 'EllipticCurve_rational_field_with_category' object has no attribute 'has_local_point' Q13=error 'EllipticCurve_rational_field_with_category' object has no attribute 'has_local_point' -> FAILS
+26a1 d=  2: Q2=error 'EllipticCurve_rational_field_with_category' object has no attribute 'has_local_point' Q13=error 'EllipticCurve_rational_field_with_category' object has no attribute 'has_local_point' -> FAILS
+26a1 d= -2: Q2=error 'EllipticCurve_rational_field_with_category' object has no attribute 'has_local_point' Q13=error 'EllipticCurve_rational_field_with_category' object has no attribute 'has_local_point' -> FAILS
+26a1 d= 13: Q2=error 'EllipticCurve_rational_field_with_category' object has no attribute 'has_local_point' Q13=error 'EllipticCurve_rational_field_with_category' object has no attribute 'has_local_point' -> FAILS
+26a1 d=-13: Q2=error 'EllipticCurve_rational_field_with_category' object has no attribute 'has_local_point' Q13=error 'EllipticCurve_rational_field_with_category' object has no attribute 'has_local_point' -> FAILS
+26a1 d= 26: Q2=error 'EllipticCurve_rational_field_with_category' object has no attribute 'has_local_point' Q13=error 'EllipticCurve_rational_field_with_category' object has no attribute 'has_local_point' -> FAILS
+26a1 d=-26: Q2=error 'EllipticCurve_rational_field_with_category' object has no attribute 'has_local_point' Q13=error 'EllipticCurve_rational_field_with_category' object has no attribute 'has_local_point' -> FAILS
+
+===== 26b1 (1, -1, 1, -3, 3) =====
+Torsion 7, Rank 0
+two_descent raw: True
+26b1 d=  1: Q2=error 'EllipticCurve_rational_field_with_category' object has no attribute 'has_local_point' Q13=error 'EllipticCurve_rational_field_with_category' object has no attribute 'has_local_point' -> FAILS
+26b1 d= -1: Q2=error 'EllipticCurve_rational_field_with_category' object has no attribute 'has_local_point' Q13=error 'EllipticCurve_rational_field_with_category' object has no attribute 'has_local_point' -> FAILS
+26b1 d=  2: Q2=error 'EllipticCurve_rational_field_with_category' object has no attribute 'has_local_point' Q13=error 'EllipticCurve_rational_field_with_category' object has no attribute 'has_local_point' -> FAILS
+26b1 d= -2: Q2=error 'EllipticCurve_rational_field_with_category' object has no attribute 'has_local_point' Q13=error 'EllipticCurve_rational_field_with_category' object has no attribute 'has_local_point' -> FAILS
+26b1 d= 13: Q2=error 'EllipticCurve_rational_field_with_category' object has no attribute 'has_local_point' Q13=error 'EllipticCurve_rational_field_with_category' object has no attribute 'has_local_point' -> FAILS
+26b1 d=-13: Q2=error 'EllipticCurve_rational_field_with_category' object has no attribute 'has_local_point' Q13=error 'EllipticCurve_rational_field_with_category' object has no attribute 'has_local_point' -> FAILS
+26b1 d= 26: Q2=error 'EllipticCurve_rational_field_with_category' object has no attribute 'has_local_point' Q13=error 'EllipticCurve_rational_field_with_category' object has no attribute 'has_local_point' -> FAILS
+26b1 d=-26: Q2=error 'EllipticCurve_rational_field_with_category' object has no attribute 'has_local_point' Q13=error 'EllipticCurve_rational_field_with_category' object has no attribute 'has_local_point' -> FAILS
+
+--- Lean ledger attempt for 26a1 ---
+two_coverings not available: 'EllipticCurve_rational_field_with_category' object has no attribute 'two_coverings'
+descent_via_two_isogeny also not: 'EllipticCurve_rational_field_with_category' object has no attribute 'descent_via_two_isogeny'
+
+--- Lean ledger attempt for 26b1 ---
+two_coverings not available: 'EllipticCurve_rational_field_with_category' object has no attribute 'two_coverings'
+descent_via_two_isogeny also not: 'EllipticCurve_rational_field_with_category' object has no attribute 'descent_via_two_isogeny'
+Basic pair: I=129, J=-4482
+disc=-11501568
+2-adic index bound = 2
+By Lemma 5.1(b), 2-adic index = 1
+2-adic index = 1
+One (I,J) pair
+*** BSD give two (I,J) pairs
+Looking for quartics with I = 129, J = -4482
+Looking for Type 3 quartics:
+Trying positive a from 1 up to 4 (square a first...)
+(1,2,-15,16,0)	--trivial
+(1,2,-3,4,12)	--trivial
+(1,2,9,24,16)	--trivial
+Trying positive a from 1 up to 4 (...then non-square a)
+(3,2,-3,4,4)	--trivial
+Trying negative a from -1 down to -1
+Finished looking for Type 3 quartics.
+Mordell rank contribution from B=im(eps) = 0
+Selmer  rank contribution from B=im(eps) = 0
+Sha     rank contribution from B=im(eps) = 0
+Mordell rank contribution from A=ker(eps) = 0
+Selmer  rank contribution from A=ker(eps) = 0
+Sha     rank contribution from A=ker(eps) = 0
+Processing points found during 2-descent...done:
+  now regulator = 1
