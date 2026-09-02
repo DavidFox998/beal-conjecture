@@ -1,0 +1,32 @@
+{
+  "title": "Beal Conjecture — v8.9.0 Real 80-Check Audit",
+  "upload_type": "software",
+  "description": "Version 8.9.0 records an honest executable Phase A finite audit for the level-26 route in Lean 4. The complete grid of eight S-unit representatives against ten quartics gives 80 entries. All 80 entries pass the available local checks at p = 2 and p = 13, so all eight representatives remain. This is not a singleton 2-Selmer computation and not an unconditional proof of the Beal Conjecture. SecondDescentHypothesis_26, Jacobian transport, formal immersion, modularity, and level lowering remain explicit conditional boundaries.",
+  "creators": [
+    {
+      "name": "Fox, David",
+      "affiliation": "Opera Numerorum"
+    }
+  ],
+  "license": "MIT",
+  "keywords": [
+    "Beal Conjecture",
+    "Lean 4",
+    "Frey curve",
+    "X0(26)",
+    "second descent",
+    "finite audit",
+    "Ribet level lowering",
+    "Taylor-Wiles patching",
+    "formal mathematics",
+    "Opera Numerorum"
+  ],
+  "access_right": "open",
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/DavidFox998/beal-conjecture",
+      "relation": "isSupplementTo",
+      "resource_type": "software"
+    }
+  ]
+}
