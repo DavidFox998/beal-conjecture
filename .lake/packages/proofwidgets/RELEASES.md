@@ -3,8 +3,31 @@
 This file contains work-in-progress notes for the upcoming release, as well as previous releases.
 Please check the [releases](https://github.com/leanprover-community/ProofWidgets4/releases) page for the build artifacts.
 
-v0.0.31 (development in progress)
+v0.0.47 (WIP)
 -------
+* Generalized `GraphDisplay.Vertex.radius` to `GraphDisplay.Vertex.boundingShape`.
+* Added demo of metavariable graph display in tactic proofs.
+
+v0.0.46
+-------
+
+* Renamed `DigraphDisplay` to `GraphDisplay`.
+  Undirected graphs can be rendered by turning off arrowheads.
+* Added support for edge labels and more customization to `GraphDisplay`.
+
+v0.0.45
+-------
+
+* Updated Lean to v4.14.0-rc1.
+
+v0.0.44
+-------
+
+* Added `DigraphDisplay` component. It uses [d3-force](https://d3js.org/d3-force) for layout
+  and can accommodate a variety of display styles.
+  See `Demos/Digraph.lean` for more.
+* Added `MarkdownDisplay` component to display Markdown (including LaTeX).
+* Fixed cloud release issue (see [Zulip](https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/cache.20and.20proofwidgets)).
 
 v0.0.30
 -------

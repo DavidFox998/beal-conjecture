@@ -40,28 +40,51 @@ open Lean Meta Elab Tactic Parser Term
 def useragent : CoreM String :=
   return leansearchclient.useragent.get (← getOptions)
 
+initialize leanSearchCache :
+  IO.Ref (Std.HashMap (String × Nat) (Array Json)) ← IO.mkRef {}
+
+initialize moogleCache :
+  IO.Ref (Std.HashMap String (Array Json)) ← IO.mkRef {}
+
 def getLeanSearchQueryJson (s : String) (num_results : Nat := 6) : CoreM <| Array Json := do
-  let apiUrl := "https://leansearch.net/api/search"
-  let s' := System.Uri.escapeUri s
-  let q := apiUrl ++ s!"?query={s'}&num_results={num_results}"
-  let s ← IO.Process.output {cmd := "curl", args := #["-X", "GET", "--user-agent", ← useragent, q]}
-  let js := Json.parse s.stdout |>.toOption |>.get!
-  return js.getArr? |>.toOption |>.get!
+  let cache ← leanSearchCache.get
+  match cache.get? (s, num_results) with
+  | some jsArr => return jsArr
+  | none => do
+    let apiUrl := "https://leansearch.net/api/search"
+    let s' := System.Uri.escapeUri s
+    let q := apiUrl ++ s!"?query={s'}&num_results={num_results}"
+    let out ← IO.Process.output {cmd := "curl", args := #["-X", "GET", "--user-agent", ← useragent, q]}
+    let js ← match Json.parse out.stdout |>.toOption with
+      | some js => pure js
+      | none => IO.throwServerError s!"Could not contact LeanSearch server"
+    match js.getArr? with
+    | Except.ok jsArr => do
+      leanSearchCache.modify fun m => m.insert (s, num_results) jsArr
+      return jsArr
+    | Except.error e =>
+      IO.throwServerError s!"Could not obtain array from {js}; error: {e}"
 
 def getMoogleQueryJson (s : String) (num_results : Nat := 6) : CoreM <| Array Json := do
+  let cache ← moogleCache.get
+  match cache.get? s with
+  | some jsArr => return jsArr
+  | none => do
   let apiUrl := "https://www.moogle.ai/api/search"
   let data := Json.arr
     #[Json.mkObj [("isFind", false), ("contents", s)]]
-  let s ← IO.Process.output {cmd := "curl", args := #[apiUrl, "-H", "content-type: application/json",  "--user-agent", ← useragent, "--data", data.pretty]}
-  match Json.parse s.stdout with
-  | Except.error e =>
-    IO.throwServerError s!"Could not parse JSON from {s.stdout}; error: {e}"
+  let out ← IO.Process.output {cmd := "curl", args := #[apiUrl, "-H", "content-type: application/json",  "--user-agent", ← useragent, "--data", data.pretty]}
+  match Json.parse out.stdout with
+  | Except.error _ =>
+    throwError m!"Could not contact Moogle server"
   | Except.ok js =>
   let result? := js.getObjValAs?  Json "data"
   match result? with
     | Except.ok result =>
         match result.getArr? with
-        | Except.ok arr => return arr[0:num_results]
+        | Except.ok arr =>
+            moogleCache.modify fun m => m.insert s arr
+            return arr[0:num_results]
         | Except.error e => IO.throwServerError s!"Could not obtain array from {js}; error: {e}"
     | _ => IO.throwServerError s!"Could not obtain data from {js}"
 
@@ -205,7 +228,7 @@ def getTacticSuggestionGroups (ss : SearchServer) (s : String) (num_results : Na
     (fullName, sr.toTacticSuggestions)
 
 def incompleteSearchQuery (ss : SearchServer) : String :=
-  s!"{ss.cmd} query should end with a `.` or `?`.\n\
+  s!"{ss.cmd} query should be a string that ends with a `.` or `?`.\n\
    Note this command sends your query to an external service at {ss.url}."
 
 open Command
@@ -253,27 +276,58 @@ def searchTacticSuggestions (ss: SearchServer) (stx: Syntax) (s: TSyntax `str) :
 end SearchServer
 
 open Command
+/-- Search [LeanSearch](https://leansearch.net/) from within Lean.
+Queries should be a string that ends with a `.` or `?`. This works as a command, as a term
+and as a tactic as in the following examples. In tactic mode, only valid tactics are displayed.
 
-syntax (name := leansearch_search_cmd) "#leansearch" str : command
+```lean
+#leansearch "If a natural number n is less than m, then the successor of n is less than the successor of m."
+
+example := #leansearch "If a natural number n is less than m, then the successor of n is less than the successor of m."
+
+example : 3 ≤ 5 := by
+  #leansearch "If a natural number n is less than m, then the successor of n is less than the successor of m."
+  sorry
+```
+ -/
+syntax (name := leansearch_search_cmd) "#leansearch" (str)? : command
 
 @[command_elab leansearch_search_cmd] def leanSearchCommandImpl : CommandElab :=
   fun stx =>
   match stx with
   | `(command| #leansearch $s) => do
     leanSearchServer.searchCommandSuggestions  stx s
+  | `(command| #leansearch) => do
+    logWarning leanSearchServer.incompleteSearchQuery
   | _ => throwUnsupportedSyntax
 
-syntax (name := moogle_search_cmd) "#moogle" str : command
+/-- Search [Moogle](https://www.moogle.ai/api/search) from within Lean.
+Queries should be a string that ends with a `.` or `?`. This works as a command, as a term
+and as a tactic as in the following examples. In tactic mode, only valid tactics are displayed.
+
+```lean
+#moogle "If a natural number n is less than m, then the successor of n is less than the successor of m."
+
+example := #moogle "If a natural number n is less than m, then the successor of n is less than the successor of m."
+
+example : 3 ≤ 5 := by
+  #moogle "If a natural number n is less than m, then the successor of n is less than the successor of m."
+  sorry
+```
+ -/
+syntax (name := moogle_search_cmd) "#moogle" (str)? : command
 
 @[command_elab moogle_search_cmd] def moogleCommandImpl : CommandElab :=
   fun stx =>
   match stx with
   | `(command| #moogle $s) => do
     moogleServer.searchCommandSuggestions  stx s
+  | `(command| #moogle) => do
+    logWarning moogleServer.incompleteSearchQuery
   | _ => throwUnsupportedSyntax
 
-
-syntax (name := leansearch_search_term) "#leansearch" str : term
+@[inherit_doc leansearch_search_cmd]
+syntax (name := leansearch_search_term) "#leansearch" (str)? : term
 
 @[term_elab leansearch_search_term] def leanSearchTermImpl : TermElab :=
   fun stx expectedType? => do
@@ -281,9 +335,13 @@ syntax (name := leansearch_search_term) "#leansearch" str : term
   | `(#leansearch $s) =>
     leanSearchServer.searchTermSuggestions stx s
     defaultTerm expectedType?
+  | `(#leansearch) => do
+    logWarning leanSearchServer.incompleteSearchQuery
+    defaultTerm expectedType?
   | _ => throwUnsupportedSyntax
 
-syntax (name := moogle_search_term) "#moogle" str : term
+@[inherit_doc moogle_search_cmd]
+syntax (name := moogle_search_term) "#moogle" (str)? : term
 
 @[term_elab moogle_search_term] def moogleTermImpl : TermElab :=
   fun stx expectedType? => do
@@ -291,23 +349,33 @@ syntax (name := moogle_search_term) "#moogle" str : term
   | `(#moogle $s) =>
     moogleServer.searchTermSuggestions stx s
     defaultTerm expectedType?
+  | `(#moogle) => do
+    logWarning moogleServer.incompleteSearchQuery
+    defaultTerm expectedType?
   | _ => throwUnsupportedSyntax
 
-
-syntax (name := leansearch_search_tactic) "#leansearch" str : tactic
+@[inherit_doc leansearch_search_cmd]
+syntax (name := leansearch_search_tactic)
+  withPosition("#leansearch" (colGt str)?) : tactic
 
 @[tactic leansearch_search_tactic] def leanSearchTacticImpl : Tactic :=
   fun stx => withMainContext do
   match stx with
   | `(tactic|#leansearch $s) =>
     leanSearchServer.searchTacticSuggestions stx s
+  | `(tactic|#leansearch) => do
+    logWarning leanSearchServer.incompleteSearchQuery
   | _ => throwUnsupportedSyntax
 
-syntax (name := moogle_search_tactic) "#moogle" str : tactic
+@[inherit_doc moogle_search_cmd]
+syntax (name := moogle_search_tactic)
+  withPosition("#moogle" (colGt str)?) : tactic
 
 @[tactic moogle_search_tactic] def moogleTacticImpl : Tactic :=
   fun stx => withMainContext do
   match stx with
   | `(tactic|#moogle $s) =>
     moogleServer.searchTacticSuggestions stx s
+  | `(tactic|#moogle) => do
+    logWarning moogleServer.incompleteSearchQuery
   | _ => throwUnsupportedSyntax

@@ -46,48 +46,62 @@ structure LoogleMatch where
   deriving Inhabited, Repr
 
 inductive LoogleResult where
+  | empty : LoogleResult
   | success : Array SearchResult →  LoogleResult
   | failure (error : String) (suggestions: Option <| List String) : LoogleResult
   deriving Inhabited, Repr
 
+initialize loogleCache :
+  IO.Ref (Std.HashMap (String × Nat) LoogleResult) ← IO.mkRef {}
+
 def getLoogleQueryJson (s : String) (num_results : Nat := 6) :
   CoreM <| LoogleResult:= do
-  let apiUrl := "https://loogle.lean-lang.org/json"
-  let s' := System.Uri.escapeUri s
-  let q := apiUrl ++ s!"?q={s'}"
-  let s ← IO.Process.output {cmd := "curl", args := #["-X", "GET", "--user-agent", ← useragent,  q]}
-  match Json.parse s.stdout with
-  | Except.error e =>
-    IO.throwServerError s!"Could not parse JSON from {s.stdout}; error: {e}"
-  | Except.ok js =>
-  let result? := js.getObjValAs?  Json "hits" |>.toOption
-  let result? := result?.filter fun js => js != Json.null
-  match result? with
-    | some result => do
-        match result.getArr? with
-        | Except.ok arr =>
-          let arr :=  arr[0:num_results] |>.toArray
-          let xs : Array SearchResult ←
-            arr.mapM fun js => do
-              let doc? := js.getObjValAs? String "doc" |>.toOption
-              let name? := js.getObjValAs? String "name"
-              let type? := js.getObjValAs? String "type"
-              match name?, type? with
-              | Except.ok name, Except.ok type =>
-                pure <| {name := name, type? := some type, docString? := doc?, doc_url? := none, kind? := none}
-              | _, _ =>
-                IO.throwServerError s!"Could not obtain name and type from {js}"
-          return LoogleResult.success xs
-        | Except.error e => IO.throwServerError s!"Could not obtain array from {js}; error: {e}, query :{s'}, hits: {result}"
-    | _ =>
-      let error? := js.getObjValAs? String "error"
-      match error? with
-        | Except.ok error =>
-          let suggestions? :=
-            js.getObjValAs? (List String) "suggestions" |>.toOption
-          pure <| LoogleResult.failure error suggestions?
-        | _ =>
-          IO.throwServerError s!"Could not obtain hits or error from {js}"
+  let s := s.splitOn "/-" |>.getD 0 s |>.trim
+  let s := s.replace "\n" " "
+  let cache ← loogleCache.get
+  match cache.get? (s, num_results) with
+  | some r => return r
+  | none => do
+    let apiUrl := "https://loogle.lean-lang.org/json"
+    let s' := System.Uri.escapeUri s
+    if s.trim == "" then
+      return LoogleResult.empty
+    let q := apiUrl ++ s!"?q={s'}"
+    let out ← IO.Process.output {cmd := "curl", args := #["-X", "GET", "--user-agent", ← useragent,  q]}
+    match Json.parse out.stdout with
+    | Except.error _ =>
+      IO.throwServerError s!"Could not contact Loogle server"
+    | Except.ok js =>
+    let result? := js.getObjValAs?  Json "hits" |>.toOption
+    let result? := result?.filter fun js => js != Json.null
+    match result? with
+      | some result => do
+          match result.getArr? with
+          | Except.ok arr =>
+            let arr :=  arr[0:num_results] |>.toArray
+            let xs : Array SearchResult ←
+              arr.mapM fun js => do
+                let doc? := js.getObjValAs? String "doc" |>.toOption
+                let name? := js.getObjValAs? String "name"
+                let type? := js.getObjValAs? String "type"
+                match name?, type? with
+                | Except.ok name, Except.ok type =>
+                  pure <| {name := name, type? := some type, docString? := doc?, doc_url? := none, kind? := none}
+                | _, _ =>
+                  IO.throwServerError s!"Could not obtain name and type from {js}"
+            loogleCache.modify fun m => m.insert (s, num_results) (LoogleResult.success xs)
+            return LoogleResult.success xs
+          | Except.error e => IO.throwServerError s!"Could not obtain array from {js}; error: {e}, query :{s'}, hits: {result}"
+      | _ =>
+        let error? := js.getObjValAs? String "error"
+        match error? with
+          | Except.ok error =>
+            let suggestions? :=
+              js.getObjValAs? (List String) "suggestions" |>.toOption
+            loogleCache.modify fun m => m.insert (s, num_results) (LoogleResult.failure error suggestions?)
+            pure <| LoogleResult.failure error suggestions?
+          | _ =>
+            IO.throwServerError s!"Could not obtain hits or error from {js}"
 
 -- #eval getLoogleQueryJson "List"
 
@@ -142,6 +156,56 @@ syntax loogle_filter := (turnstyle term) <|> term
 syntax loogle_filters := loogle_filter,*
 
 open Command
+/--
+Search [Loogle](https://loogle.lean-lang.org/json) from within Lean. This can be used as a command, term or tactic as in the following examples. In the case of a tactic, only valid tactics are displayed.
+
+
+```lean
+#loogle List ?a → ?a
+
+example := #loogle List ?a → ?a
+
+example : 3 ≤ 5 := by
+  #loogle Nat.succ_le_succ
+  sorry
+
+```
+
+## Loogle Usage
+
+Loogle finds definitions and lemmas in various ways:
+
+By constant:
+🔍 Real.sin
+finds all lemmas whose statement somehow mentions the sine function.
+
+By lemma name substring:
+🔍 \"differ\"
+finds all lemmas that have \"differ\" somewhere in their lemma name.
+
+By subexpression:
+🔍 _ * (_ ^ _)
+finds all lemmas whose statements somewhere include a product where the second argument is raised to some power.
+
+The pattern can also be non-linear, as in
+🔍 Real.sqrt ?a * Real.sqrt ?a
+
+If the pattern has parameters, they are matched in any order. Both of these will find List.map:
+🔍 (?a -> ?b) -> List ?a -> List ?b
+🔍 List ?a -> (?a -> ?b) -> List ?b
+
+By main conclusion:
+🔍 |- tsum _ = _ * tsum _
+finds all lemmas where the conclusion (the subexpression to the right of all → and ∀) has the given shape.
+
+As before, if the pattern has parameters, they are matched against the hypotheses of the lemma in any order; for example,
+🔍 |- _ < _ → tsum _ < tsum _
+will find tsum_lt_tsum even though the hypothesis f i < g i is not the last.
+
+If you pass more than one such search filter, separated by commas Loogle will return lemmas which match all of them. The search
+🔍 Real.sin, \"two\", tsum, _ * _, _ ^ _, |- _ < _ → _
+woould find all lemmas which mention the constants Real.sin and tsum, have \"two\" as a substring of the lemma name, include a product and a power somewhere in the type, and have a hypothesis of the form _ < _ (if there were any such lemmas). Metavariables (?a) are assigned independently in each filter.
+-/
 syntax (name := loogle_cmd) "#loogle" loogle_filters  : command
 @[command_elab loogle_cmd] def loogleCmdImpl : CommandElab := fun stx =>
   Command.liftTermElabM do
@@ -150,6 +214,8 @@ syntax (name := loogle_cmd) "#loogle" loogle_filters  : command
     let s := (← PrettyPrinter.ppCategory ``loogle_filters args).pretty
     let result ← getLoogleQueryJson s
     match result with
+    | LoogleResult.empty =>
+      logInfo loogleUsage
     | LoogleResult.success xs =>
       let suggestions := xs.map SearchResult.toCommandSuggestion
       if suggestions.isEmpty then
@@ -164,21 +230,18 @@ syntax (name := loogle_cmd) "#loogle" loogle_filters  : command
       | some suggestions =>
         let suggestions : List TryThis.Suggestion :=
           suggestions.map fun s =>
-            {suggestion := .string s!"#loogle \"{s}\""}
+            {suggestion := .string s!"#loogle {s}"}
         unless suggestions.isEmpty do
           TryThis.addSuggestions stx suggestions.toArray (header := s!"Did you maybe mean")
       | none => pure ()
   | _ => throwUnsupportedSyntax
 
--- #loogle List ?a → ?b
-
--- #loogle nonsense
-
--- #loogle ?a → ?b
-
--- #loogle sin
+@[inherit_doc loogle_cmd]
+syntax (name := just_loogle_cmd)(priority := low) "#loogle" loogle_filters  : command
+@[command_elab just_loogle_cmd] def justLoogleCmdImpl : CommandElab := fun _ => return
 
 
+@[inherit_doc loogle_cmd]
 syntax (name := loogle_term) "#loogle" loogle_filters  : term
 @[term_elab loogle_term] def loogleTermImpl : TermElab :=
     fun stx expectedType? => do
@@ -187,6 +250,8 @@ syntax (name := loogle_term) "#loogle" loogle_filters  : term
     let s := (← PrettyPrinter.ppCategory ``loogle_filters args).pretty
     let result ← getLoogleQueryJson s
     match result with
+    | LoogleResult.empty =>
+      logInfo loogleUsage
     | LoogleResult.success xs =>
       let suggestions := xs.map SearchResult.toTermSuggestion
       if suggestions.isEmpty then
@@ -210,7 +275,9 @@ syntax (name := loogle_term) "#loogle" loogle_filters  : term
     defaultTerm expectedType?
   | _ => throwUnsupportedSyntax
 
-syntax (name := loogle_tactic) "#loogle" loogle_filters  : tactic
+@[inherit_doc loogle_cmd]
+syntax (name := loogle_tactic)
+  withPosition("#loogle" (ppSpace colGt (loogle_filters)))  : tactic
 @[tactic loogle_tactic] def loogleTacticImpl : Tactic :=
     fun stx => do
   match stx with
@@ -218,6 +285,8 @@ syntax (name := loogle_tactic) "#loogle" loogle_filters  : tactic
     let s := (← PrettyPrinter.ppCategory ``loogle_filters args).pretty
     let result ← getLoogleQueryJson s
     match result with
+    | LoogleResult.empty =>
+      logInfo loogleUsage
     | LoogleResult.success xs => do
       let suggestionGroups := xs.map fun sr =>
          (sr.name, sr.toTacticSuggestions)
@@ -236,7 +305,6 @@ syntax (name := loogle_tactic) "#loogle" loogle_filters  : tactic
           | _ => pure false
         unless sg.isEmpty do
           TryThis.addSuggestions stx sg (header := s!"From: {name}")
-
     | LoogleResult.failure error suggestions? =>
       logWarning s!"Loogle search failed with error: {error}"
       logInfo loogleUsage
@@ -250,6 +318,10 @@ syntax (name := loogle_tactic) "#loogle" loogle_filters  : tactic
       | none => pure ()
   | _ => throwUnsupportedSyntax
 
+syntax (name := just_loogle_tactic)(priority := low) "#loogle"  : tactic
+@[tactic just_loogle_tactic] def justLoogleTacticImpl : Tactic :=
+  fun _ => do
+    logWarning loogleUsage
 
 example : 3 ≤ 5 := by
   -- #loogle Nat.succ_le_succ

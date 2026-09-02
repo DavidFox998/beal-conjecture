@@ -7,7 +7,6 @@ Authors: Jannis Limperg
 import Aesop.RuleTac.Basic
 import Aesop.RuleTac.ElabRuleTerm
 import Batteries.Lean.Meta.UnusedNames
-import Batteries.Lean.Meta.AssertHypotheses
 import Aesop.Script.SpecificTactics
 import Aesop.RuleTac.Forward.Basic
 
@@ -34,7 +33,7 @@ partial def makeForwardHyps (e : Expr) (pat? : Option RulePattern)
     let mut instMVars := Array.mkEmpty argMVars.size
     let mut immediateMVars := Array.mkEmpty argMVars.size
     for h : i in [:argMVars.size] do
-      let mvarId := argMVars[i]'h.2 |>.mvarId!
+      let mvarId := argMVars[i].mvarId!
       if patInstantiatedMVars.contains mvarId then
         continue
       if immediate.contains i then
@@ -51,7 +50,7 @@ partial def makeForwardHyps (e : Expr) (pat? : Option RulePattern)
         (proofTypesAcc : Std.HashSet Expr) :
         MetaM (Array (Expr × Nat) × Array FVarId × Std.HashSet Expr) := do
       if h : i < immediateMVars.size then
-        let mvarId := immediateMVars.get ⟨i, h⟩
+        let mvarId := immediateMVars[i]
         let type ← mvarId.getType
         (← getLCtx).foldlM (init := (proofsAcc, usedHypsAcc, proofTypesAcc)) λ s@(proofsAcc, usedHypsAcc, proofTypesAcc) ldecl => do
           if ldecl.isImplementationDetail then
@@ -103,7 +102,7 @@ def assertForwardHyp (goal : MVarId) (hyp : Hypothesis) (depth : Nat)
         binderInfo := .default
         kind := .implDetail
     }
-    let (#[fvarId, _], goal) ← goal.assertHypotheses' #[hyp, implDetailHyp]
+    let (#[fvarId, _], goal) ← goal.assertHypotheses #[hyp, implDetailHyp]
       | throwError "aesop: internal error in assertForwardHyp: unexpected number of asserted fvars"
     return (fvarId, goal)
 where
