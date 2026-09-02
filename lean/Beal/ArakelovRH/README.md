@@ -59,3 +59,16 @@ multiplicity one.
 Those obligations are exposed in `Beal/Patching/`; their rank-one consequence
 is constructed choice-free from generator and coordinate laws.
 
+## Place in *Opera Numerorum*
+
+This directory is a quiet side chamber of the Beal route. It preserves the
+Arakelov and desert-brothers interfaces that can supply arithmetic separation
+data to the modular story, while refusing to identify a numerical inequality
+with the geometric theorem it would need to support.
+
+In the v9.2.0 Level-26 chapter, the reproducible descent evidence belongs to
+`Beal/Mazur/`, not here. The two stories meet only through typed suppliers:
+Arakelov-style or jitter data may index a later construction, but it does not
+by itself prove a Jacobian decomposition, a Taylor–Wiles system, or a
+singleton Selmer group.
+

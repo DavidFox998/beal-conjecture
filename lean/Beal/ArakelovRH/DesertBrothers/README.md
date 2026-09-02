@@ -96,3 +96,16 @@ Prime levels and the patched tower are explicit supplier data in
 the real-number bridge, including its `Classical.choice` footprint, outside
 the choice-free patching-to-rank-one theorem.
 
+## The desert-brothers room in the opera
+
+Within *Opera Numerorum*, this folder is an interface room rather than a
+replacement for the Level-26 arithmetic. It carries a small, auditable
+arithmetic certificate across a Lean-version boundary so that later Galois and
+patching code can name the data it needs.
+
+The v9.2.0 descent replay does not use this inequality as a hidden proof of
+local solubility or modular geometry. The local-field certificates, when they
+exist, must still be supplied and checked in their own terms. Keeping those
+rooms separate is what lets the wider Beal narrative remain both connected
+and honest.
+

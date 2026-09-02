@@ -521,3 +521,18 @@ projections, depth equalities, and generator/coordinate laws. B15 derives
 This remains conditional mathematics: an enriched-plan supplier must construct
 the patching data for every edge. No claim is made that the fixed-point jitter
 inequality alone supplies Taylor–Wiles primes or an R=T theorem.
+
+## This directory as an Opera Numerorum chamber
+
+`Beal/` is where the story becomes a sequence of named mathematical
+interfaces. The numbered files keep the route legible: primitive Beal data
+becomes a Frey model; the model enters Galois and modular-form language; the
+Level-26 chapter tests the residual `13` case; and the patching and Ribet
+interfaces carry the conditional descent to level `2`.
+
+The v9.2.0 milestone is deliberately layered. The finite Level-26 ledgers and
+replay checks are executable evidence. The genuine local-field certificate,
+global rational-point exhaustiveness, Jacobian transport, and modularity
+inputs are different obligations and remain visible as proof-relevant
+boundaries. This separation is not a disclaimer beside the mathematics; it is
+the organizing principle of the chamber.

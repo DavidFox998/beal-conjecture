@@ -650,3 +650,17 @@ finite-level diamond actions come from explicit deformation lifts. It does
 not identify those lifts with Frobenius data or assert that the comparison
 map is an R=T isomorphism.
 
+## The Galois voice of *Opera Numerorum*
+
+This directory is the modular voice in the Beal chamber. It gives the Frey
+curve a residual representation, attaches Hecke and newform data, and names
+the exact transport a Ribet-style descent would require. Its value is
+structural: every edge says what data must travel, rather than allowing a
+single opaque “modularity” label to stand in for the whole journey.
+
+The v9.2.0 Level-26 evidence is upstream of this room. Finite quartic
+congruences and replayed model data do not construct modular forms, establish
+level lowering, or fill the support and transport suppliers described here.
+Those interfaces therefore remain part of the conditional final theorem and
+are not promoted by the new certificate work.
+
