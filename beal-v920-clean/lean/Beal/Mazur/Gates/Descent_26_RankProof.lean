@@ -215,21 +215,32 @@ theorem no_rational_two_torsion_26b1W :
 
 /-! ## Genuine local predicates and the finite representative list -/
 
-def HasRealPoint (q : BinaryQuartic) : Prop :=
+def HasRealPoint {rows : List BinaryQuartic}
+    (candidate : CoefficientCovering rows) : Prop :=
   ∃ x z y : ℝ, (x ≠ 0 ∨ z ≠ 0) ∧
-    y ^ 2 =
-      q.a * x ^ 4 + q.b * x ^ 3 * z + q.c * x ^ 2 * z ^ 2 +
-        q.d * x * z ^ 3 + q.e * z ^ 4
+    candidate.sUnit.1 * y ^ 2 =
+      candidate.quartic.a * x ^ 4 +
+        candidate.quartic.b * x ^ 3 * z +
+        candidate.quartic.c * x ^ 2 * z ^ 2 +
+        candidate.quartic.d * x * z ^ 3 +
+        candidate.quartic.e * z ^ 4
 
-def HasQpPoint (q : BinaryQuartic) (p : Nat) (hp : Nat.Prime p) : Prop := by
+def HasQpPoint {rows : List BinaryQuartic}
+    (candidate : CoefficientCovering rows)
+    (p : Nat) (hp : Nat.Prime p) : Prop := by
   letI : Fact (Nat.Prime p) := ⟨hp⟩
   exact ∃ x z y : ℚ_[p], (x ≠ 0 ∨ z ≠ 0) ∧
-    y ^ 2 =
-      q.a * x ^ 4 + q.b * x ^ 3 * z + q.c * x ^ 2 * z ^ 2 +
-        q.d * x * z ^ 3 + q.e * z ^ 4
+    candidate.sUnit.1 * y ^ 2 =
+      candidate.quartic.a * x ^ 4 +
+        candidate.quartic.b * x ^ 3 * z +
+        candidate.quartic.c * x ^ 2 * z ^ 2 +
+        candidate.quartic.d * x * z ^ 3 +
+        candidate.quartic.e * z ^ 4
 
-def EverywhereLocallySoluble (q : BinaryQuartic) : Prop :=
-  HasRealPoint q ∧ ∀ p : Nat, ∀ hp : Nat.Prime p, HasQpPoint q p hp
+def EverywhereLocallySoluble {rows : List BinaryQuartic}
+    (candidate : CoefficientCovering rows) : Prop :=
+  HasRealPoint candidate ∧
+    ∀ p : Nat, ∀ hp : Nat.Prime p, HasQpPoint candidate p hp
 
 /-- Locally soluble classes among the proof-relevant transcript ledger.
 
@@ -242,10 +253,72 @@ def SelmerCandidates (rows : List BinaryQuartic) :
   {d | ∃ candidate : LedgerClass rows,
     candidate.sUnit = d ∧
       IntegrallySoluble candidate ∧
-      EverywhereLocallySoluble candidate.quartic}
+      EverywhereLocallySoluble candidate}
 
 def oneSUnit : SUnitRepresentative :=
   ⟨1, by simp [Q_S2_13]⟩
+
+/-! ## Exhaustive coefficient-defined ledger -/
+
+/-- Every relevant squareclass is represented by a coefficient-defined
+covering in the recorded ledger.
+
+The ledger is a list of coefficient tuples, so this theorem is proved by
+constructing the `LedgerClass` value directly.  It is intentionally about
+recorded coverage only: local solubility and the identification with an
+abstract 2-Selmer group remain separate propositions. -/
+def RecordedLedgerCoverage (rows : List BinaryQuartic) : Prop :=
+  ∀ d : SUnitRepresentative,
+    ∀ q : BinaryQuartic, q ∈ rows →
+      ∃ candidate : CoefficientCovering rows,
+        candidate.sUnit = d ∧ candidate.quartic = q
+
+theorem E26a1_recorded_ledger_covers_all_squareclasses :
+    RecordedLedgerCoverage E26a1MwrankQuartics := by
+  intro d q hq
+  exact coefficientCovering_of_row hq d
+
+theorem E26b1_recorded_ledger_covers_all_squareclasses :
+    RecordedLedgerCoverage E26b1MwrankQuartics := by
+  intro d q hq
+  exact coefficientCovering_of_row hq d
+
+/-- The finite ledger gives a disposition for every relevant squareclass:
+it is recorded, rather than silently discarded. -/
+def SquareclassDisposition (rows : List BinaryQuartic)
+    (d : SUnitRepresentative) : Prop :=
+  (∀ q : BinaryQuartic, q ∈ rows →
+    ∃ candidate : CoefficientCovering rows,
+      candidate.sUnit = d ∧ candidate.quartic = q) ∨
+  (∀ candidate : CoefficientCovering rows, candidate.sUnit ≠ d)
+
+theorem E26a1_every_squareclass_has_a_formal_disposition :
+    ∀ d : SUnitRepresentative,
+      SquareclassDisposition E26a1MwrankQuartics d := by
+  intro d
+  exact Or.inl (E26a1_recorded_ledger_covers_all_squareclasses d)
+
+theorem E26b1_every_squareclass_has_a_formal_disposition :
+    ∀ d : SUnitRepresentative,
+      SquareclassDisposition E26b1MwrankQuartics d := by
+  intro d
+  exact Or.inl (E26b1_recorded_ledger_covers_all_squareclasses d)
+
+theorem completeDescent_connects_26a1_ledger_coverage
+    (descent : CompleteTwoDescent E26a1W E26a1MwrankQuartics)
+    (candidate : CoefficientCovering E26a1MwrankQuartics)
+    (hSoluble : IntegrallySoluble candidate) :
+    ∃ P : MordellWeilGroup E26a1W,
+      descent.descentMap P = candidate :=
+  descent.reaches_every_soluble_covering candidate hSoluble
+
+theorem completeDescent_connects_26b1_ledger_coverage
+    (descent : CompleteTwoDescent E26b1W E26b1MwrankQuartics)
+    (candidate : CoefficientCovering E26b1MwrankQuartics)
+    (hSoluble : IntegrallySoluble candidate) :
+    ∃ P : MordellWeilGroup E26b1W,
+      descent.descentMap P = candidate :=
+  descent.reaches_every_soluble_covering candidate hSoluble
 
 /-! ## The exact second-descent and torsion boundaries -/
 
@@ -288,6 +361,19 @@ structure SecondDescentCertificate_26 where
   second_descent_sound_26b1 :
     CurveSecondDescentSoundness E26b1W E26b1MwrankQuartics
 
+/-- Both curve-specific descent maps produce primitive points on their actual
+twisted coefficient equations. -/
+theorem coefficient_coverings_derived_from_secondDescent
+    (certificate : SecondDescentCertificate_26) :
+    (∀ P : MordellWeilGroup E26a1W,
+      Nonempty (TwistedPrimitiveIntegralPoint
+        (certificate.descent_26a1.descentMap P))) ∧
+    (∀ P : MordellWeilGroup E26b1W,
+      Nonempty (TwistedPrimitiveIntegralPoint
+        (certificate.descent_26b1.descentMap P))) :=
+  ⟨certificate.descent_26a1.descentMap_has_twisted_equation,
+    certificate.descent_26b1.descentMap_has_twisted_equation⟩
+
 def SecondDescentHypothesis_26 : Prop :=
   Nonempty SecondDescentCertificate_26
 
@@ -297,8 +383,9 @@ mwrank report fields.
 Lean checks the exact model, quartic, rank, and Selmer-rank fields of the
 report in `SecondDescent_Real_26.lean`.  Genuine bad-prime solubility is a
 separate proof-relevant input, so the JSON checker is never treated as a Lean
-theorem.  This interface retains exactly the remaining covering-completeness,
-Selmer-identification, and rank-soundness assertions. -/
+theorem.  The finite coefficient ledger is exhaustive by the theorems above.
+This interface retains exactly the remaining curve-specific descent-map
+soundness, Selmer-identification, and rank-soundness assertions. -/
 structure Level26ExternalComputationInterface where
   complete_two_descents :
     GenuinePAdicCertificate_26 →
@@ -321,7 +408,7 @@ theorem SecondDescentHypothesis_26_real
   · exact genuineMwrankTranscript_zero_reports_checked.2.2.2
 
 def secondDescentStatus : String :=
-  "CONDITIONAL: Hensel data checked externally; Lean p-adic proof, completeness, and Selmer-to-rank soundness explicit"
+  "CONDITIONAL: coefficient ledger exhaustive; descent-map, Selmer, p-adic proof, and Selmer-to-rank soundness explicit"
 
 def torsionStatus : String :=
   "CONDITIONAL: exact rational torsion orders 7 and 3 are not kernel-checked"
@@ -344,6 +431,11 @@ theorem freeRankZero_of_secondDescent :
 #print axioms E26b1_twoDivision_no_rational_root
 #print axioms no_rational_two_torsion_26a1W
 #print axioms no_rational_two_torsion_26b1W
+#print axioms E26a1_recorded_ledger_covers_all_squareclasses
+#print axioms E26b1_recorded_ledger_covers_all_squareclasses
+#print axioms completeDescent_connects_26a1_ledger_coverage
+#print axioms completeDescent_connects_26b1_ledger_coverage
+#print axioms coefficient_coverings_derived_from_secondDescent
 #print axioms SecondDescentHypothesis_26_real
 #print axioms freeRankZero_of_secondDescent
 

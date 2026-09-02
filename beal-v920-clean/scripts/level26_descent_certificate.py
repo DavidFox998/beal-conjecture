@@ -6,8 +6,10 @@ finds an integral approximation satisfying the strong one-variable Hensel
 inequality v_p(F(a)) > 2 v_p(F'(a)).  The checker recomputes the equation,
 partial derivative, valuations, primitiveness, and inequality from scratch.
 
-The resulting local-solubility certificates do not assert that the ledger is
-complete or identify it with a Selmer group.
+The resulting local-solubility certificates accompany the Lean proof that the
+finite coefficient ledger records every representative in the eight-element
+S-unit index.  They do not identify that finite index with an abstract Selmer
+group or prove a Selmer-to-rank theorem.
 """
 
 from __future__ import annotations
@@ -147,10 +149,28 @@ def build() -> dict[str, object]:
         "s_units": S_UNITS,
         "curves": CURVES,
         "checks": checks,
+        "formal_ledger": {
+            "lean_interface": "CoefficientCoveringMap",
+            "lean_coverage_theorems": [
+                "E26a1_recorded_ledger_covers_all_squareclasses",
+                "E26b1_recorded_ledger_covers_all_squareclasses",
+            ],
+            "representatives": S_UNITS,
+            "coverage": {
+                curve_name: [
+                    {"twist": twist, "row": row}
+                    for twist in S_UNITS
+                    for row in range(len(curve["quartics"]))
+                ]
+                for curve_name, curve in CURVES.items()
+            },
+        },
         "boundary": {
-            "proved": "a checked p-adic Hensel lift for every listed twist, row, and bad prime",
+            "proved": [
+                "a checked p-adic Hensel lift for every listed twist, row, and bad prime",
+                "the coefficient-defined ledger records every representative in the eight-element S-unit index",
+            ],
             "not_proved": [
-                "covering-ledger completeness",
                 "identification with a 2-Selmer group",
                 "Selmer-to-Mordell-Weil rank soundness",
             ],
@@ -188,7 +208,7 @@ def render_log(certificate: dict[str, object]) -> str:
     lines += [
         "",
         "BOUNDARY: PASS verifies the strong Hensel hypotheses and hence a Q_p point.",
-        "It is not a covering-completeness, Selmer, or rank proof.",
+        "Lean proves finite coefficient-ledger coverage; this log is not a Selmer or rank proof.",
         "Run sagemath/reproduce_level26_descent.sage separately for Sage/mwrank.",
     ]
     return "\n".join(lines) + "\n"

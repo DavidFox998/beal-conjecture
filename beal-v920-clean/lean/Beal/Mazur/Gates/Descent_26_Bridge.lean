@@ -15,9 +15,11 @@ file adds the proof-relevant homogeneous and reduction language needed before
 one may speak about local obstructions or a 2-descent map.
 
 All ten rows have points over both `ZMod 2` and `ZMod 13` under the Phase A
-evaluator.  Consequently this module proves no local obstruction and no
-unconditional rank statement.  The still-missing covering-to-Selmer and
-Selmer-to-free-rank theorems are exposed as propositions with no inhabitants.
+evaluator.  The proof-relevant interface below now requires its descent map to
+factor through a coefficient-defined covering selector and proves that this
+selector records every representative in `Q_S2_13`.  It still makes no
+unconditional rank statement: Selmer identification and Selmer-to-free-rank
+semantics remain explicit propositions.
 -/
 
 /-! ## Homogeneous integral coverings -/
@@ -143,11 +145,43 @@ structure LedgerClass (rows : List BinaryQuartic) where
   quartic : BinaryQuartic
   quartic_mem : quartic ∈ rows
 
+/-- A coefficient-defined covering selected by a squareclass.
+
+The row is retained as a `BinaryQuartic`, rather than as transcript text.  In
+particular, a covering supplied to the descent interface is the equation
+`d * Y² = HomogQuartic q X Z` with the coefficients of `q` visible in Lean. -/
+abbrev CoefficientCovering (rows : List BinaryQuartic) := LedgerClass rows
+
+/-- A primitive integral point on the actual twisted covering
+`d * Y² = q(X,Z)`. -/
+structure TwistedPrimitiveIntegralPoint
+    {rows : List BinaryQuartic} (candidate : CoefficientCovering rows) where
+  X : Int
+  Z : Int
+  Y : Int
+  primitive_XZ : primitive X Z
+  equation :
+    candidate.sUnit.1 * Y ^ 2 =
+      HomogQuartic candidate.quartic X Z
+
+/-- Every squareclass--row pair is present in the formal coefficient ledger.
+
+This is a structural fact about the proof-relevant ledger, not a claim that
+the resulting covering is everywhere locally soluble. -/
+theorem coefficientCovering_of_row
+    {rows : List BinaryQuartic} {q : BinaryQuartic}
+    (hq : q ∈ rows) :
+    ∀ d : SUnitRepresentative,
+      ∃ candidate : CoefficientCovering rows,
+        candidate.sUnit = d ∧ candidate.quartic = q := by
+  intro d
+  exact ⟨{sUnit := d, quartic := q, quartic_mem := hq}, rfl, rfl⟩
+
 /-- The fixed, proof-relevant solubility predicate used by the descent
 interface.  It cannot be replaced by an arbitrary caller-supplied predicate. -/
 def IntegrallySoluble {rows : List BinaryQuartic}
-    (candidate : LedgerClass rows) : Prop :=
-  Nonempty (PrimitiveIntegralPoint candidate.quartic)
+    (candidate : CoefficientCovering rows) : Prop :=
+  Nonempty (TwistedPrimitiveIntegralPoint candidate)
 
 /-- The data and proofs required for a genuine curve-specific 2-descent.
 
@@ -156,7 +190,7 @@ construct `map_is_integrallySoluble` or `exhaustive` because finite-field
 points do not supply primitive integral points. -/
 structure CompleteTwoDescent
     (E : WeierstrassCurve ℚ) (rows : List BinaryQuartic) where
-  descentMap : MordellWeilGroup E → LedgerClass rows
+  descentMap : MordellWeilGroup E → CoefficientCovering rows
   same_class_iff :
     ∀ P Q, descentMap P = descentMap Q ↔ EquivalentModTwo P Q
   map_is_integrallySoluble : ∀ P, IntegrallySoluble (descentMap P)
@@ -164,6 +198,29 @@ structure CompleteTwoDescent
     ∀ candidate : LedgerClass rows,
       IntegrallySoluble candidate →
         ∃ P : MordellWeilGroup E, descentMap P = candidate
+
+/-- A complete descent map supplies a primitive point on the actual twisted
+coefficient equation attached to every rational point. -/
+theorem CompleteTwoDescent.descentMap_has_twisted_equation
+    {E : WeierstrassCurve ℚ} {rows : List BinaryQuartic}
+    (descent : CompleteTwoDescent E rows) :
+    ∀ P : MordellWeilGroup E,
+      Nonempty (TwistedPrimitiveIntegralPoint (descent.descentMap P)) :=
+  descent.map_is_integrallySoluble
+
+/-- A complete descent reaches every soluble coefficient-defined covering in
+the recorded ledger.
+
+This is the exact connection between the finite coverage statement and the
+existing proof-relevant descent interface.  It does not identify the eight
+representatives with an abstract Selmer group. -/
+theorem CompleteTwoDescent.reaches_every_soluble_covering
+    {E : WeierstrassCurve ℚ} {rows : List BinaryQuartic}
+    (descent : CompleteTwoDescent E rows)
+    (candidate : CoefficientCovering rows)
+    (hSoluble : IntegrallySoluble candidate) :
+    ∃ P : MordellWeilGroup E, descent.descentMap P = candidate :=
+  descent.exhaustive candidate hSoluble
 
 /-- The exact missing algebraic theorem for one curve: a verified complete
 2-descent must imply that every rational point is torsion. -/
@@ -196,6 +253,9 @@ theorem phaseB_bridge_of_complete_descent
 #print axioms no_certified_integral_lift_of_no_Fp_point
 #print axioms E26a1_all_rows_have_points_at_bad_primes
 #print axioms E26b1_all_rows_have_points_at_bad_primes
+#print axioms coefficientCovering_of_row
+#print axioms CompleteTwoDescent.descentMap_has_twisted_equation
+#print axioms CompleteTwoDescent.reaches_every_soluble_covering
 #print axioms phaseB_bridge_of_complete_descent
 
 end Beal17Mazur.Gates.Descent26Bridge

@@ -59,8 +59,10 @@ jobs:
           python3 scripts/level26_descent_certificate.py --check
           python3 scripts/check_level26_replay.py
 
-      - name: Build level-26 p-adic certificate interface
-        run: lake build Beal.Mazur.Gates.Descent_26_PadicCertificates
+      - name: Build level-26 descent proof interfaces
+        run: |
+          lake build Beal.Mazur.Gates.Descent_26_PadicCertificates
+          lake build Beal.Mazur.Gates.Descent_26_RankProof
 
       - name: Check Lake manifest for dependency drift
         run: |

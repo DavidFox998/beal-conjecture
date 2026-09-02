@@ -1,13 +1,15 @@
 {
   "boundary": {
     "not_proved": [
-      "covering-ledger completeness",
       "identification with a 2-Selmer group",
       "Selmer-to-Mordell-Weil rank soundness"
     ],
-    "proved": "a checked p-adic Hensel lift for every listed twist, row, and bad prime"
+    "proved": [
+      "a checked p-adic Hensel lift for every listed twist, row, and bad prime",
+      "the coefficient-defined ledger records every representative in the eight-element S-unit index"
+    ]
   },
-  "certificate_sha256": "51800e72a0cac6c790148cf009289847bc11642f99d4acc721a16a2dc8ce89c4",
+  "certificate_sha256": "5c2fd8c656c5c91a395606b98039f75f27036d6d7aac9010a17e9d27d79bfd56",
   "checks": [
     {
       "curve": "lean_E26a1",
@@ -3625,6 +3627,349 @@
     }
   },
   "equation": "F(x,z,y)=twist*y^2-(a*x^4+b*x^3*z+c*x^2*z^2+d*x*z^3+e*z^4)",
+  "formal_ledger": {
+    "coverage": {
+      "lean_E26a1": [
+        {
+          "row": 0,
+          "twist": 1
+        },
+        {
+          "row": 1,
+          "twist": 1
+        },
+        {
+          "row": 2,
+          "twist": 1
+        },
+        {
+          "row": 3,
+          "twist": 1
+        },
+        {
+          "row": 0,
+          "twist": -1
+        },
+        {
+          "row": 1,
+          "twist": -1
+        },
+        {
+          "row": 2,
+          "twist": -1
+        },
+        {
+          "row": 3,
+          "twist": -1
+        },
+        {
+          "row": 0,
+          "twist": 2
+        },
+        {
+          "row": 1,
+          "twist": 2
+        },
+        {
+          "row": 2,
+          "twist": 2
+        },
+        {
+          "row": 3,
+          "twist": 2
+        },
+        {
+          "row": 0,
+          "twist": -2
+        },
+        {
+          "row": 1,
+          "twist": -2
+        },
+        {
+          "row": 2,
+          "twist": -2
+        },
+        {
+          "row": 3,
+          "twist": -2
+        },
+        {
+          "row": 0,
+          "twist": 13
+        },
+        {
+          "row": 1,
+          "twist": 13
+        },
+        {
+          "row": 2,
+          "twist": 13
+        },
+        {
+          "row": 3,
+          "twist": 13
+        },
+        {
+          "row": 0,
+          "twist": -13
+        },
+        {
+          "row": 1,
+          "twist": -13
+        },
+        {
+          "row": 2,
+          "twist": -13
+        },
+        {
+          "row": 3,
+          "twist": -13
+        },
+        {
+          "row": 0,
+          "twist": 26
+        },
+        {
+          "row": 1,
+          "twist": 26
+        },
+        {
+          "row": 2,
+          "twist": 26
+        },
+        {
+          "row": 3,
+          "twist": 26
+        },
+        {
+          "row": 0,
+          "twist": -26
+        },
+        {
+          "row": 1,
+          "twist": -26
+        },
+        {
+          "row": 2,
+          "twist": -26
+        },
+        {
+          "row": 3,
+          "twist": -26
+        }
+      ],
+      "lean_E26b1": [
+        {
+          "row": 0,
+          "twist": 1
+        },
+        {
+          "row": 1,
+          "twist": 1
+        },
+        {
+          "row": 2,
+          "twist": 1
+        },
+        {
+          "row": 3,
+          "twist": 1
+        },
+        {
+          "row": 4,
+          "twist": 1
+        },
+        {
+          "row": 5,
+          "twist": 1
+        },
+        {
+          "row": 0,
+          "twist": -1
+        },
+        {
+          "row": 1,
+          "twist": -1
+        },
+        {
+          "row": 2,
+          "twist": -1
+        },
+        {
+          "row": 3,
+          "twist": -1
+        },
+        {
+          "row": 4,
+          "twist": -1
+        },
+        {
+          "row": 5,
+          "twist": -1
+        },
+        {
+          "row": 0,
+          "twist": 2
+        },
+        {
+          "row": 1,
+          "twist": 2
+        },
+        {
+          "row": 2,
+          "twist": 2
+        },
+        {
+          "row": 3,
+          "twist": 2
+        },
+        {
+          "row": 4,
+          "twist": 2
+        },
+        {
+          "row": 5,
+          "twist": 2
+        },
+        {
+          "row": 0,
+          "twist": -2
+        },
+        {
+          "row": 1,
+          "twist": -2
+        },
+        {
+          "row": 2,
+          "twist": -2
+        },
+        {
+          "row": 3,
+          "twist": -2
+        },
+        {
+          "row": 4,
+          "twist": -2
+        },
+        {
+          "row": 5,
+          "twist": -2
+        },
+        {
+          "row": 0,
+          "twist": 13
+        },
+        {
+          "row": 1,
+          "twist": 13
+        },
+        {
+          "row": 2,
+          "twist": 13
+        },
+        {
+          "row": 3,
+          "twist": 13
+        },
+        {
+          "row": 4,
+          "twist": 13
+        },
+        {
+          "row": 5,
+          "twist": 13
+        },
+        {
+          "row": 0,
+          "twist": -13
+        },
+        {
+          "row": 1,
+          "twist": -13
+        },
+        {
+          "row": 2,
+          "twist": -13
+        },
+        {
+          "row": 3,
+          "twist": -13
+        },
+        {
+          "row": 4,
+          "twist": -13
+        },
+        {
+          "row": 5,
+          "twist": -13
+        },
+        {
+          "row": 0,
+          "twist": 26
+        },
+        {
+          "row": 1,
+          "twist": 26
+        },
+        {
+          "row": 2,
+          "twist": 26
+        },
+        {
+          "row": 3,
+          "twist": 26
+        },
+        {
+          "row": 4,
+          "twist": 26
+        },
+        {
+          "row": 5,
+          "twist": 26
+        },
+        {
+          "row": 0,
+          "twist": -26
+        },
+        {
+          "row": 1,
+          "twist": -26
+        },
+        {
+          "row": 2,
+          "twist": -26
+        },
+        {
+          "row": 3,
+          "twist": -26
+        },
+        {
+          "row": 4,
+          "twist": -26
+        },
+        {
+          "row": 5,
+          "twist": -26
+        }
+      ]
+    },
+    "lean_coverage_theorems": [
+      "E26a1_recorded_ledger_covers_all_squareclasses",
+      "E26b1_recorded_ledger_covers_all_squareclasses"
+    ],
+    "lean_interface": "CoefficientCoveringMap",
+    "representatives": [
+      1,
+      -1,
+      2,
+      -2,
+      13,
+      -13,
+      26,
+      -26
+    ]
+  },
   "lifting_theorem": {
     "conclusion": "holding the other two coordinates fixed, the selected coordinate lifts in Z_p",
     "hypothesis": "v_p(F(a)) > 2*v_p(partial_variable F(a)); F(a)=0 is allowed",

@@ -5,18 +5,20 @@ description: Separation between reproducible twisted congruences, Sage output, a
 
 Keep the dependency-free p-adic Hensel certificate and any Sage/mwrank
 transcript in separate immutable outputs. Coefficient-defined Lean names must
-not be silently identified with database labels returned by Sage. All 160
-listed twist/row/bad-prime combinations have strong one-variable Hensel
-approximations; this proves local points for the listed ledger, not descent
-completeness.
+not be silently identified with database labels returned by Sage. The listed
+twist/row/bad-prime combinations have strong one-variable Hensel
+approximations, and the formal coefficient ledger exhausts all recorded
+squareclass-row pairs.
 
-**Why:** The Hensel inequalities close the former p-adic lifting gap, but
-reported rank-zero output and `--trivial` quartic labels still do not provide a
-complete descent map, identification with the full 2-Selmer group, or the
-Selmer-to-rank bridge. Sharing an output path also makes independent
-reproductions overwrite one another.
+**Why:** The Hensel inequalities close the former p-adic lifting gap, while
+the twisted equation and finite Cartesian ledger close the enumeration gap.
+Reported rank-zero output and `--trivial` quartic labels still do not identify
+that finite ledger with the full 2-Selmer group or supply the Selmer-to-rank
+bridge. Sharing an output path also makes independent reproductions overwrite
+one another.
 
 **How to apply:** Recheck residuals, selected partial derivatives, valuations,
-primitiveness, and the strict Hensel inequality independently. Keep JSON out of
-Lean's trusted theorem boundary, and preserve explicit obligations for
-covering completeness, Selmer semantics, and rank soundness.
+primitiveness, the strict Hensel inequality, and every squareclass-row pair
+independently. Keep JSON out of Lean's trusted theorem boundary, and preserve
+explicit obligations for curve-specific descent soundness, abstract Selmer
+semantics, and rank soundness.

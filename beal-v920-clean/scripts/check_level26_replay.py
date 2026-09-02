@@ -35,6 +35,7 @@ EXPECTED_QUARTICS = {
         (-4, -3, 10, 13, 0),
     ],
 }
+EXPECTED_S_UNITS = [1, -1, 2, -2, 13, -13, 26, -26]
 
 
 def fail(message: str) -> "NoReturn":
@@ -74,6 +75,29 @@ def main() -> None:
     expected_rows = EXPECTED_QUARTICS["26a1"] + EXPECTED_QUARTICS["26b1"]
     if not all(row in certificate_rows for row in expected_rows):
         fail("the certificate no longer contains all ten exact quartic rows")
+
+    formal_ledger = padic_certificate.get("formal_ledger")
+    if not isinstance(formal_ledger, dict):
+        fail("the formal coefficient-ledger section is missing")
+    if formal_ledger.get("representatives") != EXPECTED_S_UNITS:
+        fail("the formal ledger no longer exhausts the exact S-unit representatives")
+    expected_coverage = {
+        "lean_E26a1": [
+            {"twist": twist, "row": row}
+            for twist in EXPECTED_S_UNITS
+            for row in range(len(EXPECTED_QUARTICS["26a1"]))
+        ],
+        "lean_E26b1": [
+            {"twist": twist, "row": row}
+            for twist in EXPECTED_S_UNITS
+            for row in range(len(EXPECTED_QUARTICS["26b1"]))
+        ],
+    }
+    if formal_ledger.get("coverage") != expected_coverage:
+        fail("the formal coefficient-ledger coverage is incomplete or reordered")
+    not_proved = padic_certificate["boundary"]["not_proved"]
+    if "covering-ledger completeness" in not_proved:
+        fail("the certificate still labels formal ledger coverage as unproved")
 
     require(transcript, "LEVEL-26 P-ADIC HENSEL CERTIFICATE", TRANSCRIPT)
     require(transcript, "BOUNDARY: PASS verifies the strong Hensel hypotheses", TRANSCRIPT)

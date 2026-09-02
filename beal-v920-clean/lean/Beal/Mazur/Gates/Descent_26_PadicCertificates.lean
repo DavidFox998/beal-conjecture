@@ -22,7 +22,10 @@ defines the actual twisted homogeneous quartic predicates over `ℚ_[2]` and
 
 The JSON producer supplies integer Hensel approximations, but JSON is not a
 theorem.  Lean therefore accepts only the resulting proof-relevant p-adic
-points; a checker or transcript cannot inhabit this structure by itself.
+points; a checker or transcript cannot inhabit this structure by itself.  The
+coefficient-covering enumeration is proved separately in
+`Descent_26_Bridge`; this module supplies local points but does not identify
+the resulting finite set with an abstract Selmer group.
 -/
 
 def HasQpTwistedPoint
