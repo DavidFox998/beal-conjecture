@@ -107,6 +107,16 @@ The inherited v4.1.0 titles and descriptions on Zenodo records
 version-specific “Beal Conjecture — Formalization Release” metadata and retain
 their original files and DOIs.
 
+The v10.0.0 final conditional assembly is currently a GitHub-only release;
+no Zenodo DOI was minted in that release step. Keep its documentation
+conditional and do not infer a new archival DOI from the older chain.
+
+**Why:** v10.0.0 assembles explicit theorem premises while deliberately
+deferring the actual level-26 cotangent-map construction to v10.0.1.
+
+**How to apply:** Treat the GitHub tag, release assets, and green main CI as
+the v10.0.0 release record until a separately verified Zenodo deposition exists.
+
 The Tate local conductor verification is published as `v4.1.0` with DOI
 `10.5281/zenodo.22091549` (Zenodo record 22091549). Its archival description
 must retain the odd-prime-only boundary: one typed Frey model ties the local
