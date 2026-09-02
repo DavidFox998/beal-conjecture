@@ -54,6 +54,12 @@ jobs:
       - name: Build all bricks
         run: lake build +Beal.B00_OperaNumerorum Beal
 
+      - name: Check level-26 external transcript integrity
+        run: python3 scripts/check_level26_replay.py
+
+      - name: Build level-26 p-adic certificate interface
+        run: lake build Beal.Mazur.Gates.Descent_26_PadicCertificates
+
       - name: Check Lake manifest for dependency drift
         run: |
           set -euo pipefail
