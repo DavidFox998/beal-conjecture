@@ -120,6 +120,65 @@ The audited declarations contain no `sorry`, `admit`, `sorryAx`, or
 `propext`, `Classical.choice`, and `Quot.sound`. This remains conditional
 mathematics, not an unconditional proof of Beal's Conjecture.
 
+### v9.1.0 — Real formal-immersion matrix at 3
+
+The v9.1.0 release adds the first real finite Phase C matrix evidence to the
+level-26 chain. The implementation was merged on `main` at
+`0a28f246359f1eea99a9183420a9fc395e03d019`; the annotated release tag is
+created on the subsequent documentation-inclusive snapshot so that the tag,
+README, and source code describe the same release.
+
+`Mazur/Jacobian/FormalImmersion_26.lean` now records:
+
+- the explicit hyperelliptic model
+  $y^2 = X0\_26\_f6(x)$, reusing the verified degree-six level-26 model;
+- the finite differential basis $\omega_1 = dx/y$ and
+  $\omega_2 = x\,dx/y$;
+- mod-3 reduction tokens for all four cusp labels, finite Abel–Jacobi replay
+  rows, and two selected distinct cusp reductions;
+- the differential evaluation table over $\mathbb Z/3\mathbb Z$; and
+- the computed matrix
+  $$
+  M_3 =
+  \begin{pmatrix}1&1\\0&2\end{pmatrix},
+  \qquad \det(M_3)=2\ne 0\pmod 3.
+  $$
+
+The declaration `formal_immersion_matrix_rank_two_decided` proves the rank-two
+finite certificate by `decide`, without additional axioms. The combined
+certificate is exposed as `FormalImmersionAt3_Real_26` and
+`formal_immersion_real_evidence`, and is exported through
+`ConditionalBealTheorem.lean` as
+`phase_c_formal_immersion_evidence_real`.
+
+The focused release builds are:
+
+```text
+lake build Beal.Mazur.Jacobian.FormalImmersion_26
+lake build Beal.Mazur.Jacobian.J0_26_Decomp
+lake build Beal.Mazur.Gates.SecondDescent_Real_26
+lake build Beal.ConditionalBealTheorem
+lake build Beal
+```
+
+This is real finite matrix evidence, not a claim that Lean has reconstructed
+the scheme-level Abel–Jacobi map, smooth reduction, or the geometric
+formal-immersion implication. Those interfaces remain explicit conditional
+data in `FormalImmersionAt3_26`. The genus-two Jacobian isogeny
+$J_0(26)\sim E_{26a1}\times E_{26b1}$, modularity, level-lowering, and the
+global four-cusp conclusion therefore remain conditional boundaries.
+
+The v9.1.0 chain is:
+
+**real 80-check Phase A** → **real $S_2(26)$ q-expansion, Hecke, distinctness,
+and dimension-two Phase B evidence** → **real**
+$M_3=\left(\begin{smallmatrix}1&1\\0&2\end{smallmatrix}\right)$ **rank-two
+mod-3 Phase C certificate** → **conditional Phase D Beal endgame**.
+
+The Phase A and Phase B evidence remains as documented below. In particular,
+the 80-entry audit does not claim a singleton Selmer group, and the Phase B
+finite tables do not by themselves prove the missing Jacobian/isogeny theorem.
+
 The immutable release archive
 `beal-conjecture-v8.9.0.tar.gz` is 175,208 bytes with SHA-256
 `61362de15bd0c2ea9f64fea47ce91e958c9eafd2a6aa034147fda68099266672`.
@@ -480,6 +539,8 @@ Tate, or Ribet from first principles.
 | **v8.7.1 certificate guards** | `v8.7.1` | [Zenodo v8.7.1](https://doi.org/10.5281/zenodo.22226446) | GitHub-first certificate-guard hardening for the existing Phase A–C chain. |
 | **v8.8.0 conditional Phase D** | `v8.8.0` / `881926a` | [Zenodo v8.8.0](https://doi.org/10.5281/zenodo.22235410) | Conditional level-26 Frey endgame with explicit construction, modularity, level-lowering, descent, transport, and formal-immersion boundaries. |
 | **v8.9.0 Real 80-Check Audit** | `v8.9.0` | [Zenodo v8.9.0](https://doi.org/10.5281/zenodo.22238572) | Honest level-26 finite Phase A audit: 80 S-unit/ledger pairs pass the available `p = 2` and `p = 13` checks; all eight candidates remain, so the second-descent hypothesis stays conditional. |
+| **v9.0.0 Real Phase B evidence** | `v9.0.0` / `5cee2e1` | [Zenodo v9.0.0](https://doi.org/10.5281/zenodo.22238979) | Real finite $S_2(26)$ q-expansion, Hecke-at-2-and-13, distinctness, and dimension-two evidence; the genus-two Jacobian/isogeny bridge remains conditional. |
+| **v9.1.0 Real Phase C matrix rank** | `v9.1.0` | Version DOI recorded after mint | Real finite formal-immersion matrix at 3, $M_3=\left(\begin{smallmatrix}1&1\\0&2\end{smallmatrix}\right)$, rank two by `decide`, with the geometric map and implication still conditional. |
 
 The v4.0.0 Zenodo landing page retains an older v0.4-style display title; its
 release tag, archive, and audited boundary are the v4.0.0 row above. The
