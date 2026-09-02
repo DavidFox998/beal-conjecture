@@ -5,6 +5,7 @@ import Beal.Mazur.Frey.LevelLowering_26
 
 namespace Beal.Final
 
+open Beal17Mazur
 open Beal17Mazur.Frey.LevelLowering26
 open Beal17Mazur.Gates
 open Beal17Mazur.Gates.FormalImmersion26
