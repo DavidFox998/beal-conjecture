@@ -1,0 +1,116 @@
+name: Level-26 Sage replay
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "sagemath/reproduce_level26_descent.sage"
+      - "sagemath/GENUINE_26_CERT_v9.2.0.txt"
+      - "scripts/level26_descent_certificate.py"
+      - ".github/workflows/level26-sage-replay.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "sagemath/reproduce_level26_descent.sage"
+      - "sagemath/GENUINE_26_CERT_v9.2.0.txt"
+      - "scripts/level26_descent_certificate.py"
+      - ".github/workflows/level26-sage-replay.yml"
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+jobs:
+  replay:
+    name: Replay SageMath 10.6 level-26 arithmetic
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run the pinned Sage image
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/level26-sage-replay
+
+          # Keep this transcript outside sagemath/certs_26a1_26b1.log:
+          # the latter is the dependency-free congruence certificate output.
+          docker run --rm \
+            --volume "$PWD:/workspace" \
+            --workdir /workspace \
+            sagemath/sagemath@sha256:19995db6194f4a4bab18ce9a88556fd15b9ed5e916b4504fefe618a7796ddbdb \
+            sage sagemath/reproduce_level26_descent.sage \
+            | tee artifacts/level26-sage-replay/sage_mwrank_level26.log
+
+      - name: Validate and hash the replay evidence
+        run: |
+          set -euo pipefail
+          artifact_dir="artifacts/level26-sage-replay"
+          transcript="$artifact_dir/sage_mwrank_level26.log"
+          summary="$artifact_dir/sage_mwrank_level26.summary"
+
+          # Fail closed if the producer stops reporting a field whose drift
+          # would otherwise be easy to miss in a successful-looking run.
+          grep -Eq '^sage_version: SageMath version [0-9]+\.' "$transcript"
+          grep -Eq '^sage_executable: ' "$transcript"
+          grep -Eq '^eclib version [0-9]+' "$transcript"
+          python3 - "$transcript" <<'PY'
+          import pathlib
+          import sys
+
+          expected = {
+              "26a1": "[1, 0, 1, -5, -8]",
+              "26b1": "[1, -1, 1, -3, 3]",
+          }
+          records = {}
+          current = None
+          for line in pathlib.Path(sys.argv[1]).read_text(encoding="utf-8").splitlines():
+              if line.startswith("database_label: "):
+                  current = line.split(": ", 1)[1]
+                  if current in records:
+                      raise SystemExit(f"duplicate database label: {current}")
+                  records[current] = {}
+              elif current is not None and line.startswith("ainvs: "):
+                  records[current]["ainvs"] = line.split(": ", 1)[1]
+              elif current is not None and line.startswith("rank: "):
+                  records[current]["rank"] = line.split(": ", 1)[1]
+              elif current is not None and line.startswith("two_descent: "):
+                  records[current]["two_descent"] = line.split(": ", 1)[1]
+
+          if set(records) != set(expected):
+              raise SystemExit(f"unexpected database labels: {sorted(records)}")
+          for label, ainvs in expected.items():
+              record = records[label]
+              if record.get("ainvs") != ainvs:
+                  raise SystemExit(
+                      f"{label} returned unexpected a-invariants: {record.get('ainvs')}"
+                  )
+              if record.get("rank") != "0":
+                  raise SystemExit(f"{label} returned unexpected rank: {record.get('rank')}")
+              if record.get("two_descent") != "True":
+                  raise SystemExit(
+                      f"{label} returned unexpected two-descent result: "
+                      f"{record.get('two_descent')}"
+                  )
+          PY
+
+          grep -E \
+            '^(sage_version:|sage_executable:|command:|eclib version |database_label:|ainvs:|conductor:|discriminant:|torsion_order:|rank:|two_descent:)' \
+            "$transcript" > "$summary"
+
+          sha256sum "$transcript" "$summary" \
+            > "$artifact_dir/SHA256SUMS"
+          {
+            echo "sage_image: sagemath/sagemath@sha256:19995db6194f4a4bab18ce9a88556fd15b9ed5e916b4504fefe618a7796ddbdb"
+            sha256sum sagemath/reproduce_level26_descent.sage
+            cat "$artifact_dir/SHA256SUMS"
+          } > "$artifact_dir/replay-manifest.txt"
+
+          cat "$artifact_dir/replay-manifest.txt"
+
+      - name: Archive the Sage transcript and hashes
+        uses: actions/upload-artifact@v4
+        with:
+          name: level26-sage-replay
+          path: artifacts/level26-sage-replay/
+          if-no-files-found: error
+          retention-days: 90
