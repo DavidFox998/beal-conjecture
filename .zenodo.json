@@ -1,8 +1,8 @@
 {
-  "title": "Beal Conjecture — Opera Numerorum — v9.3.0 J0(26) decomposition",
+  "title": "Beal Conjecture — Opera Numerorum — v9.4.0 Formal immersion M3 rank 2",
   "upload_type": "software",
-  "version": "9.3.0",
-  "description": "Reproducible J0(26) decomposition evidence for the Beal Conjecture formalization. The certificate records dim J0(26) = 2 = 1 + 1, the reported isogeny J0(26) ~ E26a1 x E26b1, and the exact coefficient models (1,0,1,-5,-8) and (1,-1,1,-3,3). Sage decomposition semantics and mwrank/second-descent rank semantics remain explicit proposition-valued premises in Lean rather than global axioms.",
+  "version": "9.4.0",
+  "description": "Reproducible level-26 formal-immersion evidence for the Beal Conjecture formalization. The certificate records the M3 rank-two witness at 2 for X0(26) -> J0(26), together with the preceding J0(26) decomposition evidence. The finite matrix rank is checked over Q and GF(2); scheme-level cotangent-map interpretation and Mazur's criterion remain explicit proposition-valued premises in Lean rather than global axioms.",
   "creators": [
     {
       "name": "DavidFox998",
@@ -12,18 +12,17 @@
   "license": "MIT",
   "keywords": [
     "Beal",
-    "Beal Conjecture",
+    "X0(26)",
     "J0(26)",
-    "modular curve",
+    "formal immersion",
+    "M3 rank2",
     "Lean4",
-    "SageMath",
-    "reproducible certificate",
-    "version 9.3.0"
+    "reproducible"
   ],
   "access_right": "open",
   "related_identifiers": [
     {
-      "identifier": "https://github.com/DavidFox998/beal-conjecture/releases/tag/v9.3.0",
+      "identifier": "https://github.com/DavidFox998/beal-conjecture/releases/tag/v9.4.0",
       "relation": "isIdenticalTo",
       "resource_type": "software"
     },
@@ -33,7 +32,7 @@
       "resource_type": "software"
     }
   ],
-  "doi": "10.5281/zenodo.22247099",
-  "conceptdoi": "10.5281/zenodo.22247098",
-  "zenodo_record": 22247099
+  "doi": "10.5281/zenodo.22257984",
+  "conceptdoi": "10.5281/zenodo.22257983",
+  "zenodo_record": 22257984
 }
