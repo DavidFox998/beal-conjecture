@@ -69,3 +69,4 @@ import Beal.B17_MazurPrimeCoverage
     import Beal.B20_Beal_Core
     import Beal.B21_FermatCorollary_Core
     import Beal.B21_FermatCorollary
+import Beal.Final.ConditionalBealTheorem

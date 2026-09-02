@@ -89,6 +89,41 @@ and `tate_step2_odd_prime_external`, plus the explicit
 entries such as `propext`, `Classical.choice`, and `Quot.sound` are Lean
 foundations, not additional mathematical theorems.
 
+### v10.0.0 — Conditional Beal — Explicit premises, no global axioms
+
+The v10.0.0 final assembly is
+[`lean/Beal/Final/ConditionalBealTheorem.lean`](lean/Beal/Final/ConditionalBealTheorem.lean).
+It composes the reproducible v9.2--v9.4 level-26 chain with the existing
+Frey, modularity, and Ribet level-lowering interfaces to prove the public Lean
+proposition `BealConjecture`.
+
+This is a conditional theorem. Its mathematical boundaries are visible theorem
+arguments; the release does not claim that transcripts or JSON files construct
+the missing geometry.
+
+| Verification | Status | Checked conclusion |
+|---|---|---|
+| v9.2 replay/certificate | passed | rank `0`, subject to the explicit Selmer/mwrank soundness premise |
+| v9.3 JSON | passed | `dim J₀(26) = 2 = 1 + 1` and the displayed factors |
+| v9.4 JSON | passed | `M₃` has rank `2` over `ℚ` and `GF(2)` |
+| Focused Lean | passed | `Beal.Final.ConditionalBealTheorem` |
+| Full CI | passed | complete project and certificate audit |
+| Axiom audit | passed | only `propext`, `Classical.choice`, and `Quot.sound` |
+
+The five explicit premises are:
+
+- `J0DecompositionSoundness_26 J0_26`;
+- `MwrankCertificateSoundness_26`;
+- `FormalImmersionSoundness_26 J0_26 cotangent`;
+- `FreyCurveExists`; and
+- `LevelLowering_26`.
+
+The first three are the v9.2--v9.4 certificate-interpretation boundaries.
+`FreyCurveExists` reuses the existing level-26 Frey construction supplier;
+`LevelLowering_26` carries the indexed modularity and Ribet level-lowering
+data. None is a global Lean axiom. Task #495 remains the named v10.0.1
+hardening step for constructing the actual cotangent map behind `M₃`.
+
 ### v9.4.0 — Formal immersion `X₀(26) → J₀(26)` at `2` via `M₃` rank `2`
 
 The v9.4.0 release adds a reproducible finite formal-immersion witness at the

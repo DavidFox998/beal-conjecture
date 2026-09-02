@@ -72,6 +72,9 @@ jobs:
       - name: Build formal-immersion bridge
         run: lake build Beal.Mazur.Gates.FormalImmersion_26
 
+      - name: Build v10 conditional Beal assembly
+        run: lake build Beal.Final.ConditionalBealTheorem
+
       - name: Check Lake manifest for dependency drift
         run: |
           set -euo pipefail
