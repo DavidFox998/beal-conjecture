@@ -60,6 +60,12 @@ jobs:
       - name: Build level-26 p-adic certificate interface
         run: lake build Beal.Mazur.Gates.Descent_26_PadicCertificates
 
+      - name: Check J0(26) decomposition witness
+        run: python3 scripts/j0_26_decomp_certificate.py --check
+
+      - name: Build J0(26) decomposition bridge
+        run: lake build Beal.Mazur.Gates.J0_26_Decomp
+
       - name: Check Lake manifest for dependency drift
         run: |
           set -euo pipefail
