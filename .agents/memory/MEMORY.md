@@ -40,6 +40,7 @@
 - [Lean tactic-linter replacement scope](lean-tactic-linter-replacement-scope.md) — “Try this” may replace only the final tactic; remove earlier tactics only when separately reported unused.
 - [Lean structure field names](lean-structure-field-names.md) — under large imported namespaces, single-letter dependent fields may resolve as existing terms; use descriptive names.
 - [Lean parent namespace exposure](lean-parent-namespace-exposure.md) — opening a child namespace does not expose declarations from its parent; open the parent explicitly.
+- [Lean Lake source directories](lean-lake-source-dir.md) — a library in a `lean/` source tree needs an explicit `srcDir := "lean"` in its Lake declaration.
 - [X₀(10) source boundary](x0-10-source-boundary.md) — GJ–L Proposition 17/Table 31 classify Faltings-minimal vertices; they do not prove a no-Frey exclusion.
 - [X₀(26) finite-model boundary](x0-26-model-boundary.md) — four rational cusps; J₀(26)(ℚ) target is Z/21, but model checks do not prove rank or exhaustiveness.
 - [Lean merge protection](lean-merge-protection.md) — brothers-desert-proof/main requires only the exact Lean job check; workspace origin is not the target.
