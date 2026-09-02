@@ -68,9 +68,8 @@ theorem pAdicSingleton_of_genuineCertificate
   · intro hAdmissible
     have hSame : sUnit = identitySUnitIndex_26 := by
       by_contra hNonidentity
-      obtain ⟨row, hAtTwo, hAtThirteen⟩ :=
+      obtain ⟨row, hAtTwo | hAtThirteen⟩ :=
         certificate.nonidentity_obstructions sUnit hNonidentity
-      rcases hAtTwo with hAtTwo | hAtThirteen
       · exact hAtTwo (hAdmissible row).1
       · exact hAtThirteen (hAdmissible row).2
     simpa [hSame]
