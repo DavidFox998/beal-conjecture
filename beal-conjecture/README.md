@@ -102,6 +102,41 @@ This is a conditional formalization milestone, not an unconditional proof of
 Beal's Conjecture. The new principal theorems compile with no `sorryAx` and use
 only Lean's standard `{propext, Classical.choice, Quot.sound}` foundations.
 
+### Consolidated level-26 endpoint
+
+`Mazur/Level26_ConditionalEndpoint.lean` now gives one inspectable package for
+the remaining level-26 inputs. Its consequences are deliberately separated:
+
+- the Phase A--C fields imply that the rational points on the displayed model
+  are the four certified cusps;
+- a separately supplied Frey realization turns this into the distinguished
+  `p = 13` exclusion used by the complete B17 prime split;
+- the seven non-13 Kenku--Mazur exclusions remain separate named inputs; and
+- the Frey-construction and level-lowering fields, together with the existing
+  modularity-label package, feed the public conditional `BealConjecture`
+  theorem.
+
+The endpoint does not turn the coefficient ledger into Galois cohomology or
+the mod-3 matrix into scheme geometry. The genuine Selmer/Kummer/finiteness
+package, exact torsion, Jacobian isogeny and rank transport, Abel--Jacobi
+geometry, Frey realization, and level lowering remain visible proof-relevant
+inputs wherever they are not already proved. The modularity-label
+compatibility package is retained separately with the weaker meaning described
+below.
+
+One older Phase D distinction is important: `ModularityCertificate_Beal`
+stores proposition-valued labels for R=T and modularity lifting, not proofs of
+those propositions. The operative supplied conclusion is the indexed
+`LevelLoweringCertificate_26`, which contains the noncuspidal level-26 point.
+The consolidated endpoint preserves and documents this API; it does not
+upgrade the labels into a modularity theorem.
+
+Further first-principles work belongs in
+[`beal-level-26-foundations`](https://github.com/DavidFox998/beal-level-26-foundations).
+That repository is the independent v1--v4 route toward replacing these
+premises; it is not a source dependency of this conditional repository, and
+its roadmap must not be read as a completed unconditional proof.
+
 ### v7.3.0 Task #440: Typed Eutheos old/new geometric bridge
 
 The v7.3.0 bridge makes the old/new boundary more explicit without pretending

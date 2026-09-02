@@ -31,6 +31,30 @@ audit names the global conductor, local Tate, and Wiles boundaries and also
 records the existing `Classical.choice` footprint of the `ZMod` unit argument.
 The choice-free patching/rank-one audit remains `[propext, Quot.sound]`.
 
+## Level-26 conditional endpoint
+
+`Beal/Mazur/Level26_ConditionalEndpoint.lean` is the source-level boundary
+between the released conditional development and the deeper foundations
+project. It collects the explicit descent, exact-torsion, Jacobian-transport,
+formal-immersion, Frey-realization, Frey-construction, modularity, and
+level-lowering inputs. Lean then derives:
+
+1. the four-cusp conclusion;
+2. the `p = 13` exclusion used by B17;
+3. complete B17 coverage after the seven non-13 exclusions are supplied; and
+4. the existing public conditional `BealConjecture` theorem.
+
+No field is synthesized from unrelated finite evidence. The separate
+[`beal-level-26-foundations`](https://github.com/DavidFox998/beal-level-26-foundations)
+repository is the v1--v4 program for constructing stronger replacements; it
+is linked documentation, not an imported Lean dependency.
+
+Here “modularity” names the existing Phase D compatibility field precisely:
+`ModularityCertificate_Beal` stores proposition labels rather than proofs.
+The indexed `LevelLoweringCertificate_26` is the operative supplier of the
+noncuspidal point. The endpoint deliberately exposes this weaker API instead
+of presenting the labels as a proved modularity-lifting theorem.
+
 ## Source-tree map
 
 ```text
@@ -85,7 +109,8 @@ smaller feedback loop is useful.
 2. the B01–B13 core and wrapper history;
 3. the B14 Frey, Tate, and level-2 ingredients;
 4. B15 iteration;
-5. B16–B21 final assembly and the Fermat corollary.
+5. B16–B21 final assembly and the Fermat corollary;
+6. the consolidated conditional level-26 endpoint.
 
 This manifest is intentionally explicit. It makes the full source inventory
 visible to Lean and to CI, including modules that are not on the shortest

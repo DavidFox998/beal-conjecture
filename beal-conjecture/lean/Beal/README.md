@@ -174,6 +174,26 @@ the repository constructs no value of it. The verified finite set remains the
 four source-backed cusps: no two CM points or six-point classification are
 invented.
 
+`Mazur/Level26_ConditionalEndpoint.lean` consolidates the current endpoint
+without weakening that boundary. It derives the four-cusp theorem, the
+distinguished `p = 13` Frey-isogeny exclusion, the complete B17 supplier after
+the seven non-13 exclusions are supplied, and the public conditional
+`BealConjecture` theorem. Its fields keep the genuine Selmer/Kummer/finiteness
+package, exact torsion, Jacobian transport, scheme-level formal immersion,
+Frey realization, modularity, and level lowering explicit.
+
+The modularity field retains the exact older Phase D semantics:
+`ModularityCertificate_Beal` names R=T and modularity-lifting propositions but
+does not carry proofs of them. The indexed level-lowering certificate supplies
+the noncuspidal point used by the contradiction. This endpoint documents that
+distinction rather than upgrading a label into a theorem.
+
+The independent
+[`beal-level-26-foundations`](https://github.com/DavidFox998/beal-level-26-foundations)
+repository is the v1--v4 route toward constructing those missing objects from
+first principles. This repository links to that program but does not import
+it, duplicate it, or present its roadmap as an unconditional theorem.
+
 The certificate interfaces follow the useful shapes in the BSD repository:
 a fixed complex function evaluated at `s = 1`, an explicit rational point with
 a height value, and a natural-number rank value. The concrete BSD files concern
