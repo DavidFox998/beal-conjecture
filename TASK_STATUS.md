@@ -15,6 +15,7 @@ what remains, without inventing a separate blocked state.
 | Concrete elliptic \(E[2]\) representation | `lake build Beal.Mazur.Cohomology.EllipticTwoTorsion` passes; the ambient algebraic `H1` is now canonical Mathlib group cohomology of geometric 2-torsion. |
 | Full Beal aggregate build | `lake build Beal` passes on the current workspace. |
 | Consolidated level-26 conditional endpoint | `Beal.Mazur.Level26_ConditionalEndpoint` is present, imported by `Beal.lean`, and exposes one `Level26ConditionalEndpoint` package with the four-cusp, \(p=13\), Mazur-classification, and conditional-Beal consequences. |
+| Foundations finite-evidence seed | `beal-level-26-foundations` contains the checked \(M_3\), typed ten-row ledger, 80-entry audit, and deterministic 160-witness replay; `bash scripts/verify-scaffold.sh` passes. |
 | Ensemble backlink warning | `rh-p5-bridge-14/REPOS.md` now explicitly requires a backlink plus chain/workflow registration before a repository counts as ensemble-linked. |
 | EKG and webhook test infrastructure | The repository contains the EKG, Stripe webhook, email, and tier-gate test suites; individual live-provider confirmations are tracked separately below. |
 
@@ -25,7 +26,7 @@ what remains, without inventing a separate blocked state.
 | RapidAPI paid-subscriber path | The live app still reports that `RAPIDAPI_PROXY_SECRET` is not configured in Fly.io. |
 | Direct Stripe validation | The live app still reports an invalid `mk_...` Stripe value instead of an accepted secret-key prefix. |
 | GitHub pushes / ensemble relock | No successful push or relock has been verified. |
-| Foundations repository publication | The local finite-evidence work exists and builds, but publication has not been verified. |
+| Foundations repository publication | The local finite-evidence work is complete, but remote publication has not been verified. |
 | FastAPI startup cleanup | `zerobeacon_mf_1000_main.py` still uses `@app.on_event("startup")`. |
 | Genuine level-26 Selmer bridge | Continuous/local Galois cohomology and the proof-relevant ledger identification remain unfinished; the concrete algebraic \(H^1\) is not being presented as a complete Selmer construction. |
 | Live Stripe behavior | Webhook delivery, retry idempotency, restart persistence, re-subscription delivery, and admin-log redaction still need their corresponding checks. |
