@@ -33,5 +33,7 @@
       "scheme": "doi"
     }
   ],
-  "conceptdoi": "10.5281/zenodo.22041831"
+  "doi": "10.5281/zenodo.22281075",
+  "conceptdoi": "10.5281/zenodo.22041831",
+  "zenodo_record": 22281075
 }

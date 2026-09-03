@@ -7,8 +7,8 @@ authors:
     given-names: David
     affiliation: "Opera Numerorum"
 version: "v11.0.0"
+doi: "10.5281/zenodo.22281075"
 date-released: 2026-09-03
-doi: "10.5281/zenodo.22041831"
 license: MIT
 repository-code: "https://github.com/DavidFox998/beal-conjecture"
 keywords:

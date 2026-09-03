@@ -1,5 +1,7 @@
 # v11.0.0 — Conditionally complete
 
+Version DOI: [10.5281/zenodo.22281075](https://doi.org/10.5281/zenodo.22281075)
+
 This release closes the repository as a stable conditional theorem assembly.
 The final theorem proves `BealConjecture` from exactly five named inputs:
 

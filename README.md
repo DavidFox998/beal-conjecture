@@ -1,4 +1,4 @@
-[![Concept DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22041831.svg)](https://doi.org/10.5281/zenodo.22041831) [![CI](https://github.com/DavidFox998/beal-conjecture/actions/workflows/main.yml/badge.svg)](https://github.com/DavidFox998/beal-conjecture/actions/workflows/main.yml)
+[![v11.0.0 DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22281075.svg)](https://doi.org/10.5281/zenodo.22281075) [![Concept DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22041831.svg)](https://doi.org/10.5281/zenodo.22041831) [![CI](https://github.com/DavidFox998/beal-conjecture/actions/workflows/main.yml/badge.svg)](https://github.com/DavidFox998/beal-conjecture/actions/workflows/main.yml)
 
 # Beal Conjecture — a formal instrument in *Opera Numerorum*
 
@@ -680,6 +680,7 @@ Tate, or Ribet from first principles.
 
 | Version | Tag / commit | Version DOI | What the snapshot records |
 |---|---|---|---|
+| **v11.0.0 conditionally complete** | `v11.0.0` / `1ecb9e56` | [Zenodo v11.0.0](https://doi.org/10.5281/zenodo.22281075) | Exactly five visible final premises; explicit supplied-carrier Selmer cardinality; ledger-derived \(M_3\); named q-expansion/Abel--Jacobi compatibility boundary. |
 | v0.2.0 zero-axiom core | `v0.2.0-zero-axiom-core` / `4f425e5` | Not verified in this audit trail | First zero-axiom core scaffold |
 | v0.3.0 arithmetic descent | `v0.3.0-arithmetic-descent` / `246fd41` | [Zenodo v0.3.0](https://doi.org/10.5281/zenodo.22048503) | Arithmetic descent, including $S_2(\Gamma_0(2)) = 0$ by `rfl` |
 | v0.4.0 typed interfaces | `v0.4.0-interfaces-typed` / `881b109` | Not verified in this audit trail | A single typed `modularity_hypothesis` boundary |
