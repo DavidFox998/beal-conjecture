@@ -23,7 +23,7 @@ Ribet level lowering to 26
         ↓
 noncuspidal rational point on X₀(26)
         ↓
-J₀(26) rank 0 + formal immersion at 2
+J₀(26) rank 0 + formal immersion at 3
         ↓
 X₀(26)(ℚ) consists of the four certified cusps
         ↓
@@ -61,7 +61,7 @@ The finite witness checks `dim J₀(26) = 2 = 1 + 1` and the displayed factor
 models. The isogeny interpretation remains
 `J0DecompositionSoundness_26 J0_26`.
 
-### v9.4.0 — formal immersion at `2`
+### v9.4.0 — finite formal-immersion evidence, corrected to `3`
 
 - `sagemath/formal_immersion_26.log`
 - `sagemath/GENUINE_FORMAL_IMMERSION_26_CERT_v9.4.0.txt`
@@ -70,8 +70,9 @@ models. The isogeny interpretation remains
 - `lean/Beal/Mazur/Gates/FormalImmersion_26_Cert.lean`
 - `lean/Beal/Mazur/Gates/FormalImmersion_26.lean`
 
-The witness checks that the displayed `2 × 6` matrix has rank two over `ℚ`
-and `GF(2)`. Its identification with the actual cotangent map and Mazur's
+The witness checks that the displayed matrix
+`[[1,1],[0,2]]` has determinant `2`, hence rank two over `ZMod 3`.
+Its identification with the actual cotangent map and Mazur's
 cusp criterion remains `FormalImmersionSoundness_26 J0_26 cotangent`.
 
 ## The five explicit v10.0.0 premises

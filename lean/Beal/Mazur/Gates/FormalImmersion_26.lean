@@ -6,7 +6,7 @@ import Beal.Mazur.Gates.FormalImmersion_J0_26_NoSorry
 namespace Beal17Mazur.Gates.FormalImmersion26
 
 /-!
-# Focused v9.4.0 formal-immersion boundary at `2`
+# Focused formal-immersion boundary at `3`
 
 The finite matrix and rank computations are checked in
 `FormalImmersion_26_Cert`.  Mathlib 4.12 does not construct the modular curve,
@@ -27,58 +27,52 @@ open Beal17Mazur.Jacobian.J0_26_Decomp
 
 /-- The abstract cotangent map whose geometric construction is not yet
 available in Mathlib. -/
-structure CotangentMapAt2_26 where
+structure CotangentMapAt3_26 where
   Cot_0_J0_26 : Type
   Cot_infinity_X0_26 : Type
   pullback : Cot_0_J0_26 → Cot_infinity_X0_26
 
-def CotangentMapSurjectiveAt2_26
-    (cotangent : CotangentMapAt2_26) : Prop :=
+def CotangentMapSurjectiveAt3_26
+    (cotangent : CotangentMapAt3_26) : Prop :=
   Function.Surjective cotangent.pullback
 
 /-- Explicit geometric soundness premise for v9.4.0.
 
-The first implication interprets the checked mod-2 matrix rank as
+The first implication interprets the checked mod-3 nonzero determinant as
 surjectivity of the actual cotangent map.  The second is the exact Mazur
 criterion used here: rank zero plus that surjectivity isolates the four
 certified cusps.  Both implications remain visible data supplied by future
 scheme-level geometry. -/
 def FormalImmersionSoundness_26
     (J0_26 : Type*) [AddCommGroup J0_26]
-    (cotangent : CotangentMapAt2_26) : Prop :=
-  (M3_rank_mod2 = J0_26_dimension →
-      CotangentMapSurjectiveAt2_26 cotangent) ∧
+    (cotangent : CotangentMapAt3_26) : Prop :=
+  (Matrix.det M3 ≠ 0 →
+      CotangentMapSurjectiveAt3_26 cotangent) ∧
     ((∃ transport : JacobianTransport_26 J0_26,
         transport.rank_J0 = 0) →
-      CotangentMapSurjectiveAt2_26 cotangent →
+      CotangentMapSurjectiveAt3_26 cotangent →
       X0_26_Q = (four_cusps : Set X0_26_RationalPoint))
 
 theorem M3_rows_cols_and_rank :
-    M3_rows = 2 ∧
-      M3_cols = 6 ∧
-      M3_rank_QQ = 2 ∧
-      M3_rank_mod2 = 2 ∧
-      M3_rank_mod2 = J0_26_dimension := by
-  refine ⟨M3_rows_eq_two, M3_cols_eq_six, M3_rank_QQ_eq_two,
-    M3_rank_mod2_eq_two, ?_⟩
-  exact M3_rank_mod2_eq_two.trans J0_26_dimension_eq_two.symm
+    Matrix.det M3 ≠ 0 ∧
+      J0_26_dimension = 2 :=
+  ⟨M3_det_nonzero, J0_26_dimension_eq_two⟩
 
 /-- The checked rank-two matrix yields surjectivity only through the explicit
 geometric soundness premise. -/
-theorem cotangent_map_surjective_at_2
+theorem cotangent_map_surjective_at_3
     {J0_26 : Type*} [AddCommGroup J0_26]
-    {cotangent : CotangentMapAt2_26}
+    {cotangent : CotangentMapAt3_26}
     (formalSoundness :
       FormalImmersionSoundness_26 J0_26 cotangent) :
-    CotangentMapSurjectiveAt2_26 cotangent := by
-  exact formalSoundness.1
-    (M3_rank_mod2_eq_two.trans J0_26_dimension_eq_two.symm)
+    CotangentMapSurjectiveAt3_26 cotangent :=
+  formalSoundness.1 M3_det_nonzero
 
 /-- The three visible v9.2--v9.4 premises combine to give rank zero and
 Mazur's cusp-only conclusion. -/
 theorem X0_26_Q_eq_four_cusps_of_certificates
     {J0_26 : Type*} [AddCommGroup J0_26]
-    {cotangent : CotangentMapAt2_26}
+    {cotangent : CotangentMapAt3_26}
     (decompositionSoundness : J0DecompositionSoundness_26 J0_26)
     (mwrankSoundness : MwrankCertificateSoundness_26)
     (formalSoundness :
@@ -89,11 +83,11 @@ theorem X0_26_Q_eq_four_cusps_of_certificates
         transport.rank_J0 = 0 :=
     J0_26_rank_zero decompositionSoundness mwrankSoundness
   exact formalSoundness.2 rankZero
-    (cotangent_map_surjective_at_2 formalSoundness)
+    (cotangent_map_surjective_at_3 formalSoundness)
 
 theorem X0_26_Q_finite_of_certificates
     {J0_26 : Type*} [AddCommGroup J0_26]
-    {cotangent : CotangentMapAt2_26}
+    {cotangent : CotangentMapAt3_26}
     (decompositionSoundness : J0DecompositionSoundness_26 J0_26)
     (mwrankSoundness : MwrankCertificateSoundness_26)
     (formalSoundness :
@@ -104,7 +98,7 @@ theorem X0_26_Q_finite_of_certificates
   exact four_cusps.finite_toSet
 
 #print axioms M3_rows_cols_and_rank
-#print axioms cotangent_map_surjective_at_2
+#print axioms cotangent_map_surjective_at_3
 #print axioms X0_26_Q_eq_four_cusps_of_certificates
 #print axioms X0_26_Q_finite_of_certificates
 

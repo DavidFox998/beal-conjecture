@@ -1,10 +1,10 @@
 Sage version: 10.5
 Level: 26
-Reduction prime: 2
-M3 = [[1, 0, 1, 0, 1, 1], [0, 1, 1, 1, 0, 1]]
+Reduction prime: 3
+M3 = [[1, 1], [0, 2]]
 M3 rows: 2
-M3 columns: 6
+M3 columns: 2
 Rank over QQ: 2
-Rank over GF(2): 2
+Rank over GF(3): 2
 Dimension J0(26): 2
 Formal immersion criterion reported: rank M3 = dim J0(26)

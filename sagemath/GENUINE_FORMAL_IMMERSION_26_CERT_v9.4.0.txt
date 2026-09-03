@@ -1,53 +1,38 @@
-# GENUINE CERT FOR v9.4.0 — Formal Immersion X0(26) -> J0(26) at 2 — M3 rank 2 — 6-point checklist
+# CORRECTED FINITE CERTIFICATE — X0(26) at the cusp infinity modulo 3
 
-1. Correct curve labels and exact model identifiers:
-   - X0(26): modular curve level 26 = 2*13, genus g=2, cusp at infinity
-   - J0(26): Jacobian of X0(26), dim 2 = E26a1 x E26b1 from v9.3.0 cert b06254c
-     E26a1: (1,0,1,-5,-8) LMFDB 26.a1, E26b1: (1,-1,1,-3,3) LMFDB 26.b1
-   - Formal immersion at p=2: map on cotangent spaces
-     f*: Cot_0(J0(26)) -> Cot_infty(X0(26)) must be surjective mod 2
-   - M3 matrix: Hecke/q-expansion matrix linking S2(26) basis to cotangent at cusp
+1. Objects and reduction prime
+   - X0(26) has level 26 = 2*13 and genus 2.
+   - The point under study is the rational cusp infinity.
+   - The reduction prime is p=3, a good prime because 3 does not divide 26.
 
-2. Sage/mwrank versions and generating commands:
-   - Sage 10.5 SageCell, modular symbols package
-   - Commands (reuses v9.1.0 phase C):
-     M = ModularSymbols(26,2,1).cuspidal_subspace().new_subspace()
-     S = M.q_expansion_basis(10) # basis of S2(26)
-     # M3 = matrix of coefficients of q-exp basis truncated to cotangent conditions at cusp infinity mod 2
-     # Explicit M3 from v9.1.0 log — see sagemath/formal_immersion_26.log
-     print(M3); print("Rank", M3.rank())
-   - Log saved as sagemath/formal_immersion_26.log — reproducible via SageCell
-   - Reuses v9.3.0 decomp log j0_26_decomp.log and v9.2.0 certs_26a1_26b1.log for rank 0
+2. Modular-symbol input
+   - The recorded S2(26) dimension is 2.
+   - The two normalized coefficient lines are 26a1 and 26b1.
+   - Their coefficients a_0 through a_100 are recorded in
+     docs/Level26/level_26_ledger.json.
+   - Their a_2 coefficients are distinct: -1 and 1.
 
-3. Exact S-unit-dependent coverings / q-expansion basis:
-   - S2(26) dimension 2 = newforms 26a + 26b
-   - q-expansion basis from Sage: f_26a = q - q^2 + ... , f_26b = q + ... (check log)
-   - S={2,13} — formal immersion checked mod 2, not S-units, but bridge uses S-unit coverings from v9.2.0 triviality to get rank 0 needed for Mazur's method
-   - M3 matrix entries are q-coeffs mod 2 after applying Atkin-Lehner w2, w13
+3. Finite cotangent-matrix evidence
+   - In the recorded modular-symbol basis, the finite matrix is
+       M3 = [[1, 1], [0, 2]]
+     over ZMod 3.
+   - det(M3) = 2, which is nonzero modulo 3.
+   - Therefore M3 has rank 2 over GF(3), equal to the recorded genus and
+     Jacobian dimension.
 
-4. Successful formal immersion / M3 rank calculation:
-   - M3 matrix (from v9.1.0 phase C log):
-     M3 = [1 0 1 0 1 0 ... ; 0 1 1 1 0 1 ...] (2 x n, full explicit in formal_immersion_26.log)
-     Rank M3 = 2 (computed over QQ and mod 2 — both 2)
-   - Interpretation: Rank 2 = 2 = dim J0(26) = genus X0(26) => map on cotangents surjective
-   - Log output: "Rank M3 = 2 — Formal immersion holds at 2 for X0(26) -> J0(26)"
-   - This is the geometric condition for Chabauty / Mazur's argument to rule out rational points beyond cusps
+4. Reproducibility
+   - sagemath/formal_immersion_26.log records the exact matrix and ranks.
+   - scripts/formal_immersion_26_certificate.py parses that transcript and
+     independently checks rank over QQ and GF(3).
+   - lean/Beal/Mazur/Gates/FormalImmersion_26_Cert.lean checks the determinant
+     over ZMod 3 in Lean.
 
-5. Checkable witnesses / external assumption:
-   - Witness: M3 matrix file sagemath/formal_immersion_26.log — anyone can recompute rank with Sage: matrix(QQ, ...).rank()
-   - External-computation assumption (explicitly declared, not hidden):
-     ASSUME ModularSymbols/Sage q-expansion basis correctness: If Sage reports S2(26) basis and M3 rank 2, then formal immersion holds at 2.
-     ASSUME J0DecompositionSoundness_26 from v9.3.0 b06254c still holds
-     ASSUME MwrankCertificateSoundness_26 from v9.2.0 still holds
-   - All premises declared as Prop args — no global Lean axiom.
+5. Explicit proof boundary
+   - The finite matrix is not itself a constructed Abel--Jacobi differential.
+   - Identifying M3 with d(AJ)_infinity is still an external geometric premise.
+   - Applying Mazur's formal-immersion criterion and the rank/torsion
+     hypotheses remains conditional on the corresponding geometric and
+     arithmetic suppliers.
 
-6. Justified bridge from M3 rank 2 to FormalImmersion and to Beal:
-   - Mazur's formal immersion criterion: If map on cotangents is surjective at prime p, then any rational point on X0(N) that reduces to same point mod p as cusp must be cusp itself when J0(N)(Q) rank 0
-   - We have from v9.2.0: Rank E26a1 = Rank E26b1 =0 => Rank J0(26)=0 from v9.3.0 isogeny
-   - From M3 rank 2: Cot_0(J0(26)) -> Cot_infty(X0(26)) surjective mod 2 => formal immersion at 2
-   - Therefore: X0(26)(Q) known — only cusps and known CM points — no extra points that could give Beal triple
-   - Lean bridge:
-     theorem FormalImmersion_26_at_2 (h1: J0DecompositionSoundness_26) (h2: MwrankCertificateSoundness_26) (h3: FormalImmersionSoundness_26) : True := trivial with witness M3 rank
-   - This closes second-to-last conditional in ConditionalBealTheorem — leaves only final assembly for v10.0
-
-Path reference: sagemath/formal_immersion_26.log is immutable log, this txt is checklist, lean cert houses M3.
+This correction supersedes the obsolete 2 x 6 placeholder and every prior
+claim that this certificate established formal immersion modulo 2.

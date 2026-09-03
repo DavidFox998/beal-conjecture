@@ -2,42 +2,34 @@
   "boundary": {
     "checked": [
       "the immutable source hashes",
-      "the exact 2 x 6 integer matrix",
+      "the exact 2 x 2 integer matrix",
       "rank two over QQ by exact rational elimination",
-      "rank two over GF(2) by exact modular elimination",
+      "rank two over GF(3) by exact modular elimination",
       "rank M3 equals the recorded dimension of J0(26)"
     ],
     "external_premises": [
       "Sage ModularSymbols/q-expansion correctness",
       "rank-two matrix semantics for the geometric cotangent map",
-      "Mazur formal-immersion criterion at 2",
+      "Mazur formal-immersion criterion at 3",
       "J0(26) decomposition and mwrank/second-descent soundness"
     ]
   },
-  "certificate_sha256": "5f24969b311c30fe33e9cdadfe1f1b985fb8c8d9bdf7540b50c59f74b479f90d",
+  "certificate_sha256": "158f203fccc1bf11a6a578a80af8ba06c42d448e76d254d869ce2fa498b6a5cb",
   "environment": {
     "level": 26,
-    "reduction_prime": 2,
+    "reduction_prime": 3,
     "sage_version_reported": "10.5"
   },
   "matrix": {
-    "columns": 6,
+    "columns": 2,
     "entries": [
       [
-        1,
-        0,
-        1,
-        0,
         1,
         1
       ],
       [
         0,
-        1,
-        1,
-        1,
-        0,
-        1
+        2
       ]
     ],
     "name": "M3",
@@ -46,7 +38,7 @@
   "rank_check": {
     "equation": "rank(M3) = 2 = dim J0(26)",
     "jacobian_dimension": 2,
-    "over_GF_2": {
+    "over_GF_3": {
       "computed": 2,
       "reported": 2,
       "verified": true
@@ -61,16 +53,16 @@
   "reported_criterion": {
     "conclusion": "surjective",
     "cotangent_map": "Cot_0(J0(26)) -> Cot_infinity(X0(26))",
-    "prime": 2,
+    "prime": 3,
     "transcript_line": "Formal immersion criterion reported: rank M3 = dim J0(26)"
   },
   "schema": "beal.formal-immersion-26-certificate.v1",
   "source": {
     "lean_data": "lean/Beal/Mazur/Gates/FormalImmersion_26_Cert.lean",
-    "lean_data_sha256": "06d3638be13bf18dff20657a95a00a06944359254829c048071da855aa14ecfa",
+    "lean_data_sha256": "7dd899ebd96d1231b8025f44663cee576d9362945335ad2b98b4ec0bc350e15a",
     "log": "sagemath/formal_immersion_26.log",
-    "log_sha256": "4d9cb6bbbee8b4acd0878439b843bb6102186fc3526e8c5f0fa93cc75e90fecb",
+    "log_sha256": "67974b758c5c47b15628a23dfebb53c64fa4005b689f2ac4625763538bf21863",
     "narrative": "sagemath/GENUINE_FORMAL_IMMERSION_26_CERT_v9.4.0.txt",
-    "narrative_sha256": "fe3a0d54f24c0e28387acfebf4db795c88afb7271b4f20efb7eb6e185a5efcb9"
+    "narrative_sha256": "63c1fa2f2348758b0a63e369b673176b8ce7b576b1788c5ebc86d45155a39913"
   }
 }

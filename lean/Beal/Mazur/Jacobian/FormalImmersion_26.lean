@@ -1,4 +1,5 @@
 import Beal.Mazur.Jacobian.J0_26_Decomp
+import Beal.Mazur.Gates.FormalImmersion_26_Cert
 import Beal.Mazur.Gates.FormalImmersion_J0_26_NoSorry
 
 namespace Beal17Mazur.Jacobian.FormalImmersion26
@@ -138,10 +139,19 @@ theorem formal_immersion_matrix_explicit :
     formalImmersionMatrixMod3 = !![1, 1; 0, 2] := by
   decide
 
+/-- The matrix computed from the differential/cusp tables is exactly the
+canonical mod-`3` certificate matrix at the cusp `∞`. -/
+theorem formal_immersion_matrix_eq_certified_M3 :
+    formalImmersionMatrixMod3 =
+      Beal17Mazur.Gates.FormalImmersion26Cert.M3 := by
+  rw [formal_immersion_matrix_explicit]
+  rfl
+
 /-- Kernel-decided full-rank certificate for the real Phase C matrix. -/
 theorem formal_immersion_matrix_rank_two_decided :
     Matrix.det formalImmersionMatrixMod3 ≠ 0 := by
-  decide
+  rw [formal_immersion_matrix_eq_certified_M3]
+  exact Beal17Mazur.Gates.FormalImmersion26Cert.M3_det_nonzero
 
 /-- The finite, theorem-backed Phase C evidence.
 
