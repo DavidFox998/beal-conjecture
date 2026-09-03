@@ -8,9 +8,10 @@ namespace Beal17Mazur.Gates.FormalImmersion26Cert
 The reduction prime is `3`, which is a good prime for level `26 = 2 * 13`.
 The point of immersion is the rational cusp `∞`; these are separate roles.
 
-`M3` is the `2 × 2` cotangent matrix obtained from the
-`ModularSymbols(26)` basis after reduction modulo `3`. Its determinant is
-`2`, hence is a unit in `ZMod 3`. This module checks that finite matrix fact.
+`M3` is the `2 × 2` matrix obtained from the first two coefficients of the
+two normalized level-26 eigenlines, followed by the target-coordinate change
+recorded in `Beal.Modular.Level26_GeometryBridge`. Its determinant is `2`,
+hence is a unit in `ZMod 3`. This module checks that finite matrix fact.
 The geometric identification with the actual Abel--Jacobi differential at
 `∞` remains a separate theorem obligation.
 -/

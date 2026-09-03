@@ -82,6 +82,40 @@ def X0_26_certifiedGenus : Nat :=
 theorem X0_26_genus : X0_26_certifiedGenus = 2 := by
   decide
 
+/-! ## Independent modular-curve genus arithmetic
+
+This is the level-26 specialization of the Diamond--Shurman numerical pattern
+also used for `X₀(143)` in the Opera Numerorum RH repositories.  It verifies
+the arithmetic inputs to the Riemann--Hurwitz formula without pretending that
+Mathlib 4.12 already identifies the displayed hyperelliptic model with a
+scheme-level modular curve.
+-/
+
+/-- `[SL₂(ℤ) : Γ₀(26)] = 26(1+1/2)(1+1/13) = 42`. -/
+theorem X0_26_modular_index : 26 * 3 / 2 * 14 / 13 = 42 := by
+  decide
+
+/-- The squarefree level `26 = 2·13` has four cusps. -/
+theorem X0_26_cusp_term :
+    Nat.totient (Nat.gcd 1 26) + Nat.totient (Nat.gcd 2 13) +
+      Nat.totient (Nat.gcd 13 2) + Nat.totient (Nat.gcd 26 1) = 4 := by
+  decide
+
+/-- Numerical Diamond--Shurman genus formula at level 26:
+`g = 1 + μ/12 - ν₂/4 - ν₃/3 - ν∞/2 = 2`, with
+`μ=42`, `ν₂=2`, `ν₃=0`, and `ν∞=4`. -/
+theorem X0_26_genus_formula_arithmetic :
+    (1 : ℚ) + 42 / 12 - 2 / 4 - 0 / 3 - 4 / 2 = 2 := by
+  norm_num
+
+/-- The independent modular-curve arithmetic agrees numerically with the
+genus certified from the nonsingular sextic model. -/
+theorem X0_26_model_genus_agrees_with_formula :
+    (X0_26_certifiedGenus : ℚ) =
+      1 + 42 / 12 - 2 / 4 - 0 / 3 - 4 / 2 := by
+  rw [X0_26_genus]
+  norm_num
+
 /-- Points on the even-degree projective hyperelliptic model.
 
 The two infinity constructors distinguish the two rational points at infinity

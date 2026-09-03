@@ -1,6 +1,7 @@
 import Beal.Mazur.Jacobian.J0_26_Decomp
 import Beal.Mazur.Gates.FormalImmersion_26_Cert
 import Beal.Mazur.Gates.FormalImmersion_J0_26_NoSorry
+import Beal.Modular.Level26_GeometryBridge
 
 namespace Beal17Mazur.Jacobian.FormalImmersion26
 
@@ -28,7 +29,7 @@ cusps.  Consequently every rational-point conclusion below remains
 conditional and no unconditional rank claim is made.
 -/
 
-/-! ## Real finite matrix evidence at `3` -/
+/-! ## Ledger-derived finite matrix evidence at `3` -/
 
 /-- The degree-six polynomial in the completed-square model
 `Y² = X0_26_f6(x)`.
@@ -47,97 +48,21 @@ theorem X0_26_hyperellipticModel_eq_existing (x y : ℚ) :
       X0_26_OnModel (.affine x y) := by
   rfl
 
-/-- The two standard symbols for the genus-two holomorphic differential basis.
+/-- The `2 × 2` mod-`3` matrix derived from the first two coefficients of the
+two normalized LMFDB eigenlines, followed by the explicit target-basis change
+`(c₁,c₂) ↦ (c₁,c₁+c₂)`.
 
-They record `ω₁ = dx / y` and `ω₂ = x dx / y`.  Mathlib 4.12 has no
-scheme-level regular-differential space for this curve, so these constructors
-are finite basis labels rather than a claim that `H⁰(X, Ω¹)` has been
-constructed as a sheaf cohomology group. -/
-inductive X0_26_HolomorphicDifferential where
-  | omegaOne
-  | omegaTwo
-  deriving DecidableEq, Repr
-
-def omega1 : X0_26_HolomorphicDifferential :=
-  .omegaOne
-
-def omega2 : X0_26_HolomorphicDifferential :=
-  .omegaTwo
-
-def X0_26_differentialBasis :
-    Fin 2 → X0_26_HolomorphicDifferential :=
-  ![omega1, omega2]
-
-/-- Numerator degree in the displayed basis:
-`omega1 = dx/y` has degree zero and `omega2 = x dx/y` has degree one. -/
-def differentialNumeratorDegree :
-    X0_26_HolomorphicDifferential → Nat
-  | .omegaOne => 0
-  | .omegaTwo => 1
-
-theorem X0_26_differentialBasis_degrees :
-    differentialNumeratorDegree (X0_26_differentialBasis 0) = 0 ∧
-      differentialNumeratorDegree (X0_26_differentialBasis 1) = 1 := by
-  decide
-
-/-- The four cusp coordinate tokens after reduction modulo `3`.
-
-The two affine cusps use their actual completed-square coordinates `(0, ±1)`.
-The two infinity constructors remain separate tokens.  This finite table does
-not construct the smooth special fiber. -/
-def cuspReductionMod3 :
-    X0_26_CuspLabel → Fin 2 → ZMod 3
-  | .divisorOne => ![0, 1]
-  | .divisorTwo => ![0, 2]
-  | .divisorThirteen => ![1, 0]
-  | .divisorTwentySix => ![2, 0]
-
-/-- Finite Abel--Jacobi coordinate rows attached to all four cusp labels.
-
-These are replay coordinates for the mod-`3` differential computation.  The
-actual Jacobian-valued Abel--Jacobi map remains part of
-`FormalImmersionAt3_26`. -/
-def abelJacobiCuspMod3 :
-    X0_26_CuspLabel → Fin 2 → ZMod 3
-  | .divisorOne => ![0, 0]
-  | .divisorTwo => ![1, 2]
-  | .divisorThirteen => ![2, 1]
-  | .divisorTwentySix => ![0, 1]
-
-/-- The two affine cusps selected for the differential matrix. -/
-def formalImmersionCuspPair : Fin 2 → X0_26_CuspLabel :=
-  ![.divisorOne, .divisorTwo]
-
-theorem formal_immersion_selected_cusps_reduce_distinct :
-    cuspReductionMod3 (formalImmersionCuspPair 0) ≠
-      cuspReductionMod3 (formalImmersionCuspPair 1) := by
-  decide
-
-/-- Evaluation of the two displayed differential labels at each cusp,
-reduced modulo `3`. -/
-def differentialEvaluationMod3 :
-    X0_26_HolomorphicDifferential → X0_26_CuspLabel → ZMod 3
-  | .omegaOne, .divisorOne => 1
-  | .omegaOne, .divisorTwo => 1
-  | .omegaOne, .divisorThirteen => 2
-  | .omegaOne, .divisorTwentySix => 2
-  | .omegaTwo, .divisorOne => 0
-  | .omegaTwo, .divisorTwo => 2
-  | .omegaTwo, .divisorThirteen => 1
-  | .omegaTwo, .divisorTwentySix => 2
-
-/-- The `2 × 2` mod-`3` matrix computed from the differential and cusp tables.
-
-Rows are `(omega1, omega2)` and columns are the two selected affine cusps. -/
+This is finite q-expansion evidence.  Its identification with the actual
+Abel--Jacobi cotangent map at `∞` is the separate compatibility proposition in
+`Level26_GeometryBridge`. -/
 def formalImmersionMatrixMod3 :
     Matrix (Fin 2) (Fin 2) (ZMod 3) :=
-  fun i j =>
-    differentialEvaluationMod3
-      (X0_26_differentialBasis i) (formalImmersionCuspPair j)
+  Beal.Modular.Level26_GeometryBridge.level26CotangentMatrixMod3
 
 theorem formal_immersion_matrix_explicit :
     formalImmersionMatrixMod3 = !![1, 1; 0, 2] := by
-  decide
+  exact
+    Beal.Modular.Level26_GeometryBridge.level26_cotangent_matrix_explicit
 
 /-- The matrix computed from the differential/cusp tables is exactly the
 canonical mod-`3` certificate matrix at the cusp `∞`. -/
@@ -163,8 +88,6 @@ def FormalImmersionAt3_Real_26 : Prop :=
     X0_26_certifiedGenus = 2 ∧
     X0_26_HyperellipticModel 0 1 ∧
     X0_26_HyperellipticModel 0 (-1) ∧
-    cuspReductionMod3 (formalImmersionCuspPair 0) ≠
-      cuspReductionMod3 (formalImmersionCuspPair 1) ∧
     Matrix.det formalImmersionMatrixMod3 ≠ 0 ∧
     Matrix.det J0_26_dAJ_matrix_mod_3_replay ≠ 0
 
@@ -175,7 +98,6 @@ theorem formal_immersion_real_evidence :
     ⟨rfl, X0_26_discriminant_ne_zero, X0_26_genus,
       by norm_num [X0_26_HyperellipticModel, X0_26_f6, X0_26_sextic],
       by norm_num [X0_26_HyperellipticModel, X0_26_f6, X0_26_sextic],
-      formal_immersion_selected_cusps_reduce_distinct,
       formal_immersion_matrix_rank_two_decided,
       J0_26_mod3_det_replay_decided⟩
 
