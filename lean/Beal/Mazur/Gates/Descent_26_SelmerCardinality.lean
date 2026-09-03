@@ -29,7 +29,7 @@ theorem abstractTwoSelmer_card_eq_one
     (trivial : Subsingleton selmer.Carrier) :
     Nat.card selmer.Carrier = 1 := by
   letI : Subsingleton selmer.Carrier := trivial
-  exact Nat.card_of_subsingleton ⟨selmer.zero⟩
+  exact Nat.card_of_subsingleton selmer.zero
 
 /-- The equivalence is an explicit input; no coefficient ledger is identified
 with a cohomological Selmer group by definition. -/
