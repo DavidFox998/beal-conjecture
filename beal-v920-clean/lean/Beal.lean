@@ -59,6 +59,7 @@ import Beal.B17_X0Moduli
 import Beal.Mazur.KernelToX0
 import Beal.Mazur.X0_26_Model
 import Beal.Mazur.X0_26_RationalPoints
+import Beal.Mazur.Cohomology.EllipticTwoTorsion
 import Beal.Mazur.Gates.Descent_26_SelmerCardinality
 import Beal.B17_MazurPrimeCoverage
     import Beal.B18_FreyIsElliptic_Core

@@ -1,6 +1,7 @@
 import Beal.Mazur.Gates.Descent_26_Bridge
 import Beal.Mazur.Gates.Descent_26_PadicCertificates
 import Beal.Mazur.Gates.SecondDescent_Real_26
+import Beal.Mazur.Cohomology.EllipticTwoTorsion
 import Mathlib.NumberTheory.Padics.PadicNumbers
 import Mathlib.RingTheory.Polynomial.RationalRoot
 import Mathlib.Tactic
@@ -247,20 +248,18 @@ def EverywhereLocallySoluble {rows : List BinaryQuartic}
 
 /-! ## Abstract 2-Selmer carriers and their covering semantics -/
 
-/-- An externally supplied cohomological model of the full 2-Selmer group of
-a rational elliptic curve.
+/-- A proof-relevant model of the full 2-Selmer group inside the canonical
+algebraic `H¹(ℚ, E[2])`.
 
-Mathlib 4.12 has no `H¹(ℚ, E[2])` or 2-Selmer API.  The carrier is consequently
-defined here from externally supplied cohomological data rather than being
-silently replaced by the finite coefficient list: `H1` is the ambient
-cohomology carrier and `localKummerConditions` is the subgroup cut out by all
-local Kummer images.  The full Selmer carrier is definitionally that subgroup.
-Supplying these fields from actual Galois cohomology remains the visible
-Mathlib boundary. -/
+The ambient carrier is Mathlib's group cohomology of the genuine absolute
+Galois representation on geometric elliptic 2-torsion.  It cannot be replaced
+by an arbitrary type or by the finite coefficient ledger.  Continuity,
+global-to-local restriction, and local Kummer images remain explicit in
+`localKummerConditions`, since Mathlib 4.12 does not supply those arithmetic
+constructions. -/
 structure AbstractTwoSelmer (E : WeierstrassCurve ℚ) where
-  H1 : Type
-  h1Group : AddCommGroup H1
-  localKummerConditions : @AddSubgroup H1 h1Group.toAddGroup
+  localKummerConditions :
+    AddSubgroup (Beal17Mazur.Cohomology.EllipticH1 E)
   exponent_two : ∀ s : localKummerConditions, 2 • s = 0
   kummerMap : MordellWeilGroup E →+ localKummerConditions
   kummer_kills_doubles :
@@ -268,8 +267,6 @@ structure AbstractTwoSelmer (E : WeierstrassCurve ℚ) where
   kummer_kernel_is_doubles :
     ∀ P : MordellWeilGroup E,
       kummerMap P = 0 → ∃ Q : MordellWeilGroup E, P = 2 • Q
-
-attribute [instance] AbstractTwoSelmer.h1Group
 
 /-- The full Selmer carrier cut out inside the supplied cohomology model by
 the local Kummer conditions. -/

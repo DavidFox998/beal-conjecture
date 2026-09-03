@@ -35,11 +35,24 @@ Selmer model and the subgroup zero class, Lean proves that each carrier has
 `Nat.card = 1`. These theorems do not use Mordell--Weil rank and do not relabel
 the eight-candidate finite audit as a Selmer computation.
 
+`Beal/Mazur/Cohomology/EllipticTwoTorsion.lean` now fixes the ambient
+cohomology carrier used by those Selmer models.  It constructs the actual
+geometric subgroup `E[2](ℚ̄)`, the coordinatewise action of
+`Gal(ℚ̄/ℚ)`, the resulting `ZMod 2` representation, and Mathlib's canonical
+algebraic `groupCohomology.H1`.  The Selmer structure can therefore no longer
+substitute an arbitrary type for `H¹(ℚ, E[2])`.
+
+This is not yet continuous Galois cohomology and is not yet a complete Selmer
+construction.  Continuity for the Krull topology, restriction to local Galois
+groups, local Kummer images, and the proof identifying the level-26 covering
+ledger with the resulting intersection remain explicit arithmetic boundaries.
+
 The snapshot also includes the conditional aggregator
 `Beal/ConditionalBealTheorem.lean`. Both focused targets compile:
 
 ```text
 lake build Beal.Mazur.Gates.SecondDescent_Real_26
+lake build Beal.Mazur.Cohomology.EllipticTwoTorsion
 lake build Beal.Mazur.Gates.Descent_26_SelmerCardinality
 lake build Beal.ConditionalBealTheorem
 ```

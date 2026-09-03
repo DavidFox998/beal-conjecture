@@ -28,6 +28,12 @@ cut out by local Kummer conditions. Its Kummer map must be an additive
 homomorphism that kills doubles. Keep local-to-global surjectivity separate as
 the curve-specific vanishing of the represented `Sha[2]` classes.
 
+The ambient algebraic group cohomology should be Mathlib's canonical `H1` of
+the actual absolute-Galois representation on geometric elliptic 2-torsion.
+Do not replace that carrier with a user-supplied type. Algebraic `H1` alone is
+still not the Selmer group: continuity for the Krull topology, local
+restriction maps, and local Kummer-image conditions must be constructed.
+
 **Why:** An arbitrary exponent-two group or an arbitrary function can mimic a
 finite ledger without being a Selmer group or Kummer map. Moreover, local
 solubility does not imply a global point unless the relevant Tate--Shafarevich
