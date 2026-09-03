@@ -1,10 +1,11 @@
-import Beal.Modular.Level26_Eigenline
 import Beal.Mazur.Gates.FormalImmersion_26_Cert
+import BealLevel26Foundations.Mazur.QExpansionCotangent_Real_26
 
 namespace Beal.Modular.Level26_GeometryBridge
 
-open Beal.Modular.Level26_Eigenline
 open Beal17Mazur.Gates.FormalImmersion26Cert
+open BealLevel26Foundations.M3Explicit
+open BealLevel26Foundations.Mazur.QExpansionCotangentReal26
 
 /-!
 # Level-26 q-expansion to cotangent coordinates
@@ -16,34 +17,29 @@ defined to be this matrix: its identification remains the explicit proposition
 `QExpansionCotangentCompatibilityAtInfinity26`.
 -/
 
-def level26CoefficientMatrixMod3 :
+abbrev level26CoefficientMatrixMod3 :
     Matrix (Fin 2) (Fin 2) (ZMod 3) :=
-  !![
-    Level26a1_Eigenline.generator 1,
-      Level26b1_Eigenline.generator 1;
-    Level26a1_Eigenline.generator 2,
-      Level26b1_Eigenline.generator 2
-  ]
+  qExpansionCoefficientMatrix26
 
 theorem level26_coefficient_matrix_explicit :
     level26CoefficientMatrixMod3 = !![1, 1; 2, 1] := by
-  decide
+  exact qExpansionCoefficientMatrix26_eq
 
-def qExpansionCotangentBasisChange :
+abbrev qExpansionCotangentBasisChange :
     Matrix (Fin 2) (Fin 2) (ZMod 3) :=
-  !![1, 0; 1, 1]
+  P
 
-def level26CotangentMatrixMod3 :
+abbrev level26CotangentMatrixMod3 :
     Matrix (Fin 2) (Fin 2) (ZMod 3) :=
-  qExpansionCotangentBasisChange * level26CoefficientMatrixMod3
+  qExpansionCotangentMatrix26
 
 theorem level26_cotangent_matrix_explicit :
     level26CotangentMatrixMod3 = !![1, 1; 0, 2] := by
-  decide
+  exact qExpansionCotangentMatrix26_explicit
 
 theorem level26_cotangent_matrix_eq_M3 :
     level26CotangentMatrixMod3 = M3 := by
-  rw [level26_cotangent_matrix_explicit, M3_explicit]
+  exact qExpansionCotangentMatrix26_eq_M3
 
 theorem level26_cotangent_matrix_det_nonzero :
     Matrix.det level26CotangentMatrixMod3 ≠ 0 := by

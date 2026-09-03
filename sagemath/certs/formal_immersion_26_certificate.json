@@ -14,7 +14,7 @@
       "J0(26) decomposition and mwrank/second-descent soundness"
     ]
   },
-  "certificate_sha256": "158f203fccc1bf11a6a578a80af8ba06c42d448e76d254d869ce2fa498b6a5cb",
+  "certificate_sha256": "de4f3f46153212ad578b4990e72dfc39113ff37fcde6d43ca592fe498bfbbd17",
   "environment": {
     "level": 26,
     "reduction_prime": 3,
@@ -59,7 +59,7 @@
   "schema": "beal.formal-immersion-26-certificate.v1",
   "source": {
     "lean_data": "lean/Beal/Mazur/Gates/FormalImmersion_26_Cert.lean",
-    "lean_data_sha256": "7dd899ebd96d1231b8025f44663cee576d9362945335ad2b98b4ec0bc350e15a",
+    "lean_data_sha256": "539f8cf9ebf592e95ac46a024f2aba91e168cd3a78f486c4503669fc28fa5f20",
     "log": "sagemath/formal_immersion_26.log",
     "log_sha256": "67974b758c5c47b15628a23dfebb53c64fa4005b689f2ac4625763538bf21863",
     "narrative": "sagemath/GENUINE_FORMAL_IMMERSION_26_CERT_v9.4.0.txt",

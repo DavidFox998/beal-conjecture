@@ -145,7 +145,7 @@ theorem formal_immersion_matrix_eq_certified_M3 :
     formalImmersionMatrixMod3 =
       Beal17Mazur.Gates.FormalImmersion26Cert.M3 := by
   rw [formal_immersion_matrix_explicit]
-  rfl
+  exact Beal17Mazur.Gates.FormalImmersion26Cert.M3_explicit.symm
 
 /-- Kernel-decided full-rank certificate for the real Phase C matrix. -/
 theorem formal_immersion_matrix_rank_two_decided :

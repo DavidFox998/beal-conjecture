@@ -868,6 +868,16 @@ bridge and the desert property of exceptional primes.
 [`ImperialCollegeLondon/FLT`](https://github.com/ImperialCollegeLondon/FLT) is
 an inspiration for formalization, not a dependency of this repository.
 
+### Active level-26 foundations companion
+
+The active companion to the conditionally complete v11.0.0 assembly is
+[`beal-level-26-foundations` v1.1.0 arithmetic Frey/genus/q-expansion
+matrix](https://doi.org/10.5281/zenodo.22284436). The parent now imports its
+ledger-derived identity `P * C3 = M3 = [[1,1],[0,2]]` rather than duplicating
+that finite calculation. The Picard/Abel--Jacobi identification, genuine
+Selmer comparison, local conductor equality, and geometric
+Riemann--Hurwitz bridge remain explicit boundaries.
+
 Maintained by DavidFox998 as part of *Opera Numerorum*: mathematics made
 auditable, with the beauty left visible.
 
