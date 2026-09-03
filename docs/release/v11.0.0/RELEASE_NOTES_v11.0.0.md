@@ -17,9 +17,10 @@ geometric theorem is named
 `QExpansionCotangentCompatibilityAtInfinity26`; it must identify that
 coefficient map with the actual Abel--Jacobi cotangent map at the cusp.
 
-The Selmer-cardinality module likewise requires an explicit cohomological
-triviality theorem or a genuine ledger equivalence. It does not relabel the
-finite audit as a Selmer comparison.
+The Selmer-cardinality module proves cardinality one for an explicitly
+supplied carrier from a triviality theorem or a genuine ledger equivalence.
+Its identification with the cohomological Selmer group remains an external
+mathematical input; the finite audit is not relabeled as that comparison.
 
 The companion Foundations release
 [10.5281/zenodo.22272714](https://doi.org/10.5281/zenodo.22272714) contains

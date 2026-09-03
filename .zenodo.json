@@ -2,7 +2,7 @@
   "title": "Beal Conjecture — a conditionally complete formal assembly",
   "upload_type": "software",
   "version": "11.0.0",
-  "description": "A conditionally complete Lean 4 assembly of a level-26 route toward the Beal Conjecture. The final theorem exposes exactly five named premises. The finite mod-3 matrix is ledger-derived; the q-expansion/cotangent compatibility with the actual Abel-Jacobi differential remains explicit.",
+  "description": "A conditionally complete Lean 4 assembly of a level-26 route toward the Beal Conjecture. The final theorem exposes exactly five named premises. The finite mod-3 matrix is ledger-derived; the q-expansion/cotangent compatibility with the actual Abel-Jacobi differential remains explicit. Selmer cardinality is proved only for an explicitly supplied carrier whose cohomological identification remains external.",
   "creators": [
     {
       "name": "DavidFox998",

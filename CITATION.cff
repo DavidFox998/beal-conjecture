@@ -19,4 +19,4 @@ keywords:
   - Tate Algorithm
   - Ribet Level Lowering
   - Taylor-Wiles Patching
-abstract: "A conditionally complete Lean 4 assembly of a level-26 route toward the Beal Conjecture. The final theorem exposes exactly five named mathematical premises. The finite mod-3 matrix is derived from normalized eigenform coefficients and an explicit basis change; identifying it with the actual Abel-Jacobi cotangent map remains a named geometric compatibility theorem."
+abstract: "A conditionally complete Lean 4 assembly of a level-26 route toward the Beal Conjecture. The final theorem exposes exactly five named mathematical premises. The finite mod-3 matrix is derived from normalized eigenform coefficients and an explicit basis change; identifying it with the actual Abel-Jacobi cotangent map remains a named geometric compatibility theorem. Selmer cardinality is proved only for an explicitly supplied carrier; its cohomological identification remains external."

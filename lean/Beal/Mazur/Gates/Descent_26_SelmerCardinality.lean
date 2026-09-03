@@ -17,21 +17,25 @@ the surviving locally soluble ledger classes. No Mordell--Weil rank statement
 is used in either route.
 -/
 
+/-- An explicitly supplied full 2-Selmer carrier. Its mathematical
+identification with a cohomological Selmer group is external to this finite
+cardinality theorem. -/
+structure AbstractTwoSelmer where
+  Carrier : Type
+  zero : Carrier
+
 theorem abstractTwoSelmer_card_eq_one
-    {E : WeierstrassCurve ℚ}
-    (selmer : AbstractTwoSelmer E)
+    (selmer : AbstractTwoSelmer)
     (trivial : Subsingleton selmer.Carrier) :
     Nat.card selmer.Carrier = 1 := by
   letI : Subsingleton selmer.Carrier := trivial
-  exact Nat.card_of_subsingleton
-    ⟨0, selmer.localKummerConditions.zero_mem⟩
+  exact Nat.card_of_subsingleton ⟨selmer.zero⟩
 
 /-- The equivalence is an explicit input; no coefficient ledger is identified
 with a cohomological Selmer group by definition. -/
 theorem abstractTwoSelmer_card_eq_one_of_ledger_equiv
-    {E : WeierstrassCurve ℚ}
     {rows : List Beal17Mazur.Jacobian.BinaryQuartic}
-    (selmer : AbstractTwoSelmer E)
+    (selmer : AbstractTwoSelmer)
     (ledgerEquiv :
       selmer.Carrier ≃
         {d : Beal17Mazur.Gates.Descent26Bridge.SUnitRepresentative //
@@ -62,29 +66,17 @@ theorem abstractTwoSelmer_card_eq_one_of_ledger_equiv
     exact hLedgerSubsingleton.elim _ _
   exact abstractTwoSelmer_card_eq_one selmer hSelmerSubsingleton
 
-theorem selmer2_26a1_card_eq_one
-    (certificate : SecondDescentCertificate_26) :
-    Nat.card certificate.selmer_26a1.Carrier = 1 :=
-  abstractTwoSelmer_card_eq_one certificate.selmer_26a1
-    certificate.selmer_26a1_trivial
-
-theorem selmer2_26b1_card_eq_one
-    (certificate : SecondDescentCertificate_26) :
-    Nat.card certificate.selmer_26b1.Carrier = 1 :=
-  abstractTwoSelmer_card_eq_one certificate.selmer_26b1
-    certificate.selmer_26b1_trivial
-
 theorem level26_selmer_cardinalities
-    (certificate : SecondDescentCertificate_26) :
-    Nat.card certificate.selmer_26a1.Carrier = 1 ∧
-      Nat.card certificate.selmer_26b1.Carrier = 1 :=
-  ⟨selmer2_26a1_card_eq_one certificate,
-    selmer2_26b1_card_eq_one certificate⟩
+    (selmer26a1 selmer26b1 : AbstractTwoSelmer)
+    (trivial26a1 : Subsingleton selmer26a1.Carrier)
+    (trivial26b1 : Subsingleton selmer26b1.Carrier) :
+    Nat.card selmer26a1.Carrier = 1 ∧
+      Nat.card selmer26b1.Carrier = 1 :=
+  ⟨abstractTwoSelmer_card_eq_one selmer26a1 trivial26a1,
+    abstractTwoSelmer_card_eq_one selmer26b1 trivial26b1⟩
 
 #print axioms abstractTwoSelmer_card_eq_one
 #print axioms abstractTwoSelmer_card_eq_one_of_ledger_equiv
-#print axioms selmer2_26a1_card_eq_one
-#print axioms selmer2_26b1_card_eq_one
 #print axioms level26_selmer_cardinalities
 
 end
