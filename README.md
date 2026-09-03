@@ -1,4 +1,4 @@
-[![v9.4.0 DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22257984.svg)](https://doi.org/10.5281/zenodo.22257984) [![v9.3.0 DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22247099.svg)](https://doi.org/10.5281/zenodo.22247099) [![v8.9.0 DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22238572.svg)](https://doi.org/10.5281/zenodo.22238572) [![v8.6.0 DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22220130.svg)](https://doi.org/10.5281/zenodo.22220130) [![Concept DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22041831.svg)](https://doi.org/10.5281/zenodo.22041831) [![CI](https://github.com/DavidFox998/beal-conjecture/actions/workflows/main.yml/badge.svg)](https://github.com/DavidFox998/beal-conjecture/actions/workflows/main.yml)
+[![Concept DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22041831.svg)](https://doi.org/10.5281/zenodo.22041831) [![CI](https://github.com/DavidFox998/beal-conjecture/actions/workflows/main.yml/badge.svg)](https://github.com/DavidFox998/beal-conjecture/actions/workflows/main.yml)
 
 # Beal Conjecture — a formal instrument in *Opera Numerorum*
 
@@ -13,14 +13,13 @@ make every mathematical dependency visible, inspectable, and worthy of trust.
 
 ---
 
-> **v10.0.0 — Conditional Beal — Explicit premises, no global axioms**
+> **v11.0.0 — Conditionally complete**
 >
 > The final assembly
 > [`Beal.Final.ConditionalBealTheorem`](lean/Beal/Final/ConditionalBealTheorem.lean)
-> compiles in focused CI. Its axiom audit is only
-> `propext`, `Classical.choice`, and `Quot.sound`; no new `axiom`, `sorry`,
-> `admit`, or `True` stub is introduced. The theorem joins the v9.2, v9.3,
-> and v9.4 level-26 evidence through five explicit premises.
+> exposes exactly five named mathematical premises. The finite matrix is
+> ledger-derived; the absent geometric compatibility theorem is named rather
+> than implied.
 
 ## The conjecture
 
@@ -61,7 +60,37 @@ formalization makes this coupling explicit rather than gestural.
 
 ---
 
-## Current formal status
+## v11 release boundary
+
+The five final premises are:
+
+1. `J0DecompositionSoundness_26`;
+2. `MwrankCertificateSoundness_26`;
+3. `FormalImmersionSoundness_26`;
+4. `FreyCurveExists`;
+5. `LevelLowering_26`.
+
+The theorem does not prove these inputs. It proves that they suffice.
+
+`Level26_GeometryBridge.lean` derives
+\[
+C_3=\begin{pmatrix}1&1\\2&1\end{pmatrix},\quad
+P=\begin{pmatrix}1&0\\1&1\end{pmatrix},\quad
+PC_3=M_3=\begin{pmatrix}1&1\\0&2\end{pmatrix}.
+\]
+The missing geometric statement is
+`QExpansionCotangentCompatibilityAtInfinity26`, identifying this coefficient
+map with the actual Abel--Jacobi cotangent map at the cusp.
+
+The companion
+[`beal-level-26-foundations`](https://github.com/DavidFox998/beal-level-26-foundations)
+develops these missing foundations. Its corrected computable v1 release is
+[10.5281/zenodo.22272714](https://doi.org/10.5281/zenodo.22272714), under
+concept DOI
+[10.5281/zenodo.22272382](https://doi.org/10.5281/zenodo.22272382).
+It is a companion work, not a version of this repository.
+
+## Historical formal-status narrative
 
 This is a conditional formalization, not an unconditional Lean proof of
 Beal's Conjecture. The compact referee map is:

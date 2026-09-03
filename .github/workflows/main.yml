@@ -72,8 +72,17 @@ jobs:
       - name: Build formal-immersion bridge
         run: lake build Beal.Mazur.Gates.FormalImmersion_26
 
-      - name: Build v10 conditional Beal assembly
+      - name: Build v11 conditional Beal assembly
         run: lake build Beal.Final.ConditionalBealTheorem
+
+      - name: Build v11 Selmer-cardinality boundary
+        run: lake build Beal.Mazur.Gates.Descent_26_SelmerCardinality
+
+      - name: Build v11 level-26 geometry boundary
+        run: lake build Beal.Modular.Level26_GeometryBridge
+
+      - name: Audit v11 premise surface
+        run: bash scripts/check-v11-release.sh
 
       - name: Check Lake manifest for dependency drift
         run: |
