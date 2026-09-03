@@ -37,6 +37,8 @@ grep -qi 'conditionally complete' README.md
 grep -q 'v11.0.0' CITATION.cff
 grep -q '10.5281/zenodo.22272714' README.md
 grep -q '10.5281/zenodo.22284436' README.md
+grep -q '10.5281/zenodo.22286222' README.md
+grep -q 'v1.2.0-abel-jacobi-differential-closed-valuation-input' lakefile.lean
 
 if grep -RInE \
   --exclude-dir=.git --exclude-dir=.lake \

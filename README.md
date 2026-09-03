@@ -78,16 +78,21 @@ C_3=\begin{pmatrix}1&1\\2&1\end{pmatrix},\quad
 P=\begin{pmatrix}1&0\\1&1\end{pmatrix},\quad
 PC_3=M_3=\begin{pmatrix}1&1\\0&2\end{pmatrix}.
 \]
-The missing geometric statement is
-`QExpansionCotangentCompatibilityAtInfinity26`, identifying this coefficient
-map with the actual Abel--Jacobi cotangent map at the cusp.
+Foundations v1.2.0 now proves
+`QExpansionCotangentCompatibilityAtInfinity26` for its formally constructed
+Abel--Jacobi differential on the symmetric-square cusp chart. This closes the
+previous matrix-identification boundary without claiming a construction of the
+global Picard scheme.
 
 The companion
 [`beal-level-26-foundations`](https://github.com/DavidFox998/beal-level-26-foundations)
-develops these missing foundations. Its corrected computable v1 release is
-[10.5281/zenodo.22272714](https://doi.org/10.5281/zenodo.22272714), under
+develops these missing foundations. Its closed formal cusp-chart differential
+and odd-prime valuation-input release is
+[10.5281/zenodo.22286222](https://doi.org/10.5281/zenodo.22286222), under
 concept DOI
 [10.5281/zenodo.22272382](https://doi.org/10.5281/zenodo.22272382).
+The corrected finite-only v1.0.1 archive remains
+[10.5281/zenodo.22272714](https://doi.org/10.5281/zenodo.22272714).
 It is a companion work, not a version of this repository.
 
 ## Historical formal-status narrative
@@ -685,6 +690,7 @@ Tate, or Ribet from first principles.
 | Companion v1.1.0 arithmetic | `v1.1.0-arithmetic-frey-genus-qexpansion-matrix` / `c670d1c` | [10.5281/zenodo.22284436](https://doi.org/10.5281/zenodo.22284436) | Parent pinned to this immutable commit — reproducible ledger identity, not a moving branch |
 | Parent integration final | `main` / `42f70d3` | — | Complete validation green: full `lake build Beal`, focused S-unit 8 checks, 4+6 quartics, mod-2/mod-13 point-result checks via `decide`, replay certificates, Phase A–C bridges, v11 assembly, premise audit, and B20 axiom audit all passed; dependency pinned to Foundations `c670d1c`; Foundations `main` pushed green at `1c2c52b`; [GitHub CI](https://github.com/DavidFox998/beal-conjecture/actions/runs/33784390943) reproduces local validation |
 | Companion v1.1.1 choice-clean representation | `v1.1.1-choice-clean-representation-dependency` / `1c2c52b` | [10.5281/zenodo.22285575](https://doi.org/10.5281/zenodo.22285575) | `ledgerM3` has the three-foundation footprint `[propext, Classical.choice, Quot.sound]` because Mathlib 4.12's `Matrix (Fin 2) (Fin 2) (ZMod 3)` representation has it even for the zero matrix; this is not a Picard, conductor, genus, or Selmer axiom. Focused point checks at 2 and 13 remain choice-free with `[propext, Quot.sound]`. |
+| Companion v1.2.0 Abel--Jacobi differential and valuation input | `v1.2.0-abel-jacobi-differential-closed-valuation-input` / `ed74e3b` | [10.5281/zenodo.22286222](https://doi.org/10.5281/zenodo.22286222) | Parent pinned to this immutable commit. The formal symmetric-square cusp chart and Abel primitive derive `[[1,1],[0,2]]`; odd-prime valuations give `vₚ(c₄)=0` and `vₚ(Δ)>0` without `frey_conductor_data`. `[propext, Classical.choice, Quot.sound]` is a representation footprint, not a domain axiom. Conductor exponent one and `N=2^e rad(ABC)` remain reserved for genuine Tate/Kodaira/conductor classification. |
 
 The v4.0.0 Zenodo landing page retains an older v0.4-style display title; its
 release tag, archive, and audited boundary are the v4.0.0 row above. The
@@ -850,12 +856,13 @@ an inspiration for formalization, not a dependency of this repository.
 ### Active level-26 foundations companion
 
 The active companion to the conditionally complete v11.0.0 assembly is
-[`beal-level-26-foundations` v1.1.0 arithmetic Frey/genus/q-expansion
-matrix](https://doi.org/10.5281/zenodo.22284436). The parent now imports its
-ledger-derived identity `P * C3 = M3 = [[1,1],[0,2]]` rather than duplicating
-that finite calculation. The Picard/Abel--Jacobi identification, genuine
-Selmer comparison, local conductor equality, and geometric
-Riemann--Hurwitz bridge remain explicit boundaries.
+[`beal-level-26-foundations` v1.2.0](https://doi.org/10.5281/zenodo.22286222).
+The parent pins its immutable commit and imports both the ledger-derived
+identity `P * C3 = M3 = [[1,1],[0,2]]` and the formal symmetric-square
+cusp-chart Abel--Jacobi differential theorem rather than duplicating either
+calculation. The genuine Selmer comparison, Tate/Kodaira conductor
+classification, and geometric Riemann--Hurwitz bridge remain explicit
+boundaries.
 
 Maintained by DavidFox998 as part of *Opera Numerorum*: mathematics made
 auditable, with the beauty left visible.
