@@ -48,3 +48,4 @@
 - [Mixed X₀(2p) level boundary](mixed-x0-level-boundary.md) — choose one rational order-two line; full E[2] is not itself cyclic X₀(2p) level.
 - [Level-26 descent certificate boundary](level26-mwrank-log-boundary.md) — the 80-pair coefficient ledger is exhaustive; abstract Selmer identification and rank semantics remain explicit.
 - [J0(26) decomposition certificate](j0-26-decomposition-certificate.md) — preserve the source/Lean factor-order mismatch and keep isogeny and rank soundness as explicit premises.
+- [Task completion evidence](task-completion-evidence.md) — queue state is planning state; classify work from reproducible checks and explicit blockers.

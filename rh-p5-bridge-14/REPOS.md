@@ -19,6 +19,14 @@
 
 To audit any repo: clone it and run [`scripts/audit.sh <path>`](scripts/audit.sh).
 
+> **Important — adding a repository is a two-sided change.** A repo is not
+> ensemble-linked merely because it appears in this table. Before adding a
+> new row, add a visible backlink from that repository's `AGENTS.md` or
+> `README.md` to this `rh-p5-bridge-14` map, then include the repo in
+> `CHAIN.md`, the relock script, and the verification workflow. A missing
+> backlink leaves the ensemble relationship unverifiable and must be treated
+> as an incomplete addition, not as a closed chain entry.
+
 ---
 
 ## Cluster 1 — Riemann Hypothesis
