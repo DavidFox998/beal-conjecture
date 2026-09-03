@@ -1,8 +1,8 @@
 {
-  "title": "Beal Conjecture — Opera Numerorum — v9.4.0 Formal immersion M3 rank 2",
+  "title": "Beal Conjecture — a conditionally complete formal assembly",
   "upload_type": "software",
-  "version": "9.4.0",
-  "description": "Reproducible level-26 formal-immersion evidence for the Beal Conjecture formalization. The certificate records the M3 rank-two witness at 2 for X0(26) -> J0(26), together with the preceding J0(26) decomposition evidence. The finite matrix rank is checked over Q and GF(2); scheme-level cotangent-map interpretation and Mazur's criterion remain explicit proposition-valued premises in Lean rather than global axioms.",
+  "version": "11.0.0",
+  "description": "A conditionally complete Lean 4 assembly of a level-26 route toward the Beal Conjecture. The final theorem exposes exactly five named premises. The finite mod-3 matrix is ledger-derived; the q-expansion/cotangent compatibility with the actual Abel-Jacobi differential remains explicit.",
   "creators": [
     {
       "name": "DavidFox998",
@@ -22,17 +22,16 @@
   "access_right": "open",
   "related_identifiers": [
     {
-      "identifier": "https://github.com/DavidFox998/beal-conjecture/releases/tag/v9.4.0",
+      "identifier": "https://github.com/DavidFox998/beal-conjecture/releases/tag/v11.0.0",
       "relation": "isIdenticalTo",
       "resource_type": "software"
     },
     {
-      "identifier": "https://github.com/DavidFox998/beal-conjecture",
+      "identifier": "10.5281/zenodo.22272382",
       "relation": "isSupplementTo",
-      "resource_type": "software"
+      "resource_type": "software",
+      "scheme": "doi"
     }
   ],
-  "doi": "10.5281/zenodo.22257984",
-  "conceptdoi": "10.5281/zenodo.22257983",
-  "zenodo_record": 22257984
+  "conceptdoi": "10.5281/zenodo.22041831"
 }
