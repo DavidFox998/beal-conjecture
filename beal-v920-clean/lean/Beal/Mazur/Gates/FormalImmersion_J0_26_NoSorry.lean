@@ -1,5 +1,6 @@
 import Beal.Mazur.X0_26_Model
 import Beal.Mazur.Jacobian.J0_26_Decomp
+import Beal.Mazur.Gates.FormalImmersion_26_Cert
 import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 
 namespace Beal17Mazur.Gates.FormalImmersionNoSorry
@@ -19,14 +20,13 @@ def AJ : X0_26_RationalPoint → J0_26_Jacobian :=
   fun point => point
 
 def dAJ_matrix_mod_3 : Matrix (Fin 2) (Fin 2) (ZMod 3) :=
-  !![1, 1; 0, 2]
+  Beal17Mazur.Gates.FormalImmersion26Cert.M3
 
 def FormalImmersionAt3 : Prop :=
   Matrix.det dAJ_matrix_mod_3 ≠ 0
 
 theorem formal_immersion_at_3 : FormalImmersionAt3 := by
-  norm_num [FormalImmersionAt3, dAJ_matrix_mod_3, Matrix.det_fin_two]
-  decide
+  exact Beal17Mazur.Gates.FormalImmersion26Cert.M3_det_nonzero
 
 def four_cusps : Finset X0_26_RationalPoint :=
   X0_26_cusps
