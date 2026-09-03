@@ -32,6 +32,8 @@ grep -q 'QExpansionCotangentCompatibilityAtInfinity26' "$geometry"
 grep -q 'qExpansionCotangentMatrix26_eq_M3' "$geometry"
 grep -q 'BealLevel26Foundations.M3Explicit' \
   lean/Beal/Mazur/Gates/FormalImmersion_26_Cert.lean
+grep -q 'formalImmersionSoundness_requires_qExpansionCompatibility' \
+  lean/Beal/Mazur/Gates/FormalImmersion_26.lean
 grep -q 'abstractTwoSelmer_card_eq_one_of_ledger_equiv' "$selmer"
 grep -qi 'conditionally complete' README.md
 grep -q 'v11.0.0' CITATION.cff

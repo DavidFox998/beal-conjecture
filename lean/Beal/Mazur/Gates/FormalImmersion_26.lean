@@ -57,6 +57,14 @@ def FormalImmersionSoundness_26
       CotangentMapSurjectiveAt3_26 cotangent →
       X0_26_Q = (four_cusps : Set X0_26_RationalPoint))
 
+theorem formalImmersionSoundness_requires_qExpansionCompatibility
+    {J0_26 : Type*} [AddCommGroup J0_26]
+    {cotangent : CotangentMapAt3_26}
+    (formalSoundness : FormalImmersionSoundness_26 J0_26 cotangent) :
+    QExpansionCotangentCompatibilityAtInfinity26
+      cotangent.matrixAtInfinity :=
+  formalSoundness.1
+
 theorem M3_rows_cols_and_rank :
     Matrix.det M3 ≠ 0 ∧
       J0_26_dimension = 2 :=
@@ -105,6 +113,7 @@ theorem X0_26_Q_finite_of_certificates
   exact four_cusps.finite_toSet
 
 #print axioms M3_rows_cols_and_rank
+#print axioms formalImmersionSoundness_requires_qExpansionCompatibility
 #print axioms cotangent_map_surjective_at_3
 #print axioms X0_26_Q_eq_four_cusps_of_certificates
 #print axioms X0_26_Q_finite_of_certificates
