@@ -2,6 +2,7 @@ import Beal.Mazur.Gates.FormalImmersion_26_Cert
 import Beal.Mazur.Gates.J0_26_Decomp_Cert
 import Beal.Mazur.Gates.J0_26_Decomp
 import Beal.Mazur.Gates.FormalImmersion_J0_26_NoSorry
+import Beal.Modular.Level26_GeometryBridge
 
 namespace Beal17Mazur.Gates.FormalImmersion26
 
@@ -24,6 +25,7 @@ open Beal17Mazur.Gates.J0_26_Decomp_Cert
 open Beal17Mazur.Gates.J0_26_Decomp
 open Beal17Mazur.Gates.FormalImmersionNoSorry
 open Beal17Mazur.Jacobian.J0_26_Decomp
+open Beal.Modular.Level26_GeometryBridge
 
 /-- The abstract cotangent map whose geometric construction is not yet
 available in Mathlib. -/
@@ -31,6 +33,7 @@ structure CotangentMapAt3_26 where
   Cot_0_J0_26 : Type
   Cot_infinity_X0_26 : Type
   pullback : Cot_0_J0_26 → Cot_infinity_X0_26
+  matrixAtInfinity : Matrix (Fin 2) (Fin 2) (ZMod 3)
 
 def CotangentMapSurjectiveAt3_26
     (cotangent : CotangentMapAt3_26) : Prop :=
@@ -46,7 +49,8 @@ scheme-level geometry. -/
 def FormalImmersionSoundness_26
     (J0_26 : Type*) [AddCommGroup J0_26]
     (cotangent : CotangentMapAt3_26) : Prop :=
-  (Matrix.det M3 ≠ 0 →
+  QExpansionCotangentCompatibilityAtInfinity26 cotangent.matrixAtInfinity ∧
+    (Matrix.det cotangent.matrixAtInfinity ≠ 0 →
       CotangentMapSurjectiveAt3_26 cotangent) ∧
     ((∃ transport : JacobianTransport_26 J0_26,
         transport.rank_J0 = 0) →
@@ -65,8 +69,11 @@ theorem cotangent_map_surjective_at_3
     {cotangent : CotangentMapAt3_26}
     (formalSoundness :
       FormalImmersionSoundness_26 J0_26 cotangent) :
-    CotangentMapSurjectiveAt3_26 cotangent :=
-  formalSoundness.1 M3_det_nonzero
+    CotangentMapSurjectiveAt3_26 cotangent := by
+  have hdet : Matrix.det cotangent.matrixAtInfinity ≠ 0 := by
+    rw [formalSoundness.1]
+    exact M3_det_nonzero
+  exact formalSoundness.2.1 hdet
 
 /-- The three visible v9.2--v9.4 premises combine to give rank zero and
 Mazur's cusp-only conclusion. -/
@@ -82,7 +89,7 @@ theorem X0_26_Q_eq_four_cusps_of_certificates
       ∃ transport : JacobianTransport_26 J0_26,
         transport.rank_J0 = 0 :=
     J0_26_rank_zero decompositionSoundness mwrankSoundness
-  exact formalSoundness.2 rankZero
+  exact formalSoundness.2.2 rankZero
     (cotangent_map_surjective_at_3 formalSoundness)
 
 theorem X0_26_Q_finite_of_certificates

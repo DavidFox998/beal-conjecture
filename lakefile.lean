@@ -9,7 +9,7 @@ require mathlib from git
 
 require beal_level_26_foundations from git
   "https://github.com/DavidFox998/beal-level-26-foundations.git" @
-    "v1.2.0-abel-jacobi-differential-closed-valuation-input"
+    "v1.2.1-formal-coordinate-boundary-corrected"
 
 @[default_target]
 lean_lib Beal where

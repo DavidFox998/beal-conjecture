@@ -691,6 +691,7 @@ Tate, or Ribet from first principles.
 | Parent integration final | `main` / `42f70d3` | — | Complete validation green: full `lake build Beal`, focused S-unit 8 checks, 4+6 quartics, mod-2/mod-13 point-result checks via `decide`, replay certificates, Phase A–C bridges, v11 assembly, premise audit, and B20 axiom audit all passed; dependency pinned to Foundations `c670d1c`; Foundations `main` pushed green at `1c2c52b`; [GitHub CI](https://github.com/DavidFox998/beal-conjecture/actions/runs/33784390943) reproduces local validation |
 | Companion v1.1.1 choice-clean representation | `v1.1.1-choice-clean-representation-dependency` / `1c2c52b` | [10.5281/zenodo.22285575](https://doi.org/10.5281/zenodo.22285575) | `ledgerM3` has the three-foundation footprint `[propext, Classical.choice, Quot.sound]` because Mathlib 4.12's `Matrix (Fin 2) (Fin 2) (ZMod 3)` representation has it even for the zero matrix; this is not a Picard, conductor, genus, or Selmer axiom. Focused point checks at 2 and 13 remain choice-free with `[propext, Quot.sound]`. |
 | Companion v1.2.0 formal-coordinate matrix and valuation input | `v1.2.0-abel-jacobi-differential-closed-valuation-input` / `ed74e3b` | [10.5281/zenodo.22286222](https://doi.org/10.5281/zenodo.22286222) | Parent pinned to this immutable commit. The finite cusp-coordinate model derives `[[1,1],[0,2]]` but does not identify an actual Picard/Abel--Jacobi map; that compatibility remains a premise. Odd-prime valuations give `vₚ(c₄)=0` and `vₚ(Δ)>0` without `frey_conductor_data`. Conductor exponent one remains reserved for genuine Tate/Kodaira classification. |
+| Companion v1.2.1 corrected formal-coordinate boundary | `v1.2.1-formal-coordinate-boundary-corrected` / `05b8159` | [10.5281/zenodo.22286630](https://doi.org/10.5281/zenodo.22286630) | Corrective immutable release pinned by the parent. The finite coordinate model remains reusable, while `PicardAbelJacobiIdentification_26` is explicitly premise-bearing and no theorem identifies it with an actual geometric map. |
 
 The v4.0.0 Zenodo landing page retains an older v0.4-style display title; its
 release tag, archive, and audited boundary are the v4.0.0 row above. The
@@ -856,7 +857,7 @@ an inspiration for formalization, not a dependency of this repository.
 ### Active level-26 foundations companion
 
 The active companion to the conditionally complete v11.0.0 assembly is
-[`beal-level-26-foundations` v1.2.0](https://doi.org/10.5281/zenodo.22286222).
+[`beal-level-26-foundations` v1.2.1](https://doi.org/10.5281/zenodo.22286630).
 The parent pins its immutable commit and imports the ledger-derived identity
 `P * C3 = M3 = [[1,1],[0,2]]` and finite formal-coordinate calculation rather
 than duplicating them. The actual Picard/Abel--Jacobi compatibility, genuine
