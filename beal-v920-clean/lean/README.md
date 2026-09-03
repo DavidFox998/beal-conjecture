@@ -29,11 +29,18 @@ supplies no Selmer cardinality by itself. Given explicit full-Selmer
 triviality, Kummer-kernel exactness, and finite-rank coordinates, the
 Selmer-to-Mordell--Weil rank-zero implication is now proved in Lean.
 
+`Beal/Mazur/Gates/Descent_26_SelmerCardinality.lean` keeps the next conclusion
+separate: from the explicit `Subsingleton` proof carried by each supplied full
+Selmer model and the subgroup zero class, Lean proves that each carrier has
+`Nat.card = 1`. These theorems do not use Mordell--Weil rank and do not relabel
+the eight-candidate finite audit as a Selmer computation.
+
 The snapshot also includes the conditional aggregator
 `Beal/ConditionalBealTheorem.lean`. Both focused targets compile:
 
 ```text
 lake build Beal.Mazur.Gates.SecondDescent_Real_26
+lake build Beal.Mazur.Gates.Descent_26_SelmerCardinality
 lake build Beal.ConditionalBealTheorem
 ```
 
