@@ -26,7 +26,8 @@ The finite certificates prove what they can:
 
 * v9.2 records the second-descent and rank-zero boundary;
 * v9.3 checks `dim J₀(26) = 2 = 1 + 1` and records the isogeny boundary;
-* v9.4 checks that the displayed `M₃` has rank two over `ℚ` and `GF(2)`.
+* the finite certificate checks that the displayed `M₃` has nonzero
+  determinant, hence rank two, over `ZMod 3`.
 
 The interpretation of `M₃` as the actual cotangent map, Mazur's cusp
 criterion, Frey construction, modularity, and Ribet level lowering remain
@@ -61,7 +62,7 @@ solution and contradicts the four-cusp equality supplied by the rank-zero
 formal-immersion chain. -/
 theorem ConditionalBealTheorem
     {J0_26 : Type*} [AddCommGroup J0_26]
-    {cotangent : CotangentMapAt2_26}
+    {cotangent : CotangentMapAt3_26}
     (h_decomp : J0DecompositionSoundness_26 J0_26)
     (h_mwrank : MwrankCertificateSoundness_26)
     (h_immersion : FormalImmersionSoundness_26 J0_26 cotangent)

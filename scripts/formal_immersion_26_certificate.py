@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Produce and verify the immutable X0(26) formal-immersion witness.
+"""Produce and verify the finite X0(26) formal-immersion witness.
 
 The producer parses the committed transcript and independently computes the
-rank of its displayed matrix over QQ and GF(2).  It checks dimensions and
+rank of its displayed matrix over QQ and GF(3). It checks dimensions and
 source hashes, but does not promote Sage/ModularSymbols output to a geometric
 Lean theorem.  That interpretation remains an explicit proposition-valued
 premise in the focused Lean bridge.
@@ -130,8 +130,8 @@ def parse_source() -> dict[str, object]:
     if lines[9] != CRITERION_LINE:
         raise ValueError("transcript no longer reports the formal-immersion criterion")
 
-    if level != 26 or prime != 2 or rank_prime != prime:
-        raise ValueError("expected the level-26 certificate reduced at prime 2")
+    if level != 26 or prime != 3 or rank_prime != prime:
+        raise ValueError("expected the level-26 certificate reduced at prime 3")
     if not matrix or any(not isinstance(row, list) for row in matrix):
         raise ValueError("M3 must be a nonempty rectangular matrix")
     if any(
@@ -146,7 +146,7 @@ def parse_source() -> dict[str, object]:
         raise ValueError("M3 rows have inconsistent lengths")
     if (rows, columns) != (computed_rows, computed_columns):
         raise ValueError("reported M3 shape disagrees with displayed matrix")
-    if matrix != [[1, 0, 1, 0, 1, 1], [0, 1, 1, 1, 0, 1]]:
+    if matrix != [[1, 1], [0, 2]]:
         raise ValueError("M3 entries changed")
 
     computed_rank_qq = rank_over_qq(matrix)
@@ -154,9 +154,9 @@ def parse_source() -> dict[str, object]:
     if reported_rank_qq != computed_rank_qq:
         raise ValueError("reported QQ rank disagrees with exact elimination")
     if reported_rank_gf != computed_rank_gf:
-        raise ValueError("reported GF(2) rank disagrees with exact elimination")
+        raise ValueError("reported GF(3) rank disagrees with exact elimination")
     if computed_rank_qq != rows or computed_rank_gf != rows:
-        raise ValueError("M3 is not full row rank over both QQ and GF(2)")
+        raise ValueError("M3 is not full row rank over both QQ and GF(3)")
     if dimension != rows:
         raise ValueError("M3 rank does not equal dim J0(26)")
 
@@ -187,7 +187,7 @@ def parse_source() -> dict[str, object]:
                 "computed": computed_rank_qq,
                 "verified": True,
             },
-            "over_GF_2": {
+            "over_GF_3": {
                 "reported": reported_rank_gf,
                 "computed": computed_rank_gf,
                 "verified": True,
@@ -206,15 +206,15 @@ def parse_source() -> dict[str, object]:
         "boundary": {
             "checked": [
                 "the immutable source hashes",
-                "the exact 2 x 6 integer matrix",
+                "the exact 2 x 2 integer matrix",
                 "rank two over QQ by exact rational elimination",
-                "rank two over GF(2) by exact modular elimination",
+                "rank two over GF(3) by exact modular elimination",
                 "rank M3 equals the recorded dimension of J0(26)",
             ],
             "external_premises": [
                 "Sage ModularSymbols/q-expansion correctness",
                 "rank-two matrix semantics for the geometric cotangent map",
-                "Mazur formal-immersion criterion at 2",
+                "Mazur formal-immersion criterion at 3",
                 "J0(26) decomposition and mwrank/second-descent soundness",
             ],
         },
