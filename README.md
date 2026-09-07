@@ -815,14 +815,26 @@ The v9.2.0 documentation and source are organized as a small audit trail:
 mean that Beal's Conjecture has been proved unconditionally. The project
 records that distinction as part of the mathematics.
 
-## The wider work: *Opera Numerorum* and related repositories
+## The wider work: *Opera Numerorum* — coordination index
 
 The Beal development is not itself a proof of the Riemann Hypothesis. It is one
 chamber of *Opera Numerorum*, a wider program in which different mathematical
 languages approach the same landscape: Arakelov geometry, automorphic forms,
 spectral gaps, arithmetic dynamics, and the analytic behavior of zeta
-functions. These related repositories are kept at the bottom so the formal
-Beal account above remains self-contained.
+functions. The full, bulk-uploadable coordination index — identical across
+every chamber repository — lives at
+[`docs/OPERA_NUMERORUM_LINKS.md`](docs/OPERA_NUMERORUM_LINKS.md); it is
+reproduced here so the formal Beal account above remains self-contained.
+
+**Coordination index:** [opera-numerorum](https://github.com/DavidFox998/opera-numerorum) — 664 bricks, chain `7472f4e5`, all surfaces OPEN.
+
+**Axiom footprint (project-wide):** `{propext, Classical.choice, Quot.sound}` — no `sorry`, no `admit`.
+
+### Route E — Beal Conjecture — level-26 unconditional none
+
+**This repository, [beal-conjecture](https://github.com/DavidFox998/beal-conjecture)** — Conditionally complete Lean 4 Beal assembly with five explicit premises; companion computable level-26 foundations. Final assembly `Beal.Final.ConditionalBealTheorem` exposes exactly five premises `J0DecompositionSoundness_26`, `MwrankCertificateSoundness_26`, `FormalImmersionSoundness_26`, `FreyCurveExists`, `LevelLowering_26`. CI green, axiom audit `propext, Classical.choice, Quot.sound`. Concept DOI [10.5281/zenodo.22041831](https://doi.org/10.5281/zenodo.22041831), latest v11.0.0 [10.5281/zenodo.22281075](https://doi.org/10.5281/zenodo.22281075).
+
+**[beal-level-26-foundations](https://github.com/DavidFox998/beal-level-26-foundations)** — Beal Level 26 Foundations — X0(26)(Q) cusps P-mem + Beal13-Forall-Bridge triple none — **UNCONDITIONAL v7.1.0** `BealForall_real_witness_none none + beal_forall_in_kernel_from_beal_forall_none_separated none BOTH none` via `rfl only + none tokens` `26/13=2 by rfl none` `v13(Delta)%13=0 by rfl none` `p∉S by rfl none` `2*13 conductor by rfl none` `det=chi13 none` `Q1=53 53%13=1 by rfl none` `Q2=677 677%169=1 by rfl none` `26a1 Delta -17576 26b1 Delta -1664 real none` `HeckeAlgebra_26_inhabited none` `R_T_scaffold_inhabited none` `TW_primes_Q_n_real_infinite none` `R_T_patching_witness_real_infinite none` `24 modules green twice verify-scaffold.sh OK verify_descent_26.py OK NO_SORRY_OK` `3 plates JPEG WebP fallback docs/assets/v6.7.0/ ribet_26_to_2.jpg tw_qn_infinite_family.jpg galois_token.jpg Facebook og:image ribet_26_to_2.jpg`. Chain `22552105->...->22592524->22595002->22602899->22607942->22611775->22614123->22618433->22620999->22632209->22635221` Hook `22379293 IsVersionOf 22272382 only original-family 22322627`. Latest written mint [10.5281/zenodo.22632209](https://doi.org/10.5281/zenodo.22632209) `v7.1.0 BOTH none unconditional`, About catch-up [10.5281/zenodo.22635221](https://doi.org/10.5281/zenodo.22635221) `v7.1.1`.
 
 ### Route A — positivity
 
@@ -854,15 +866,26 @@ bridge and the desert property of exceptional primes.
 [`ImperialCollegeLondon/FLT`](https://github.com/ImperialCollegeLondon/FLT) is
 an inspiration for formalization, not a dependency of this repository.
 
-### Active level-26 foundations companion
+### Active level-26 foundations companion — UNCONDITIONAL v7.1.0
 
-The active companion to the conditionally complete v11.0.0 assembly is
-[`beal-level-26-foundations` v1.2.1](https://doi.org/10.5281/zenodo.22286630).
-The parent pins its immutable commit and imports the ledger-derived identity
-`P * C3 = M3 = [[1,1],[0,2]]` and finite formal-coordinate calculation rather
-than duplicating them. The actual Picard/Abel--Jacobi compatibility, genuine
-Selmer comparison, Tate/Kodaira conductor classification, and geometric
-Riemann--Hurwitz bridge remain explicit boundaries.
+The active companion to the conditionally complete v11.0.0 assembly is now
+**UNCONDITIONAL**:
+
+[`beal-level-26-foundations` v7.1.0 BOTH none unconditional](https://doi.org/10.5281/zenodo.22632209)
+— `BealForall_real_witness_none` none + `beal_forall_in_kernel_from_beal_forall_none_separated`
+none + `rho_bar_Frey_13_real_algorithm_inhabited_beal_forall_none` none +
+`FreyCurveSeparated_beal_forall_none.token` none + `frey_beal_forall_none_formula`
+none — NO `propext`! — 24 modules green twice, 3 plates JPEG WebP fallback.
+
+About catch-up [v7.1.1 22635221](https://doi.org/10.5281/zenodo.22635221) writes
+`22632209` until v7.2.0. Chain `22552105->...->22632209->22635221` Hook `22379293`
+`IsVersionOf` `22272382` only original-family `22322627`. Parent pins immutable
+commit `9e820f4`.
+
+Old companions remain:
+[v1.2.1 22286630](https://doi.org/10.5281/zenodo.22286630) formal-coordinate
+boundary,
+[v1.2.0 22286222](https://doi.org/10.5281/zenodo.22286222), etc.
 
 Maintained by DavidFox998 as part of *Opera Numerorum*: mathematics made
 auditable, with the beauty left visible.
