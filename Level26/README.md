@@ -14,4 +14,14 @@ Citation: `paper/beal_level26_v24_4_0.bib` and `\cite{beal_level26_v24_4_0}` in 
 
 v14 J0 `[[1,0,1,-5,-8],[1,-1,1,-3,3]]` mwrank `{0,12}` M3 `[[1,1],[0,2]]` unchanged.
 
-The empty `beal-level-26-foundations` GitHub URL is being repurposed for the Matveev-Beal lower bound `|Λ|>exp(C)` toward true v25 `B≤B0=1e6` unconditional.
+The `beal-level-26-foundations` GitHub URL is now the Matveev-Beal lower-bound package. Lake in this monorepo exposes the relocated kernel as `lean_lib Level26` (explicit FullProof roots, not a glob over all of `Beal`).
+
+v25 wiring (type-correct, still not inhabited): see `Level26/BakerBoundGap3Holds.lean`.
+
+```
+matveev_gap3_lower : matveev_inequality_real_target     -- Matveev-Beal, one sorry
+matveev_inequality_real_target → baker_bound_gap3       -- LLL / Bugeaud, def Prop
+baker_conditional_gap3_full : baker_bound_gap3 → forall -- already a theorem
+```
+
+The sketch `baker_bound_gap3_holds := baker_conditional_gap3_full matveev_gap3_lower` does not typecheck: `baker_conditional_gap3_full` takes `baker_bound_gap3`, not the Matveev target. This monorepo does not `require` Matveev-Beal (that package depends on `Level26/BealLevel26Foundations`).
