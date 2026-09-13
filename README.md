@@ -1,25 +1,16 @@
-[![v11.0.0 DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22281075.svg)](https://doi.org/10.5281/zenodo.22281075) [![Concept DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22041831.svg)](https://doi.org/10.5281/zenodo.22041831) [![CI](https://github.com/DavidFox998/beal-conjecture/actions/workflows/main.yml/badge.svg)](https://github.com/DavidFox998/beal-conjecture/actions/workflows/main.yml)
+# Beal Conjecture Level 26 — Gap-3 Baker B0=10^6 Unconditional
+Current: f7bbdc5 wiring v25.0.0-Beal-44-13-Level-26-Baker-B0-Unconditional NOT MINTED, one sorry matveev_gap3_lower at 716 in beal-level-26-foundations 4bd15bd.
+- Monorepo Level26/BealLevel26Foundations 83 modules v24.4.0 db7a556 DOI 10.5281/zenodo.22732209 concept 22379293 closed |Λ|≤B^4/A^4, conditional toward B0
+- Matveev-Beal 4bd15bd owns Matveev Thm1.4 n=2 C1_floor=143186215390 + Bugeaud LLL → B0=10^6, no Mathlib waiting, hGen ∀α1,α2>1 α2=B+3 not 1<B
+- Level26/mcom-draft.tex amsart draft, census B≤10^6 via baker_le_B0_gap3
+- lake build green, axioms [propext, Classical.choice, Quot.sound]
 
-# Beal Conjecture — a formal instrument in *Opera Numerorum*
+[![v11.0.0 DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22281075.svg)](https://doi.org/10.5281/zenodo.22281075) [![Level 26 concept DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22379293.svg)](https://doi.org/10.5281/zenodo.22379293) [![CI](https://github.com/DavidFox998/beal-conjecture/actions/workflows/main.yml/badge.svg)](https://github.com/DavidFox998/beal-conjecture/actions/workflows/main.yml)
 
-This repository is one chamber of David Fox's *Opera Numerorum*: a growing
-collection of machine-checked arithmetic, geometry, and analysis in Lean 4.
-It approaches the Beal Conjecture through a tower of formal layers — from
-elementary divisibility, through elliptic-curve conductor arithmetic, to the
-modularity machinery pioneered by Wiles, Ribet, and Tate.
-
-The aim is not to make a green build look like a finished theorem. It is to
-make every mathematical dependency visible, inspectable, and worthy of trust.
-
----
-
-> **v11.0.0 — Conditionally complete**
->
-> The final assembly
+> **v11.0.0 — Conditionally complete assembly** (software version of this monorepo).
 > [`Beal.Final.ConditionalBealTheorem`](lean/Beal/Final/ConditionalBealTheorem.lean)
-> exposes exactly five named mathematical premises. The finite matrix is
-> ledger-derived; the absent geometric compatibility theorem is named rather
-> than implied.
+> exposes exactly five named mathematical premises. The Level 26 gap-3 Baker
+> $B_0$ tag is **not minted**.
 
 ## The conjecture
 

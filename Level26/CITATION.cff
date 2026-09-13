@@ -1,0 +1,55 @@
+cff-version: 1.2.0
+title: "Beal Conjecture Level 26 — Gap-3 Baker B0=10^6 Unconditional"
+message: >-
+  Cite this Level 26 gap-3 Baker B0 wiring under concept DOI
+  10.5281/zenodo.22379293. The named tag
+  v25.0.0-Beal-44-13-Level-26-Baker-B0-Unconditional is NOT MINTED
+  until hGen and hLLL are 0-sorry. Relocated kernel software remains
+  v24.4.0-Beal-44-13-Level-26-v24x-Final-Summary
+  (DOI 10.5281/zenodo.22732209 on db7a556).
+type: software
+authors:
+  - family-names: Fox
+    given-names: David
+    affiliation: "Opera Numerorum"
+version: "v25.0.0-Beal-44-13-Level-26-Baker-B0-Unconditional"
+doi: "10.5281/zenodo.22379293"
+date-released: 2026-09-13
+license: MIT
+repository-code: "https://github.com/DavidFox998/beal-conjecture"
+url: "https://doi.org/10.5281/zenodo.22379293"
+keywords:
+  - beal-conjecture
+  - lean4
+  - mathlib4
+  - diophantine
+  - matveev
+  - baker
+  - bugeaud
+  - LLL
+  - number-theory
+abstract: >-
+  Gap-3 A^4+B^4=(B+3)^13 toward Baker B0=10^6. v24.4.0 db7a556 closed
+  |Λ|≤B^4/A^4 and the B≤10^6 census. v25 wiring at e823a52 / f7bbdc5
+  packages hGen (Matveev 2000 Thm 1.4 n=2, ∀α1,α2>1, α2=B+3) and
+  hLLL (Bugeaud LLL) into ∀B ¬∃A. One sorry remains:
+  matveev_gap3_lower at line 716 in beal-level-26-foundations 4bd15bd.
+preferred-citation:
+  type: software
+  authors:
+    - family-names: Fox
+      given-names: David
+      affiliation: "Opera Numerorum"
+  title: "Beal Conjecture Level 26 — Gap-3 Baker B0=10^6 Unconditional"
+  version: "v25.0.0-Beal-44-13-Level-26-Baker-B0-Unconditional"
+  year: 2026
+  doi: "10.5281/zenodo.22379293"
+  url: "https://doi.org/10.5281/zenodo.22379293"
+  repository-code: "https://github.com/DavidFox998/beal-conjecture"
+  notes: >-
+    Preferred citation for Level26/mcom-draft.tex and
+    Level26/BakerBoundGap3Holds.lean. Concept DOI
+    10.5281/zenodo.22379293. Prior v24.4.0 version DOI
+    10.5281/zenodo.22732209 on db7a556. Subtree software version
+    remains v24.4.0-Beal-44-13-Level-26-v24x-Final-Summary.
+    The named v25 tag waits until hGen and hLLL are 0-sorry.

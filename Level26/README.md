@@ -1,4 +1,11 @@
-# Level 26 Foundations - v24.4.0 Final Summary
+# Beal Conjecture Level 26 — Gap-3 Baker B0=10^6 Unconditional
+Current: f7bbdc5 wiring v25.0.0-Beal-44-13-Level-26-Baker-B0-Unconditional NOT MINTED, one sorry matveev_gap3_lower at 716 in beal-level-26-foundations 4bd15bd.
+- Monorepo Level26/BealLevel26Foundations 83 modules v24.4.0 db7a556 DOI 10.5281/zenodo.22732209 concept 22379293 closed |Λ|≤B^4/A^4, conditional toward B0
+- Matveev-Beal 4bd15bd owns Matveev Thm1.4 n=2 C1_floor=143186215390 + Bugeaud LLL → B0=10^6, no Mathlib waiting, hGen ∀α1,α2>1 α2=B+3 not 1<B
+- Level26/mcom-draft.tex amsart draft, census B≤10^6 via baker_le_B0_gap3
+- lake build green, axioms [propext, Classical.choice, Quot.sound]
+
+Subtree `CITATION.cff` `doi` / `repository-code` were stale (`10.5281/zenodo.22732045` and the old `beal-level-26-foundations` URL) and are now `10.5281/zenodo.22732209` / `https://github.com/DavidFox998/beal-conjecture`. Do **not** rename this GitHub repo: concept DOI `10.5281/zenodo.22379293` would break.
 
 Relocated from github.com/DavidFox998/beal-level-26-foundations v24.4.0 tag db7a556 DOI 10.5281/zenodo.22732209 concept 10.5281/zenodo.22379293
 
@@ -13,9 +20,13 @@ v24.x DOI chain: 22730408, 22730460, 22730548, 22730776, 22730846, 22731054, 227
 Citation: `Level26/beal_level26_v24_4_0.bib` and `\cite{beal_level26_v24_4_0}`
 in `beal_mcom_draft.tex`. The v25 Baker $B_0$ wiring draft is
 `Level26/mcom-draft.tex` (conditional on uninhabited $hGen$ and $hLLL$).
-Preferred citation: root and subtree `CITATION.cff` `preferred-citation`
+Preferred citation: root `CITATION.cff`, `Level26/CITATION.cff`, and
+subtree `Level26/BealLevel26Foundations/CITATION.cff` `preferred-citation`
+title `Beal Conjecture Level 26 — Gap-3 Baker B0=10^6 Unconditional`,
 version `v25.0.0-Beal-44-13-Level-26-Baker-B0-Unconditional`, concept
-DOI 10.5281/zenodo.22379293. The named tag is not minted yet.
+DOI 10.5281/zenodo.22379293. Root software stays `v11.0.0`; subtree
+software stays `v24.4.0-Beal-44-13-Level-26-v24x-Final-Summary`.
+The named tag is not minted yet.
 
 v14 J0 `[[1,0,1,-5,-8],[1,-1,1,-3,3]]` mwrank `{0,12}` M3 `[[1,1],[0,2]]` unchanged.
 

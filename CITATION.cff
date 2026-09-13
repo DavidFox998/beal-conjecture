@@ -1,5 +1,5 @@
 cff-version: 1.2.0
-title: "Beal Conjecture — a conditionally complete formal assembly"
+title: "Beal Conjecture Level 26 — Gap-3 Baker B0=10^6 Unconditional"
 message: "If you use this software, please cite this release or its Zenodo record."
 type: software
 authors:
@@ -26,7 +26,7 @@ preferred-citation:
     - family-names: Fox
       given-names: David
       affiliation: "Opera Numerorum"
-  title: "Beal Level 26 Foundations v25.0.0: Baker B0 Unconditional"
+  title: "Beal Conjecture Level 26 — Gap-3 Baker B0=10^6 Unconditional"
   version: "v25.0.0-Beal-44-13-Level-26-Baker-B0-Unconditional"
   year: 2026
   doi: "10.5281/zenodo.22379293"
