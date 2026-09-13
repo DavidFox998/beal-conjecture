@@ -14,7 +14,10 @@ Citation: `paper/beal_level26_v24_4_0.bib` and `\cite{beal_level26_v24_4_0}` in 
 
 v14 J0 `[[1,0,1,-5,-8],[1,-1,1,-3,3]]` mwrank `{0,12}` M3 `[[1,1],[0,2]]` unchanged.
 
-The `beal-level-26-foundations` GitHub URL is now the Matveev-Beal lower-bound package. Lake in this monorepo exposes the relocated kernel as `lean_lib Level26` (explicit FullProof roots, not a glob over all of `Beal`).
+The `beal-level-26-foundations` GitHub URL is now the Matveev-Beal lower-bound package. Lake exposes the relocated kernel as `lean_lib Level26` with explicit
+`.one` modules (empty `globs` would treat `roots` as `.andSubmodules`
+and compile the Zsigmondy / Ribet tree). The subtree package
+`Level26/BealLevel26Foundations` uses the same slim default.
 
 v25 wiring (type-correct, still not inhabited): see `Level26/BakerBoundGap3Holds.lean`.
 

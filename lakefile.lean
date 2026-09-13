@@ -31,6 +31,11 @@ lean_lib lean where
     Matveev-Beal requires (subdirectory of this repo). -/
 lean_lib Level26 where
   srcDir := "Level26/BealLevel26Foundations/lean"
+  -- Empty globs would treat roots as `.andSubmodules`.
+  globs := #[
+    .one `BealLevel26Foundations.Beal.FullProof.BealMatveevThm14,
+    .one `BealLevel26Foundations.Beal.FullProof.BealBakerB0ReductionCertificate
+  ]
   roots := #[
     `BealLevel26Foundations.Beal.FullProof.BealMatveevThm14,
     `BealLevel26Foundations.Beal.FullProof.BealBakerB0ReductionCertificate
