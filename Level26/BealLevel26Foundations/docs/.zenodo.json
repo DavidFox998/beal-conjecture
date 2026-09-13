@@ -1,0 +1,33 @@
+{
+  "title": "Beal Level 26 Foundations - Exponent 13 Full Package (Computational Boundary)",
+  "description": "Lean 4.12 computational package for the exponent-13 / level-26 route. Certified Cremona models: 26a1 [1,0,1,-5,-8] discriminant -17576 conductor 26 torsion 3; 26b1 [1,-1,1,-3,3] discriminant -1664 conductor 26 torsion 7. PARI 2.17.2 ellrank [0,0] and empty ell2cover give displayed |Sel2|=1 twice (Lean 1=1) plus det M3=2 over ZMod 3. FreyLevel26 is the displayed equality 2*13=26 (rfl). X0_26_Q_four is rankZero_unconditional and Chabauty0ForcesCusp_computational. BealTheorem_Exponent13_Full_package is that conjunction. Mathlib 4.12 has no SelmerGroup, MordellWeil.rank, modularity, or Ribet. Not forall A B C, not A^13+B^13=C^13. Typed fourCusps implies not ExistsNoncuspidal remains uninhabitable. Descent_26.json SHA-256 d9d907f6cf29e9a90731184f082d430d33128f0f857e6a8124a1eef0b8e39260. Ledger remains v1.4.0. No sorry, True, or trivial inhabitants for those names.",
+  "creators": [
+    {
+      "name": "Fox, David"
+    }
+  ],
+  "keywords": [
+    "Lean 4",
+    "formal mathematics",
+    "Beal conjecture",
+    "level 26",
+    "Frey curve",
+    "PARI",
+    "2-descent"
+  ],
+  "license": "mit-license",
+  "upload_type": "software",
+  "access_right": "open",
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/DavidFox998/beal-level-26-foundations",
+      "relation": "isSupplementTo",
+      "scheme": "url"
+    },
+    {
+      "identifier": "10.5281/zenodo.22272382",
+      "relation": "isVersionOf",
+      "scheme": "doi"
+    }
+  ]
+}

@@ -1,0 +1,138 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite this cumulative archive under concept DOI 10.5281/zenodo.22379293 (series) and the corrected v1.0.1-computable release 10.5281/zenodo.22272714 / package concept 10.5281/zenodo.22272382."
+title: "Beal Level 26 Foundations — X0(26)(Q) Cusps P-mem [1,2,13,26] + README Sweep 22452680 → 22456594 + Beal13-Forall-Bridge Triple None"
+type: software
+authors:
+  - family-names: Fox
+    given-names: David
+version: "v24.4.0-Beal-44-13-Level-26-v24x-Final-Summary"
+date-released: "2026-09-13"
+doi: "10.5281/zenodo.22732045"
+repository-code: "https://github.com/DavidFox998/beal-level-26-foundations"
+url: "https://github.com/DavidFox998/beal-level-26-foundations/releases/tag/v24.4.0-Beal-44-13-Level-26-v24x-Final-Summary"
+# v24.4.0-Beal-44-13-Level-26-v24x-Final-Summary: honest v24.x final summary (not v25); matveev_v24x_summary (|Lambda| = log(1+B^4/A^4) <= B^4/A^4 = B^4/((B+3)^13-B^4) and 0 < exp(C) < 1e-12 < 1 with C = -height_B0 log height_B0, height_B0 = 104382751019310000000 = C1_floor*30^6, 30^6=729000000) / matveev_v24x_conditional_summary (IF target THEN 0 < exp(C) < B^4/A^4 and B^4*(1+exp(C)) > exp(C)*(B+3)^13) / bugeaud_v24x_final_link / baker_v24x_reduction_shape; target, baker_bound_gap3, and bugeaud_LLL_reduction_conditional stay def Prop; locked Lean 0 vs v24.3.2 305e5f4 except BealMatveevThm14.lean, RibetMazur.lean, and BealBakerB0ReductionCertificate.lean summary shape. Previous v24.3.2 DOI 10.5281/zenodo.22732045. Series concept 10.5281/zenodo.22379293.
+# v24.3.2-Beal-44-13-Level-26-Exp-Numerical-Bound: numerical tiny bound exp(C) << 10^{-12} toward B0; height_B0 > 10^20 / log height_B0 > 46 via 2^83 < 10^25 so log 10 > 2.3 / C_exp_bound <= -10^12 / 0 < exp(C) < exp(-10^12) < 10^{-12} < 1 (matveev_C_exp_bound_le_neg_1e12 / matveev_target_exp_lower_lt_exp_neg_1e12 / matveev_target_exp_lower_lt_onee12 / matveev_exp_C_pos_lt_one); target, baker_bound_gap3, and bugeaud_LLL_reduction_conditional stay def Prop; locked Lean 0 vs v24.3.1 d189ef9 except BealMatveevThm14.lean and RibetMazur.lean. Previous v24.3.1 DOI 10.5281/zenodo.22731966. Current v24.3.2 DOI 10.5281/zenodo.22732045. Series concept 10.5281/zenodo.22379293.
+# v24.3.1-Beal-44-13-Level-26-Conditional-B-Lower: derive explicit B lower bound from conditional Matveev ratio bound; matveev_gap3_A_pow_eq_B3_pow_sub_B_pow (A^4 = (B+3)^13 - B^4) / matveev_gap3_ratio_explicit (B^4 / A^4 = B^4 / ((B+3)^13 - B^4)) / matveev_gap3_conditional_B_lower (IF |Lambda| > exp(C_exp_bound) THEN B^4 / ((B+3)^13 - B^4) > exp(C_exp_bound) and B^4 * (1 + exp(C_exp_bound)) > exp(C_exp_bound) * (B+3)^13) / matveev_gap3_conditional_B_lower_of_target / matveev_gap3_conditional_B_pos_lower; target, baker_bound_gap3, and bugeaud_LLL_reduction_conditional stay def Prop; locked Lean 0 vs v24.3.0 6a0a0b1 except BealMatveevThm14.lean and RibetMazur.lean. Previous v24.3.0 DOI 10.5281/zenodo.22731759. Current v24.3.1 DOI 10.5281/zenodo.22731966. Series concept 10.5281/zenodo.22379293.
+# v24.3.0-Beal-44-13-Level-26-Bugeaud-LLL-Link: link conditional Matveev ratio bound to Baker B0=1e6 certificate and LLL reduction; matveev_gap3_conditional_ratio_pos (0 < exp(C_exp_bound) < B^4/A^4) / matveev_gap3_ratio_pos_of_conditional_lower / bugeaud_LLL_reduction_conditional (matveev_inequality_real_formal -> ∃ B_reduced <= 1e6, ∀ solution with B <= 1e6, B <= B_reduced); target and baker_bound_gap3 stay def Prop; locked Lean 0 vs v24.2.3 ed94732 except BealMatveevThm14.lean, BealBugeaudLLLFormal.lean, and RibetMazur.lean. Previous v24.2.3 DOI 10.5281/zenodo.22731634. Current v24.3.0 DOI 10.5281/zenodo.22731759. Series concept 10.5281/zenodo.22379293.
+# v24.2.3-Beal-44-13-Level-26-Matveev-Conditional-Lower: conditional lower bound implies ratio bound on gap-3 solutions; matveev_conditional_lower_implies_ratio_gt_exp (|Lambda| > target -> B^4/A^4 > target) / matveev_conditional_lower_implies_ratio_gt_exp_of_solution / matveev_gap3_ratio_lower_bound_conditional (solution ∧ matveev_inequality_real_target -> B^4/A^4 > exp(C_exp_bound)); target and baker_bound_gap3 stay def Prop; locked Lean 0 vs v24.2.2 ffd8343 except BealMatveevThm14.lean and RibetMazur.lean. Previous v24.2.2 DOI 10.5281/zenodo.22731508. Current v24.2.3 DOI 10.5281/zenodo.22731634. Series concept 10.5281/zenodo.22379293.
+# v24.2.2-Beal-44-13-Level-26-Matveev-Log-One-Plus-Le: logarithmic bound log(1+x) <= x on gap-3 solutions; matveev_log_one_plus_le_self (Real.log (1+x) <= x for x > -1) / matveev_gap3_B_pow_div_A_pow_pos (0 < B^4 / A^4) / matveev_gap3_abs_lambda_nonneg (0 <= |Lambda|) / matveev_gap3_abs_lambda_le_ratio (|Lambda| <= B^4 / A^4) / matveev_gap3_abs_lambda_lt_one_of_small_ratio (B^4 / A^4 < 1 -> |Lambda| < 1); target and baker_bound_gap3 stay def Prop; locked Lean 0 vs v24.2.1 ac100cf except BealMatveevThm14.lean and RibetMazur.lean. Previous v24.2.1 DOI 10.5281/zenodo.22731160. Series concept 10.5281/zenodo.22379293.
+# v24.2.1-Beal-44-13-Level-26-Matveev-Log-Form-Ratio: logarithmic form as logarithm of ratio on gap-3 solutions; 0 < A^4 (matveev_gap3_A_pow_pos) / 0 < (B+3)^13 (matveev_gap3_B3_pow_pos) / (B+3)^13 / A^4 = 1 + B^4 / A^4 (matveev_gap3_ratio_eq_one_plus_ratio) / Lambda = -log((B+3)^13 / A^4) and |Lambda| = log((B+3)^13 / A^4) = log(1 + B^4 / A^4) (matveev_gap3_log_form_eq_log_ratio) / |Lambda| = log(1 + B^4 / A^4) (matveev_gap3_abs_lambda_eq_log_one_plus_ratio); target and baker_bound_gap3 stay def Prop; locked Lean 0 vs v24.2.0 d755428 except BealMatveevThm14.lean and RibetMazur.lean. Previous v24.2.0 DOI 10.5281/zenodo.22731054. Series concept 10.5281/zenodo.22379293.
+# v24.2.0-Beal-44-13-Level-26-Matveev-Log-Form-Bound: logarithmic form upper bound on gap-3 solutions; matveev_gap3_B_pos_of_solution (B > 0 via baker_le_B0_gap3) / matveev_gap3_A_pos (A > 0 via eq_implies_A_gt_B) / matveev_gap3_log_form_upper_bound (Lambda < 0 and |Lambda| = -Lambda) / matveev_exp_lower_lt_one_and_pos (0 < target < 1); target and baker_bound_gap3 stay def Prop; locked Lean 0 vs v24.1.1 21df092 except BealMatveevThm14.lean and RibetMazur.lean. Previous v24.1.1 DOI 10.5281/zenodo.22730846. Series concept 10.5281/zenodo.22379293.
+# v24.1.1-Beal-44-13-Level-26-Matveev-C-Exp-Rewrite: matveev_C_exp_bound = -(height_B0 * log height_B0) using v24.1.0 product identity C1_floor*thirty_pow=height_B0; matveev_C_exp_bound_eq_neg_height_mul_log / matveev_C_exp_bound_eq_neg_height_log / matveev_target_exp_lower_eq / matveev_height_B0_mul_log_pos / matveev_C_exp_bound_neg_of_mul_log_pos; target and baker_bound_gap3 stay def Prop; locked Lean 0 vs v24.1.0 7962905 except BealMatveevThm14.lean. Previous v24.1.0 DOI 10.5281/zenodo.22730776. Series concept 10.5281/zenodo.22379293.
+# v24.1.0-Beal-44-13-Level-26-Matveev-Height-Product: C1_floor*729000000=height_B0=104382751019310000000 by decide; typo C1_floor*72900000=height_B0/10; matveev_height_product_link; target and baker_bound_gap3 stay def Prop; stay in v24 until |Lambda|>exp(-C); locked Lean 0 vs v24.0.2 73c5993 except BealMatveevThm14.lean. Previous v24.0.2 DOI 10.5281/zenodo.22730548. Series concept 10.5281/zenodo.22379293.
+# v24.0.2-Beal-44-13-Level-26-Matveev-Exp-Bound-Properties DOI 10.5281/zenodo.22730548 at 73c5993: Real.exp properties of C_exp_bound; exp(C)<1 and 0<exp(C); C_exp_bound <= -10^12; named matveev_target_exp_lower; target and baker_bound_gap3 stay def Prop; stay in v24 until |Lambda|>exp(-C); locked Lean 0 vs v24.0.1 4d66383 except BealMatveevThm14.lean. Previous v24.0.1 DOI 10.5281/zenodo.22730460. Series concept 10.5281/zenodo.22379293.
+# v24.0.1-Beal-44-13-Level-26-Matveev-Height-Log-Monotone DOI 10.5281/zenodo.22730460 at 4d66383: height/log monotone lemmas; matveev_height_B0_gt_two / matveev_log_height_monotone / matveev_C_exp_bound_lt_zero_of_pos_log; C1_floor>0 thirty_pow>0 by decide; target and baker_bound_gap3 stay def Prop; stay in v24 until |Lambda|>exp(-C); locked Lean 0 vs v24.0.0 d39c6d5 except BealMatveevThm14.lean. Previous v24.0.0 DOI 10.5281/zenodo.22730408. Series concept 10.5281/zenodo.22379293.
+# v24.0.0-Beal-44-13-Level-26-Matveev-Thm-1-4-Formalization-Start DOI 10.5281/zenodo.22730408 at d39c6d5: BealMatveevThm14.lean starts Matveev 2000 Thm 1.4 |Lambda|>exp(-C); matveev_height_log_pos / matveev_exp_bound_neg inhabited; thirty_pow=729000000 and ≠72900000 by decide; matveev_inequality_real_target and baker_bound_gap3 stay def Prop; stay in v24 until baker_bound_gap3 inhabited; locked Lean 0 vs v23 c44f161. Previous v23 DOI 10.5281/zenodo.22730338. Series concept 10.5281/zenodo.22379293.
+# v23.0.0-Beal-44-13-Level-26-Matveev-C-Exp-Bound-Compare DOI 10.5281/zenodo.22730338 at c44f161: matveev_C_exp_bound_lt_neg_onee12 and matveev_log_form_ne_zero_of_gap3 inhabited; baker_bound_gap3 stays def Prop; Matveev 2000 Thm 1.4 not in Mathlib 4.12; locked Lean 0 vs v22 1db061a. Previous v22 DOI 10.5281/zenodo.22729980. Series concept 10.5281/zenodo.22379293.
+# v22.0.0-Beal-44-13-Level-26-Matveev-Inequality-Real DOI 10.5281/zenodo.22729980 at 1db061a: matveev_C_exp_bound Real exponent -(C1_floor:Real)*(thirty_pow:Real)*Real.log(height_B0); matveev_C_exp_bound_decide C1_floor=143186215390 ∧ thirty_pow=729000000 by decide no axioms; matveev_inequality_real_formal / matveev_inequality_real_lower stay def Prop; baker_bound_gap3 stays def Prop; baker_bound_gap3_of_matveev_inequality_real implication only; locked Lean 0 vs v21 3079d82. Previous v21 DOI 10.5281/zenodo.22729724. Series concept 10.5281/zenodo.22379293.
+# v21.0.0-Beal-44-13-Level-26-Matveev-Log-Form-Nonzero DOI 10.5281/zenodo.22729724 at 3079d82: matveev_log_form_int=16*(4B-13(B+3)) Tate c4 scale; matveev_log_form_ne_zero on B%14=0; decide witnesses B=0,14 no axioms; matveev_height_le_log_B0 B<=104382751019310000000; baker_bound_gap3 and bugeaud_reduction_formal stay def Prop; locked Lean 0 vs v20 768ed7f except appended theorems. Previous v20 DOI 10.5281/zenodo.22729515. Series concept 10.5281/zenodo.22379293.
+# v20.0.0-Beal-44-13-Level-26-Matveev-Inequality-Bugeaud-LLL-Formalization DOI 10.5281/zenodo.22729515 at 768ed7f: BealMatveevInequality.lean matveev_log_form Real.log; matveev_lower_bound def Prop; matveev_inequality_constants_hold decide no axioms; BealBugeaudLLLFormal.lean bugeaud_K=10^20 bugeaud_LLL_basis_holds decide no axioms; bugeaud_reduction_formal def Prop; baker_bound_gap3 stays def Prop; Tate/Baker/v14 J0/v15 B0/v17 LLL/v19 constants 0 lines vs v19 8fe96fd / 10.5281/zenodo.22729309. Series concept 10.5281/zenodo.22379293.
+# v19.0.0-Beal-44-13-Level-26-Matveev-Constants-Formalization DOI 10.5281/zenodo.22729309 at 8fe96fd: BealMatveevConstants.lean matveev_C1_floor=143186215390 theorem decide Nat/Int constants (not Props); matveev_explicit_gap3_constants_hold decide no axioms; baker_bound_gap3 stays def Prop; Tate/Baker/v14 J0/v15 B0/v17 reduction 0 lines vs v18 430189e / 10.5281/zenodo.22729129. Series concept 10.5281/zenodo.22379293.
+# v18.0.0-Beal-44-13-Level-26-Cumulative-Archive-v10-v17 DOI 10.5281/zenodo.22729129 at 430189e: docs-only cumulative archive v10-v17 most current NOT final; Lean 0 lines vs v17 3fbafa6 / 10.5281/zenodo.22729067. Series concept 10.5281/zenodo.22379293.
+# v17.0.0-Beal-44-13-Level-26-Baker-B0-Reduction-Certificate DOI 10.5281/zenodo.22729067 at 3fbafa6: PARI LLL qflll B0_raw to B0_reduced=1e6 baker_B0_reduction_certificate.json List (List Int); baker_reduction_certificate_holds decide no axioms; baker_bound_gap3 stays def Prop; Tate/Baker/v15 B0/v14 modular 0 lines vs v16 9ce2980. Previous v16 DOI 10.5281/zenodo.22728705. Series concept 10.5281/zenodo.22379293.
+# v16.0.0-Beal-44-13-Level-26-Cumulative-Archive DOI 10.5281/zenodo.22728705 at 9ce2980: docs-only cumulative archive v10-v15 most current NOT final; Lean 0 lines vs v15 6443f81 / 10.5281/zenodo.22728624. Series concept 10.5281/zenodo.22379293.
+# v15.0.0-Baker-B0-PARI-Certificate DOI 10.5281/zenodo.22728624 at 6443f81: PARI gp B0=1e6 Matveev explicit Table 1 baker_B0_certificate.json transparent List/Int cert; baker_bound_gap3 stays def Prop; Tate/Baker 0 lines vs v14 3089bec.
+# v14.0.0-J0-Mwrank-Formal-Verified DOI 10.5281/zenodo.22722140 at 3089bec: explicit displayed certs J0 [[1,0,1,-5,-8],[1,-1,1,-3,3]] mwrank {0,12} formal M3 [[1,1],[0,2]] reuse Tate c4/tateF2 f2<=5; holds theorems decide/rfl no axioms.
+# v13.0.0-Beal-44-13-Level-26-Modular-Elimination DOI 10.5281/zenodo.22721843: Frey Y^2=X(X-A^4)(X+B^4) tateConductor 2^{f2}*rad*13 f2<=5 + Kraus a53 vs S2(26) + five transparent List/Nat cert structures (not opaque axioms). Concept DOI still 10.5281/zenodo.22272382; v12 DOI 10.5281/zenodo.22721089.
+# v12.0.0-Baker-Matveev-explicit DOI 10.5281/zenodo.22721089: explicit Matveev for (4,4,13) gap3, not general Bugeaud; matveev_explicit_gap3 turns baker_bound_gap3 into eq → B ≤ baker_B0; matveev_no_solution_A_le_B inhabited; baker_bound_gap3 stays Prop; Tate file unchanged.
+# v11.0.0-Tate-N-def DOI 10.5281/zenodo.22721420: defines tateConductor / frey_tate_conductor as 2^{f2}*rad*13 and inhabits frey_tate_conductor_inhabited; baker_bound_gap3 / conductor_86 / B14_honest stay Prop.
+# v10.0.0-paper-B14-Baker-1e6-DOI archives math DOI 10.5281/zenodo.22712897 and paper DOI 10.5281/zenodo.22713047 for the v9.4.0 census (62500 / 25 chunks), Baker conditional forall B, and Tate 2^5*rad*13.
+# v9.4.0-chunked-1e6-final names allKilled_chunk_0..24 and allKilled_62500 / allKilled_1e6; baker_conditional_gap3_full stays inhabited; baker_bound_gap3 / frey_tate_conductor / conductor_86 / B14_honest stay Prop.
+# v9.3.0-Baker-conditional-gap3-full inhabits baker_conditional_gap3_full; baker_bound_gap3 stays Prop.
+# v9.2.0-Tate-2adic-conductor records Tate Steps 6-7 at 2; frey_tate_conductor stays Prop.
+# v9.1.0-Tate-conductor records Tate Step 2; frey_tate_conductor stays Prop.
+# v9.0.0-Baker-bound-gap3 records baker_bound_gap3 as an uninhabited Prop.
+# v8.88.0-Zsig-Bgt2M-gap3 records the 5983 + LTE ledger; B>2M forall stays Prop.
+# v8.87.0-general-conductor-bound inhabits frey_conductor_general (Weierstrass Δ).
+# Math release: v8.84.0-B14-modq-kill / 10.5281/zenodo.22712897.
+# Paper: v8.85.0-paper-B14-full / 10.5281/zenodo.22713047.
+# https://github.com/DavidFox998/beal-level-26-foundations/releases/tag/v8.87.0-general-conductor-bound
+license: MIT
+keywords:
+  - beal-conjecture
+  - x0-26
+  - frey-curve
+  - ribet-level-lowering
+  - lean4
+  - pari-gp
+  - 2-descent
+  - axiom-free
+abstract: >-
+  X0(26)(Q) Cusps P-mem Locked [1,2,13,26] rfl P.mem mem_1 mem_2
+  mem_13 mem_26 not_mem_3 hInList_X0_26 hNotIn_X0_26 for
+  hGeomForbid_typed_true, READMEs sweep all folders badges DOI
+  22452680 findable records 22450737 hook 22379293 IsVersionOf
+  22272382 metadata only original latest 22322627, new mint
+  22456594 findable version v4.29.0-iter-readme-X0-26-22452680-locked
+  READMEs point at 22452680, about updated,
+  beal_forall_eq_exponent13_bridge none = beal_forall_from_ribet =
+  Contradiction.beal_exponent13_from_ribet BRIDGE none hGeomForbid,
+  beal13_forall_bridge_triple ⟨exponent13,forall,bridge⟩ none
+  formerly final_*, typed_and_forall none, forall prep comment
+  forall A B C reduces to p=13 dividing xyz via Ribet level
+  lowering to 26 then X0(26)(Q)=cusps forces gcd>1 still not
+  inhabited No False.elim, PARI 26a1 -17576 26b1 -1664 Sel2=1
+  det M3=2 SHA
+  d9d907f6cf29e9a90731184f082d430d33128f0f857e6a8124a1eef0b8e39260
+  image >=300KB hook 22379293 honest
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.22730460
+    description: v24.0.1-Beal-44-13-Level-26-Matveev-Height-Log-Monotone height and log monotone
+  - type: doi
+    value: 10.5281/zenodo.22730408
+    description: v24.0.0-Beal-44-13-Level-26-Matveev-Thm-1-4-Formalization-Start Matveev 1.4 start
+  - type: doi
+    value: 10.5281/zenodo.22730338
+    description: v23.0.0-Beal-44-13-Level-26-Matveev-C-Exp-Bound-Compare exponent compare
+  - type: doi
+    value: 10.5281/zenodo.22729980
+    description: v22.0.0-Beal-44-13-Level-26-Matveev-Inequality-Real Real exponent skeleton
+  - type: doi
+    value: 10.5281/zenodo.22729724
+    description: v21.0.0-Beal-44-13-Level-26-Matveev-Log-Form-Nonzero integer log form ne_zero
+  - type: doi
+    value: 10.5281/zenodo.22729515
+    description: v20.0.0-Beal-44-13-Level-26-Matveev-Inequality-Bugeaud-LLL-Formalization Real.log LLL skeleton
+  - type: doi
+    value: 10.5281/zenodo.22729309
+    description: v19.0.0-Beal-44-13-Level-26-Matveev-Constants-Formalization Matveev C Nat/Int theorems
+  - type: doi
+    value: 10.5281/zenodo.22729129
+    description: v18.0.0-Beal-44-13-Level-26-Cumulative-Archive-v10-v17 docs-only archive
+  - type: doi
+    value: 10.5281/zenodo.22729067
+    description: v17.0.0-Beal-44-13-Level-26-Baker-B0-Reduction-Certificate PARI LLL B0 cert
+  - type: doi
+    value: 10.5281/zenodo.22379293
+    description: Series concept DOI (v10-v24 webhook versions)
+  - type: doi
+    value: 10.5281/zenodo.22272382
+    description: Older package concept DOI
+  - type: doi
+    value: 10.5281/zenodo.22272714
+    description: v1.0.1-computable citation DOI
+  - type: doi
+    value: 10.5281/zenodo.22712897
+    description: v10 / v8.84.0-B14-modq-kill math release
+  - type: doi
+    value: 10.5281/zenodo.22713047
+    description: v10 / v8.85.0-paper-B14-full paper version DOI
+  - type: doi
+    value: 10.5281/zenodo.22721420
+    description: v11.0.0-Tate-N-def
+  - type: doi
+    value: 10.5281/zenodo.22721089
+    description: v12.0.0-Baker-Matveev-explicit
+  - type: doi
+    value: 10.5281/zenodo.22721843
+    description: v13.0.0-Beal-44-13-Level-26-Modular-Elimination transparent certs
+  - type: doi
+    value: 10.5281/zenodo.22722140
+    description: v14.0.0-J0-Mwrank-Formal-Verified displayed J0/mwrank/formal certs
+  - type: doi
+    value: 10.5281/zenodo.22728624
+    description: v15.0.0-Baker-B0-PARI-Certificate PARI Matveev B0 cert
+  - type: doi
+    value: 10.5281/zenodo.22728705
+    description: v16.0.0-Beal-44-13-Level-26-Cumulative-Archive v10-v15 archive

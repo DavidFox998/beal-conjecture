@@ -1,0 +1,17 @@
+{
+  "26a1": {
+    "label": "26.a1",
+    "conductor": 26,
+    "rank": 0,
+    "torsion": "Z/3Z",
+    "ap2": -1
+  },
+  "26b1": {
+    "label": "26.b1",
+    "conductor": 26,
+    "rank": 0,
+    "torsion": "Z/7Z",
+    "ap2": 1
+  },
+  "source": "LMFDB.org EllipticCurve/Q/26a1 and 26b1, accessed 2026-05-10"
+}
