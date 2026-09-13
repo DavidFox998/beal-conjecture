@@ -25,9 +25,19 @@ stay out of the default lib.
 v25 wiring (type-correct, still not inhabited): see `Level26/BakerBoundGap3Holds.lean`.
 
 ```
-matveev_gap3_lower : matveev_inequality_real_target     -- Matveev-Beal, one sorry
-matveev_inequality_real_target → baker_bound_gap3       -- LLL / Bugeaud, def Prop
+hGen : matveev_theorem_1_4_general_prop                  -- Matveev-Beal, uninhabited
+hLLL : bugeaud_LLL_reduction_conditional                -- LLL / Bugeaud, def Prop
+baker_bound_gap3_of_LLL : hLLL → hGen → baker_bound_gap3 -- proved packaging
+v25_of_hGen_hLLL : hGen → hLLL → ∀ B, ¬∃ A              -- proved packaging
 baker_conditional_gap3_full : baker_bound_gap3 → forall -- already a theorem
 ```
 
+`hGen` uses `α₁ = A`, `α₂ = B+3` (not `1 < B`). The B ≤ B0 Matveev lower bound is `matveev_gap3_lower_of_general_of_B_le_B0` in Matveev-Beal 4bd15bd; duplicated here as `matveev_gap3_lower_on_B0_range` (def Prop, no reverse import).
+
+Not v25: hGen and hLLL are still uninhabited. Tag
+`v25.0.0-Beal-44-13-Level-26-Baker-B0-Unconditional` waits on 0 sorry
+for both. DOI stays concept 22379293.
+
 The sketch `baker_bound_gap3_holds := baker_conditional_gap3_full matveev_gap3_lower` does not typecheck: `baker_conditional_gap3_full` takes `baker_bound_gap3`, not the Matveev target. This monorepo does not `require` Matveev-Beal (that package depends on `Level26/BealLevel26Foundations`).
+
+`Level26Wiring` is not a default `lake build` target: the existing git require of the old foundations tag shadows `BealLevel26Foundations.Beal.FullProof.*`. The wiring file typechecks against the relocated kernel oleans. `lake build` still builds the `Beal` lib.

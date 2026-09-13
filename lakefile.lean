@@ -42,7 +42,9 @@ lean_lib Level26 where
   ]
 
 /-- v25 wiring names. Does not `require` Matveev-Beal: that
-    package depends on the Level26 subtree of this repo. -/
+    package depends on the Level26 subtree of this repo.
+    Not a default target: the git require of the old
+    foundations tag shadows `BealLevel26Foundations.Beal.FullProof.*`. -/
 lean_lib Level26Wiring where
   srcDir := "Level26"
   globs := #[.one `BakerBoundGap3Holds]
