@@ -45,4 +45,5 @@ lean_lib Level26 where
     package depends on the Level26 subtree of this repo. -/
 lean_lib Level26Wiring where
   srcDir := "Level26"
+  globs := #[.one `BakerBoundGap3Holds]
   roots := #[`BakerBoundGap3Holds]
