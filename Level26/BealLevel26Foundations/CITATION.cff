@@ -7,9 +7,26 @@ authors:
     given-names: David
 version: "v24.4.0-Beal-44-13-Level-26-v24x-Final-Summary"
 date-released: "2026-09-13"
-doi: "10.5281/zenodo.22732045"
-repository-code: "https://github.com/DavidFox998/beal-level-26-foundations"
-url: "https://github.com/DavidFox998/beal-level-26-foundations/releases/tag/v24.4.0-Beal-44-13-Level-26-v24x-Final-Summary"
+doi: "10.5281/zenodo.22732209"
+repository-code: "https://github.com/DavidFox998/beal-conjecture"
+url: "https://github.com/DavidFox998/beal-conjecture/tree/main/Level26"
+preferred-citation:
+  type: software
+  authors:
+    - family-names: Fox
+      given-names: David
+  title: "Beal Level 26 Foundations v25.0.0: Baker B0 Unconditional"
+  version: "v25.0.0-Beal-44-13-Level-26-Baker-B0-Unconditional"
+  year: 2026
+  doi: "10.5281/zenodo.22379293"
+  url: "https://doi.org/10.5281/zenodo.22379293"
+  repository-code: "https://github.com/DavidFox998/beal-conjecture"
+  notes: >-
+    Preferred citation for the v25 Baker B0 wiring draft
+    (Level26/mcom-draft.tex). Concept DOI 10.5281/zenodo.22379293.
+    Prior closing v24.4.0 DOI 10.5281/zenodo.22732209 on db7a556.
+    The named v25 tag is not minted until hGen and hLLL are 0-sorry.
+    Matveev-Beal 4bd15bd still has one sorry matveev_gap3_lower at 716.
 # v24.4.0-Beal-44-13-Level-26-v24x-Final-Summary: honest v24.x final summary (not v25); matveev_v24x_summary (|Lambda| = log(1+B^4/A^4) <= B^4/A^4 = B^4/((B+3)^13-B^4) and 0 < exp(C) < 1e-12 < 1 with C = -height_B0 log height_B0, height_B0 = 104382751019310000000 = C1_floor*30^6, 30^6=729000000) / matveev_v24x_conditional_summary (IF target THEN 0 < exp(C) < B^4/A^4 and B^4*(1+exp(C)) > exp(C)*(B+3)^13) / bugeaud_v24x_final_link / baker_v24x_reduction_shape; target, baker_bound_gap3, and bugeaud_LLL_reduction_conditional stay def Prop; locked Lean 0 vs v24.3.2 305e5f4 except BealMatveevThm14.lean, RibetMazur.lean, and BealBakerB0ReductionCertificate.lean summary shape. Previous v24.3.2 DOI 10.5281/zenodo.22732045. Series concept 10.5281/zenodo.22379293.
 # v24.3.2-Beal-44-13-Level-26-Exp-Numerical-Bound: numerical tiny bound exp(C) << 10^{-12} toward B0; height_B0 > 10^20 / log height_B0 > 46 via 2^83 < 10^25 so log 10 > 2.3 / C_exp_bound <= -10^12 / 0 < exp(C) < exp(-10^12) < 10^{-12} < 1 (matveev_C_exp_bound_le_neg_1e12 / matveev_target_exp_lower_lt_exp_neg_1e12 / matveev_target_exp_lower_lt_onee12 / matveev_exp_C_pos_lt_one); target, baker_bound_gap3, and bugeaud_LLL_reduction_conditional stay def Prop; locked Lean 0 vs v24.3.1 d189ef9 except BealMatveevThm14.lean and RibetMazur.lean. Previous v24.3.1 DOI 10.5281/zenodo.22731966. Current v24.3.2 DOI 10.5281/zenodo.22732045. Series concept 10.5281/zenodo.22379293.
 # v24.3.1-Beal-44-13-Level-26-Conditional-B-Lower: derive explicit B lower bound from conditional Matveev ratio bound; matveev_gap3_A_pow_eq_B3_pow_sub_B_pow (A^4 = (B+3)^13 - B^4) / matveev_gap3_ratio_explicit (B^4 / A^4 = B^4 / ((B+3)^13 - B^4)) / matveev_gap3_conditional_B_lower (IF |Lambda| > exp(C_exp_bound) THEN B^4 / ((B+3)^13 - B^4) > exp(C_exp_bound) and B^4 * (1 + exp(C_exp_bound)) > exp(C_exp_bound) * (B+3)^13) / matveev_gap3_conditional_B_lower_of_target / matveev_gap3_conditional_B_pos_lower; target, baker_bound_gap3, and bugeaud_LLL_reduction_conditional stay def Prop; locked Lean 0 vs v24.3.0 6a0a0b1 except BealMatveevThm14.lean and RibetMazur.lean. Previous v24.3.0 DOI 10.5281/zenodo.22731759. Current v24.3.1 DOI 10.5281/zenodo.22731966. Series concept 10.5281/zenodo.22379293.

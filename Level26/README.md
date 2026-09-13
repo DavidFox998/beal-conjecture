@@ -10,7 +10,12 @@ Still uninhabited: matveev_inequality_real_target, baker_bound_gap3, bugeaud_LLL
 
 v24.x DOI chain: 22730408, 22730460, 22730548, 22730776, 22730846, 22731054, 22731160, 22731508, 22731634, 22731759, 22731966, 22732045, 22732209
 
-Citation: `paper/beal_level26_v24_4_0.bib` and `\cite{beal_level26_v24_4_0}` in `beal_mcom_draft.tex`.
+Citation: `Level26/beal_level26_v24_4_0.bib` and `\cite{beal_level26_v24_4_0}`
+in `beal_mcom_draft.tex`. The v25 Baker $B_0$ wiring draft is
+`Level26/mcom-draft.tex` (conditional on uninhabited $hGen$ and $hLLL$).
+Preferred citation: root and subtree `CITATION.cff` `preferred-citation`
+version `v25.0.0-Beal-44-13-Level-26-Baker-B0-Unconditional`, concept
+DOI 10.5281/zenodo.22379293. The named tag is not minted yet.
 
 v14 J0 `[[1,0,1,-5,-8],[1,-1,1,-3,3]]` mwrank `{0,12}` M3 `[[1,1],[0,2]]` unchanged.
 

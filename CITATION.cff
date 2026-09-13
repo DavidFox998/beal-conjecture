@@ -20,3 +20,22 @@ keywords:
   - Ribet Level Lowering
   - Taylor-Wiles Patching
 abstract: "A conditionally complete Lean 4 assembly of a level-26 route toward the Beal Conjecture. The final theorem exposes exactly five named mathematical premises. The finite mod-3 matrix is derived from normalized eigenform coefficients and an explicit basis change; identifying it with the actual Abel-Jacobi cotangent map remains a named geometric compatibility theorem. Selmer cardinality is proved only for an explicitly supplied carrier; its cohomological identification remains external."
+preferred-citation:
+  type: software
+  authors:
+    - family-names: Fox
+      given-names: David
+      affiliation: "Opera Numerorum"
+  title: "Beal Level 26 Foundations v25.0.0: Baker B0 Unconditional"
+  version: "v25.0.0-Beal-44-13-Level-26-Baker-B0-Unconditional"
+  year: 2026
+  doi: "10.5281/zenodo.22379293"
+  url: "https://doi.org/10.5281/zenodo.22379293"
+  repository-code: "https://github.com/DavidFox998/beal-conjecture"
+  notes: >-
+    Preferred citation for the Level 26 gap-3 Baker B0 wiring
+    (Level26/mcom-draft.tex, Level26/BakerBoundGap3Holds.lean e823a52).
+    Concept DOI 10.5281/zenodo.22379293; prior v24.4.0 version DOI
+    10.5281/zenodo.22732209 on db7a556. The named v25 tag waits until
+    hGen (Matveev 2000 Thm 1.4) and hLLL (Bugeaud) are 0-sorry.
+    Matveev-Beal 4bd15bd still has one sorry matveev_gap3_lower at 716.

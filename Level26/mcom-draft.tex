@@ -1,0 +1,191 @@
+% Beal Level 26 v25.0.0-Beal-44-13-Level-26-Baker-B0-Unconditional
+% Monorepo e823a52 after fea0c39, Matveev-Beal 4bd15bd one sorry at 716
+% DOI concept 22379293, prior v24.4.0 db7a556 DOI 10.5281/zenodo.22732209
+% Honest: the tag waits until hGen and hLLL are 0-sorry. Not v25 yet.
+\documentclass[11pt]{amsart}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{hyperref}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{definition}[theorem]{Definition}
+
+\title{Gap-3 $A^4+B^4=(B+3)^{13}$ toward Baker $B_0=10^6$}
+\author{David Fox}
+\date{2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+On Beal gap-3 $A^4+B^4=(B+3)^{13}$ the v24.4.0 kernel~\cite{beal_level26_v24_4_0}
+closes $|\Lambda|\le B^4/A^4$ and the $B\le 10^6$ residue census.
+The v25 wiring~\cite{beal_level26_v25_0_0} packages
+$hGen$ (Matveev 2000 Thm.~1.4, $n=2$) and $hLLL$ (Bugeaud lattice reduction)
+into $\forall B,\ \neg\exists A$. Both hypotheses remain uninhabited
+\texttt{def Prop}s in Mathlib~4.12. The one \texttt{sorry} is
+\texttt{matveev\_gap3\_lower} at line~716 of
+\texttt{beal-level-26-foundations} $4bd15bd$.
+The GitHub tag
+\texttt{v25.0.0-Beal-44-13-Level-26-Baker-B0-Unconditional}
+waits until $hGen$ and $hLLL$ are $0$-\texttt{sorry}.
+DOI concept \texttt{22379293} persists.
+\end{abstract}
+
+\section{Gap-3 $A^4+B^4=(B+3)^{13}$ toward Baker $B_0=10^6$}
+
+\begin{definition}[Linear form $\Lambda_{\mathrm{gap3}}$]
+For $A,B\in\mathbb{N}$, $B>0$, on $A^4+B^4=(B+3)^{13}$,
+\[
+\Lambda_{\mathrm{gap3}} := 4\log A - 13\log(B+3)
+= \log\bigl(1+B^4/A^4\bigr),
+\qquad |\Lambda|\le B^4/A^4.
+\]
+Here $B<A$ via \texttt{eq\_implies\_A\_gt\_B} and
+$A\approx(B+3)^{13/4}$, not $A<B+3$. Also $A^4<(B+3)^{13}$,
+$1<B+3$, and $\log A < \tfrac{13}{4}\log(B+3)$.
+\end{definition}
+
+\begin{definition}[Matveev 2000 Thm.~1.4 $n=2$ data $hGen$]
+On a gap-3 solution one takes $\alpha_1=A$, $\alpha_2=B+3$
+(not the Nat $B$), $b_1=4$, $b_2=-13$, $D=1$, $\kappa=1$,
+$B_{\mathrm{coeff}}=\max|b_i|=13$,
+$A_1=\log\alpha_1$, $A_2=\log\alpha_2$,
+\[
+B0_{\mathrm{term}}
+= \log 13 + \log(\log 13) + \log\alpha_1 + \log\alpha_2.
+\]
+The displayed constants are
+$C_1^{\mathrm{floor}}=143186215390$, $30^6=729000000$,
+$height_{B0}=C_1^{\mathrm{floor}}\cdot 30^6=104382751019310000000$,
+$C_{\mathrm{exp}}= -height_{B0}\log height_{B0}$, and
+$0<\exp(C_{\mathrm{exp}})<10^{-12}$.
+The general hypothesis is
+\[
+hGen:\quad
+\forall\,\alpha_1,\alpha_2\in\mathbb{R},\
+1<\alpha_1,\ 1<\alpha_2,\quad
+\bigl|4\log\alpha_1-13\log\alpha_2\bigr|
+> \exp\bigl(-C_1^{\mathrm{floor}} A_1 A_2 B0_{\mathrm{term}}\bigr).
+\]
+Nat $B=1$ occurs, so $1<B$ is the wrong hyp; one uses $1<\alpha_2=B+3$.
+Mathlib~4.12 has no Matveev/Baker/Bugeaud linear-forms theorem;
+$hGen$ is an uninhabited \texttt{def Prop} in
+\texttt{beal-level-26-foundations} $4bd15bd$.
+\end{definition}
+
+\begin{definition}[Bugeaud LLL $hLLL$]
+\[
+hLLL:\quad
+hGen \to
+\bigl(\forall A,B\in\mathbb{N},\
+A^4+B^4=(B+3)^{13},\ 0<B \to B\le B_0\bigr),
+\qquad B_0=10^6.
+\]
+Raw Matveev versus $|\Lambda|\le B^4/A^4$ only rules out astronomically
+large $B$; $B\le 10^6$ needs lattice reduction, which is not in Mathlib.
+\end{definition}
+
+\begin{lemma}[Product bound on the $B\le B_0$ range, proved in $4bd15bd$]
+\label{lem:product}
+If $B\le 10^6$ (equivalently $B+3\le height_{B0}$) then
+\[
+C_1^{\mathrm{floor}}
+\log A\cdot\log(B+3)
+\bigl(\log 13+\log(\log 13)+\log A+\log(B+3)\bigr)
+\le height_{B0}\log height_{B0},
+\]
+via $\log 13<3$, $\log(\log 13)<1$, $\log height_{B0}<63$, and
+$\log A<\tfrac{13}{4}\log(B+3)$.
+Thus $hGen$ gives $|\Lambda|>\exp(C_{\mathrm{exp}})$ on the $B\le B_0$
+range (\texttt{matveev\_gap3\_lower\_of\_general\_of\_B\_le\_B0}).
+The unrestricted $\forall$-solutions product is not a theorem:
+the left-hand side is $O((\log(B+3))^3)$ while the right-hand side is
+the constant $\sim 5\times 10^{21}$.
+\end{lemma}
+
+\begin{theorem}[v25.0.0 $B_0$-unconditional, assuming $hGen$ and $hLLL$]
+\label{thm:v25}
+Assume $hGen$ and $hLLL$. Then
+\[
+\forall B\in\mathbb{N},\quad
+\neg\exists A\in\mathbb{N},\quad
+A^4+B^4=(B+3)^{13}.
+\]
+In particular gap-3 of Beal $x^4+y^4=z^{13}$ with $z-y=3$ has no
+solutions. This is $B\le 10^6$ unconditional only after both
+hypotheses are inhabited.
+\end{theorem}
+
+\begin{proof}
+From $hLLL$ and $hGen$, the monorepo packaging
+\texttt{baker\_bound\_gap3\_of\_LLL}~\cite{beal_level26_v25_0_0}
+inhabits \texttt{baker\_bound\_gap3}: there is no gap-3 solution with
+$B>10^6$.
+Solutions with $B\le 10^6$ are already excluded by the v24.4.0 residue
+census \texttt{baker\_le\_B0\_gap3}~\cite{beal_level26_v24_4_0}.
+Therefore \texttt{baker\_conditional\_gap3\_full} (equivalently
+\texttt{v25\_of\_hGen\_hLLL}) gives $\forall B,\ \neg\exists A$.
+
+On the $B\le 10^6$ range, Lemma~\ref{lem:product} plus $hGen$ also
+gives $|\Lambda|>\exp(C_{\mathrm{exp}})$. Combined with the closed
+upper bound $|\Lambda|\le B^4/A^4$ this is the v24.4.0 conditional
+$B^4(1+\exp(C_{\mathrm{exp}}))>\exp(C_{\mathrm{exp}})(B+3)^{13}$.
+That inequality is not what kills $B\le 10^6$; the census does.
+\end{proof}
+
+{\small
+The one \texttt{sorry} remains \texttt{matveev\_gap3\_lower} at
+line~716 in \texttt{beal-level-26-foundations} $4bd15bd$, representing
+$hGen$. Lake build is green with that warning.
+Monorepo \texttt{beal-conjecture} $e823a52$ has $0$-\texttt{sorry}
+packaging \texttt{baker\_bound\_gap3\_of\_LLL} and
+\texttt{v25\_of\_hGen\_hLLL}.
+The tag
+\texttt{v25.0.0-Beal-44-13-Level-26-Baker-B0-Unconditional}
+waits until $hGen$ and $hLLL$ are $0$-\texttt{sorry}.
+DOI concept $22379293$ persists.
+}
+
+\bibliographystyle{amsalpha}
+\begin{thebibliography}{99}
+\bibitem{beal_level26_v24_4_0}
+D.~Fox,
+\textit{Beal Level 26 Foundations v24.4.0},
+2026,
+Zenodo,
+DOI \href{https://doi.org/10.5281/zenodo.22732209}{10.5281/zenodo.22732209},
+GitHub tag \texttt{db7a556},
+concept DOI \href{https://doi.org/10.5281/zenodo.22379293}{10.5281/zenodo.22379293}.
+Upper bound $|\Lambda|\le B^4/A^4$, $0<\exp(C)<10^{-12}$,
+conditional $B^4(1+\exp(C))>\exp(C)(B+3)^{13}$ toward $B_0=10^6$.
+
+\bibitem{beal_level26_v25_0_0}
+D.~Fox,
+\textit{Beal Level 26 Foundations
+v25.0.0-Beal-44-13-Level-26-Baker-B0-Unconditional},
+2026,
+Zenodo concept DOI
+\href{https://doi.org/10.5281/zenodo.22379293}{10.5281/zenodo.22379293}
+(new version DOI would mint from $22732209$),
+GitHub \texttt{beal-conjecture} $e823a52$ after $fea0c39$ and
+\texttt{beal-level-26-foundations} $4bd15bd$ with one \texttt{sorry}
+\texttt{matveev\_gap3\_lower} at $716$, honest.
+Depends on Matveev 2000 Thm.~1.4 $hGen$ and Bugeaud LLL $hLLL$,
+not in Mathlib~4.12.
+The named tag is not minted until both hypotheses are inhabited.
+
+\bibitem{matveev2000}
+E.~M.~Matveev,
+An explicit lower bound for a homogeneous rational linear form
+in logarithms of algebraic numbers.~II,
+\textit{Izv.\ Math.}\ \textbf{64} (2000).
+
+\bibitem{bugeaud}
+Y.~Bugeaud,
+\textit{Linear forms in logarithms and applications},
+IRMA Lectures in Mathematics and Theoretical Physics,
+2018.
+Lattice reduction.
+\end{thebibliography}
+\end{document}
