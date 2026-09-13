@@ -1,0 +1,52 @@
+{
+  "version": "v4.1.1-descent-compute",
+  "engine": "cypari2/PARI-2.17.2",
+  "note": "PARI ellrank / ell2cover / elltors on the certified minimal models. Computational 2-descent; not a Mathlib Mordell--Weil theorem and not a cohomological Selmer group.",
+  "ledger_sha256": "0259fe957cc348b7286e233ce717fac47c30ad174b05e8e1c5fb70626f511151",
+  "26a1": {
+    "cremona": "26a1",
+    "ainv": [
+      1,
+      0,
+      1,
+      -5,
+      -8
+    ],
+    "discriminant": -17576,
+    "conductor": 26,
+    "rank": 0,
+    "rank_lower": 0,
+    "rank_upper": 0,
+    "torsion": 3,
+    "torsion_structure": [
+      3
+    ],
+    "sel2_size": 1,
+    "sha2_trivial": true,
+    "ell2cover_count": 0,
+    "analytic_rank": 0
+  },
+  "26b1": {
+    "cremona": "26b1",
+    "ainv": [
+      1,
+      -1,
+      1,
+      -3,
+      3
+    ],
+    "discriminant": -1664,
+    "conductor": 26,
+    "rank": 0,
+    "rank_lower": 0,
+    "rank_upper": 0,
+    "torsion": 7,
+    "torsion_structure": [
+      7
+    ],
+    "sel2_size": 1,
+    "sha2_trivial": true,
+    "ell2cover_count": 0,
+    "analytic_rank": 0
+  }
+}

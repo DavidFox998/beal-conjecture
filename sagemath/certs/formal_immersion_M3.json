@@ -1,0 +1,129 @@
+{
+  "J0_dimension": 2,
+  "M3": [
+    [
+      1,
+      1
+    ],
+    [
+      0,
+      2
+    ]
+  ],
+  "M3_det": 2,
+  "M3_det_mod_3": 2,
+  "M3_mod_3": [
+    [
+      1,
+      1
+    ],
+    [
+      0,
+      2
+    ]
+  ],
+  "M3_rank": 2,
+  "basis_change_mod_3": [
+    [
+      1,
+      0
+    ],
+    [
+      1,
+      1
+    ]
+  ],
+  "boundary": "Finite modular-symbols and newform evidence for a rank-2 M3. This does not construct or identify the geometric Picard/Abel-Jacobi cotangent map, and it is not a formal-immersion theorem at 2.",
+  "coefficient_matrix": [
+    [
+      1,
+      1
+    ],
+    [
+      -1,
+      1
+    ]
+  ],
+  "coefficient_matrix_mod_3": [
+    [
+      1,
+      1
+    ],
+    [
+      2,
+      1
+    ]
+  ],
+  "formal_immersion_prime": 2,
+  "level": 26,
+  "modular_symbols_new_cuspidal_dimension": 2,
+  "nebentypus": 1,
+  "newforms": [
+    {
+      "a1": 1,
+      "a2": -1,
+      "abelian_label": "26a(1,26)",
+      "cremona_label": "26a1",
+      "level": 26,
+      "qexp_a0_to_a20": [
+        0,
+        1,
+        -1,
+        1,
+        1,
+        -3,
+        -1,
+        -1,
+        -1,
+        -2,
+        3,
+        6,
+        1,
+        1,
+        1,
+        -3,
+        1,
+        -3,
+        2,
+        2,
+        -3
+      ],
+      "qexp_preview": "q - q^2 + q^3 + q^4 - 3*q^5 + O(q^6)"
+    },
+    {
+      "a1": 1,
+      "a2": 1,
+      "abelian_label": "26b(1,26)",
+      "cremona_label": "26b1",
+      "level": 26,
+      "qexp_a0_to_a20": [
+        0,
+        1,
+        1,
+        -3,
+        1,
+        -1,
+        -3,
+        1,
+        1,
+        6,
+        -1,
+        -2,
+        -3,
+        -1,
+        1,
+        3,
+        1,
+        -3,
+        6,
+        6,
+        -1
+      ],
+      "qexp_preview": "q + q^2 - 3*q^3 + q^4 - q^5 + O(q^6)"
+    }
+  ],
+  "previous": "v1.3.0",
+  "sagemath_version": "10.7",
+  "version": "v1.4.0",
+  "weight": 2
+}

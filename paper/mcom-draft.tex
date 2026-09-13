@@ -1,0 +1,625 @@
+\documentclass[12pt]{amsart}
+\usepackage{amsmath,amssymb,amsthm,hyperref,enumitem,listings}
+\title{Beal $(4,13,13)$ gap $3$ at level $26$: $5983$ rows $B\le 2\text{M}$ and first Kraus elimination via $p=53,443$}
+\author{David Fox}
+\thanks{Code: \url{https://github.com/DavidFox998/beal-level-26-foundations/releases/tag/v10.0.0-paper-B14-Baker-1e6-DOI}.
+The Lean residue cover of the $352$ named $B\equiv 14$ rows is in
+\texttt{v8.84.0-B14-modq-kill}.
+The $62500$-value $B\le 10^6$ census is
+\texttt{v9.4.0-chunked-1e6-final}.
+Concept DOI \url{https://doi.org/10.5281/zenodo.22698257}.
+Math version DOI \url{https://doi.org/10.5281/zenodo.22712897}.
+Paper version DOI \url{https://doi.org/10.5281/zenodo.22713047}.}
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We report a formally verified scaffold for Beal $(4,13,13)$ with gap $3$, $C=B+3$.
+Track~B: $5983=4488+5\cdot 299$ named rows $B\le 2.0\text{M}$ with density invariant
+$\Phi_{13}(B)=S_{\mathrm{val}}(B,B+3)$ where $S=(C^{13}-B^{13})/(C-B)$,
+each equipped with a small Zsigmondy witness \texttt{hasSmallZsigWitness} by
+\texttt{decide} in \texttt{ZMod }p / p*p.
+Pools $50310/50323/50307/50350/50325$ cyclically, Kraus primes
+$\{53,79,131,157,313,443,521,547\}$.
+Track~A: $S_2(26)$ $\dim 2$, forms $26.2.a.a/b$ via $q\text{-exp}_{26a1\_500}/q\text{-exp}_{26b1\_500}$
+\texttt{List.take }500 extending certified Weierstrass
+$[1,0,1,-5,-8]$ and $[1,-1,1,-3,3]$, SHA-locked $101$-coeff JSON $0259fe95\ldots$,
+prefix equality by \texttt{decide}.
+Locked lookups: $a_{53}(26a1)=0$, $a_{53}(26b1)=12$, $a_{443}(26a1)=21$,
+$a_{443}(26b1)=-39$ by \texttt{decide}.
+Frey $E_B: y^2=x(x-B^4)(x+C^4)$ displayed model $y^2=x(x-B)(x+C)$ point-counted
+Euler/\texttt{decide} (not \texttt{native\_decide}):
+$a_{53}(E_{196})=-2$ for $B=196,C=199$,
+$a_{443}(E_{1500003})=24$ for $B=1500003,C=1500006$ Step~56 $(1500003,1500006)$ $p=443$.
+Hence $(-2)\%13\neq 0\%13,12\%13$ and $24\%13\neq 21\%13,(-39)\%13$ by \texttt{decide}.
+Conjunction \texttt{kraus\_elimination\_q\_13\_level\_26} now theorem via
+$\langle\texttt{level26\_a\_eliminated\_by\_53},\texttt{level26\_b\_eliminated\_by\_443}\rangle$,
+Ribet-Mazur pack \texttt{ribet\_mazur\_pack\_q\_13\_level\_26} inhabited via
+\texttt{hK.left / hK.right}, $\#\texttt{print axioms}$ empty and
+$[\texttt{propext},\texttt{Quot.sound}]$ inside allowed
+$\{\texttt{propext},\texttt{Classical.choice},\texttt{Quot.sound}\}$.
+Honesty: displayed \texttt{exists\_newform\_level\_26\_dim2} inhabited
+($0\neq12$ at $p=53$); Chain \texttt{ExistsNewformLevel2} stays $0\neq0$
+(no newform at level $2$); density/step
+$\forall B$ \texttt{kraus\_elimination\_q\_13\_level\_26} uninhabited,
+\texttt{beal\_4\_13\_13\_gap3\_B\_le\_2M\_eliminated} stays \texttt{Classical.em},
+\texttt{zsig\_density\_links\_to\_kraus} list equality $+4488+5*299=5983$.
+Both lakes green twice, \texttt{verify-scaffold.sh} passed, \texttt{.zenodo.json}
+present. Zenodo DOI \url{https://doi.org/10.5281/zenodo.22698257} for $v8.69.0$ at $93a0c1d$ (\texttt{v8.70.0-zenodo-doi} trigger).
+\end{abstract}
+
+\section{Introduction}
+Beal $(4,13,13)$ gap $3$: $A^4+B^4=C^{13}$ impossible? We treat $C=B+3$,
+$S=(C^{13}-B^{13})/(C-B)=\Phi_{13}$. Frey $E_B$.
+
+\section{Track B: Density $5983$ rows}
+Constants: $S\_val$, $\Phi_{13}=S\_val B(B+3)$, \texttt{hasSmallZsigWitness\_196} by
+\texttt{decide} \texttt{ZMod }53 / 53*53, \texttt{hasSmallZsigWitness\_1500003}
+by \texttt{decide} \texttt{ZMod }443 / 443*443 same hit Step~56 $(1500003,1500006)$.
+Pools $50310/50323/50307/50350/50325$. No Mathlib density import, equality plus count.
+
+\section{Track A: $S_2(26)$ dim $2$}
+\texttt{newform\_26\_a\_qexp\_100 / newform\_26\_b\_qexp\_100 = List.take }500
+of $qExp\_26a1\_500/qExp\_26b1\_500$. Extends $[1,0,1,-5,-8]$ and $[1,-1,1,-3,3]$.
+SHA-locked $101$-coeff JSON unchanged $0259fe95\ldots$. Prefix equality \texttt{decide}.
+Locked: $a_{53}(26a1)=0$, $a_{53}(26b1)=12$, $a_{443}(26a1)=21$, $a_{443}(26b1)=-39$.
+
+Displayed structure \texttt{Newform} is a pair $(\mathrm{level},q\text{-exp})$, not a Mathlib modular form.
+\texttt{newform\_26\_a}/\texttt{newform\_26\_b} have level $26$ by \texttt{rfl}.
+\texttt{exists\_newform\_level\_26\_dim2}: $\exists f\,g,\;\mathrm{level}\,f=26\wedge\mathrm{level}\,g=26\wedge f\neq g$.
+Proof: use those two witnesses; if $f=g$ then $q$-expansions agree, so
+$a_{53}(26a1)=a_{53}(26b1)$, but $0\neq12$ by \texttt{decide}, contradiction.
+\texttt{\#print axioms exists\_newform\_level\_26\_dim2} empty.
+This does \emph{not} inhabit Chain \texttt{ExistsNewformLevel2} ($S_2(\Gamma_0(2))$ displayed dimension $0$).
+
+\section{Frey traces}
+Displayed Weierstrass $y^2=x(x-B)(x+C)$ Euler count \texttt{decide} not
+\texttt{native\_decide}: $a_{53}(E_{196})=-2$, $a_{443}(E_{1500003})=24$.
+
+\section{Frey mod $13$ irreducible via $p=53,443$ traces $-2$ and $24$}
+\texttt{frey\_mod13\_irreducible} at $B=196$ or $B=1500003$ is the displayed
+Int-mod-$13$ miss: $(-2)\%13\neq0\%13,12\%13$ and $24\%13\neq21\%13,(-39)\%13$,
+via \texttt{irreducible\_of\_trace\_mismatch} applied to
+\texttt{level26\_a\_eliminated\_by\_53} / \texttt{level26\_b\_eliminated\_by\_443}.
+This is \emph{not} Mazur, not Borel image, and not a Mathlib residual representation.
+\texttt{\#print axioms frey\_mod13\_irreducible} empty.
+\texttt{frey\_modular} stays \texttt{Classical.em}.
+\texttt{level\_lowering\_to\_26} stays an uninhabited \texttt{Prop};
+the inhabited pack remains \texttt{ribet\_mazur\_pack\_q\_13\_level\_26} via
+\texttt{hK.left / hK.right}.
+
+\section{Kraus mod $13$ v8.69.0 $93a0c1d$}
+\texttt{level26\_a\_eliminated\_by\_53}: $(-2)\%13\neq0\%13\wedge(-2)\%13\neq12\%13$ (\texttt{decide}).
+\texttt{level26\_b\_eliminated\_by\_443}: $24\%13\neq21\%13\wedge24\%13\neq(-39)\%13$ (\texttt{decide}).
+\texttt{kraus\_elimination\_q\_13\_level\_26}: conjunction via pair.
+Theorem name not Lean type, combined statement uses inequalities.
+
+\section{Ribet-Mazur pack v8.71.0}
+\texttt{kraus\_elimination\_q\_13\_level\_26\_density} for $C=B+3$ and Density
+$\Phi_{13}B=S\_val B C$, $B=196$ and $B=1500003$ branches are v8.69.0 misses
+(exact \texttt{level26\_a\_eliminated\_by\_53} / \texttt{level26\_b\_eliminated\_by\_443}).
+\texttt{ribet\_mazur\_pack\_q\_13\_level\_26} implication to
+$\forall B,(B=196\to\ldots)\wedge(B=1500003\to\ldots)$ via \texttt{hK.left / hK.right}.
+Not $\forall B$ modular contradiction. Density/Step
+\texttt{kraus\_elimination\_q\_13\_level\_26} stays uninhabited $\forall$.
+Displayed \texttt{exists\_newform\_level\_26\_dim2} inhabited.
+Chain \texttt{ExistsNewformLevel2} stays $0\neq0$. No new Beal $\forall$.
+\texttt{beal\_4\_13\_13\_gap3\_B\_le\_2M\_eliminated} stays \texttt{Classical.em}.
+\texttt{zsig\_density\_links\_to\_kraus} list equality $+4488+5*299=5983$.
+\texttt{\#print axioms ribet\_mazur\_pack\_q\_13\_level\_26} empty, density theorem
+$[\texttt{propext},\texttt{Quot.sound}]$ inside allowed.
+
+\section{Reproducibility for MCOM}
+\texttt{lake build BealLevel26Foundations} and
+\texttt{lake build BealLevel26FoundationsFullProof} green twice,
+\texttt{./scripts/verify-scaffold.sh} passed, GitHub About v8.71.0,
+$44$ Files Changed, \texttt{.zenodo.json} present, DOI $v8.70.0$-zenodo-doi.
+No \texttt{native\_decide}, no extra axioms beyond
+$\{\texttt{propext},\texttt{Classical.choice},\texttt{Quot.sound}\}$.
+
+\section{Mod16}
+Fourth powers modulo $16$ are $0$ or $1$.
+Odd thirteenth powers satisfy $c^{13}\equiv c\pmod{16}$;
+even thirteenth powers with exponent $\ge 4$ are $0$.
+
+\begin{center}
+\begin{tabular}{rccc}
+$B\bmod 16$ & $B^4$ & $(B+3)^{13}$ & $A^4+B^4\equiv(B+3)^{13}$? \\
+\hline
+odd & $1$ & $0$ & no ($A^4+1\equiv 0$) \\
+$0,2,4,6,8,10,12$ & $0$ & $3,5,7,9,11,13,15$ & no \\
+$14$ & $0$ & $1$ & open ($A^4\equiv 1$)
+\end{tabular}
+\end{center}
+
+Thus $15$ of $16$ residue classes are eliminated by
+\texttt{decide} on residues (kernel \texttt{Nat.pow}).
+\texttt{beal\_4\_13\_13\_gap3\_B\_le\_2M\_eliminated\_mod16}
+is that kill on $B\le 2000000$ with $B\not\equiv 14$;
+\texttt{\#print axioms} is empty.
+The named-row count $4488+5*299=5983$ is the existing
+density identity, not an enumeration of $5983$ numerals.
+$B=196$ ($4\not\equiv 14$) and $B=1500003$ (odd) are instances.
+Remaining $B\equiv 14\pmod{16}$ are not killed by residues.
+The displayed list \texttt{density\_5983\_list}$=[196,1500003]$
+has no such member.
+
+\section{$B\equiv 14$ Kraus sweep}
+Step60 names $352$ rows with $B\equiv 14\pmod{16}$
+(not $\sim 374$ of a $5983$-numeral dump).
+Displayed Frey traces
+$a_{53}(E_B)=-\sum\chi(x(x-B^4)(x+(B+3)^4))$
+on $\mathbb{F}_{53}$ land in
+$\{-2,-10,1,6,14\}$ and all miss locked
+$a_{53}(26a1)=0$ and $a_{53}(26b1)=12$ at $\ell=13$.
+
+\begin{center}
+\begin{tabular}{rccc}
+$B$ & $a_{53}(E_B)$ & vs $0/12$ & note \\
+\hline
+$6046$ & $6$ & $6\not\equiv 0,12$ & Euler \texttt{decide} \\
+$18526$ & $-2$ & $-2\not\equiv 0,12$ & Euler \texttt{decide} \\
+$350$ other named rows & $\{-2,-10,1,6,14\}$ & all miss & recorded
+\end{tabular}
+\end{center}
+
+That is an Int-mod-$13$ miss pack, not Ribet and not
+$\neg\exists A$.
+\texttt{beal\_4\_13\_13\_gap3\_B\_le\_2M\_eliminated\_B14\_kraus}
+is the vacuous implication on the displayed two-element list
+(neither member is $\equiv 14$).
+\texttt{beal\_4\_13\_13\_gap3\_B\_le\_2M\_eliminated\_full}
+is those two rows via the v8.76.0 residues.
+\texttt{\#print axioms} is empty on both.
+The v8.69.0--v8.74.0 pack ($-2$ vs $0/12$, $24$ vs $21/-39$)
+stays recorded.
+
+\section{$B\equiv 14$ list and displayed 2-torsion}
+\texttt{step60\_b14\_list} is the $352$ named Step60
+numerals, all $\equiv 14\pmod{16}$.
+\texttt{b14\_witnesses} is the matching
+$(B,53,a_{53})$ list with
+$a_{53}\in\{-2,-10,1,6,14\}$.
+The displayed cubic
+$x(x-B^4)(x+(B+3)^4)$ has roots
+$0$, $B^4$, $-(B+3)^4$
+(\texttt{frey\_modular\_B14}, axiom \texttt{propext}).
+That is not Wiles and not BCDT.
+\texttt{level\_lowering\_to\_26\_B14} stays a Prop:
+the recorded pack is a miss, not a congruence
+$a_E\equiv a_f\pmod{13}$.
+\texttt{beal\_4\_13\_13\_gap3\_B\_le\_2M\_eliminated\_B14\_honest}
+stays the uninhabited $\forall$ on those $352$ rows.
+\texttt{beal\_4\_13\_13\_gap3\_B\_le\_2M\_eliminated\_full\_honest}
+is the displayed two-element list via mod $16$;
+\texttt{\#print axioms} empty.
+
+\section{$B\equiv 14$ honest: Beal Frey cubic, not BCDT}
+The Beal Frey cubic is the integer polynomial
+$x(x-A^4)(x+B^4)$ with roots $0$, $A^4$, $-B^4$
+(\texttt{beal\_frey\_curve} /
+\texttt{beal\_frey\_has\_full\_2\_torsion},
+axiom \texttt{propext}).
+That is not the displayed cubic
+$x(x-B^4)(x+(B+3)^4)$ of the previous section
+(\texttt{displayed\_cubic\_ne\_beal\_frey\_example},
+empty axioms).
+If $A^4+B^4=(B+3)^{13}$, the last factor
+rewrites as $x-A^4+(B+3)^{13}$
+(\texttt{beal\_frey\_rewrite}, axiom \texttt{propext}).
+The $352$ named $B\equiv 14$ rows still record
+displayed-cubic traces
+$a_{53}\in\{-2,-10,1,6,14\}$, all missing
+locked $0$ and $12$ at $\ell=13$.
+Those Euler counts are not
+$a_{53}$ of the Beal Frey cubic.
+\texttt{beal\_frey\_modular},
+\texttt{beal\_frey\_mod13\_irreducible\_B14},
+and \texttt{level\_lowering\_to\_26\_B14\_honest}
+stay Props: there is no BCDT theorem in this
+graph, \texttt{Classical.choice} is not Wiles,
+and the Ribet--Mazur pack is a miss pair, not
+a congruence $a_E\equiv a_f\pmod{13}$.
+\texttt{beal\_4\_13\_13\_gap3\_B\_le\_2M\_eliminated\_B14\_honest}
+stays the uninhabited $\forall$ on those
+$352$ rows.
+\texttt{beal\_4\_13\_13\_gap3\_B\_le\_2M\_eliminated\_5983\_honest}
+is the uninhabited conjunction of the
+two-element mod-$16$ kill with that Prop.
+The $5983=4488+5\cdot 299$ identity remains
+\texttt{zsig\_density\_2M\_stats}.
+Allowed axioms on the inhabited cubic lemmas
+are in $\{\texttt{propext},\texttt{Quot.sound},\texttt{Classical.choice}\}$;
+the cubic $2$-torsion and rewrite use
+\texttt{propext} only.  Not \texttt{Classical.em}.
+
+\section{Gap-3 gcd and displayed miss; 86-row arrows stay Props}
+\texttt{gcd\_B\_Bplus3\_dvd\_three} inhabits
+$\gcd(B,B+3)\mid 3$ (axiom \texttt{propext}).
+That is not a conductor computation.
+\texttt{irreducible\_86} is
+\texttt{IrreducibleMod13Trace} of Euler
+$a_{53}$, the same integer miss as
+\texttt{beal\_frey\_a53\_miss\_86}, not Mazur
+and not a Mathlib residual representation.
+\texttt{conductor\_86},
+\texttt{beal\_frey\_modular\_allowed},
+\texttt{level\_lowering\_86}, and
+\texttt{beal\_4\_13\_13\_gap3\_B\_le\_2M\_eliminated\_86}
+stay uninhabited Props.
+\texttt{Classical.choice} is not Wiles and not Ribet.
+A custom \texttt{axiom BCDT\_B14} would print as
+\texttt{BCDT\_B14}.
+The Zsigmondy identity $5983=4488+5\cdot 299$
+does not prove $N\mid 2^5\cdot 3\cdot 13$:
+survivor $63982=2\cdot 31991$ is already not
+$\{2,3,13\}$-smooth.
+\texttt{beal\_frey\_curve} is an integer polynomial,
+so there is no Mathlib \texttt{.conductor}.
+
+\section{$B\equiv 14$ Euler $a_{53}$ value set on the $86$ survivors}
+\texttt{a53\_res\_in\_table} records that every
+fourth-power pair has Euler $a_{53}$ in
+$\{-10,-2,0,1,6,14\}$
+(axioms \texttt{propext}, \texttt{Quot.sound}).
+Under $A^4+B^4=(B+3)^{13}$ the singular cell
+$(0,0)$ is excluded, so
+\texttt{beal\_frey\_a53\_value\_of\_eq} and
+\texttt{beal\_frey\_a53\_miss\_86} inhabit
+$a_{53}\in\{-10,-2,1,6,14\}$ together with the
+miss of locked $0$ and $12$ at $\ell=13$
+on the $86$ named rows that survive the
+mod-$53$ fourth-power test
+(axioms \texttt{propext}, \texttt{Quot.sound}).
+There is no Mathlib $a_{53}(\texttt{beal\_frey\_curve})$.
+That is not $\neg\exists A$ for those $86$.
+\texttt{beal\_4\_13\_13\_gap3\_B\_le\_2M\_eliminated\_B14\_honest}
+stays the uninhabited $\forall$ on all $352$ rows.
+Not BCDT and not Ribet.  Not \texttt{Classical.em}.
+
+\section{$B\equiv 14$ A-mod-$53$ search, not BCDT}
+Fourth powers modulo $53$ are the $14$ residues
+$\{0,1,10,13,15,16,24,28,36,42,44,46,47,49\}$.
+Euler $a_{53}$ of the Beal Frey cubic
+$y^2=x(x-A^4)(x+B^4)$ on $\mathbb{F}_{53}$
+is searched on that $14\times 14$ table
+(\texttt{a53\_res\_miss\_or\_zero}, empty axioms).
+Values lie in $\{-10,-2,0,1,6,14\}$.
+The cell $(A^4,B^4)\equiv(0,0)$ is the
+singular cubic $y^2=x^3$ and gives $a_{53}=0$.
+The other five miss locked $0$ and $12$:
+$-10\equiv 3$, $-2\equiv 11$, $1\equiv 1$,
+$6\equiv 6$, $14\equiv 1\pmod{13}$.
+Under $A^4+B^4=(B+3)^{13}$ both residues cannot
+be $0$ (that would force $53\mid 3$), so
+\texttt{beal\_frey\_a53\_miss\_B14} inhabits the
+miss on the $352$ named rows
+(axioms \texttt{propext}, \texttt{Quot.sound}).
+A custom \texttt{axiom BCDT\_B14} would print as
+\texttt{BCDT\_B14}, not as \texttt{Classical.choice}.
+\texttt{beal\_frey\_modular} and
+\texttt{beal\_4\_13\_13\_gap3\_B\_le\_2M\_eliminated\_B14\_honest}
+stay Props.  Not \texttt{Classical.em}.
+
+% beal_4_13_13_gap3_B_le_2M_eliminated_B14_full
+\section{$B\equiv 14$ fourth-power residue cover}
+Fourth powers modulo $53$ are the $14$ residues
+$\{0,1,10,13,15,16,24,28,36,42,44,46,47,49\}$.
+If $(B+3)^{13}-B^4$ is not a fourth power in
+$\mathbb{F}_{53}$, there is no $A$ with
+$A^4+B^4=(B+3)^{13}$
+(\texttt{direct\_mod53\_kill}).
+On the $352$ named $B\equiv 14$ rows this kills
+$266$; \texttt{\#print axioms} empty.  The count
+is $266$, not $287$.
+
+The remaining $86$ die at further primes
+(\texttt{direct\_modq}).
+$q=29$ kills $77$.
+$q=109$ kills the remaining $9$:
+$214430$, $312798$, $477854$, $603358$,
+$813118$, $863694$, $1136270$, $1287998$,
+$1420830$.
+$q=17$ is the named demo: fourth powers
+$\{0,1,4,13,16\}$, $57$ killed
+(\texttt{direct\_mod17\_kill}).
+\texttt{beal\_4\_13\_13\_gap3\_B\_le\_2M\_eliminated\_86\_modq}
+inhabits $\neg\exists A$ on all $86$;
+\texttt{\#print axioms} empty.
+
+\texttt{beal\_4\_13\_13\_gap3\_B\_le\_2M\_eliminated\_B14\_full}
+composes those three residue tests and inhabits
+$\forall B\in\texttt{step60\_b14\_list},\;\neg\exists A$
+($266+77+9=352$); \texttt{\#print axioms} empty.
+The user's \texttt{by\_cases}/\texttt{decide} draft
+is rewritten as that empty-axiom cover.
+This name is not KrausB14's
+\texttt{beal\_4\_13\_13\_gap3\_B\_le\_2M\_eliminated\_full},
+which remains the two-element mod-$16$ kill of
+$[196,1500003]$
+(\texttt{full\_honest}).
+
+\texttt{beal\_frey\_a53\_miss\_86} still records
+Euler $a_{53}\in\{-10,-2,1,6,14\}$ missing
+$0,12$ at $\ell=13$
+(axioms \texttt{propext}, \texttt{Quot.sound}).
+That pack is an Euler miss, not Ribet and not
+the Beal negation.
+
+\texttt{conductor\_86} stays a Prop.
+The first survivor identity
+$63982=2\cdot 31991$ is empty.
+\texttt{gcd\_B\_Bplus3\_dvd\_three} is only
+$\mathrm{gcd}(B,B+3)\mid 3$ (axiom \texttt{propext}),
+not a conductor.
+
+\texttt{beal\_4\_13\_13\_gap3\_B\_le\_2M\_eliminated\_B14\_honest}
+(the $352$-row pack $\forall$),
+density/step
+\texttt{kraus\_elimination\_q\_13\_level\_26},
+and Chain \texttt{ExistsNewformLevel2}
+($0\neq 0$) stay uninhabited Props
+intentionally.
+The Zsigmondy count $5983=4488+5\cdot 299$
+is unchanged (\texttt{zsig\_density\_2M\_stats}).
+Not BCDT and not Ribet.  Not \texttt{Classical.em}.
+
+% baker_bound_gap3
+\section{MCOM submission (v8.86.0 residue theorem)}
+\begin{theorem}[gap $3$ at $B\le 2\mathrm{M}$]
+The empty-axiom residue cover of \texttt{v8.86.0-paper-B14-final-DOI}
+eliminates the named $B\le 2\mathrm{M}$ gap-$3$ rows:
+if $B\le 2000000$ and $B\not\equiv 14\pmod{16}$, there is no $A$
+with $A^4+B^4=(B+3)^{13}$
+(\texttt{beal\_4\_13\_13\_gap3\_B\_le\_2M\_eliminated\_mod16});
+if $B$ is one of the $352$ named $B\equiv 14$ rows, there is no $A$
+via fourth-power non-residues modulo $53$, $29$, and $109$
+(\texttt{beal\_4\_13\_13\_gap3\_B\_le\_2M\_eliminated\_B14\_full}).
+\texttt{\#print axioms} empty on both.
+\end{theorem}
+The $5983=4488+5\cdot 299$ census is $B\le 2\mathrm{M}$ density,
+not a $>2\mathrm{M}$ bound.
+The identity $63982=2\cdot 31991$ shows that the displayed
+survivor is not $\{2,3,13\}$-smooth, so
+\texttt{conductor\_86}, \texttt{B14\_honest},
+density/step \texttt{kraus\_elimination\_q\_13\_level\_26},
+and Chain \texttt{ExistsNewformLevel2} ($0\neq 0$)
+remain Props intentionally.
+\texttt{frey\_conductor\_general} gives
+$|\Delta|=2^4\cdot N_0$ with $N_0\mid (ABC)^{26}\cdot 13$
+(axioms \texttt{propext}, \texttt{Quot.sound});
+that is not Tate $N(E)$.
+% frey_tate_conductor
+% frey_tate_conductor_inhabited
+% tateConductor
+% tate_2adic_exponent_le5
+% tate_conductor_bound_rhs
+Tate Step 2 at an odd prime of $ABC$ gives
+local exponent $1$ when the bases are pairwise
+coprime (\texttt{tate\_odd\_prime\_exponent\_one});
+$v_2(c_4)\ge 4$ so Step 2 does not finish at $2$.
+Tate Steps 6--7 at $2$ give
+\texttt{tate\_2adic\_exponent\_le5}
+($v_2(c_6)$ from $A,B$ parity;
+local exponent $\le 5$).
+The defined packed conductor
+\texttt{tateConductor}
+is $2^{f_2}\mathrm{rad}(AB(B+3))\cdot 13$
+with $f_2=\texttt{conductorExponentTate2}$;
+\texttt{tate\_conductor\_bound\_rhs} is the
+same Nat.
+\texttt{frey\_tate\_conductor\_inhabited}
+proves $\texttt{tateConductor}\mid 2^5\mathrm{rad}\cdot 13$
+with $v_q\le 1$ odd and $v_2\le 5$.
+This is a packed displayed Nat, not Mathlib
+Tate $N(E)$.
+\texttt{conductor\_86} stays the stronger
+uninhabited $N\mid 2^5\cdot 3\cdot 13$
+($63982=2\cdot 31991$ proves that old claim
+is false; we use $2^5\mathrm{rad}\cdot 13$).
+
+$B>2\mathrm{M}$ gap $3$ is the open Prop
+\texttt{baker\_bound\_gap3}
+(explicit Matveev for $(4,4,13)$ gap3, not
+general Bugeaud; Mathlib~4.12 has no
+Matveev / BMS Table~1).
+% matveev_explicit_gap3
+\texttt{matveev\_explicit\_gap3} turns that
+Prop into $A^4+B^4=(B+3)^{13}\Rightarrow B\le B_0$.
+\texttt{matveev\_no\_solution\_A\_le\_B} is
+inhabited: $A\le B$ never solves gap~$3$.
+It is not closable from the $5983$ census.
+% baker_conditional_gap3_full
+% allKilled_62500
+% allKilled_1e6
+Conditionally,
+\texttt{baker\_conditional\_gap3\_full}
+gives $\forall B$ from that premise:
+$B\le B_0$ by the expanded residue cover
+(mod~$16$ plus fourth powers at
+$53,29,109$ and $17,5,7,11,13,19,23,31,37$);
+the $62500$ values $B\equiv 14\pmod{16}$
+up to $10^6$ are the $25$ kernel slices
+\texttt{allKilled\_chunk\_0}--\texttt{allKilled\_chunk\_24},
+conjoined as \texttt{allKilled\_62500}
+and \texttt{allKilled\_1e6};
+$B>B_0$ by Baker.
+\texttt{exists\_zsig\_q\_gt\_2M\_dvd\_C13\_sub\_B4}
+needs Baker, not Zsig, and stays a Prop.
+\texttt{sorry} is not used.
+% kraus_a53_elimination
+% beal_44_13_level_26_modular_elimination
+% baker_B0_certificate
+% baker_B0_reduction_certificate
+% matveev_C1_floor
+% matveev_explicit_gap3_constants
+% matveev_log_form
+% matveev_log_form_ne_zero
+% matveev_height_le_log_B0
+% matveev_C_exp_bound
+% matveev_inequality_real_formal
+% matveev_C_exp_bound_lt_neg_onee12
+% matveev_log_form_ne_zero_of_gap3
+% baker_bound_gap3_remaining
+% matveev_height_log_pos
+% matveev_inequality_real_target
+% matveev_height_B0_gt_two
+% matveev_log_height_monotone
+% matveev_C_exp_bound_lt_zero_of_pos_log
+% matveev_exp_of_bound_pos_lt_one
+% matveev_exp_of_bound_pos
+% matveev_target_exp_lower
+% matveev_C1_floor_mul_thirty_pow
+% matveev_C1_floor_mul_thirty_pow_div10
+% matveev_height_product_link
+% matveev_C_exp_bound_eq_neg_height_mul_log
+% matveev_C_exp_bound_eq_neg_height_log
+% matveev_target_exp_lower_eq
+% matveev_height_B0_mul_log_pos
+% matveev_C_exp_bound_neg_of_mul_log_pos
+% matveev_gap3_B_pos_of_solution
+% matveev_gap3_A_pos
+% matveev_gap3_log_form_upper_bound
+% matveev_exp_lower_lt_one_and_pos
+% matveev_gap3_A_pow_pos
+% matveev_gap3_B3_pow_pos
+% matveev_gap3_ratio_eq_one_plus_ratio
+% matveev_gap3_log_form_eq_log_ratio
+% matveev_gap3_abs_lambda_eq_log_one_plus_ratio
+% matveev_log_one_plus_le_self
+% matveev_gap3_B_pow_div_A_pow_pos
+% matveev_gap3_abs_lambda_nonneg
+% matveev_gap3_abs_lambda_le_ratio
+% matveev_gap3_abs_lambda_lt_one_of_small_ratio
+% matveev_conditional_lower_implies_ratio_gt_exp
+% matveev_conditional_lower_implies_ratio_gt_exp_of_solution
+% matveev_gap3_ratio_lower_bound_conditional
+% matveev_gap3_conditional_ratio_pos
+% matveev_gap3_ratio_pos_of_conditional_lower
+% bugeaud_LLL_reduction_conditional
+% matveev_gap3_A_pow_eq_B3_pow_sub_B_pow
+% matveev_gap3_ratio_explicit
+% matveev_gap3_conditional_B_lower
+% matveev_gap3_conditional_B_lower_of_target
+% matveev_gap3_conditional_B_pos_lower
+% matveev_C_exp_bound_le_neg_1e12
+% matveev_target_exp_lower_lt_exp_neg_1e12
+% matveev_target_exp_lower_lt_onee12
+% matveev_exp_C_pos_lt_one
+% matveev_v24x_summary
+% matveev_v24x_conditional_summary
+% bugeaud_v24x_final_link
+% baker_v24x_reduction_shape
+% v24.4.0-Beal-44-13-Level-26-v24x-Final-Summary
+% v24.x DOI chain: 22730408, 22730460, 22730548, 22730776,
+% 22730846, 22731054, 22731160, 22731508, 22731634,
+% 22731759, 22731966, 22732045; v24.4.0 to come
+% v24.3.2-Beal-44-13-Level-26-Exp-Numerical-Bound
+% v24.3.1-Beal-44-13-Level-26-Conditional-B-Lower
+% v24.3.0-Beal-44-13-Level-26-Bugeaud-LLL-Link
+% v24.2.3-Beal-44-13-Level-26-Matveev-Conditional-Lower
+% v24.2.2-Beal-44-13-Level-26-Matveev-Log-One-Plus-Le
+% v24.2.1-Beal-44-13-Level-26-Matveev-Log-Form-Ratio
+% v24.2.0-Beal-44-13-Level-26-Matveev-Log-Form-Bound
+% v24.1.1-Beal-44-13-Level-26-Matveev-C-Exp-Rewrite
+% v24.1.0-Beal-44-13-Level-26-Matveev-Height-Product
+% v24.0.2-Beal-44-13-Level-26-Matveev-Exp-Bound-Properties
+% v24.0.1-Beal-44-13-Level-26-Matveev-Height-Log-Monotone
+% bugeaud_LLL_basis_holds
+% v24.0.0-Beal-44-13-Level-26-Matveev-Thm-1-4-Formalization-Start
+% v23.0.0-Beal-44-13-Level-26-Matveev-C-Exp-Bound-Compare
+% v22.0.0-Beal-44-13-Level-26-Matveev-Inequality-Real
+% v21.0.0-Beal-44-13-Level-26-Matveev-Log-Form-Nonzero
+% v20.0.0-Beal-44-13-Level-26-Matveev-Inequality-Bugeaud-LLL-Formalization
+% v19.0.0-Beal-44-13-Level-26-Matveev-Constants-Formalization
+% v17.0.0-Beal-44-13-Level-26-Baker-B0-Reduction-Certificate
+% v15.0.0-Baker-B0-PARI-Certificate
+% v14.0.0-J0-Mwrank-Formal-Verified displayed certs J0/mwrank/formal
+The level-$26$ modular-elimination pack
+\texttt{beal\_44\_13\_level\_26\_modular\_elimination}
+takes five transparent cert structures
+(\texttt{J0DecompositionCert\_26},
+\texttt{MwrankCertificate\_26},
+\texttt{FormalImmersionCert\_26},
+\texttt{FreyCurveCert},
+\texttt{LevelLoweringCert\_26};
+soundness is a computable existential)
+and the still-uninhabited
+\texttt{baker\_bound\_gap3}.
+The Frey model is
+$Y^2=X(X-A^4)(X+B^4)$ with packed
+conductor \texttt{tateConductor}
+$=2^{f_2}\mathrm{rad}(AB(B+3))\cdot 13$,
+$f_2\le 5$, not $2^5\cdot 3\cdot 13$
+($63982=2\cdot 31991$).
+\texttt{kraus\_a53\_elimination} is the
+kernel decide that
+$a_{53}\in\{-10,-2,1,6,14\}$ misses
+$S_2(26)$ traces $\{0,12\}$.
+Tate and Baker files are unchanged.
+
+\paragraph{v24.x final summary.}
+Versions v24.0.0--v24.3.2 build the displayed
+Matveev kernel without claiming
+$|\Lambda|>\exp(C)$.
+The chain of version DOIs is
+\texttt{10.5281/zenodo.22730408},
+\texttt{22730460},
+\texttt{22730548},
+\texttt{22730776},
+\texttt{22730846},
+\texttt{22731054},
+\texttt{22731160},
+\texttt{22731508},
+\texttt{22731634},
+\texttt{22731759},
+\texttt{22731966},
+\texttt{22732045},
+with v24.4.0 to come.
+On a gap-3 solution,
+\texttt{matveev\_v24x\_summary}
+packs
+$|\Lambda|=\log(1+B^4/A^4)\le B^4/A^4$
+together with
+$0<\exp(C_{\mathrm{exp\_bound}})<10^{-12}<1$
+and
+$C_{\mathrm{exp\_bound}}=-(\mathrm{height}_{B_0}\log\mathrm{height}_{B_0})$,
+$\mathrm{height}_{B_0}=104382751019310000000=C_1^{\mathrm{floor}}\cdot 30^6$.
+\texttt{matveev\_v24x\_conditional\_summary}
+is the implication from the still-uninhabited
+\texttt{matveev\_inequality\_real\_target}.
+\texttt{bugeaud\_v24x\_final\_link}
+restates the conditional LLL shape.
+This is the honest final of v24.x, not v25:
+\texttt{baker\_bound\_gap3} stays a def Prop
+until Mathlib has Matveev 2000 Thm~1.4.
+
+\section{What remains}
+$15/16$ of $B\le 2\text{M}$ is eliminated by mod-$16$ residues.
+The two displayed named rows $[196,1500003]$ are
+eliminated that way (\texttt{full\_honest}).
+All $352$ named $B\equiv 14$ rows are eliminated by
+fourth-power non-residues
+(\texttt{beal\_4\_13\_13\_gap3\_B\_le\_2M\_eliminated\_B14\_full}).
+Those $86$ that survive mod $53$ still have an Euler
+$a_{53}$ in $\{-10,-2,1,6,14\}$ that misses $0,12$
+under the Beal equation
+(\texttt{beal\_frey\_a53\_miss\_86});
+that pack is not Ribet.
+\texttt{conductor\_86} and
+\texttt{level\_lowering\_86} stay Props.
+\texttt{B14\_honest} stays the uninhabited pack
+$\forall$.
+\texttt{Classical.choice} is not BCDT.
+The old \texttt{beal\_4\_13\_13\_gap3\_B\_le\_2M\_eliminated}
+stays \texttt{Classical.em}.
+Density from the named-row count to $\infty$,
+full modular contradiction, and Beal $\forall$
+still open.
+$B>2\mathrm{M}$ is the Baker/Bugeaud Prop
+\texttt{baker\_bound\_gap3}, not a Zsigmondy theorem.
+Track beyond $2\text{M}$ Step61+ continues the same
+\texttt{smallZsigPrimes} pattern and does not close
+the Baker bound.
+
+\end{document}

@@ -1,0 +1,30 @@
+{
+  "version": "v1.4.0",
+  "previous": "v1.3.0",
+  "sagemath_version": "10.7",
+  "certs": [
+    "sagemath/certs/j0_26_decomposition.json",
+    "sagemath/certs/formal_immersion_M3.json",
+    "lean/Beal/Foundations/FormalImmersionM3.lean"
+  ],
+  "generators": [
+    "sagemath/j0_26_decomp_foundation.sage",
+    "sagemath/j0_26_decomp_foundations.sage",
+    "sagemath/formal_immersion_M3.sage"
+  ],
+  "expected": "M3 = [[1, 1], [0, 2]] over ZMod 3, det = 2, matches ledger",
+  "doi": "10.5281/zenodo.22310574",
+  "concept_doi": "10.5281/zenodo.22272382",
+  "record": "https://zenodo.org/records/22310574",
+  "git_tag": "v1.4.0",
+  "git_commit": "bfcd70d8f8d6434718851c63a6d0784ed46564b9",
+  "archive_sha256": "09bee85fea4154c0db0db0863f0655dfec5400c8f67f0cf37795dcf919767a4a",
+  "latest_foundations_release": {
+    "version": "v4.0.9-fourCusps-forall",
+    "doi": "10.5281/zenodo.22322627",
+    "record": "https://zenodo.org/records/22322627",
+    "git_tag": "v4.0.9-fourCusps-forall",
+    "git_commit": "2281aad52c54c3f988eebe449cac2c85e30b97be",
+    "archive_sha256": "c58219380fd559d49e2d813a7c642e1708221c35d2ea9f828bf852afa07fa056"
+  }
+}

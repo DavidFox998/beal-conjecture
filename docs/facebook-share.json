@@ -1,0 +1,26 @@
+{
+  "og:image": "https://davidfox998.github.io/beal-level-26-foundations/assets/v6.7.0/ribet_26_to_2.jpg",
+  "og:image:type": "image/jpeg",
+  "og:image:alt": "Ribet 26→2 26/13=2 by rfl none 26a1 Δ -17576 26b1 Δ -1664",
+  "note": "Facebook Open Graph crawlers should use .jpg, not .webp. Icons and share previews use JPEG/PNG.",
+  "images": {
+    "ribet_26_to_2": {
+      "jpg": "assets/v6.7.0/ribet_26_to_2.jpg",
+      "png": "assets/v6.7.0/ribet_26_to_2.png",
+      "webp": "assets/v6.7.0/ribet_26_to_2.webp",
+      "share": "assets/v6.7.0/ribet_26_to_2.jpg"
+    },
+    "tw_qn_infinite_family": {
+      "jpg": "assets/v6.7.0/tw_qn_infinite_family.jpg",
+      "png": "assets/v6.7.0/tw_qn_infinite_family.png",
+      "webp": "assets/v6.7.0/tw_qn_infinite_family.webp",
+      "share": "assets/v6.7.0/tw_qn_infinite_family.jpg"
+    },
+    "galois_token": {
+      "jpg": "assets/v6.7.0/galois_token.jpg",
+      "png": "assets/v6.7.0/galois_token.png",
+      "webp": "assets/v6.7.0/galois_token.webp",
+      "share": "assets/v6.7.0/galois_token.jpg"
+    }
+  }
+}

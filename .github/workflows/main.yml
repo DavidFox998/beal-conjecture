@@ -1,0 +1,41 @@
+name: Beal Level-26 Foundations CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install elan
+        run: |
+          curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      - name: Restore Lean toolchain and Mathlib cache
+        id: lean-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.elan/toolchains
+            ~/.elan/update-hashes
+            .lake/packages
+          key: lean-${{ runner.os }}-${{ hashFiles('lean-toolchain', 'lakefile.lean', 'lake-manifest.json') }}
+
+      - name: Get Mathlib binary cache
+        if: steps.lean-cache.outputs.cache-hit != 'true'
+        run: lake exe cache get
+
+      - name: Build finite foundations and explicit extensions
+        run: |
+          lake build BealLevel26Foundations
+          lake build BealLevel26FoundationsScaffold
+          lake build BealLevel26FoundationsReal
+
+      - name: Verify declarations, evidence, and release surface
+        run: bash scripts/verify-scaffold.sh
