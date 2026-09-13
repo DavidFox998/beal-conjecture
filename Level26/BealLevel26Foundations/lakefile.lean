@@ -1,6 +1,9 @@
 import Lake
 open Lake DSL
 
+set_option maxHeartbeats 40000000
+set_option maxRecDepth 2048
+
 package beal_level_26_foundations where
   leanOptions := #[⟨`autoImplicit, false⟩]
 
