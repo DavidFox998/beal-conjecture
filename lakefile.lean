@@ -102,7 +102,13 @@ lean_lib lean where
     `Level26.BealLevel26Foundations.Beal` would compile RibetMazur.
     The subtree package at
     `Level26/BealLevel26Foundations` remains the Lake package
-    (subdirectory of this repo). -/
+    (subdirectory of this repo).
+
+    CI must `lake -d Level26/BealLevel26Foundations build`
+    first so FullProof oleans land in the path package
+    `.lake/build`. A bare `lake build Level26` on a clean
+    runner otherwise steals `BealBakerB0ReductionCertificate`
+    into the root build dir. -/
 lean_lib Level26 where
   srcDir := "Level26/BealLevel26Foundations/lean"
   -- Empty globs would treat roots as `.andSubmodules`.

@@ -29,9 +29,15 @@ path-requires `./Level26/BealLevel26Foundations`. The `v1.2.1`
 git require is gone.
 
 ```
-lake build HonestB0Search   # six roots + closed graph
-lake build Level26          # vendor J0 / Matveev / Baker certificate
+lake build HonestB0Search
+lake -d Level26/BealLevel26Foundations build
+lake build Level26
 ```
+
+On a clean runner, build the path package first so FullProof
+oleans land in `Level26/BealLevel26Foundations/.lake/build`.
+A bare `lake build Level26` can steal
+`BealBakerB0ReductionCertificate` into the root build dir.
 
 `lake build BealMatveevBeal` is a foundations-only target. It is
 not this package.

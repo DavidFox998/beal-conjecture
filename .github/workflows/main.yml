@@ -36,7 +36,15 @@ jobs:
         run: lake build HonestB0Search
 
       - name: lake build Level26
-        run: lake build Level26
+        run: |
+          set -euo pipefail
+          # Path package first: oleans must land in
+          # Level26/BealLevel26Foundations/.lake/build/lib.
+          # A bare `lake build Level26` on a clean runner
+          # steals BealBakerB0ReductionCertificate into the
+          # root build dir and BealBugeaudLLLFormal fails.
+          lake -d Level26/BealLevel26Foundations build
+          lake build Level26
 
       - name: Confirm path require (v1.2.1 git require gone)
         run: |
