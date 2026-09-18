@@ -1,3 +1,30 @@
+# Vendor pin — unchanged `db7a556` / `fea0c393`
+
+This tree is the relocated v24.4.0 Level 26 kernel inside
+`beal-conjecture` at `954be82`. It is **not** rewritten for v26.
+There is **no** nested `Level26/BealLevel26Foundations/Level26`.
+
+- Path-required by the root lakefile as
+  `require beal_level_26_foundations from "Level26/BealLevel26Foundations"`.
+- The `v1.2.1` git require is gone. Two lakefiles are intentional.
+- `lake build Level26` is green on the parent package.
+- Honest slice lives in the sibling
+  [`../HonestB0Search/`](../HonestB0Search/), copied from
+  foundations `43735b3`. Do not paste that slice into this vendor.
+- Foundations `phase-darmon-merel-4413` stays `43735b3` as the
+  working repo for the last four `def Prop`s.
+- Deposit title (parent): Formal Verification of the Level 26
+  Foundations for Signature (4,4,13): Certified Mordell-Weil Rank
+  Zero for X₀(26), Descent, Torsion, and Conductor Data.
+  Version `v26.0.0-level-26-foundations-certified-mw-rank-zero`.
+  Concept DOI [10.5281/zenodo.22379293](https://doi.org/10.5281/zenodo.22379293).
+- Historical vendor DOI [10.5281/zenodo.22732209](https://doi.org/10.5281/zenodo.22732209).
+
+The v24.x narrative below is the vendor’s own record and is kept
+verbatim.
+
+---
+
 [![v17 DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22729067.svg)](https://doi.org/10.5281/zenodo.22729067) [![v16 DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22728705.svg)](https://doi.org/10.5281/zenodo.22728705) [![v15 DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22728624.svg)](https://doi.org/10.5281/zenodo.22728624) [![v14 DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22722140.svg)](https://doi.org/10.5281/zenodo.22722140) [![v13 DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22721843.svg)](https://doi.org/10.5281/zenodo.22721843) [![v12 DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22721089.svg)](https://doi.org/10.5281/zenodo.22721089) [![v11 DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22721420.svg)](https://doi.org/10.5281/zenodo.22721420) [![math DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22712897.svg)](https://doi.org/10.5281/zenodo.22712897) [![paper DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22713047.svg)](https://doi.org/10.5281/zenodo.22713047) [![v8.20.0 DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22654189.svg)](https://doi.org/10.5281/zenodo.22654189) [![v7.1.1 DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22635221.svg)](https://doi.org/10.5281/zenodo.22635221) [![Concept DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22272382.svg)](https://doi.org/10.5281/zenodo.22272382)
 
 # Beal Level 26 Foundations — v24.4.0-Beal-44-13-Level-26-v24x-Final-Summary

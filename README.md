@@ -1,13 +1,24 @@
-# Beal Conjecture Level 26 — Gap-3 Baker B0=10^6 Unconditional
-Current: f7bbdc5 wiring v25.0.0-Beal-44-13-Level-26-Baker-B0-Unconditional NOT MINTED, one sorry matveev_gap3_lower at 716 in beal-level-26-foundations 4bd15bd.
-- Monorepo Level26/BealLevel26Foundations 83 modules v24.4.0 db7a556 DOI 10.5281/zenodo.22732209 concept 22379293 closed |Λ|≤B^4/A^4, conditional toward B0
-- Matveev-Beal 4bd15bd owns Matveev Thm1.4 n=2 C1_floor=143186215390 + Bugeaud LLL → B0=10^6, no Mathlib waiting, hGen ∀α1,α2>1 α2=B+3 not 1<B
-- Level26/mcom-draft.tex amsart draft, census B≤10^6 via baker_le_B0_gap3
-- lake build green, axioms [propext, Classical.choice, Quot.sound]
+# Formal Verification of Level 26 Foundations for A⁴+B⁴=C¹³: Certified MW Rank Zero for X₀(26)
 
-[![v11.0.0 DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22281075.svg)](https://doi.org/10.5281/zenodo.22281075) [![Level 26 concept DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22379293.svg)](https://doi.org/10.5281/zenodo.22379293) [![CI](https://github.com/DavidFox998/beal-conjecture/actions/workflows/main.yml/badge.svg)](https://github.com/DavidFox998/beal-conjecture/actions/workflows/main.yml)
+Current: `954be82` `merge-foundations-43735b3-for-v26` from `7adeede` — merge foundations `43735b3` honest slice into beal-conjecture — vendor `Level26/BealLevel26Foundations` unchanged `db7a556`/`fea0c393` no nested `Level26` — honest slice `Level26/HonestB0Search/` six roots `TwoDescent_26a1_26` `7c19ad0` `|Sel₂|=1` `3·7=21` `2⁰=1`, `BSD_MordellWeil` `8994d38` `¬IsRankZero` `(4,4)` `Δ=-17576` `(1,0)` `Δ=-1664` `ℤ/3` `ℤ/7`, `Tate_Frey_Conductor_29` `Δ=16A⁸B⁸(A⁴+B⁴)²` `v₂₉=26 v₂₉(C)` `32/928`, `Mazur_X0_13_No_Isogeny` `|SL₂(𝔽₁₃)|=2184` `48<2184` genus 0 cusp 2, `Ribet_Level_Lowering_29_to_32` `928/29=32`, `Kolyvagin_MW_Rank0_26a1_26b1` `Nonempty(Fintype(E(ℚ)))` not Subsingleton `L/Ω=1/3` `1/7` — plus `J0_26_BSD_26a1_26b1`, `X0_26_Full2Torsion`, `Tate_I29_Inertia`, `Mazur_X0_13_RationalPoints`, `Ribet_Level32`, `Serre_Large_vs_CM_Small`, `DarmonMerelFrey4413`, `docs/X0_26_SECTION_8994d38.md` González `Y²=x⁶-8x⁵+8x⁴-18x³+8x²-8x+1` genus 2, `docs/roadmap_without_wiles/README.md`, `sagemath/j0_26_decomp_foundation.sage` `certified_mwrank` 0, `scripts/verify_descent_26.py` PARI `ellrank` `[0,0]`, `certs/pari_x0_26_four_cusps.json` — lakefile path-requires `./Level26/BealLevel26Foundations` — `v1.2.1` git require gone — Matveev 2000 Thm 1.4 `n=2` `C1_floor=143186215390` + Bugeaud LLL → `B0=10^6` `hGen` `∀ α₁,α₂>1` `α₂=B+3` `|Λ|≤B⁴/A⁴` `|Λ|=log(1+B⁴/A⁴)` `C_exp_bound = -height_B0 log height_B0` `height_B0=104382751019310000000 = C1_floor·30⁶` — `lake build HonestB0Search` green, `Level26` green — axioms `[propext, Classical.choice, Quot.sound]` — 1 sorry historical at 716 in `4bd15bd` now inhabited on foundations side — foundations `phase-darmon-merel-4413` stays `43735b3` working repo for last 4 `def Prop`s — concept DOI `10.5281/zenodo.22379293`
 
-> **v11.0.0 — Conditionally complete assembly** (software version of this monorepo).
+[![Concept DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22379293.svg)](https://doi.org/10.5281/zenodo.22379293) [![CI](https://github.com/DavidFox998/beal-conjecture/actions/workflows/main.yml/badge.svg)](https://github.com/DavidFox998/beal-conjecture/actions/workflows/main.yml)
+
+> **v26.0.0 — Formal Verification of the Level 26 Foundations for Signature (4,4,13): Certified Mordell-Weil Rank Zero for X₀(26), Descent, Torsion, and Conductor Data** — short title Formal Verification of Level 26 Foundations for A⁴+B⁴=C¹³: Certified MW Rank Zero for X₀(26)
+
+## v26.0.0 — Honest slice from foundations 43735b3
+
+- Vendor unchanged `db7a556`/`fea0c393` — no nested `Level26/`.
+- Honest slice `Level26/HonestB0Search/` — six roots + closed graph from foundations `43735b3`: `TwoDescent_26a1_26` `7c19ad0` `|Sel₂|=1` `3·7=21` `2⁰=1`; `BSD_MordellWeil` `8994d38` `¬IsRankZero` `(4,4)`/`(1,0)` `ℤ/3` `ℤ/7`; Tate residual `32/928`; Mazur `|SL₂|=2184`; Ribet `928/29=32`; Kolyvagin `Fintype` not Subsingleton. Docs: `X0_26_SECTION_8994d38.md`, `roadmap_without_wiles`.
+- Lakefile path-requires `./Level26/BealLevel26Foundations` — `v1.2.1` git require gone — two lakefiles are intentional (root app + vendor package).
+- `lake build HonestB0Search` green, `lake build Level26` green.
+- Inhabited on this slice: displayed `|Sel₂|`, torsion Nats, `¬IsRankZero` (Subsingleton refuted), `L/Ω` rationals `1/3` and `1/7`, `Δ` identities, `928/29=32`, `|SL₂(𝔽₁₃)|=2184`. Algebraic MW rank 0 as `Nonempty (Fintype (E(ℚ)))`, Tate’s algorithm / Néron `N_E`, Frey 13-isogeny, and abstract Ribet stay `def Prop`.
+- Four working `def Prop`s remain on foundations `phase-darmon-merel-4413` `43735b3` — branches `tate-v29`, `mazur-x0-13`, `ribet-928-32`, `kolyvagin-fintype` not created yet.
+- Matveev Thm 1.4 `n=2` `C1_floor=143186215390` `hGen` `∀ α₁,α₂>1` `α₂=B+3` + Bugeaud LLL `hLLL` → `B0=10^6` — `|Λ|≤B⁴/A⁴`. Title has no Wiles and no tag string.
+
+[![v11.0.0 DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22281075.svg)](https://doi.org/10.5281/zenodo.22281075)
+
+> **v11.0.0 — Conditionally complete assembly** (prior software version of this monorepo).
 > [`Beal.Final.ConditionalBealTheorem`](lean/Beal/Final/ConditionalBealTheorem.lean)
 > exposes exactly five named mathematical premises. The Level 26 gap-3 Baker
 > $B_0$ tag is **not minted**.

@@ -41,7 +41,7 @@ grep -q '10.5281/zenodo.22272714' README.md
 grep -q '10.5281/zenodo.22284436' README.md
 grep -q '10.5281/zenodo.22286222' README.md
 grep -q '10.5281/zenodo.22286630' README.md
-grep -q 'v1.2.1-formal-coordinate-boundary-corrected' lakefile.lean
+grep -q 'Level26/BealLevel26Foundations' lakefile.lean
 
 if grep -RInE \
   --exclude-dir=.git --exclude-dir=.lake \

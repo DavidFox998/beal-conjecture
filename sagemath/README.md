@@ -1,5 +1,11 @@
 # `sagemath/`
 
+**v26.** Root Sage transcripts stay historical. Vendor
+`certified_mwrank` 0 for 26a1 / 26b1 is
+[`../Level26/BealLevel26Foundations/sagemath/`](../Level26/BealLevel26Foundations/sagemath/).
+That computation does not inhabit
+`Nonempty (Fintype (E(ℚ)))` on the honest slice.
+
 This folder contains reproducibility programs and source transcripts for the
 Level-26 arithmetic in the Beal chamber of *Opera Numerorum*. The replay
 program prints its Sage and mwrank environment, obtains the database-defined

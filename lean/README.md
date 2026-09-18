@@ -1,5 +1,13 @@
 # `lean/`
 
+**v26.** The historical `Beal` library (v11 five-premise assembly) lives
+here. The v26 honest slice is
+[`../Level26/HonestB0Search/`](../Level26/HonestB0Search/)
+(`lake build HonestB0Search`). Vendor Matveev / Baker is
+[`../Level26/BealLevel26Foundations/`](../Level26/BealLevel26Foundations/)
+(`lake build Level26`). `lean_lib Beal` uses explicit globs so it
+does not steal `Beal.Foundations.J0_26_Decomp`.
+
 This directory is the Lean source root for the Beal Conjecture formalization
 in *Opera Numerorum*. It is deliberately small at the top level: the source
 library lives in `Beal/`, while `Beal.lean` is the import manifest that asks
