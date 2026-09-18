@@ -1,15 +1,16 @@
 # Workflows
 
-[`main.yml`](main.yml) is the beal-conjecture CI workflow.
+[`main.yml`](main.yml) is **beal-conjecture** CI.
 
-It runs on pushes and pull requests to **`main`**. It does not
-automatically run on `merge-foundations-43735b3-for-v26`. Local
-verification for the v26 slice is:
+It runs on `main`, `merge-foundations-*`, `phase-*`, `v24*`,
+`v25*`, `v26*`, pull requests, and `workflow_dispatch`.
+
+v26 verification on this branch:
 
 ```
 lake build HonestB0Search
 lake build Level26
 ```
 
-Axioms expected: `[propext, Classical.choice, Quot.sound]`.
-Do not treat a green `main` badge as a v26 mint.
+The historical `build` job stays on `main`. Do not look for
+this run on `beal-level-26-foundations`.

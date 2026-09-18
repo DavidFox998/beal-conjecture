@@ -1,13 +1,24 @@
 # `.github/`
 
 GitHub Actions for
-[DavidFox998/beal-conjecture](https://github.com/DavidFox998/beal-conjecture).
+[DavidFox998/beal-conjecture](https://github.com/DavidFox998/beal-conjecture)
+— **this repository**, not `beal-level-26-foundations`.
 
-[`workflows/main.yml`](workflows/main.yml) listens to **`main`**.
-The v26 honest-slice work currently lives on
-`merge-foundations-43735b3-for-v26` at `954be82` and is **not**
-yet merged to `main`. A green Actions badge on `main` is the
-historical v11 assembly until that merge.
+[`workflows/main.yml`](workflows/main.yml) triggers on
+
+- `push` to `main`, `merge-foundations-*`, `phase-*`, `v24*`, `v25*`, `v26*`
+- `pull_request`
+- `workflow_dispatch`
+
+Jobs:
+
+| Job | When | What |
+|---|---|---|
+| `v26-slice` | every matching event | `lake build HonestB0Search` and `lake build Level26` |
+| `build` | `main` only | historical v11 Beal assembly and audits |
+
+Actions live at
+https://github.com/DavidFox998/beal-conjecture/actions
 
 Concept DOI: [10.5281/zenodo.22379293](https://doi.org/10.5281/zenodo.22379293).
 Version string prepared for mint:
