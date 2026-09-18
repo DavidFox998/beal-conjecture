@@ -11,9 +11,15 @@ require mathlib from git
   "https://github.com/leanprover-community/mathlib4.git" @ "v4.12.0"
 
 /-- Import closure of BealMatveevThm14 + BealBakerB0ReductionCertificate
-    (83 modules). Explicit `.one` globs so Lake schedules
-    transitives without `.andSubmodules` of all of BealLevel26Foundations
-    (RibetMazur / Mazur / Jacobian stay out).
+    (83 FullProof modules) plus the FormalImmersion / GeometryBridge
+    prefix (`M3_Explicit` and its four imports). Explicit `.one`
+    globs so Lake schedules transitives without `.andSubmodules`
+    of all of BealLevel26Foundations (RibetMazur stays out).
+
+    Lake 4.12 `+Module` only accepts declared `lean_lib` members.
+    `FormalImmersion_26_Cert` imports `M3_Explicit`;
+    `Level26_GeometryBridge` imports `Mazur.QExpansionCotangent_Real_26`.
+    Packaging only — Lean math of those files is unchanged.
 
     Gap3BakerUpperBound → BealMod16 → Zsigmondy Density → Steps 4–60
     is a real import, not a glob accident. -/
@@ -103,6 +109,11 @@ lean_lib BealLevel26Foundations where
     .one `BealLevel26Foundations.Chain.Level2,
     .one `BealLevel26Foundations.Chain.X0_26_Point,
     .one `BealLevel26Foundations.CoefficientLedger_26,
+    .one `BealLevel26Foundations.FiniteEvidence,
+    .one `BealLevel26Foundations.AbelJacobiDifferential,
+    .one `BealLevel26Foundations.M3_Explicit,
+    .one `BealLevel26Foundations.Jacobian.PicardAbelJacobiIdentification_26,
+    .one `BealLevel26Foundations.Mazur.QExpansionCotangent_Real_26,
     .one `BealLevel26Foundations.Real.FreyWeierstrass
   ]
   roots := #[
@@ -188,5 +199,10 @@ lean_lib BealLevel26Foundations where
     `BealLevel26Foundations.Chain.Level2,
     `BealLevel26Foundations.Chain.X0_26_Point,
     `BealLevel26Foundations.CoefficientLedger_26,
+    `BealLevel26Foundations.FiniteEvidence,
+    `BealLevel26Foundations.AbelJacobiDifferential,
+    `BealLevel26Foundations.M3_Explicit,
+    `BealLevel26Foundations.Jacobian.PicardAbelJacobiIdentification_26,
+    `BealLevel26Foundations.Mazur.QExpansionCotangent_Real_26,
     `BealLevel26Foundations.Real.FreyWeierstrass
   ]

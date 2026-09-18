@@ -115,12 +115,23 @@ lean_lib Level26 where
   globs := #[
     .one `Beal.Foundations.J0_26_Decomp,
     .one `BealLevel26Foundations.Beal.FullProof.BealMatveevThm14,
-    .one `BealLevel26Foundations.Beal.FullProof.BealBakerB0ReductionCertificate
+    .one `BealLevel26Foundations.Beal.FullProof.BealBakerB0ReductionCertificate,
+    -- FormalImmersion / GeometryBridge prefix. Declared here so
+    -- `lake build +BealLevel26Foundations.M3_Explicit` is a real
+    -- target. CI still builds the path package first so oleans
+    -- land in vendor `.lake/build` (LEAN_PATH vendor-first).
+    .one `BealLevel26Foundations.FiniteEvidence,
+    .one `BealLevel26Foundations.AbelJacobiDifferential,
+    .one `BealLevel26Foundations.M3_Explicit,
+    .one `BealLevel26Foundations.Jacobian.PicardAbelJacobiIdentification_26,
+    .one `BealLevel26Foundations.Mazur.QExpansionCotangent_Real_26
   ]
   roots := #[
     `Beal.Foundations.J0_26_Decomp,
     `BealLevel26Foundations.Beal.FullProof.BealMatveevThm14,
-    `BealLevel26Foundations.Beal.FullProof.BealBakerB0ReductionCertificate
+    `BealLevel26Foundations.Beal.FullProof.BealBakerB0ReductionCertificate,
+    `BealLevel26Foundations.M3_Explicit,
+    `BealLevel26Foundations.Mazur.QExpansionCotangent_Real_26
   ]
 
 /-- v25 wiring names. Does not `require` Matveev-Beal: that
