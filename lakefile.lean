@@ -13,9 +13,81 @@ require mathlib from git
     Do **not** nest another `Level26/` inside this package. -/
 require beal_level_26_foundations from "Level26/BealLevel26Foundations"
 
+/-- Do **not** use implicit `.andSubmodules` of `Beal`: that
+    steals `Beal.Foundations.J0_26_Decomp` from the path
+    package `Level26/BealLevel26Foundations`. Galois file
+    names start with digits and cannot be `.one` tokens. -/
 @[default_target]
 lean_lib Beal where
   srcDir := "lean"
+  globs := #[
+    .one `Beal,
+    .submodules `Beal.ArakelovRH,
+    .submodules `Beal.Final,
+    .submodules `Beal.Galois,
+    .submodules `Beal.Mazur,
+    .submodules `Beal.Modular,
+    .submodules `Beal.Patching,
+    .one `Beal.B00_OperaNumerorum,
+    .one `Beal.B01_Def,
+    .one `Beal.B01_Def_Core,
+    .one `Beal.B02_Frey,
+    .one `Beal.B02_Frey_Core,
+    .one `Beal.B03_Conductor,
+    .one `Beal.B03_Conductor_Core,
+    .one `Beal.B04_Modular,
+    .one `Beal.B04_Modular_Core,
+    .one `Beal.B04_QExpansion_Core,
+    .one `Beal.B05_HasseWiles,
+    .one `Beal.B05_HasseWiles_Core,
+    .one `Beal.B05_Modularity,
+    .one `Beal.B05_Modularity_Core,
+    .one `Beal.B06_Final,
+    .one `Beal.B06_Final_Core,
+    .one `Beal.B07_Galois,
+    .one `Beal.B07_Galois_Core,
+    .one `Beal.B08_LevelLowering,
+    .one `Beal.B08_LevelLowering_Core,
+    .one `Beal.B09_FinalContradiction,
+    .one `Beal.B09_FinalContradiction_Core,
+    .one `Beal.B10_RibetReal,
+    .one `Beal.B10_RibetReal_Core,
+    .one `Beal.B11_Epsilon,
+    .one `Beal.B11_Epsilon_Core,
+    .one `Beal.B12_RibetProof,
+    .one `Beal.B12_RibetProof_Core,
+    .one `Beal.B13_RibetRealDefs,
+    .one `Beal.B13_RibetRealDefs_Core,
+    .one `Beal.B14_FormRepresentation,
+    .one `Beal.B14_FreyConductor,
+    .one `Beal.B14_FreyConductor_Core,
+    .one `Beal.B14_FreyS2,
+    .one `Beal.B14_FreyTate,
+    .one `Beal.B14_PrimeNotDvd_Core,
+    .one `Beal.B14_TateC4Nonzero,
+    .one `Beal.B14_TateInImpliesOrd1,
+    .one `Beal.B15_LevelTo2,
+    .one `Beal.B15_LevelTo2_Core,
+    .one `Beal.B15_RibetIterate,
+    .one `Beal.B16_BealFinal,
+    .one `Beal.B16_BealFinal_Core,
+    .one `Beal.B17_FreyRationalTwoTorsion,
+    .one `Beal.B17_FullE2,
+    .one `Beal.B17_MazurIrreducible,
+    .one `Beal.B17_MazurIrreducible_Core,
+    .one `Beal.B17_MazurPrimeCoverage,
+    .one `Beal.B17_X0Moduli,
+    .one `Beal.B18_FreyIsElliptic,
+    .one `Beal.B18_FreyIsElliptic_Core,
+    .one `Beal.B19_BealFinalAssembly,
+    .one `Beal.B19_BealFinalAssembly_Core,
+    .one `Beal.B20_BealConjectureDone,
+    .one `Beal.B20_BealConjectureDone_Core,
+    .one `Beal.B20_Beal_Core,
+    .one `Beal.B21_FermatCorollary,
+    .one `Beal.B21_FermatCorollary_Core,
+    .one `Beal.ConditionalBealTheorem
+  ]
 
 lean_lib lean where
   srcDir := "lean"
@@ -35,10 +107,12 @@ lean_lib Level26 where
   srcDir := "Level26/BealLevel26Foundations/lean"
   -- Empty globs would treat roots as `.andSubmodules`.
   globs := #[
+    .one `Beal.Foundations.J0_26_Decomp,
     .one `BealLevel26Foundations.Beal.FullProof.BealMatveevThm14,
     .one `BealLevel26Foundations.Beal.FullProof.BealBakerB0ReductionCertificate
   ]
   roots := #[
+    `Beal.Foundations.J0_26_Decomp,
     `BealLevel26Foundations.Beal.FullProof.BealMatveevThm14,
     `BealLevel26Foundations.Beal.FullProof.BealBakerB0ReductionCertificate
   ]
