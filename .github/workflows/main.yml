@@ -110,6 +110,10 @@ jobs:
           lake -d Level26/BealLevel26Foundations build \
             +BealLevel26Foundations.M3_Explicit \
             +BealLevel26Foundations.Mazur.QExpansionCotangent_Real_26
+          # Vendor owns Beal/ via J0_26_Decomp. Overlay root Beal
+          # oleans so FormalImmersion / GeometryBridge / lake build
+          # Beal resolve Beal.Mazur.* on the vendor-first LEAN_PATH.
+          bash scripts/point-vendor-beal-prefix.sh
 
       - name: Build all bricks
         run: lake build +Beal.B00_OperaNumerorum Beal
