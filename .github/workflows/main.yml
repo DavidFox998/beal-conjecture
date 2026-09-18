@@ -101,18 +101,15 @@ jobs:
 
           echo "OK: Opera Numerorum is present and imported by the release entrypoint"
 
-      - name: Point vendor Beal prefix at root Beal oleans
+      - name: Build FormalImmersion vendor modules
         run: |
           set -euo pipefail
-          mkdir -p .lake/build/lib/Beal
-          vendor_beal="Level26/BealLevel26Foundations/.lake/build/lib/Beal"
-          if [ -d "$vendor_beal/Foundations" ]; then
-            mkdir -p .lake/build/lib/Beal/Foundations
-            cp -a "$vendor_beal/Foundations/." .lake/build/lib/Beal/Foundations/
-          fi
-          mkdir -p Level26/BealLevel26Foundations/.lake/build/lib
-          rm -rf "$vendor_beal"
-          ln -sfn "$(pwd)/.lake/build/lib/Beal" "$vendor_beal"
+          # Path package default lib does not glob M3_Explicit.
+          # FormalImmersion_26_Cert imports it; a missing prefix
+          # is "unknown module prefix 'BealLevel26Foundations'".
+          lake -d Level26/BealLevel26Foundations build \
+            +BealLevel26Foundations.M3_Explicit \
+            +BealLevel26Foundations.Mazur.QExpansionCotangent_Real_26
 
       - name: Build all bricks
         run: lake build +Beal.B00_OperaNumerorum Beal
