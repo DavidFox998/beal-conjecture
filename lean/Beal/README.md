@@ -1,5 +1,12 @@
 # `Beal`
 
+**v26.** Numbered `B*` / Final / Mazur / Galois / Patching modules
+below are the historical assembly. Do not import
+`Beal.Foundations.*` from this lib — that name belongs to the
+path package `Level26/BealLevel26Foundations`. Honest two-descent
+and the four remaining `def Prop`s are in
+[`../../Level26/HonestB0Search/`](../../Level26/HonestB0Search/).
+
 This directory contains the numbered Lean development for Beal's Conjecture.
 It is the main mathematical body of *Opera Numerorum*: elementary
 divisibility and the Frey curve appear first, then conductor and modular-form

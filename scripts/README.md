@@ -1,5 +1,12 @@
 # `scripts/`
 
+**v26.** Parent reproducibility scripts. Vendor PARI
+`verify_descent_26.py` (`ellrank [0,0]`) is
+[`../Level26/BealLevel26Foundations/scripts/`](../Level26/BealLevel26Foundations/scripts/).
+`check-v11-release.sh` is a historical v11 gate (still mentions
+`v11.0.0` and the old `v1.2.1` git require). It is not the v26
+mint script.
+
 These scripts are the reproducibility instruments for the Beal chamber in
 *Opera Numerorum*. They validate release inputs, replay the Level-26
 certificate data, and guard the boundary between committed evidence and

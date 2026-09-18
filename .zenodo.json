@@ -1,11 +1,11 @@
 {
-  "title": "Beal Conjecture — a conditionally complete formal assembly",
+  "title": "Formal Verification of the Level 26 Foundations for Signature (4,4,13): Certified Mordell-Weil Rank Zero for X0(26), Descent, Torsion, and Conductor Data",
   "upload_type": "software",
-  "version": "11.0.0",
-  "description": "A conditionally complete Lean 4 assembly of a level-26 route toward the Beal Conjecture. The final theorem exposes exactly five named premises. The finite mod-3 matrix is ledger-derived; the q-expansion/cotangent compatibility with the actual Abel-Jacobi differential remains explicit. Selmer cardinality is proved only for an explicitly supplied carrier whose cohomological identification remains external.",
+  "version": "v26.0.0-level-26-foundations-certified-mw-rank-zero",
+  "description": "One-repo from beal-conjecture with honest slice Level26/HonestB0Search/ from foundations 43735b3. Vendor unchanged db7a556/fea0c393 no nested Level26. Includes TwoDescent |Sel2|=1 3*7=21, BSD_MordellWeil ¬IsRankZero, Tate 32/928, Mazur 2184, Ribet 32, Kolyvagin Fintype, L/Ω=1/3 1/7, Matveev Thm1.4 C1=143186215390 B0=10^6. Lake HonestB0Search green, Level26 green, path-requires. Foundations phase-darmon-merel-4413 stays 43735b3 working repo for last 4 def Props. Concept DOI 10.5281/zenodo.22379293.",
   "creators": [
     {
-      "name": "DavidFox998",
+      "name": "Fox, David",
       "affiliation": "Opera Numerorum"
     }
   ],
@@ -14,26 +14,42 @@
     "Beal",
     "X0(26)",
     "J0(26)",
-    "formal immersion",
-    "M3 rank2",
+    "Mordell-Weil",
+    "2-descent",
+    "Tate",
+    "Mazur",
+    "Ribet",
+    "Kolyvagin",
+    "Matveev",
+    "Bugeaud",
     "Lean4",
-    "reproducible"
+    "formal verification"
   ],
   "access_right": "open",
   "related_identifiers": [
     {
-      "identifier": "https://github.com/DavidFox998/beal-conjecture/releases/tag/v11.0.0",
-      "relation": "isIdenticalTo",
-      "resource_type": "software"
+      "identifier": "10.5281/zenodo.22379293",
+      "relation": "isVersionOf",
+      "resource_type": "software",
+      "scheme": "doi"
     },
     {
-      "identifier": "10.5281/zenodo.22272382",
+      "identifier": "10.5281/zenodo.22281075",
+      "relation": "isNewVersionOf",
+      "resource_type": "software",
+      "scheme": "doi"
+    },
+    {
+      "identifier": "10.5281/zenodo.22732209",
       "relation": "isSupplementTo",
       "resource_type": "software",
       "scheme": "doi"
+    },
+    {
+      "identifier": "https://github.com/DavidFox998/beal-conjecture",
+      "relation": "isIdenticalTo",
+      "resource_type": "software"
     }
   ],
-  "doi": "10.5281/zenodo.22281075",
-  "conceptdoi": "10.5281/zenodo.22041831",
-  "zenodo_record": 22281075
+  "conceptdoi": "10.5281/zenodo.22379293"
 }

@@ -7,7 +7,7 @@ This directory is **not** `Level26/BealLevel26Foundations`.
 The relocated v24.4.0 kernel (`db7a556` / `fea0c393`, DOI
 `10.5281/zenodo.22732209`) stays untouched in that package.
 
-## Public roots (AMS merge)
+## Public roots (v26 honest slice)
 
 - `TwoDescent_26a1_26.lean` (`7c19ad0`) — `|Sel₂|=1`, `3·7=21`
 - `BSD_MordellWeil.lean` (`8994d38`) — `¬IsRankZero` via `(4,4)`/`(1,0)`

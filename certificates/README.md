@@ -1,5 +1,11 @@
 # `certificates/`
 
+**v26.** Root certificates for the historical `X₀(26)` model.
+Vendor / slice descent evidence is under
+`Level26/BealLevel26Foundations/` and
+`Level26/HonestB0Search/`. A JSON file is not a Mathlib MW
+rank-0 theorem.
+
 This folder holds committed, machine-readable evidence for the Beal chamber of
 *Opera Numerorum*. A certificate file records concrete data that a script or
 Lean declaration can replay; it is not automatically a proof of every

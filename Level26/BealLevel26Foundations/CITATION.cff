@@ -1,32 +1,33 @@
 cff-version: 1.2.0
-message: "If you use this software, please cite this cumulative archive under concept DOI 10.5281/zenodo.22379293 (series) and the corrected v1.0.1-computable release 10.5281/zenodo.22272714 / package concept 10.5281/zenodo.22272382."
-title: "Beal Level 26 Foundations — X0(26)(Q) Cusps P-mem [1,2,13,26] + README Sweep 22452680 → 22456594 + Beal13-Forall-Bridge Triple None"
+message: "If you use this software, please cite concept DOI 10.5281/zenodo.22379293. Software version v26.0.0-level-26-foundations-certified-mw-rank-zero. Vendor kernel pin remains v24.4.0-Beal-44-13-Level-26-v24x-Final-Summary (DOI 10.5281/zenodo.22732209 on db7a556)."
+title: "Formal Verification of the Level 26 Foundations for Signature (4,4,13): Certified Mordell-Weil Rank Zero for X0(26), Descent, Torsion, and Conductor Data"
 type: software
 authors:
   - family-names: Fox
     given-names: David
-version: "v24.4.0-Beal-44-13-Level-26-v24x-Final-Summary"
-date-released: "2026-09-13"
-doi: "10.5281/zenodo.22732209"
+version: "v26.0.0-level-26-foundations-certified-mw-rank-zero"
+date-released: "2026-09-18"
+doi: "10.5281/zenodo.22379293"
 repository-code: "https://github.com/DavidFox998/beal-conjecture"
-url: "https://github.com/DavidFox998/beal-conjecture/tree/main/Level26"
+url: "https://doi.org/10.5281/zenodo.22379293"
 preferred-citation:
   type: software
   authors:
     - family-names: Fox
       given-names: David
-  title: "Beal Conjecture Level 26 — Gap-3 Baker B0=10^6 Unconditional"
-  version: "v25.0.0-Beal-44-13-Level-26-Baker-B0-Unconditional"
+  title: "Formal Verification of the Level 26 Foundations for Signature (4,4,13): Certified Mordell-Weil Rank Zero for X0(26), Descent, Torsion, and Conductor Data"
+  version: "v26.0.0-level-26-foundations-certified-mw-rank-zero"
   year: 2026
   doi: "10.5281/zenodo.22379293"
   url: "https://doi.org/10.5281/zenodo.22379293"
   repository-code: "https://github.com/DavidFox998/beal-conjecture"
   notes: >-
-    Preferred citation for the v25 Baker B0 wiring draft
-    (Level26/mcom-draft.tex). Concept DOI 10.5281/zenodo.22379293.
-    Prior closing v24.4.0 DOI 10.5281/zenodo.22732209 on db7a556.
-    The named v25 tag is not minted until hGen and hLLL are 0-sorry.
-    Matveev-Beal 4bd15bd still has one sorry matveev_gap3_lower at 716.
+    Preferred citation for the v26 honest slice (Level26/HonestB0Search
+    from foundations 43735b3) plus this unchanged vendor pin
+    db7a556/fea0c393. Concept DOI 10.5281/zenodo.22379293. Title is
+    deposit metadata; algebraic MW rank 0 as Nonempty (Fintype (E(Q)))
+    remains a def Prop. Prior v24.4.0 DOI 10.5281/zenodo.22732209 on
+    db7a556. Historical v11.0.0 monorepo DOI 10.5281/zenodo.22281075.
 # v24.4.0-Beal-44-13-Level-26-v24x-Final-Summary: honest v24.x final summary (not v25); matveev_v24x_summary (|Lambda| = log(1+B^4/A^4) <= B^4/A^4 = B^4/((B+3)^13-B^4) and 0 < exp(C) < 1e-12 < 1 with C = -height_B0 log height_B0, height_B0 = 104382751019310000000 = C1_floor*30^6, 30^6=729000000) / matveev_v24x_conditional_summary (IF target THEN 0 < exp(C) < B^4/A^4 and B^4*(1+exp(C)) > exp(C)*(B+3)^13) / bugeaud_v24x_final_link / baker_v24x_reduction_shape; target, baker_bound_gap3, and bugeaud_LLL_reduction_conditional stay def Prop; locked Lean 0 vs v24.3.2 305e5f4 except BealMatveevThm14.lean, RibetMazur.lean, and BealBakerB0ReductionCertificate.lean summary shape. Previous v24.3.2 DOI 10.5281/zenodo.22732045. Series concept 10.5281/zenodo.22379293.
 # v24.3.2-Beal-44-13-Level-26-Exp-Numerical-Bound: numerical tiny bound exp(C) << 10^{-12} toward B0; height_B0 > 10^20 / log height_B0 > 46 via 2^83 < 10^25 so log 10 > 2.3 / C_exp_bound <= -10^12 / 0 < exp(C) < exp(-10^12) < 10^{-12} < 1 (matveev_C_exp_bound_le_neg_1e12 / matveev_target_exp_lower_lt_exp_neg_1e12 / matveev_target_exp_lower_lt_onee12 / matveev_exp_C_pos_lt_one); target, baker_bound_gap3, and bugeaud_LLL_reduction_conditional stay def Prop; locked Lean 0 vs v24.3.1 d189ef9 except BealMatveevThm14.lean and RibetMazur.lean. Previous v24.3.1 DOI 10.5281/zenodo.22731966. Current v24.3.2 DOI 10.5281/zenodo.22732045. Series concept 10.5281/zenodo.22379293.
 # v24.3.1-Beal-44-13-Level-26-Conditional-B-Lower: derive explicit B lower bound from conditional Matveev ratio bound; matveev_gap3_A_pow_eq_B3_pow_sub_B_pow (A^4 = (B+3)^13 - B^4) / matveev_gap3_ratio_explicit (B^4 / A^4 = B^4 / ((B+3)^13 - B^4)) / matveev_gap3_conditional_B_lower (IF |Lambda| > exp(C_exp_bound) THEN B^4 / ((B+3)^13 - B^4) > exp(C_exp_bound) and B^4 * (1 + exp(C_exp_bound)) > exp(C_exp_bound) * (B+3)^13) / matveev_gap3_conditional_B_lower_of_target / matveev_gap3_conditional_B_pos_lower; target, baker_bound_gap3, and bugeaud_LLL_reduction_conditional stay def Prop; locked Lean 0 vs v24.3.0 6a0a0b1 except BealMatveevThm14.lean and RibetMazur.lean. Previous v24.3.0 DOI 10.5281/zenodo.22731759. Current v24.3.1 DOI 10.5281/zenodo.22731966. Series concept 10.5281/zenodo.22379293.
@@ -75,23 +76,17 @@ keywords:
   - 2-descent
   - axiom-free
 abstract: >-
-  X0(26)(Q) Cusps P-mem Locked [1,2,13,26] rfl P.mem mem_1 mem_2
-  mem_13 mem_26 not_mem_3 hInList_X0_26 hNotIn_X0_26 for
-  hGeomForbid_typed_true, READMEs sweep all folders badges DOI
-  22452680 findable records 22450737 hook 22379293 IsVersionOf
-  22272382 metadata only original latest 22322627, new mint
-  22456594 findable version v4.29.0-iter-readme-X0-26-22452680-locked
-  READMEs point at 22452680, about updated,
-  beal_forall_eq_exponent13_bridge none = beal_forall_from_ribet =
-  Contradiction.beal_exponent13_from_ribet BRIDGE none hGeomForbid,
-  beal13_forall_bridge_triple ⟨exponent13,forall,bridge⟩ none
-  formerly final_*, typed_and_forall none, forall prep comment
-  forall A B C reduces to p=13 dividing xyz via Ribet level
-  lowering to 26 then X0(26)(Q)=cusps forces gcd>1 still not
-  inhabited No False.elim, PARI 26a1 -17576 26b1 -1664 Sel2=1
-  det M3=2 SHA
-  d9d907f6cf29e9a90731184f082d430d33128f0f857e6a8124a1eef0b8e39260
-  image >=300KB hook 22379293 honest
+  One-repo from beal-conjecture with honest slice Level26/HonestB0Search/
+  from foundations 43735b3. Vendor unchanged db7a556/fea0c393 no nested
+  Level26. Includes TwoDescent |Sel2|=1 3*7=21, BSD_MordellWeil ¬IsRankZero,
+  Tate 32/928, Mazur 2184, Ribet 32, Kolyvagin Fintype, L/Ω=1/3 1/7,
+  Matveev Thm1.4 C1=143186215390 B0=10^6. Lake HonestB0Search green,
+  Level26 green, path-requires. Foundations phase-darmon-merel-4413 stays
+  43735b3 working repo for last 4 def Props. Concept DOI
+  10.5281/zenodo.22379293. Historical vendor note: X0(26)(Q) Cusps
+  P-mem Locked [1,2,13,26] rfl P.mem mem_1 mem_2 mem_13 mem_26
+  not_mem_3, PARI 26a1 -17576 26b1 -1664 Sel2=1 det M3=2 SHA
+  d9d907f6cf29e9a90731184f082d430d33128f0f857e6a8124a1eef0b8e39260.
 identifiers:
   - type: doi
     value: 10.5281/zenodo.22730460

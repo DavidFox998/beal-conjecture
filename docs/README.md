@@ -1,5 +1,11 @@
 # `docs/`
 
+**v26.** Current deposit title and honest-slice boundary are in the
+root [`README.md`](../README.md) and [`../Level26/README.md`](../Level26/README.md).
+Concept DOI [10.5281/zenodo.22379293](https://doi.org/10.5281/zenodo.22379293).
+This folder keeps the historical written map; it does not inhabit
+Tate, Mazur, Ribet, or Kolyvagin `Fintype`.
+
 This folder is the written map for the Beal chamber in *Opera Numerorum*. It
 keeps the mathematical narrative beside the Lean source without asking a
 README or a theorem name to carry more certainty than the code supports.
