@@ -2,7 +2,7 @@ name: beal-conjecture CI
 
 on:
   push:
-    branches: [main, "merge-foundations-*", "phase-*", "v24*", "v25*", "v26*"]
+    branches: [main, "merge-foundations-*", "phase-*", "v24*", "v25*", "v26*", "v27*"]
   pull_request:
   workflow_dispatch:
 

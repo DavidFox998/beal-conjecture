@@ -124,6 +124,35 @@ theorem certified_mwrank_display_zero :
     certified_mwrank_26a1 = 0 ∧ certified_mwrank_26b1 = 0 :=
   certified_mwrank_both_zero_holds
 
+theorem two_pow_sel2_is_one :
+    (2 : ℕ) ^ Sel2_F2_dim_26a1 = 1 ∧ (2 : ℕ) ^ Sel2_F2_dim_26b1 = 1 :=
+  ⟨two_pow_sel2_F2_dim_26a1.trans Sel2_card_26a1_eq,
+    two_pow_sel2_F2_dim_26b1.trans Sel2_card_26b1_eq⟩
+
+theorem curve26a1_Δ_reexport : curve26a1.Δ = -17576 :=
+  curve26a1_Δ
+
+theorem curve26b1_Δ_reexport : curve26b1.Δ = -1664 :=
+  curve26b1_Δ
+
+/-- Packaged inhabited Kolyvagin *display*. Algebraic MW rank 0
+    as `Nonempty (Fintype (E(ℚ)))` stays `def Prop`. This is
+    not Kato/Kolyvagin and not Subsingleton `{0}`. -/
+theorem Kolyvagin_MW_Rank0_26a1_26b1_inhabited :
+    ¬ MordellWeilGroup.IsRankZero curve26a1_Q ∧
+      ¬ MordellWeilGroup.IsRankZero curve26b1_Q ∧
+      L_over_Omega_26a1 = (1 / 3 : ℚ) ∧
+      L_over_Omega_26b1 = (1 / 7 : ℚ) ∧
+      Sel2_card_26a1 = 1 ∧ Sel2_card_26b1 = 1 ∧
+      TorsionOrder_26a1 * TorsionOrder_26b1 = 21 ∧
+      certified_mwrank_26a1 = 0 ∧ certified_mwrank_26b1 = 0 ∧
+      curve26a1.Δ = -17576 ∧ curve26b1.Δ = -1664 :=
+  ⟨not_IsRankZero_26a1_reexport, not_IsRankZero_26b1_reexport,
+    L_over_Omega_26a1_eq_one_third, L_over_Omega_26b1_eq_one_seventh,
+    Sel2_card_26a1_eq, Sel2_card_26b1_eq, torsion_3_mul_7_eq_21,
+    certified_mwrank_26a1_eq, certified_mwrank_26b1_eq,
+    curve26a1_Δ_reexport, curve26b1_Δ_reexport⟩
+
 /-! ## Kolyvagin / TwoDescent implications stay `def Prop` -/
 
 /-- Kato / Kolyvagin: analytic non-vanishing ⇒ `MW_rank_zero_fintype`.
@@ -153,11 +182,13 @@ theorem LLL_nogo_persists_after_Kolyvagin_MW_Rank0 :
 #check L_over_Omega_26a1_ne_zero_reexport
 #check Sel2_card_both_one
 #check torsion_3_mul_7_eq_21
+#check Kolyvagin_MW_Rank0_26a1_26b1_inhabited
 #check Kolyvagin_L_nonzero_imp_MW_rank_zero
 #check TwoDescent_implies_MW_rank_zero_fintype
 #check MW_rank_zero_26a1
 #print axioms not_IsRankZero_26a1_reexport
 #print axioms L_over_Omega_26a1_eq_one_third
+#print axioms Kolyvagin_MW_Rank0_26a1_26b1_inhabited
 #print axioms LLL_nogo_persists_after_Kolyvagin_MW_Rank0
 
 end BealMatveevBeal.Kolyvagin_MW_Rank0_26a1_26b1

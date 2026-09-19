@@ -143,9 +143,12 @@ lean_lib Level26Wiring where
   globs := #[.one `BakerBoundGap3Holds]
   roots := #[`BakerBoundGap3Holds]
 
-/-- Honest B0Search slice from foundations `43735b3`.
-    Non-default. Not a vendor nest. Last four gaps stay
-    `def Prop` on the working foundations repo. -/
+/-- Honest B0Search slice from foundations `51bba93`
+    (`v0.27-mcom-four-props-inhabited`). Non-default. Not a
+    vendor nest. Packaged inhabited displays: Tate Δ / 928/29=32,
+    Mazur 2184, Ribet numeral, Kolyvagin |Sel2| / L/Ω.
+    Algebraic Tate algorithm / Néron, Frey 13-isogeny, abstract
+    Ribet, and `Nonempty (Fintype (E(Q)))` stay `def Prop`. -/
 lean_lib HonestB0Search where
   srcDir := "Level26/HonestB0Search"
   globs := #[

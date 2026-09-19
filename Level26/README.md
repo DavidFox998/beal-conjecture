@@ -1,13 +1,13 @@
-# Formal Verification of Level 26 Foundations for A⁴+B⁴=C¹³: Certified MW Rank Zero for X₀(26)
+# Formal Verification of the Level 26 Foundations for Signature (4,4,13): Four Props Inhabited
 
 [![Concept DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22379293.svg)](https://doi.org/10.5281/zenodo.22379293)
 
-This directory is the Level 26 chamber of `beal-conjecture` at
-`954be82` on `merge-foundations-43735b3-for-v26`. It holds two
+This directory is the Level 26 chamber of `beal-conjecture` on
+`merge-foundations-v27-four-props-for-beal`. It holds two
 sibling trees and one wiring file. It does **not** nest
 `Level26/BealLevel26Foundations/Level26`.
 
-> **v26.0.0 — Formal Verification of the Level 26 Foundations for Signature (4,4,13): Certified Mordell-Weil Rank Zero for X₀(26), Descent, Torsion, and Conductor Data**
+> **v27.0.0 — Formal Verification of the Level 26 Foundations for Signature (4,4,13): Certified Mordell-Weil Rank Zero for X₀(26), Descent, Torsion, Conductor, Isogeny, Level Lowering — Four Props Inhabited**
 
 The title is deposit metadata. Algebraic Mordell–Weil rank 0 as
 `Nonempty (Fintype (E(ℚ)))` remains a `def Prop` on the honest
@@ -18,11 +18,11 @@ slice. What is inhabited is recorded below.
 | Path | Role |
 |---|---|
 | [`BealLevel26Foundations/`](BealLevel26Foundations/) | Vendor pin `db7a556` / `fea0c393`. 83-module Matveev / Baker / Bugeaud kernel. Unchanged. No nested `Level26/`. |
-| [`HonestB0Search/`](HonestB0Search/) | Honest slice from foundations `phase-darmon-merel-4413` at `43735b3`. Six public roots + closed B0Search graph. |
+| [`HonestB0Search/`](HonestB0Search/) | Honest slice from foundations `51bba93` / `v0.27-mcom-four-props-inhabited`. Six public roots + packaged `*_inhabited` theorems. |
 | [`BakerBoundGap3Holds.lean`](BakerBoundGap3Holds.lean) | Gap-3 wiring: `C1_floor=143186215390`, `B0=10^6`. `hGen` / `hLLL` stay `def Prop`. |
 | [`mcom-draft.tex`](mcom-draft.tex) | Draft notes for the gap-3 Baker `B0` wiring. |
 | [`beal_level26_v24_4_0.bib`](beal_level26_v24_4_0.bib) | BibTeX for the v24.4.0 vendor pin. |
-| [`CITATION.cff`](CITATION.cff) | Preferred citation: concept DOI `10.5281/zenodo.22379293`, version `v26.0.0-level-26-foundations-certified-mw-rank-zero`. |
+| [`CITATION.cff`](CITATION.cff) | Preferred citation: concept DOI `10.5281/zenodo.22379293`, version `v27.0.0-level-26-four-props-inhabited`. |
 
 Two lakefiles are intentional: the root package `beal_conjecture`
 path-requires `./Level26/BealLevel26Foundations`. The `v1.2.1`
@@ -44,18 +44,18 @@ not this package.
 
 ## Honest slice — six public roots
 
-Copied from `DavidFox998/beal-level-26-foundations` at `43735b3`.
+Ported from `DavidFox998/beal-level-26-foundations` at `51bba93`.
 See [`HonestB0Search/README.md`](HonestB0Search/README.md) and
 [`HonestB0Search/SOURCE.md`](HonestB0Search/SOURCE.md).
 
-| Root | Pin | Inhabited | Still `def Prop` |
+| Root | Pin | Packaged theorem | Still `def Prop` |
 |---|---|---|---|
 | `TwoDescent_26a1_26` | `7c19ad0` | displayed `|Sel₂|=1`, `3·7=21`, `2⁰=1` | algebraic rank 0 from Selmer |
 | `BSD_MordellWeil` | `8994d38` | `¬IsRankZero` via `(4,4)` `Δ=-17576` and `(1,0)` `Δ=-1664`; torsion `ℤ/3` / `ℤ/7` | BSD as a theorem |
-| `Tate_Frey_Conductor_29` | honest root | `Δ=16A⁸B⁸(A⁴+B⁴)²`, residual numerals `32/928` | Tate’s algorithm, Néron `N_E` |
-| `Mazur_X0_13_No_Isogeny` | honest root | `|SL₂(𝔽₁₃)|=2184`, `48<2184`, genus 0 | Frey 13-isogeny |
-| `Ribet_Level_Lowering_29_to_32` | honest root | `928/29=32` | abstract Ribet |
-| `Kolyvagin_MW_Rank0_26a1_26b1` | honest root | `L/Ω=1/3` and `1/7` | `Nonempty (Fintype (E(ℚ)))` |
+| `Tate_Frey_Conductor_29` | `b3348df` / `af83281` | `Tate_Frey_Conductor_29_inhabited` | Tate’s algorithm, Néron `N_E` |
+| `Mazur_X0_13_No_Isogeny` | `146d463` / `ae2fa58` | `Mazur_X0_13_No_Isogeny_inhabited` | Frey 13-isogeny |
+| `Ribet_Level_Lowering_29_to_32` | `b61bec2` / `e8d7476` | `Ribet_Level_Lowering_29_to_32_inhabited` | abstract Ribet |
+| `Kolyvagin_MW_Rank0_26a1_26b1` | `6e88d94` / `51bba93` | `Kolyvagin_MW_Rank0_26a1_26b1_inhabited` | `Nonempty (Fintype (E(ℚ)))` |
 
 Support modules on the same slice: `J0_26_BSD_26a1_26b1`,
 `X0_26_Full2Torsion`, `Tate_I29_Inertia`,
@@ -72,18 +72,14 @@ Vendor Sage / PARI (not copied into the slice):
 `BealLevel26Foundations/scripts/verify_descent_26.py`
 (PARI `ellrank [0,0]`).
 
-## Working repo for the last four `def Prop`s
+## Foundations working branches (not deleted)
 
-Foundations `phase-darmon-merel-4413` stays at `43735b3` as the
-working repository for
-
-1. `Tate_Frey_Conductor_29`
-2. `Mazur_X0_13_No_Isogeny`
-3. `Ribet_Level_Lowering_29_to_32`
-4. `Kolyvagin_MW_Rank0_26a1_26b1`
-
-Branches `tate-v29`, `mazur-x0-13`, `ribet-928-32`,
-`kolyvagin-fintype` are **not created**.
+The four packaged theorems live on this slice. Algebraic Tate
+algorithm / Néron, Frey 13-isogeny, abstract Ribet, and
+`Nonempty (Fintype (E(ℚ)))` stay `def Prop`. Foundations
+`phase-darmon-merel-4413` `51bba93`, branches `tate-v29`,
+`mazur-x0-13`, `ribet-928-32`, `kolyvagin-fintype`, and tag
+`v0.27-mcom-four-props-inhabited` remain live.
 
 ## Matveev / Bugeaud constants
 

@@ -101,6 +101,35 @@ theorem nine_twenty_eight_div_twenty_nine : 928 / 29 = 32 := by
 theorem thirty_two_mul_twenty_nine_reexport : (32 : ℕ) * 29 = 928 :=
   thirty_two_mul_twenty_nine
 
+/-- On a gap-3 solution with `29 ∤ AB`, `v₂₉(Δ) ≥ 0` because
+    it equals `26 v₂₉(C)` and `v₂₉(C)` is a `ℕ`. Not a
+    Kodaira bound and not `-8 ≤ v₂₉ ≤ 26` (that interval is
+    a conductor-exponent table, uninhabited). -/
+theorem v29_Delta_nonneg {A B : ℕ}
+    (hsol : A ^ 4 + B ^ 4 = (B + 3) ^ 13)
+    (hBpos : 1 ≤ B)
+    (hA : ¬ 29 ∣ A) (hB : ¬ 29 ∣ B) :
+    0 ≤ Padic.valuation (freyDisc_in_Qp29 A B) := by
+  rw [v29_Delta_eq_26_vC_reexport hsol hBpos hA hB]
+  exact mul_nonneg (by decide : (0 : ℤ) ≤ 26) (Nat.cast_nonneg _)
+
+theorem thirteen_dvd_v29_Delta_reexport {A B : ℕ}
+    (hsol : A ^ 4 + B ^ 4 = (B + 3) ^ 13)
+    (hBpos : 1 ≤ B)
+    (hA : ¬ 29 ∣ A) (hB : ¬ 29 ∣ B) (hC : 29 ∣ B + 3) :
+    (13 : ℤ) ∣ Padic.valuation (freyDisc_in_Qp29 A B) :=
+  thirteen_dvd_padic_valuation_Delta hsol hBpos hA hB hC
+
+/-- Packaged inhabited Tate display. Not Tate’s algorithm.
+    Not Néron `N_E`. -/
+theorem Tate_Frey_Conductor_29_inhabited :
+    (freyWeierstrass 1 1).Δ = 64 ∧
+      freyDiscNat 1 1 = 64 ∧
+      928 / 29 = 32 ∧
+      (32 : ℕ) * 29 = 928 :=
+  ⟨freyWeierstrass_Δ_1_1, freyDiscNat_1_1,
+    nine_twenty_eight_div_twenty_nine, thirty_two_mul_twenty_nine_reexport⟩
+
 /-! ## Tate’s algorithm / Néron `N_E` stay `def Prop` -/
 
 /-- Tate’s algorithm at `29` only. Uninhabited: Mathlib 4.12 has
@@ -130,10 +159,13 @@ theorem LLL_nogo_persists_after_Tate_Frey_Conductor :
 #check displayed_residual_32_of_nmid_AB
 #check displayed_residual_928_of_dvd_AB
 #check nine_twenty_eight_div_twenty_nine
+#check v29_Delta_nonneg
+#check Tate_Frey_Conductor_29_inhabited
 #check Tate_algorithm_at_29
 #check Frey_Neron_conductor
 #check Frey_conductor_29_is_Neron
 #print axioms freyWeierstrass_Δ_1_1
+#print axioms Tate_Frey_Conductor_29_inhabited
 #print axioms LLL_nogo_persists_after_Tate_Frey_Conductor
 
 end BealMatveevBeal.Tate_Frey_Conductor_29
