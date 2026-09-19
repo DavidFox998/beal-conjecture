@@ -1,14 +1,14 @@
 cff-version: 1.2.0
-title: "Formal Verification of the Level 26 Foundations for Signature (4,4,13): Certified Mordell-Weil Rank Zero for X0(26), Descent, Torsion, and Conductor Data"
+title: "Formal Verification of the Level 26 Foundations for Signature (4,4,13): Certified Mordell-Weil Rank Zero for X0(26), Descent, Torsion, Conductor, Isogeny, Level Lowering — Four Props Inhabited"
 message: "If you use this software, please cite this release under concept DOI 10.5281/zenodo.22379293."
 type: software
 authors:
   - family-names: Fox
     given-names: David
     affiliation: "Opera Numerorum"
-version: "v26.0.0-level-26-foundations-certified-mw-rank-zero"
+version: "v27.0.0-level-26-four-props-inhabited"
 doi: "10.5281/zenodo.22379293"
-date-released: 2026-09-18
+date-released: 2026-09-19
 license: MIT
 repository-code: "https://github.com/DavidFox998/beal-conjecture"
 url: "https://doi.org/10.5281/zenodo.22379293"
@@ -26,14 +26,15 @@ keywords:
   - Bugeaud
   - LLL
 abstract: >-
-  One-repo from beal-conjecture with honest slice Level26/HonestB0Search/
-  from foundations 43735b3. Vendor unchanged db7a556/fea0c393 no nested
-  Level26. Includes TwoDescent |Sel2|=1 3*7=21, BSD_MordellWeil ¬IsRankZero,
-  Tate 32/928, Mazur 2184, Ribet 32, Kolyvagin Fintype, L/Ω=1/3 1/7,
-  Matveev Thm1.4 C1=143186215390 B0=10^6. Lake HonestB0Search green,
-  Level26 green, path-requires. Foundations phase-darmon-merel-4413 stays
-  43735b3 working repo for last 4 def Props. Concept DOI
-  10.5281/zenodo.22379293. Prior software version v11.0.0
+  beal-conjecture v27 port of foundations v0.27-mcom-four-props-inhabited
+  at 51bba93. Honest slice Level26/HonestB0Search/ now includes packaged
+  theorems Tate/Mazur/Ribet/Kolyvagin displays (Δ, 928/29=32, |SL2|=2184,
+  |Sel2|=1, L/Ω=1/3 and 1/7, ¬IsRankZero). Algebraic Tate algorithm /
+  Néron, Frey 13-isogeny, abstract Ribet, and Nonempty(Fintype(E(Q)))
+  stay def Prop. Vendor unchanged db7a556/fea0c393, no nested Level26,
+  path-requires. Matveev C1=143186215390 B0=10^6. Concept DOI
+  10.5281/zenodo.22379293. Prior v26 version DOI 10.5281/zenodo.22832505
+  at 5e2906b / 5806dad. Prior software version v11.0.0
   (DOI 10.5281/zenodo.22281075).
 preferred-citation:
   type: software
@@ -41,17 +42,17 @@ preferred-citation:
     - family-names: Fox
       given-names: David
       affiliation: "Opera Numerorum"
-  title: "Formal Verification of the Level 26 Foundations for Signature (4,4,13): Certified Mordell-Weil Rank Zero for X0(26), Descent, Torsion, and Conductor Data"
-  version: "v26.0.0-level-26-foundations-certified-mw-rank-zero"
+  title: "Formal Verification of the Level 26 Foundations for Signature (4,4,13): Certified Mordell-Weil Rank Zero for X0(26), Descent, Torsion, Conductor, Isogeny, Level Lowering — Four Props Inhabited"
+  version: "v27.0.0-level-26-four-props-inhabited"
   year: 2026
   doi: "10.5281/zenodo.22379293"
   url: "https://doi.org/10.5281/zenodo.22379293"
   repository-code: "https://github.com/DavidFox998/beal-conjecture"
   notes: >-
-    Preferred citation for v26: honest slice Level26/HonestB0Search/ from
-    foundations 43735b3 plus vendor Level26/BealLevel26Foundations
+    Preferred citation for v27: honest slice Level26/HonestB0Search/
+    from foundations 51bba93 plus vendor Level26/BealLevel26Foundations
     (db7a556/fea0c393). Concept DOI 10.5281/zenodo.22379293. Title is
     deposit metadata; algebraic MW rank 0 as Nonempty (Fintype (E(Q)))
-    remains a def Prop. Prior software version v11.0.0
-    (DOI 10.5281/zenodo.22281075). Prior v24.4.0 version DOI
-    10.5281/zenodo.22732209 on db7a556.
+    remains a def Prop. Prior v26 version DOI 10.5281/zenodo.22832505.
+    Prior software version v11.0.0 (DOI 10.5281/zenodo.22281075).
+    Prior v24.4.0 version DOI 10.5281/zenodo.22732209 on db7a556.

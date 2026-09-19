@@ -64,6 +64,16 @@ theorem conductor_display_928_of_29_dvd_AB {A B : ℕ}
     level_after_ribet_29 A B = 928 :=
   level_after_ribet_29_eq_928_of_dvd_AB h
 
+/-- Packaged inhabited Ribet display. `928/29=32` is a
+    numeral, not Néron `N_E` and not a Galois isomorphism. -/
+theorem Ribet_Level_Lowering_29_to_32_inhabited :
+    928 / 29 = 32 ∧ (32 : ℕ) * 29 = 928 ∧
+      (928 : ℕ) ≠ 32 ∧ ¬ 29 ∣ 32 :=
+  ⟨nine_twenty_eight_div_twenty_nine_reexport,
+    thirty_two_mul_twenty_nine_reexport,
+    nine_twenty_eight_ne_thirty_two_reexport,
+    twenty_nine_nmid_thirty_two_reexport⟩
+
 /-- Ribet lowering `928 → 32` at `p = 13`, `N = 29`.
     Uninhabited. Alias of `ribet_level_lowering_29_to_32`.
     **Not** an axiom. **Not** full Ribet. -/
@@ -89,10 +99,12 @@ theorem LLL_nogo_persists_after_Ribet_Level_Lowering :
 #check nine_twenty_eight_div_twenty_nine_reexport
 #check conductor_display_32_of_29_nmid_AB
 #check conductor_display_928_of_29_dvd_AB
+#check Ribet_Level_Lowering_29_to_32_inhabited
 #check Ribet_928_to_32
 #check no_newforms_at_32_mod13
 #check explicit_a29_mod13
 #print axioms nine_twenty_eight_div_twenty_nine_reexport
+#print axioms Ribet_Level_Lowering_29_to_32_inhabited
 #print axioms LLL_nogo_persists_after_Ribet_Level_Lowering
 
 end BealMatveevBeal.Ribet_Level_Lowering_29_to_32

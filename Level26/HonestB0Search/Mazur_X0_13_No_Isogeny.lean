@@ -87,6 +87,17 @@ theorem serre_non_Borel_numerics :
   ⟨card_SL2_F13_numeral, thirteen_is_sum_of_two_squares,
     forty_eight_lt_2184_reexport, two_eighty_eight_div_forty_eight_reexport⟩
 
+/-- Packaged inhabited Mazur display. Does **not** claim
+    `X₀(13)(ℚ) = {2 cusps}` (genus 0 ⇒ infinitely many
+    rational points; that paste is literature-false). -/
+theorem Mazur_X0_13_No_Isogeny_inhabited :
+    X0_13_genus_nat = 0 ∧ X0_13_cusp_count = 2 ∧
+      (13 : ℕ) * 12 * 14 = 2184 ∧ 48 < 2184 ∧
+      (2 : ℤ) ^ 2 + 3 ^ 2 = 13 ∧ 288 / 48 = 6 :=
+  ⟨X0_13_genus_nat_eq, X0_13_cusp_count_eq, card_SL2_F13_numeral,
+    forty_eight_lt_2184_reexport, thirteen_is_sum_of_two_squares,
+    two_eighty_eight_div_forty_eight_reexport⟩
+
 /-! ## Galois / Mazur stay `def Prop` -/
 
 /-- `X₀(13)(ℚ)` is infinite because the curve is genus `0`.
@@ -119,11 +130,13 @@ theorem LLL_nogo_persists_after_Mazur_X0_13_No_Isogeny :
 #check X0_13_genus_nat_eq
 #check X0_13_cusp_count_eq
 #check serre_non_Borel_numerics
+#check Mazur_X0_13_No_Isogeny_inhabited
 #check X0_13_Q_infinite
 #check frey_no_rational_13_isogeny
 #check Serre_non_Borel_mod13
 #check mazur_no_Frey_13_isogeny
 #print axioms serre_non_Borel_numerics
+#print axioms Mazur_X0_13_No_Isogeny_inhabited
 #print axioms LLL_nogo_persists_after_Mazur_X0_13_No_Isogeny
 
 end BealMatveevBeal.Mazur_X0_13_No_Isogeny

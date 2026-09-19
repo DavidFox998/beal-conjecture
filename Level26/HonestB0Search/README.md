@@ -1,34 +1,36 @@
-# Honest B0Search slice
+# Honest B0Search slice — v27 four props inhabited
 
 Referee map for `Level26/HonestB0Search/` on
-`merge-foundations-43735b3-for-v26` at `954be82`.
+`merge-foundations-v27-four-props-for-beal`.
 
-This directory is the **honest slice** copied from
+This directory is the **honest slice** ported from
 `DavidFox998/beal-level-26-foundations`
-`phase-darmon-merel-4413` at `43735b3`. It is **not** the
-vendor kernel [`../BealLevel26Foundations/`](../BealLevel26Foundations/).
+`v0.27-mcom-four-props-inhabited` at `51bba93` (four `--no-ff`
+merges from `43735b3`). It is **not** the vendor kernel
+[`../BealLevel26Foundations/`](../BealLevel26Foundations/).
 There is no nested `Level26/`.
 
-`lake build HonestB0Search` is green. Public roots:
+`lake build HonestB0Search` is the slice target. Public roots:
 
-| Module | What a referee can take as proved | What stays `def Prop` |
+| Module | Packaged theorem | Still `def Prop` |
 |---|---|---|
 | [`TwoDescent_26a1_26.lean`](TwoDescent_26a1_26.lean) | displayed `|Sel₂|=1`, `3·7=21`, `2⁰=1` (`7c19ad0`) | Selmer ⇒ algebraic rank 0 |
 | [`BSD_MordellWeil.lean`](BSD_MordellWeil.lean) | `¬IsRankZero` via `(4,4)` / `(1,0)`; torsion `ℤ/3ℤ` / `ℤ/7ℤ` (`8994d38`) | BSD itself |
-| [`Tate_Frey_Conductor_29.lean`](Tate_Frey_Conductor_29.lean) | `Δ=16A⁸B⁸(A⁴+B⁴)²`; residual `32` or `928` | Tate’s algorithm, Néron `N_E` |
-| [`Mazur_X0_13_No_Isogeny.lean`](Mazur_X0_13_No_Isogeny.lean) | `|SL₂(𝔽₁₃)|=2184`, `48<2184` | Frey 13-isogeny |
-| [`Ribet_Level_Lowering_29_to_32.lean`](Ribet_Level_Lowering_29_to_32.lean) | `928/29=32` | abstract Ribet |
-| [`Kolyvagin_MW_Rank0_26a1_26b1.lean`](Kolyvagin_MW_Rank0_26a1_26b1.lean) | `L/Ω=1/3`, `1/7` | `Nonempty (Fintype (E(ℚ)))` |
+| [`Tate_Frey_Conductor_29.lean`](Tate_Frey_Conductor_29.lean) | `Tate_Frey_Conductor_29_inhabited`: `Δ`, `928/29=32` | Tate’s algorithm, Néron `N_E` |
+| [`Mazur_X0_13_No_Isogeny.lean`](Mazur_X0_13_No_Isogeny.lean) | `Mazur_X0_13_No_Isogeny_inhabited`: `|SL₂|=2184`, `48<2184`, genus 0, 2 cusps | Frey 13-isogeny |
+| [`Ribet_Level_Lowering_29_to_32.lean`](Ribet_Level_Lowering_29_to_32.lean) | `Ribet_Level_Lowering_29_to_32_inhabited`: `928/29=32` | abstract Ribet / no newforms at 32 |
+| [`Kolyvagin_MW_Rank0_26a1_26b1.lean`](Kolyvagin_MW_Rank0_26a1_26b1.lean) | `Kolyvagin_MW_Rank0_26a1_26b1_inhabited`: `|Sel₂|=1`, `3·7=21`, `L/Ω=1/3` `1/7` | `Nonempty (Fintype (E(ℚ)))` |
 
 `IsRankZero` is Mathlib `Subsingleton` of the Mordell–Weil group
 (the identity only). Torsion of order 3 and 7 refutes it. That
-is **not** a proof of algebraic rank 0.
+is **not** a proof of algebraic rank 0. Mazur does **not** claim
+`X₀(13)(ℚ) = {2 cusps}` (genus 0 ⇒ infinitely many rational points).
 
 ## Closed import graph
 
-The six roots import the B0Search chain. Those modules are
-copied here so the lib builds without a git require of
-foundations and without nesting the vendor:
+The six roots import the B0Search chain. Those modules stay
+here so the lib builds without a git require of foundations
+and without nesting the vendor:
 
 - `BealMatveevBealV25B0Search.lean`
 - `LLLTargetB8.lean`, `LLLTargetB8_C1_lower_bound.lean`
@@ -51,17 +53,21 @@ tree. Provenance: [`SOURCE.md`](SOURCE.md).
 ## Documents
 
 - [`X0_26_SECTION_8994d38.md`](X0_26_SECTION_8994d38.md) — González
-  even model `Y²=x⁶-8x⁵+8x⁴-18x³+8x²-8x+1`, LMFDB `26.42.2.a.1`
-  (modular curve, genus 2) ≠ elliptic `26.a1`/`26.a2`.
+  even model `Y²=x⁶-8x⁵+8x⁴-18x³+8x²-8x+1`, LMFDB `26.42.2.a.1`.
+- [`docs/tate-v29/`](docs/tate-v29/), [`docs/mazur-x0-13/`](docs/mazur-x0-13/),
+  [`docs/ribet-928-32/`](docs/ribet-928-32/), [`docs/kolyvagin-fintype/`](docs/kolyvagin-fintype/)
+  — four-slice notes from foundations `51bba93`.
 - [`docs/roadmap_without_wiles/`](docs/roadmap_without_wiles/) —
-  four remaining `def Prop` gaps; no Wiles.
+  remaining algebraic `def Prop` gaps; no Wiles.
+- [`certs/`](certs/), [`sagemath/`](sagemath/), [`scripts/`](scripts/) —
+  PARI four-cusp JSON, Sage `certified_mwrank` display `0`, PARI `ellrank [0,0]`.
 
 Cremona **26a1** = LMFDB **26.a2** `[1,0,1,-5,-8]` `Δ=-17576`
 torsion `ℤ/3ℤ`. Cremona **26b1** = LMFDB **26.b2** `[1,-1,1,-3,3]`
 `Δ=-1664` torsion `ℤ/7ℤ`.
 
-Working repo for the last four `def Prop`s:
-foundations `43735b3`. Branches `tate-v29`, `mazur-x0-13`,
-`ribet-928-32`, `kolyvagin-fintype` are not created.
+Foundations branches `tate-v29`, `mazur-x0-13`, `ribet-928-32`,
+`kolyvagin-fintype`, `phase-darmon-merel-4413` and tag
+`v0.27-mcom-four-props-inhabited` stay live. They are not deleted.
 
 Concept DOI: [10.5281/zenodo.22379293](https://doi.org/10.5281/zenodo.22379293).
