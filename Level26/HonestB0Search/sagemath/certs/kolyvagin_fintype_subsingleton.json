@@ -1,0 +1,36 @@
+{
+  "version": "kolyvagin-fintype-subsingleton-v28",
+  "parent": "6e88d94",
+  "phase": "51bba93",
+  "concept_doi": "10.5281/zenodo.22379293",
+  "Sel2_card_26a1": 1,
+  "Sel2_card_26b1": 1,
+  "torsion_3_mul_7": 21,
+  "L_over_Omega_26a1": [1, 3],
+  "L_over_Omega_26b1": [1, 7],
+  "IsRankZero_is_Subsingleton": true,
+  "IsRankZero_on_26a1": false,
+  "IsRankZero_on_26b1": false,
+  "curves": [
+    {
+      "label": "26a1",
+      "ainvs": [1, 0, 1, -5, -8],
+      "discriminant": -17576,
+      "conductor": 26,
+      "torsion_order": 3,
+      "sage_rank": 0,
+      "note": "Sage E.rank() / torsion_order(); not Mathlib MW / Fintype."
+    },
+    {
+      "label": "26b1",
+      "ainvs": [1, -1, 1, -3, 3],
+      "discriminant": -1664,
+      "conductor": 26,
+      "torsion_order": 7,
+      "sage_rank": 0,
+      "note": "Sage E.rank() / torsion_order(); not Mathlib MW / Fintype."
+    }
+  ],
+  "sage_ran": false,
+  "honesty": "Nonempty(Fintype alpha) -> Fintype alpha is a typeclass upgrade (Fintype.ofFinite / choice). It does not prove E(Q) is finite. IsRankZero := Subsingleton is false on 26a1/26b1 (torsion 3 and 7). Sage E.rank() is not Kato/Kolyvagin. MW_rank_zero_fintype stays def Prop."
+}
