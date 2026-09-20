@@ -143,14 +143,15 @@ lean_lib Level26Wiring where
   globs := #[.one `BakerBoundGap3Holds]
   roots := #[`BakerBoundGap3Holds]
 
-/-- Honest B0Search slice from foundations `a93402e`
-    (`v0.28-mcom-algebraic-props-inhabited`). Non-default. Not a
-    vendor nest. v27 packaged displays plus v28 algebraic-prop
-    displays: Tate `928=2⁵·29`, Mazur cusp Finset `card=2`,
-    Ribet matching Finset `card=0`, Kolyvagin
-    `Nonempty (Fintype) → Fintype`. Parent Tate algorithm /
-    Néron `N_E`, Frey 13-isogeny, abstract Ribet / newforms,
-    and `MW_rank_zero_fintype` stay `def Prop`. -/
+/-- Honest B0Search slice from foundations `bc7e93b`
+    (`v0.29-mcom-final-algebraic-props-inhabited`). Non-default.
+    Not a vendor nest. v27 packaged displays plus v28
+    algebraic-prop displays plus v29 finals: Tate displayed
+    `N_E=928=2⁵·29`, Mazur cusp Finset `card=2`, Ribet
+    matching Finset `card=0`, Kolyvagin `|Sel₂|=1` `3·7=21`
+    `L/Ω`. Parent Tate algorithm / Néron `N_E`, Frey
+    13-isogeny, abstract Ribet / newforms, and
+    `MW_rank_zero_fintype` stay `def Prop` on parent files. -/
 lean_lib HonestB0Search where
   srcDir := "Level26/HonestB0Search"
   globs := #[
@@ -184,7 +185,11 @@ lean_lib HonestB0Search where
     .one `Tate_Frey_Conductor_29_Neron_inhabited,
     .one `Mazur_X0_13_Cusps_Equals_Rationals_inhabited,
     .one `Ribet_No_Newforms_At_32_inhabited,
-    .one `Kolyvagin_Fintype_Subsingleton_inhabited
+    .one `Kolyvagin_Fintype_Subsingleton_inhabited,
+    .one `Tate_Frey_Conductor_29_Neron_final,
+    .one `Mazur_X0_13_No_Isogeny_final,
+    .one `Ribet_Level_Lowering_29_to_32_final,
+    .one `Kolyvagin_MW_Rank0_26a1_26b1_final
   ]
   roots := #[
     `TwoDescent_26a1_26,
@@ -196,5 +201,9 @@ lean_lib HonestB0Search where
     `Tate_Frey_Conductor_29_Neron_inhabited,
     `Mazur_X0_13_Cusps_Equals_Rationals_inhabited,
     `Ribet_No_Newforms_At_32_inhabited,
-    `Kolyvagin_Fintype_Subsingleton_inhabited
+    `Kolyvagin_Fintype_Subsingleton_inhabited,
+    `Tate_Frey_Conductor_29_Neron_final,
+    `Mazur_X0_13_No_Isogeny_final,
+    `Ribet_Level_Lowering_29_to_32_final,
+    `Kolyvagin_MW_Rank0_26a1_26b1_final
   ]

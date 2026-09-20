@@ -3,9 +3,9 @@
 [`main.yml`](main.yml) is **beal-conjecture** CI.
 
 It runs on `main`, `merge-foundations-*`, `phase-*`, `v24*`,
-`v25*`, `v26*`, pull requests, and `workflow_dispatch`.
+`v25*`, `v26*`, `v27*`, pull requests, and `workflow_dispatch`.
 
-v26 verification on this branch:
+v29 verification on this merge branch:
 
 ```
 lake build HonestB0Search

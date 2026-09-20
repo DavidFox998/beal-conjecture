@@ -1,13 +1,13 @@
-# Honest B0Search slice — v28 algebraic props inhabited
+# Honest B0Search slice — v29 final algebraic props inhabited
 
 Referee map for `Level26/HonestB0Search/` on
-`merge-foundations-v28-algebraic-props-for-beal`.
+`merge-foundations-v29-final-algebraic-props-for-beal`.
 
 This directory is the **honest slice** ported from
 `DavidFox998/beal-level-26-foundations`
-`v0.28-mcom-algebraic-props-inhabited` at `a93402e` (four
-`--no-ff` merges from `51bba93`). It is **not** the vendor
-kernel [`../BealLevel26Foundations/`](../BealLevel26Foundations/).
+`v0.29-mcom-final-algebraic-props-inhabited` at `bc7e93b`
+(four `--no-ff` merges from `a93402e`). It is **not** the
+vendor kernel [`../BealLevel26Foundations/`](../BealLevel26Foundations/).
 There is no nested `Level26/`.
 
 `lake build HonestB0Search` is the slice target. Public roots:
@@ -24,6 +24,10 @@ There is no nested `Level26/`.
 | [`Mazur_X0_13_Cusps_Equals_Rationals_inhabited.lean`](Mazur_X0_13_Cusps_Equals_Rationals_inhabited.lean) | genus 0, cusp Finset `{0,1}` `card=2` | `{2 cusps}=X₀(13)(ℚ)` (literature-false) |
 | [`Ribet_No_Newforms_At_32_inhabited.lean`](Ribet_No_Newforms_At_32_inhabited.lean) | `928/29=32`, Sturm `8`, matching Finset `card=0` | Sage `new_subspace dim=0` (LMFDB new dim 1) |
 | [`Kolyvagin_Fintype_Subsingleton_inhabited.lean`](Kolyvagin_Fintype_Subsingleton_inhabited.lean) | `Nonempty (Fintype) → Fintype`, `|Sel₂|=1`, `¬IsRankZero` | `MW_rank_zero_fintype` |
+| [`Tate_Frey_Conductor_29_Neron_final.lean`](Tate_Frey_Conductor_29_Neron_final.lean) | parent names as theorems; displayed `N_E=928` | parent Tate / Néron `def Prop` |
+| [`Mazur_X0_13_No_Isogeny_final.lean`](Mazur_X0_13_No_Isogeny_final.lean) | parent names as theorems; `|SL₂|=2184` | parent Frey 13-isogeny `def Prop` |
+| [`Ribet_Level_Lowering_29_to_32_final.lean`](Ribet_Level_Lowering_29_to_32_final.lean) | parent names as theorems; `928/29=32` | parent abstract Ribet `def Prop` |
+| [`Kolyvagin_MW_Rank0_26a1_26b1_final.lean`](Kolyvagin_MW_Rank0_26a1_26b1_final.lean) | parent names as theorems; `|Sel₂|=1`, `3·7=21` | parent `MW_rank_zero_fintype` `def Prop` |
 
 `IsRankZero` is Mathlib `Subsingleton` of the Mordell–Weil group
 (the identity only). Torsion of order 3 and 7 refutes it. That
@@ -58,6 +62,10 @@ tree. Provenance: [`SOURCE.md`](SOURCE.md).
 
 - [`X0_26_SECTION_8994d38.md`](X0_26_SECTION_8994d38.md) — González
   even model `Y²=x⁶-8x⁵+8x⁴-18x³+8x²-8x+1`, LMFDB `26.42.2.a.1`.
+- [`docs/tate-neron-v29/`](docs/tate-neron-v29/), [`docs/mazur-cusps-v29/`](docs/mazur-cusps-v29/),
+  [`docs/ribet-no-newforms-v29/`](docs/ribet-no-newforms-v29/),
+  [`docs/kolyvagin-rank0-v29/`](docs/kolyvagin-rank0-v29/)
+  — v29 final algebraic-prop notes from foundations `bc7e93b`.
 - [`docs/tate-neron-v28/`](docs/tate-neron-v28/), [`docs/mazur-cusps-v28/`](docs/mazur-cusps-v28/),
   [`docs/ribet-no-newforms-v28/`](docs/ribet-no-newforms-v28/),
   [`docs/kolyvagin-fintype-subsingleton-v28/`](docs/kolyvagin-fintype-subsingleton-v28/)
@@ -69,7 +77,7 @@ tree. Provenance: [`SOURCE.md`](SOURCE.md).
   remaining algebraic `def Prop` gaps; no Wiles.
 - [`certs/`](certs/), [`sagemath/`](sagemath/), [`scripts/`](scripts/) —
   PARI four-cusp JSON, Sage `certified_mwrank` display `0`, PARI `ellrank [0,0]`,
-  plus v28 Tate / Ribet / Kolyvagin Sage pins.
+  plus v28/v29 Tate / Ribet / Kolyvagin Sage pins.
 
 Cremona **26a1** = LMFDB **26.a2** `[1,0,1,-5,-8]` `Δ=-17576`
 torsion `ℤ/3ℤ`. Cremona **26b1** = LMFDB **26.b2** `[1,-1,1,-3,3]`
@@ -78,7 +86,11 @@ torsion `ℤ/3ℤ`. Cremona **26b1** = LMFDB **26.b2** `[1,-1,1,-3,3]`
 Foundations branches `tate-v29`, `mazur-x0-13`, `ribet-928-32`,
 `kolyvagin-fintype`, `tate-neron-v28`, `mazur-cusps-v28`,
 `ribet-no-newforms-v28`, `kolyvagin-fintype-subsingleton-v28`,
+`tate-neron-final-v29`, `mazur-no-isogeny-final-v29`,
+`ribet-928-to-32-final-v29`, `kolyvagin-rank0-final-v29`,
 `phase-darmon-merel-4413` and tags `v0.27-mcom-four-props-inhabited`,
-`v0.28-mcom-algebraic-props-inhabited` stay live. They are not deleted.
+`v0.28-mcom-algebraic-props-inhabited`,
+`v0.29-mcom-final-algebraic-props-inhabited` stay live. They
+are not deleted.
 
 Concept DOI: [10.5281/zenodo.22379293](https://doi.org/10.5281/zenodo.22379293).

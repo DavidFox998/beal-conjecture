@@ -10,6 +10,8 @@ Authors: David Fox
   import `Beal.Matveev.MatveevThm14General` or
   `BealTrueV25`. Do **not** add a Ribet axiom.
 -/
+import Mathlib.Data.Nat.Prime.Basic
+import Mathlib.Data.Finset.Basic
 import Ribet_Level_Lowering_29_to_32
 import Level32Table
 import LLLTargetB8_C1_lower_bound
@@ -49,6 +51,7 @@ set_option linter.dupNamespace false
 
 namespace BealMatveevBeal.Ribet_No_Newforms_At_32_inhabited
 
+open Nat Finset Classical
 open BealMatveevBeal.BealMatveevBealV25B0Search
 open BealMatveevBeal.Ribet_Level_Lowering_29_to_32
 open BealMatveevBeal.Level32Table

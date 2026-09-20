@@ -11,6 +11,8 @@ Authors: David Fox
   `BealTrueV25`. Do **not** add a Kolyvagin axiom.
   Do **not** overwrite `BSD_MordellWeil.lean`.
 -/
+import Mathlib.Data.Nat.Prime.Basic
+import Mathlib.Data.Finset.Basic
 import Kolyvagin_MW_Rank0_26a1_26b1
 import TwoDescent_26a1_26
 import BSD_MordellWeil
@@ -53,6 +55,7 @@ set_option linter.dupNamespace false
 
 namespace BealMatveevBeal.Kolyvagin_Fintype_Subsingleton_inhabited
 
+open Nat Finset Classical
 open BealMatveevBeal.BealMatveevBealV25B0Search
 open BealMatveevBeal.Kolyvagin_MW_Rank0_26a1_26b1
 open BealMatveevBeal.TwoDescent_26a1_26
