@@ -11,6 +11,8 @@ Authors: David Fox
   **not** import `Beal.Matveev.MatveevThm14General` or
   `BealTrueV25`. Do **not** add a Tate / Néron axiom.
 -/
+import Mathlib.Data.Nat.Prime.Basic
+import Mathlib.Data.Finset.Basic
 import Tate_Frey_Conductor_29
 import Level928Table
 import Inertia29Unramified
@@ -57,6 +59,7 @@ No `def Prop`. No `sorry`. No new axiom. No Wiles.
 
 namespace BealMatveevBeal.Tate_Frey_Conductor_29_Neron_inhabited
 
+open Nat Finset Classical
 open BealMatveevBeal.BealMatveevBealV25B0Search
 open BealMatveevBeal.DarmonMerelFrey4413
 open BealMatveevBeal.Level928Table
@@ -98,21 +101,24 @@ theorem freyWeierstrass_c₆ (A B : ℕ) :
     WeierstrassCurve.b₆]
   ring
 
+theorem frey_c4_1_1 : frey_c4 1 1 = 48 := by
+  unfold frey_c4 frey_A4 frey_B4
+  decide
+
 theorem freyWeierstrass_c₄_1_1 :
     (freyWeierstrass 1 1).c₄ = 48 := by
-  rw [freyWeierstrass_c₄]
-  native_decide
+  rw [freyWeierstrass_c₄, frey_c4_1_1]
 
 theorem freyWeierstrass_c₆_1_1 :
     (freyWeierstrass 1 1).c₆ = 0 := by
   rw [freyWeierstrass_c₆]
-  native_decide
+  unfold frey_c6 frey_A4 frey_B4
+  decide
 
-theorem frey_c4_1_1 : frey_c4 1 1 = 48 := by
-  native_decide
-
-theorem v29_c4_1_1 : padicValInt 29 (frey_c4 1 1) = 0 :=
-  v29_c4_eq_0 (by decide : ¬ 29 ∣ 1) (by decide : ¬ 29 ∣ 1)
+theorem v29_c4_1_1 : padicValInt 29 (frey_c4 1 1) = 0 := by
+  rw [frey_c4_1_1]
+  haveI : Fact (Nat.Prime 29) := ⟨by decide⟩
+  exact padicValInt.eq_zero_of_not_dvd (by decide : ¬ (29 : ℤ) ∣ 48)
 
 /-! ## Odd fourth powers and `v₂(Δ) = 6` (`I₀*` valuation) -/
 
@@ -250,11 +256,37 @@ theorem v29_Delta_29_1 : padicValNat 29 (freyDiscNat 29 1) = 8 := by
     padicValNat.mul h29n (mul_ne_zero h1n hsqn),
     padicValNat.mul h1n hsqn, h16, h29, h1, hsq]
 
+theorem frey_c4_29_1_eq :
+    frey_c4 29 1 = 16 * ((29 : ℤ) ^ 8 + (29 : ℤ) ^ 4 + 1) := by
+  unfold frey_c4 frey_A4 frey_B4
+  ring
+
+/-- `29 ∤ c₄(29,1)` because `c₄ = 16(29⁸ + 29⁴ + 1)` and
+    `29⁸ + 29⁴ + 1 ≡ 1 (mod 29)`. `decide`, not
+    `native_decide`. -/
+theorem not_twenty_nine_dvd_frey_c4_29_1 :
+    ¬ (29 : ℤ) ∣ frey_c4 29 1 := by
+  rw [frey_c4_29_1_eq]
+  intro h
+  have h16 : ¬ (29 : ℤ) ∣ (16 : ℤ) := by decide
+  have hP : Prime (29 : ℤ) :=
+    Nat.prime_iff_prime_int.mp (by decide : Nat.Prime 29)
+  have hrest : (29 : ℤ) ∣ ((29 : ℤ) ^ 8 + (29 : ℤ) ^ 4 + 1) :=
+    (hP.dvd_or_dvd h).resolve_left h16
+  have h8 : (29 : ℤ) ∣ (29 : ℤ) ^ 8 :=
+    dvd_pow_self _ (by decide : 8 ≠ 0)
+  have h4 : (29 : ℤ) ∣ (29 : ℤ) ^ 4 :=
+    dvd_pow_self _ (by decide : 4 ≠ 0)
+  have h84 : (29 : ℤ) ∣ ((29 : ℤ) ^ 8 + (29 : ℤ) ^ 4) :=
+    dvd_add h8 h4
+  have hone : (29 : ℤ) ∣ (1 : ℤ) :=
+    (Int.dvd_add_right h84).mp (by
+      simpa [add_assoc] using hrest)
+  exact (by decide : ¬ (29 : ℤ) ∣ (1 : ℤ)) hone
+
 theorem v29_c4_29_1 : padicValInt 29 (frey_c4 29 1) = 0 := by
   haveI : Fact (Nat.Prime 29) := ⟨by decide⟩
-  have h : ¬ (29 : ℤ) ∣ frey_c4 29 1 := by
-    native_decide
-  exact padicValInt.eq_zero_of_not_dvd h
+  exact padicValInt.eq_zero_of_not_dvd not_twenty_nine_dvd_frey_c4_29_1
 
 /-! ## Packaged Tate / Néron display (not a Mathlib Néron model) -/
 

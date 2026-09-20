@@ -10,6 +10,8 @@ Authors: David Fox
   import `Beal.Matveev.MatveevThm14General` or
   `BealTrueV25`. Do **not** add a Mazur axiom.
 -/
+import Mathlib.Data.Nat.Prime.Basic
+import Mathlib.Data.Finset.Basic
 import Mazur_X0_13_No_Isogeny
 import LLLTargetB8_C1_lower_bound
 
@@ -46,6 +48,7 @@ set_option linter.dupNamespace false
 
 namespace BealMatveevBeal.Mazur_X0_13_Cusps_Equals_Rationals_inhabited
 
+open Nat Finset Classical
 open BealMatveevBeal.BealMatveevBealV25B0Search
 open BealMatveevBeal.Mazur_X0_13_No_Isogeny
 open BealMatveevBeal.LLLTargetB8
