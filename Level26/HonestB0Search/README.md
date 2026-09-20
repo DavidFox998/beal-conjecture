@@ -1,12 +1,15 @@
-# Honest B0Search slice — v29 final algebraic props inhabited
+# Honest B0Search slice — v30.0.0-level-26-structural-verification
+
+**v30.0.0-level-26-structural-verification — Tate 928=2⁵·29 Neron I0* I8 c4 Δ v2=6 v29=8 Mazur 2184 48<2184 13=2²+3² 288/48=6 card2 genus0 infinite vs2 Ribet 928/29=32 ∅ card0 full1 new1 LMFDB 32a1 Kolyvagin |Sel2|=1 3·7=21 L/Ω=1/3 1/7 rank0 26a1 26b1**
+
 
 Referee map for `Level26/HonestB0Search/` on
-`merge-foundations-v29-final-algebraic-props-for-beal`.
+`merge-foundations-v30-structural-verification`.
 
 This directory is the **honest slice** ported from
 `DavidFox998/beal-level-26-foundations`
-`v0.29-mcom-final-algebraic-props-inhabited` at `bc7e93b`
-(four `--no-ff` merges from `a93402e`). It is **not** the
+`v0.30-mcom-structural-verification` at `2b60ccd`
+(chore `9160a6a` from `bc7e93b`). It is **not** the
 vendor kernel [`../BealLevel26Foundations/`](../BealLevel26Foundations/).
 There is no nested `Level26/`.
 
@@ -62,6 +65,10 @@ tree. Provenance: [`SOURCE.md`](SOURCE.md).
 
 - [`X0_26_SECTION_8994d38.md`](X0_26_SECTION_8994d38.md) — González
   even model `Y²=x⁶-8x⁵+8x⁴-18x³+8x²-8x+1`, LMFDB `26.42.2.a.1`.
+- [`docs/tate-neron-v30/`](docs/tate-neron-v30/), [`docs/mazur-cusps-v30/`](docs/mazur-cusps-v30/),
+  [`docs/ribet-no-newforms-v30/`](docs/ribet-no-newforms-v30/),
+  [`docs/kolyvagin-rank0-v30/`](docs/kolyvagin-rank0-v30/)
+  — v30 structural-verification notes from foundations `2b60ccd`.
 - [`docs/tate-neron-v29/`](docs/tate-neron-v29/), [`docs/mazur-cusps-v29/`](docs/mazur-cusps-v29/),
   [`docs/ribet-no-newforms-v29/`](docs/ribet-no-newforms-v29/),
   [`docs/kolyvagin-rank0-v29/`](docs/kolyvagin-rank0-v29/)
@@ -90,7 +97,8 @@ Foundations branches `tate-v29`, `mazur-x0-13`, `ribet-928-32`,
 `ribet-928-to-32-final-v29`, `kolyvagin-rank0-final-v29`,
 `phase-darmon-merel-4413` and tags `v0.27-mcom-four-props-inhabited`,
 `v0.28-mcom-algebraic-props-inhabited`,
-`v0.29-mcom-final-algebraic-props-inhabited` stay live. They
+`v0.29-mcom-final-algebraic-props-inhabited`,
+`v0.30-mcom-structural-verification` stay live. They
 are not deleted.
 
 Concept DOI: [10.5281/zenodo.22379293](https://doi.org/10.5281/zenodo.22379293).

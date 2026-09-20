@@ -143,10 +143,10 @@ lean_lib Level26Wiring where
   globs := #[.one `BakerBoundGap3Holds]
   roots := #[`BakerBoundGap3Holds]
 
-/-- Honest B0Search slice from foundations `bc7e93b`
-    (`v0.29-mcom-final-algebraic-props-inhabited`). Non-default.
-    Not a vendor nest. v27 packaged displays plus v28
-    algebraic-prop displays plus v29 finals: Tate displayed
+/-- Honest B0Search slice from foundations `2b60ccd`
+    (`v0.30-mcom-structural-verification`; Lean from `bc7e93b`).
+    Non-default. Not a vendor nest. v27 packaged displays plus v28
+    algebraic-prop displays plus v29 finals (v30 docs): Tate displayed
     `N_E=928=2⁵·29`, Mazur cusp Finset `card=2`, Ribet
     matching Finset `card=0`, Kolyvagin `|Sel₂|=1` `3·7=21`
     `L/Ω`. Parent Tate algorithm / Néron `N_E`, Frey
