@@ -1,13 +1,16 @@
-# Formal Verification of the Level 26 Foundations for Signature (4,4,13): Final Algebraic Props Inhabited
+# Formal Verification of the Level 26 Foundations for Signature (4,4,13): Certified Mordell-Weil Rank Zero for X₀(26), Descent, Torsion, Conductor, Isogeny, Level Lowering — v30.0.0-level-26-structural-verification
+
+**v30.0.0-level-26-structural-verification — Tate 928=2⁵·29 Neron I0* I8 c4 Δ v2=6 v29=8 Mazur 2184 48<2184 13=2²+3² 288/48=6 card2 genus0 infinite vs2 Ribet 928/29=32 ∅ card0 full1 new1 LMFDB 32a1 Kolyvagin |Sel2|=1 3·7=21 L/Ω=1/3 1/7 rank0 26a1 26b1**
+
 
 [![Concept DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22379293.svg)](https://doi.org/10.5281/zenodo.22379293)
 
 This directory is the Level 26 chamber of `beal-conjecture` on
-`merge-foundations-v29-final-algebraic-props-for-beal`. It holds two
+`merge-foundations-v30-structural-verification`. It holds two
 sibling trees and one wiring file. It does **not** nest
 `Level26/BealLevel26Foundations/Level26`.
 
-> **v29.0.0 — Formal Verification of the Level 26 Foundations for Signature (4,4,13): Certified Mordell-Weil Rank Zero for X₀(26), Descent, Torsion, Conductor, Isogeny, Level Lowering — Final Algebraic Props Inhabited**
+> **v30.0.0-level-26-structural-verification — Formal Verification of the Level 26 Foundations for Signature (4,4,13): Certified Mordell-Weil Rank Zero for X₀(26), Descent, Torsion, Conductor, Isogeny, Level Lowering — v30.0.0-level-26-structural-verification**
 
 The title is deposit metadata. Algebraic Mordell–Weil rank 0 as
 `Nonempty (Fintype (E(ℚ)))` remains a `def Prop` on the honest
@@ -18,11 +21,11 @@ slice. What is inhabited is recorded below.
 | Path | Role |
 |---|---|
 | [`BealLevel26Foundations/`](BealLevel26Foundations/) | Vendor pin `db7a556` / `fea0c393`. 83-module Matveev / Baker / Bugeaud kernel. Unchanged. No nested `Level26/`. |
-| [`HonestB0Search/`](HonestB0Search/) | Honest slice from foundations `bc7e93b` / `v0.29-mcom-final-algebraic-props-inhabited`. Six v27 roots + four v28 algebraic-prop modules + four v29 finals. |
+| [`HonestB0Search/`](HonestB0Search/) | Honest slice from foundations `2b60ccd` / `v0.30-mcom-structural-verification` (four v29 finals + v30 docs). Six v27 roots + four v28 algebraic-prop modules + four v29 finals. |
 | [`BakerBoundGap3Holds.lean`](BakerBoundGap3Holds.lean) | Gap-3 wiring: `C1_floor=143186215390`, `B0=10^6`. `hGen` / `hLLL` stay `def Prop`. |
 | [`mcom-draft.tex`](mcom-draft.tex) | Draft notes for the gap-3 Baker `B0` wiring. |
 | [`beal_level26_v24_4_0.bib`](beal_level26_v24_4_0.bib) | BibTeX for the v24.4.0 vendor pin. |
-| [`CITATION.cff`](CITATION.cff) | Preferred citation: concept DOI `10.5281/zenodo.22379293`, version `v29.0.0-level-26-final-algebraic-props-inhabited`. |
+| [`CITATION.cff`](CITATION.cff) | Preferred citation: concept DOI `10.5281/zenodo.22379293`, version `v30.0.0-level-26-structural-verification`. |
 
 Two lakefiles are intentional: the root package `beal_conjecture`
 path-requires `./Level26/BealLevel26Foundations`. The `v1.2.1`
@@ -42,9 +45,9 @@ A bare `lake build Level26` can steal
 `lake build BealMatveevBeal` is a foundations-only target. It is
 not this package.
 
-## Honest slice — six public roots plus v28 algebraic props plus v29 finals
+## Honest slice — six public roots plus v28 algebraic props plus v29 finals (v30 structural verification)
 
-Ported from `DavidFox998/beal-level-26-foundations` at `bc7e93b`.
+Ported from `DavidFox998/beal-level-26-foundations` at `2b60ccd` / `bc7e93b`.
 See [`HonestB0Search/README.md`](HonestB0Search/README.md) and
 [`HonestB0Search/SOURCE.md`](HonestB0Search/SOURCE.md).
 
@@ -84,7 +87,7 @@ v28 branches `tate-neron-v28`, `mazur-cusps-v28`,
 `ribet-no-newforms-v28`, `kolyvagin-fintype-subsingleton-v28`,
 v29 finals `tate-neron-final-v29`, `mazur-no-isogeny-final-v29`,
 `ribet-928-to-32-final-v29`, `kolyvagin-rank0-final-v29`, and
-tags `v0.27` / `v0.28` / `v0.29` remain live.
+tags `v0.27` / `v0.28` / `v0.29` / `v0.30` remain live.
 
 ## Matveev / Bugeaud constants
 

@@ -1,8 +1,8 @@
 cff-version: 1.2.0
-title: "Formal Verification of the Level 26 Foundations for Signature (4,4,13): Certified Mordell-Weil Rank Zero for X0(26), Descent, Torsion, Conductor, Isogeny, Level Lowering — Final Algebraic Props Inhabited"
+title: "Formal Verification of the Level 26 Foundations for Signature (4,4,13): Certified Mordell-Weil Rank Zero for X0(26), Descent, Torsion, Conductor, Isogeny, Level Lowering — v30.0.0-level-26-structural-verification"
 message: >-
   Cite this Level 26 package under concept DOI 10.5281/zenodo.22379293.
-  Software version v29.0.0-level-26-final-algebraic-props-inhabited.
+  Software version v30.0.0-level-26-structural-verification.
   Vendor kernel remains v24.4.0-Beal-44-13-Level-26-v24x-Final-Summary
   (DOI 10.5281/zenodo.22732209 on db7a556).
 type: software
@@ -10,7 +10,7 @@ authors:
   - family-names: Fox
     given-names: David
     affiliation: "Opera Numerorum"
-version: "v29.0.0-level-26-final-algebraic-props-inhabited"
+version: "v30.0.0-level-26-structural-verification"
 doi: "10.5281/zenodo.22379293"
 date-released: 2026-09-20
 license: MIT
@@ -29,10 +29,10 @@ keywords:
   - x0-26
   - number-theory
 abstract: >-
-  beal-conjecture v29 port of foundations
-  v0.29-mcom-final-algebraic-props-inhabited at bc7e93b.
-  Honest slice Level26/HonestB0Search/ includes v29
-  Tate/Mazur/Ribet/Kolyvagin final displays. Parent Tate
+  beal-conjecture v30 port of foundations
+  v0.30-mcom-structural-verification at 2b60ccd (Lean from bc7e93b).
+  Honest slice Level26/HonestB0Search/ includes v29 Tate/Mazur/Ribet/Kolyvagin finals plus v30
+  structural-verification docs. Parent Tate
   algorithm / Néron, Frey 13-isogeny, abstract Ribet, and
   MW_rank_zero_fintype stay def Prop on parent files. Vendor
   unchanged db7a556/fea0c393. Concept DOI
@@ -43,8 +43,8 @@ preferred-citation:
     - family-names: Fox
       given-names: David
       affiliation: "Opera Numerorum"
-  title: "Formal Verification of the Level 26 Foundations for Signature (4,4,13): Certified Mordell-Weil Rank Zero for X0(26), Descent, Torsion, Conductor, Isogeny, Level Lowering — Final Algebraic Props Inhabited"
-  version: "v29.0.0-level-26-final-algebraic-props-inhabited"
+  title: "Formal Verification of the Level 26 Foundations for Signature (4,4,13): Certified Mordell-Weil Rank Zero for X0(26), Descent, Torsion, Conductor, Isogeny, Level Lowering — v30.0.0-level-26-structural-verification"
+  version: "v30.0.0-level-26-structural-verification"
   year: 2026
   doi: "10.5281/zenodo.22379293"
   url: "https://doi.org/10.5281/zenodo.22379293"
