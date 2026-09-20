@@ -1,13 +1,13 @@
-# Honest B0Search slice — v27 four props inhabited
+# Honest B0Search slice — v28 algebraic props inhabited
 
 Referee map for `Level26/HonestB0Search/` on
-`merge-foundations-v27-four-props-for-beal`.
+`merge-foundations-v28-algebraic-props-for-beal`.
 
 This directory is the **honest slice** ported from
 `DavidFox998/beal-level-26-foundations`
-`v0.27-mcom-four-props-inhabited` at `51bba93` (four `--no-ff`
-merges from `43735b3`). It is **not** the vendor kernel
-[`../BealLevel26Foundations/`](../BealLevel26Foundations/).
+`v0.28-mcom-algebraic-props-inhabited` at `a93402e` (four
+`--no-ff` merges from `51bba93`). It is **not** the vendor
+kernel [`../BealLevel26Foundations/`](../BealLevel26Foundations/).
 There is no nested `Level26/`.
 
 `lake build HonestB0Search` is the slice target. Public roots:
@@ -20,6 +20,10 @@ There is no nested `Level26/`.
 | [`Mazur_X0_13_No_Isogeny.lean`](Mazur_X0_13_No_Isogeny.lean) | `Mazur_X0_13_No_Isogeny_inhabited`: `|SL₂|=2184`, `48<2184`, genus 0, 2 cusps | Frey 13-isogeny |
 | [`Ribet_Level_Lowering_29_to_32.lean`](Ribet_Level_Lowering_29_to_32.lean) | `Ribet_Level_Lowering_29_to_32_inhabited`: `928/29=32` | abstract Ribet / no newforms at 32 |
 | [`Kolyvagin_MW_Rank0_26a1_26b1.lean`](Kolyvagin_MW_Rank0_26a1_26b1.lean) | `Kolyvagin_MW_Rank0_26a1_26b1_inhabited`: `|Sel₂|=1`, `3·7=21`, `L/Ω=1/3` `1/7` | `Nonempty (Fintype (E(ℚ)))` |
+| [`Tate_Frey_Conductor_29_Neron_inhabited.lean`](Tate_Frey_Conductor_29_Neron_inhabited.lean) | `c₄`/`c₆`, `v₂(Δ)=6`, `v₂₉(Δ(29,1))=8`, `928=2⁵·29` | Tate algorithm / Néron `N_E` |
+| [`Mazur_X0_13_Cusps_Equals_Rationals_inhabited.lean`](Mazur_X0_13_Cusps_Equals_Rationals_inhabited.lean) | genus 0, cusp Finset `{0,1}` `card=2` | `{2 cusps}=X₀(13)(ℚ)` (literature-false) |
+| [`Ribet_No_Newforms_At_32_inhabited.lean`](Ribet_No_Newforms_At_32_inhabited.lean) | `928/29=32`, Sturm `8`, matching Finset `card=0` | Sage `new_subspace dim=0` (LMFDB new dim 1) |
+| [`Kolyvagin_Fintype_Subsingleton_inhabited.lean`](Kolyvagin_Fintype_Subsingleton_inhabited.lean) | `Nonempty (Fintype) → Fintype`, `|Sel₂|=1`, `¬IsRankZero` | `MW_rank_zero_fintype` |
 
 `IsRankZero` is Mathlib `Subsingleton` of the Mordell–Weil group
 (the identity only). Torsion of order 3 and 7 refutes it. That
@@ -28,7 +32,7 @@ is **not** a proof of algebraic rank 0. Mazur does **not** claim
 
 ## Closed import graph
 
-The six roots import the B0Search chain. Those modules stay
+The roots import the B0Search chain. Those modules stay
 here so the lib builds without a git require of foundations
 and without nesting the vendor:
 
@@ -54,20 +58,27 @@ tree. Provenance: [`SOURCE.md`](SOURCE.md).
 
 - [`X0_26_SECTION_8994d38.md`](X0_26_SECTION_8994d38.md) — González
   even model `Y²=x⁶-8x⁵+8x⁴-18x³+8x²-8x+1`, LMFDB `26.42.2.a.1`.
+- [`docs/tate-neron-v28/`](docs/tate-neron-v28/), [`docs/mazur-cusps-v28/`](docs/mazur-cusps-v28/),
+  [`docs/ribet-no-newforms-v28/`](docs/ribet-no-newforms-v28/),
+  [`docs/kolyvagin-fintype-subsingleton-v28/`](docs/kolyvagin-fintype-subsingleton-v28/)
+  — v28 algebraic-prop notes from foundations `a93402e`.
 - [`docs/tate-v29/`](docs/tate-v29/), [`docs/mazur-x0-13/`](docs/mazur-x0-13/),
   [`docs/ribet-928-32/`](docs/ribet-928-32/), [`docs/kolyvagin-fintype/`](docs/kolyvagin-fintype/)
-  — four-slice notes from foundations `51bba93`.
+  — v27 four-slice notes from foundations `51bba93`.
 - [`docs/roadmap_without_wiles/`](docs/roadmap_without_wiles/) —
   remaining algebraic `def Prop` gaps; no Wiles.
 - [`certs/`](certs/), [`sagemath/`](sagemath/), [`scripts/`](scripts/) —
-  PARI four-cusp JSON, Sage `certified_mwrank` display `0`, PARI `ellrank [0,0]`.
+  PARI four-cusp JSON, Sage `certified_mwrank` display `0`, PARI `ellrank [0,0]`,
+  plus v28 Tate / Ribet / Kolyvagin Sage pins.
 
 Cremona **26a1** = LMFDB **26.a2** `[1,0,1,-5,-8]` `Δ=-17576`
 torsion `ℤ/3ℤ`. Cremona **26b1** = LMFDB **26.b2** `[1,-1,1,-3,3]`
 `Δ=-1664` torsion `ℤ/7ℤ`.
 
 Foundations branches `tate-v29`, `mazur-x0-13`, `ribet-928-32`,
-`kolyvagin-fintype`, `phase-darmon-merel-4413` and tag
-`v0.27-mcom-four-props-inhabited` stay live. They are not deleted.
+`kolyvagin-fintype`, `tate-neron-v28`, `mazur-cusps-v28`,
+`ribet-no-newforms-v28`, `kolyvagin-fintype-subsingleton-v28`,
+`phase-darmon-merel-4413` and tags `v0.27-mcom-four-props-inhabited`,
+`v0.28-mcom-algebraic-props-inhabited` stay live. They are not deleted.
 
 Concept DOI: [10.5281/zenodo.22379293](https://doi.org/10.5281/zenodo.22379293).

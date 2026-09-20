@@ -1,8 +1,8 @@
 {
-  "title": "Formal Verification of the Level 26 Foundations for Signature (4,4,13): Certified Mordell-Weil Rank Zero for X0(26), Descent, Torsion, Conductor, Isogeny, Level Lowering — Four Props Inhabited",
+  "title": "Formal Verification of the Level 26 Foundations for Signature (4,4,13): Certified Mordell-Weil Rank Zero for X0(26), Descent, Torsion, Conductor, Isogeny, Level Lowering — Algebraic Props Inhabited",
   "upload_type": "software",
-  "version": "v27.0.0-level-26-four-props-inhabited",
-  "description": "beal-conjecture v27 port of foundations v0.27-mcom-four-props-inhabited at 51bba93 (four --no-ff merges from 43735b3). Honest slice Level26/HonestB0Search/ now includes packaged theorems Tate_Frey_Conductor_29_inhabited (Δ identity, 928/29=32), Mazur_X0_13_No_Isogeny_inhabited (|SL2(F13)|=2184, 48<2184, genus 0, 2 cusps), Ribet_Level_Lowering_29_to_32_inhabited (numeral 928/29=32), Kolyvagin_MW_Rank0_26a1_26b1_inhabited (|Sel2|=1, 3*7=21, L/Ω=1/3 and 1/7, ¬IsRankZero). Algebraic Tate algorithm / Néron N_E, Frey 13-isogeny, abstract Ribet, and Nonempty(Fintype(E(Q))) stay def Prop. Vendor unchanged db7a556/fea0c393, no nested Level26, path-requires ./Level26/BealLevel26Foundations. Matveev Thm1.4 C1=143186215390 B0=10^6 hGen hLLL stay def Prop. Parent v26 5e2906b / badge 5806dad / version DOI 10.5281/zenodo.22832505. Concept DOI 10.5281/zenodo.22379293.",
+  "version": "v28.0.0-level-26-algebraic-props-inhabited",
+  "description": "beal-conjecture v28 port of foundations v0.28-mcom-algebraic-props-inhabited at a93402e (four --no-ff merges from 51bba93). Honest slice Level26/HonestB0Search/ adds Tate_Frey_Conductor_29_Neron_inhabited (c4/c6, v2(Δ)=6 I0*, v29(Δ(29,1))=8, 928=2^5*29), Mazur_X0_13_Cusps_Equals_Rationals_inhabited (genus 0, cusp Finset card=2, |SL2|=2184; {2 cusps}=X0(13)(Q) is literature-false), Ribet_No_Newforms_At_32_inhabited (928/29=32, Sturm 8, matching Finset card=0; LMFDB new dim 1), Kolyvagin_Fintype_Subsingleton_inhabited (Nonempty(Fintype)->Fintype, |Sel2|=1, 3*7=21, L/Ω=1/3 and 1/7, ¬IsRankZero). Parent Tate algorithm / Néron N_E, Frey 13-isogeny, abstract Ribet / newforms, and MW_rank_zero_fintype stay def Prop. Vendor unchanged db7a556/fea0c393, no nested Level26, path-requires ./Level26/BealLevel26Foundations. Matveev Thm1.4 C1=143186215390 B0=10^6 hGen hLLL stay def Prop. Parent v27 4b4d6f8 / badge 6ccafbf / version DOI 10.5281/zenodo.22842767. Concept DOI 10.5281/zenodo.22379293.",
   "creators": [
     {
       "name": "Fox, David",
@@ -30,6 +30,12 @@
     {
       "identifier": "10.5281/zenodo.22379293",
       "relation": "isVersionOf",
+      "resource_type": "software",
+      "scheme": "doi"
+    },
+    {
+      "identifier": "10.5281/zenodo.22842767",
+      "relation": "isNewVersionOf",
       "resource_type": "software",
       "scheme": "doi"
     },

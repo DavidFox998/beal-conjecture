@@ -1,0 +1,22 @@
+{
+  "version": "ribet-no-newforms-v28",
+  "parent": "b61bec2",
+  "phase": "51bba93",
+  "concept_doi": "10.5281/zenodo.22379293",
+  "nine_twenty_eight_div_twenty_nine": 32,
+  "thirty_two_mul_twenty_nine": 928,
+  "displayed_old_level": 16,
+  "displayed_index_Gamma0_32": 48,
+  "sturm_bound_wt2_level32": 8,
+  "displayed_frey_matching_newform_count": 0,
+  "lmfdb_S2_Gamma0_32_dim": 1,
+  "lmfdb_newform": "32a1",
+  "sage": {
+    "cuspforms_32_2_dimension": 1,
+    "cuspforms_32_2_new_subspace_dimension": 1,
+    "cuspforms_16_2_dimension": 0,
+    "sturm_bound_32_wt2": 8
+  },
+  "sage_ran": false,
+  "honesty": "CuspForms(32,2).new_subspace().dimension() is Sage / LMFDB data (expected 1, newform 32a1). The paste dimension()=0 is not this cert. Lean inhabits matching Finset card 0, Sturm 8, old level 16, and the numeral 928/29=32. Not Mathlib ModularForm dimension, not Kraus emptiness, not abstract Ribet."
+}

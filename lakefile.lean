@@ -143,12 +143,14 @@ lean_lib Level26Wiring where
   globs := #[.one `BakerBoundGap3Holds]
   roots := #[`BakerBoundGap3Holds]
 
-/-- Honest B0Search slice from foundations `51bba93`
-    (`v0.27-mcom-four-props-inhabited`). Non-default. Not a
-    vendor nest. Packaged inhabited displays: Tate Δ / 928/29=32,
-    Mazur 2184, Ribet numeral, Kolyvagin |Sel2| / L/Ω.
-    Algebraic Tate algorithm / Néron, Frey 13-isogeny, abstract
-    Ribet, and `Nonempty (Fintype (E(Q)))` stay `def Prop`. -/
+/-- Honest B0Search slice from foundations `a93402e`
+    (`v0.28-mcom-algebraic-props-inhabited`). Non-default. Not a
+    vendor nest. v27 packaged displays plus v28 algebraic-prop
+    displays: Tate `928=2⁵·29`, Mazur cusp Finset `card=2`,
+    Ribet matching Finset `card=0`, Kolyvagin
+    `Nonempty (Fintype) → Fintype`. Parent Tate algorithm /
+    Néron `N_E`, Frey 13-isogeny, abstract Ribet / newforms,
+    and `MW_rank_zero_fintype` stay `def Prop`. -/
 lean_lib HonestB0Search where
   srcDir := "Level26/HonestB0Search"
   globs := #[
@@ -178,7 +180,11 @@ lean_lib HonestB0Search where
     .one `Tate_Frey_Conductor_29,
     .one `Mazur_X0_13_No_Isogeny,
     .one `Ribet_Level_Lowering_29_to_32,
-    .one `Kolyvagin_MW_Rank0_26a1_26b1
+    .one `Kolyvagin_MW_Rank0_26a1_26b1,
+    .one `Tate_Frey_Conductor_29_Neron_inhabited,
+    .one `Mazur_X0_13_Cusps_Equals_Rationals_inhabited,
+    .one `Ribet_No_Newforms_At_32_inhabited,
+    .one `Kolyvagin_Fintype_Subsingleton_inhabited
   ]
   roots := #[
     `TwoDescent_26a1_26,
@@ -186,5 +192,9 @@ lean_lib HonestB0Search where
     `Tate_Frey_Conductor_29,
     `Mazur_X0_13_No_Isogeny,
     `Ribet_Level_Lowering_29_to_32,
-    `Kolyvagin_MW_Rank0_26a1_26b1
+    `Kolyvagin_MW_Rank0_26a1_26b1,
+    `Tate_Frey_Conductor_29_Neron_inhabited,
+    `Mazur_X0_13_Cusps_Equals_Rationals_inhabited,
+    `Ribet_No_Newforms_At_32_inhabited,
+    `Kolyvagin_Fintype_Subsingleton_inhabited
   ]

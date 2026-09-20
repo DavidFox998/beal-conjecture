@@ -1,0 +1,63 @@
+{
+  "version": "tate-neron-v28",
+  "parent": "b3348df",
+  "phase": "51bba93",
+  "concept_doi": "10.5281/zenodo.22379293",
+  "displayed_neron_numeral": 928,
+  "two_pow_five_times_29": 928,
+  "formula": "Delta = 16 A^8 B^8 (A^4+B^4)^2",
+  "v29_on_solution": "v29(Delta) = 26 v29(C) when 29 does not divide AB",
+  "frey": [
+    {
+      "A": 1,
+      "B": 1,
+      "model": "frey",
+      "ainvs": [0, 0, 0, -1, 0],
+      "c4": 48,
+      "c6": 0,
+      "discriminant": 64,
+      "delta_formula": 64,
+      "conductor": 32,
+      "cremona_label": "32a3",
+      "kodaira_at_2": "I0*",
+      "v2_delta": 6,
+      "v29_delta": 0,
+      "v29_c4": 0,
+      "note": "y^2 = x^3 - x. Cremona 32a3. Conductor 32, not 928."
+    },
+    {
+      "A": 29,
+      "B": 1,
+      "model": "frey",
+      "ainvs": [0, -707280, 0, -707281, 0],
+      "c4": 8003953923888,
+      "c6": 22644194148737763840,
+      "discriminant": 4003954900966624098217024,
+      "delta_formula": 4003954900966624098217024,
+      "conductor": 928,
+      "cremona_label": null,
+      "kodaira_at_2": "I0*",
+      "v2_delta": 6,
+      "v29_delta": 8,
+      "v29_c4": 0,
+      "note": "Displayed split 928 = 2^5 * 29. Kodaira I8 at 29 is v29(Delta)=8."
+    }
+  ],
+  "short_non_frey_comparison": [
+    {
+      "A": 1,
+      "B": 1,
+      "model": "short_non_frey",
+      "ainvs": [0, -2, 0, 0, 0],
+      "note": "Not the Frey curve. Do not read this conductor as N_E."
+    },
+    {
+      "A": 29,
+      "B": 1,
+      "model": "short_non_frey",
+      "ainvs": [0, -707282, 0, 0, 0],
+      "note": "Not the Frey curve. Do not read this conductor as N_E."
+    }
+  ],
+  "honesty": "Kodaira symbols and conductor() are Sage output, not Mathlib KodairaType / NeronModel. Lean inhabits the valuations and the numeral 928 = 2^5 * 29. Static JSON pins Lean numerals; re-run sagemath/tate_nero_29.sage when Sage is available."
+}

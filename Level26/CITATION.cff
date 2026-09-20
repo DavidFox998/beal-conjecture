@@ -1,8 +1,8 @@
 cff-version: 1.2.0
-title: "Formal Verification of the Level 26 Foundations for Signature (4,4,13): Certified Mordell-Weil Rank Zero for X0(26), Descent, Torsion, Conductor, Isogeny, Level Lowering — Four Props Inhabited"
+title: "Formal Verification of the Level 26 Foundations for Signature (4,4,13): Certified Mordell-Weil Rank Zero for X0(26), Descent, Torsion, Conductor, Isogeny, Level Lowering — Algebraic Props Inhabited"
 message: >-
   Cite this Level 26 package under concept DOI 10.5281/zenodo.22379293.
-  Software version v27.0.0-level-26-four-props-inhabited.
+  Software version v28.0.0-level-26-algebraic-props-inhabited.
   Vendor kernel remains v24.4.0-Beal-44-13-Level-26-v24x-Final-Summary
   (DOI 10.5281/zenodo.22732209 on db7a556).
 type: software
@@ -10,7 +10,7 @@ authors:
   - family-names: Fox
     given-names: David
     affiliation: "Opera Numerorum"
-version: "v27.0.0-level-26-four-props-inhabited"
+version: "v28.0.0-level-26-algebraic-props-inhabited"
 doi: "10.5281/zenodo.22379293"
 date-released: 2026-09-19
 license: MIT
@@ -29,20 +29,20 @@ keywords:
   - x0-26
   - number-theory
 abstract: >-
-  beal-conjecture v27 port of foundations v0.27-mcom-four-props-inhabited
-  at 51bba93. Honest slice Level26/HonestB0Search/ includes packaged
-  Tate/Mazur/Ribet/Kolyvagin displays. Algebraic Tate algorithm / Néron,
-  Frey 13-isogeny, abstract Ribet, and Nonempty(Fintype(E(Q))) stay
-  def Prop. Vendor unchanged db7a556/fea0c393. Concept DOI
-  10.5281/zenodo.22379293.
+  beal-conjecture v28 port of foundations v0.28-mcom-algebraic-props-inhabited
+  at a93402e. Honest slice Level26/HonestB0Search/ includes v28
+  Tate/Mazur/Ribet/Kolyvagin algebraic-prop displays. Parent Tate
+  algorithm / Néron, Frey 13-isogeny, abstract Ribet, and
+  MW_rank_zero_fintype stay def Prop. Vendor unchanged db7a556/fea0c393.
+  Concept DOI 10.5281/zenodo.22379293.
 preferred-citation:
   type: software
   authors:
     - family-names: Fox
       given-names: David
       affiliation: "Opera Numerorum"
-  title: "Formal Verification of the Level 26 Foundations for Signature (4,4,13): Certified Mordell-Weil Rank Zero for X0(26), Descent, Torsion, Conductor, Isogeny, Level Lowering — Four Props Inhabited"
-  version: "v27.0.0-level-26-four-props-inhabited"
+  title: "Formal Verification of the Level 26 Foundations for Signature (4,4,13): Certified Mordell-Weil Rank Zero for X0(26), Descent, Torsion, Conductor, Isogeny, Level Lowering — Algebraic Props Inhabited"
+  version: "v28.0.0-level-26-algebraic-props-inhabited"
   year: 2026
   doi: "10.5281/zenodo.22379293"
   url: "https://doi.org/10.5281/zenodo.22379293"
@@ -50,7 +50,8 @@ preferred-citation:
   notes: >-
     Preferred citation for Level26/HonestB0Search and the path-required
     vendor Level26/BealLevel26Foundations. Concept DOI
-    10.5281/zenodo.22379293. Prior v26 version DOI
+    10.5281/zenodo.22379293. Prior v27 version DOI
+    10.5281/zenodo.22842767. Prior v26 version DOI
     10.5281/zenodo.22832505. Prior v24.4.0 version DOI
     10.5281/zenodo.22732209 on db7a556. Title is deposit metadata;
     algebraic MW rank 0 as Nonempty (Fintype (E(Q))) remains a def Prop.
