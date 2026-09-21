@@ -1,12 +1,34 @@
 \section{Conclusion}\label{sec:conc}
 
-Level~$26$ structural verification is complete for the four honest
-displays: Tate $928=2^5\cdot 29$ ($I_0^*$, $I_8$), Mazur $2184$ and
-cusp card~$2$ versus genus~$0$, Ribet $928/29=32$ with matching
-Finset $\emptyset$ against LMFDB \texttt{32a1} of dimension~$1$,
-and Kolyvagin $\lvert\Sel_2\rvert=1$, $3\cdot 7=21$,
-$L/\cO=1/3$ and $1/7$ on \texttt{26a1}/\texttt{26b1}. The software
-versions are
+This draft records, honestly, what four Lean~4.12 files named
+after Tate, Mazur, Ribet, and Kolyvagin actually contain for the
+restricted gap-3 family $A^4+B^4=(B+3)^{13}$: numerals and Finset
+cardinalities, not proofs of the classical theorems. Tate:
+$928=2^5\cdot 29$ at $(A,B)=(29,1)$ only ($I_0^*$, $I_8$), not a
+Lean N\'eron conductor for general $(A,B)$. Mazur: $2184$ and cusp
+card~$2$ versus genus~$0$ --- no $13$-isogeny is excluded. Ribet:
+$928/29=32$ with an \emph{asserted}, not derived, matching Finset
+$\emptyset$ against LMFDB \texttt{32a1} of dimension~$1$. Kolyvagin:
+$\lvert\Sel_2\rvert=1$, $3\cdot 7=21$, $L/\cO=1/3$ and $1/7$ on
+\texttt{26a1}/\texttt{26b1}, where the parent
+\texttt{IsRankZero := Subsingleton} is mathematically false on both
+curves. Separately, and more substantively, the repository proves
+\texttt{no\_match\_32a1\_of\_good\_red\_29}
+(Section~\ref{sec:ribet}): a genuine, \texttt{native\_decide}-checked
+mod-$29$ trace mismatch for gap-3 solutions with good reduction at
+$29$, whose hypotheses are not shown to hold anywhere and which is
+not linked in Lean to Ribet's level-lowering step. That lemma, not
+the four asserted displays, is the closest thing in this repository
+to a mathematically meaningful elimination result, and it is
+scoped to a single residue and a single restricted family, not to
+Beal's conjecture or even to the unrestricted signature $(4,4,13)$.
+
+On this basis the draft is not a proof or a partial proof of any
+instance of Beal's conjecture. It is a record of what a specific
+Lean development does and does not establish, offered so that the
+distinction between a displayed numeral and a mathematical theorem
+is not lost in translation between the repository and its
+description. The software versions are
 \texttt{v30.0.0-level-26-structural-verification} on
 \texttt{beal-conjecture} (\texttt{af520d3}, About tip
 \texttt{ea261b9}) and

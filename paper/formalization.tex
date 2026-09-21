@@ -9,8 +9,8 @@ on $\Q$), never \texttt{native\_decide}, so
 \texttt{Lean.ofReduceBool} does not appear.
 
 \paragraph{Pin.}
-Toolchain \texttt{leanprover/lean4:v4.12.0}. Mathlib
-\texttt{809c3fb3b5c8f5d7dace56e200b426187516535a},
+Toolchain \texttt{leanprover/lean4:v4.12.0}. Mathlib commit
+\seqsplit{809c3fb3b5c8f5d7dace56e200b426187516535a},
 \texttt{inputRev v4.12.0}. Foundations Lake manifest prefix
 \texttt{c7dbd578}; conjecture prefix \texttt{83739542}
 (package lists differ; do not run \texttt{lake update}). Vendor
@@ -19,12 +19,31 @@ Toolchain \texttt{leanprover/lean4:v4.12.0}. Mathlib
 \texttt{43735b3}.
 
 \paragraph{Axioms.}
-Allowed axiom lists are $[\mathtt{propext}]$,
+For the four packaged \texttt{\_final} displays of
+Sections~\ref{sec:tate}--\ref{sec:kolyvagin}, allowed axiom lists
+are $[\mathtt{propext}]$,
 $[\mathtt{propext},\mathtt{Quot.sound}]$, and
 $[\mathtt{propext},\mathtt{Classical.choice},\mathtt{Quot.sound}]$.
-There is no \texttt{sorryAx} and no new axiom. Parent files keep
-the algebraic names as \texttt{def Prop}. Display files contain
-no new \texttt{def Prop}.
+There is no \texttt{sorryAx} and no new axiom, and
+\texttt{Lean.ofReduceBool} does not occur, i.e.\ none of the four
+uses \texttt{native\_decide}. Parent files keep the algebraic names
+as \texttt{def Prop}. Display files contain no new \texttt{def Prop}.
+This does \emph{not} extend to every theorem in every file those
+four displays import: Section~\ref{sec:ribet} records one lemma,
+\texttt{no\_match\_32a1\_of\_good\_red\_29} in
+\texttt{Level32Table.lean}, whose axiom list is
+$[\mathtt{propext},\mathtt{Classical.choice},\mathtt{Lean.ofReduceBool},
+\mathtt{Quot.sound}]$ because its proof uses \texttt{native\_decide}
+on a finite residue check. Both were verified on the pinned
+toolchain with
+\texttt{lake build +Level32Table} followed by the file's own
+\texttt{\#print axioms} lines (cache warm, $\sim 1.3$s), and,
+for the companion theorem
+\texttt{no\_sol\_with\_good\_red\_29\_of\_trace\_match}, with a
+one-line standalone \texttt{lake env lean} check
+(\texttt{import Level32Table; \#print axioms
+no\_sol\_with\_good\_red\_29\_of\_trace\_match}), which also
+reports \texttt{Lean.ofReduceBool}.
 
 \paragraph{CI, incremental only.}
 Foundations \texttt{build.yml} is HonestB0Search incremental:

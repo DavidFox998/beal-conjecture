@@ -3,31 +3,95 @@
 The Beal conjecture asserts that if $A^x+B^y=C^z$ with integers
 $A,B,C\neq 0$ and exponents $x,y,z>2$, then $A,B,C$ share a prime
 factor~\cite{mauldin1997beal}. This draft does not prove the
-conjecture. It records a \emph{structural verification} of four
-honest Lean~4.12 displays used in the level-$26$ attack on the
-signature $(4,4,13)$,
+conjecture, does not address the unrestricted signature $(4,4,13)$
+equation
 \[
-  A^4+B^4=C^{13}.
+  A^4+B^4=C^{13},
 \]
-The associated Frey curve is the displayed Weierstrass model
+and does not derive any reduction of that equation. It records a
+\emph{structural verification} of Lean~4.12 material attached to a
+single, deliberately restricted one-parameter family inside that
+signature, together with an honest account of what each Lean name
+does and does not establish.
+
+\subsection*{The gap-3 family: what it is and where it comes from}
+
+Throughout, ``the gap-3 equation'' means
+\begin{equation}\label{eq:gap3}
+  A^4+B^4=(B+3)^{13},
+\end{equation}
+i.e.\ $C:=B+3$. This is \emph{not} a reduction proved from the
+unrestricted equation anywhere in the repositories accompanying
+this draft. It is the name given, inside a much larger and mostly
+uninhabited Lean development (files
+\texttt{BealGap3BakerUpperBound.lean}, \texttt{BealFreyB14.lean},
+\texttt{DarmonMerelFrey4413.lean}, and the
+\texttt{Beal\_4\_13\_13\_Zsigmondy\_13\_Step*} series), to one
+specific test family that the author chose to formalize as a
+vehicle for exercising Tate/Mazur/Ribet/Kolyvagin-style arguments
+in Lean. Four points, requested explicitly by an external
+reviewer, are recorded here rather than left implicit:
+\begin{enumerate}
+\item \emph{Where $C=B+3$ comes from.} It is an adopted
+  normalization, not a derived one. The surrounding Lean files
+  contain a size lemma for the \emph{different} triple $(4,13,13)$
+  showing $C^{13}-B^{13}\ge 26B^{12}$ when $C\ge B+2$
+  (\texttt{Beal\_4\_13\_13\_Size\_C\_ge\_B\_plus\_2.lean}) and an
+  observation that $\gcd(B,B+3)\mid 3$
+  (\texttt{gcd\_B\_Bplus3\_dvd\_three} in
+  \texttt{BealFreyB14.lean}), but neither of these, nor anything
+  else found in the repository, is a theorem that a hypothetical
+  $(4,4,13)$ counterexample must have $C-B=3$. The gap-3 family is
+  a case study, not a WLOG reduction.
+\item \emph{What it covers.} Only the one-parameter slice
+  \eqref{eq:gap3}, for arbitrary $A,B\in\mathbb N$. It says nothing
+  about $C-B\in\{1,2,4,5,\dots\}$ or about solutions, if any, of the
+  unrestricted equation.
+\item \emph{Whether the ``good reduction at $29$'' hypotheses hold
+  in any intended case.} They do not hold automatically; they are
+  hypotheses of the lemma discussed in
+  Section~\ref{sec:ribet}, and no Lean theorem in the repository
+  shows that a hypothetical solution of \eqref{eq:gap3} must
+  satisfy $29\nmid ABC$. The case $29\mid ABC$ is untouched.
+\item \emph{Whether a trace mismatch eliminates the level-$32$
+  newform after level lowering.} It does not, in Lean, because the
+  level-lowering step itself
+  (\texttt{ribet\_lowers\_Frey\_to\_level\_32}) stays an uninhabited
+  \texttt{def Prop}: there is no formal link between the actual
+  Galois representation of the Frey curve and the newform
+  \texttt{32a1} whose trace is being compared.
+\end{enumerate}
+Section~\ref{sec:ribet} returns to this with the specific lemma
+statement, its hypotheses, and its axiom profile.
+
+\subsection*{The strategy, honestly labelled}
+
+The classical strategy this development is modeled on is
+Frey--Serre--Ribet--Mazur~\cite{frey1986,serre1987,ribet1990,mazur1978}:
+compute the conductor of a Frey curve by Tate's
+algorithm~\cite{tate1975}, exclude a rational $13$-isogeny by
+Mazur's theorem on $X_0(13)$, lower the residual level in the
+style of Ribet, and compare the resulting newform space with
+Mordell--Weil data via the Cremona labels \texttt{26a1} and
+\texttt{26b1}~\cite{cremona,lmfdb}. None of those four classical
+theorems is proved, used, or even stated as a hypothesis-free
+implication anywhere in the Lean files discussed below. The
+Frey curve of~\eqref{eq:gap3} is the displayed Weierstrass model
 \begin{equation}\label{eq:frey}
   y^2=x(x-A^4)(x+B^4)
   \qquad\text{i.e.}\qquad
   [0,\,B^4-A^4,\,0,\,-A^4B^4,\,0].
 \end{equation}
 The short model $[0,-(A^4+B^4),0,0,0]$ is a different curve and is
-not used as $E$.
+not used as $E$. Sections~\ref{sec:tate}--\ref{sec:kolyvagin} are
+titled ``displayed data'' for exactly this reason: each records
+what four Lean files, named \emph{after} the classical authors,
+actually contain --- numerals, Finset cardinalities, and one
+typeclass upgrade --- while the corresponding algebraic statements
+of Tate/Mazur/Ribet/Kolyvagin remain uninhabited \texttt{def Prop}
+in the parent files.
 
-The strategy is classical~\cite{frey1986,serre1987,ribet1990,mazur1978}:
-compute the conductor of~\eqref{eq:frey} by Tate's
-algorithm~\cite{tate1975}, exclude a rational $13$-isogeny by Mazur's
-theorem on $X_0(13)$, lower the residual level $928\to 32$ in the
-style of Ribet, and compare the resulting newform space with the
-Mordell--Weil data of $J_0(26)$ via the Cremona labels
-\texttt{26a1} and \texttt{26b1}~\cite{cremona,lmfdb}. Each of those
-four names is inhabited in Lean only as a \emph{display}: numerals,
-Finset cardinalities, and a typeclass upgrade. Parent files keep the
-corresponding algebraic statements as uninhabited \texttt{def Prop}.
+\subsection*{Pins and provenance}
 
 The formal pin is Lean \texttt{v4.12.0}, mathlib commit
 \texttt{809c3fb3b5c8f5d7dace56e200b426187516535a} with
@@ -47,9 +111,14 @@ preprint. There is no arXiv identifier and no arXiv badge.
 
 The four display files live in
 \texttt{Level26/HonestB0Search/} on \texttt{beal-conjecture}
-\texttt{main} at \texttt{ea261b9} (badge parent \texttt{ff546da},
-merge \texttt{af520d3}) and on foundations
-\texttt{phase-darmon-merel-4413} at \texttt{2b60ccd}. At this writing
-the HonestB0Search slices are near identical; \texttt{beal-conjecture}
-is the superset, carrying the historical \texttt{BealMatveevBeal}
-target in addition to the four finals.
+\texttt{main} (release tag
+\texttt{v30.0.0-level-26-structural-verification}, commit
+\texttt{af520d3}) and on foundations
+\texttt{phase-darmon-merel-4413} at \texttt{2b60ccd}. At this
+writing the HonestB0Search slices are near identical;
+\texttt{beal-conjecture} is the superset, carrying the historical
+\texttt{BealMatveevBeal} target in addition to the four finals. Any
+commit hash for \texttt{main} cited elsewhere in this draft for
+purposes other than pinning a specific historical file is only
+accurate as of the revision that introduced it; the release tag
+above is the stable anchor.

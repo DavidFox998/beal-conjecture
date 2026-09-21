@@ -1,55 +1,63 @@
-\section{Mazur --- no rational $13$-isogeny}\label{sec:mazur}
+\section{Displayed data II --- Mazur-style numerals for
+$X_0(13)$}\label{sec:mazur}
 
 The file
 \texttt{Mazur\_X0\_13\_No\_Isogeny\_final.lean}
 (\texttt{2f4e16e}; incremental
 \href{https://github.com/DavidFox998/beal-level-26-foundations/actions/runs/35488699511}{35488699511},
-$252$s) displays the Mazur constants for $X_0(13)$~\cite{mazur1978}.
+$252$s) displays numerals associated with $X_0(13)$~\cite{mazur1978}.
+None of them excludes a rational $13$-isogeny; see the honesty note
+below.
 
 \begin{displaythm}[Mazur numerals]
 \label{disp:mazur}
-\[
-\begin{aligned}
-  \lvert\SL_2(\F_{13})\rvert&=13\cdot 12\cdot 14=2184
-    &&(\texttt{SL2\_F13\_card}),\\
-  48&<2184
-    &&(\texttt{forty\_eight\_lt\_2184}),\\
-  13&=2^2+3^2
-    &&(\texttt{thirteen\_eq\_two\_squares}),\\
-  288/48&=6
-    &&(\texttt{two\_eighty\_eight\_div\_forty\_eight}),\\
-  (\{0,1\}:\mathrm{Finset}\,\mathbb{N}).\mathrm{card}&=2
-    &&(\texttt{displayed\_cusps\_card}).
-\end{aligned}
-\]
+\begin{itemize}[leftmargin=1.6em]
+\item $\lvert\SL_2(\F_{13})\rvert=13\cdot 12\cdot 14=2184$
+  (\texttt{SL2\_F13\_card});
+\item $48<2184$ (\texttt{forty\_eight\_lt\_2184});
+\item $13=2^2+3^2$ (\texttt{thirteen\_eq\_two\_squares});
+\item $288/48=6$ (\texttt{two\_eighty\_eight\_div\_forty\_eight});
+\item $(\{0,1\}:\mathrm{Finset}\,\mathbb{N}).\mathrm{card}=2$
+  (\texttt{displayed\_cusps\_card}).
+\end{itemize}
 The first four identities are axiom-free \texttt{decide} theorems.
 The cusp-card theorem uses $[\mathtt{propext},\mathtt{Quot.sound}]$.
 \end{displaythm}
 
-The parent names \texttt{X0\_13\_Q\_infinite},
-\texttt{frey\_no\_rational\_13\_isogeny},
-\texttt{Serre\_non\_Borel\_mod13}, and
-\texttt{mazur\_no\_Frey\_13\_isogeny} are theorems in this
-namespace. Each re-exports the inhabited conjunction of
-Display~\ref{disp:mazur} with the genus Nat $0$. On the parent
-file \texttt{Mazur\_X0\_13\_No\_Isogeny.lean} those four names stay
-\texttt{def Prop}.
+The parent names
+\texttt{X0\_13\_Q\_infinite},
+\texttt{\seqsplit{frey\_no\_rational\_13\_isogeny}},
+\texttt{\seqsplit{Serre\_non\_Borel\_mod13}},
+and
+\texttt{\seqsplit{mazur\_no\_Frey\_13\_isogeny}}
+are theorems in this namespace. Each re-exports the inhabited conjunction of
+Display~\ref{disp:mazur} with the genus Nat $0$; despite the
+names, none of them states or proves that a rational $13$-isogeny
+is excluded. On the parent file
+\texttt{Mazur\_X0\_13\_No\_Isogeny.lean} those four names stay
+\texttt{def Prop}, and it is that parent Prop, not the theorem in
+this file, that would correspond to an actual exclusion statement.
 
-\begin{honesty}[Genus $0$ versus two cusps]
+\begin{honesty}[Genus $0$ versus two cusps, and no isogeny exclusion]
 $X_0(13)$ has genus $0$, so $X_0(13)(\Q)$ is infinite over $\Q$.
 The pasted equality $\{2\text{ cusps}\}=X_0(13)(\Q)$ is
 literature-false and is \emph{not} a theorem. The honest Lean
 display is finite card~$2$ versus the genus-$0$ note
 \texttt{X0\_13\_genus\_nat $\neq$ X0\_13\_cusp\_count}. The theorem
 named \texttt{X0\_13\_Q\_infinite} packages that conjunction; it is
-not a Mathlib proof that the rational points are infinite.
+not a Mathlib proof that the rational points are infinite, and it
+is not Mazur's isogeny theorem. In particular, the introduction's
+classical strategy paragraph names Mazur's theorem for context only:
+no Lean theorem in this repository excludes a rational $13$-isogeny
+of the Frey curve, and the genus-$0$/infinitude fact recorded here
+is logically unrelated to such an exclusion.
 \end{honesty}
 
 Geometrically, a genus-$0$ curve has trivial Jacobian, so $J_0(13)$
 is a point (rank~$0$, finite). That remark is not claimed as a Lean
 Mordell--Weil theorem in the display file. Mazur's theorem that the
 only rational $13$-isogenies of elliptic curves over $\Q$ arise from
-the cusps remains \texttt{def Prop} on the parent.
+the cusps remains \texttt{def Prop} on the parent, uninhabited.
 
 Axioms: numerals $[\mathtt{propext}]$ or axiom-free;
 package $[\mathtt{propext},\mathtt{Quot.sound}]$;

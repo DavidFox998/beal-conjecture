@@ -1,28 +1,25 @@
-\section{Ribet --- $928\to 32$ level lowering}\label{sec:ribet}
+\section{Displayed data III --- Ribet-style numerals for level
+$32$, and a conditional trace lemma at $29$}\label{sec:ribet}
+
+\subsection*{The packaged display}
 
 The file
 \texttt{Ribet\_Level\_Lowering\_29\_to\_32\_final.lean}
 (\texttt{5631fd1}; incremental
 \href{https://github.com/DavidFox998/beal-level-26-foundations/actions/runs/35489274297}{35489274297},
-$282$s) displays the residual-level arithmetic of
+$282$s) displays the residual-level arithmetic named after
 Ribet~\cite{ribet1990} without inhabiting abstract level lowering.
 
 \begin{displaythm}[Ribet numerals]
 \label{disp:ribet}
-\[
-\begin{aligned}
-  928/29&=32, &
-  32\cdot 29&=928, &
-  \neg\,29\mid 32,\\
-  2^4&=16, &
-  16\mid 32,\\
-  \dim S_2(\Ga_0(32))^{\mathrm{disp}}&=1, &
-  \dim S_2(\Ga_0(16))^{\mathrm{disp}}&=0,\\
-  32\cdot\tfrac{3}{2}&=48, &
-  2\cdot 48/12&=8,\\
-  (\emptyset:\mathrm{Finset}\,\mathbb{N}).\mathrm{card}&=0.
-\end{aligned}
-\]
+\begin{itemize}[leftmargin=1.6em]
+\item $928/29=32$, $\ 32\cdot 29=928$, $\ \neg\,29\mid 32$;
+\item $2^4=16$, $\ 16\mid 32$;
+\item displayed $\dim S_2(\Ga_0(32))=1$, displayed
+  $\dim S_2(\Ga_0(16))=0$;
+\item Sturm pair $32\cdot\tfrac32=48$ and $2\cdot 48/12=8$;
+\item $(\emptyset:\mathrm{Finset}\,\mathbb{N}).\mathrm{card}=0$.
+\end{itemize}
 The displayed full/new dimensions and the Sturm pair are the LMFDB
 pin \texttt{full=1}, \texttt{new=1}, \texttt{level16=0},
 \texttt{sturm=8} for the unique newform \texttt{32a1}~\cite{lmfdb}.
@@ -33,7 +30,10 @@ The parent names \texttt{Ribet\_928\_to\_32},
 \texttt{explicit\_a29\_mod13} are theorems in this namespace. Each
 re-exports \texttt{no\_newforms\_at\_32}: the numerals of
 Display~\ref{disp:ribet} together with
-\texttt{displayed\_frey\_matching\_newforms.card $= 0$}. On the
+\texttt{displayed\_frey\_matching\_newforms.card $= 0$}. That
+Finset is defined by \texttt{:= $\emptyset$}, not computed from the
+Frey curve's traces, so its cardinality theorem is immediate and
+proves nothing about which newform the Frey curve matches. On the
 parent file \texttt{Ribet\_Level\_Lowering\_29\_to\_32.lean} those
 three names stay \texttt{def Prop}. The theorem named
 \texttt{explicit\_a29\_mod13} does not compute $a_{29}$.
@@ -42,15 +42,96 @@ three names stay \texttt{def Prop}. The theorem named
 LMFDB records $\dim S_2(\Ga_0(32))^{\mathrm{new}}=1$, with unique
 newform \texttt{32a1}. The pasted Sage line
 \texttt{CuspForms(32,2).new\_subspace().dimension()=0} is
-\emph{not} a theorem. The honest Lean display is the empty matching
-Finset (card~$0$) versus displayed dimension~$1$. Witnesses:
+\emph{not} a theorem. The honest Lean display is the empty
+\emph{asserted} matching Finset (card~$0$) versus displayed
+dimension~$1$; it is a mismatch of definitions, not a derived
+elimination. Witnesses:
 \texttt{sagemath/ribet\_no\_newforms\_32.sage} and
 \texttt{certs/ribet\_no\_newforms\_32.json} pin
 \texttt{full=1}, \texttt{new=1}, \texttt{level16=0},
-\texttt{sturm=8}.
+\texttt{sturm=8} (\texttt{sage\_ran: false} in the JSON: these are
+recorded, not freshly computed, values).
 \end{honesty}
 
-Axioms: display $[\mathtt{propext},\mathtt{Quot.sound}]$;
-LLL no-go
+Axioms on the packaged display:
+$[\mathtt{propext},\mathtt{Quot.sound}]$.
+LLL no-go persistence:
 $[\mathtt{propext},\mathtt{Classical.choice},\mathtt{Quot.sound}]$.
-No \texttt{Lean.ofReduceBool}, no \texttt{sorryAx}, no new axiom.
+No \texttt{Lean.ofReduceBool}, no \texttt{sorryAx}, no new axiom
+for either.
+
+\subsection*{A separate, genuinely computed lemma:
+\texttt{no\_match\_32a1\_of\_good\_red\_29}}
+
+The file \texttt{Level32Table.lean}, imported by
+\texttt{Ribet\_Level\_Lowering\_29\_to\_32\_final.lean} but not used
+by any of the theorems above, contains a lemma that \emph{is}
+derived rather than asserted:
+\begin{equation}\label{eq:no-match}
+\begin{aligned}
+  &\texttt{no\_match\_32a1\_of\_good\_red\_29}\ \{A\ B:\mathbb N\}\\
+  &\quad (\mathrm{hsol}: A^4+B^4=(B+3)^{13})\ (\mathrm{hA}:29\nmid A)\
+    (\mathrm{hB}:29\nmid B)\ (\mathrm{hC}:29\nmid B+3):\\
+  &\qquad \mathrm{frey\_ap}\ 29\ (A\bmod 29)\ (B\bmod 29)\neq(-10:\mathbb Z).
+\end{aligned}
+\end{equation}
+Here $\mathrm{frey\_ap}\ p\ A\ B$ is the trace $a_p=p-\#E_{A,B}(\F_p)$
+of the naive reduction of~\eqref{eq:frey} mod $p$, computed by
+counting affine points, and $-10$ is \texttt{curve32a1\_ap\_29}, the
+$a_{29}$ coefficient of \texttt{32a1}. The proof reduces
+\eqref{eq:no-match} to a closed instance,
+\texttt{frey\_a29\_ne\_32a1\_fin}: for every pair
+$(A,B)\in(\Z/29\Z)^2$ with $A\neq 0$, $B\neq 0$,
+$A^4+B^4\not\equiv 0\pmod{29}$, and
+$A^4+B^4\equiv(B+3)^{13}\pmod{29}$ --- i.e.\ every residue pair
+consistent with a good-reduction solution of~\eqref{eq:gap3} at
+$29$ --- the trace is $\neq -10$. This is a finite check over the
+$29^2=841$ candidate pairs, proved by \texttt{native\_decide}, not
+\texttt{decide}.
+
+\begin{honesty}[Axiom profile differs from the four named displays]
+Rebuilding \texttt{Level32Table.lean} on the pinned toolchain and
+running \texttt{\#print axioms no\_match\_32a1\_of\_good\_red\_29}
+reports
+\[
+  [\mathtt{propext},\ \mathtt{Classical.choice},\
+    \mathtt{Lean.ofReduceBool},\ \mathtt{Quot.sound}].
+\]
+The presence of \texttt{Lean.ofReduceBool} is exactly the mark of
+\texttt{native\_decide}: this lemma trusts the compiled kernel
+reduction of a finite check over $29^2=841$ residue pairs, unlike
+every named-display theorem in Sections~\ref{sec:tate}--\ref{sec:kolyvagin},
+which are stated above to avoid \texttt{native\_decide} and to have
+no \texttt{Lean.ofReduceBool} in their axiom lists. Both facts are
+true simultaneously: the four packaged \texttt{\_final} displays
+really do avoid \texttt{native\_decide}, and this separate,
+uncited lemma really does use it. Citing
+\texttt{no\_match\_32a1\_of\_good\_red\_29} as part of an
+axiom-clean argument would be inaccurate.
+\end{honesty}
+
+Under its stated hypotheses --- a gap-3 solution with good
+reduction at $29$ on all of $A$, $B$, and $B+3$ --- the lemma is a
+real, mechanically checked mod-$29$ trace mismatch, and the
+assessment in this draft's first version understated it. It does
+not, however, complete an elimination argument for three reasons
+recorded in Section~\ref{sec:intro}: (i) it says nothing about
+$29\mid ABC$; (ii) no Lean theorem shows a hypothetical solution of
+the gap-3 family must have good reduction at $29$, so the hypothesis
+is not known to hold in any case of interest; and (iii) the
+identification of $a_{29}$ of the Frey curve's Galois representation
+with $a_{29}$ of \texttt{32a1} --- which is what a completed
+Ribet/level-lowering argument would supply --- is not derived here;
+\texttt{ribet\_lowers\_Frey\_to\_level\_32} stays an uninhabited
+\texttt{def Prop} (Section~\ref{sec:formal}). The companion theorem
+\texttt{no\_sol\_with\_good\_red\_29\_of\_trace\_match} makes this
+last gap explicit: it takes the trace-match hypothesis that Ribet
+would need to supply as an additional argument and derives
+\texttt{False} from it via \texttt{no\_match\_32a1\_of\_good\_red\_29}.
+Its axiom list,
+$[\mathtt{propext},\mathtt{Classical.choice},\mathtt{Lean.ofReduceBool},
+\mathtt{Quot.sound}]$ (checked the same way), still carries
+\texttt{Lean.ofReduceBool}, since it calls the
+\texttt{native\_decide}-based lemma directly rather than merely
+citing its statement; no theorem in this file removes that
+dependency.
