@@ -57,8 +57,9 @@ $(4,4,13)$, i.e.\ $A^4+B^4=(B+3)^{13}$. This ``gap-3'' family is an
 internal naming convention of a larger, still largely open Lean
 development; it is \emph{not} derived in this repository from the
 unrestricted equation $A^4+B^4=C^{13}$, and no claim about the
-general signature is made. For the single specialization
-$(A,B)=(29,1)$ the associated Frey curve
+general signature is made. For the test parameters
+$(A,B)=(29,1)$ in the displayed Frey model --- not a solution of
+the gap-3 equation itself --- the associated Frey curve
 $E:y^2=x(x-A^4)(x+B^4)$ has displayed conductor $928=2^5\cdot 29$,
 N\'eron types $I_0^*$ at $2$ and $I_8$ at $29$, and valuations
 $v_2(\Delta)=6$, $v_{29}(\Delta)=8$; Tate's algorithm itself is not
@@ -76,9 +77,11 @@ newform space at level $32$ (\texttt{32a1}). Kolyvagin-named
 display: $\lvert\Sel_2\rvert=1$, $3\cdot 7=21$, $L/\cO=1/3$ and
 $1/7$ on Cremona \texttt{26a1}/\texttt{26b1}, and the typeclass
 upgrade $\mathrm{Nonempty}(\mathrm{Fintype}\,\alpha)\to
-\mathrm{Finite}\,\alpha$; the parent identifier
-\texttt{IsRankZero := Subsingleton} is mathematically false on
-both curves, which have nontrivial torsion. Separately, the
+\mathrm{Finite}\,\alpha$; the repository's surrogate
+\texttt{IsSubsingleton := Subsingleton} (renamed from
+\texttt{IsRankZero} in this revision) is not the conventional
+algebraic-rank-zero predicate, and its application to each curve is
+false, since both have nontrivial torsion. Separately, the
 repository proves a genuine finite lemma,
 \texttt{no\_match\_32a1\_of\_good\_red\_29}: on the gap-3 equation
 with $29\nmid A$, $29\nmid B$, $29\nmid B+3$, the Frey trace at

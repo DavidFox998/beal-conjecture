@@ -25,18 +25,33 @@ pin \texttt{full=1}, \texttt{new=1}, \texttt{level16=0},
 \texttt{sturm=8} for the unique newform \texttt{32a1}~\cite{lmfdb}.
 \end{displaythm}
 
-The parent names \texttt{Ribet\_928\_to\_32},
-\texttt{no\_newforms\_at\_32\_mod13}, and
-\texttt{explicit\_a29\_mod13} are theorems in this namespace. Each
+The single named theorem
+\texttt{\seqsplit{displayed\_level32\_arithmetic\_and\_newspace\_data}}
 re-exports \texttt{no\_newforms\_at\_32}: the numerals of
 Display~\ref{disp:ribet} together with
 \texttt{displayed\_frey\_matching\_newforms.card $= 0$}. That
 Finset is defined by \texttt{:= $\emptyset$}, not computed from the
 Frey curve's traces, so its cardinality theorem is immediate and
-proves nothing about which newform the Frey curve matches. On the
-parent file \texttt{Ribet\_Level\_Lowering\_29\_to\_32.lean} those
-three names stay \texttt{def Prop}. The theorem named
-\texttt{explicit\_a29\_mod13} does not compute $a_{29}$.
+proves nothing about which newform the Frey curve matches.
+
+\begin{honesty}[v31 rename]
+Earlier releases (through \texttt{v0.30}) exported this same
+conjunction under three further names, \texttt{Ribet\_928\_to\_32},
+\texttt{no\_newforms\_at\_32\_mod13}, and
+\texttt{explicit\_a29\_mod13}, plus a fourth packaged theorem of the
+same type once named
+\texttt{\seqsplit{Ribet\_Level\_Lowering\_29\_to\_32\_final}}. The name
+\texttt{no\_newforms\_at\_32\_mod13} was especially misleading,
+since LMFDB records a one-dimensional newspace at level $32$, and
+\texttt{explicit\_a29\_mod13} did not compute $a_{29}$. All four are
+removed as of this revision; there is no compatibility alias. The
+differently-scoped parent names on
+\texttt{Ribet\_Level\_Lowering\_29\_to\_32.lean} are untouched and
+remain \texttt{def Prop}. The genuinely computed lemmas discussed
+below, \texttt{no\_match\_32a1\_of\_good\_red\_29} and
+\texttt{no\_sol\_with\_good\_red\_29\_of\_trace\_match}, describe
+their actual conditional conclusions and are kept unchanged.
+\end{honesty}
 
 \begin{honesty}[Newspace dimension $1$, not $0$]
 LMFDB records $\dim S_2(\Ga_0(32))^{\mathrm{new}}=1$, with unique

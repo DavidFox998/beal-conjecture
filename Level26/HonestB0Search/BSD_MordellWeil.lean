@@ -25,11 +25,17 @@ coordinate-ring class group). This file **names** that type
 prove the Mordell–Weil finite-generation theorem, does **not**
 prove BSD, and does **not** inhabit `J0_26_rank0`.
 
-The pasted `IsRankZero := Subsingleton` is **only the identity**.
+v31 rename: the former `IsRankZero := Subsingleton` is
+renamed to `IsSubsingleton`. "Rank zero" conventionally
+permits nontrivial finite torsion, while `Subsingleton`
+(only the identity element) does not; the old name invited
+exactly that confusion. `IsSubsingleton` states precisely
+what it is, no more.
+
 Cremona `26a1` has torsion `ℤ/3ℤ` (affine point `(4,4)`);
 `26b1` has torsion `ℤ/7ℤ` (affine point `(1,0)`). Those points
-are not `0`, so `¬ IsRankZero` on both models. Rank 0 would be
-“`E(ℚ)` is finite”, not “`E(ℚ) = {0}`”.
+are not `0`, so `¬ IsSubsingleton` on both models. Rank 0 would
+be “`E(ℚ)` is finite”, not “`E(ℚ) = {0}`”.
 
 `BSD_rank_statement` is a parameterized schema
 (`analytic rank = algebraic rank`). Mathlib 4.12 has no
@@ -64,13 +70,15 @@ theorem add_comm {K : Type*} [Field K] {E : WeierstrassCurve K}
     (P Q : MordellWeilGroup E) : P + Q = Q + P :=
   _root_.add_comm P Q
 
-/-- **Only the identity.** Not MW rank 0 (torsion may be larger). -/
-def IsRankZero {K : Type*} [Field K] (E : WeierstrassCurve K) : Prop :=
+/-- **Only the identity.** Not MW rank 0 (torsion may be larger).
+    Renamed (v31) from `IsRankZero`, which conflated "rank
+    zero" with "trivial" and is no longer used. -/
+def IsSubsingleton {K : Type*} [Field K] (E : WeierstrassCurve K) : Prop :=
   Subsingleton (MordellWeilGroup E)
 
-theorem eq_zero_of_isRankZero {K : Type*} [Field K]
+theorem eq_zero_of_isSubsingleton {K : Type*} [Field K]
     {E : WeierstrassCurve K}
-    (h : IsRankZero E) (P : MordellWeilGroup E) : P = 0 :=
+    (h : IsSubsingleton E) (P : MordellWeilGroup E) : P = 0 :=
   @Subsingleton.elim _ h P 0
 
 end MordellWeilGroup
@@ -108,10 +116,10 @@ theorem point_26a1_4_4_ne_zero : point_26a1_4_4 ≠ 0 :=
   Point.some_ne_zero curve26a1_Q_nonsingular_4_4
 
 /-- `(4,4) ≠ 0`, so the MW *type* is not a subsingleton.
-    This **refutes** pasted `IsRankZero` on `26a1`. -/
-theorem not_IsRankZero_26a1 : ¬ MordellWeilGroup.IsRankZero curve26a1_Q := by
+    This **refutes** `IsSubsingleton` on `26a1`. -/
+theorem not_IsSubsingleton_26a1 : ¬ MordellWeilGroup.IsSubsingleton curve26a1_Q := by
   intro h
-  exact point_26a1_4_4_ne_zero (MordellWeilGroup.eq_zero_of_isRankZero h point_26a1_4_4)
+  exact point_26a1_4_4_ne_zero (MordellWeilGroup.eq_zero_of_isSubsingleton h point_26a1_4_4)
 
 /-- Cremona `26b1` = LMFDB `26.b2` over `ℚ`. -/
 def curve26b1_Q : WeierstrassCurve ℚ where
@@ -142,14 +150,15 @@ noncomputable def point_26b1_1_0 : MordellWeilGroup curve26b1_Q :=
 theorem point_26b1_1_0_ne_zero : point_26b1_1_0 ≠ 0 :=
   Point.some_ne_zero curve26b1_Q_nonsingular_1_0
 
-theorem not_IsRankZero_26b1 : ¬ MordellWeilGroup.IsRankZero curve26b1_Q := by
+theorem not_IsSubsingleton_26b1 : ¬ MordellWeilGroup.IsSubsingleton curve26b1_Q := by
   intro h
-  exact point_26b1_1_0_ne_zero (MordellWeilGroup.eq_zero_of_isRankZero h point_26b1_1_0)
+  exact point_26b1_1_0_ne_zero (MordellWeilGroup.eq_zero_of_isSubsingleton h point_26b1_1_0)
 
 /-- Algebraic MW rank 0: every rational point is torsion.
     Uninhabited (needs finite generation + a torsion proof for
-    every point). Not `IsRankZero` (that is Subsingleton).
-    **Not** `J0_26_rank0`. **Not** an axiom. -/
+    every point). Not `IsSubsingleton` (a strictly stronger
+    condition than rank 0). **Not** `J0_26_rank0`. **Not** an
+    axiom. -/
 def MW_rank_zero {K : Type*} [Field K] (E : WeierstrassCurve K) : Prop :=
   ∀ P : MordellWeilGroup E, ∃ n : ℕ, n ≠ 0 ∧ n • P = 0
 
@@ -173,17 +182,17 @@ theorem LLL_nogo_persists_after_BSD_MordellWeil :
   LLL_reduces_C1_to_lt_nine_iff_no_sol_ge_B0
 
 #check MordellWeilGroup.add_comm
-#check MordellWeilGroup.eq_zero_of_isRankZero
+#check MordellWeilGroup.eq_zero_of_isSubsingleton
 #check curve26a1_Q_Δ
 #check curve26b1_Q_Δ
 #check point_26a1_4_4_ne_zero
-#check not_IsRankZero_26a1
-#check not_IsRankZero_26b1
+#check not_IsSubsingleton_26a1
+#check not_IsSubsingleton_26b1
 #check MW_rank_zero_26a1
 #check BSD_rank_statement
 #check LLL_nogo_persists_after_BSD_MordellWeil
 #print axioms MordellWeilGroup.add_comm
-#print axioms not_IsRankZero_26a1
+#print axioms not_IsSubsingleton_26a1
 #print axioms LLL_nogo_persists_after_BSD_MordellWeil
 
 end BealMatveevBeal.BSD_MordellWeil

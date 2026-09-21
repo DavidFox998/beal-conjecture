@@ -21,17 +21,25 @@ import LLLTargetB8_C1_lower_bound
 /-!
 # Mazur / `X₀(13)` no-isogeny final display (v29)
 
-The four remaining parent *names*
+v31 rename: the four former re-export *names*
 `X0_13_Q_infinite`, `frey_no_rational_13_isogeny`,
-`Serre_non_Borel_mod13`, `mazur_no_Frey_13_isogeny`
-become **theorems in this namespace**. Each re-exports
-`Mazur_X0_13_Cusps_Equals_Rationals_inhabited` from
-`495421c` / `a93402e`: genus `0`, cusp Finset `{0,1}`
-`card = 2`, `|SL₂(𝔽₁₃)| = 13·12·14 = 2184`, `48 < 2184`,
-`13 = 2²+3²`, `288/48 = 6`.
+`Serre_non_Borel_mod13`, `mazur_no_Frey_13_isogeny`, and the
+former packaged `Mazur_X0_13_No_Isogeny_final`, are removed.
+All five had (up to two extra conjuncts on the packaged one)
+the same type — the inhabited conjunction from
+`Mazur_X0_13_Cusps_Equals_Rationals_inhabited` (`495421c` /
+`a93402e`): genus `0`, cusp Finset `{0,1}` `card = 2`,
+`|SL₂(𝔽₁₃)| = 13·12·14 = 2184`, `48 < 2184`, `13 = 2²+3²`,
+`288/48 = 6` — but their names suggested a $13$-isogeny
+exclusion, a non-Borel image statement, or Mazur's theorem
+itself, none of which this file proves. The single canonical
+name is now `displayed_X0_13_numerical_data`. There is no
+compatibility alias for the old names.
 
-The parent file `Mazur_X0_13_No_Isogeny.lean` keeps those
-four names as `def Prop`. This file does not convert them.
+The parent file `Mazur_X0_13_No_Isogeny.lean` is unchanged and
+keeps its own, differently-scoped names as `def Prop`. This
+file does not convert them, and the rename above is local to
+this namespace.
 
 `X₀(13)` is genus `0`, so `X₀(13)(ℚ)` is **infinite**.
 The pasted equality `X₀(13)(ℚ) = {2 cusps}` is
@@ -79,67 +87,21 @@ theorem genus_zero_vs_cusp_card :
     X0_13_cusp_count_eq_reexport,
     genus_zero_ne_two_cusps⟩
 
-/-- Final displayed “`X₀(13)(ℚ)` infinite” *name*. Packages
-    genus `0` versus cusp card `2`. Not a Mathlib proof that
-    `X₀(13)(ℚ)` is infinite, and **not** `{2 cusps}`. -/
-theorem X0_13_Q_infinite :
-    X0_13_genus_nat = 0 ∧
-      X0_13_cusp_count = 2 ∧
-      displayed_rational_cusps.card = 2 ∧
-      displayed_rational_cusps.card = X0_13_cusp_count ∧
-      (13 : ℕ) * 12 * 14 = 2184 ∧
-      48 < 2184 ∧
-      (2 : ℤ) ^ 2 + 3 ^ 2 = 13 ∧
-      288 / 48 = 6 ∧
-      X0_13_genus_nat ≠ X0_13_cusp_count :=
-  Mazur_X0_13_Cusps_Equals_Rationals_inhabited
-
-/-- Final displayed Frey 13-isogeny *name*. Numerals only.
-    Parent `frey_no_rational_13_isogeny` stays `def Prop`. -/
-theorem frey_no_rational_13_isogeny :
-    X0_13_genus_nat = 0 ∧
-      X0_13_cusp_count = 2 ∧
-      displayed_rational_cusps.card = 2 ∧
-      displayed_rational_cusps.card = X0_13_cusp_count ∧
-      (13 : ℕ) * 12 * 14 = 2184 ∧
-      48 < 2184 ∧
-      (2 : ℤ) ^ 2 + 3 ^ 2 = 13 ∧
-      288 / 48 = 6 ∧
-      X0_13_genus_nat ≠ X0_13_cusp_count :=
-  Mazur_X0_13_Cusps_Equals_Rationals_inhabited
-
-/-- Final displayed Serre non-Borel *name*. `48 < 2184` is
-    the numeral, not `card(image) ≤ 48`. -/
-theorem Serre_non_Borel_mod13 :
-    X0_13_genus_nat = 0 ∧
-      X0_13_cusp_count = 2 ∧
-      displayed_rational_cusps.card = 2 ∧
-      displayed_rational_cusps.card = X0_13_cusp_count ∧
-      (13 : ℕ) * 12 * 14 = 2184 ∧
-      48 < 2184 ∧
-      (2 : ℤ) ^ 2 + 3 ^ 2 = 13 ∧
-      288 / 48 = 6 ∧
-      X0_13_genus_nat ≠ X0_13_cusp_count :=
-  Mazur_X0_13_Cusps_Equals_Rationals_inhabited
-
-/-- Final displayed Mazur-no-Frey-13-isogeny *name*.
-    Parent `mazur_no_Frey_13_isogeny` stays `def Prop`. -/
-theorem mazur_no_Frey_13_isogeny :
-    X0_13_genus_nat = 0 ∧
-      X0_13_cusp_count = 2 ∧
-      displayed_rational_cusps.card = 2 ∧
-      displayed_rational_cusps.card = X0_13_cusp_count ∧
-      (13 : ℕ) * 12 * 14 = 2184 ∧
-      48 < 2184 ∧
-      (2 : ℤ) ^ 2 + 3 ^ 2 = 13 ∧
-      288 / 48 = 6 ∧
-      X0_13_genus_nat ≠ X0_13_cusp_count :=
-  Mazur_X0_13_Cusps_Equals_Rationals_inhabited
-
-/-- Packaged v29 final. Honest: card `2` versus genus `0`
-    (infinite). Literature-false `{2 cusps} = X₀(13)(ℚ)`
-    is not claimed. -/
-theorem Mazur_X0_13_No_Isogeny_final :
+/-- Canonical v31 name for the packaged displayed data:
+    genus `0` versus cusp card `2`, plus the `SL₂(𝔽₁₃)`
+    numerals. Re-export of
+    `Mazur_X0_13_Cusps_Equals_Rationals_inhabited`
+    (`495421c`). Not a Mathlib proof that `X₀(13)(ℚ)` is
+    infinite, not `{2 cusps}`, not a $13$-isogeny exclusion,
+    not a non-Borel image statement, and not Mazur's theorem.
+    Replaces the removed aliases `X0_13_Q_infinite`,
+    `frey_no_rational_13_isogeny`, `Serre_non_Borel_mod13`,
+    `mazur_no_Frey_13_isogeny`, and the removed packaged
+    `Mazur_X0_13_No_Isogeny_final` (v29 and earlier), all of
+    which had this type (the old packaged final omitted the
+    two cusp-Finset conjuncts; this canonical version keeps
+    them). -/
+theorem displayed_X0_13_numerical_data :
     X0_13_genus_nat = 0 ∧
       X0_13_cusp_count = 2 ∧
       displayed_rational_cusps.card = 2 ∧
@@ -161,11 +123,7 @@ theorem LLL_nogo_persists_after_Mazur_No_Isogeny_v29 :
 #check forty_eight_lt_2184
 #check thirteen_eq_two_squares
 #check displayed_cusps_card
-#check X0_13_Q_infinite
-#check frey_no_rational_13_isogeny
-#check Serre_non_Borel_mod13
-#check mazur_no_Frey_13_isogeny
-#check Mazur_X0_13_No_Isogeny_final
+#check displayed_X0_13_numerical_data
 #check BealMatveevBeal.Mazur_X0_13_No_Isogeny.X0_13_Q_infinite
 #check BealMatveevBeal.Mazur_X0_13_No_Isogeny.frey_no_rational_13_isogeny
 #check BealMatveevBeal.Mazur_X0_13_No_Isogeny.Serre_non_Borel_mod13
@@ -173,8 +131,7 @@ theorem LLL_nogo_persists_after_Mazur_No_Isogeny_v29 :
 #print axioms SL2_F13_card
 #print axioms displayed_cusps_card
 #print axioms forty_eight_lt_2184
-#print axioms X0_13_Q_infinite
-#print axioms Mazur_X0_13_No_Isogeny_final
+#print axioms displayed_X0_13_numerical_data
 #print axioms LLL_nogo_persists_after_Mazur_No_Isogeny_v29
 
 end BealMatveevBeal.Mazur_X0_13_No_Isogeny_final

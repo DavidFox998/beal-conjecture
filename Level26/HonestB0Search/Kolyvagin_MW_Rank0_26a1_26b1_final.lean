@@ -29,31 +29,47 @@ import LLLTargetB8_C1_lower_bound
 /-!
 # Kolyvagin rank-0 final display (v29)
 
-The remaining parent *names*
-`MW_rank_zero_fintype`,
+v31 rename: the former parent-named re-export *theorems*
+`MW_rank_zero_fintype`, `Kolyvagin_L_nonzero_imp_MW_rank_zero`,
+`TwoDescent_implies_MW_rank_zero_fintype`, and the former
+module-named theorems `TwoDescent_26a1_26`, `BSD_MordellWeil`,
+`J0_26_BSD_26a1_26b1`, `X0_26_Full2Torsion`, and the former
+packaged `Kolyvagin_MW_Rank0_26a1_26b1_final`, are removed.
+All eight had the identical type — the inhabited conjunction
+from `Kolyvagin_Fintype_Subsingleton_inhabited` (`b01a399` /
+`a93402e`): `|Sel₂| = 1`, `3 · 7 = 21`, `L/Ω = 1/3` and `1/7`,
+`¬ IsSubsingleton` on Cremona `26a1` / `26b1`, `Nonempty
+(Fintype α) → Finite α` via `finite_iff_nonempty_fintype`, and
+Subsingleton card `1` on `Unit` — but each of the removed
+names either duplicated a `def Prop` name from a different,
+uninhabited parent (`MW_rank_zero_fintype`,
 `Kolyvagin_L_nonzero_imp_MW_rank_zero`,
-`TwoDescent_implies_MW_rank_zero_fintype`
-become **theorems in this namespace**. Each re-exports
-`Kolyvagin_Fintype_Subsingleton_inhabited` from
-`b01a399` / `a93402e`: `|Sel₂| = 1`, `3 · 7 = 21`,
-`L/Ω = 1/3` and `1/7`, `¬ IsRankZero` on Cremona
-`26a1` / `26b1`, `Nonempty (Fintype α) → Finite α`
-via `finite_iff_nonempty_fintype`, and Subsingleton
-card `1` on `Unit`.
+`TwoDescent_implies_MW_rank_zero_fintype`) or duplicated a
+module name (`TwoDescent_26a1_26`, `BSD_MordellWeil`,
+`J0_26_BSD_26a1_26b1`, `X0_26_Full2Torsion`), inviting the
+reader to mistake this numeral display for the parent's
+uninhabited claim or for the named module. The single
+canonical name is now `displayed_26a1_26b1_certificate_data`.
+There is no compatibility alias for the old names.
 
-Parent files keep those names as `def Prop`. This file
-does not convert them. Module-named theorems
-`TwoDescent_26a1_26`, `BSD_MordellWeil`,
-`J0_26_BSD_26a1_26b1`, `X0_26_Full2Torsion` package
-the same numerals (`7c19ad0` / `8994d38`).
+Parent files are unchanged and keep their own `def Prop`
+names; this rename is local to this namespace and does not
+convert them.
 
-`IsRankZero := Subsingleton` is **false** on both
-models (torsion `3` and `7`). The Subsingleton→Fintype
-path does **not** apply to those `MordellWeilGroup`s.
-Algebraic MW rank 0 as
+`IsSubsingleton := Subsingleton` (v31 rename from
+`IsRankZero`) is **false** on both models (torsion `3` and
+`7`). The Subsingleton→Fintype path does **not** apply to
+those `MordellWeilGroup`s. Algebraic MW rank 0 as
 `Nonempty (Fintype (E(ℚ)))` stays `def Prop` on the
 parent. This is not Kato/Kolyvagin and not Sage
 `E.rank()`.
+
+Kept unchanged (individually honest, already `displayed_`
+or `not_..._final` named): `displayed_Sel2_card_26a1`,
+`displayed_Sel2_card_26b1`, `displayed_torsion_3_mul_7`,
+`displayed_L_over_Omega_26a1`, `displayed_L_over_Omega_26b1`,
+`not_IsSubsingleton_26a1_final`,
+`not_IsSubsingleton_26b1_final`.
 
 Lean 4.12: explicit theorem types, `open Nat Finset
 Classical`, `decide` not `native_decide`.
@@ -122,18 +138,18 @@ theorem Fintype_of_nonempty_Fintype_spec_final {α : Type*}
   Fintype_of_nonempty_Fintype_spec h
 
 /-- Subsingleton card `1` on `Unit`. Does **not** apply
-    to `26a1` / `26b1` (`¬ IsRankZero`). -/
+    to `26a1` / `26b1` (`¬ IsSubsingleton`). -/
 theorem Unit_Subsingleton_card_one :
     @Fintype.card Unit (Fintype_of_Subsingleton ()) = 1 :=
   Unit_is_Fintype_card_one
 
-theorem not_IsRankZero_26a1_final :
-    ¬ MordellWeilGroup.IsRankZero curve26a1_Q :=
-  not_IsRankZero_26a1_reexport'
+theorem not_IsSubsingleton_26a1_final :
+    ¬ MordellWeilGroup.IsSubsingleton curve26a1_Q :=
+  not_IsSubsingleton_26a1_reexport'
 
-theorem not_IsRankZero_26b1_final :
-    ¬ MordellWeilGroup.IsRankZero curve26b1_Q :=
-  not_IsRankZero_26b1_reexport'
+theorem not_IsSubsingleton_26b1_final :
+    ¬ MordellWeilGroup.IsSubsingleton curve26b1_Q :=
+  not_IsSubsingleton_26b1_reexport'
 
 theorem not_Subsingleton_MW_26a1_final :
     ¬ Subsingleton (MordellWeilGroup curve26a1_Q) :=
@@ -143,118 +159,24 @@ theorem not_Subsingleton_MW_26b1_final :
     ¬ Subsingleton (MordellWeilGroup curve26b1_Q) :=
   not_Subsingleton_MW_26b1
 
-/-- Final displayed TwoDescent *name* (`7c19ad0`).
-    `|Sel₂| = 1` and `3 · 7 = 21`. Parent
-    `TwoDescent_implies_MW_rank_zero_fintype` stays
-    `def Prop`. -/
-theorem TwoDescent_26a1_26 :
-    ¬ MordellWeilGroup.IsRankZero curve26a1_Q ∧
-      ¬ MordellWeilGroup.IsRankZero curve26b1_Q ∧
-      ¬ Subsingleton (MordellWeilGroup curve26a1_Q) ∧
-      ¬ Subsingleton (MordellWeilGroup curve26b1_Q) ∧
-      Sel2_card_26a1 = 1 ∧ Sel2_card_26b1 = 1 ∧
-      TorsionOrder_26a1 * TorsionOrder_26b1 = 21 ∧
-      BealMatveevBeal.J0_26_BSD_26a1_26b1.L_over_Omega_26a1 = (1 / 3 : ℚ) ∧
-      BealMatveevBeal.J0_26_BSD_26a1_26b1.L_over_Omega_26b1 = (1 / 7 : ℚ) ∧
-      @Fintype.card Unit (Fintype_of_Subsingleton ()) = 1 :=
-  Kolyvagin_Fintype_Subsingleton_inhabited
-
-/-- Final displayed BSD *name* (`8994d38`). `¬ IsRankZero`
-    and `L/Ω`. Parent `MW_rank_zero` / `BSD_rank_statement`
-    stay `def Prop`. -/
-theorem BSD_MordellWeil :
-    ¬ MordellWeilGroup.IsRankZero curve26a1_Q ∧
-      ¬ MordellWeilGroup.IsRankZero curve26b1_Q ∧
-      ¬ Subsingleton (MordellWeilGroup curve26a1_Q) ∧
-      ¬ Subsingleton (MordellWeilGroup curve26b1_Q) ∧
-      Sel2_card_26a1 = 1 ∧ Sel2_card_26b1 = 1 ∧
-      TorsionOrder_26a1 * TorsionOrder_26b1 = 21 ∧
-      BealMatveevBeal.J0_26_BSD_26a1_26b1.L_over_Omega_26a1 = (1 / 3 : ℚ) ∧
-      BealMatveevBeal.J0_26_BSD_26a1_26b1.L_over_Omega_26b1 = (1 / 7 : ℚ) ∧
-      @Fintype.card Unit (Fintype_of_Subsingleton ()) = 1 :=
-  Kolyvagin_Fintype_Subsingleton_inhabited
-
-/-- Final displayed `J0(26)` BSD *name*. `L/Ω = 1/3`,
-    `1/7`. Parent `J0_26_rank0_via_Kolyvagin` stays
-    `def Prop`. -/
-theorem J0_26_BSD_26a1_26b1 :
-    ¬ MordellWeilGroup.IsRankZero curve26a1_Q ∧
-      ¬ MordellWeilGroup.IsRankZero curve26b1_Q ∧
-      ¬ Subsingleton (MordellWeilGroup curve26a1_Q) ∧
-      ¬ Subsingleton (MordellWeilGroup curve26b1_Q) ∧
-      Sel2_card_26a1 = 1 ∧ Sel2_card_26b1 = 1 ∧
-      TorsionOrder_26a1 * TorsionOrder_26b1 = 21 ∧
-      BealMatveevBeal.J0_26_BSD_26a1_26b1.L_over_Omega_26a1 = (1 / 3 : ℚ) ∧
-      BealMatveevBeal.J0_26_BSD_26a1_26b1.L_over_Omega_26b1 = (1 / 7 : ℚ) ∧
-      @Fintype.card Unit (Fintype_of_Subsingleton ()) = 1 :=
-  Kolyvagin_Fintype_Subsingleton_inhabited
-
-/-- Final displayed `X₀(26)` full 2-torsion *name*.
-    Torsion Nats `3 · 7 = 21`. Parent `J0_26_rank0`
-    stays `def Prop`. -/
-theorem X0_26_Full2Torsion :
-    ¬ MordellWeilGroup.IsRankZero curve26a1_Q ∧
-      ¬ MordellWeilGroup.IsRankZero curve26b1_Q ∧
-      ¬ Subsingleton (MordellWeilGroup curve26a1_Q) ∧
-      ¬ Subsingleton (MordellWeilGroup curve26b1_Q) ∧
-      Sel2_card_26a1 = 1 ∧ Sel2_card_26b1 = 1 ∧
-      TorsionOrder_26a1 * TorsionOrder_26b1 = 21 ∧
-      BealMatveevBeal.J0_26_BSD_26a1_26b1.L_over_Omega_26a1 = (1 / 3 : ℚ) ∧
-      BealMatveevBeal.J0_26_BSD_26a1_26b1.L_over_Omega_26b1 = (1 / 7 : ℚ) ∧
-      @Fintype.card Unit (Fintype_of_Subsingleton ()) = 1 :=
-  Kolyvagin_Fintype_Subsingleton_inhabited
-
-/-- Final displayed `MW_rank_zero_fintype` *name*.
-    Numerals and the typeclass upgrade. **Not**
-    `Nonempty (Fintype (MordellWeilGroup E))`. Parent
-    `MW_rank_zero_fintype` stays `def Prop`. -/
-theorem MW_rank_zero_fintype :
-    ¬ MordellWeilGroup.IsRankZero curve26a1_Q ∧
-      ¬ MordellWeilGroup.IsRankZero curve26b1_Q ∧
-      ¬ Subsingleton (MordellWeilGroup curve26a1_Q) ∧
-      ¬ Subsingleton (MordellWeilGroup curve26b1_Q) ∧
-      Sel2_card_26a1 = 1 ∧ Sel2_card_26b1 = 1 ∧
-      TorsionOrder_26a1 * TorsionOrder_26b1 = 21 ∧
-      BealMatveevBeal.J0_26_BSD_26a1_26b1.L_over_Omega_26a1 = (1 / 3 : ℚ) ∧
-      BealMatveevBeal.J0_26_BSD_26a1_26b1.L_over_Omega_26b1 = (1 / 7 : ℚ) ∧
-      @Fintype.card Unit (Fintype_of_Subsingleton ()) = 1 :=
-  Kolyvagin_Fintype_Subsingleton_inhabited
-
-/-- Final displayed Kato/Kolyvagin *name*. `1/3 ≠ 0` is
-    not `L(E,1)`. Parent stays `def Prop`. -/
-theorem Kolyvagin_L_nonzero_imp_MW_rank_zero :
-    ¬ MordellWeilGroup.IsRankZero curve26a1_Q ∧
-      ¬ MordellWeilGroup.IsRankZero curve26b1_Q ∧
-      ¬ Subsingleton (MordellWeilGroup curve26a1_Q) ∧
-      ¬ Subsingleton (MordellWeilGroup curve26b1_Q) ∧
-      Sel2_card_26a1 = 1 ∧ Sel2_card_26b1 = 1 ∧
-      TorsionOrder_26a1 * TorsionOrder_26b1 = 21 ∧
-      BealMatveevBeal.J0_26_BSD_26a1_26b1.L_over_Omega_26a1 = (1 / 3 : ℚ) ∧
-      BealMatveevBeal.J0_26_BSD_26a1_26b1.L_over_Omega_26b1 = (1 / 7 : ℚ) ∧
-      @Fintype.card Unit (Fintype_of_Subsingleton ()) = 1 :=
-  Kolyvagin_Fintype_Subsingleton_inhabited
-
-/-- Final displayed TwoDescent⇒rank-0 *name*. `|Sel₂|=1`
-    is a numeral, not MW rank 0. Parent stays `def Prop`. -/
-theorem TwoDescent_implies_MW_rank_zero_fintype :
-    ¬ MordellWeilGroup.IsRankZero curve26a1_Q ∧
-      ¬ MordellWeilGroup.IsRankZero curve26b1_Q ∧
-      ¬ Subsingleton (MordellWeilGroup curve26a1_Q) ∧
-      ¬ Subsingleton (MordellWeilGroup curve26b1_Q) ∧
-      Sel2_card_26a1 = 1 ∧ Sel2_card_26b1 = 1 ∧
-      TorsionOrder_26a1 * TorsionOrder_26b1 = 21 ∧
-      BealMatveevBeal.J0_26_BSD_26a1_26b1.L_over_Omega_26a1 = (1 / 3 : ℚ) ∧
-      BealMatveevBeal.J0_26_BSD_26a1_26b1.L_over_Omega_26b1 = (1 / 7 : ℚ) ∧
-      @Fintype.card Unit (Fintype_of_Subsingleton ()) = 1 :=
-  Kolyvagin_Fintype_Subsingleton_inhabited
-
-/-- Packaged v29 final. Honest: `|Sel₂|=1`, `3·7=21`,
-    `L/Ω`, `¬ IsRankZero`, typeclass upgrade, Unit card
-    `1`. Not Kato, not `E(ℚ)` finite, not Subsingleton
-    on torsion-`3`/`7`. -/
-theorem Kolyvagin_MW_Rank0_26a1_26b1_final :
-    ¬ MordellWeilGroup.IsRankZero curve26a1_Q ∧
-      ¬ MordellWeilGroup.IsRankZero curve26b1_Q ∧
+/-- Canonical v31 name for the packaged displayed data:
+    `¬ IsSubsingleton` on `26a1`/`26b1`, `|Sel₂|=1`, `3·7=21`,
+    `L/Ω = 1/3` and `1/7`, and the `Fintype`-of-`Unit`
+    typeclass upgrade. Re-export of
+    `Kolyvagin_Fintype_Subsingleton_inhabited` (`b01a399`).
+    Not Kato/Kolyvagin, not `E(ℚ)` finite, not Subsingleton
+    on torsion-`3`/`7`, and not BSD, `J0(26)`, or Ribet-style
+    level lowering. Replaces the removed names
+    `TwoDescent_26a1_26`, `BSD_MordellWeil`,
+    `J0_26_BSD_26a1_26b1`, `X0_26_Full2Torsion`,
+    `MW_rank_zero_fintype`,
+    `Kolyvagin_L_nonzero_imp_MW_rank_zero`,
+    `TwoDescent_implies_MW_rank_zero_fintype`, and the removed
+    packaged `Kolyvagin_MW_Rank0_26a1_26b1_final` (v29 and
+    earlier), all of which had this exact type. -/
+theorem displayed_26a1_26b1_certificate_data :
+    ¬ MordellWeilGroup.IsSubsingleton curve26a1_Q ∧
+      ¬ MordellWeilGroup.IsSubsingleton curve26b1_Q ∧
       ¬ Subsingleton (MordellWeilGroup curve26a1_Q) ∧
       ¬ Subsingleton (MordellWeilGroup curve26b1_Q) ∧
       Sel2_card_26a1 = 1 ∧ Sel2_card_26b1 = 1 ∧
@@ -274,14 +196,9 @@ theorem LLL_nogo_persists_after_Kolyvagin_Rank0_v29 :
 #check L_over_Omega_one_third
 #check Fintype_of_Nonempty
 #check Unit_Subsingleton_card_one
-#check TwoDescent_26a1_26
-#check BSD_MordellWeil
-#check J0_26_BSD_26a1_26b1
-#check X0_26_Full2Torsion
-#check MW_rank_zero_fintype
-#check Kolyvagin_L_nonzero_imp_MW_rank_zero
-#check TwoDescent_implies_MW_rank_zero_fintype
-#check Kolyvagin_MW_Rank0_26a1_26b1_final
+#check not_IsSubsingleton_26a1_final
+#check not_IsSubsingleton_26b1_final
+#check displayed_26a1_26b1_certificate_data
 #check BealMatveevBeal.Kolyvagin_MW_Rank0_26a1_26b1.MW_rank_zero_fintype
 #check BealMatveevBeal.Kolyvagin_MW_Rank0_26a1_26b1.Kolyvagin_L_nonzero_imp_MW_rank_zero
 #check BealMatveevBeal.Kolyvagin_MW_Rank0_26a1_26b1.TwoDescent_implies_MW_rank_zero_fintype
@@ -290,8 +207,7 @@ theorem LLL_nogo_persists_after_Kolyvagin_Rank0_v29 :
 #print axioms three_mul_seven
 #print axioms L_over_Omega_one_third
 #print axioms Unit_Subsingleton_card_one
-#print axioms MW_rank_zero_fintype
-#print axioms Kolyvagin_MW_Rank0_26a1_26b1_final
+#print axioms displayed_26a1_26b1_certificate_data
 #print axioms LLL_nogo_persists_after_Kolyvagin_Rank0_v29
 
 end BealMatveevBeal.Kolyvagin_MW_Rank0_26a1_26b1_final

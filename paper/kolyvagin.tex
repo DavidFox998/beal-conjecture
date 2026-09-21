@@ -19,7 +19,7 @@ $262$s) displays numerals for Cremona \texttt{26a1} (LMFDB
 \item $3\cdot 7=21$ (\texttt{three\_mul\_seven});
 \item $L/\cO=1/3$ on \texttt{26a1}, $1/7$ on \texttt{26b1}
   (\texttt{norm\_num} on $\Q$);
-\item $\neg\,\mathtt{IsRankZero}$ on both models;
+\item $\neg\,\mathtt{IsSubsingleton}$ on both models;
 \item $\mathrm{Nonempty}(\mathrm{Fintype}\,\alpha)\to
   \mathrm{Finite}\,\alpha$ (\texttt{finite\_iff\_nonempty\_fintype});
 \item $\lvert\mathrm{Unit}\rvert=1$ (Subsingleton card on
@@ -30,37 +30,66 @@ The rationals $3/9=1/3$ and $7/49=1/7$ use \texttt{norm\_num}:
 \end{displaythm}
 
 Cremona \texttt{26a1} has torsion $\Z/3\Z$ and $\Delta=-17576$;
-\texttt{26b1} has torsion $\Z/7\Z$ and $\Delta=-1664$. The identity
-\texttt{IsRankZero $:=$ Subsingleton} is therefore \emph{false} on
-both Mordell--Weil groups (the theorems
-\texttt{not\_IsRankZero\_26a1\_final} and
+\texttt{26b1} has torsion $\Z/7\Z$ and $\Delta=-1664$. The
+repository's surrogate \texttt{IsSubsingleton $:=$ Subsingleton}
+(renamed, this revision, from \texttt{IsRankZero}; see below) is
+not the conventional algebraic-rank-zero predicate, and its
+application to each of these curves is false, because each curve
+has nontrivial torsion (the theorems
+\texttt{not\_IsSubsingleton\_26a1\_final} and
 \texttt{not\_Subsingleton\_MW\_26a1\_final}, and the \texttt{26b1}
 twins). The Subsingleton$\to$Fintype path applies to
 \texttt{Unit}, not to $E(\Q)$. The section title above says
 ``numerals,'' not ``rank $0$,'' precisely because the repository's
-own display file proves \texttt{IsRankZero} \emph{fails} for the
-curves it names.
+own display file proves \texttt{IsSubsingleton} \emph{fails} for
+the curves it names.
 
-The parent names \texttt{MW\_rank\_zero\_fintype},
-\texttt{Kolyvagin\_L\_nonzero\_imp\_MW\_rank\_zero}, and
-\texttt{TwoDescent\_implies\_MW\_rank\_zero\_fintype} are theorems
-in this namespace. Module-named theorems
-\texttt{TwoDescent\_26a1\_26} (from \texttt{7c19ad0}),
-\texttt{BSD\_MordellWeil}, \texttt{J0\_26\_BSD\_26a1\_26b1}, and
-\texttt{X0\_26\_Full2Torsion} package the same numerals. On the
-parent files, \texttt{MW\_rank\_zero\_fintype}, Kato,
-\texttt{BSD\_MordellWeil.MW\_rank\_zero}, and
-\texttt{X0\_26\_Full2Torsion.J0\_26\_rank0} stay \texttt{def Prop}.
+The single named theorem
+\texttt{\seqsplit{displayed\_26a1\_26b1\_certificate\_data}}
+packages Display~\ref{disp:kolyvagin}: $\neg\,\mathtt{IsSubsingleton}$
+on both curves, $\lvert\Sel_2\rvert=1$, $3\cdot 7=21$, $L/\cO$, and
+the typeclass upgrade.
 
 \begin{honesty}[Not $E(\Q)$ finite]
 Algebraic Mordell--Weil rank~$0$ as
 $\mathrm{Nonempty}(\mathrm{Fintype}(E(\Q)))$ remains
-\texttt{def Prop} on the parent. The packaged theorem
-\texttt{MW\_rank\_zero\_fintype} is Display~\ref{disp:kolyvagin},
-not Kato--Kolyvagin and not Sage \texttt{E.rank()}. Witness:
+\texttt{def Prop} on the parent
+(\texttt{Kolyvagin\_MW\_Rank0\_26a1\_26b1.lean}). The packaged
+theorem \texttt{\seqsplit{displayed\_26a1\_26b1\_certificate\_data}}
+is Display~\ref{disp:kolyvagin}, not Kato--Kolyvagin and not Sage
+\texttt{E.rank()}. Witness:
 \texttt{sagemath/kolyvagin\_rank0\_26.sage} with
 \texttt{certs/kolyvagin\_rank0\_26.json} (\texttt{sage\_ran: false}:
 the file records pinned values, not a fresh Sage computation).
+\end{honesty}
+
+\begin{honesty}[v31 rename]
+Earlier releases (through \texttt{v0.30}) exported this same
+conjunction seven further times: as the parent-named theorems
+\texttt{MW\_rank\_zero\_fintype},
+\texttt{Kolyvagin\_L\_nonzero\_imp\_MW\_rank\_zero}, and
+\texttt{TwoDescent\_implies\_MW\_rank\_zero\_fintype} (duplicating
+uninhabited \texttt{def Prop} names on a different parent file),
+and as the module-named theorems \texttt{TwoDescent\_26a1\_26}
+(from \texttt{7c19ad0}), \texttt{BSD\_MordellWeil},
+\texttt{J0\_26\_BSD\_26a1\_26b1}, and \texttt{X0\_26\_Full2Torsion}
+(duplicating the names of separate, genuinely different modules),
+plus an eighth packaged theorem of the same type once named
+\texttt{\seqsplit{Kolyvagin\_MW\_Rank0\_26a1\_26b1\_final}}. All eight invited
+a reader to mistake this numeral display for the parent's
+uninhabited claim, for BSD, or for the named module. They are
+removed as of this revision; there is no compatibility alias. On
+the parent files, \texttt{MW\_rank\_zero\_fintype}, Kato,
+\texttt{BSD\_MordellWeil.MW\_rank\_zero}, and
+\texttt{X0\_26\_Full2Torsion.J0\_26\_rank0} are untouched and remain
+\texttt{def Prop}. Separately, the definition
+\texttt{IsRankZero $:=$ Subsingleton} on
+\texttt{BSD\_MordellWeil.lean} is renamed to
+\texttt{IsSubsingleton}, since ``rank zero'' conventionally permits
+nontrivial finite torsion while \texttt{Subsingleton} does not; all
+theorems whose names referenced \texttt{IsRankZero} are renamed to
+match (e.g.\ \texttt{not\_IsRankZero\_26a1\_final} is now
+\texttt{not\_IsSubsingleton\_26a1\_final}).
 \end{honesty}
 
 Axioms: $[\mathtt{propext},\mathtt{Classical.choice},\mathtt{Quot.sound}]$.
