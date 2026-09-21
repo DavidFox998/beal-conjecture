@@ -1,0 +1,58 @@
+\section{Tate --- N\'eron conductor $928$}\label{sec:tate}
+
+The file
+\texttt{Tate\_Frey\_Conductor\_29\_Neron\_final.lean}
+(\texttt{11c0ad7}; foundations incremental
+\href{https://github.com/DavidFox998/beal-level-26-foundations/actions/runs/35488239286}{35488239286},
+$137$s cache hit) packages the displayed conductor numeral
+\[
+  N_E^{\mathrm{disp}}=(2:\mathbb{N})^5\cdot 29=928.
+\]
+The named theorems \texttt{displayed\_Neron\_conductor} and
+\texttt{final\_N\_E\_eq\_928} are that equality, proved by
+\texttt{decide}. The split \texttt{displayed\_928\_div\_29} is
+$928/29=32$.
+
+\begin{displaythm}[Displayed N\'eron conductor]
+\label{disp:tate-928}
+In Lean~4.12, with \texttt{open Nat Finset Classical},
+\[
+  (2:\mathbb{N})^5\cdot 29=928,\qquad
+  928/29=32,\qquad
+  32\cdot 29=928,\qquad
+  \neg\,29\mid 32.
+\]
+These are numerals. Mathlib~$4.12$ has no \texttt{KodairaType} and
+no \texttt{NeronModel}. The name $N_E=928$ is not the conductor of
+a N\'eron model.
+\end{displaythm}
+
+The displayed Weierstrass invariants of~\eqref{eq:frey} are
+\[
+  c_4=16(A^8+B^8+A^4B^4),\qquad
+  \Delta=16A^8B^8(A^4+B^4)^2.
+\]
+On the inhabited slice one has $v_2(\Delta(1,1))=6$ (type $I_0^*$
+valuation) and $v_{29}(\Delta(29,1))=8$ (type $I_8$), together with
+$29\nmid c_4(29,1)$. The residual-level Finset $\{32,928\}$ has
+card~$2$; that card is a Finset numeral, not two N\'eron models.
+The parent names \texttt{Tate\_algorithm\_at\_29},
+\texttt{Frey\_Neron\_conductor}, and
+\texttt{Frey\_conductor\_29\_is\_Neron} are \emph{theorems in this
+namespace}: each re-exports the inhabited conjunction
+\texttt{Tate\_algorithm\_at\_2\_and\_29}. On the parent file
+\texttt{Tate\_Frey\_Conductor\_29.lean} those three names stay
+\texttt{def Prop}.
+
+\begin{honesty}
+The phrase ``final $N_E=928$'' means the displayed identity
+$2^5\cdot 29=928$. It is not Tate's algorithm as a function on
+integral models. SAGE \texttt{sagemath/tate\_nero\_29.sage} uses
+the displayed Frey~\eqref{eq:frey}, not the short model.
+\end{honesty}
+
+Axioms on the packaged Tate final are $[\mathtt{propext}]$ for the
+pure numerals and $[\mathtt{propext},\mathtt{Classical.choice},\mathtt{Quot.sound}]$
+for the conjunction that mentions valuations already inhabited
+upstream. There is no \texttt{Lean.ofReduceBool}, no
+\texttt{sorryAx}, and no new axiom.

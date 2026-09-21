@@ -1,0 +1,66 @@
+\section{Kolyvagin --- MW rank-$0$ display on \texttt{26a1}, \texttt{26b1}}
+\label{sec:kolyvagin}
+
+The file
+\texttt{Kolyvagin\_MW\_Rank0\_26a1\_26b1\_final.lean}
+(\texttt{fc8c7a1} / phase merge \texttt{bc7e93b}; incremental
+\href{https://github.com/DavidFox998/beal-level-26-foundations/actions/runs/35489926310}{35489926310},
+$262$s) displays the Kolyvagin / two-descent numerals for Cremona
+\texttt{26a1} (LMFDB \texttt{26.a2}) and \texttt{26b1} (LMFDB
+\texttt{26.b2})~\cite{kolyvagin1990,cremona,lmfdb}.
+
+\begin{displaythm}[Kolyvagin numerals and typeclass upgrade]
+\label{disp:kolyvagin}
+\[
+\begin{aligned}
+  \lvert\Sel_2\rvert^{\mathrm{disp}}&=1
+    &&(\texttt{Sel2\_card\_one},\ \texttt{displayed\_Sel2\_card\_26a1/b1}),\\
+  3\cdot 7&=21
+    &&(\texttt{three\_mul\_seven}),\\
+  L/\cO&=1/3\text{ on \texttt{26a1}},\quad
+  1/7\text{ on \texttt{26b1}}
+    &&(\texttt{norm\_num}\text{ on }\Q),\\
+  \neg\,\mathtt{IsRankZero}&
+    \text{ on both models},\\
+  \mathrm{Nonempty}(\mathrm{Fintype}\,\alpha)&\to\mathrm{Finite}\,\alpha
+    &&(\texttt{finite\_iff\_nonempty\_fintype}),\\
+  \lvert\mathrm{Unit}\rvert&=1
+    &&(\text{Subsingleton card on }\mathtt{Unit}).
+\end{aligned}
+\]
+The rationals $3/9=1/3$ and $7/49=1/7$ use \texttt{norm\_num}:
+\texttt{decide} has no $\Q$ instance in Lean~$4.12$.
+\end{displaythm}
+
+Cremona \texttt{26a1} has torsion $\Z/3\Z$ and $\Delta=-17576$;
+\texttt{26b1} has torsion $\Z/7\Z$ and $\Delta=-1664$. The identity
+\texttt{IsRankZero $:=$ Subsingleton} is therefore \emph{false} on
+both Mordell--Weil groups (the theorems
+\texttt{not\_IsRankZero\_26a1\_final} and
+\texttt{not\_Subsingleton\_MW\_26a1\_final}, and the \texttt{26b1}
+twins). The Subsingleton$\to$Fintype path applies to
+\texttt{Unit}, not to $E(\Q)$.
+
+The parent names \texttt{MW\_rank\_zero\_fintype},
+\texttt{Kolyvagin\_L\_nonzero\_imp\_MW\_rank\_zero}, and
+\texttt{TwoDescent\_implies\_MW\_rank\_zero\_fintype} are theorems
+in this namespace. Module-named theorems
+\texttt{TwoDescent\_26a1\_26} (from \texttt{7c19ad0}),
+\texttt{BSD\_MordellWeil}, \texttt{J0\_26\_BSD\_26a1\_26b1}, and
+\texttt{X0\_26\_Full2Torsion} package the same numerals. On the
+parent files, \texttt{MW\_rank\_zero\_fintype}, Kato,
+\texttt{BSD\_MordellWeil.MW\_rank\_zero}, and
+\texttt{X0\_26\_Full2Torsion.J0\_26\_rank0} stay \texttt{def Prop}.
+
+\begin{honesty}[Not $E(\Q)$ finite]
+Algebraic Mordell--Weil rank~$0$ as
+$\mathrm{Nonempty}(\mathrm{Fintype}(E(\Q)))$ remains
+\texttt{def Prop} on the parent. The packaged theorem
+\texttt{MW\_rank\_zero\_fintype} is Display~\ref{disp:kolyvagin},
+not Kato--Kolyvagin and not Sage \texttt{E.rank()}. Witness:
+\texttt{sagemath/kolyvagin\_rank0\_26.sage} with
+\texttt{certs/kolyvagin\_rank0\_26.json}.
+\end{honesty}
+
+Axioms: $[\mathtt{propext},\mathtt{Classical.choice},\mathtt{Quot.sound}]$.
+No \texttt{Lean.ofReduceBool}, no \texttt{sorryAx}, no new axiom.

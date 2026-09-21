@@ -1,0 +1,55 @@
+\section{Introduction}\label{sec:intro}
+
+The Beal conjecture asserts that if $A^x+B^y=C^z$ with integers
+$A,B,C\neq 0$ and exponents $x,y,z>2$, then $A,B,C$ share a prime
+factor~\cite{mauldin1997beal}. This draft does not prove the
+conjecture. It records a \emph{structural verification} of four
+honest Lean~4.12 displays used in the level-$26$ attack on the
+signature $(4,4,13)$,
+\[
+  A^4+B^4=C^{13}.
+\]
+The associated Frey curve is the displayed Weierstrass model
+\begin{equation}\label{eq:frey}
+  y^2=x(x-A^4)(x+B^4)
+  \qquad\text{i.e.}\qquad
+  [0,\,B^4-A^4,\,0,\,-A^4B^4,\,0].
+\end{equation}
+The short model $[0,-(A^4+B^4),0,0,0]$ is a different curve and is
+not used as $E$.
+
+The strategy is classical~\cite{frey1986,serre1987,ribet1990,mazur1978}:
+compute the conductor of~\eqref{eq:frey} by Tate's
+algorithm~\cite{tate1975}, exclude a rational $13$-isogeny by Mazur's
+theorem on $X_0(13)$, lower the residual level $928\to 32$ in the
+style of Ribet, and compare the resulting newform space with the
+Mordell--Weil data of $J_0(26)$ via the Cremona labels
+\texttt{26a1} and \texttt{26b1}~\cite{cremona,lmfdb}. Each of those
+four names is inhabited in Lean only as a \emph{display}: numerals,
+Finset cardinalities, and a typeclass upgrade. Parent files keep the
+corresponding algebraic statements as uninhabited \texttt{def Prop}.
+
+The formal pin is Lean \texttt{v4.12.0}, mathlib commit
+\texttt{809c3fb3b5c8f5d7dace56e200b426187516535a} with
+\texttt{inputRev v4.12.0} (not \texttt{@ main}), and the
+\texttt{beal-conjecture} Lake manifest prefix \texttt{83739542}.
+The command \texttt{lake update} was not run. The vendor tree
+\texttt{Level26/BealLevel26Foundations} at \texttt{db7a556}/\texttt{fea0c393}
+has difference $0$ against \texttt{b780c9c}/\texttt{1a00fbd}.
+Version DOI \href{https://doi.org/10.5281/zenodo.22863527}{10.5281/zenodo.22863527}
+is a new version of \texttt{22854603} and \texttt{22851334}; the
+concept DOI
+\href{https://doi.org/10.5281/zenodo.22379293}{10.5281/zenodo.22379293}
+stays, related as \texttt{isVersionOf}~\cite{zenodo-v30,zenodo-concept}.
+
+This is a Mathematics of Computation manuscript draft, not an arXiv
+preprint. There is no arXiv identifier and no arXiv badge.
+
+The four display files live in
+\texttt{Level26/HonestB0Search/} on \texttt{beal-conjecture}
+\texttt{main} at \texttt{ea261b9} (badge parent \texttt{ff546da},
+merge \texttt{af520d3}) and on foundations
+\texttt{phase-darmon-merel-4413} at \texttt{2b60ccd}. At this writing
+the HonestB0Search slices are near identical; \texttt{beal-conjecture}
+is the superset, carrying the historical \texttt{BealMatveevBeal}
+target in addition to the four finals.
