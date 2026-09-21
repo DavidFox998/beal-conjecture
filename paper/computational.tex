@@ -4,25 +4,60 @@
 Version DOI
 \href{https://doi.org/10.5281/zenodo.22863527}{10.5281/zenodo.22863527}
 is a new version of \texttt{22854603} and
-\texttt{22851334}~\cite{zenodo-v30}. The concept DOI
+\texttt{22851334}~\cite{zenodo-v30}, and archives the pre-rename
+Lean numerals discussed in
+Sections~\ref{sec:tate}--\ref{sec:kolyvagin}. The concept DOI
 \href{https://doi.org/10.5281/zenodo.22379293}{10.5281/zenodo.22379293}
-stays, recorded as \texttt{isVersionOf}~\cite{zenodo-concept}.
+stays, recorded as \texttt{isVersionOf}~\cite{zenodo-concept}, and
+resolves to whichever version is most recently archived under it.
 GitHub release
 \href{https://github.com/DavidFox998/beal-conjecture/releases/tag/v30.0.0-level-26-structural-verification}{\texttt{v30.0.0-level-26-structural-verification}}
 has id \texttt{392549396} at \texttt{af520d3}.
 
+\begin{honesty}[This revision's own archive is a genuine GitHub Release, not only a tag]
+An earlier draft of this section cited \texttt{v31} identifiers that
+were Git tags with no corresponding GitHub Release object, so
+Zenodo's GitHub integration --- which archives \emph{releases}, not
+bare tags --- had not minted a version DOI for either repository at
+that point. This revision's \texttt{v31.0.0-level-26-honest-declarations}
+(conjecture) and \texttt{v0.31-mcom-honest-declarations} (foundations)
+identifiers are published GitHub Releases, so each is archived by
+Zenodo under the concept DOI \texttt{22379293} above with its own new
+version DOI, recording the renamed declarations rather than the
+\texttt{22863527} snapshot's pre-rename ones.
+\end{honesty}
+
 \paragraph{Sage and JSON.}
 The Lean displays are paired with static Sage scripts and JSON pins,
-not with a Sage kernel in CI:
+not with a Sage kernel in CI (\texttt{sage\_ran: false} in every
+certificate below):
 \texttt{sagemath/tate\_nero\_29.sage};
 \texttt{sagemath/ribet\_no\_newforms\_32.sage} with
 \texttt{certs/ribet\_no\_newforms\_32.json}
 (\texttt{full=1}, \texttt{new=1}, \texttt{level16=0},
 \texttt{sturm=8});
 \texttt{sagemath/kolyvagin\_rank0\_26.sage} with
-\texttt{certs/kolyvagin\_rank0\_26.json}.
+\texttt{certs/kolyvagin\_rank0\_26.json} and
+\texttt{sagemath/kolyvagin\_fintype\_subsingleton.sage} with
+\texttt{certs/kolyvagin\_fintype\_subsingleton.json}.
 LMFDB labels used as pins are \texttt{32a1}, \texttt{26a1}, and
-\texttt{26b1}~\cite{lmfdb}.
+\texttt{26b1}~\cite{lmfdb}. Lean verifies arithmetic involving the
+values these certificates carry; it does not verify their
+provenance, since no Sage kernel runs in CI.
+
+\begin{honesty}[Certificate schema predates the v31 rename]
+The two Kolyvagin JSON certificates above are immutable per-version
+snapshots, tagged \texttt{kolyvagin-rank0-final-v29} and
+\texttt{kolyvagin-fintype-subsingleton-v28} in their own
+\texttt{version} field. Their field names
+\texttt{IsRankZero\_is\_Subsingleton}, \texttt{IsRankZero\_on\_26a1},
+and \texttt{IsRankZero\_on\_26b1} predate the Lean-side rename of
+\texttt{IsRankZero} to \texttt{IsSubsingleton} described in
+Section~\ref{sec:kolyvagin}; a \texttt{schema\_note} field added to
+each certificate at v31 states this explicitly. The boolean values
+are unaffected by the rename, since \texttt{Subsingleton} itself did
+not change --- only its Lean-side name did.
+\end{honesty}
 
 \paragraph{Repository surface.}
 Folder READMEs are complete outside the vendor tree (difference $0$
@@ -36,18 +71,28 @@ against \texttt{43735b3}). GitHub About texts are $302$ characters
 \texttt{x0-13}, \texttt{x0-26}). There is no arXiv badge.
 
 \paragraph{Tags and working branches.}
-Foundations tags \texttt{v0.27}, \texttt{v0.28}, \texttt{v0.29},
-\texttt{v0.30} stay live. Phase
-\texttt{phase-darmon-merel-4413} stays \texttt{2b60ccd}
-(\texttt{v0.30-mcom-structural-verification}). Working finals stay
-\texttt{tate-neron-final-v29} \texttt{11c0ad7},
+Foundations tags \texttt{v0.27}--\texttt{v0.31} stay live; none is
+deleted or force-moved to record this rename. Phase
+\texttt{phase-darmon-merel-4413} carries the rename as an ordinary
+fast-forward: \texttt{2b60ccd} (\texttt{v0.30-mcom-structural-verification})
+$\to$ \texttt{adbdca8} (Lean rename) $\to$ \texttt{b416dc9} (referee-surface
+script updated to check the new names) $\to$ \texttt{05fda4b}
+(\texttt{CITATION.cff}/\texttt{.zenodo.json} bumped to
+\texttt{v0.31-mcom-honest-declarations}, JSON certificate
+\texttt{schema\_note} fields added), tagged
+\texttt{v0.31-mcom-honest-declarations}. Working finals from the v29
+line (\texttt{tate-neron-final-v29} \texttt{11c0ad7},
 \texttt{mazur-no-isogeny-final-v29} \texttt{2f4e16e},
 \texttt{ribet-928-to-32-final-v29} \texttt{5631fd1},
-\texttt{kolyvagin-rank0-final-v29} \texttt{fc8c7a1}.
-Conjecture tag
-\texttt{v30.0.0-level-26-structural-verification} stays at
-\texttt{af520d3}; this is the fixed anchor for the pre-rename Lean
-numerals discussed above. The declaration renames described in
-Sections~\ref{sec:tate}--\ref{sec:kolyvagin} are tagged separately
-as \texttt{v31}; see Section~\ref{sec:intro} on why
-self-referential commit hashes for \texttt{main} are avoided.
+\texttt{kolyvagin-rank0-final-v29} \texttt{fc8c7a1}) are unchanged;
+they predate the \texttt{\_final.lean} consolidation and are not
+themselves renamed. Conjecture \texttt{main} carries the same rename
+--- \texttt{bac0bf7} (\texttt{v30.0.0-level-26-structural-verification})
+$\to$ \texttt{f32a6ea} (Lean rename plus the paper's first honesty
+revision) $\to$ this revision's own commit, tagged
+\texttt{v31.0.0-level-26-honest-declarations} --- so, unlike the
+v30 anchor \texttt{af520d3} discussed above (which the pre-rename
+Lean numerals in Sections~\ref{sec:tate}--\ref{sec:kolyvagin} cite
+because it is what \texttt{22863527} archived), the v31 tag and its
+Zenodo archive are the fixed anchor for the renamed declarations and
+for this paragraph itself.

@@ -113,8 +113,10 @@ reports
     \mathtt{Lean.ofReduceBool},\ \mathtt{Quot.sound}].
 \]
 The presence of \texttt{Lean.ofReduceBool} is exactly the mark of
-\texttt{native\_decide}: this lemma trusts the compiled kernel
-reduction of a finite check over $29^2=841$ residue pairs, unlike
+\texttt{native\_decide}: this lemma relies on Lean's trusted
+native-evaluation bridge \texttt{Lean.ofReduceBool}, rather than on
+reduction of the full finite check over $29^2=841$ residue pairs by
+the kernel, unlike
 every named-display theorem in Sections~\ref{sec:tate}--\ref{sec:kolyvagin},
 which are stated above to avoid \texttt{native\_decide} and to have
 no \texttt{Lean.ofReduceBool} in their axiom lists. Both facts are

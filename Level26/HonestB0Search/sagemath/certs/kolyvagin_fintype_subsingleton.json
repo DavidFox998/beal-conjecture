@@ -8,6 +8,7 @@
   "torsion_3_mul_7": 21,
   "L_over_Omega_26a1": [1, 3],
   "L_over_Omega_26b1": [1, 7],
+  "schema_note": "This is the immutable kolyvagin-fintype-subsingleton-v28 certificate. Field names use the pre-v31 Lean predicate name IsRankZero; the Lean side renamed def IsRankZero := Subsingleton to def IsSubsingleton := Subsingleton in v0.31-mcom-honest-declarations. The boolean values below are unchanged by that rename (Subsingleton is unaffected).",
   "IsRankZero_is_Subsingleton": true,
   "IsRankZero_on_26a1": false,
   "IsRankZero_on_26b1": false,
