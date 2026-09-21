@@ -1,0 +1,22 @@
+# GitHub UI About lock (applied via API; this file is the in-repo copy).
+# Mathematics of Computation submission — not an arXiv preprint.
+# Do not add an arXiv badge.
+repository: DavidFox998/beal-conjecture
+description: >-
+  Beal Conjecture Level 26 Structural Verification — Tate 928=2⁵·29 Neron I0* I8 c4 Δ v2=6 v29=8 Mazur 2184 48<2184 13=2²+3² 288/48=6 card2 genus0 infinite vs2 Ribet 928/29=32 ∅ card0 full1 new1 LMFDB 32a1 Kolyvagin |Sel2|=1 3·7=21 L/Ω=1/3 1/7 rank0 26a1 26b1 — Lean 4.12 explicit types decide — v30.0.0 — mcom
+homepage: https://doi.org/10.5281/zenodo.22863527
+release: https://github.com/DavidFox998/beal-conjecture/releases/tag/v30.0.0-level-26-structural-verification
+topics:
+  - lean4
+  - mathlib
+  - beal-conjecture
+  - frey-curve
+  - tate-algorithm
+  - mazur
+  - ribet
+  - kolyvagin
+  - x0-13
+  - x0-26
+  - modular-curves
+  - number-theory
+  - mcom

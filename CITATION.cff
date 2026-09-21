@@ -11,20 +11,31 @@ doi: "10.5281/zenodo.22379293"
 date-released: 2026-09-20
 license: MIT
 repository-code: "https://github.com/DavidFox998/beal-conjecture"
-url: "https://doi.org/10.5281/zenodo.22379293"
+url: "https://doi.org/10.5281/zenodo.22863527"
 keywords:
   - Beal Conjecture
   - Lean 4
   - Formal Mathematics
+  - X0(13)
   - X0(26)
+  - 26a1
+  - 26b1
   - Frey Curve
   - Tate Algorithm
   - Ribet Level Lowering
   - Mazur
   - Kolyvagin
+  - mcom
   - Matveev
   - Bugeaud
   - LLL
+identifiers:
+  - type: doi
+    value: "10.5281/zenodo.22863527"
+    description: Version DOI for v30.0.0-level-26-structural-verification
+  - type: doi
+    value: "10.5281/zenodo.22379293"
+    description: Concept DOI (series; isVersionOf stays)
 abstract: >-
   beal-conjecture v30 port of foundations
   v0.30-mcom-structural-verification at 2b60ccd (Lean from bc7e93b).
@@ -36,9 +47,12 @@ abstract: >-
   Sage new_subspace dim=0, and MW_rank_zero_fintype stay
   def Prop on parent files. Vendor unchanged
   db7a556/fea0c393, no nested Level26, path-requires.
-  Matveev C1=143186215390 B0=10^6. Concept DOI
-  10.5281/zenodo.22379293. Prior v28 version DOI
-  10.5281/zenodo.22851334 at bd1400e / b780c9c. Prior v27
+  Matveev C1=143186215390 B0=10^6. Version DOI
+  10.5281/zenodo.22863527. Concept DOI
+  10.5281/zenodo.22379293 stays (isVersionOf). No arXiv id.
+  Mathematics of Computation submission, not an arXiv preprint.
+  Prior v29 version DOI 10.5281/zenodo.22854603. Prior v28
+  version DOI 10.5281/zenodo.22851334 at bd1400e / b780c9c. Prior v27
   version DOI 10.5281/zenodo.22842767 at 4b4d6f8 / 6ccafbf.
   Prior v26 version DOI 10.5281/zenodo.22832505 at 5e2906b
   / 5806dad. Prior software version v11.0.0
