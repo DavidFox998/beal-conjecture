@@ -1,30 +1,39 @@
-\section{Tate --- N\'eron conductor $928$}\label{sec:tate}
+\section{Displayed data I --- a Tate-style conductor numeral at
+$(A,B)=(29,1)$}\label{sec:tate}
 
 The file
 \texttt{Tate\_Frey\_Conductor\_29\_Neron\_final.lean}
 (\texttt{11c0ad7}; foundations incremental
 \href{https://github.com/DavidFox998/beal-level-26-foundations/actions/runs/35488239286}{35488239286},
-$137$s cache hit) packages the displayed conductor numeral
+$137$s cache hit) packages the displayed conductor numeral, for the
+test parameters $(A,B)=(29,1)$ in the displayed Frey
+model~\eqref{eq:frey} associated with the gap-3 development. These
+are test parameters for the model, not a solution of the gap-3
+equation \eqref{eq:gap3}: $29^4+1^4\neq(1+3)^{13}$.
 \[
   N_E^{\mathrm{disp}}=(2:\mathbb{N})^5\cdot 29=928.
 \]
 The named theorems \texttt{displayed\_Neron\_conductor} and
 \texttt{final\_N\_E\_eq\_928} are that equality, proved by
 \texttt{decide}. The split \texttt{displayed\_928\_div\_29} is
-$928/29=32$.
+$928/29=32$. At the other named specialization $(A,B)=(1,1)$ the
+same family displays conductor $32$, not $928$
+(\texttt{sagemath/certs/tate\_nero\_29.json}): the numeral $928$ is
+a fact about one pair $(A,B)$, not a property of every solution of
+\eqref{eq:gap3}.
 
 \begin{displaythm}[Displayed N\'eron conductor]
 \label{disp:tate-928}
-In Lean~4.12, with \texttt{open Nat Finset Classical},
-\[
-  (2:\mathbb{N})^5\cdot 29=928,\qquad
-  928/29=32,\qquad
-  32\cdot 29=928,\qquad
-  \neg\,29\mid 32.
-\]
+In Lean~4.12, with \texttt{open Nat Finset Classical}:
+\begin{itemize}[leftmargin=1.6em]
+\item $(2:\mathbb{N})^5\cdot 29=928$ (\texttt{final\_N\_E\_eq\_928});
+\item $928/29=32$ (\texttt{displayed\_928\_div\_29});
+\item $32\cdot 29=928$;
+\item $\neg\,29\mid 32$.
+\end{itemize}
 These are numerals. Mathlib~$4.12$ has no \texttt{KodairaType} and
-no \texttt{NeronModel}. The name $N_E=928$ is not the conductor of
-a N\'eron model.
+no \texttt{NeronModel}. The name $N_E=928$ is not the output of a
+Lean formalization of Tate's algorithm or of a N\'eron model.
 \end{displaythm}
 
 The displayed Weierstrass invariants of~\eqref{eq:frey} are
@@ -35,24 +44,42 @@ The displayed Weierstrass invariants of~\eqref{eq:frey} are
 On the inhabited slice one has $v_2(\Delta(1,1))=6$ (type $I_0^*$
 valuation) and $v_{29}(\Delta(29,1))=8$ (type $I_8$), together with
 $29\nmid c_4(29,1)$. The residual-level Finset $\{32,928\}$ has
-card~$2$; that card is a Finset numeral, not two N\'eron models.
-The parent names \texttt{Tate\_algorithm\_at\_29},
-\texttt{Frey\_Neron\_conductor}, and
-\texttt{Frey\_conductor\_29\_is\_Neron} are \emph{theorems in this
-namespace}: each re-exports the inhabited conjunction
-\texttt{Tate\_algorithm\_at\_2\_and\_29}. On the parent file
-\texttt{Tate\_Frey\_Conductor\_29.lean} those three names stay
+card~$2$; that card is a Finset numeral over two named
+specializations, not two N\'eron models of a single curve. The
+single named theorem
+\texttt{\seqsplit{displayed\_frey\_specialization\_data\_at\_2\_and\_29}}
+re-exports this inhabited conjunction, i.e.\
+\texttt{Tate\_algorithm\_at\_2\_and\_29}.
+
+\begin{honesty}[v31 rename]
+Earlier releases (through \texttt{v0.30}) additionally exported this
+same conjunction under three further names,
+\texttt{Tate\_algorithm\_at\_29}, \texttt{Frey\_Neron\_conductor},
+and \texttt{Frey\_conductor\_29\_is\_Neron}, chosen to echo Tate's
+algorithm and N\'eron conductors even though the file computes
+neither. Those names, and a fourth packaged theorem of the same
+type once named \texttt{\seqsplit{Tate\_Frey\_Conductor\_29\_Neron\_final}},
+are removed as of this revision; there is no compatibility alias.
+The differently-scoped parent names
+\texttt{Tate\_algorithm\_at\_29}, \texttt{Frey\_Neron\_conductor},
+and \texttt{Frey\_conductor\_29\_is\_Neron} on
+\texttt{Tate\_Frey\_Conductor\_29.lean} are untouched and remain
 \texttt{def Prop}.
+\end{honesty}
 
 \begin{honesty}
 The phrase ``final $N_E=928$'' means the displayed identity
-$2^5\cdot 29=928$. It is not Tate's algorithm as a function on
-integral models. SAGE \texttt{sagemath/tate\_nero\_29.sage} uses
-the displayed Frey~\eqref{eq:frey}, not the short model.
+$2^5\cdot 29=928$ at $(A,B)=(29,1)$. It is not Tate's algorithm as a
+function on integral models, and it is not a claim about the
+conductor for other $(A,B)$ satisfying \eqref{eq:gap3}. SAGE
+\texttt{sagemath/tate\_nero\_29.sage} uses the displayed
+Frey~\eqref{eq:frey}, not the short model, and its own comment
+records that $(1,1)$ gives $32$.
 \end{honesty}
 
-Axioms on the packaged Tate final are $[\mathtt{propext}]$ for the
-pure numerals and $[\mathtt{propext},\mathtt{Classical.choice},\mathtt{Quot.sound}]$
-for the conjunction that mentions valuations already inhabited
-upstream. There is no \texttt{Lean.ofReduceBool}, no
-\texttt{sorryAx}, and no new axiom.
+Axioms in this file are $[\mathtt{propext}]$ for the pure numerals
+(e.g.\ \texttt{final\_N\_E\_eq\_928}) and
+$[\mathtt{propext},\mathtt{Classical.choice},\mathtt{Quot.sound}]$
+for \texttt{\seqsplit{displayed\_frey\_specialization\_data\_at\_2\_and\_29}},
+which mentions valuations already inhabited upstream. There is no
+\texttt{Lean.ofReduceBool}, no \texttt{sorryAx}, and no new axiom.

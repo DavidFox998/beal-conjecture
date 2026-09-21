@@ -205,8 +205,8 @@ theorem LLL_nogo_persists_after_J0_26_BSD :
 #check J0_26_isogenous_26a1_times_26b1
 #check J0_26_rank0_via_Kolyvagin
 #check MordellWeilGroup.add_comm
-#check not_IsRankZero_26a1
-#check not_IsRankZero_26b1
+#check not_IsSubsingleton_26a1
+#check not_IsSubsingleton_26b1
 #check MW_rank_zero_26a1
 #check BSD_rank_statement
 #print axioms curve26a1_Δ

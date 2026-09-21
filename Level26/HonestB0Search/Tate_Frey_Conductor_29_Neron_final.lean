@@ -21,22 +21,32 @@ import LLLTargetB8_C1_lower_bound
 /-!
 # Tate algorithm / Néron conductor final display (v29)
 
-The three remaining parent *names*
+v31 rename: the three former re-export *names*
 `Tate_algorithm_at_29`, `Frey_Neron_conductor`,
-`Frey_conductor_29_is_Neron` become **theorems in this
-namespace**. Each re-exports
-`Tate_algorithm_at_2_and_29` from
+`Frey_conductor_29_is_Neron`, and the former packaged
+`Tate_Frey_Conductor_29_Neron_final`, are removed. All four
+had the identical type — the inhabited conjunction from
 `Tate_Frey_Conductor_29_Neron_inhabited` (`6f67889` /
 `a93402e`): `c₄`/`c₆`, `v₂(Δ)=6` (`I₀*`),
 `v₂₉(Δ(29,1))=8` (`I₈`), displayed numeral
-`928 = 2⁵ · 29`.
+`928 = 2⁵ · 29` — but their names suggested Tate's algorithm,
+a Néron conductor, or an identification with one, none of
+which this file computes. The single canonical name for that
+conjunction is now
+`displayed_frey_specialization_data_at_2_and_29`. There is no
+compatibility alias for the old names: they were exactly the
+problem being corrected, so none is kept.
 
-The parent file `Tate_Frey_Conductor_29.lean` keeps those
-three names as `def Prop` (aliases of `Tate_uniformization`,
-`Tate_q`, `inertia_trivial_mod13_when_13_dvd_v`). This file
-does not convert them.
+The parent file `Tate_Frey_Conductor_29.lean` is unchanged and
+keeps its own, differently-scoped names
+`Tate_algorithm_at_29`, `Frey_Neron_conductor`,
+`Frey_conductor_29_is_Neron` as `def Prop` (aliases of
+`Tate_uniformization`, `Tate_q`,
+`inertia_trivial_mod13_when_13_dvd_v`). This file does not
+convert them, and the rename above is local to this
+namespace; it does not touch the parent.
 
-**Final `N_E = 928`** is that displayed numeral. Mathlib
+**`final_N_E_eq_928`** is the displayed numeral. Mathlib
 4.12 has no `KodairaType` and no `NeronModel`. This is
 not Tate’s algorithm as a function on integral models and
 is not `N_E` of a Néron model.
@@ -96,55 +106,18 @@ theorem displayed_v29_I8 : padicValNat 29 (freyDiscNat 29 1) = 8 :=
 theorem displayed_residual_levels_card :
     (({32, 928} : Finset ℕ).card) = 2 := by decide
 
-/-- Final displayed Tate algorithm at `29`. Re-export of
-    the inhabited `2`/`29` valuation conjunction from
-    `6f67889`. Not Mathlib `KodairaType`. -/
-theorem Tate_algorithm_at_29 :
-    (2 : ℕ) ^ 5 * 29 = 928 ∧
-      (32 : ℕ) * 29 = 928 ∧
-      928 / 29 = 32 ∧
-      (freyWeierstrass 1 1).c₄ = 48 ∧
-      (freyWeierstrass 1 1).c₆ = 0 ∧
-      padicValInt 29 (frey_c4 1 1) = 0 ∧
-      padicValNat 2 (freyDiscNat 1 1) = 6 ∧
-      padicValNat 2 (freyDiscNat 29 1) = 6 ∧
-      padicValNat 29 (freyDiscNat 29 1) = 8 ∧
-      padicValInt 29 (frey_c4 29 1) = 0 :=
-  Tate_algorithm_at_2_and_29
-
-/-- Final displayed Néron conductor numeral
-    `928 = 2⁵ · 29`. Not Mathlib `NeronModel` / `N_E`. -/
-theorem Frey_Neron_conductor :
-    (2 : ℕ) ^ 5 * 29 = 928 ∧
-      (32 : ℕ) * 29 = 928 ∧
-      928 / 29 = 32 ∧
-      (freyWeierstrass 1 1).c₄ = 48 ∧
-      (freyWeierstrass 1 1).c₆ = 0 ∧
-      padicValInt 29 (frey_c4 1 1) = 0 ∧
-      padicValNat 2 (freyDiscNat 1 1) = 6 ∧
-      padicValNat 2 (freyDiscNat 29 1) = 6 ∧
-      padicValNat 29 (freyDiscNat 29 1) = 8 ∧
-      padicValInt 29 (frey_c4 29 1) = 0 :=
-  Tate_algorithm_at_2_and_29
-
-/-- The displayed `29`-split numeral is `928`. Not equality
-    with a Mathlib Néron conductor. -/
-theorem Frey_conductor_29_is_Neron :
-    (2 : ℕ) ^ 5 * 29 = 928 ∧
-      (32 : ℕ) * 29 = 928 ∧
-      928 / 29 = 32 ∧
-      (freyWeierstrass 1 1).c₄ = 48 ∧
-      (freyWeierstrass 1 1).c₆ = 0 ∧
-      padicValInt 29 (frey_c4 1 1) = 0 ∧
-      padicValNat 2 (freyDiscNat 1 1) = 6 ∧
-      padicValNat 2 (freyDiscNat 29 1) = 6 ∧
-      padicValNat 29 (freyDiscNat 29 1) = 8 ∧
-      padicValInt 29 (frey_c4 29 1) = 0 :=
-  Tate_algorithm_at_2_and_29
-
-/-- Packaged v29 final. Displayed `N_E = 928` is the
-    numeral `2⁵ · 29`, not a Néron-model constructor. -/
-theorem Tate_Frey_Conductor_29_Neron_final :
+/-- Canonical v31 name for the packaged displayed data at
+    the two named specializations `(A,B)=(1,1)` and
+    `(A,B)=(29,1)`: numerals, `c₄`/`c₆`, and `p`-adic
+    valuations of the discriminant. Re-export of
+    `Tate_algorithm_at_2_and_29` (`6f67889`). Not Mathlib
+    `KodairaType`, not a Néron conductor, and not Tate's
+    algorithm as a function on integral models. Replaces the
+    removed aliases `Tate_algorithm_at_29`,
+    `Frey_Neron_conductor`, `Frey_conductor_29_is_Neron`, and
+    the removed packaged `Tate_Frey_Conductor_29_Neron_final`
+    (v29 and earlier), all of which had this exact type. -/
+theorem displayed_frey_specialization_data_at_2_and_29 :
     (2 : ℕ) ^ 5 * 29 = 928 ∧
       (32 : ℕ) * 29 = 928 ∧
       928 / 29 = 32 ∧
@@ -170,19 +143,13 @@ theorem LLL_nogo_persists_after_Tate_Neron_v29 :
 #check displayed_928_div_29
 #check displayed_Delta_1_1
 #check displayed_residual_levels_card
-#check Tate_algorithm_at_29
-#check Frey_Neron_conductor
-#check Frey_conductor_29_is_Neron
-#check Tate_Frey_Conductor_29_Neron_final
+#check displayed_frey_specialization_data_at_2_and_29
 #check final_N_E_eq_928
 #check BealMatveevBeal.Tate_Frey_Conductor_29.Tate_algorithm_at_29
 #check BealMatveevBeal.Tate_Frey_Conductor_29.Frey_Neron_conductor
 #check BealMatveevBeal.Tate_Frey_Conductor_29.Frey_conductor_29_is_Neron
 #print axioms displayed_Neron_conductor
-#print axioms Tate_algorithm_at_29
-#print axioms Frey_Neron_conductor
-#print axioms Frey_conductor_29_is_Neron
-#print axioms Tate_Frey_Conductor_29_Neron_final
+#print axioms displayed_frey_specialization_data_at_2_and_29
 #print axioms final_N_E_eq_928
 #print axioms LLL_nogo_persists_after_Tate_Neron_v29
 

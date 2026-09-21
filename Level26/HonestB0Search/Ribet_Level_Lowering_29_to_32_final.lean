@@ -22,19 +22,34 @@ import LLLTargetB8_C1_lower_bound
 /-!
 # Ribet `928 → 32` final display (v29)
 
-The three remaining parent *names*
+v31 rename: the three former re-export *names*
 `Ribet_928_to_32`, `no_newforms_at_32_mod13`,
-`explicit_a29_mod13` become **theorems in this
-namespace**. Each re-exports `no_newforms_at_32` from
-`Ribet_No_Newforms_At_32_inhabited` (`e80431f` /
+`explicit_a29_mod13`, and the former packaged
+`Ribet_Level_Lowering_29_to_32_final`, are removed. All
+four had the identical type — the inhabited conjunction
+from `Ribet_No_Newforms_At_32_inhabited` (`e80431f` /
 `a93402e`): `928 / 29 = 32`, `32 · 29 = 928`, `29 ∤ 32`,
 `2⁴ = 16`, `16 ∣ 32`, displayed `dim S₂(Γ₀(32)) = 1`,
 displayed `dim S₂(Γ₀(16)) = 0`, Sturm `32 · 3 / 2 = 48`,
-`2 · 48 / 12 = 8`, Frey-matching Finset `∅` (`card = 0`).
+`2 · 48 / 12 = 8`, Frey-matching Finset `∅` (`card = 0`) —
+but their names suggested a level-lowering statement, that
+no newforms exist at level `32` mod `13` (the development
+records a one-dimensional newspace, `32a1`), or an explicit
+computation of `a₂₉`, none of which this file does. The
+single canonical name is now
+`displayed_level32_arithmetic_and_newspace_data`. There is
+no compatibility alias for the old names.
 
-The parent file `Ribet_Level_Lowering_29_to_32.lean` keeps
-those three names as `def Prop`. This file does not
-convert them.
+The parent file `Ribet_Level_Lowering_29_to_32.lean` is
+unchanged and keeps its own, differently-scoped names as
+`def Prop`. This file does not convert them, and the rename
+above is local to this namespace.
+
+Kept unchanged (genuinely computed, in `Level32Table.lean`):
+`no_match_32a1_of_good_red_29`,
+`no_sol_with_good_red_29_of_trace_match`. Those describe
+their actual conditional conclusions and are not part of
+this rename.
 
 LMFDB / `Level32Table` record `dim S₂(Γ₀(32))` **new**
 as `1` (unique `32a1`). The pasted equality
@@ -87,66 +102,19 @@ theorem displayed_sturm_bound_8 : (2 : ℕ) * 48 / 12 = 8 := by decide
 theorem displayed_matching_empty_card :
     ((∅ : Finset ℕ).card) = 0 := by decide
 
-/-- Final displayed Ribet `928 → 32` *name*. Numerals and
-    the empty matching Finset. Not abstract Ribet and not
-    Sage `new_subspace().dimension() = 0` (LMFDB new dim
-    is `1`, newform `32a1`). Parent `Ribet_928_to_32`
-    stays `def Prop`. -/
-theorem Ribet_928_to_32 :
-    928 / 29 = 32 ∧
-      (32 : ℕ) * 29 = 928 ∧
-      ¬ 29 ∣ 32 ∧
-      S2_Gamma0_32_dim = 1 ∧
-      displayed_old_level = 16 ∧
-      S2_Gamma0_16_dim = 0 ∧
-      (2 : ℕ) ^ 4 = 16 ∧
-      16 ∣ 32 ∧
-      (32 : ℕ) * 3 / 2 = 48 ∧
-      (2 : ℕ) * 48 / 12 = 8 ∧
-      displayed_frey_matching_newforms.card = 0 ∧
-      S2_Gamma0_32_dim ≠ displayed_frey_matching_newforms.card :=
-  no_newforms_at_32
-
-/-- Final displayed “no newforms at 32 mod 13” *name*.
-    Matching Finset `card = 0` versus displayed dim `1`.
-    Parent `no_newforms_at_32_mod13` stays `def Prop`. -/
-theorem no_newforms_at_32_mod13 :
-    928 / 29 = 32 ∧
-      (32 : ℕ) * 29 = 928 ∧
-      ¬ 29 ∣ 32 ∧
-      S2_Gamma0_32_dim = 1 ∧
-      displayed_old_level = 16 ∧
-      S2_Gamma0_16_dim = 0 ∧
-      (2 : ℕ) ^ 4 = 16 ∧
-      16 ∣ 32 ∧
-      (32 : ℕ) * 3 / 2 = 48 ∧
-      (2 : ℕ) * 48 / 12 = 8 ∧
-      displayed_frey_matching_newforms.card = 0 ∧
-      S2_Gamma0_32_dim ≠ displayed_frey_matching_newforms.card :=
-  no_newforms_at_32
-
-/-- Final displayed explicit `a₂₉` mod `13` *name*.
-    Matching Finset is empty; this file does not compute
-    `a₂₉`. Parent `explicit_a29_mod13` stays `def Prop`. -/
-theorem explicit_a29_mod13 :
-    928 / 29 = 32 ∧
-      (32 : ℕ) * 29 = 928 ∧
-      ¬ 29 ∣ 32 ∧
-      S2_Gamma0_32_dim = 1 ∧
-      displayed_old_level = 16 ∧
-      S2_Gamma0_16_dim = 0 ∧
-      (2 : ℕ) ^ 4 = 16 ∧
-      16 ∣ 32 ∧
-      (32 : ℕ) * 3 / 2 = 48 ∧
-      (2 : ℕ) * 48 / 12 = 8 ∧
-      displayed_frey_matching_newforms.card = 0 ∧
-      S2_Gamma0_32_dim ≠ displayed_frey_matching_newforms.card :=
-  no_newforms_at_32
-
-/-- Packaged v29 final. Honest: matching `∅` card `0`
-    versus LMFDB / displayed `dim S₂(Γ₀(32)) = 1`. Sage
-    `new_subspace().dimension() = 0` is not claimed. -/
-theorem Ribet_Level_Lowering_29_to_32_final :
+/-- Canonical v31 name for the packaged displayed data:
+    numerals plus the empty Frey-matching Finset versus the
+    displayed newspace dimension `1`. Re-export of
+    `no_newforms_at_32` (`e80431f`). Not abstract Ribet level
+    lowering, not a claim that no newforms exist at level
+    `32` mod `13` (LMFDB records dimension `1`, newform
+    `32a1`), not Sage `new_subspace().dimension() = 0`, and
+    not a computation of `a₂₉`. Replaces the removed aliases
+    `Ribet_928_to_32`, `no_newforms_at_32_mod13`,
+    `explicit_a29_mod13`, and the removed packaged
+    `Ribet_Level_Lowering_29_to_32_final` (v29 and earlier),
+    all of which had this exact type. -/
+theorem displayed_level32_arithmetic_and_newspace_data :
     928 / 29 = 32 ∧
       (32 : ℕ) * 29 = 928 ∧
       ¬ 29 ∣ 32 ∧
@@ -177,18 +145,14 @@ theorem LLL_nogo_persists_after_Ribet_928_to_32_v29 :
 #check displayed_index_sturm_48
 #check displayed_sturm_bound_8
 #check displayed_matching_empty_card
-#check Ribet_928_to_32
-#check no_newforms_at_32_mod13
-#check explicit_a29_mod13
-#check Ribet_Level_Lowering_29_to_32_final
+#check displayed_level32_arithmetic_and_newspace_data
 #check BealMatveevBeal.Ribet_Level_Lowering_29_to_32.Ribet_928_to_32
 #check BealMatveevBeal.Ribet_Level_Lowering_29_to_32.no_newforms_at_32_mod13
 #check BealMatveevBeal.Ribet_Level_Lowering_29_to_32.explicit_a29_mod13
 #print axioms nine_twenty_eight_div_twenty_nine
 #print axioms displayed_matching_empty_card
 #print axioms displayed_S2_Gamma0_32_dim
-#print axioms Ribet_928_to_32
-#print axioms Ribet_Level_Lowering_29_to_32_final
+#print axioms displayed_level32_arithmetic_and_newspace_data
 #print axioms LLL_nogo_persists_after_Ribet_928_to_32_v29
 
 end BealMatveevBeal.Ribet_Level_Lowering_29_to_32_final

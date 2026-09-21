@@ -35,11 +35,12 @@ from `Kolyvagin_MW_Rank0_26a1_26b1_inhabited` (`6e88d94` /
 * `Fintype.ofSubsingleton a` when `Subsingleton α` and a
   witness `a` exists (card `1`)
 * `|Sel₂| = 1`, `3 · 7 = 21`, `L/Ω = 1/3` and `1/7`
-* `¬ IsRankZero` on Cremona `26a1` / `26b1`
+* `¬ IsSubsingleton` on Cremona `26a1` / `26b1`
 
-`IsRankZero := Subsingleton` is **refuted** on both models
-(torsion points `(4,4)` / `(1,0)`). The Subsingleton→Fintype
-path therefore does **not** apply to those `MordellWeilGroup`s.
+`IsSubsingleton := Subsingleton` (v31 rename from
+`IsRankZero`) is **refuted** on both models (torsion points
+`(4,4)` / `(1,0)`). The Subsingleton→Fintype path therefore
+does **not** apply to those `MordellWeilGroup`s.
 Algebraic MW rank 0 as `Nonempty (Fintype (E(ℚ)))` stays
 `def Prop` on the parent.
 
@@ -66,13 +67,13 @@ open BealMatveevBeal.LLLTargetB8C1LowerBound
 
 /-! ## Re-export parent numerals (`6e88d94`) -/
 
-theorem not_IsRankZero_26a1_reexport' :
-    ¬ MordellWeilGroup.IsRankZero curve26a1_Q :=
-  not_IsRankZero_26a1_reexport
+theorem not_IsSubsingleton_26a1_reexport' :
+    ¬ MordellWeilGroup.IsSubsingleton curve26a1_Q :=
+  not_IsSubsingleton_26a1_reexport
 
-theorem not_IsRankZero_26b1_reexport' :
-    ¬ MordellWeilGroup.IsRankZero curve26b1_Q :=
-  not_IsRankZero_26b1_reexport
+theorem not_IsSubsingleton_26b1_reexport' :
+    ¬ MordellWeilGroup.IsSubsingleton curve26b1_Q :=
+  not_IsSubsingleton_26b1_reexport
 
 theorem Sel2_card_both_one_reexport :
     Sel2_card_26a1 = 1 ∧ Sel2_card_26b1 = 1 :=
@@ -114,8 +115,8 @@ theorem Fintype_of_nonempty_Fintype_spec {α : Type*}
   ⟨Fintype_of_nonempty_Fintype h⟩
 
 /-- Subsingleton + witness ⇒ `Fintype` of card `1`.
-    This is pasted `IsRankZero` (only `{0}`). It does **not**
-    apply to `26a1` / `26b1` (`¬ IsRankZero`). -/
+    This is `IsSubsingleton` (only `{0}`). It does **not**
+    apply to `26a1` / `26b1` (`¬ IsSubsingleton`). -/
 def Fintype_of_Subsingleton {α : Type*} [Subsingleton α] (a : α) :
     Fintype α :=
   Fintype.ofSubsingleton a
@@ -130,32 +131,32 @@ theorem Unit_is_Fintype_card_one :
 
 /-! ## Subsingleton path is blocked on the displayed curves -/
 
-theorem IsRankZero_is_Subsingleton_on_26a1 :
-    MordellWeilGroup.IsRankZero curve26a1_Q ↔
+theorem IsSubsingleton_iff_Subsingleton_on_26a1 :
+    MordellWeilGroup.IsSubsingleton curve26a1_Q ↔
       Subsingleton (MordellWeilGroup curve26a1_Q) :=
   Iff.rfl
 
-theorem IsRankZero_is_Subsingleton_on_26b1 :
-    MordellWeilGroup.IsRankZero curve26b1_Q ↔
+theorem IsSubsingleton_iff_Subsingleton_on_26b1 :
+    MordellWeilGroup.IsSubsingleton curve26b1_Q ↔
       Subsingleton (MordellWeilGroup curve26b1_Q) :=
   Iff.rfl
 
 theorem not_Subsingleton_MW_26a1 :
     ¬ Subsingleton (MordellWeilGroup curve26a1_Q) :=
-  not_IsRankZero_26a1_reexport'
+  not_IsSubsingleton_26a1_reexport'
 
 theorem not_Subsingleton_MW_26b1 :
     ¬ Subsingleton (MordellWeilGroup curve26b1_Q) :=
-  not_IsRankZero_26b1_reexport'
+  not_IsSubsingleton_26b1_reexport'
 
 /-! ## Packaged v28 display -/
 
 /-- Numerals plus the typeclass upgrade. Does **not** inhabit
     `MW_rank_zero_fintype` / Kato / TwoDescent⇒rank 0.
-    Does **not** apply `ofSubsingleton` to `E(ℚ)` (`¬ IsRankZero`). -/
+    Does **not** apply `ofSubsingleton` to `E(ℚ)` (`¬ IsSubsingleton`). -/
 theorem Kolyvagin_Fintype_Subsingleton_inhabited :
-    ¬ MordellWeilGroup.IsRankZero curve26a1_Q ∧
-      ¬ MordellWeilGroup.IsRankZero curve26b1_Q ∧
+    ¬ MordellWeilGroup.IsSubsingleton curve26a1_Q ∧
+      ¬ MordellWeilGroup.IsSubsingleton curve26b1_Q ∧
       ¬ Subsingleton (MordellWeilGroup curve26a1_Q) ∧
       ¬ Subsingleton (MordellWeilGroup curve26b1_Q) ∧
       Sel2_card_26a1 = 1 ∧ Sel2_card_26b1 = 1 ∧
@@ -163,8 +164,8 @@ theorem Kolyvagin_Fintype_Subsingleton_inhabited :
       BealMatveevBeal.J0_26_BSD_26a1_26b1.L_over_Omega_26a1 = (1 / 3 : ℚ) ∧
       BealMatveevBeal.J0_26_BSD_26a1_26b1.L_over_Omega_26b1 = (1 / 7 : ℚ) ∧
       @Fintype.card Unit (Fintype_of_Subsingleton ()) = 1 :=
-  ⟨not_IsRankZero_26a1_reexport',
-    not_IsRankZero_26b1_reexport',
+  ⟨not_IsSubsingleton_26a1_reexport',
+    not_IsSubsingleton_26b1_reexport',
     not_Subsingleton_MW_26a1,
     not_Subsingleton_MW_26b1,
     Sel2_card_26a1_eq, Sel2_card_26b1_eq,
