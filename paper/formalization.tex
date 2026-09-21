@@ -1,0 +1,77 @@
+\section{Lean formalization --- explicit types}\label{sec:formal}
+
+Every theorem in the four finals carries an explicit type. Lean~$4.12$
+rejects \texttt{theorem foo := bar}. The required opens are
+\texttt{open Nat Finset Classical}. Typical types are
+$\mathbb{N}$, $\mathrm{Prop}$, $\mathrm{Finset}\,\mathbb{N}$, and
+\texttt{Fintype}. Proofs use \texttt{decide} (or \texttt{norm\_num}
+on $\Q$), never \texttt{native\_decide}, so
+\texttt{Lean.ofReduceBool} does not appear.
+
+\paragraph{Pin.}
+Toolchain \texttt{leanprover/lean4:v4.12.0}. Mathlib
+\texttt{809c3fb3b5c8f5d7dace56e200b426187516535a},
+\texttt{inputRev v4.12.0}. Foundations Lake manifest prefix
+\texttt{c7dbd578}; conjecture prefix \texttt{83739542}
+(package lists differ; do not run \texttt{lake update}). Vendor
+\texttt{db7a556}/\texttt{fea0c393} has difference $0$ against
+\texttt{b780c9c}/\texttt{1a00fbd} and against foundations
+\texttt{43735b3}.
+
+\paragraph{Axioms.}
+Allowed axiom lists are $[\mathtt{propext}]$,
+$[\mathtt{propext},\mathtt{Quot.sound}]$, and
+$[\mathtt{propext},\mathtt{Classical.choice},\mathtt{Quot.sound}]$.
+There is no \texttt{sorryAx} and no new axiom. Parent files keep
+the algebraic names as \texttt{def Prop}. Display files contain
+no new \texttt{def Prop}.
+
+\paragraph{CI, incremental only.}
+Foundations \texttt{build.yml} is HonestB0Search incremental:
+\texttt{lake exe cache get}, then
+\texttt{+Tate\_Frey\_Conductor\_29\_Neron\_final},
+\texttt{+Mazur\_X0\_13\_No\_Isogeny\_final},
+\texttt{+Ribet\_Level\_Lowering\_29\_to\_32\_final},
+\texttt{+Kolyvagin\_MW\_Rank0\_26a1\_26b1\_final}
+($\sim 40$s on a warm \texttt{.lake}), then
+\texttt{lake build HonestB0Search} and \texttt{lake build Level26}
+($1$--$2$s each). Cache key
+\texttt{lake-\$\{hashFiles(lean-toolchain,lake-manifest.json)\}-v27-6ccafbf}.
+Representative greens:
+\href{https://github.com/DavidFox998/beal-level-26-foundations/actions/runs/35488239286}{35488239286}
+($137$s, \texttt{11c0ad7});
+\href{https://github.com/DavidFox998/beal-level-26-foundations/actions/runs/35488699511}{35488699511}
+($252$s);
+\href{https://github.com/DavidFox998/beal-level-26-foundations/actions/runs/35489274297}{35489274297}
+($282$s);
+\href{https://github.com/DavidFox998/beal-level-26-foundations/actions/runs/35489926310}{35489926310}
+($262$s);
+phase
+\href{https://github.com/DavidFox998/beal-level-26-foundations/actions/runs/35490246507}{35490246507}
+($303$s) and
+\href{https://github.com/DavidFox998/beal-level-26-foundations/actions/runs/35524223408}{35524223408};
+About chore
+\href{https://github.com/DavidFox998/beal-level-26-foundations/actions/runs/35552037733}{35552037733}
+($01{:}47{:}20$Z--$01{:}52{:}05$Z, $285$s, \texttt{.lake} restored).
+On those working branches \texttt{main.yml} recorded $0$ runs.
+The phase incremental
+\href{https://github.com/DavidFox998/beal-level-26-foundations/actions/runs/35524223408}{35524223408}
+is the green gate. This draft does not run
+\texttt{lake build BealMatveevBeal} and does not run
+\texttt{lake update}.
+
+\paragraph{Conjecture \texttt{main.yml}.}
+On \texttt{beal-conjecture} the hours job
+\texttt{build+HonestB0Search+Level26} runs only on \texttt{main}
+(and matching merge/phase/v24--v27 branches). Greens:
+merge-branch
+\href{https://github.com/DavidFox998/beal-conjecture/actions/runs/35524441913}{35524441913}
+(\texttt{850e1e9});
+main
+\href{https://github.com/DavidFox998/beal-conjecture/actions/runs/35532850099}{35532850099}
+(\texttt{af520d3});
+badge
+\href{https://github.com/DavidFox998/beal-conjecture/actions/runs/35541392250}{35541392250}
+($22{:}20{:}55$Z--$00{:}58{:}37$Z, $2$h~$37$m) on
+\texttt{ff546da}. Tip \texttt{ea261b9} is the About chore on top
+of that badge.

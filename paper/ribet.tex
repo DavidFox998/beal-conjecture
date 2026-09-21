@@ -1,0 +1,56 @@
+\section{Ribet --- $928\to 32$ level lowering}\label{sec:ribet}
+
+The file
+\texttt{Ribet\_Level\_Lowering\_29\_to\_32\_final.lean}
+(\texttt{5631fd1}; incremental
+\href{https://github.com/DavidFox998/beal-level-26-foundations/actions/runs/35489274297}{35489274297},
+$282$s) displays the residual-level arithmetic of
+Ribet~\cite{ribet1990} without inhabiting abstract level lowering.
+
+\begin{displaythm}[Ribet numerals]
+\label{disp:ribet}
+\[
+\begin{aligned}
+  928/29&=32, &
+  32\cdot 29&=928, &
+  \neg\,29\mid 32,\\
+  2^4&=16, &
+  16\mid 32,\\
+  \dim S_2(\Ga_0(32))^{\mathrm{disp}}&=1, &
+  \dim S_2(\Ga_0(16))^{\mathrm{disp}}&=0,\\
+  32\cdot\tfrac{3}{2}&=48, &
+  2\cdot 48/12&=8,\\
+  (\emptyset:\mathrm{Finset}\,\mathbb{N}).\mathrm{card}&=0.
+\end{aligned}
+\]
+The displayed full/new dimensions and the Sturm pair are the LMFDB
+pin \texttt{full=1}, \texttt{new=1}, \texttt{level16=0},
+\texttt{sturm=8} for the unique newform \texttt{32a1}~\cite{lmfdb}.
+\end{displaythm}
+
+The parent names \texttt{Ribet\_928\_to\_32},
+\texttt{no\_newforms\_at\_32\_mod13}, and
+\texttt{explicit\_a29\_mod13} are theorems in this namespace. Each
+re-exports \texttt{no\_newforms\_at\_32}: the numerals of
+Display~\ref{disp:ribet} together with
+\texttt{displayed\_frey\_matching\_newforms.card $= 0$}. On the
+parent file \texttt{Ribet\_Level\_Lowering\_29\_to\_32.lean} those
+three names stay \texttt{def Prop}. The theorem named
+\texttt{explicit\_a29\_mod13} does not compute $a_{29}$.
+
+\begin{honesty}[Newspace dimension $1$, not $0$]
+LMFDB records $\dim S_2(\Ga_0(32))^{\mathrm{new}}=1$, with unique
+newform \texttt{32a1}. The pasted Sage line
+\texttt{CuspForms(32,2).new\_subspace().dimension()=0} is
+\emph{not} a theorem. The honest Lean display is the empty matching
+Finset (card~$0$) versus displayed dimension~$1$. Witnesses:
+\texttt{sagemath/ribet\_no\_newforms\_32.sage} and
+\texttt{certs/ribet\_no\_newforms\_32.json} pin
+\texttt{full=1}, \texttt{new=1}, \texttt{level16=0},
+\texttt{sturm=8}.
+\end{honesty}
+
+Axioms: display $[\mathtt{propext},\mathtt{Quot.sound}]$;
+LLL no-go
+$[\mathtt{propext},\mathtt{Classical.choice},\mathtt{Quot.sound}]$.
+No \texttt{Lean.ofReduceBool}, no \texttt{sorryAx}, no new axiom.
