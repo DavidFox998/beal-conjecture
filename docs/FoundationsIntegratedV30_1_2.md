@@ -58,10 +58,10 @@ proposition boundaries.
   `c7dbd5785b52afccc90ba404fef4a8f3ff12b549235698677a495fdc57ee7fc6`
 - Cache restored: 5,134 files
 - Combined build: 5,209 jobs
-- New module: `5178/5209`
-- `MazurCurve.BlockerDoc`: `5179/5209`
-- `Conditional32Newform.Bridge`: `5201/5209`
-- `KolyvaginCurve.BlockerDoc`: `5207/5209`
+- New module: `5191/5209`
+- `MazurCurve.BlockerDoc`: `5190/5209`
+- `Conditional32Newform.Bridge`: `5207/5209`
+- `KolyvaginCurve.BlockerDoc`: `5206/5209`
 - `RequiresTateMazurRibetFor32.Doc`: `5208/5209`
 - No `lake update`
 - No vendoring
