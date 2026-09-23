@@ -80,13 +80,17 @@ and Ribet conclusions, three explicit typed conversions to the older
 abstract interface, and \texttt{HasNewformAtLevel32} strictly forward. The
 final \texttt{RequiresTateMazurRibetFor32.ForwardDoc} table preserves the
 Tate, N\'eron/inertia, Mazur, Ribet, Kolyvagin, and Conditional-32 interfaces
-in that exact order while retaining the three typed conversions. The
+in that exact order while retaining the three typed conversions. The final
+\texttt{BealFinal.Main} interface adds the common-prime conclusion only as
+explicit proof data and keeps the full $B\leq10^6$ search separate from the
+proved $B<1000$ slice. The
 integrated bridge
 derives proposition-valued level-$32$ evidence from exactly three explicit
 Mazur, Tate, and Ribet assumptions; it does not construct an unconditional
-Mathlib newform. Theorems use explicit types and \texttt{decide}, not
-\texttt{native\_decide}. Software version DOI
-\texttt{10.5281/zenodo.22911918}; concept DOI
+Mathlib newform. The new final module adds no \texttt{native\_decide};
+its numerical theorem inherits the existing finite-search certificate.
+Software version DOI
+\texttt{10.5281/zenodo.22912430}; concept DOI
 \texttt{10.5281/zenodo.22379293}.
 \end{abstract}
 

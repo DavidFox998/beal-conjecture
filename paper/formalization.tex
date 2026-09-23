@@ -83,6 +83,23 @@ $\Delta$, $v_{29}(\Delta)$, $928/29$, $\lvert\SL_2(\F_{13})\rvert$,
 $a_{29}$, $L/\cO$, and Selmer cardinalities without using any of them
 backwards to construct the six interfaces.
 
+\paragraph{Final Beal interface.}
+The module \path{BealFinal.Main} at commit
+\texttt{995b9c4810869c1ce6531b32080e668c1f5ff233} extends the exact dependency
+ledger without changing its formal status. The record
+\path{BealFinalData} carries the six-stage Requires package, the equalities
+\texttt{C1\_floor=143186215390} and \texttt{B0\_nat=1000000}, the full
+$B\leq10^6$ search proposition, and a separate \path{BealTheoremData}
+field. The latter states that every positive solution with all exponents at
+least three has a prime dividing all three bases.
+
+The projection theorems expose that common-prime conclusion but do not prove
+it from the signature $(4,4,13)$ numerics. Likewise, the imported finite
+search proves only $B<1000$; the full $B\leq10^6$ statement remains an
+explicit field. The final numerical surface records the established
+discriminant, valuation, level, newform, normalized-value, and Selmer
+equalities together with the two constants and the proved $B<1000$ slice.
+
 \paragraph{Forward Tate closure.}
 The subsequent module \path{TateCurve.Neron32_928InertiaQ13} projects the
 exact symbol $I_{26k}$ from Tate-algorithm evidence, the $32/928$ split from
