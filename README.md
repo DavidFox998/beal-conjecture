@@ -2,6 +2,28 @@
 
 **v30.0.0-level-26-structural-verification — Tate 928=2⁵·29 Neron I0* I8 c4 Δ v2=6 v29=8 Mazur 2184 48<2184 13=2²+3² 288/48=6 card2 genus0 infinite vs2 Ribet 928/29=32 ∅ card0 full1 new1 LMFDB 32a1 Kolyvagin |Sel2|=1 3·7=21 L/Ω=1/3 1/7 rank0 26a1 26b1**
 
+## Foundations v30.1 integrated conditional level-32 reference
+
+The companion repository now publishes the four full Tate, Mazur, Ribet, and
+Kolyvagin surfaces together with the conditional level-`32` bridge:
+
+- repository: [`beal-level-26-foundations`](https://github.com/DavidFox998/beal-level-26-foundations);
+- branch: `integrated-43735b3-full-tate-mazur-ribet-kolyvagin-conditional-32`;
+- commit: `75a07c0f8d369613e5cbae77661077178f6fc6ed`;
+- annotated tag: `v30.1.0-integrated-full-43735b3`;
+- tag object: `079c639abff33b6a2c511338a29dccac81df8814`;
+- exact merge base: `43735b3b14a9e844d4b4bdf57fa5f68d29e749ee`;
+- version DOI: [10.5281/zenodo.22909486](https://doi.org/10.5281/zenodo.22909486);
+- concept DOI: [10.5281/zenodo.22379293](https://doi.org/10.5281/zenodo.22379293).
+
+This is a successor reference to
+`v30.0.0-level-26-structural-verification`; it does not replace or move that
+tag.  The bridge takes explicit Mazur, Tate, and Ribet assumptions and is not
+an unconditional newform construction.  See
+[`docs/FoundationsIntegratedV30_1.md`](docs/FoundationsIntegratedV30_1.md).
+The Lean and Mathlib pins remain `v4.12.0` and `809c3fb3…`; no
+`lake update` was run.
+
 Current: `af520d3` `main` tag `v30.0.0-level-26-structural-verification` version DOI `10.5281/zenodo.22863527` — ports foundations `v0.30-mcom-structural-verification` at `2b60ccd` (chore `9160a6a` from `bc7e93b`) — four v29 finals already on this repo; v30 is structural verification of displayed Tate `928=2⁵·29` Néron `I₀*` `I₈` `c₄` `Δ` `v₂=6` `v₂₉=8`, Mazur `2184` `48<2184` `13=2²+3²` `288/48=6` card `2` genus `0` infinite vs `2`, Ribet `928/29=32` `∅` card `0` `full=1` `new=1` LMFDB `32a1`, Kolyvagin `|Sel₂|=1` `3·7=21` `L/Ω=1/3` `1/7` rank0 `26a1` `26b1` — vendor `Level26/BealLevel26Foundations` unchanged `db7a556`/`fea0c393` no nested `Level26` — parent Tate algorithm / Néron `N_E`, `{2 cusps}=X₀(13)(ℚ)`, Sage `new_subspace dim=0`, and `MW_rank_zero_fintype` stay `def Prop` on parent files — lakefile path-requires `./Level26/BealLevel26Foundations` — Matveev 2000 Thm 1.4 `n=2` `C1_floor=143186215390` + Bugeaud LLL → `B0=10^6` `hGen` `hLLL` stay `def Prop` — axioms `[propext, Classical.choice, Quot.sound]` — Lean 4.12 explicit types `decide` not `native_decide` — foundations branches `tate-v29` `mazur-x0-13` `ribet-928-32` `kolyvagin-fintype` `tate-neron-v28` `mazur-cusps-v28` `ribet-no-newforms-v28` `kolyvagin-fintype-subsingleton-v28` `tate-neron-final-v29` `mazur-no-isogeny-final-v29` `ribet-928-to-32-final-v29` `kolyvagin-rank0-final-v29` `chore-v30-structural-verification-docs` `phase-darmon-merel-4413` and tags `v0.27` `v0.28` `v0.29` `v0.30` stay live — concept DOI `10.5281/zenodo.22379293` — prior version DOI `10.5281/zenodo.22854603`
 
 [![Lean v4.12.0](https://img.shields.io/badge/Lean-v4.12.0-purple)](https://github.com/leanprover/lean4/releases/tag/v4.12.0) [![mathlib 809c3fb](https://img.shields.io/badge/mathlib-809c3fb-blue)](https://github.com/leanprover-community/mathlib4/commit/809c3fb3b5c8f5d7dace56e200b426187516535a) [![Concept DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22379293.svg)](https://doi.org/10.5281/zenodo.22379293) [![v30.0.0 DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22863527.svg)](https://doi.org/10.5281/zenodo.22863527) [![v29.0.0 DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22854603.svg)](https://doi.org/10.5281/zenodo.22854603) [![v28.0.0 DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22851334.svg)](https://doi.org/10.5281/zenodo.22851334) [![v27.0.0 DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22842767.svg)](https://doi.org/10.5281/zenodo.22842767) [![v26.0.0 DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22832505.svg)](https://doi.org/10.5281/zenodo.22832505) [![CI](https://github.com/DavidFox998/beal-conjecture/actions/workflows/main.yml/badge.svg)](https://github.com/DavidFox998/beal-conjecture/actions/workflows/main.yml) [![main 35532850099](https://img.shields.io/badge/main%20CI-35532850099-brightgreen)](https://github.com/DavidFox998/beal-conjecture/actions/runs/35532850099) [![badge 35541392250](https://img.shields.io/badge/badge%20CI-35541392250-brightgreen)](https://github.com/DavidFox998/beal-conjecture/actions/runs/35541392250) [![foundations incremental 35524223408](https://img.shields.io/badge/foundations%20incremental-35524223408-brightgreen)](https://github.com/DavidFox998/beal-level-26-foundations/actions/runs/35524223408)
