@@ -65,6 +65,17 @@ Neither genus and cusp numerals nor image-cardinality numerals are used
 backwards to construct moduli, geometric torsion, a Galois representation,
 or Borel containment.
 
+\paragraph{Forward Ribet closure.}
+The subsequent module \path{RibetCurve.Ribet32a1KrausA29} takes constructed
+modularity, residual-representation, irreducibility, inertia, conductor,
+N\'eron, residual-eigenform, and \texttt{32a1} data. It projects those data
+in the mathematical direction and keeps the good-reduction
+$a_{29}=-10$ mismatch distinct from complete bad-reduction Kraus
+elimination. The independent numerical surface includes the discriminant
+and valuation identities, $928/29=32$, $32\cdot29=928$,
+$\lvert\SL_2(\F_{13})\rvert=2184$, and $48<2184$; none of those numerals
+inhabits a geometric or automorphic boundary.
+
 \paragraph{CI, incremental only.}
 Foundations \texttt{build.yml} is HonestB0Search incremental:
 \texttt{lake exe cache get}, then

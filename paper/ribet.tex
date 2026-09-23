@@ -54,3 +54,25 @@ Axioms: display $[\mathtt{propext},\mathtt{Quot.sound}]$;
 LLL no-go
 $[\mathtt{propext},\mathtt{Classical.choice},\mathtt{Quot.sound}]$.
 No \texttt{Lean.ofReduceBool}, no \texttt{sorryAx}, no new axiom.
+
+\paragraph{Forward Ribet closure.}
+The companion module \path{RibetCurve.Ribet32a1KrausA29} at commit
+\texttt{492a29293c1fcd72b4f7f686a7133ffc822ccb52} packages the geometric
+and automorphic inputs explicitly. Its forward theorems project Wiles/BCDT
+modularity, concrete residual irreducibility, unramifiedness at $29$,
+Kodaira type $I_{26k}$, local conductor exponent one, the global N\'eron
+$32/928$ split, a residual level-$32$ eigenform, and exact identification
+with \texttt{32a1}. At good reduction it records the mismatch with
+$a_{29}(\texttt{32a1})=-10$; complete bad-reduction residue elimination
+remains a separate explicit field.
+
+The proved surface
+\[
+ \Delta=16A^8B^8(A^4+B^4)^2,\quad
+ v_{29}(\Delta)=26v_{29}(B+3),\quad 13\mid v_{29}(\Delta),
+\]
+together with $928/29=32$, $32\cdot29=928$,
+$\lvert\SL_2(\F_{13})\rvert=2184$, and $48<2184$, is never used backwards
+to construct modularity, a representation, irreducibility, conductor data,
+an eigenform, or elimination. The new theorem dependencies are subsets of
+$[\mathtt{propext},\mathtt{Classical.choice},\mathtt{Quot.sound}]$.
