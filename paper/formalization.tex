@@ -100,6 +100,25 @@ explicit field. The final numerical surface records the established
 discriminant, valuation, level, newform, normalized-value, and Selmer
 equalities together with the two constants and the proved $B<1000$ slice.
 
+\paragraph{v25 forward retrofit.}
+The post-final module
+\path{BealMatveevBealV25B0Search.Forward} orders three interfaces without
+strengthening them. \path{MatveevBoundData} carries
+\texttt{C1\_floor=143186215390} and \texttt{B0\_nat=1000000}.
+\path{Level26SearchData} carries only the forward numerical surface
+$\Delta=16A^8B^8(A^4+B^4)^2$,
+$v_{29}(\Delta)=26v_{29}(B+3)$,
+$13\mid v_{29}(\Delta)$, $928/29=32$, and $32\cdot29=928$.
+\path{MatveevLevel26ForwardData} then carries the proved $B<1000$
+elimination and, separately, the full $B\leq10^6$ proposition.
+
+The three projection theorems consume those fields in that order. They do
+not infer a Matveev bound, a level-lowering construction, or the full search
+from the numerical identities. Their dependency lists are exactly
+$[\mathtt{propext},\mathtt{Classical.choice},\mathtt{Quot.sound}]$; the
+historical finite-computation dependency of the existing small-search theorem
+is not introduced into the new projections.
+
 \paragraph{Forward Tate closure.}
 The subsequent module \path{TateCurve.Neron32_928InertiaQ13} projects the
 exact symbol $I_{26k}$ from Tate-algorithm evidence, the $32/928$ split from
