@@ -14,10 +14,10 @@ cp main.pdf paper.pdf
 ```
 
 Software version DOI
-[10.5281/zenodo.22911053](https://doi.org/10.5281/zenodo.22911053).
+[10.5281/zenodo.22911318](https://doi.org/10.5281/zenodo.22911318).
 Concept DOI [10.5281/zenodo.22379293](https://doi.org/10.5281/zenodo.22379293).
 Predecessor software DOI
-[10.5281/zenodo.22910834](https://doi.org/10.5281/zenodo.22910834).
+[10.5281/zenodo.22911053](https://doi.org/10.5281/zenodo.22911053).
 
 The integrated bridge is conditional on explicit Mazur, Tate, and Ribet
 assumptions. It is not an unconditional Mathlib newform construction.

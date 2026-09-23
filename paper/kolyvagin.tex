@@ -64,3 +64,22 @@ not Kato--Kolyvagin and not Sage \texttt{E.rank()}. Witness:
 
 Axioms: $[\mathtt{propext},\mathtt{Classical.choice},\mathtt{Quot.sound}]$.
 No \texttt{Lean.ofReduceBool}, no \texttt{sorryAx}, no new axiom.
+
+\paragraph{Forward Kolyvagin closure.}
+The companion module
+\path{KolyvaginCurve.KolyvaginL_OmegaSel2Fintype} at commit
+\texttt{e0d538ac2f344a75586fe2745e5867944ec8e429} begins with
+curve-attached $L$-functions, positive periods, and exact normalized-value
+identifications. Only then does it derive analytic nonvanishing and apply an
+explicit Kato--Kolyvagin boundary. Independently, it begins with constructed
+two-Selmer exact sequences, exact cardinality identifications, and
+Mordell--Weil finite generation before applying the singleton-Selmer
+boundary.
+
+Thus $L/\Omega=1/3$ for \texttt{26a1}, $L/\Omega=1/7$ for
+\texttt{26b1}, $\lvert\Sel_2\rvert=1$, and $2^{\dim}=1$ are forward
+projections, not constructors. Actual
+\texttt{Nonempty (Fintype E(Q))} witnesses are explicit data and coexist
+with the proved $\neg\texttt{Subsingleton E(Q)}$ facts from nonzero torsion.
+The new theorem dependencies are subsets of
+$[\mathtt{propext},\mathtt{Classical.choice},\mathtt{Quot.sound}]$.

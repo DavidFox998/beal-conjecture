@@ -76,6 +76,18 @@ and valuation identities, $928/29=32$, $32\cdot29=928$,
 $\lvert\SL_2(\F_{13})\rvert=2184$, and $48<2184$; none of those numerals
 inhabits a geometric or automorphic boundary.
 
+\paragraph{Forward Kolyvagin closure.}
+The subsequent module
+\path{KolyvaginCurve.KolyvaginL_OmegaSel2Fintype} keeps the analytic and
+two-descent routes explicit. Constructed $L$-functions, positive periods,
+and normalized-value identifications precede Kato--Kolyvagin. Constructed
+Selmer exact sequences, exact cardinality identifications, and
+Mordell--Weil finite generation precede the singleton-Selmer implication.
+The displayed values $1/3$, $1/7$, $\lvert\Sel_2\rvert=1$, and
+$2^{\dim}=1$ never construct those inputs. Actual \texttt{Fintype}
+witnesses provide the finite-point endpoint while the nonzero torsion points
+continue to refute the older \texttt{Subsingleton} encoding.
+
 \paragraph{CI, incremental only.}
 Foundations \texttt{build.yml} is HonestB0Search incremental:
 \texttt{lake exe cache get}, then
