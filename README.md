@@ -1,6 +1,7 @@
 # Formal Verification of the Level 26 Foundations for Signature (4,4,13): Certified Mordell-Weil Rank Zero for X₀(26), Descent, Torsion, Conductor, Isogeny, Level Lowering — v30.0.0-level-26-structural-verification
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22041831.svg)](https://doi.org/10.5281/zenodo.22041831)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22923337.svg)](https://doi.org/10.5281/zenodo.22923337)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22884873.svg)](https://doi.org/10.5281/zenodo.22884873)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22379293.svg)](https://doi.org/10.5281/zenodo.22379293)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22922473.svg)](https://doi.org/10.5281/zenodo.22922473)
@@ -16,6 +17,7 @@ changing its formal boundaries. The exact merge base is
 
 | Release | Commit / tag object | GitHub release | Zenodo |
 | --- | --- | ---: | --- |
+| `beal-conjecture-v30.1.7-v25.0.1-integrated` | commit `a80048e9eb23cdd66021c28621242485da7d7bc4`; tag `5e9f94a3d8d0855650333696b83d25447902b931` | `394906831` | [`22923337`](https://doi.org/10.5281/zenodo.22923337) |
 | `v30.0.0-level-26-structural-verification` | `af520d36`; paper ancestor `2124501f` | — | `22863527` |
 | `v30.1.0-integrated-full-43735b3` | tag `079c639` | `394308513` | `22909486` |
 | `v30.1.1-tate-closure-continued-43735b3` | `8f7274d` | — | `22910461` |

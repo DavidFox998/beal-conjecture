@@ -1,6 +1,7 @@
 # Level 26 Structural Verification (draft)
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22041831.svg)](https://doi.org/10.5281/zenodo.22041831)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22923337.svg)](https://doi.org/10.5281/zenodo.22923337)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22884873.svg)](https://doi.org/10.5281/zenodo.22884873)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22379293.svg)](https://doi.org/10.5281/zenodo.22379293)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22922473.svg)](https://doi.org/10.5281/zenodo.22922473)
@@ -19,7 +20,9 @@ latexmk -pdf main.tex
 cp main.pdf paper.pdf
 ```
 
-Current pre-integration `beal-conjecture` version DOI:
+Integrated release DOI:
+[10.5281/zenodo.22923337](https://doi.org/10.5281/zenodo.22923337).
+Pre-integration `beal-conjecture` version DOI:
 [10.5281/zenodo.22885060](https://doi.org/10.5281/zenodo.22885060).
 `beal-conjecture` concept DOI:
 [10.5281/zenodo.22041831](https://doi.org/10.5281/zenodo.22041831).
