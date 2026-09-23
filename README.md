@@ -1,6 +1,54 @@
 # Formal Verification of the Level 26 Foundations for Signature (4,4,13): Certified Mordell-Weil Rank Zero for X₀(26), Descent, Torsion, Conductor, Isogeny, Level Lowering — v30.0.0-level-26-structural-verification
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22041831.svg)](https://doi.org/10.5281/zenodo.22041831)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22884873.svg)](https://doi.org/10.5281/zenodo.22884873)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22379293.svg)](https://doi.org/10.5281/zenodo.22379293)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22922473.svg)](https://doi.org/10.5281/zenodo.22922473)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22912430.svg)](https://doi.org/10.5281/zenodo.22912430)
+
 **v30.0.0-level-26-structural-verification — Tate 928=2⁵·29 Neron I0* I8 c4 Δ v2=6 v29=8 Mazur 2184 48<2184 13=2²+3² 288/48=6 card2 genus0 infinite vs2 Ribet 928/29=32 ∅ card0 full1 new1 LMFDB 32a1 Kolyvagin |Sel2|=1 3·7=21 L/Ω=1/3 1/7 rank0 26a1 26b1**
+
+## Foundations integrated v30.1.7 and v25.0.1-forward
+
+The companion foundations line is integrated without vendoring and without
+changing its formal boundaries. The exact merge base is
+`43735b3b14a9e844d4b4bdf57fa5f68d29e749ee`.
+
+| Release | Commit / tag object | GitHub release | Zenodo |
+| --- | --- | ---: | --- |
+| `v30.0.0-level-26-structural-verification` | `af520d36`; paper ancestor `2124501f` | — | `22863527` |
+| `v30.1.0-integrated-full-43735b3` | tag `079c639` | `394308513` | `22909486` |
+| `v30.1.1-tate-closure-continued-43735b3` | `8f7274d` | — | `22910461` |
+| `v30.1.2-mazur-x0-13-frey-j-borel-43735b3` | — | — | `22910834` |
+| `v30.1.3-ribet-32a1-kraus-a29-43735b3` | — | — | `22911053` |
+| `v30.1.4-kolyvagin-L-Omega-Sel2-Fintype-43735b3` | `69ffd58e` | — | `22911318` |
+| `v30.1.5-conditional-32-bridge-forward-43735b3` | `eee5b542` | — | `22911502` |
+| `v30.1.6-requires-forward-43735b3` | `1e873612` | — | `22911918` |
+| `v30.1.7-beal-final-43735b3` | commit `995b9c4810869c1ce6531b32080e668c1f5ff233`; tag `4254aac7923b1ac48f33a5359c90c4e1bd242bf3` | `394412409` | [`22912430`](https://doi.org/10.5281/zenodo.22912430) |
+| `v25.0.1-forward-43735b3` | commit `385ff85c78c351de83b3fd625a208c9dea003647`; tag `626bbf615e9365a8af4b9f1b290259adee2936fd` | `394869393` | [`22922473`](https://doi.org/10.5281/zenodo.22922473) |
+
+The foundations concept DOI is
+[10.5281/zenodo.22379293](https://doi.org/10.5281/zenodo.22379293).
+The predecessor sequence is `22863527`, `22909486`, `22910461`, `22910834`,
+`22911053`, `22911318`, `22911502`, `22911918`, `22912430`, `22922473`.
+
+The integrated numerical surface records
+`Δ = 16A⁸B⁸(A⁴+B⁴)²`, `v₂₉(Δ)=26v₂₉(B+3)`,
+`13∣v₂₉(Δ)`, `928/29=32`, `32*29=928`,
+`|SL₂(𝔽₁₃)|=2184`, `48<2184`, `a₂₉=-10`,
+`L/Ω=1/3,1/7`, and `Sel₂_card=1`. These equalities never construct the
+remaining interfaces backwards. The exhaustive `B<1000` slice is proved;
+the full `B≤10⁶` search and the general Beal common-prime theorem remain
+separate explicit boundaries.
+
+The clean foundations build had 5,215 jobs:
+`BealMatveevBealV25B0Search` at `5148/5215`,
+`BealMatveevBealV25B0Search.Forward` at `5213/5215`, and
+`BealFinal.Main` at `5214/5215`. The retrofit projections use exactly
+`[propext, Classical.choice, Quot.sound]`. See
+[`docs/FoundationsIntegratedV30_1_7.md`](docs/FoundationsIntegratedV30_1_7.md)
+and
+[`docs/FoundationsIntegratedV25_0_1.md`](docs/FoundationsIntegratedV25_0_1.md).
 
 ## Foundations v30.1 integrated conditional level-32 reference
 
