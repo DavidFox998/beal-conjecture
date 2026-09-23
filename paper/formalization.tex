@@ -44,6 +44,16 @@ irreducibility, Tate/N\'eron and cyclotomic-inertia theory, genuine Ribet
 lowering, identification with \texttt{32a1}, and complete Kraus elimination
 remain explicit.
 
+\paragraph{Forward Tate closure.}
+The subsequent module \path{TateCurve.Neron32_928InertiaQ13} projects the
+exact symbol $I_{26k}$ from Tate-algorithm evidence, the $32/928$ split from
+constructed N\'eron data, and $v_{29}(q)=v_{29}(\Delta)$ from
+curve-attached uniformization data.  Its final mod-$13$ theorem consumes the
+proved numerical surface but obtains unramifiedness only from the explicit
+Tate--N\'eron--$q^{1/13}$ inertia boundary.  In particular,
+$13\mid v_{29}(\Delta)$ is never used backwards to construct the geometric
+representation or cyclotomic formula.
+
 \paragraph{CI, incremental only.}
 Foundations \texttt{build.yml} is HonestB0Search incremental:
 \texttt{lake exe cache get}, then

@@ -56,3 +56,42 @@ pure numerals and $[\mathtt{propext},\mathtt{Classical.choice},\mathtt{Quot.soun
 for the conjunction that mentions valuations already inhabited
 upstream. There is no \texttt{Lean.ofReduceBool}, no
 \texttt{sorryAx}, and no new axiom.
+
+\subsection{Continued Tate-closure boundary}
+
+The companion module
+\path{TateCurve.Neron32_928InertiaQ13} at commit
+\texttt{bb4980fb0dba2c2d51c8d928935ffa647d786754} does not reinterpret the
+preceding numerals as geometry.  It records the required local argument in
+the following forward order:
+\[
+ \text{full }j(q)\text{ inversion}
+ \longrightarrow E_q/\Q_{29}
+ \longrightarrow j(E_q)=j(E_{A,B})
+ \longrightarrow I_{26k}
+ \longrightarrow N_{\mathrm{N\acute eron}}\in\{32,928\}
+ \longrightarrow q^{1/13}\text{ inertia}
+ \longrightarrow \bar\rho_{E,13}|_{I_{29}}=1,
+\]
+where $k=v_{29}(B+3)$ and the curve-attached parameter is required to
+satisfy
+\[
+ v_{29}(q)=v_{29}(\Delta)=26v_{29}(B+3).
+\]
+The exact Kodaira equality is a projection from a
+\path{TateAlgorithmAt29} witness.  The $32/928$ equalities are projections
+from constructed N\'eron-conductor data.  The cyclotomic formula is a field
+of the $q^{1/13}$ inertia evidence, not a consequence manufactured from
+divisibility alone.
+
+The numerical surface
+\[
+ 13\mid v_{29}(\Delta),\quad 928/29=32,\quad
+ 32\cdot29=928,\quad 928\ne32,\quad 29\nmid32
+\]
+is proved independently.  The theorem
+\path{tate_mod13_unramifiedness_forward} preserves that surface while
+projecting unramifiedness from the explicit
+\path{TateNeron32_928InertiaQ13} boundary.  Thus no numerical equality is
+used backwards to claim Tate uniformization, Tate's algorithm, a N\'eron
+model, a residual representation, or the cyclotomic inertia formula.
