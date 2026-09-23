@@ -26,6 +26,24 @@ There is no \texttt{sorryAx} and no new axiom. Parent files keep
 the algebraic names as \texttt{def Prop}. Display files contain
 no new \texttt{def Prop}.
 
+\paragraph{Integrated conditional bridge.}
+The companion release registers the full Tate, Mazur, Ribet, and Kolyvagin
+surfaces together with \path{Conditional32Newform.Bridge} and
+\path{RequiresTateMazurRibetFor32.Doc}.  The bridge proves
+\[
+ \Delta=16A^8B^8(A^4+B^4)^2,\qquad
+ v_{29}(\Delta)=26v_{29}(B+3),\qquad
+ 13\mid v_{29}(\Delta),
+\]
+as well as $928/29=32$ and $32\cdot29=928$.  Its theorem
+\path{has_newform_at_level_32_of_assumptions} takes exactly
+\texttt{hMazur}, \texttt{hTate}, and \texttt{hRibet}.  The result is
+\path{HasNewformAtLevel32}, a proposition-valued evidence record.  Wiles/BCDT
+modularity, the geometric mod-$13$ representation and absolute
+irreducibility, Tate/N\'eron and cyclotomic-inertia theory, genuine Ribet
+lowering, identification with \texttt{32a1}, and complete Kraus elimination
+remain explicit.
+
 \paragraph{CI, incremental only.}
 Foundations \texttt{build.yml} is HonestB0Search incremental:
 \texttt{lake exe cache get}, then
@@ -59,6 +77,14 @@ The phase incremental
 is the green gate. This draft does not run
 \texttt{lake build BealMatveevBeal} and does not run
 \texttt{lake update}.
+
+The integrated release ran the larger reproducibility gate: cache restoration
+of $5{,}134$ files and a combined build of $5{,}206$ jobs, including
+\path{BealMatveevBealV25B0Search}, all four \texttt{BlockerDoc} roots, the
+conditional bridge, and its requirements document.  The publication-surface
+validator and \texttt{verify-matveev-beal.sh} passed.  Its axiom report is
+$[\mathtt{propext},\mathtt{Classical.choice},\mathtt{Quot.sound}]$ with no
+\texttt{sorryAx}.
 
 \paragraph{Conjecture \texttt{main.yml}.}
 On \texttt{beal-conjecture} the hours job

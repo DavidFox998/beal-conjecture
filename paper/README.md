@@ -1,8 +1,8 @@
-# Level 26 Structural Verification (draft)
+# Level 26 Integrated Conditional Methodology (draft)
 
 Mathematics of Computation manuscript draft. Not an arXiv preprint.
 
-- Title: *Level 26 Structural Verification — Tate, Mazur, Ribet, Kolyvagin Honest Displays in Lean 4.12*
+- Title: *Level 26 Integrated Conditional Methodology — Tate, Mazur, Ribet, and Kolyvagin in Lean 4.12*
 - Author: David Fox
 - Sources: `main.tex`, section `*.tex`, `references.bib`
 - PDF: [`paper.pdf`](paper.pdf)
@@ -13,5 +13,9 @@ latexmk -pdf main.tex
 cp main.pdf paper.pdf
 ```
 
-Version DOI [10.5281/zenodo.22863527](https://doi.org/10.5281/zenodo.22863527).
+Software version DOI
+[10.5281/zenodo.22909486](https://doi.org/10.5281/zenodo.22909486).
 Concept DOI [10.5281/zenodo.22379293](https://doi.org/10.5281/zenodo.22379293).
+
+The integrated bridge is conditional on explicit Mazur, Tate, and Ribet
+assumptions. It is not an unconditional Mathlib newform construction.
