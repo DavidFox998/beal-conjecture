@@ -62,6 +62,27 @@ Mazur, Tate, and Ribet hypotheses. Exactly those three hypotheses feed
 \texttt{has\_newform\_at\_level\_32\_of\_assumptions\_forward} and its
 \texttt{HasNewformAtLevel32Data} result.
 
+\paragraph{Integrated forward dependency table.}
+The module \path{RequiresTateMazurRibetFor32.ForwardDoc} at commit
+\texttt{70bdf8149b377861a1504ef7d4932711e15e6905} closes the documentation
+surface without erasing its hypotheses. Its record orders
+\path{TateCurve.ClosureContinued},
+\path{TateCurve.Neron32_928InertiaQ13},
+\path{MazurCurve.X0_13FreyJBorel},
+\path{RibetCurve.Ribet32a1KrausA29},
+\path{KolyvaginCurve.KolyvaginL_OmegaSel2Fintype}, and
+\path{Conditional32Newform.BridgeForward}. The exact-dependency theorem
+returns all six boundaries; the integrated theorem returns that dependency
+table together with the conditional level-$32$ evidence.
+
+The Kolyvagin interface remains logically separate from the three bridge
+hypotheses, even though it is preserved in the release ledger. The final
+bridge still consumes only Mazur, Tate, and Ribet, and it does so only after
+the three explicit typed conversions. The parallel numerical theorem records
+$\Delta$, $v_{29}(\Delta)$, $928/29$, $\lvert\SL_2(\F_{13})\rvert$,
+$a_{29}$, $L/\cO$, and Selmer cardinalities without using any of them
+backwards to construct the six interfaces.
+
 \paragraph{Forward Tate closure.}
 The subsequent module \path{TateCurve.Neron32_928InertiaQ13} projects the
 exact symbol $I_{26k}$ from Tate-algorithm evidence, the $32/928$ split from

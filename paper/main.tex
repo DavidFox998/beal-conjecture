@@ -36,7 +36,7 @@ Conditional Methodology --- Tate, Mazur, Ribet, and Kolyvagin in Lean 4.12}
 
 \author{David Fox}
 \address{Opera Numerorum}
-\date{22 September 2026}
+\date{23 September 2026}
 
 \keywords{Beal conjecture, Frey curve, Tate algorithm, Mazur, Ribet,
 Kolyvagin, $X_0(13)$, $X_0(26)$, Lean 4, Mathlib, Mathematics of Computation}
@@ -78,12 +78,15 @@ cardinality identifications, and actual \texttt{Fintype} witnesses strictly
 forward. The final Conditional-32 boundary orders the concrete Mazur, Tate,
 and Ribet conclusions, three explicit typed conversions to the older
 abstract interface, and \texttt{HasNewformAtLevel32} strictly forward. The
+final \texttt{RequiresTateMazurRibetFor32.ForwardDoc} table preserves the
+Tate, N\'eron/inertia, Mazur, Ribet, Kolyvagin, and Conditional-32 interfaces
+in that exact order while retaining the three typed conversions. The
 integrated bridge
 derives proposition-valued level-$32$ evidence from exactly three explicit
 Mazur, Tate, and Ribet assumptions; it does not construct an unconditional
 Mathlib newform. Theorems use explicit types and \texttt{decide}, not
 \texttt{native\_decide}. Software version DOI
-\texttt{10.5281/zenodo.22911502}; concept DOI
+\texttt{10.5281/zenodo.22911918}; concept DOI
 \texttt{10.5281/zenodo.22379293}.
 \end{abstract}
 
