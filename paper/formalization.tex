@@ -45,6 +45,25 @@ one-line standalone \texttt{lake env lean} check
 no\_sol\_with\_good\_red\_29\_of\_trace\_match}), which also
 reports \texttt{Lean.ofReduceBool}.
 
+\paragraph{Integrated end-of-proof and v25 forward interfaces.}
+The companion foundations releases preserve a six-stage
+Tate--Mazur--Ribet--Kolyvagin--Conditional-32--Requires ledger in
+\path{BealFinal.Main}. The general Beal common-prime conclusion is carried
+as explicit proof data rather than inferred from the signature $(4,4,13)$
+numerical surface.
+
+The post-final module
+\path{BealMatveevBealV25B0Search.Forward} orders
+\path{MatveevBoundData}, \path{Level26SearchData}, the proved $B<1000$
+elimination, and the explicit full $B\leq10^6$ proposition.
+Its numerical projection records
+$\Delta=16A^8B^8(A^4+B^4)^2$,
+$v_{29}(\Delta)=26v_{29}(B+3)$,
+$13\mid v_{29}(\Delta)$, $928/29=32$, and $32\cdot29=928$.
+None of those identities constructs the Matveev, level-lowering, or
+full-search boundaries. The three retrofit projections report exactly
+$[\mathtt{propext},\mathtt{Classical.choice},\mathtt{Quot.sound}]$.
+
 \paragraph{CI, incremental only.}
 Foundations \texttt{build.yml} is HonestB0Search incremental:
 \texttt{lake exe cache get}, then
