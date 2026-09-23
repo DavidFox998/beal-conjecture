@@ -1,2 +1,3 @@
 - [Prop-to-data support boundary](prop-to-data-support-boundary.md) — keep token-producing newform support witnesses in Type; Prop existentials cannot construct PreservedForm without choice.
 - [Lean 4.12 real boundaries](lean-412-real-boundaries.md) — clear fixed-point inequalities into Nat data when real arithmetic pollutes an audited interface with choice.
+- [Conditional bridge proposition boundaries](conditional-bridge-proposition-boundaries.md) — keep concrete closure results distinct from older abstract bridge propositions.

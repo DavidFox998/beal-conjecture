@@ -44,6 +44,24 @@ irreducibility, Tate/N\'eron and cyclotomic-inertia theory, genuine Ribet
 lowering, identification with \texttt{32a1}, and complete Kraus elimination
 remain explicit.
 
+\paragraph{Forward Conditional-32 closure.}
+The module \path{Conditional32Newform.BridgeForward} at commit
+\texttt{75d546a56de5ff901faf50611c5fd3d449612aab} first projects the
+concrete Mazur conclusion from point-level $X_0(13)$, Borel/Fricke, and
+global-exclusion evidence; the concrete Tate conclusion from
+uniformization, N\'eron, $q^{1/13}$ inertia, and mod-$13$ unramifiedness;
+and the concrete Ribet conclusion from residual \texttt{32a1},
+$a_{29}=-10$, and complete Kraus elimination.
+
+The newer concrete modules and the older Conditional-32 interface use
+distinct proposition names. Three explicit typed conversion boundaries are
+therefore fields of \texttt{Conditional32BridgeData}; they are neither
+silently identified nor inferred from numerical equalities. Only after
+those conversions does \texttt{three\_hypotheses\_forward} produce the
+Mazur, Tate, and Ribet hypotheses. Exactly those three hypotheses feed
+\texttt{has\_newform\_at\_level\_32\_of\_assumptions\_forward} and its
+\texttt{HasNewformAtLevel32Data} result.
+
 \paragraph{Forward Tate closure.}
 The subsequent module \path{TateCurve.Neron32_928InertiaQ13} projects the
 exact symbol $I_{26k}$ from Tate-algorithm evidence, the $32/928$ split from
