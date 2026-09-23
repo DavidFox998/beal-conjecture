@@ -54,6 +54,17 @@ Tate--N\'eron--$q^{1/13}$ inertia boundary.  In particular,
 $13\mid v_{29}(\Delta)$ is never used backwards to construct the geometric
 representation or cyclotomic formula.
 
+\paragraph{Forward Mazur closure.}
+The subsequent module \path{MazurCurve.X0_13FreyJBorel} keeps the
+two-constructor Fricke cusp table distinct from the infinitely many rational
+points on the genus-zero parameter line. It projects the exact Fricke
+function from point-level moduli data and $j=c_4^3/\Delta$ from
+curve-attached Frey data. Its no-rational-$13$-isogeny theorem consumes both
+the explicit Borel/Fricke equivalence and the Frey-specific global exclusion.
+Neither genus and cusp numerals nor image-cardinality numerals are used
+backwards to construct moduli, geometric torsion, a Galois representation,
+or Borel containment.
+
 \paragraph{CI, incremental only.}
 Foundations \texttt{build.yml} is HonestB0Search incremental:
 \texttt{lake exe cache get}, then
