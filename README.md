@@ -12,6 +12,9 @@ the general common-prime formulation **conditionally** from the existing
 seven-field `BealCertificates_26` input. The foundations million-case scan
 has an independently replayed external checkpoint but no Lean proof term for
 the complete range. [Scope and reproducibility](docs/Full10e6ExternalCheckpoint.md).
+The common-prime deduction was checked in isolation; the full `Beal.Main`
+target was not verified here because its nested path-package build did not
+finish.
 The badges above cite older releases, not an unconditional Beal theorem.
 No new release DOI has been issued for this branch.
 

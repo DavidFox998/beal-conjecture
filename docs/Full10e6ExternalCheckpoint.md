@@ -21,6 +21,11 @@ and exponents at least three. Its `BealData` argument carries the
 been provided. A restricted `(4,4,13)` scan cannot fill those general
 geometric and modularity hypotheses. The main theorem is therefore
 conditional, not an unconditional solution of Beal's conjecture.
+The common-prime deduction was checked with Lean using the public
+`BealConjecture` proposition. A full `lake build Beal.Main` has not
+completed in this environment: its path-required Level26 package needs
+its own build artifacts, and the attempted nested build was stopped
+after 1,817 of 2,403 steps. Do not cite this branch as fully built.
 
 There is no v25.0.2 inhabited-search tag, unconditional release, or new
 foundations DOI to cite. The existing DOI badges refer to earlier releases
