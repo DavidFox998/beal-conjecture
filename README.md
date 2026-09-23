@@ -7,6 +7,14 @@
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22922473.svg)](https://doi.org/10.5281/zenodo.22922473)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22912430.svg)](https://doi.org/10.5281/zenodo.22912430)
 
+**Current experimental branch:** [`Beal.Main`](lean/Beal/Main.lean) proves
+the general common-prime formulation **conditionally** from the existing
+seven-field `BealCertificates_26` input. The foundations million-case scan
+has an independently replayed external checkpoint but no Lean proof term for
+the complete range. [Scope and reproducibility](docs/Full10e6ExternalCheckpoint.md).
+The badges above cite older releases, not an unconditional Beal theorem.
+No new release DOI has been issued for this branch.
+
 **v30.0.0-level-26-structural-verification — Tate 928=2⁵·29 Neron I0* I8 c4 Δ v2=6 v29=8 Mazur 2184 48<2184 13=2²+3² 288/48=6 card2 genus0 infinite vs2 Ribet 928/29=32 ∅ card0 full1 new1 LMFDB 32a1 Kolyvagin |Sel2|=1 3·7=21 L/Ω=1/3 1/7 rank0 26a1 26b1**
 
 ## Foundations integrated v30.1.7 and v25.0.1-forward

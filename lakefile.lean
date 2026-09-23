@@ -86,7 +86,8 @@ lean_lib Beal where
     .one `Beal.B20_Beal_Core,
     .one `Beal.B21_FermatCorollary,
     .one `Beal.B21_FermatCorollary_Core,
-    .one `Beal.ConditionalBealTheorem
+    .one `Beal.ConditionalBealTheorem,
+    .one `Beal.Main
   ]
 
 lean_lib lean where

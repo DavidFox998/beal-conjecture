@@ -64,6 +64,18 @@ None of those identities constructs the Matveev, level-lowering, or
 full-search boundaries. The three retrofit projections report exactly
 $[\mathtt{propext},\mathtt{Classical.choice},\mathtt{Quot.sound}]$.
 
+\paragraph{External million-case checkpoint.}
+An exact-integer script checks the $(4,4,13)$ gap-3 equation for all
+$0\leq B\leq10^6$ and an independent fourth-root implementation
+replays the 101 hashed range checkpoints, finding no candidate.
+This computation is not a Lean proof of the full search statement:
+the companion \path{Full10e6.lean} explicitly requires a
+\path{Full10e6KernelCert}. Likewise, the common-prime formulation in
+\path{lean/Beal/Main.lean} follows only from a supplied
+\path{BealCertificates_26} package. No unconditional general Beal
+theorem, v25.0.2 inhabited-search release, or associated DOI follows
+from these computations.
+
 \paragraph{CI, incremental only.}
 Foundations \texttt{build.yml} is HonestB0Search incremental:
 \texttt{lake exe cache get}, then
