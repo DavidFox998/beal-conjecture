@@ -4,6 +4,8 @@ import Mathlib.Algebra.MvPolynomial.Basic
 import Mathlib.FieldTheory.IsAlgClosed.Basic
 import Mathlib.RingTheory.Localization.AtPrime
 import Mathlib.RingTheory.Ideal.Cotangent
+import Mathlib.RingTheory.KrullDimension.Basic
+import Mathlib.RingTheory.DedekindDomain.Dvr
 
 /-!
 Explicit residue-characteristic-two smoothness and node tests for
@@ -13,6 +15,60 @@ Tate's algorithm or assign a Kodaira type or Néron conductor exponent.
 -/
 
 namespace Beal.General
+
+open Order
+
+/-- The two-adic integers have Krull dimension one. The lower bound
+is the strict chain `(0) < (2)`; the upper bound uses that a discrete
+valuation ring has no strictly intermediate prime ideal. -/
+theorem padicInt_two_ringKrullDim : ringKrullDim ℤ_[2] = 1 := by
+  let M : Ideal ℤ_[2] := LocalRing.maximalIdeal ℤ_[2]
+  have hM : M.IsMaximal := LocalRing.maximalIdeal.isMaximal _
+  have hne : M ≠ ⊥ := by
+    intro he
+    have htwo : (2 : ℤ_[2]) ∈ M := by
+      change (2 : ℤ_[2]) ∈ LocalRing.maximalIdeal ℤ_[2]
+      rw [PadicInt.maximalIdeal_eq_span_p]
+      exact Ideal.subset_span (by simp)
+    rw [he] at htwo
+    have hz : (2 : ℤ_[2]) = 0 := Ideal.mem_bot.mp htwo
+    norm_num at hz
+  let P₀ : PrimeSpectrum ℤ_[2] := ⟨⊥, Ideal.bot_prime⟩
+  let P₁ : PrimeSpectrum ℤ_[2] := ⟨M, hM.isPrime⟩
+  have hlt : P₀ < P₁ := by
+    change (⊥ : Ideal ℤ_[2]) < M
+    exact bot_lt_iff_ne_bot.mpr hne
+  have hlower : (1 : WithBot (WithTop ℕ)) ≤ ringKrullDim ℤ_[2] := by
+    let s : LTSeries (PrimeSpectrum ℤ_[2]) :=
+      (RelSeries.singleton (· < ·) P₀).snoc P₁ (by simpa using hlt)
+    simpa [ringKrullDim, s] using Order.LTSeries.length_le_krullDim s
+  have hupper : ringKrullDim ℤ_[2] ≤ (1 : WithBot (WithTop ℕ)) := by
+    change krullDim (PrimeSpectrum ℤ_[2]) ≤ _
+    rw [krullDim_eq_iSup_length]
+    apply WithBot.coe_le_coe.mpr
+    apply iSup_le
+    intro s
+    have hlen : s.length ≤ 1 := by
+      by_contra hh
+      have h2 : 2 ≤ s.length := by omega
+      let Q : PrimeSpectrum ℤ_[2] := s ⟨1, by omega⟩
+      have h01 : s ⟨0, by omega⟩ < Q := by
+        exact s.step ⟨0, by omega⟩
+      have h12 : Q < s ⟨2, by omega⟩ := by
+        exact s.step ⟨1, by omega⟩
+      have hqne : Q.asIdeal ≠ ⊥ := by
+        intro he
+        have hbad : (s ⟨0, by omega⟩).asIdeal < (⊥ : Ideal ℤ_[2]) := by
+          have hh := (PrimeSpectrum.asIdeal_lt_asIdeal _ _).mpr h01
+          simpa only [he] using hh
+        exact not_lt_bot hbad
+      have hqmax : Q.asIdeal.IsMaximal :=
+        Ring.DimensionLEOne.maximalOfPrime hqne Q.isPrime
+      have heq : Q.asIdeal = (s ⟨2, by omega⟩).asIdeal :=
+        hqmax.eq_of_le (s ⟨2, by omega⟩).isPrime.ne_top h12.le
+      exact (ne_of_lt h12) (PrimeSpectrum.ext heq)
+    exact WithTop.coe_le_coe.mpr hlen
+  exact le_antisymm hupper hlower
 
 /-- The affine Weierstrass equation over the residue field. -/
 def reducedEquation (W : WeierstrassCurve (ZMod 2)) (x y : ZMod 2) : ZMod 2 :=
@@ -1368,6 +1424,7 @@ universal I₀ claim, not a replacement for the missing Lean bridge.
 Do not assert either requested theorem from the existing residue tests
 or from a definition that merely assigns the intended labels. -/
 
+#print axioms padicInt_two_ringKrullDim
 #print axioms reducedNodalPoint_mathlibSingular
 #print axioms reducedNodalPoint_uniqueGeometricCandidate
 #print axioms reducedNodalPoint_geometricallyDistinctTangents
