@@ -2,6 +2,7 @@ import Beal.«Beal.General».Minimal
 import Mathlib.AlgebraicGeometry.EllipticCurve.Affine
 import Mathlib.Algebra.MvPolynomial.Basic
 import Mathlib.FieldTheory.IsAlgClosed.Basic
+import Mathlib.RingTheory.Localization.AtPrime
 
 /-!
 Explicit residue-characteristic-two smoothness and node tests for
@@ -789,6 +790,58 @@ theorem valOne_closedPoint_eq_span_coordinates
   exact localSurfaceClosedPoint_eq_span_coordinates_of_unit_constant
     W W.a₃ (W.a₃ ^ 2 + W.a₄) A hF hA
 
+/-- Localizing the valuation-one total surface at its closed nodal
+point gives a genuine local ring whose maximal ideal is generated
+by the images of the two translated coordinates. The local ring's
+Krull dimension is *not* determined by this equality. -/
+theorem valOne_localMaximalIdeal_eq_span_coordinates
+    (W : WeierstrassCurve ℤ_[2])
+    (hnode : ReducedNodalPoint (W.map PadicInt.toZMod)
+      (PadicInt.toZMod W.a₃)
+      (PadicInt.toZMod (W.a₃ ^ 2 + W.a₄)))
+    (hΔ : W.Δ ≠ 0)
+    (hval : Padic.valuation (W.Δ : ℚ_[2]) = 1) :
+    let R := localSurfaceCoordinateRing W W.a₃ (W.a₃ ^ 2 + W.a₄)
+    let P : Ideal R := localSurfaceClosedPoint W W.a₃ (W.a₃ ^ 2 + W.a₄)
+    letI : P.IsPrime :=
+      (reducedPoint_hasClosedSurfacePoint W W.a₃
+        (W.a₃ ^ 2 + W.a₄) hnode.1).isPrime
+    let q : MvPolynomial (Fin 2) ℤ_[2] →+* R :=
+      Ideal.Quotient.mk
+        (Ideal.span {localSurfaceEquation W W.a₃ (W.a₃ ^ 2 + W.a₄)})
+    LocalRing.maximalIdeal (Localization.AtPrime P) =
+      Ideal.span {
+        (algebraMap R (Localization.AtPrime P)) (q (MvPolynomial.X 0)),
+        (algebraMap R (Localization.AtPrime P)) (q (MvPolynomial.X 1))} := by
+  let R := localSurfaceCoordinateRing W W.a₃ (W.a₃ ^ 2 + W.a₄)
+  let P : Ideal R := localSurfaceClosedPoint W W.a₃ (W.a₃ ^ 2 + W.a₄)
+  letI : P.IsPrime :=
+    (reducedPoint_hasClosedSurfacePoint W W.a₃
+      (W.a₃ ^ 2 + W.a₄) hnode.1).isPrime
+  let q : MvPolynomial (Fin 2) ℤ_[2] →+* R :=
+    Ideal.Quotient.mk
+      (Ideal.span {localSurfaceEquation W W.a₃ (W.a₃ ^ 2 + W.a₄)})
+  let L := Localization.AtPrime P
+  let f : R →+* L := algebraMap R L
+  change LocalRing.maximalIdeal L =
+    Ideal.span {f (q (MvPolynomial.X 0)), f (q (MvPolynomial.X 1))}
+  rw [← Localization.AtPrime.map_eq_maximalIdeal (I := P)]
+  have hspan : P = Ideal.span {q (MvPolynomial.X (0 : Fin 2)),
+      q (MvPolynomial.X (1 : Fin 2))} :=
+    valOne_closedPoint_eq_span_coordinates W hnode hΔ hval
+  change Ideal.map f P =
+    Ideal.span {f (q (MvPolynomial.X 0)), f (q (MvPolynomial.X 1))}
+  calc
+    Ideal.map f P =
+        Ideal.map f (Ideal.span {q (MvPolynomial.X 0),
+          q (MvPolynomial.X 1)}) :=
+      congrArg (Ideal.map f) hspan
+    _ = _ := by
+      rw [Ideal.map_span]
+      congr 1
+      ext z
+      simp [eq_comm]
+
 /-- The explicit node test is an actual singular point for Mathlib's
 affine Weierstrass geometry, not merely a label for the residue data.
 The nonzero tangent cross term is retained by `ReducedNodalPoint`. -/
@@ -1225,6 +1278,7 @@ or from a definition that merely assigns the intended labels. -/
 #print axioms canonicalNodalPoint_surfaceEquation_mem_centre_sq
 #print axioms valOne_surfaceEquation_not_mem_centre_sq
 #print axioms valOne_closedPoint_eq_span_coordinates
+#print axioms valOne_localMaximalIdeal_eq_span_coordinates
 #print axioms LaterNonScalingTatePosValEvenDiscHasFourDivisibleNodeConstant
 #print axioms LaterNonScalingTatePosValEvenDiscSurfaceEquationInCentreSq
 #print axioms freyScaleTwoTargetHasEvenDiscriminantValuation
