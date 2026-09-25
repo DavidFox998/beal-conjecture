@@ -6,6 +6,8 @@ import Mathlib.RingTheory.Localization.AtPrime
 import Mathlib.RingTheory.Ideal.Cotangent
 import Mathlib.RingTheory.KrullDimension.Basic
 import Mathlib.RingTheory.DedekindDomain.Dvr
+import Mathlib.RingTheory.Filtration
+import Mathlib.RingTheory.Polynomial.Basic
 
 /-!
 Explicit residue-characteristic-two smoothness and node tests for
@@ -106,6 +108,98 @@ theorem localSurfaceAmbient_reduction_kernel_eq_span_two :
   rw [MvPolynomial.ker_map, PadicInt.ker_toZMod,
     PadicInt.maximalIdeal_eq_span_p, Ideal.map_span]
   simp
+
+/-- The `2`-adic filtration of the ambient polynomial ring is separated.
+Krull's intersection theorem applies since the ring is a Noetherian domain. -/
+theorem localSurfaceAmbient_span_two_iInf_pow_eq_bot :
+    (⨅ n : ℕ, (Ideal.span {MvPolynomial.C (2 : ℤ_[2])} :
+      Ideal (MvPolynomial (Fin 2) ℤ_[2])) ^ n) = ⊥ := by
+  apply Ideal.iInf_pow_eq_bot_of_isDomain
+  rw [← localSurfaceAmbient_reduction_kernel_eq_span_two]
+  exact RingHom.ker_ne_top (MvPolynomial.map PadicInt.toZMod :
+    MvPolynomial (Fin 2) ℤ_[2] →+*
+      MvPolynomial (Fin 2) (ZMod 2))
+
+/-- There is no prime strictly between `(0)` and `(2)` in the
+ambient polynomial ring. This gives height one for the named prime
+but does not bound the height of `(2, X, Y)`. -/
+theorem localSurfaceAmbient_prime_lt_span_two_eq_bot
+    (P : Ideal (MvPolynomial (Fin 2) ℤ_[2])) (hP : P.IsPrime)
+    (hP2 : P < Ideal.span {MvPolynomial.C (2 : ℤ_[2])}) :
+    P = ⊥ := by
+  let I : Ideal (MvPolynomial (Fin 2) ℤ_[2]) :=
+    Ideal.span {MvPolynomial.C (2 : ℤ_[2])}
+  have htwo : MvPolynomial.C (2 : ℤ_[2]) ∉ P := by
+    intro h
+    have hIP : I ≤ P := Ideal.span_le.mpr (by simpa [I] using h)
+    exact (not_le_of_gt hP2) hIP
+  have hpow : ∀ n : ℕ, P ≤ I ^ n := by
+    intro n
+    induction n with
+    | zero => simp
+    | succ n ih =>
+      intro x hx
+      obtain ⟨g, rfl⟩ := (Ideal.mem_span_singleton.mp (hP2.le hx))
+      have hg : g ∈ P := (hP.mem_or_mem hx).resolve_left htwo
+      rw [pow_succ]
+      exact Ideal.mul_mem_mul_rev (ih hg) (Ideal.mem_span_singleton_self _)
+  have hbot : (⨅ n : ℕ, I ^ n) = ⊥ :=
+    localSurfaceAmbient_span_two_iInf_pow_eq_bot
+  apply (eq_bot_iff).mpr
+  rw [← hbot]
+  exact le_iInf fun n => hpow n
+
+/-- The prime `(2)` has height exactly one in the ambient polynomial ring. -/
+theorem localSurfaceAmbient_span_two_height_eq_one :
+    Order.height (⟨Ideal.span {MvPolynomial.C (2 : ℤ_[2])},
+      by
+        rw [← localSurfaceAmbient_reduction_kernel_eq_span_two]
+        exact RingHom.ker_isPrime (MvPolynomial.map PadicInt.toZMod :
+          MvPolynomial (Fin 2) ℤ_[2] →+*
+            MvPolynomial (Fin 2) (ZMod 2))⟩ :
+      PrimeSpectrum (MvPolynomial (Fin 2) ℤ_[2])) = 1 := by
+  let R := MvPolynomial (Fin 2) ℤ_[2]
+  let I : Ideal R := Ideal.span {MvPolynomial.C (2 : ℤ_[2])}
+  have hI : I.IsPrime := by
+    change (Ideal.span {MvPolynomial.C (2 : ℤ_[2])} : Ideal R).IsPrime
+    rw [← localSurfaceAmbient_reduction_kernel_eq_span_two]
+    exact RingHom.ker_isPrime (MvPolynomial.map PadicInt.toZMod :
+      R →+* MvPolynomial (Fin 2) (ZMod 2))
+  let P₀ : PrimeSpectrum R := ⟨⊥, Ideal.bot_prime⟩
+  let P₁ : PrimeSpectrum R := ⟨I, hI⟩
+  change Order.height P₁ = 1
+  have h01 : P₀ < P₁ := by
+    change (⊥ : Ideal R) < I
+    apply bot_lt_iff_ne_bot.mpr
+    intro h
+    have hc : MvPolynomial.C (2 : ℤ_[2]) ∈ (⊥ : Ideal R) := by
+      rw [← h]
+      exact Ideal.mem_span_singleton_self _
+    have hc0 : (2 : ℤ_[2]) = 0 :=
+      (MvPolynomial.C_injective (Fin 2) ℤ_[2]) (by simpa using Ideal.mem_bot.mp hc)
+    norm_num at hc0
+  apply le_antisymm
+  · apply Order.height_le
+    intro s hs
+    have hlen : s.length ≤ 1 := by
+      by_contra hn
+      have h2 : 2 ≤ s.length := by omega
+      have hprev : s.eraseLast.last < P₁ := by
+        simpa only [hs] using s.eraseLast_last_rel_last (by omega)
+      have hq : (s.eraseLast.last).asIdeal = ⊥ :=
+        localSurfaceAmbient_prime_lt_span_two_eq_bot _
+          (s.eraseLast.last).isPrime (by simpa [P₁, I] using hprev)
+      have hprevprev :
+          s.eraseLast.eraseLast.last < s.eraseLast.last :=
+        s.eraseLast.eraseLast_last_rel_last (by simp; omega)
+      have hbad : (s.eraseLast.eraseLast.last).asIdeal < (⊥ : Ideal R) := by
+        have hh := (PrimeSpectrum.asIdeal_lt_asIdeal _ _).mpr hprevprev
+        simpa only [hq] using hh
+      exact not_lt_bot hbad
+    exact_mod_cast hlen
+  · let s : LTSeries (PrimeSpectrum R) :=
+      (RelSeries.singleton (· < ·) P₀).snoc P₁ h01
+    simpa [s] using (Order.length_le_height_last (p := s))
 
 /-- Three successive special-fibre prime specializations give a lower
 bound for the ambient polynomial ring. This does not provide the
@@ -1561,6 +1655,9 @@ or from a definition that merely assigns the intended labels. -/
 #print axioms padicInt_two_prime_eq_bot_or_span_two
 #print axioms localSurfaceAmbient_prime_contraction_cases
 #print axioms localSurfaceAmbient_reduction_kernel_eq_span_two
+#print axioms localSurfaceAmbient_span_two_iInf_pow_eq_bot
+#print axioms localSurfaceAmbient_prime_lt_span_two_eq_bot
+#print axioms localSurfaceAmbient_span_two_height_eq_one
 #print axioms localSurfaceAmbient_ringKrullDim_ge_three
 #print axioms reducedNodalPoint_mathlibSingular
 #print axioms reducedNodalPoint_uniqueGeometricCandidate
