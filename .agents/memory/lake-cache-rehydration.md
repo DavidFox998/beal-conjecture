@@ -21,8 +21,8 @@ After an isolated worktree is reattached, Lake may report changed dependency URL
 
 **How to apply:** Require the explicit successful full-build result before editing proofs when the baseline is a prerequisite. If output shows Mathlib compilation progressing without errors, allow the incremental build to complete, then check the exact final exit status; do not substitute cache-get success for build success.
 
-**Toolchain availability pitfall:** An environment restart can leave `lake` absent from PATH even when the pinned manifest and compiled objects survive. Installing the `elan` system dependency can silently add a Nix stanza to the project's Replit configuration, so for a verification-only run remove that dependency afterward and restore the original configuration through the validated replacement mechanism.
+**Toolchain availability pitfall:** An environment restart can leave `lake` absent from PATH even when the pinned manifest survives. Installing the `elan` system dependency can silently add a Nix stanza to the project's Replit configuration; the next Lake invocation may also re-resolve dependencies, leaving Mathlib object files absent despite source being present. For a verification-only run, remove that dependency afterward and restore the original configuration through the validated replacement mechanism.
 
 **Why:** A documentation-only check initially could not launch Lake; after making the pinned toolchain available, the build passed, but the temporary package setup had changed tracked project configuration.
 
-**How to apply:** Distinguish a missing executable from a Lean build failure. Check the final working-tree diff after setting up verification tools, and do not leave toolchain configuration changes in a source-only task unless they were requested.
+**How to apply:** Distinguish a missing executable or missing Mathlib objects from a Lean proof failure; restore the pinned cache if needed. Check the final working-tree diff after setting up verification tools, and do not leave toolchain configuration changes in a source-only task unless they were requested.

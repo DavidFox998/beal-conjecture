@@ -70,6 +70,102 @@ theorem padicInt_two_ringKrullDim : ringKrullDim ℤ_[2] = 1 := by
     exact WithTop.coe_le_coe.mpr hlen
   exact le_antisymm hupper hlower
 
+/-- Three successive special-fibre prime specializations give a lower
+bound for the ambient polynomial ring. This does not provide the
+missing upper bound or a dimension theorem for the hypersurface. -/
+theorem localSurfaceAmbient_ringKrullDim_ge_three :
+    (3 : WithBot (WithTop ℕ)) ≤ ringKrullDim (MvPolynomial (Fin 2) ℤ_[2]) := by
+  let R := MvPolynomial (Fin 2) ℤ_[2]
+  let S := MvPolynomial (Fin 2) (ZMod 2)
+  let T := MvPolynomial (Fin 1) (ZMod 2)
+  let φ : R →+* S := MvPolynomial.map PadicInt.toZMod
+  let ψ : R →+* T :=
+    MvPolynomial.eval₂Hom (MvPolynomial.C.comp PadicInt.toZMod)
+      (fun i => if i = 0 then 0 else MvPolynomial.X 0)
+  let u : S →+* T :=
+    MvPolynomial.eval₂Hom MvPolynomial.C
+      (fun i => if i = 0 then 0 else MvPolynomial.X 0)
+  let v : T →+* ZMod 2 :=
+    MvPolynomial.eval₂Hom (RingHom.id _) (fun _ => 0)
+  let w : R →+* ZMod 2 :=
+    MvPolynomial.eval₂Hom PadicInt.toZMod (fun _ => 0)
+  have hψ : ψ = u.comp φ := by
+    apply MvPolynomial.ringHom_ext
+    · intro a
+      simp [ψ, u, φ, MvPolynomial.map]
+      rw [MvPolynomial.eval₂Hom_C]
+    · intro i
+      simp [ψ, u, φ, MvPolynomial.map]
+      rw [MvPolynomial.eval₂Hom_X']
+  have he : w = v.comp ψ := by
+    apply MvPolynomial.ringHom_ext
+    · intro a
+      simp [w, ψ, v]
+      rw [MvPolynomial.constantCoeff_C]
+    · intro i
+      fin_cases i <;> simp [w, ψ, v, MvPolynomial.constantCoeff]
+  let P₀ : PrimeSpectrum R := ⟨⊥, Ideal.bot_prime⟩
+  let P₁ : PrimeSpectrum R := ⟨RingHom.ker φ, RingHom.ker_isPrime φ⟩
+  let P₂ : PrimeSpectrum R := ⟨RingHom.ker ψ, RingHom.ker_isPrime ψ⟩
+  let P₃ : PrimeSpectrum R := ⟨RingHom.ker w, RingHom.ker_isPrime w⟩
+  have h01 : P₀ < P₁ := by
+    change (⊥ : Ideal R) < RingHom.ker φ
+    apply bot_lt_iff_ne_bot.mpr
+    intro heq
+    have hm : MvPolynomial.C (2 : ℤ_[2]) ∈ (⊥ : Ideal R) := by
+      rw [← heq]
+      change φ (MvPolynomial.C (2 : ℤ_[2])) = 0
+      simp [φ, MvPolynomial.map]
+      rw [MvPolynomial.eval₂Hom_C]
+      simp only [RingHom.comp_apply, map_ofNat]
+      change (MvPolynomial.C (2 : ZMod 2) : S) = 0
+      rw [show (2 : ZMod 2) = 0 by decide]
+      simp
+    have hz : MvPolynomial.C (2 : ℤ_[2]) = (0 : R) := Ideal.mem_bot.mp hm
+    have hz' : (2 : ℤ_[2]) = 0 :=
+      (MvPolynomial.C_injective (Fin 2) ℤ_[2]) (by simpa using hz)
+    norm_num at hz'
+  have h12 : P₁ < P₂ := by
+    change RingHom.ker φ < RingHom.ker ψ
+    apply lt_of_le_of_ne
+    · intro p hp
+      rw [RingHom.mem_ker] at hp ⊢
+      rw [hψ, RingHom.comp_apply, hp, map_zero]
+    · intro heq
+      have hx : MvPolynomial.X (0 : Fin 2) ∈ RingHom.ker φ := by
+        rw [heq]
+        change ψ (MvPolynomial.X (0 : Fin 2)) = 0
+        dsimp only [ψ]
+        rw [MvPolynomial.eval₂Hom_X']
+        simp
+      have hz : (MvPolynomial.X (0 : Fin 2) : S) = 0 := by
+        change φ (MvPolynomial.X (0 : Fin 2)) = 0 at hx
+        dsimp only [φ] at hx
+        rw [MvPolynomial.map_X] at hx
+        exact hx
+      exact (MvPolynomial.X_ne_zero (R := ZMod 2) (0 : Fin 2)) hz
+  have h23 : P₂ < P₃ := by
+    change RingHom.ker ψ < RingHom.ker w
+    apply lt_of_le_of_ne
+    · intro p hp
+      rw [RingHom.mem_ker] at hp ⊢
+      rw [he, RingHom.comp_apply, hp, map_zero]
+    · intro heq
+      have hx : MvPolynomial.X (1 : Fin 2) ∈ RingHom.ker ψ := by
+        rw [heq]
+        change w (MvPolynomial.X (1 : Fin 2)) = 0
+        dsimp only [w]
+        rw [MvPolynomial.eval₂Hom_X']
+      have hz : (MvPolynomial.X (0 : Fin 1) : T) = 0 := by
+        change ψ (MvPolynomial.X (1 : Fin 2)) = 0 at hx
+        dsimp only [ψ] at hx
+        rw [MvPolynomial.eval₂Hom_X'] at hx
+        simpa only [if_neg (by decide : (1 : Fin 2) ≠ 0)] using hx
+      exact (MvPolynomial.X_ne_zero (R := ZMod 2) (0 : Fin 1)) hz
+  let s : LTSeries (PrimeSpectrum R) :=
+    ((RelSeries.singleton (· < ·) P₀).snoc P₁ h01).snoc P₂ h12 |>.snoc P₃ h23
+  simpa [ringKrullDim, s] using Order.LTSeries.length_le_krullDim s
+
 /-- The affine Weierstrass equation over the residue field. -/
 def reducedEquation (W : WeierstrassCurve (ZMod 2)) (x y : ZMod 2) : ZMod 2 :=
   y ^ 2 + W.a₁ * x * y + W.a₃ * y -
@@ -1425,6 +1521,7 @@ Do not assert either requested theorem from the existing residue tests
 or from a definition that merely assigns the intended labels. -/
 
 #print axioms padicInt_two_ringKrullDim
+#print axioms localSurfaceAmbient_ringKrullDim_ge_three
 #print axioms reducedNodalPoint_mathlibSingular
 #print axioms reducedNodalPoint_uniqueGeometricCandidate
 #print axioms reducedNodalPoint_geometricallyDistinctTangents
