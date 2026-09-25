@@ -42,6 +42,71 @@ theorem reducedEquation_shift (W : WeierstrassCurve (ZMod 2))
   simp only [reducedEquation, reducedDx, reducedDy, reducedTangentCone]
   ring
 
+/-- The affine equation over the *integral* base ring. Keeping the
+uniformizer in the coefficients is essential for studying the total
+surface; its reduction alone cannot detect whether the total surface
+is already regular at a node of the special fibre. -/
+def localWeierstrassEquation {R : Type*} [CommRing R]
+    (W : WeierstrassCurve R) (x y : R) : R :=
+  y ^ 2 + W.a₁ * x * y + W.a₃ * y -
+    (x ^ 3 + W.a₂ * x ^ 2 + W.a₄ * x + W.a₆)
+
+/-- Exact translated equation before reduction, including the linear
+terms which may be divisible by 2 but need not vanish in `ℤ_[2]`. -/
+theorem localWeierstrassEquation_shift {R : Type*} [CommRing R]
+    (W : WeierstrassCurve R) (x y u v : R) :
+    localWeierstrassEquation W (x + u) (y + v) =
+      localWeierstrassEquation W x y +
+        (W.a₁ * y - (3 * x ^ 2 + 2 * W.a₂ * x + W.a₄)) * u +
+        (2 * y + W.a₁ * x + W.a₃) * v +
+        (v ^ 2 + W.a₁ * u * v - (3 * x + W.a₂) * u ^ 2) - u ^ 3 := by
+  simp only [localWeierstrassEquation]
+  ring
+
+/-- Pullback of the total-space equation to the substitution
+`X = x + 2u, Y = y + 2v`. This is an exact *chart numerator*, not a
+strict transform or a claim that a blow-up lowers `v₂(Δ)`. In
+particular the constant and linear terms cannot be dropped merely
+because they vanish after reduction modulo 2. -/
+theorem localWeierstrassEquation_twoChart
+    (W : WeierstrassCurve ℤ_[2]) (x y u v : ℤ_[2]) :
+    localWeierstrassEquation W (x + 2 * u) (y + 2 * v) =
+      localWeierstrassEquation W x y +
+        2 * ((W.a₁ * y - (3 * x ^ 2 + 2 * W.a₂ * x + W.a₄)) * u +
+          (2 * y + W.a₁ * x + W.a₃) * v) +
+        4 * (v ^ 2 + W.a₁ * u * v - (3 * x + W.a₂) * u ^ 2) -
+        8 * u ^ 3 := by
+  rw [localWeierstrassEquation_shift]
+  ring
+
+/-- Equation numerator on the `u`-chart substitution
+`X = x + u, Y = y + u v`. The full blow-up chart additionally
+imposes a relation of the form `2 = u w`; no exceptional divisor
+or strict transform is inferred from this identity alone. -/
+theorem localWeierstrassEquation_uChart
+    (W : WeierstrassCurve ℤ_[2]) (x y u v : ℤ_[2]) :
+    localWeierstrassEquation W (x + u) (y + u * v) =
+      localWeierstrassEquation W x y +
+        u * ((W.a₁ * y - (3 * x ^ 2 + 2 * W.a₂ * x + W.a₄)) +
+          (2 * y + W.a₁ * x + W.a₃) * v) +
+        u ^ 2 * (v ^ 2 + W.a₁ * v - (3 * x + W.a₂)) - u ^ 3 := by
+  rw [localWeierstrassEquation_shift]
+  ring
+
+/-- Equation numerator on the `v`-chart substitution
+`X = x + u v, Y = y + v`. The companion base relation is `2 = v w`;
+this identity does not yet construct the strict transform. -/
+theorem localWeierstrassEquation_vChart
+    (W : WeierstrassCurve ℤ_[2]) (x y u v : ℤ_[2]) :
+    localWeierstrassEquation W (x + u * v) (y + v) =
+      localWeierstrassEquation W x y +
+        v * ((W.a₁ * y - (3 * x ^ 2 + 2 * W.a₂ * x + W.a₄)) * u +
+          (2 * y + W.a₁ * x + W.a₃)) +
+        v ^ 2 * (1 + W.a₁ * u - (3 * x + W.a₂) * u ^ 2) -
+        u ^ 3 * v ^ 3 := by
+  rw [localWeierstrassEquation_shift]
+  ring
+
 /-- A singular point whose translated quadratic term has nonzero
 mixed coefficient: the explicit characteristic-two node test. -/
 def ReducedNodalPoint (W : WeierstrassCurve (ZMod 2)) (x y : ZMod 2) : Prop :=
@@ -49,6 +114,71 @@ def ReducedNodalPoint (W : WeierstrassCurve (ZMod 2)) (x y : ZMod 2) : Prop :=
     reducedDx W x y = 0 ∧
     reducedDy W x y = 0 ∧
     W.a₁ ≠ 0
+
+/-- Every lift of a node of the special fibre has integral equation
+value and both linear coefficients in the maximal ideal of `ℤ_[2]`.
+These are *residue* equalities: they do not assert divisibility by 4,
+which is needed before dividing the `2`-chart numerator by 4. -/
+theorem reducedNodalPoint_liftLocalCoefficients
+    (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2])
+    (hnode : ReducedNodalPoint (W.map PadicInt.toZMod)
+      (PadicInt.toZMod x) (PadicInt.toZMod y)) :
+    PadicInt.toZMod (localWeierstrassEquation W x y) = 0 ∧
+      PadicInt.toZMod
+        (W.a₁ * y - (3 * x ^ 2 + 2 * W.a₂ * x + W.a₄)) = 0 ∧
+      PadicInt.toZMod (2 * y + W.a₁ * x + W.a₃) = 0 := by
+  rcases hnode with ⟨he, hx, hy, _⟩
+  constructor
+  · simpa [localWeierstrassEquation, reducedEquation, WeierstrassCurve.map] using he
+  constructor
+  · simp only [map_sub, map_add, map_mul, map_pow, map_ofNat]
+    simpa [reducedDx, WeierstrassCurve.map] using hx
+  · simp only [map_sub, map_add, map_mul, map_ofNat]
+    simpa [reducedDy, WeierstrassCurve.map] using hy
+
+/-- In `ℤ_[2]`, vanishing modulo 2 means actual divisibility by 2. -/
+private theorem two_dvd_of_toZMod_eq_zero (a : ℤ_[2])
+    (h : PadicInt.toZMod a = (0 : ZMod 2)) : (2 : ℤ_[2]) ∣ a := by
+  have hk : a ∈ RingHom.ker (PadicInt.toZMod : ℤ_[2] →+* ZMod 2) :=
+    RingHom.mem_ker.mpr h
+  rw [PadicInt.ker_toZMod, PadicInt.maximalIdeal_eq_span_p] at hk
+  exact Ideal.mem_span_singleton.mp hk
+
+/-- A lifted node makes the constant and linear coefficients of the
+translated surface equation divisible by 2. This deliberately makes
+no claim that the constant is divisible by 4: a nodal *special
+fibre* can occur at a regular point of the total surface. -/
+theorem reducedNodalPoint_liftEvenCoefficients
+    (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2])
+    (hnode : ReducedNodalPoint (W.map PadicInt.toZMod)
+      (PadicInt.toZMod x) (PadicInt.toZMod y)) :
+    ∃ A B C : ℤ_[2],
+      localWeierstrassEquation W x y = 2 * A ∧
+      W.a₁ * y - (3 * x ^ 2 + 2 * W.a₂ * x + W.a₄) = 2 * B ∧
+      2 * y + W.a₁ * x + W.a₃ = 2 * C := by
+  obtain ⟨hF, hX, hY⟩ :=
+    reducedNodalPoint_liftLocalCoefficients W x y hnode
+  obtain ⟨A, hA⟩ := two_dvd_of_toZMod_eq_zero _ hF
+  obtain ⟨B, hB⟩ := two_dvd_of_toZMod_eq_zero _ hX
+  obtain ⟨C, hC⟩ := two_dvd_of_toZMod_eq_zero _ hY
+  exact ⟨A, B, C, hA, hB, hC⟩
+
+/-- If the lifted constant term is divisible by 4 as well as the
+linear terms by 2, the `2`-chart equation has a factor of 4 with
+this explicit quotient. The extra divisibility is a hypothesis,
+not a consequence of the residue node. This still does not assert
+that the quotient defines the strict transform of a blow-up. -/
+theorem localWeierstrassEquation_twoChart_factor
+    (W : WeierstrassCurve ℤ_[2]) (x y u v A B C : ℤ_[2])
+    (hF : localWeierstrassEquation W x y = 4 * A)
+    (hX : W.a₁ * y - (3 * x ^ 2 + 2 * W.a₂ * x + W.a₄) = 2 * B)
+    (hY : 2 * y + W.a₁ * x + W.a₃ = 2 * C) :
+    localWeierstrassEquation W (x + 2 * u) (y + 2 * v) =
+      4 * (A + B * u + C * v +
+        (v ^ 2 + W.a₁ * u * v - (3 * x + W.a₂) * u ^ 2) -
+        2 * u ^ 3) := by
+  rw [localWeierstrassEquation_twoChart, hF, hX, hY]
+  ring
 
 /-- The explicit node test is an actual singular point for Mathlib's
 affine Weierstrass geometry, not merely a label for the residue data.
@@ -369,6 +499,11 @@ or from a definition that merely assigns the intended labels. -/
 #print axioms reducedNodalPoint_mathlibSingular
 #print axioms reducedNodalPoint_uniqueGeometricCandidate
 #print axioms reducedNodalPoint_geometricallyDistinctTangents
+#print axioms localWeierstrassEquation_twoChart
+#print axioms localWeierstrassEquation_uChart
+#print axioms localWeierstrassEquation_vChart
+#print axioms reducedNodalPoint_liftEvenCoefficients
+#print axioms localWeierstrassEquation_twoChart_factor
 #print axioms integralEllipticModelOfUnitDelta
 #print axioms unitDeltaGeometricallySmooth
 #print axioms LaterNonScalingTateValZeroHasIntegralEllipticModel
