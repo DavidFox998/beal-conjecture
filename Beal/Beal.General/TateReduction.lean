@@ -272,6 +272,138 @@ private theorem two_dvd_of_toZMod_eq_zero (a : ℤ_[2])
   rw [PadicInt.ker_toZMod, PadicInt.maximalIdeal_eq_span_p] at hk
   exact Ideal.mem_span_singleton.mp hk
 
+/-- Evaluation at the origin of the special fibre. Its kernel is the
+ambient centre ideal, so the centre really is a closed point, not
+merely a chosen set of three generators. -/
+noncomputable def localSurfaceResidue :
+    MvPolynomial (Fin 2) ℤ_[2] →+* ZMod 2 :=
+  MvPolynomial.eval₂Hom PadicInt.toZMod (fun _ => 0)
+
+theorem localSurfaceCentre_eq_ker_residue :
+    localSurfaceCentre = RingHom.ker localSurfaceResidue := by
+  let J := localSurfaceCentre
+  let e := localSurfaceResidue
+  let e₀ : MvPolynomial (Fin 2) ℤ_[2] →+* ℤ_[2] :=
+    MvPolynomial.eval₂Hom (RingHom.id ℤ_[2]) (fun _ => 0)
+  have hX (i : Fin 2) : MvPolynomial.X i ∈ J := by
+    fin_cases i
+    · exact Ideal.subset_span (by simp [J, localSurfaceCentre])
+    · exact Ideal.subset_span (by simp [J, localSurfaceCentre])
+  have hπ : MvPolynomial.C (2 : ℤ_[2]) ∈ J :=
+    Ideal.subset_span (by simp [J, localSurfaceCentre])
+  have hdecomp (p : MvPolynomial (Fin 2) ℤ_[2]) :
+      p - MvPolynomial.C (e₀ p) ∈ J := by
+    induction p using MvPolynomial.induction_on with
+    | h_C a =>
+        simp [e₀]
+    | h_add p q hp hq =>
+        have heq : p + q - MvPolynomial.C (e₀ (p + q)) =
+            (p - MvPolynomial.C (e₀ p)) +
+              (q - MvPolynomial.C (e₀ q)) := by
+          simp only [map_add]
+          ring
+        rw [heq]
+        exact J.add_mem hp hq
+    | h_X p i hp =>
+        have hz : e₀ (p * MvPolynomial.X i) = 0 := by simp [e₀]
+        simpa only [hz, map_zero, sub_zero] using
+          (J.mul_mem_left p (hX i))
+  have hcomp :
+      e = (PadicInt.toZMod : ℤ_[2] →+* ZMod 2).comp e₀ := by
+    apply MvPolynomial.ringHom_ext
+    · intro a
+      simp [e, e₀, localSurfaceResidue]
+    · intro i
+      simp [e, e₀, localSurfaceResidue]
+  apply le_antisymm
+  · change J ≤ RingHom.ker e
+    apply Ideal.span_le.mpr
+    intro p hp
+    rcases (show p = MvPolynomial.C (2 : ℤ_[2]) ∨
+        p = MvPolynomial.X (0 : Fin 2) ∨
+        p = MvPolynomial.X (1 : Fin 2) from by simpa [J, localSurfaceCentre] using hp)
+      with hp | hp | hp
+    all_goals rw [hp]
+    all_goals simp [RingHom.mem_ker, e, localSurfaceResidue]
+    all_goals
+      rw [map_ofNat]
+      decide
+  · change RingHom.ker e ≤ J
+    intro p hp
+    have hzero : (PadicInt.toZMod : ℤ_[2] →+* ZMod 2) (e₀ p) = 0 := by
+      have hz := RingHom.mem_ker.mp hp
+      simpa only [hcomp, RingHom.comp_apply] using hz
+    obtain ⟨a, ha⟩ := two_dvd_of_toZMod_eq_zero (e₀ p) hzero
+    have hc : MvPolynomial.C (e₀ p) ∈ J := by
+      rw [ha, map_mul]
+      exact J.mul_mem_right _ hπ
+    have heq : p = (p - MvPolynomial.C (e₀ p)) +
+        MvPolynomial.C (e₀ p) := by ring
+    rw [heq]
+    exact J.add_mem (hdecomp p) hc
+
+theorem localSurfaceCentre_isMaximal : localSurfaceCentre.IsMaximal := by
+  rw [localSurfaceCentre_eq_ker_residue]
+  apply RingHom.ker_isMaximal_of_surjective localSurfaceResidue
+  intro z
+  fin_cases z
+  · exact ⟨0, by simp [localSurfaceResidue]⟩
+  · exact ⟨1, by simp [localSurfaceResidue]⟩
+
+/-- The coordinate ring of the actual translated total-space
+hypersurface, not the ambient polynomial ring. -/
+abbrev localSurfaceCoordinateRing (W : WeierstrassCurve ℤ_[2])
+    (x y : ℤ_[2]) :=
+  (MvPolynomial (Fin 2) ℤ_[2]) ⧸ Ideal.span {localSurfaceEquation W x y}
+
+/-- The image of `(2, X, Y)` on the hypersurface. It is a closed point
+when the defining equation passes through the ambient centre. -/
+noncomputable def localSurfaceClosedPoint (W : WeierstrassCurve ℤ_[2])
+    (x y : ℤ_[2]) : Ideal (localSurfaceCoordinateRing W x y) :=
+  Ideal.map (Ideal.Quotient.mk (Ideal.span {localSurfaceEquation W x y}))
+    localSurfaceCentre
+
+theorem localSurfaceClosedPoint_isMaximal
+    (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2])
+    (hF : localSurfaceEquation W x y ∈ localSurfaceCentre) :
+    (localSurfaceClosedPoint W x y).IsMaximal := by
+  let I : Ideal (MvPolynomial (Fin 2) ℤ_[2]) :=
+    Ideal.span {localSurfaceEquation W x y}
+  let q : MvPolynomial (Fin 2) ℤ_[2] →+* localSurfaceCoordinateRing W x y :=
+    Ideal.Quotient.mk I
+  have hI : I ≤ localSurfaceCentre :=
+    Ideal.span_le.mpr (by simpa [I] using hF)
+  have hker : Ideal.comap q ⊥ = I := by
+    ext p
+    simp only [Ideal.mem_comap, Ideal.mem_bot, Ideal.Quotient.eq_zero_iff_mem]
+    exact Ideal.Quotient.eq_zero_iff_mem
+  have hcomap : (Ideal.map q localSurfaceCentre).comap q =
+      localSurfaceCentre := by
+    rw [Ideal.comap_map_of_surjective q Ideal.Quotient.mk_surjective,
+      hker, sup_eq_left.mpr hI]
+  have hproper : Ideal.map q localSurfaceCentre ≠ ⊤ := by
+    intro htop
+    have h' := congrArg (Ideal.comap q) htop
+    rw [hcomap, Ideal.comap_top] at h'
+    exact localSurfaceCentre_isMaximal.ne_top h'
+  have hcases := Ideal.map_eq_top_or_isMaximal_of_surjective
+    q Ideal.Quotient.mk_surjective localSurfaceCentre_isMaximal
+  exact hcases.resolve_left hproper
+
+/-- A reduced affine point is an actual closed point of the total
+hypersurface's coordinate ring. This is the point whose localized
+quotient ring must be studied before asserting regularity. -/
+theorem reducedPoint_hasClosedSurfacePoint
+    (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2])
+    (hpoint : reducedEquation (W.map PadicInt.toZMod)
+      (PadicInt.toZMod x) (PadicInt.toZMod y) = 0) :
+    (localSurfaceClosedPoint W x y).IsMaximal := by
+  apply localSurfaceClosedPoint_isMaximal
+  rw [localSurfaceCentre_eq_ker_residue, RingHom.mem_ker]
+  simpa [localSurfaceResidue, localSurfaceEquation,
+    localWeierstrassEquation, reducedEquation,
+    WeierstrassCurve.map] using hpoint
+
 /-- A lifted node makes the constant and linear coefficients of the
 translated surface equation divisible by 2. This deliberately makes
 no claim that the constant is divisible by 4: a nodal *special
@@ -911,6 +1043,10 @@ or from a definition that merely assigns the intended labels. -/
 #print axioms localWeierstrassEquation_vChart
 #print axioms localSurfaceEquation_mem_centre_sq
 #print axioms localSurfaceEquation_not_mem_centre_sq
+#print axioms localSurfaceCentre_eq_ker_residue
+#print axioms localSurfaceCentre_isMaximal
+#print axioms localSurfaceClosedPoint_isMaximal
+#print axioms reducedPoint_hasClosedSurfacePoint
 #print axioms reducedNodalPoint_liftEvenCoefficients
 #print axioms localWeierstrassEquation_twoChart_factor
 #print axioms nodeConstant_modFour_eq_delta
