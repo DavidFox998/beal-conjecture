@@ -182,9 +182,24 @@ theorem LaterNonScalingTatePosValHasNodalReduction
   exact ⟨_, _, reduced_nodal_point_of_delta_zero_b2_ne_zero
     (N.map PadicInt.toZMod) hred hb'⟩
 
-/- TODO post-v31: To deduce a true Kodaira Iₙ classification and
-Néron conductor exponent 1, prove the minimal-model Tate/Néron
-node-to-fibre/conductor theorem. The node test above is necessary
-geometry, not that theorem. -/
+/- TODO post-v31 — TateReductionValZeroIsI0F2Zero:
+Construct a genuine Q₂ Kodaira classifier and Néron conductor exponent
+for minimal integral models, then prove that the nonzero unit discriminant
+and smooth reduction above give type I₀ and f₂ = 0. The valuation-zero
+hypothesis alone must not include Δ = 0 (`Padic.valuation 0 = 0` here).
+
+Mathlib at manifest revision 809c3fb has no Tate/Kodaira/Néron bridge.
+The foundations tables through v31 have labels, not a theorem taking
+these actual curves to fibres or conductor exponents. The conditional
+criteria in Conductor.lean do not construct that classifier. -/
+
+/- TODO post-v31 — TateReductionPosValUnitC4IsInF2One:
+Prove the minimal-model node-to-fibre theorem for the explicit singular
+point and separable tangent cone above: the Kodaira symbol must be Iₙ
+with n = v₂(Δ) > 0, and a genuine Néron conductor theorem must give
+f₂ = 1. The (U, V) = (32, 1) example is an I₂/f₂=1 obstruction to a
+universal I₀ claim, not a replacement for the missing Lean bridge.
+Do not assert either requested theorem from the existing residue tests
+or from a definition that merely assigns the intended labels. -/
 
 end Beal.General
