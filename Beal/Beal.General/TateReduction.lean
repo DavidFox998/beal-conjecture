@@ -1,5 +1,6 @@
 import Beal.«Beal.General».Minimal
 import Mathlib.AlgebraicGeometry.EllipticCurve.Affine
+import Mathlib.FieldTheory.IsAlgClosed.Basic
 
 /-!
 Explicit residue-characteristic-two smoothness and node tests for
@@ -105,6 +106,50 @@ theorem reducedNodalPoint_uniqueGeometricCandidate
       WeierstrassCurve.map_a₁, WeierstrassCurve.map_a₂,
       WeierstrassCurve.map_a₄, ha1, htwo, hthree] using hx
   exact ⟨hx', by rw [hx'] at hx''; exact sub_eq_zero.mp hx''⟩
+
+/-- Over an algebraically closed residue extension, the quadratic
+tangent cone at the explicit node is a product of two *distinct*
+linear directions. This concerns the singular cubic, not the
+components of its minimal regular resolution. -/
+theorem reducedNodalPoint_geometricallyDistinctTangents
+    (W : WeierstrassCurve (ZMod 2)) (x y : ZMod 2)
+    (hnode : ReducedNodalPoint W x y)
+    {K : Type*} [Field K] [IsAlgClosed K] (φ : ZMod 2 →+* K) :
+    ∃ slope other : K, slope ≠ other ∧ ∀ u v : K,
+      v ^ 2 + φ W.a₁ * u * v - φ (3 * x + W.a₂) * u ^ 2 =
+        (v - slope * u) * (v - other * u) := by
+  have ha1 : W.a₁ = 1 := by
+    have hcases (z : ZMod 2) : z = 0 ∨ z = 1 := by
+      fin_cases z <;> simp
+    rcases hcases W.a₁ with hz | hone
+    · exact (hnode.2.2.2 hz).elim
+    · exact hone
+  have htwo : (2 : K) = 0 := by
+    have hm := congrArg φ (show (2 : ZMod 2) = 0 by decide)
+    simpa only [map_ofNat, map_zero] using hm
+  let c : K := φ (3 * x + W.a₂)
+  let p : Polynomial K := Polynomial.X ^ 2 + Polynomial.X - Polynomial.C c
+  have hcoeff : p.coeff 2 = 1 := by
+    simp [p, Polynomial.coeff_X]
+  have hpdeg : p.degree ≠ 0 := by
+    intro hd
+    have hlt : p.degree < (2 : WithBot ℕ) := by rw [hd]; decide
+    have hz := Polynomial.coeff_eq_zero_of_degree_lt hlt
+    exact one_ne_zero (hcoeff.symm.trans hz)
+  obtain ⟨slope, hslope⟩ := IsAlgClosed.exists_root p hpdeg
+  have hroot : slope ^ 2 + slope - c = 0 := by
+    simpa [Polynomial.IsRoot, p] using hslope
+  refine ⟨slope, slope + 1, ?_, ?_⟩
+  · intro h
+    have h' : slope + (0 : K) = slope + 1 := by simpa using h
+    have hzero : (1 : K) = 0 := (add_left_cancel h').symm
+    exact one_ne_zero hzero
+  · intro u v
+    rw [ha1, map_one]
+    change v ^ 2 + (1 : K) * u * v - c * u ^ 2 =
+      (v - slope * u) * (v - (slope + 1) * u)
+    linear_combination -hroot * u ^ 2 +
+      htwo * ((slope + 1) * u * v - c * u ^ 2)
 
 /-- Nonzero `b₂` and zero discriminant give the singular point
 `(a₃, a₃² + a₄)` in characteristic two. The mixed coefficient of
@@ -323,6 +368,7 @@ or from a definition that merely assigns the intended labels. -/
 
 #print axioms reducedNodalPoint_mathlibSingular
 #print axioms reducedNodalPoint_uniqueGeometricCandidate
+#print axioms reducedNodalPoint_geometricallyDistinctTangents
 #print axioms integralEllipticModelOfUnitDelta
 #print axioms unitDeltaGeometricallySmooth
 #print axioms LaterNonScalingTateValZeroHasIntegralEllipticModel
