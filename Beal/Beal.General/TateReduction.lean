@@ -3,6 +3,7 @@ import Mathlib.AlgebraicGeometry.EllipticCurve.Affine
 import Mathlib.Algebra.MvPolynomial.Basic
 import Mathlib.FieldTheory.IsAlgClosed.Basic
 import Mathlib.RingTheory.Localization.AtPrime
+import Mathlib.RingTheory.Ideal.Cotangent
 
 /-!
 Explicit residue-characteristic-two smoothness and node tests for
@@ -236,6 +237,50 @@ theorem localSurfaceEquation_not_mem_centre_sq
       Ideal.mem_span_singleton, heq] using hm
   exact hF hdiv
 
+/-- The base uniformizer has a nonzero first-order class at the
+ambient centre: its value at the origin is not divisible by four. -/
+theorem localSurfaceUniformizer_not_mem_centre_sq :
+    MvPolynomial.C (2 : ℤ_[2]) ∉ localSurfaceCentre ^ 2 := by
+  let e : MvPolynomial (Fin 2) ℤ_[2] →+* ℤ_[2] :=
+    MvPolynomial.eval₂Hom (RingHom.id ℤ_[2]) (fun _ => 0)
+  have hle : Ideal.map e localSurfaceCentre ≤
+      (Ideal.span {(2 : ℤ_[2])} : Ideal ℤ_[2]) := by
+    rw [localSurfaceCentre, Ideal.map_span]
+    apply Ideal.span_le.mpr
+    rintro z ⟨p, hp, rfl⟩
+    rcases (show p = MvPolynomial.C (2 : ℤ_[2]) ∨
+        p = MvPolynomial.X (0 : Fin 2) ∨
+        p = MvPolynomial.X (1 : Fin 2) from by simpa using hp) with hp | hp | hp
+    · rw [hp]
+      simpa [e] using
+        (Ideal.subset_span (Set.mem_singleton (2 : ℤ_[2])))
+    · rw [hp]
+      simp [e]
+    · rw [hp]
+      simp [e]
+  have hpow : Ideal.map e (localSurfaceCentre ^ 2) ≤
+      (Ideal.span {(2 : ℤ_[2])} : Ideal ℤ_[2]) ^ 2 := by
+    rw [pow_two, Ideal.map_mul, pow_two]
+    exact Ideal.mul_le.mpr fun _ ha _ hb =>
+      Ideal.mul_mem_mul (hle ha) (hle hb)
+  intro hp
+  have hm := hpow (Ideal.mem_map_of_mem e hp)
+  rw [Ideal.span_singleton_pow] at hm
+  have hfour : (4 : ℤ_[2]) ∣ (2 : ℤ_[2]) := by
+    simpa only [show (2 : ℤ_[2]) ^ 2 = 4 by norm_num,
+      Ideal.mem_span_singleton, show e (MvPolynomial.C (2 : ℤ_[2])) =
+        (2 : ℤ_[2]) by simp [e]] using hm
+  have hval : (2 : ℤ_[2]) ∈
+      (Ideal.span {((2 : ℤ_[2]) ^ 2)} : Ideal ℤ_[2]) :=
+    Ideal.mem_span_singleton.mpr
+      (by simpa only [show (2 : ℤ_[2]) ^ 2 = 4 by norm_num] using hfour)
+  have htwo : (2 : ℤ_[2]) ≠ 0 := by norm_num
+  have hval2 : 2 ≤ Padic.valuation ((2 : ℤ_[2]) : ℚ_[2]) :=
+    (PadicInt.mem_span_pow_iff_le_valuation (2 : ℤ_[2]) htwo 2).mp hval
+  have hvalone : Padic.valuation ((2 : ℤ_[2]) : ℚ_[2]) = 1 := by
+    exact PadicInt.valuation_p
+  omega
+
 /-- A singular point whose translated quadratic term has nonzero
 mixed coefficient: the explicit characteristic-two node test. -/
 def ReducedNodalPoint (W : WeierstrassCurve (ZMod 2)) (x y : ZMod 2) : Prop :=
@@ -443,6 +488,58 @@ theorem reducedPoint_hasClosedSurfacePoint
   simpa [localSurfaceResidue, localSurfaceEquation,
     localWeierstrassEquation, reducedEquation,
     WeierstrassCurve.map] using hpoint
+
+/-- If the total-space equation vanishes to second order, the base
+uniformizer remains nonzero modulo the square of the closed-point
+ideal in the *hypersurface coordinate ring*. This statement is about
+its first-order class, not a proof of singularity of the localization. -/
+theorem localSurfaceUniformizer_not_mem_closedPoint_sq
+    (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2])
+    (hF : localSurfaceEquation W x y ∈ localSurfaceCentre ^ 2) :
+    (Ideal.Quotient.mk (Ideal.span {localSurfaceEquation W x y}))
+      (MvPolynomial.C (2 : ℤ_[2])) ∉
+      (localSurfaceClosedPoint W x y) ^ 2 := by
+  let I : Ideal (MvPolynomial (Fin 2) ℤ_[2]) :=
+    Ideal.span {localSurfaceEquation W x y}
+  let q : MvPolynomial (Fin 2) ℤ_[2] →+* localSurfaceCoordinateRing W x y :=
+    Ideal.Quotient.mk I
+  let M := localSurfaceClosedPoint W x y
+  have hI : I ≤ localSurfaceCentre ^ 2 :=
+    Ideal.span_le.mpr (by simpa [I] using hF)
+  have hker : Ideal.comap q ⊥ = I := by
+    ext p
+    simp only [Ideal.mem_comap, Ideal.mem_bot]
+    exact Ideal.Quotient.eq_zero_iff_mem
+  have hsq : M ^ 2 = Ideal.map q (localSurfaceCentre ^ 2) := by
+    change (Ideal.map q localSurfaceCentre) ^ 2 = _
+    simp only [pow_two, Ideal.map_mul]
+  intro hh
+  have hback : MvPolynomial.C (2 : ℤ_[2]) ∈
+      Ideal.comap q (Ideal.map q (localSurfaceCentre ^ 2)) := by
+    exact hsq ▸ hh
+  rw [Ideal.comap_map_of_surjective q Ideal.Quotient.mk_surjective,
+    hker, sup_eq_left.mpr hI] at hback
+  exact localSurfaceUniformizer_not_mem_centre_sq hback
+
+/-- In the second-order branch the closed point of the actual
+hypersurface has a nonzero cotangent space, witnessed by the
+uniformizer. No dimension or regularity assertion is made. -/
+theorem localSurfaceClosedPoint_cotangent_nontrivial
+    (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2])
+    (hF : localSurfaceEquation W x y ∈ localSurfaceCentre ^ 2) :
+    Nontrivial (localSurfaceClosedPoint W x y).Cotangent := by
+  let q : MvPolynomial (Fin 2) ℤ_[2] →+* localSurfaceCoordinateRing W x y :=
+    Ideal.Quotient.mk (Ideal.span {localSurfaceEquation W x y})
+  let M := localSurfaceClosedPoint W x y
+  have hπ : MvPolynomial.C (2 : ℤ_[2]) ∈ localSurfaceCentre :=
+    Ideal.subset_span (by simp [localSurfaceCentre])
+  have hqπ : q (MvPolynomial.C (2 : ℤ_[2])) ∈ M :=
+    Ideal.mem_map_of_mem q hπ
+  have hne : M.toCotangent ⟨q (MvPolynomial.C (2 : ℤ_[2])), hqπ⟩ ≠ 0 := by
+    intro hz
+    exact (localSurfaceUniformizer_not_mem_closedPoint_sq W x y hF)
+      ((M.toCotangent_eq_zero ⟨q (MvPolynomial.C (2 : ℤ_[2])), hqπ⟩).mp hz)
+  exact nontrivial_of_ne _ _ hne
 
 /-- If the constant value is twice a unit, the uniformizer is
 eliminated by the actual hypersurface relation: the closed-point
@@ -716,6 +813,22 @@ theorem canonicalNodalPoint_surfaceEquation_mem_centre_sq
   obtain ⟨A, hF⟩ := four_dvd_nodeConstant_of_four_dvd_delta W ha hΔ
   exact localSurfaceEquation_mem_centre_sq
     W W.a₃ (W.a₃ ^ 2 + W.a₄) A B C hF hX hY
+
+/-- For the even-valuation nodal branch, the uniformizer gives a
+nonzero first-order class in the cotangent space of the actual
+hypersurface closed point. It remains to compute the cotangent
+dimension and the local ring's Krull dimension. -/
+theorem canonicalNodalPoint_cotangent_nontrivial
+    (W : WeierstrassCurve ℤ_[2])
+    (hnode : ReducedNodalPoint (W.map PadicInt.toZMod)
+      (PadicInt.toZMod W.a₃)
+      (PadicInt.toZMod (W.a₃ ^ 2 + W.a₄)))
+    (hΔ : (4 : ℤ_[2]) ∣ W.Δ) :
+    Nontrivial
+      (localSurfaceClosedPoint W W.a₃ (W.a₃ ^ 2 + W.a₄)).Cotangent :=
+  localSurfaceClosedPoint_cotangent_nontrivial W W.a₃
+    (W.a₃ ^ 2 + W.a₄)
+    (canonicalNodalPoint_surfaceEquation_mem_centre_sq W hnode hΔ)
 
 /-- At discriminant valuation exactly one, the canonical nodal lift
 has a nonzero linear uniformizer term in the ambient local equation:
@@ -1263,11 +1376,14 @@ or from a definition that merely assigns the intended labels. -/
 #print axioms localWeierstrassEquation_vChart
 #print axioms localSurfaceEquation_mem_centre_sq
 #print axioms localSurfaceEquation_not_mem_centre_sq
+#print axioms localSurfaceUniformizer_not_mem_centre_sq
 #print axioms localSurfaceCentre_eq_ker_residue
 #print axioms localSurfaceCentre_isMaximal
 #print axioms localSurfaceEquation_sub_constant_mem_variables
 #print axioms localSurfaceClosedPoint_isMaximal
 #print axioms reducedPoint_hasClosedSurfacePoint
+#print axioms localSurfaceUniformizer_not_mem_closedPoint_sq
+#print axioms localSurfaceClosedPoint_cotangent_nontrivial
 #print axioms localSurfaceClosedPoint_eq_span_coordinates_of_unit_constant
 #print axioms reducedNodalPoint_liftEvenCoefficients
 #print axioms localWeierstrassEquation_twoChart_factor
@@ -1276,6 +1392,7 @@ or from a definition that merely assigns the intended labels. -/
 #print axioms four_dvd_delta_of_val_ge_two
 #print axioms canonicalNodalPoint_twoChartHasFourFactor
 #print axioms canonicalNodalPoint_surfaceEquation_mem_centre_sq
+#print axioms canonicalNodalPoint_cotangent_nontrivial
 #print axioms valOne_surfaceEquation_not_mem_centre_sq
 #print axioms valOne_closedPoint_eq_span_coordinates
 #print axioms valOne_localMaximalIdeal_eq_span_coordinates
