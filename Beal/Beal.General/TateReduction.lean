@@ -1,5 +1,6 @@
 import Beal.«Beal.General».Minimal
 import Mathlib.AlgebraicGeometry.EllipticCurve.Affine
+import Mathlib.Algebra.MvPolynomial.Basic
 import Mathlib.FieldTheory.IsAlgClosed.Basic
 
 /-!
@@ -106,6 +107,133 @@ theorem localWeierstrassEquation_vChart
         u ^ 3 * v ^ 3 := by
   rw [localWeierstrassEquation_shift]
   ring
+
+/-- The translated total-space equation as a polynomial in the two
+local affine coordinates, with the base uniformizer retained in its
+coefficient ring. -/
+noncomputable def localSurfaceEquation (W : WeierstrassCurve ℤ_[2])
+    (x y : ℤ_[2]) : MvPolynomial (Fin 2) ℤ_[2] :=
+  localWeierstrassEquation (W.map MvPolynomial.C)
+    (MvPolynomial.C x + MvPolynomial.X 0)
+    (MvPolynomial.C y + MvPolynomial.X 1)
+
+/-- The centre ideal `(2, X, Y)` in the ambient affine plane over
+`ℤ_[2]`. Membership of an equation in its square is a first-order
+singularity certificate, not by itself a proof of singularity of the
+quotient local ring. -/
+noncomputable def localSurfaceCentre : Ideal (MvPolynomial (Fin 2) ℤ_[2]) :=
+  Ideal.span {MvPolynomial.C (2 : ℤ_[2]),
+    MvPolynomial.X 0, MvPolynomial.X 1}
+
+/-- When the lifted equation vanishes to order at least two at the
+centre, its actual polynomial lies in the square of the centre ideal.
+This is stronger than a numerical chart substitution: it records the
+ambient ideal filtration needed before a blow-up. -/
+theorem localSurfaceEquation_mem_centre_sq
+    (W : WeierstrassCurve ℤ_[2]) (x y A B C : ℤ_[2])
+    (hF : localWeierstrassEquation W x y = 4 * A)
+    (hX : W.a₁ * y - (3 * x ^ 2 + 2 * W.a₂ * x + W.a₄) = 2 * B)
+    (hY : 2 * y + W.a₁ * x + W.a₃ = 2 * C) :
+    localSurfaceEquation W x y ∈ localSurfaceCentre ^ 2 := by
+  let c : ℤ_[2] →+* MvPolynomial (Fin 2) ℤ_[2] := MvPolynomial.C
+  let π : MvPolynomial (Fin 2) ℤ_[2] := MvPolynomial.C 2
+  let U : MvPolynomial (Fin 2) ℤ_[2] := MvPolynomial.X 0
+  let V : MvPolynomial (Fin 2) ℤ_[2] := MvPolynomial.X 1
+  let J := localSurfaceCentre
+  have hπ : π ∈ J := Ideal.subset_span (by simp [J, localSurfaceCentre, π])
+  have hU : U ∈ J := Ideal.subset_span (by simp [J, localSurfaceCentre, U])
+  have hV : V ∈ J := Ideal.subset_span (by simp [J, localSurfaceCentre, V])
+  have hsq {a b : MvPolynomial (Fin 2) ℤ_[2]}
+      (ha : a ∈ J) (hb : b ∈ J) : a * b ∈ J ^ 2 := by
+    simpa only [pow_two] using Ideal.mul_mem_mul ha hb
+  have hpoly :
+      localSurfaceEquation W x y =
+        (π * π) * MvPolynomial.C A +
+        (π * U) * MvPolynomial.C B +
+        (π * V) * MvPolynomial.C C +
+        V ^ 2 + MvPolynomial.C W.a₁ * U * V -
+        MvPolynomial.C (3 * x + W.a₂) * U ^ 2 - U ^ 3 := by
+    have hFmap : localWeierstrassEquation (W.map c)
+        (c x) (c y) = c (localWeierstrassEquation W x y) := by
+      simp [localWeierstrassEquation, WeierstrassCurve.map]
+    have hXmap :
+        (W.map c).a₁ * c y -
+          (3 * c x ^ 2 +
+            2 * (W.map c).a₂ * c x +
+            (W.map c).a₄) =
+        c
+          (W.a₁ * y - (3 * x ^ 2 + 2 * W.a₂ * x + W.a₄)) := by
+      simp [WeierstrassCurve.map, map_ofNat]
+    have hYmap :
+        2 * c y + (W.map c).a₁ *
+          c x + (W.map c).a₃ =
+        c (2 * y + W.a₁ * x + W.a₃) := by
+      simp [WeierstrassCurve.map, map_ofNat]
+    change localWeierstrassEquation (W.map c)
+      (c x + U) (c y + V) = _
+    rw [localWeierstrassEquation_shift, hFmap, hXmap, hYmap, hF, hX, hY]
+    simp only [WeierstrassCurve.map_a₁, WeierstrassCurve.map_a₂,
+      map_mul, map_add, map_sub, map_pow, map_ofNat]
+    dsimp only [c, π]
+    simp only [map_ofNat]
+    ring
+  rw [hpoly]
+  apply (J ^ 2).sub_mem
+  · apply (J ^ 2).sub_mem
+    · apply (J ^ 2).add_mem
+      · apply (J ^ 2).add_mem
+        · apply (J ^ 2).add_mem
+          · apply (J ^ 2).add_mem
+            · exact (J ^ 2).mul_mem_right _ (hsq hπ hπ)
+            · exact (J ^ 2).mul_mem_right _ (hsq hπ hU)
+          · exact (J ^ 2).mul_mem_right _ (hsq hπ hV)
+        · convert hsq hV hV using 1 <;> ring
+      · convert (J ^ 2).mul_mem_left (MvPolynomial.C W.a₁) (hsq hU hV)
+          using 1 <;> ring
+    · convert (J ^ 2).mul_mem_left (MvPolynomial.C (3 * x + W.a₂))
+        (hsq hU hU) using 1 <;> ring
+  · convert (J ^ 2).mul_mem_right U (hsq hU hU) using 1 <;> ring
+
+/-- Conversely, an equation whose constant value is not divisible by
+four cannot belong to the square of `(2, X, Y)`: evaluate both local
+variables at zero and map the centre ideal to `(2)` in `ℤ_[2]`. -/
+theorem localSurfaceEquation_not_mem_centre_sq
+    (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2])
+    (hF : ¬ (4 : ℤ_[2]) ∣ localWeierstrassEquation W x y) :
+    localSurfaceEquation W x y ∉ localSurfaceCentre ^ 2 := by
+  let e : MvPolynomial (Fin 2) ℤ_[2] →+* ℤ_[2] :=
+    MvPolynomial.eval₂Hom (RingHom.id ℤ_[2]) (fun _ => 0)
+  have hle : Ideal.map e localSurfaceCentre ≤
+      (Ideal.span {(2 : ℤ_[2])} : Ideal ℤ_[2]) := by
+    rw [localSurfaceCentre, Ideal.map_span]
+    apply Ideal.span_le.mpr
+    rintro z ⟨p, hp, rfl⟩
+    rcases (show p = MvPolynomial.C (2 : ℤ_[2]) ∨
+        p = MvPolynomial.X (0 : Fin 2) ∨
+        p = MvPolynomial.X (1 : Fin 2) from by simpa using hp) with hp | hp | hp
+    · rw [hp]
+      simpa [e] using
+        (Ideal.subset_span (Set.mem_singleton (2 : ℤ_[2])))
+    · rw [hp]
+      simp [e]
+    · rw [hp]
+      simp [e]
+  have hpow : Ideal.map e (localSurfaceCentre ^ 2) ≤
+      (Ideal.span {(2 : ℤ_[2])} : Ideal ℤ_[2]) ^ 2 := by
+    rw [pow_two, Ideal.map_mul, pow_two]
+    exact Ideal.mul_le.mpr fun _ ha _ hb =>
+      Ideal.mul_mem_mul (hle ha) (hle hb)
+  have heq : e (localSurfaceEquation W x y) =
+      localWeierstrassEquation W x y := by
+    simp [e, localSurfaceEquation, localWeierstrassEquation,
+      WeierstrassCurve.map]
+  intro hp
+  have hm := hpow (Ideal.mem_map_of_mem e hp)
+  rw [Ideal.span_singleton_pow] at hm
+  have hdiv : (4 : ℤ_[2]) ∣ localWeierstrassEquation W x y := by
+    simpa only [show (2 : ℤ_[2]) ^ 2 = 4 by norm_num,
+      Ideal.mem_span_singleton, heq] using hm
+  exact hF hdiv
 
 /-- A singular point whose translated quadratic term has nonzero
 mixed coefficient: the explicit characteristic-two node test. -/
@@ -310,6 +438,57 @@ theorem canonicalNodalPoint_twoChartHasFourFactor
   exact ⟨A, B, C,
     localWeierstrassEquation_twoChart_factor
       W W.a₃ (W.a₃ ^ 2 + W.a₄) u v A B C hA hX hY⟩
+
+/-- The canonical node has a second-order zero in the ambient
+three-dimensional local coordinates when `4 ∣ Δ`. This does not
+establish regularity or nonregularity of the quotient local ring. -/
+theorem canonicalNodalPoint_surfaceEquation_mem_centre_sq
+    (W : WeierstrassCurve ℤ_[2])
+    (hnode : ReducedNodalPoint (W.map PadicInt.toZMod)
+      (PadicInt.toZMod W.a₃)
+      (PadicInt.toZMod (W.a₃ ^ 2 + W.a₄)))
+    (hΔ : (4 : ℤ_[2]) ∣ W.Δ) :
+    localSurfaceEquation W W.a₃ (W.a₃ ^ 2 + W.a₄) ∈
+      localSurfaceCentre ^ 2 := by
+  obtain ⟨_, B, C, _, hX, hY⟩ :=
+    reducedNodalPoint_liftEvenCoefficients
+      W W.a₃ (W.a₃ ^ 2 + W.a₄) hnode
+  have ha :
+      (PadicInt.toZMod : ℤ_[2] →+* ZMod 2) W.a₁ ≠ 0 := by
+    simpa only [WeierstrassCurve.map_a₁] using hnode.2.2.2
+  obtain ⟨A, hF⟩ := four_dvd_nodeConstant_of_four_dvd_delta W ha hΔ
+  exact localSurfaceEquation_mem_centre_sq
+    W W.a₃ (W.a₃ ^ 2 + W.a₄) A B C hF hX hY
+
+/-- At discriminant valuation exactly one, the canonical nodal lift
+has a nonzero linear uniformizer term in the ambient local equation:
+the equation does *not* lie in `(2, X, Y)²`. Thus the even-valuation
+blow-up premise cannot be extended to this branch. This alone is not
+a Lean construction of its regular local ring. -/
+theorem valOne_surfaceEquation_not_mem_centre_sq
+    (W : WeierstrassCurve ℤ_[2]) (hΔ : W.Δ ≠ 0)
+    (ha : (PadicInt.toZMod : ℤ_[2] →+* ZMod 2) W.a₁ ≠ 0)
+    (hval : Padic.valuation (W.Δ : ℚ_[2]) = 1) :
+    localSurfaceEquation W W.a₃ (W.a₃ ^ 2 + W.a₄) ∉
+      localSurfaceCentre ^ 2 := by
+  apply localSurfaceEquation_not_mem_centre_sq
+  intro hF
+  let φ : ℤ_[2] →+* ZMod 4 := PadicInt.toZModPow 2
+  have hFker :
+      localWeierstrassEquation W W.a₃ (W.a₃ ^ 2 + W.a₄) ∈
+        RingHom.ker φ := by
+    rw [PadicInt.ker_toZModPow]
+    exact Ideal.mem_span_singleton.mpr
+      (by simpa only [show (2 : ℤ_[2]) ^ 2 = 4 by norm_num] using hF)
+  have hFzero : φ (localWeierstrassEquation W W.a₃
+      (W.a₃ ^ 2 + W.a₄)) = 0 := RingHom.mem_ker.mp hFker
+  have hΔzero : φ W.Δ = 0 :=
+    (nodeConstant_modFour_eq_delta W ha).symm.trans hFzero
+  have hΔker : W.Δ ∈ RingHom.ker φ := RingHom.mem_ker.mpr hΔzero
+  rw [PadicInt.ker_toZModPow] at hΔker
+  have hval2 : 2 ≤ Padic.valuation (W.Δ : ℚ_[2]) :=
+    (PadicInt.mem_span_pow_iff_le_valuation W.Δ hΔ 2).mp hΔker
+  omega
 
 /-- The explicit node test is an actual singular point for Mathlib's
 affine Weierstrass geometry, not merely a label for the residue data.
@@ -640,6 +819,47 @@ theorem LaterNonScalingTatePosValEvenDiscHasFourDivisibleNodeConstant
   exact four_dvd_nodeConstant_of_four_dvd_delta N ha
     (four_dvd_delta_of_val_ge_two N hN hval)
 
+/-- The positive even-valuation branch gives a genuine second-order
+vanishing statement in the ambient polynomial ring at its canonical
+node. It does not yet construct the local quotient ring, its blow-up,
+or the minimal regular model. -/
+theorem LaterNonScalingTatePosValEvenDiscSurfaceEquationInCentreSq
+    (M : WeierstrassCurve ℤ_[2]) (hM : M.Δ ≠ 0)
+    (hc4 : (M.c₄ : ℚ_[2]) ≠ 0)
+    (hc4val : Padic.valuation (M.c₄ : ℚ_[2]) = 0)
+    (hpositive : 0 < Padic.valuation (M.Δ : ℚ_[2]))
+    (heven : ∃ k : ℤ, Padic.valuation (M.Δ : ℚ_[2]) = 2 * k)
+    (ε : ℤ_[2]ˣ) (r s t : ℚ_[2]) (N : WeierstrassCurve ℤ_[2])
+    (hmodel : (M.map (algebraMap ℤ_[2] ℚ_[2])).variableChange
+      (candidateUnitScaleChange ε r s t) =
+      N.map (algebraMap ℤ_[2] ℚ_[2])) :
+    localSurfaceEquation N N.a₃ (N.a₃ ^ 2 + N.a₄) ∈
+      localSurfaceCentre ^ 2 := by
+  have hfour := LaterNonScalingTatePosValEvenDiscHasFourDivisibleNodeConstant
+    M hM hc4 hc4val hpositive heven ε r s t N hmodel
+  obtain ⟨hN, hNpos, hb, _, _⟩ :=
+    LaterNonScalingTatePosValMinimalB2C6Odd
+      M hM hc4 hc4val hpositive ε r s t N hmodel
+  have hred : (N.map PadicInt.toZMod).Δ = 0 := by
+    rw [WeierstrassCurve.map_Δ]
+    exact positive_delta_reduces_zero N hN hNpos
+  have hb' : (N.map PadicInt.toZMod).b₂ ≠ 0 := by
+    simpa only [WeierstrassCurve.map_b₂] using hb
+  have hnode := reduced_nodal_point_of_delta_zero_b2_ne_zero
+    (N.map PadicInt.toZMod) hred hb'
+  have hnode' :
+      ReducedNodalPoint (N.map PadicInt.toZMod)
+        (PadicInt.toZMod N.a₃)
+        (PadicInt.toZMod (N.a₃ ^ 2 + N.a₄)) := by
+    simpa only [WeierstrassCurve.map_a₃, WeierstrassCurve.map_a₄,
+      map_pow, map_add] using hnode
+  obtain ⟨A, hF⟩ := hfour
+  obtain ⟨_, B, C, _, hX, hY⟩ :=
+    reducedNodalPoint_liftEvenCoefficients
+      N N.a₃ (N.a₃ ^ 2 + N.a₄) hnode'
+  exact localSurfaceEquation_mem_centre_sq
+    N N.a₃ (N.a₃ ^ 2 + N.a₄) A B C hF hX hY
+
 /-- Any integral scale-two target of the nonzero Frey model has
 even discriminant valuation. This supplies the extra parity premise
 used above without claiming that every Frey input admits such an
@@ -689,13 +909,18 @@ or from a definition that merely assigns the intended labels. -/
 #print axioms localWeierstrassEquation_twoChart
 #print axioms localWeierstrassEquation_uChart
 #print axioms localWeierstrassEquation_vChart
+#print axioms localSurfaceEquation_mem_centre_sq
+#print axioms localSurfaceEquation_not_mem_centre_sq
 #print axioms reducedNodalPoint_liftEvenCoefficients
 #print axioms localWeierstrassEquation_twoChart_factor
 #print axioms nodeConstant_modFour_eq_delta
 #print axioms four_dvd_nodeConstant_of_four_dvd_delta
 #print axioms four_dvd_delta_of_val_ge_two
 #print axioms canonicalNodalPoint_twoChartHasFourFactor
+#print axioms canonicalNodalPoint_surfaceEquation_mem_centre_sq
+#print axioms valOne_surfaceEquation_not_mem_centre_sq
 #print axioms LaterNonScalingTatePosValEvenDiscHasFourDivisibleNodeConstant
+#print axioms LaterNonScalingTatePosValEvenDiscSurfaceEquationInCentreSq
 #print axioms freyScaleTwoTargetHasEvenDiscriminantValuation
 #print axioms integralEllipticModelOfUnitDelta
 #print axioms unitDeltaGeometricallySmooth
