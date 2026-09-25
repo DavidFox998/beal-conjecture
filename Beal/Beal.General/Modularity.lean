@@ -10,6 +10,9 @@ OPEN PROOF OBLIGATIONS (not axioms, theorems, or certificates):
 
 * TateGeneral TODO: general Tate uniformization, high-valuation
   minimal models, Néron/inertia data and an actual conductor formula.
+  The reduction tests in TateReduction.lean do not prove Kodaira types
+  or f₂; the missing genuine local conductor exponent blocks the
+  conductor input to the general lowering chain.
 * MazurX0_l TODO: residual irreducibility and Borel exclusion for all
   relevant odd primes ℓ, not only the specialized X₀(13) setting.
 * RibetGeneral TODO: modularity and justified level lowering from
@@ -19,11 +22,15 @@ OPEN PROOF OBLIGATIONS (not axioms, theorems, or certificates):
 * KolyvaginGeneral TODO: the needed L-value, Selmer and rank inputs
   under their correct hypotheses, not only the 32a1 data.
 * TwoPowerGeneral TODO: construct the unsupplied `(4,4,n)` requirement
-  where applicable and handle all other 2^k exponent signatures.
+  where applicable and handle all other 2^k exponent signatures,
+  including p = 4; an odd-prime-divisor split alone cannot do this.
 * Construct the six *general* forward fields and a proved bridge to
   `BealTheoremData.commonPrime`. Neither
   `RequiresTateMazurRibetForwardData` nor the specialized
-  `Conditional32BridgeData`/`HasNewformAtLevel32` does this.
+  `Conditional32BridgeData`/`HasNewformAtLevel32` does this. The
+  TateGeneral → RibetGeneral → KrausGeneral path cannot supply that
+  bridge without f₂; MazurX0_l, KolyvaginGeneral and TwoPowerGeneral
+  remain additional independent obligations, not substitutes for it.
 
 Absence of these proofs does not establish formal non-entailment.
 There is deliberately no asserted `commonPrime` theorem, no

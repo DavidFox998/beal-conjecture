@@ -3,8 +3,10 @@ import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Tactic.NormNum
 
 /-!
-The exponent split, not elimination of the 2^k branch. A bounded
-(4,4,13) computation is not a general theorem for (4,4,n).
+The exponent split, not elimination of the 2^k branch. For exponents
+at least three, an odd prime divisor ℓ ≥ 3 or a pure power 2^k is
+available; the former does not eliminate the latter (including p = 4).
+A bounded (4,4,13) computation is not a general theorem for (4,4,n).
 -/
 
 namespace Beal.General
@@ -141,7 +143,10 @@ theorem two_power_needs_darmon_merel
 Supply a real proof with correct hypotheses for the `(4,4,n)`
 requirement if one is available; this does not address other exponent
 signatures, such as arbitrary q in x^(2^k)+y^q=z^r. The bounded
-(4,4,13) check for B ≤ 10⁶ is not the missing proof. -/
+`(4,4,13)` check for B ≤ 10⁶ (Full10e6, 7433/7433; separately
+documented under its own DOI) is not the missing proof. In particular,
+neither the odd-prime-divisor branch nor the p = 4 case discharges the
+unproved `DarmonMerel44n` premise. -/
 
 #print axioms two_power_conditional
 #print axioms two_power_44n_conditional
