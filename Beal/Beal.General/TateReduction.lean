@@ -180,6 +180,137 @@ theorem localWeierstrassEquation_twoChart_factor
   rw [localWeierstrassEquation_twoChart, hF, hX, hY]
   ring
 
+/-- For an odd mixed coefficient, the discriminant and the value of
+the equation at the canonical lift of the reduced node agree mod 4.
+This is a calculation in the actual `ZMod 4` quotient, not a
+conductor or fibre classification. -/
+private theorem zmodFour_delta_eq_nodeConstant
+    (W : WeierstrassCurve (ZMod 4))
+    (ha : W.a₁ = 1 ∨ W.a₁ = 3) :
+    W.Δ = localWeierstrassEquation W W.a₃ (W.a₃ ^ 2 + W.a₄) := by
+  have h4 : (4 : ZMod 4) = 0 := by decide
+  have h8 : (8 : ZMod 4) = 0 := by decide
+  have h27 : (27 : ZMod 4) = -1 := by decide
+  have h9 : (9 : ZMod 4) = 1 := by decide
+  have ha2 : W.a₁ ^ 2 = 1 := by
+    rcases ha with ha | ha <;> rw [ha] <;> decide
+  have hb2 : W.b₂ = 1 := by
+    simp [WeierstrassCurve.b₂, ha2, h4]
+  have hb6 : W.b₆ = W.a₃ ^ 2 := by
+    simp [WeierstrassCurve.b₆, h4]
+  have hb8 : W.b₈ =
+      W.a₆ - W.a₁ * W.a₃ * W.a₄ +
+        W.a₂ * W.a₃ ^ 2 - W.a₄ ^ 2 := by
+    simp [WeierstrassCurve.b₈, ha2, h4]
+  simp only [WeierstrassCurve.Δ, hb2, hb6, hb8,
+    WeierstrassCurve.b₄, localWeierstrassEquation,
+    one_pow, one_mul, h8, h27, h9, zero_mul, sub_zero]
+  ring
+
+/-- With odd `a₁`, the canonical lift of the reduced singular point
+has equation value congruent to the discriminant modulo 4. No
+positive-valuation hypothesis is smuggled into this congruence. -/
+theorem nodeConstant_modFour_eq_delta
+    (W : WeierstrassCurve ℤ_[2])
+    (ha : (PadicInt.toZMod : ℤ_[2] →+* ZMod 2) W.a₁ ≠ 0) :
+    (PadicInt.toZModPow 2)
+        (localWeierstrassEquation W W.a₃ (W.a₃ ^ 2 + W.a₄)) =
+      (PadicInt.toZModPow 2) W.Δ := by
+  let φ : ℤ_[2] →+* ZMod 4 := PadicInt.toZModPow 2
+  have ha1 : (PadicInt.toZMod : ℤ_[2] →+* ZMod 2) W.a₁ = 1 := by
+    have hcases (z : ZMod 2) : z = 0 ∨ z = 1 := by
+      fin_cases z <;> simp
+    rcases hcases ((PadicInt.toZMod : ℤ_[2] →+* ZMod 2) W.a₁) with hz | hone
+    · exact (ha hz).elim
+    · exact hone
+  have hminus :
+      (PadicInt.toZMod : ℤ_[2] →+* ZMod 2) (W.a₁ - 1) = 0 := by
+    rw [map_sub, ha1, map_one, sub_self]
+  obtain ⟨t, ht⟩ := two_dvd_of_toZMod_eq_zero (W.a₁ - 1) hminus
+  have hA : W.a₁ = 1 + 2 * t := by linear_combination ht
+  have hodd : (W.map φ).a₁ = 1 ∨ (W.map φ).a₁ = 3 := by
+    have hcases (z : ZMod 4) : 2 * z = 0 ∨ 2 * z = 2 := by
+      fin_cases z <;> decide
+    have hφ : (W.map φ).a₁ = 1 + 2 * φ t := by
+      simp only [WeierstrassCurve.map_a₁, hA, map_add, map_one, map_mul, map_ofNat]
+    rcases hcases (φ t) with hz | hz
+    · left; rw [hφ, hz]; ring
+    · right; rw [hφ, hz]; norm_num
+  have hid := zmodFour_delta_eq_nodeConstant (W.map φ) hodd
+  rw [WeierstrassCurve.map_Δ] at hid
+  have hmap :
+      localWeierstrassEquation (W.map φ) (φ W.a₃)
+        ((φ W.a₃) ^ 2 + φ W.a₄) =
+      φ (localWeierstrassEquation W W.a₃ (W.a₃ ^ 2 + W.a₄)) := by
+    simp [localWeierstrassEquation, WeierstrassCurve.map]
+  simp only [WeierstrassCurve.map_a₃, WeierstrassCurve.map_a₄] at hid
+  rw [hmap] at hid
+  exact hid.symm
+
+/-- The extra divisibility needed for the `2`-chart follows from
+`4 ∣ Δ`, rather than from `0 < v₂(Δ)` alone. The chosen lift is
+`(a₃, a₃² + a₄)`; this theorem does not construct a blow-up. -/
+theorem four_dvd_nodeConstant_of_four_dvd_delta
+    (W : WeierstrassCurve ℤ_[2])
+    (ha : (PadicInt.toZMod : ℤ_[2] →+* ZMod 2) W.a₁ ≠ 0)
+    (hΔ : (4 : ℤ_[2]) ∣ W.Δ) :
+    (4 : ℤ_[2]) ∣
+      localWeierstrassEquation W W.a₃ (W.a₃ ^ 2 + W.a₄) := by
+  let φ : ℤ_[2] →+* ZMod 4 := PadicInt.toZModPow 2
+  have hker : W.Δ ∈ RingHom.ker φ := by
+    rw [PadicInt.ker_toZModPow]
+    apply Ideal.mem_span_singleton.mpr
+    simpa only [show (2 : ℤ_[2]) ^ 2 = 4 by norm_num] using hΔ
+  have hred : φ W.Δ = 0 := RingHom.mem_ker.mp hker
+  have hconst :
+      φ (localWeierstrassEquation W W.a₃ (W.a₃ ^ 2 + W.a₄)) = 0 := by
+    exact (nodeConstant_modFour_eq_delta W ha).trans hred
+  have hker' :
+      localWeierstrassEquation W W.a₃ (W.a₃ ^ 2 + W.a₄) ∈ RingHom.ker φ :=
+    RingHom.mem_ker.mpr hconst
+  rw [PadicInt.ker_toZModPow] at hker'
+  simpa only [show (2 : ℤ_[2]) ^ 2 = 4 by norm_num] using
+    (Ideal.mem_span_singleton.mp hker')
+
+/-- A nonzero two-adic discriminant of valuation at least two is
+divisible by four. Valuation one is intentionally excluded. -/
+theorem four_dvd_delta_of_val_ge_two
+    (W : WeierstrassCurve ℤ_[2]) (hne : W.Δ ≠ 0)
+    (hval : 2 ≤ Padic.valuation (W.Δ : ℚ_[2])) :
+    (4 : ℤ_[2]) ∣ W.Δ := by
+  have hmem : W.Δ ∈
+      (Ideal.span {((2 : ℤ_[2]) ^ 2)} : Ideal ℤ_[2]) :=
+    (PadicInt.mem_span_pow_iff_le_valuation W.Δ hne 2).mpr hval
+  simpa only [show (2 : ℤ_[2]) ^ 2 = 4 by norm_num] using
+    (Ideal.mem_span_singleton.mp hmem)
+
+/-- At the canonical lift of a node, divisibility of the discriminant
+by four supplies all three coefficients needed for the `2`-chart
+numerator identity. This identifies a quotient *polynomial*, not the
+strict transform of a scheme-theoretic blow-up. -/
+theorem canonicalNodalPoint_twoChartHasFourFactor
+    (W : WeierstrassCurve ℤ_[2])
+    (hnode : ReducedNodalPoint (W.map PadicInt.toZMod)
+      (PadicInt.toZMod W.a₃)
+      (PadicInt.toZMod (W.a₃ ^ 2 + W.a₄)))
+    (hΔ : (4 : ℤ_[2]) ∣ W.Δ) (u v : ℤ_[2]) :
+    ∃ A B C : ℤ_[2],
+      localWeierstrassEquation W (W.a₃ + 2 * u)
+        (W.a₃ ^ 2 + W.a₄ + 2 * v) =
+        4 * (A + B * u + C * v +
+          (v ^ 2 + W.a₁ * u * v -
+            (3 * W.a₃ + W.a₂) * u ^ 2) - 2 * u ^ 3) := by
+  obtain ⟨_, B, C, _, hX, hY⟩ :=
+    reducedNodalPoint_liftEvenCoefficients
+      W W.a₃ (W.a₃ ^ 2 + W.a₄) hnode
+  have ha :
+      (PadicInt.toZMod : ℤ_[2] →+* ZMod 2) W.a₁ ≠ 0 := by
+    simpa only [WeierstrassCurve.map_a₁] using hnode.2.2.2
+  obtain ⟨A, hA⟩ := four_dvd_nodeConstant_of_four_dvd_delta W ha hΔ
+  exact ⟨A, B, C,
+    localWeierstrassEquation_twoChart_factor
+      W W.a₃ (W.a₃ ^ 2 + W.a₄) u v A B C hA hX hY⟩
+
 /-- The explicit node test is an actual singular point for Mathlib's
 affine Weierstrass geometry, not merely a label for the residue data.
 The nonzero tangent cross term is retained by `ReducedNodalPoint`. -/
@@ -476,6 +607,62 @@ theorem LaterNonScalingTatePosValHasSingularAffineFibre
       M hM hc4 hc4val hpositive ε r s t N hmodel
   exact ⟨x, y, reducedNodalPoint_mathlibSingular _ x y hnode⟩
 
+/-- For a positive *even* discriminant valuation, a unit-`c₄`
+successor has the extra divisibility needed at the canonical node.
+The evenness premise holds for the Frey discriminants proved in the
+earlier local calculations; it must not be dropped for an arbitrary
+unit-`c₄` curve of valuation one. This is still not a strict transform
+or a Kodaira classification. -/
+theorem LaterNonScalingTatePosValEvenDiscHasFourDivisibleNodeConstant
+    (M : WeierstrassCurve ℤ_[2]) (hM : M.Δ ≠ 0)
+    (hc4 : (M.c₄ : ℚ_[2]) ≠ 0)
+    (hc4val : Padic.valuation (M.c₄ : ℚ_[2]) = 0)
+    (hpositive : 0 < Padic.valuation (M.Δ : ℚ_[2]))
+    (heven : ∃ k : ℤ, Padic.valuation (M.Δ : ℚ_[2]) = 2 * k)
+    (ε : ℤ_[2]ˣ) (r s t : ℚ_[2]) (N : WeierstrassCurve ℤ_[2])
+    (hmodel : (M.map (algebraMap ℤ_[2] ℚ_[2])).variableChange
+      (candidateUnitScaleChange ε r s t) =
+      N.map (algebraMap ℤ_[2] ℚ_[2])) :
+    (4 : ℤ_[2]) ∣
+      localWeierstrassEquation N N.a₃ (N.a₃ ^ 2 + N.a₄) := by
+  obtain ⟨hN, hsame⟩ :=
+    LaterNonScalingTatePreservesNonzeroValuation M hM ε r s t N hmodel
+  obtain ⟨k, hk⟩ := heven
+  have hval : 2 ≤ Padic.valuation (N.Δ : ℚ_[2]) := by
+    rw [hsame, hk]
+    omega
+  obtain ⟨x, y, hnode⟩ :=
+    LaterNonScalingTatePosValHasNodalReduction
+      M hM hc4 hc4val hpositive ε r s t N hmodel
+  have ha :
+      (PadicInt.toZMod : ℤ_[2] →+* ZMod 2) N.a₁ ≠ 0 := by
+    simpa only [WeierstrassCurve.map_a₁] using hnode.2.2.2
+  exact four_dvd_nodeConstant_of_four_dvd_delta N ha
+    (four_dvd_delta_of_val_ge_two N hN hval)
+
+/-- Any integral scale-two target of the nonzero Frey model has
+even discriminant valuation. This supplies the extra parity premise
+used above without claiming that every Frey input admits such an
+integral scale-two change. -/
+theorem freyScaleTwoTargetHasEvenDiscriminantValuation
+    (U V : ℕ) (hU : 0 < U) (hV : 0 < V)
+    (hF : (freyZ2 U V 0 1 1 0).Δ ≠ 0)
+    (M : WeierstrassCurve ℤ_[2]) (C : WeierstrassCurve.VariableChange ℚ_[2])
+    (hmodel : ((freyZ2 U V 0 1 1 0).map
+      (algebraMap ℤ_[2] ℚ_[2])).variableChange C =
+        M.map (algebraMap ℤ_[2] ℚ_[2]))
+    (hscale : Padic.valuation (C.u : ℚ_[2]) = 1) :
+    ∃ k : ℤ, Padic.valuation (M.Δ : ℚ_[2]) = 2 * k := by
+  have hF' : ((freyZ2 U V 0 1 1 0).Δ : ℚ_[2]) ≠ 0 :=
+    (PadicInt.coe_ne_zero _).mpr hF
+  have hv := second_scale_two_delta_if_integral
+    (freyZ2 U V 0 1 1 0) M C hF' hmodel hscale
+  rw [freyZ2_delta_v2 U V 0 1 1 0 (by simpa using hU)
+    (by simpa using hV)] at hv
+  refine ⟨(padicValNat 2 (U * V * (U + V)) : ℤ) - 4, ?_⟩
+  simp only [pow_one] at hv
+  omega
+
 /- TODO post-v31 — TateReductionValZeroIsI0F2Zero:
 Construct a genuine Q₂ Kodaira classifier and Néron conductor exponent
 for minimal integral models, then prove that the nonzero unit discriminant
@@ -504,6 +691,12 @@ or from a definition that merely assigns the intended labels. -/
 #print axioms localWeierstrassEquation_vChart
 #print axioms reducedNodalPoint_liftEvenCoefficients
 #print axioms localWeierstrassEquation_twoChart_factor
+#print axioms nodeConstant_modFour_eq_delta
+#print axioms four_dvd_nodeConstant_of_four_dvd_delta
+#print axioms four_dvd_delta_of_val_ge_two
+#print axioms canonicalNodalPoint_twoChartHasFourFactor
+#print axioms LaterNonScalingTatePosValEvenDiscHasFourDivisibleNodeConstant
+#print axioms freyScaleTwoTargetHasEvenDiscriminantValuation
 #print axioms integralEllipticModelOfUnitDelta
 #print axioms unitDeltaGeometricallySmooth
 #print axioms LaterNonScalingTateValZeroHasIntegralEllipticModel
