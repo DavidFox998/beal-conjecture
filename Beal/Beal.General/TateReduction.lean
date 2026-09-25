@@ -70,6 +70,43 @@ theorem padicInt_two_ringKrullDim : ringKrullDim ℤ_[2] = 1 := by
     exact WithTop.coe_le_coe.mpr hlen
   exact le_antisymm hupper hlower
 
+/-- Every prime of the two-adic integers is either zero or the
+uniformizer ideal. This is the contraction dichotomy needed when
+studying chains of primes in the polynomial ring. -/
+theorem padicInt_two_prime_eq_bot_or_span_two
+    (P : Ideal ℤ_[2]) (hP : P.IsPrime) :
+    P = ⊥ ∨ P = Ideal.span {(2 : ℤ_[2])} := by
+  by_cases hzero : P = ⊥
+  · exact Or.inl hzero
+  · right
+    have hmax : P.IsMaximal := Ring.DimensionLEOne.maximalOfPrime hzero hP
+    simpa only [PadicInt.maximalIdeal_eq_span_p] using LocalRing.eq_maximalIdeal hmax
+
+/-- The contraction of any ambient prime to the coefficient DVR
+lies over either `(0)` or `(2)`. This does not bound how long a prime
+chain may be on both sides of a change of fibre. -/
+theorem localSurfaceAmbient_prime_contraction_cases
+    (P : Ideal (MvPolynomial (Fin 2) ℤ_[2])) (hP : P.IsPrime) :
+    Ideal.comap (MvPolynomial.C : ℤ_[2] →+*
+      MvPolynomial (Fin 2) ℤ_[2]) P = ⊥ ∨
+    Ideal.comap (MvPolynomial.C : ℤ_[2] →+*
+      MvPolynomial (Fin 2) ℤ_[2]) P =
+      Ideal.span {(2 : ℤ_[2])} := by
+  letI : P.IsPrime := hP
+  exact padicInt_two_prime_eq_bot_or_span_two _
+    (Ideal.comap_isPrime _ P)
+
+/-- The first nonzero prime in the ambient chain is precisely `(2)`,
+not merely an unnamed kernel of reduction. -/
+theorem localSurfaceAmbient_reduction_kernel_eq_span_two :
+    RingHom.ker (MvPolynomial.map PadicInt.toZMod :
+      MvPolynomial (Fin 2) ℤ_[2] →+*
+        MvPolynomial (Fin 2) (ZMod 2)) =
+      Ideal.span {MvPolynomial.C (2 : ℤ_[2])} := by
+  rw [MvPolynomial.ker_map, PadicInt.ker_toZMod,
+    PadicInt.maximalIdeal_eq_span_p, Ideal.map_span]
+  simp
+
 /-- Three successive special-fibre prime specializations give a lower
 bound for the ambient polynomial ring. This does not provide the
 missing upper bound or a dimension theorem for the hypersurface. -/
@@ -1521,6 +1558,9 @@ Do not assert either requested theorem from the existing residue tests
 or from a definition that merely assigns the intended labels. -/
 
 #print axioms padicInt_two_ringKrullDim
+#print axioms padicInt_two_prime_eq_bot_or_span_two
+#print axioms localSurfaceAmbient_prime_contraction_cases
+#print axioms localSurfaceAmbient_reduction_kernel_eq_span_two
 #print axioms localSurfaceAmbient_ringKrullDim_ge_three
 #print axioms reducedNodalPoint_mathlibSingular
 #print axioms reducedNodalPoint_uniqueGeometricCandidate
