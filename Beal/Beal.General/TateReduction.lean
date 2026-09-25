@@ -4,6 +4,7 @@ import Mathlib.Algebra.MvPolynomial.Basic
 import Mathlib.FieldTheory.IsAlgClosed.Basic
 import Mathlib.RingTheory.Localization.AtPrime
 import Mathlib.RingTheory.Ideal.Cotangent
+import Mathlib.RingTheory.Ideal.MinimalPrime
 import Mathlib.RingTheory.KrullDimension.Basic
 import Mathlib.RingTheory.DedekindDomain.Dvr
 import Mathlib.RingTheory.Filtration
@@ -120,6 +121,110 @@ theorem localSurfaceAmbient_span_two_iInf_pow_eq_bot :
     MvPolynomial (Fin 2) ℤ_[2] →+*
       MvPolynomial (Fin 2) (ZMod 2))
 
+/-- In a Noetherian domain, a prime strictly below a principal prime is zero.
+This is the principal-*prime* case, not the principal ideal theorem for
+minimal primes over an arbitrary principal ideal. -/
+theorem prime_lt_principal_prime_eq_bot {R : Type*}
+    [CommRing R] [IsDomain R] [IsNoetherianRing R]
+    (a : R) (hI : (Ideal.span {a} : Ideal R).IsPrime)
+    (P : Ideal R) (hP : P.IsPrime)
+    (hPI : P < Ideal.span {a}) : P = ⊥ := by
+  let I : Ideal R := Ideal.span {a}
+  have ha : a ∉ P := by
+    intro h
+    exact (not_le_of_gt hPI) (Ideal.span_le.mpr (by simpa [I] using h))
+  have hpow : ∀ n : ℕ, P ≤ I ^ n := by
+    intro n
+    induction n with
+    | zero => simp
+    | succ n ih =>
+      intro x hx
+      obtain ⟨g, rfl⟩ := (Ideal.mem_span_singleton.mp (hPI.le hx))
+      have hg : g ∈ P := (hP.mem_or_mem hx).resolve_left ha
+      rw [pow_succ]
+      exact Ideal.mul_mem_mul_rev (ih hg) (Ideal.mem_span_singleton_self _)
+  have hbot : (⨅ n : ℕ, I ^ n) = ⊥ :=
+    Ideal.iInf_pow_eq_bot_of_isDomain (I := I) (by simpa [I] using hI.ne_top)
+  apply (eq_bot_iff).mpr
+  rw [← hbot]
+  exact le_iInf fun n => hpow n
+
+/-- A principal ideal that is prime in a Noetherian domain has height at most
+one. This does not bound the height of primes merely *minimal over* a
+principal ideal. -/
+theorem principal_prime_height_le_one {R : Type*}
+    [CommRing R] [IsDomain R] [IsNoetherianRing R]
+    (a : R) (hI : (Ideal.span {a} : Ideal R).IsPrime) :
+    Order.height (⟨Ideal.span {a}, hI⟩ : PrimeSpectrum R) ≤ 1 := by
+  let I : Ideal R := Ideal.span {a}
+  let P₁ : PrimeSpectrum R := ⟨I, hI⟩
+  change Order.height P₁ ≤ 1
+  apply Order.height_le
+  intro s hs
+  have hlen : s.length ≤ 1 := by
+    by_contra hn
+    have h2 : 2 ≤ s.length := by omega
+    have hprev : s.eraseLast.last < P₁ := by
+      simpa only [hs] using s.eraseLast_last_rel_last (by omega)
+    have hq : (s.eraseLast.last).asIdeal = ⊥ :=
+      prime_lt_principal_prime_eq_bot a hI _
+        (s.eraseLast.last).isPrime (by simpa [P₁, I] using hprev)
+    have hprevprev :
+        s.eraseLast.eraseLast.last < s.eraseLast.last :=
+      s.eraseLast.eraseLast_last_rel_last (by simp; omega)
+    have hbad : (s.eraseLast.eraseLast.last).asIdeal < (⊥ : Ideal R) := by
+      have hh := (PrimeSpectrum.asIdeal_lt_asIdeal _ _).mpr hprevprev
+      simpa only [hq] using hh
+    exact not_lt_bot hbad
+  exact_mod_cast hlen
+
+/-- Principal ideal theorem for a Noetherian unique-factorization domain.
+Unlike the preceding lemma, the minimal prime need not itself be given as
+a principal ideal: prime factorization supplies its generator. -/
+theorem minimal_prime_over_principal_height_le_one {R : Type*}
+    [CommRing R] [IsDomain R] [IsNoetherianRing R]
+    [UniqueFactorizationMonoid R] (x : R) (P : Ideal R)
+    (hmin : P ∈ (Ideal.span {x}).minimalPrimes) :
+    Order.height (⟨P, hmin.1.1⟩ : PrimeSpectrum R) ≤ 1 := by
+  by_cases hx : x = 0
+  · subst x
+    have hPbot : P = ⊥ := (eq_bot_iff).mpr
+      (hmin.2 ⟨Ideal.bot_prime, by simp⟩ bot_le)
+    subst P
+    simpa only [Ideal.span_singleton_eq_bot.mpr (rfl : (0 : R) = 0)] using
+      (principal_prime_height_le_one (0 : R)
+      (by rw [Ideal.span_singleton_eq_bot.mpr rfl]; exact Ideal.bot_prime))
+  · have hxP : x ∈ P := hmin.1.2 (Ideal.mem_span_singleton_self x)
+    have hxprod : x ∣ (UniqueFactorizationMonoid.factors x).prod :=
+      (UniqueFactorizationMonoid.factors_prod hx).symm.dvd
+    have hprod : (UniqueFactorizationMonoid.factors x).prod ∈ P :=
+      hmin.1.2 (Ideal.mem_span_singleton.mpr hxprod)
+    obtain ⟨p, hpf, hpP⟩ :=
+      (hmin.1.1.multiset_prod_mem_iff_exists_mem _).mp hprod
+    have hprime : Prime p := UniqueFactorizationMonoid.prime_of_factor p hpf
+    have hspan : (Ideal.span {p} : Ideal R).IsPrime :=
+      (Ideal.span_singleton_prime hprime.ne_zero).mpr hprime
+    have hxspan : x ∈ (Ideal.span {p} : Ideal R) :=
+      Ideal.mem_span_singleton.mpr (UniqueFactorizationMonoid.dvd_of_mem_factors hpf)
+    have hIle : (Ideal.span {x} : Ideal R) ≤ Ideal.span {p} :=
+      Ideal.span_le.mpr (by simpa using hxspan)
+    have hPle : (Ideal.span {p} : Ideal R) ≤ P :=
+      Ideal.span_le.mpr (by simpa using hpP)
+    have hEq : P = Ideal.span {p} :=
+      le_antisymm (hmin.2 ⟨hspan, hIle⟩ hPle) hPle
+    subst P
+    exact principal_prime_height_le_one p hspan
+
+/-- The principal ideal theorem holds for minimal primes over a single
+equation in the ambient two-adic polynomial ring, using its UFD structure. -/
+theorem localSurfaceAmbient_minimal_prime_over_principal_height_le_one
+    (x : MvPolynomial (Fin 2) ℤ_[2])
+    (P : Ideal (MvPolynomial (Fin 2) ℤ_[2]))
+    (hmin : P ∈ (Ideal.span {x}).minimalPrimes) :
+    Order.height (⟨P, hmin.1.1⟩ :
+      PrimeSpectrum (MvPolynomial (Fin 2) ℤ_[2])) ≤ 1 :=
+  minimal_prime_over_principal_height_le_one x P hmin
+
 /-- There is no prime strictly between `(0)` and `(2)` in the
 ambient polynomial ring. This gives height one for the named prime
 but does not bound the height of `(2, X, Y)`. -/
@@ -127,27 +232,11 @@ theorem localSurfaceAmbient_prime_lt_span_two_eq_bot
     (P : Ideal (MvPolynomial (Fin 2) ℤ_[2])) (hP : P.IsPrime)
     (hP2 : P < Ideal.span {MvPolynomial.C (2 : ℤ_[2])}) :
     P = ⊥ := by
-  let I : Ideal (MvPolynomial (Fin 2) ℤ_[2]) :=
-    Ideal.span {MvPolynomial.C (2 : ℤ_[2])}
-  have htwo : MvPolynomial.C (2 : ℤ_[2]) ∉ P := by
-    intro h
-    have hIP : I ≤ P := Ideal.span_le.mpr (by simpa [I] using h)
-    exact (not_le_of_gt hP2) hIP
-  have hpow : ∀ n : ℕ, P ≤ I ^ n := by
-    intro n
-    induction n with
-    | zero => simp
-    | succ n ih =>
-      intro x hx
-      obtain ⟨g, rfl⟩ := (Ideal.mem_span_singleton.mp (hP2.le hx))
-      have hg : g ∈ P := (hP.mem_or_mem hx).resolve_left htwo
-      rw [pow_succ]
-      exact Ideal.mul_mem_mul_rev (ih hg) (Ideal.mem_span_singleton_self _)
-  have hbot : (⨅ n : ℕ, I ^ n) = ⊥ :=
-    localSurfaceAmbient_span_two_iInf_pow_eq_bot
-  apply (eq_bot_iff).mpr
-  rw [← hbot]
-  exact le_iInf fun n => hpow n
+  apply prime_lt_principal_prime_eq_bot _ _ P hP hP2
+  rw [← localSurfaceAmbient_reduction_kernel_eq_span_two]
+  exact RingHom.ker_isPrime (MvPolynomial.map PadicInt.toZMod :
+    MvPolynomial (Fin 2) ℤ_[2] →+*
+      MvPolynomial (Fin 2) (ZMod 2))
 
 /-- The prime `(2)` has height exactly one in the ambient polynomial ring. -/
 theorem localSurfaceAmbient_span_two_height_eq_one :
@@ -179,24 +268,7 @@ theorem localSurfaceAmbient_span_two_height_eq_one :
       (MvPolynomial.C_injective (Fin 2) ℤ_[2]) (by simpa using Ideal.mem_bot.mp hc)
     norm_num at hc0
   apply le_antisymm
-  · apply Order.height_le
-    intro s hs
-    have hlen : s.length ≤ 1 := by
-      by_contra hn
-      have h2 : 2 ≤ s.length := by omega
-      have hprev : s.eraseLast.last < P₁ := by
-        simpa only [hs] using s.eraseLast_last_rel_last (by omega)
-      have hq : (s.eraseLast.last).asIdeal = ⊥ :=
-        localSurfaceAmbient_prime_lt_span_two_eq_bot _
-          (s.eraseLast.last).isPrime (by simpa [P₁, I] using hprev)
-      have hprevprev :
-          s.eraseLast.eraseLast.last < s.eraseLast.last :=
-        s.eraseLast.eraseLast_last_rel_last (by simp; omega)
-      have hbad : (s.eraseLast.eraseLast.last).asIdeal < (⊥ : Ideal R) := by
-        have hh := (PrimeSpectrum.asIdeal_lt_asIdeal _ _).mpr hprevprev
-        simpa only [hq] using hh
-      exact not_lt_bot hbad
-    exact_mod_cast hlen
+  · exact principal_prime_height_le_one _ hI
   · let s : LTSeries (PrimeSpectrum R) :=
       (RelSeries.singleton (· < ·) P₀).snoc P₁ h01
     simpa [s] using (Order.length_le_height_last (p := s))
@@ -1656,6 +1728,10 @@ or from a definition that merely assigns the intended labels. -/
 #print axioms localSurfaceAmbient_prime_contraction_cases
 #print axioms localSurfaceAmbient_reduction_kernel_eq_span_two
 #print axioms localSurfaceAmbient_span_two_iInf_pow_eq_bot
+#print axioms prime_lt_principal_prime_eq_bot
+#print axioms principal_prime_height_le_one
+#print axioms minimal_prime_over_principal_height_le_one
+#print axioms localSurfaceAmbient_minimal_prime_over_principal_height_le_one
 #print axioms localSurfaceAmbient_prime_lt_span_two_eq_bot
 #print axioms localSurfaceAmbient_span_two_height_eq_one
 #print axioms localSurfaceAmbient_ringKrullDim_ge_three
