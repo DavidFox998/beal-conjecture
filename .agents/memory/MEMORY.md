@@ -7,3 +7,4 @@
 - [Frey local-at-two boundary](frey-local-two-boundary.md) — rescaling needs congruence analysis; unit c₄ does not imply I₀ or conductor exponent zero.
 - [Concrete p-adic valuations](concrete-padic-valuations.md) — direct numeral normalization can stall; factor powers of the prime and prove the residual factor is coprime.
 - [Finite residue proofs](finite-residue-proofs.md) — split constrained cases before exhaustive Lean decisions; a monolithic check can time out in the full module.
+- [Quotient domain transport](quotient-domain-transport.md) — transport primality of the ideal, then rebuild quotient-domain instances instead of rewriting their dependent types.
