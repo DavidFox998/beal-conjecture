@@ -1687,6 +1687,103 @@ noncomputable def projectiveWeierstrassProductProjChartMap
       (CommRingCat.ofHom (projectiveWeierstrassProductChartQuotientMap W i j)) ≫
     (projectiveWeierstrassAmbientProductChartIso i j).inv
 
+/-- The quotient map on product affine charts gives the same `Spec`
+morphism in both orders, after transporting its dependent ring types. -/
+theorem projectiveWeierstrassProductChartSpecMap_comm
+    (W : WeierstrassCurve ℤ_[2]) (i j : Fin 3) :
+    letI : GradedAlgebra (MvPolynomial.homogeneousSubmodule (Fin 3) ℤ_[2]) :=
+      MvPolynomial.gradedAlgebra
+    letI : GradedAlgebra (projectiveWeierstrassQuotientComponent W) :=
+      projectiveWeierstrassQuotientGrading W
+    HEq (AlgebraicGeometry.Spec.locallyRingedSpaceMap
+      (CommRingCat.ofHom (projectiveWeierstrassProductChartQuotientMap W i j)))
+      (AlgebraicGeometry.Spec.locallyRingedSpaceMap
+        (CommRingCat.ofHom (projectiveWeierstrassProductChartQuotientMap W j i))) := by
+  letI : GradedAlgebra (MvPolynomial.homogeneousSubmodule (Fin 3) ℤ_[2]) :=
+    MvPolynomial.gradedAlgebra
+  letI : GradedAlgebra (projectiveWeierstrassQuotientComponent W) :=
+    projectiveWeierstrassQuotientGrading W
+  let q : MvPolynomial (Fin 3) ℤ_[2] →+* projectiveWeierstrassCoordinateRing W :=
+    Ideal.Quotient.mk (Ideal.span {projectiveWeierstrassCubic W})
+  let a : MvPolynomial (Fin 3) ℤ_[2] := MvPolynomial.X i
+  let b : MvPolynomial (Fin 3) ℤ_[2] := MvPolynomial.X j
+  let c := q a
+  let d := q b
+  congr 1
+  case e_1 =>
+    exact congrArg (fun t => CommRingCat.of (HomogeneousLocalization.Away
+      (MvPolynomial.homogeneousSubmodule (Fin 3) ℤ_[2]) t)) (mul_comm a b)
+  case e_2 =>
+    exact congrArg (fun t => CommRingCat.of (HomogeneousLocalization.Away
+      (projectiveWeierstrassQuotientComponent W) t)) (mul_comm c d)
+  case e_3 =>
+    congr 1
+    case e_1 => exact congrArg (fun t => HomogeneousLocalization.Away
+      (MvPolynomial.homogeneousSubmodule (Fin 3) ℤ_[2]) t) (mul_comm a b)
+    case e_2 => exact congrArg (fun t => HomogeneousLocalization.Away
+      (projectiveWeierstrassQuotientComponent W) t) (mul_comm c d)
+    case e_3 =>
+      congr 1
+      exact congrArg Submonoid.powers (mul_comm a b)
+    case e_4 =>
+      congr 1
+      exact congrArg Submonoid.powers (mul_comm c d)
+    case e_5 => exact projectiveWeierstrassProductChartQuotientMap_comm W i j
+
+private theorem projectiveIso_hom_heq {C : Type*} [CategoryTheory.Category C]
+    {X Y X' Y' : C} {f : X ≅ Y} {g : X' ≅ Y'}
+    (hX : X = X') (hY : Y = Y') (h : HEq f g) :
+    HEq f.hom g.hom := by
+  cases hX
+  cases hY
+  cases h
+  rfl
+
+private theorem projectiveIso_inv_heq {C : Type*} [CategoryTheory.Category C]
+    {X Y X' Y' : C} {f : X ≅ Y} {g : X' ≅ Y'}
+    (hX : X = X') (hY : Y = Y') (h : HEq f g) :
+    HEq f.inv g.inv := by
+  cases hX
+  cases hY
+  cases h
+  rfl
+
+/-- On the product overlap, the two orders give the same morphism
+between the actual quotient and ambient restricted `Proj` charts.
+The heterogeneous equality transports both dependent endpoints. -/
+theorem projectiveWeierstrassProductProjChartMap_comm
+    (W : WeierstrassCurve ℤ_[2]) (i j : Fin 3) :
+    HEq (projectiveWeierstrassProductProjChartMap W i j)
+      (projectiveWeierstrassProductProjChartMap W j i) := by
+  letI : GradedAlgebra (MvPolynomial.homogeneousSubmodule (Fin 3) ℤ_[2]) :=
+    MvPolynomial.gradedAlgebra
+  letI : GradedAlgebra (projectiveWeierstrassQuotientComponent W) :=
+    projectiveWeierstrassQuotientGrading W
+  let 𝒜 := MvPolynomial.homogeneousSubmodule (Fin 3) ℤ_[2]
+  let ℬ := projectiveWeierstrassQuotientComponent W
+  let q : MvPolynomial (Fin 3) ℤ_[2] →+* projectiveWeierstrassCoordinateRing W :=
+    Ideal.Quotient.mk (Ideal.span {projectiveWeierstrassCubic W})
+  let a : MvPolynomial (Fin 3) ℤ_[2] := MvPolynomial.X i
+  let b : MvPolynomial (Fin 3) ℤ_[2] := MvPolynomial.X j
+  let c := q a
+  let d := q b
+  let hQ := congrArg (fun t => (AlgebraicGeometry.Proj.toLocallyRingedSpace ℬ).restrict
+    (TopologicalSpace.Opens.openEmbedding (ProjectiveSpectrum.basicOpen ℬ t))) (mul_comm c d)
+  let hQS := congrArg (fun t => AlgebraicGeometry.Spec.locallyRingedSpaceObj
+    (CommRingCat.of (HomogeneousLocalization.Away ℬ t))) (mul_comm c d)
+  let hAS := congrArg (fun t => AlgebraicGeometry.Spec.locallyRingedSpaceObj
+    (CommRingCat.of (HomogeneousLocalization.Away 𝒜 t))) (mul_comm a b)
+  let hA := congrArg (fun t => (AlgebraicGeometry.Proj.toLocallyRingedSpace 𝒜).restrict
+    (TopologicalSpace.Opens.openEmbedding (ProjectiveSpectrum.basicOpen 𝒜 t))) (mul_comm a b)
+  have hhom := projectiveIso_hom_heq hQ hQS
+    (projectiveWeierstrassProductChartIso_comm W i j)
+  have hinv := projectiveIso_inv_heq hA hAS
+    (projectiveWeierstrassAmbientProductChartIso_comm i j)
+  have hspec := projectiveWeierstrassProductChartSpecMap_comm W i j
+  have hrest := CategoryTheory.heq_comp hQS hAS hA hspec hinv
+  unfold projectiveWeierstrassProductProjChartMap
+  exact CategoryTheory.heq_comp hQ hQS hA hhom hrest
+
 /-- The local quotient-to-ambient morphism is compatible with the
 actual open restrictions of both `Proj` schemes on `D₊(XᵢXⱼ)`. -/
 theorem projectiveWeierstrassProjChartRestriction_commutes
@@ -2934,6 +3031,44 @@ theorem projectiveWeierstrassCubic_X_mem_of_Z_mem
     have := Q.sub_mem hsum hF
     simpa only [add_sub_cancel_left] using this
   exact hQ.mem_of_pow_mem 3 hpow
+
+/-- The same implication holds at a prime of the homogeneous quotient:
+the cubic vanishes there by construction. -/
+theorem projectiveWeierstrassQuotient_X_mem_of_Z_mem
+    (W : WeierstrassCurve ℤ_[2])
+    (Q : Ideal (projectiveWeierstrassCoordinateRing W)) (hQ : Q.IsPrime)
+    (hZ : (Ideal.Quotient.mk (Ideal.span {projectiveWeierstrassCubic W}))
+      (MvPolynomial.X (2 : Fin 3)) ∈ Q) :
+    (Ideal.Quotient.mk (Ideal.span {projectiveWeierstrassCubic W}))
+      (MvPolynomial.X (0 : Fin 3)) ∈ Q := by
+  let q : MvPolynomial (Fin 3) ℤ_[2] →+* projectiveWeierstrassCoordinateRing W :=
+    Ideal.Quotient.mk (Ideal.span {projectiveWeierstrassCubic W})
+  have hprime : (Q.comap q).IsPrime := hQ.comap q
+  have hF : projectiveWeierstrassCubic W ∈ Q.comap q := by
+    change q (projectiveWeierstrassCubic W) ∈ Q
+    change (Ideal.Quotient.mk (Ideal.span {projectiveWeierstrassCubic W}))
+      (projectiveWeierstrassCubic W) ∈ Q
+    rw [Ideal.Quotient.eq_zero_iff_mem.mpr (Ideal.mem_span_singleton_self _)]
+    exact Q.zero_mem
+  exact projectiveWeierstrassCubic_X_mem_of_Z_mem W (Q.comap q) hprime hF hZ
+
+/-- Every quotient-projective point in the `X ≠ 0` chart is already
+in the `Z ≠ 0` chart; this is an inclusion of actual basic opens. -/
+theorem projectiveWeierstrassQuotientBasicOpen_X_le_Z
+    (W : WeierstrassCurve ℤ_[2]) :
+    letI : GradedAlgebra (projectiveWeierstrassQuotientComponent W) :=
+      projectiveWeierstrassQuotientGrading W
+    ProjectiveSpectrum.basicOpen (projectiveWeierstrassQuotientComponent W)
+      ((Ideal.Quotient.mk (Ideal.span {projectiveWeierstrassCubic W}))
+        (MvPolynomial.X (0 : Fin 3))) ≤
+    ProjectiveSpectrum.basicOpen (projectiveWeierstrassQuotientComponent W)
+      ((Ideal.Quotient.mk (Ideal.span {projectiveWeierstrassCubic W}))
+        (MvPolynomial.X (2 : Fin 3))) := by
+  letI : GradedAlgebra (projectiveWeierstrassQuotientComponent W) :=
+    projectiveWeierstrassQuotientGrading W
+  intro x hx hz
+  exact hx (projectiveWeierstrassQuotient_X_mem_of_Z_mem W
+    x.asHomogeneousIdeal.toIdeal x.isPrime hz)
 
 /-- Every relevant prime of the projective cubic is in one of the
 `Z ≠ 0` or `Y ≠ 0` basic opens. The premise spells out relevance as

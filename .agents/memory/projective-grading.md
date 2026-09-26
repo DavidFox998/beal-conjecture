@@ -20,3 +20,9 @@ In the pinned localization API, the scalar action on a full localization used by
 **Why:** Converting a homogeneous denominator identity into an equation of products, then cancelling a localized unit, took several failed direct rewrites. The obstacle was instance selection, not a missing algebraic hypothesis.
 
 **How to apply:** Bridge the scalar actions using the Ore-localization fraction-at-one action and the localization algebra map before rewriting with ring homomorphisms. When `mul_zero` cannot match the zero in a localized goal, first state the equality of its direct zero and multiplicative-structure zero (provable by reflexivity here), then rewrite explicitly.
+
+Dependent product-chart morphisms need more than commutativity of their denominators: transporting the induced `Spec` map also transports the localization ring instances, and composing heterogeneously equal arrows requires equalities at every intermediate object. Composition must follow the expression's actual association.
+
+**Why:** Direct rewriting of a whole chart morphism and elimination of constituent heterogeneous equalities failed even though the factor order was mathematically immaterial. The missing data were instance and endpoint transports, not another ring identity.
+
+**How to apply:** Establish the ring-instance and `Spec` endpoint transports before lifting a ring-map equality to `Spec`. For the full chart composite, line up each intermediate object equality and compose the heterogeneous arrow equalities in the same grouping as the target expression; only then turn the result into an ordinary equality across identified opens.
