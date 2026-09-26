@@ -7,6 +7,10 @@ import Mathlib.RingTheory.Localization.Ideal
 Polynomial-level special-fibre prerequisites for a future `I₁`
 classification. The local fibre must be obtained by localization;
 an affine polynomial identity alone is not a Kodaira classification.
+At a nodal closed point, regularity does not make the uniformizer a
+local parameter: for example, `xy = 2` has `2` in the square of the
+maximal ideal. Component multiplicity is measured at its generic
+point, not by maximal-ideal order at the node.
 -/
 
 namespace Beal.General
@@ -354,6 +358,93 @@ theorem splitNode_localTwoQuotient_isDomain
     exact hprime
   exact Ideal.Quotient.isDomain _
 
+/-- The canonical map from the affine fibre into the fibre of the
+surface localized at its node is injective. Identifying its target
+as a localization requires an additional universal-property step. -/
+theorem splitNode_affineToLocalFibre_injective
+    (W : WeierstrassCurve ℤ_[2])
+    (hnode : ReducedNodalPoint (W.map PadicInt.toZMod)
+      (PadicInt.toZMod W.a₃)
+      (PadicInt.toZMod (W.a₃ ^ 2 + W.a₄)))
+    (hsplit : 3 * PadicInt.toZMod W.a₃ +
+      (W.map PadicInt.toZMod).a₂ = 0) :
+    let R := localSurfaceCoordinateRing W W.a₃ (W.a₃ ^ 2 + W.a₄)
+    let P : Ideal R :=
+      localSurfaceClosedPoint W W.a₃ (W.a₃ ^ 2 + W.a₄)
+    letI : P.IsPrime :=
+      (reducedPoint_hasClosedSurfacePoint W W.a₃
+        (W.a₃ ^ 2 + W.a₄) hnode.1).isPrime
+    let L := Localization.AtPrime P
+    let K := localSurfaceSpecialFibreIdeal W W.a₃ (W.a₃ ^ 2 + W.a₄)
+    Function.Injective (Ideal.quotientMap
+      (Ideal.map (algebraMap R L) K) (algebraMap R L)
+        (Ideal.le_comap_map : K ≤
+          Ideal.comap (algebraMap R L) (Ideal.map (algebraMap R L) K))) := by
+  let R := localSurfaceCoordinateRing W W.a₃ (W.a₃ ^ 2 + W.a₄)
+  let P : Ideal R :=
+    localSurfaceClosedPoint W W.a₃ (W.a₃ ^ 2 + W.a₄)
+  letI : P.IsPrime :=
+    (reducedPoint_hasClosedSurfacePoint W W.a₃
+      (W.a₃ ^ 2 + W.a₄) hnode.1).isPrime
+  let L := Localization.AtPrime P
+  let K : Ideal R :=
+    localSurfaceSpecialFibreIdeal W W.a₃ (W.a₃ ^ 2 + W.a₄)
+  have hK : K.IsPrime :=
+    (Ideal.Quotient.isDomain_iff_prime K).mp
+      (splitNode_affineSpecialFibre_isDomain W hnode hsplit)
+  have hKP : K ≤ P :=
+    localSurfaceSpecialFibreIdeal_le_closedPoint W W.a₃
+      (W.a₃ ^ 2 + W.a₄)
+  have hd : Disjoint (↑P.primeCompl : Set R) (↑K : Set R) := by
+    apply Set.disjoint_left.mpr
+    intro r hr hk
+    exact (show r ∉ P from hr) (hKP hk)
+  have hc : Ideal.comap (algebraMap R L)
+      (Ideal.map (algebraMap R L) K) = K :=
+    IsLocalization.comap_map_of_isPrime_disjoint P.primeCompl L K hK hd
+  exact Ideal.quotientMap_injective' (le_of_eq hc)
+
+/-- The closed point of the surface descends to a prime of the affine
+special fibre; its inverse image is precisely the original point.
+This is the prime at which the fibre must be localized. -/
+theorem splitNode_fibreClosedPoint_comap
+    (W : WeierstrassCurve ℤ_[2])
+    (hnode : ReducedNodalPoint (W.map PadicInt.toZMod)
+      (PadicInt.toZMod W.a₃)
+      (PadicInt.toZMod (W.a₃ ^ 2 + W.a₄))) :
+    let R := localSurfaceCoordinateRing W W.a₃ (W.a₃ ^ 2 + W.a₄)
+    let P : Ideal R :=
+      localSurfaceClosedPoint W W.a₃ (W.a₃ ^ 2 + W.a₄)
+    letI : P.IsPrime :=
+      (reducedPoint_hasClosedSurfacePoint W W.a₃
+        (W.a₃ ^ 2 + W.a₄) hnode.1).isPrime
+    let K := localSurfaceSpecialFibreIdeal W W.a₃ (W.a₃ ^ 2 + W.a₄)
+    let q : R →+* R ⧸ K := Ideal.Quotient.mk K
+    let Q : Ideal (R ⧸ K) := Ideal.map q P
+    Q.IsPrime ∧ Ideal.comap q Q = P := by
+  let R := localSurfaceCoordinateRing W W.a₃ (W.a₃ ^ 2 + W.a₄)
+  let P : Ideal R :=
+    localSurfaceClosedPoint W W.a₃ (W.a₃ ^ 2 + W.a₄)
+  letI : P.IsPrime :=
+    (reducedPoint_hasClosedSurfacePoint W W.a₃
+      (W.a₃ ^ 2 + W.a₄) hnode.1).isPrime
+  let K : Ideal R :=
+    localSurfaceSpecialFibreIdeal W W.a₃ (W.a₃ ^ 2 + W.a₄)
+  let q : R →+* R ⧸ K := Ideal.Quotient.mk K
+  let Q : Ideal (R ⧸ K) := Ideal.map q P
+  have hKP : K ≤ P :=
+    localSurfaceSpecialFibreIdeal_le_closedPoint W W.a₃ (W.a₃ ^ 2 + W.a₄)
+  have hker : RingHom.ker q ≤ P := by
+    rw [Ideal.mk_ker]
+    exact hKP
+  haveI : Q.IsPrime :=
+    Ideal.map_isPrime_of_surjective Ideal.Quotient.mk_surjective hker
+  refine ⟨inferInstance, ?_⟩
+  change Ideal.comap q (Ideal.map q P) = P
+  rw [Ideal.comap_map_of_surjective q Ideal.Quotient.mk_surjective P,
+    ← RingHom.ker_eq_comap_bot q]
+  exact sup_eq_left.mpr hker
+
 #print axioms splitNode_surfaceEquation_modTwo
 #print axioms splitNodeCubic_atOne_irreducible
 #print axioms splitNodeCubic_ideal_isPrime
@@ -361,5 +452,7 @@ theorem splitNode_localTwoQuotient_isDomain
 #print axioms splitNode_affineSpecialFibre_isDomain
 #print axioms splitNode_localSpecialFibre_isDomain
 #print axioms splitNode_localTwoQuotient_isDomain
+#print axioms splitNode_affineToLocalFibre_injective
+#print axioms splitNode_fibreClosedPoint_comap
 
 end Beal.General
