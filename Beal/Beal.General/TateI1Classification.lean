@@ -3,6 +3,7 @@ import Mathlib.Algebra.Polynomial.SpecificDegree
 import Mathlib.RingTheory.Ideal.QuotientOperations
 import Mathlib.RingTheory.Localization.Ideal
 import Mathlib.RingTheory.DiscreteValuationRing.TFAE
+import Mathlib.AlgebraicGeometry.EllipticCurve.Projective
 
 /-!
 Polynomial-level special-fibre prerequisites for a future `I₁`
@@ -1228,6 +1229,68 @@ theorem splitNode_fibreGeneric_two_irreducible
   change Irreducible t
   exact DiscreteValuationRing.irreducible_of_span_eq_maximalIdeal t ht hmax
 
+/-- Every nonzero projective representative at infinity on a
+Weierstrass cubic over a field is smooth. This excludes an additional
+singularity outside the affine chart, without constructing a model. -/
+theorem weierstrass_projective_infinity_nonsingular
+    {K : Type*} [Field K] (W : WeierstrassCurve K)
+    (P : Fin 3 → K) (hP : P ≠ 0)
+    (heq : W.toProjective.Equation P) (hz : P 2 = 0) :
+    W.toProjective.Nonsingular P := by
+  have hx : P 0 = 0 :=
+    WeierstrassCurve.Projective.X_eq_zero_of_Z_eq_zero heq hz
+  have hy : P 1 ≠ 0 := by
+    intro hy
+    apply hP
+    funext i
+    fin_cases i <;> simp [hx, hy, hz]
+  apply (WeierstrassCurve.Projective.nonsingular_of_Z_eq_zero hz).mpr
+  refine ⟨heq, Or.inr ?_⟩
+  simpa [hx] using (pow_ne_zero 2 hy)
+
+/-- A projective geometric singularity of the split-node fibre can
+only be the known affine node. In particular there is no hidden
+geometric singularity at infinity. This does not identify the
+minimal regular model or a Kodaira symbol. -/
+theorem splitNode_projective_singular_only_at_node
+    (W : WeierstrassCurve ℤ_[2])
+    (hnode : ReducedNodalPoint (W.map PadicInt.toZMod)
+      (PadicInt.toZMod W.a₃)
+      (PadicInt.toZMod (W.a₃ ^ 2 + W.a₄)))
+    {K : Type*} [Field K] (φ : ZMod 2 →+* K)
+    (P : Fin 3 → K) (hP : P ≠ 0)
+    (heq : ((W.map PadicInt.toZMod).map φ).toProjective.Equation P)
+    (hsing : ¬ ((W.map PadicInt.toZMod).map φ).toProjective.Nonsingular P) :
+    P 2 ≠ 0 ∧
+      P 0 / P 2 = φ (PadicInt.toZMod W.a₃) ∧
+      P 1 / P 2 = φ (PadicInt.toZMod (W.a₃ ^ 2 + W.a₄)) := by
+  let W₀ := W.map PadicInt.toZMod
+  let V := W₀.map φ
+  have hz : P 2 ≠ 0 := by
+    intro hz
+    exact hsing
+      (weierstrass_projective_infinity_nonsingular V P hP heq hz)
+  have haff : V.toAffine.Equation (P 0 / P 2) (P 1 / P 2) :=
+    (WeierstrassCurve.Projective.equation_of_Z_ne_zero hz).mp heq
+  have hnot : ¬ V.toAffine.Nonsingular (P 0 / P 2) (P 1 / P 2) := by
+    intro h
+    exact hsing
+      ((WeierstrassCurve.Projective.nonsingular_of_Z_ne_zero hz).mpr h)
+  have hdx : (V.toAffine.polynomialX).evalEval
+      (P 0 / P 2) (P 1 / P 2) = 0 := by
+    by_contra hx
+    exact hnot ⟨haff, Or.inl hx⟩
+  have hdy : (V.toAffine.polynomialY).evalEval
+      (P 0 / P 2) (P 1 / P 2) = 0 := by
+    by_contra hy
+    exact hnot ⟨haff, Or.inr hy⟩
+  obtain ⟨hx, hy⟩ :=
+    reducedNodalPoint_uniqueGeometricCandidate W₀
+      ⟨PadicInt.toZMod W.a₃,
+        PadicInt.toZMod (W.a₃ ^ 2 + W.a₄), hnode⟩ φ
+      (P 0 / P 2) (P 1 / P 2) hdx hdy
+  exact ⟨hz, hx, by simpa only [map_pow, map_add] using hy⟩
+
 #print axioms splitNode_surfaceEquation_modTwo
 #print axioms splitNodeCubic_atOne_irreducible
 #print axioms splitNodeCubic_ne_zero
@@ -1250,5 +1313,7 @@ theorem splitNode_fibreGeneric_two_irreducible
 #print axioms splitNode_fibreGeneric_maximalIdeal_span_two
 #print axioms splitNode_fibreGeneric_discreteValuationRing
 #print axioms splitNode_fibreGeneric_two_irreducible
+#print axioms weierstrass_projective_infinity_nonsingular
+#print axioms splitNode_projective_singular_only_at_node
 
 end Beal.General
