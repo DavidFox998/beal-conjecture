@@ -8,11 +8,12 @@ The homogeneous equation for the candidate projective Weierstrass
 model over `ℤ_[2]`, together with checks on two affine charts.
 The quotient carries its inherited grading, so its `Proj` is an
 actual scheme. The ambient projective plane and the cubic's closed
-topological locus are also constructed. Dehomogenization defines
-surjective maps from each degree-zero chart localization to its
-explicit affine quotient; injectivity is not yet proved. The closed immersion
-relating the schemes, properness, all-stalk regularity, relative
-minimality, and Kodaira classification remain to be proved.
+topological locus are also constructed. Homogeneous normal forms
+and localized saturation prove that dehomogenization identifies both
+degree-zero chart localizations with their explicit affine quotients.
+The closed immersion relating the schemes, properness, all-stalk
+regularity, relative minimality, and Kodaira classification remain
+to be proved.
 -/
 
 namespace Beal.General
@@ -93,9 +94,8 @@ theorem projectiveWeierstrassCubic_ideal_isHomogeneous
   rcases Set.mem_singleton_iff.mp hf with rfl
   exact ⟨3, projectiveWeierstrassCubic_isHomogeneous W⟩
 
-/-- The proposed project's actual homogeneous coordinate *ring*.
-The quotient has not yet been equipped with the inherited grading,
-so this definition alone does not produce its `Proj` scheme. -/
+/-- The project's homogeneous coordinate *ring*. Its inherited
+grading and `Proj` scheme are constructed below. -/
 abbrev projectiveWeierstrassCoordinateRing
     (W : WeierstrassCurve ℤ_[2]) : Type :=
   MvPolynomial (Fin 3) ℤ_[2] ⧸
@@ -270,10 +270,10 @@ theorem projectiveWeierstrassCoordinate_mem_degree_one
   apply Submodule.mem_map.mpr
   exact ⟨MvPolynomial.X i, MvPolynomial.isHomogeneous_X _ _, rfl⟩
 
-/-- Mathlib's actual scheme isomorphism from a basic open of the
+/-- Mathlib's scheme isomorphism from a basic open of the
 quotient `Proj` to the spectrum of its degree-zero homogeneous
-localization. This does not yet identify that localization with
-the explicit affine Weierstrass quotient. -/
+localization. The explicit affine chart ring identifications are
+proved below. -/
 noncomputable def projectiveWeierstrassBasicChartIso
     (W : WeierstrassCurve ℤ_[2]) (i : Fin 3) :=
   letI : GradedAlgebra (projectiveWeierstrassQuotientComponent W) :=
@@ -363,9 +363,491 @@ theorem projectiveWeierstrassCubic_infinity
       MvPolynomial.eval ![u, v] (weierstrassInfinityChartEquation W) := by
   simp [projectiveWeierstrassCubic, weierstrassInfinityChartEquation]
 
-/-- The integral affine `Z = 1` chart's coordinate ring. Its
-isomorphism with the degree-zero homogeneous localization is still
-to be proved. -/
+/-- A homogeneous polynomial scales by its degree under a
+simultaneous scaling of every evaluation variable. -/
+private theorem homogeneous_aeval_smul
+    {σ S : Type*} [CommSemiring S] [Algebra ℤ_[2] S]
+    (p : MvPolynomial σ ℤ_[2]) {n : ℕ} (hp : p.IsHomogeneous n)
+    (c : S) (x : σ → S) :
+    (MvPolynomial.aeval (fun i => c * x i)) p =
+      c ^ n * (MvPolynomial.aeval x) p := by
+  classical
+  conv_lhs => rw [← MvPolynomial.support_sum_monomial_coeff p]
+  conv_rhs => rw [← MvPolynomial.support_sum_monomial_coeff p]
+  simp only [map_sum, Finset.mul_sum]
+  apply Finset.sum_congr rfl
+  intro d hd
+  have hdeg : d.degree = n := by
+    rw [Finsupp.degree_eq_weight_one]
+    exact hp (MvPolynomial.mem_support_iff.mp hd)
+  simp only [MvPolynomial.aeval_monomial]
+  have hprod : d.prod (fun i k => (c * x i) ^ k) =
+      c ^ d.degree * d.prod (fun i k => x i ^ k) := by
+    simp only [mul_pow, Finsupp.prod_mul]
+    rw [show d.prod (fun _ k => c ^ k) = c ^ d.degree by
+      simp only [Finsupp.prod, Finsupp.degree,
+        Finset.prod_pow_eq_pow_sum]]
+  rw [hprod, hdeg]
+  ring
+
+/-- A homogeneous ambient polynomial is its dehomogenized
+evaluation in the coordinate ratios, multiplied by the appropriate
+power of the inverted variable. -/
+private theorem homogeneous_away_normal_form
+    {σ : Type*} (p : MvPolynomial σ ℤ_[2]) {n : ℕ}
+    (hp : p.IsHomogeneous n) (j : σ) :
+    let z := MvPolynomial.X j
+    let q := algebraMap (MvPolynomial σ ℤ_[2]) (Localization.Away z)
+    let u : (Localization.Away z)ˣ :=
+      (IsLocalization.Away.algebraMap_isUnit z).unit
+    let iz : Localization.Away z :=
+      ((u⁻¹ : (Localization.Away z)ˣ) : Localization.Away z)
+    q p = (q z) ^ n *
+      (MvPolynomial.aeval (fun i => q (MvPolynomial.X i) * iz)) p := by
+  classical
+  let z : MvPolynomial σ ℤ_[2] := MvPolynomial.X j
+  let q : MvPolynomial σ ℤ_[2] →+* Localization.Away z :=
+    algebraMap _ _
+  have hz : IsUnit (q z) := IsLocalization.Away.algebraMap_isUnit z
+  let u : (Localization.Away z)ˣ := hz.unit
+  let iz : Localization.Away z :=
+    ((u⁻¹ : (Localization.Away z)ˣ) : Localization.Away z)
+  have hu : q z * iz = 1 := by
+    change (u : Localization.Away z) *
+      ((u⁻¹ : (Localization.Away z)ˣ) : Localization.Away z) = 1
+    exact Units.mul_inv u
+  have heval :
+      (MvPolynomial.aeval (fun i => q (MvPolynomial.X i))) p = q p := by
+    have heq : (MvPolynomial.aeval
+        (fun i => q (MvPolynomial.X i))).toRingHom = q := by
+      apply MvPolynomial.ringHom_ext
+      · intro a
+        change (MvPolynomial.aeval
+          (fun i => q (MvPolynomial.X i))) (MvPolynomial.C a) =
+            q (MvPolynomial.C a)
+        rw [MvPolynomial.aeval_C, ← MvPolynomial.algebraMap_eq]
+        exact IsScalarTower.algebraMap_apply ℤ_[2]
+          (MvPolynomial σ ℤ_[2]) (Localization.Away z) a
+      · intro i
+        simp
+    exact DFunLike.congr_fun heq p
+  have hvar :
+      (fun i => q z * (q (MvPolynomial.X i) * iz)) =
+        (fun i => q (MvPolynomial.X i)) := by
+    funext i
+    calc
+      q z * (q (MvPolynomial.X i) * iz) =
+          q (MvPolynomial.X i) * (q z * iz) := by ring
+      _ = q (MvPolynomial.X i) := by rw [hu, mul_one]
+  have hscale := homogeneous_aeval_smul p hp (q z)
+    (fun i => q (MvPolynomial.X i) * iz)
+  rw [hvar, heval] at hscale
+  change q p = (q z) ^ n *
+    (MvPolynomial.aeval (fun i => q (MvPolynomial.X i) * iz)) p
+  exact hscale
+
+/-- The ambient `Z`-localization normal form uses the literal
+dehomogenized two-variable polynomial. -/
+private theorem homogeneous_Z_away_dehom
+    (p : MvPolynomial (Fin 3) ℤ_[2]) {n : ℕ}
+    (hp : p.IsHomogeneous n) :
+    let z := MvPolynomial.X (2 : Fin 3)
+    let q := algebraMap (MvPolynomial (Fin 3) ℤ_[2]) (Localization.Away z)
+    let u : (Localization.Away z)ˣ :=
+      (IsLocalization.Away.algebraMap_isUnit z).unit
+    let iz : Localization.Away z :=
+      ((u⁻¹ : (Localization.Away z)ˣ) : Localization.Away z)
+    q p = (q z) ^ n *
+      (MvPolynomial.aeval ![q (MvPolynomial.X 0) * iz,
+          q (MvPolynomial.X 1) * iz])
+        ((MvPolynomial.aeval
+          ![(MvPolynomial.X 0 : MvPolynomial (Fin 2) ℤ_[2]),
+            MvPolynomial.X 1, 1]) p) := by
+  classical
+  let z : MvPolynomial (Fin 3) ℤ_[2] := MvPolynomial.X 2
+  let q : MvPolynomial (Fin 3) ℤ_[2] →+* Localization.Away z :=
+    algebraMap _ _
+  let u : (Localization.Away z)ˣ :=
+    (IsLocalization.Away.algebraMap_isUnit z).unit
+  let iz : Localization.Away z :=
+    ((u⁻¹ : (Localization.Away z)ˣ) : Localization.Away z)
+  have hu : q z * iz = 1 := by
+    change (u : Localization.Away z) *
+      ((u⁻¹ : (Localization.Away z)ˣ) : Localization.Away z) = 1
+    exact Units.mul_inv u
+  let l : MvPolynomial (Fin 3) ℤ_[2] →ₐ[ℤ_[2]] Localization.Away z :=
+    MvPolynomial.aeval (fun i => q (MvPolynomial.X i) * iz)
+  let r : MvPolynomial (Fin 3) ℤ_[2] →ₐ[ℤ_[2]] Localization.Away z :=
+    (MvPolynomial.aeval ![q (MvPolynomial.X 0) * iz,
+      q (MvPolynomial.X 1) * iz]).comp
+      (MvPolynomial.aeval
+        ![(MvPolynomial.X 0 : MvPolynomial (Fin 2) ℤ_[2]),
+          MvPolynomial.X 1, 1])
+  have hlr : l = r := by
+    apply MvPolynomial.algHom_ext
+    intro i
+    fin_cases i <;> simp [l, r, hu]
+  have h := homogeneous_away_normal_form p hp (2 : Fin 3)
+  change q p = q z ^ n * l p at h
+  rw [hlr] at h
+  change q p = q z ^ n * r p
+  exact h
+
+/-- The corresponding ambient normal form after setting `Y = 1`. -/
+private theorem homogeneous_Y_away_dehom
+    (p : MvPolynomial (Fin 3) ℤ_[2]) {n : ℕ}
+    (hp : p.IsHomogeneous n) :
+    let y := MvPolynomial.X (1 : Fin 3)
+    let q := algebraMap (MvPolynomial (Fin 3) ℤ_[2]) (Localization.Away y)
+    let u : (Localization.Away y)ˣ :=
+      (IsLocalization.Away.algebraMap_isUnit y).unit
+    let iy : Localization.Away y :=
+      ((u⁻¹ : (Localization.Away y)ˣ) : Localization.Away y)
+    q p = (q y) ^ n *
+      (MvPolynomial.aeval ![q (MvPolynomial.X 0) * iy,
+          q (MvPolynomial.X 2) * iy])
+        ((MvPolynomial.aeval
+          ![(MvPolynomial.X 0 : MvPolynomial (Fin 2) ℤ_[2]),
+            1, MvPolynomial.X 1]) p) := by
+  classical
+  let y : MvPolynomial (Fin 3) ℤ_[2] := MvPolynomial.X 1
+  let q : MvPolynomial (Fin 3) ℤ_[2] →+* Localization.Away y :=
+    algebraMap _ _
+  let u : (Localization.Away y)ˣ :=
+    (IsLocalization.Away.algebraMap_isUnit y).unit
+  let iy : Localization.Away y :=
+    ((u⁻¹ : (Localization.Away y)ˣ) : Localization.Away y)
+  have hu : q y * iy = 1 := by
+    change (u : Localization.Away y) *
+      ((u⁻¹ : (Localization.Away y)ˣ) : Localization.Away y) = 1
+    exact Units.mul_inv u
+  let l : MvPolynomial (Fin 3) ℤ_[2] →ₐ[ℤ_[2]] Localization.Away y :=
+    MvPolynomial.aeval (fun i => q (MvPolynomial.X i) * iy)
+  let r : MvPolynomial (Fin 3) ℤ_[2] →ₐ[ℤ_[2]] Localization.Away y :=
+    (MvPolynomial.aeval ![q (MvPolynomial.X 0) * iy,
+      q (MvPolynomial.X 2) * iy]).comp
+      (MvPolynomial.aeval
+        ![(MvPolynomial.X 0 : MvPolynomial (Fin 2) ℤ_[2]),
+          1, MvPolynomial.X 1])
+  have hlr : l = r := by
+    apply MvPolynomial.algHom_ext
+    intro i
+    fin_cases i <;> simp [l, r, hu]
+  have h := homogeneous_away_normal_form p hp (1 : Fin 3)
+  change q p = q y ^ n * l p at h
+  rw [hlr] at h
+  change q p = q y ^ n * r p
+  exact h
+
+/-- A homogeneous polynomial whose `Z = 1` dehomogenization is a
+multiple of the affine equation becomes a multiple of the cubic
+after multiplying by `Z³` in the ambient localization. -/
+theorem projectiveWeierstrassCubic_Z_localized_saturation
+    (W : WeierstrassCurve ℤ_[2])
+    (p : MvPolynomial (Fin 3) ℤ_[2]) {n : ℕ}
+    (hp : p.IsHomogeneous n)
+    (hdehom : (MvPolynomial.aeval
+      ![(MvPolynomial.X 0 : MvPolynomial (Fin 2) ℤ_[2]),
+        MvPolynomial.X 1, 1]) p ∈
+        Ideal.span {localSurfaceEquation W 0 0}) :
+    let z := MvPolynomial.X (2 : Fin 3)
+    let q := algebraMap (MvPolynomial (Fin 3) ℤ_[2]) (Localization.Away z)
+    ∃ t : Localization.Away z,
+      (q z) ^ 3 * q p =
+        (q z) ^ n * q (projectiveWeierstrassCubic W) * t := by
+  classical
+  let z : MvPolynomial (Fin 3) ℤ_[2] := MvPolynomial.X 2
+  let q : MvPolynomial (Fin 3) ℤ_[2] →+* Localization.Away z :=
+    algebraMap _ _
+  let u : (Localization.Away z)ˣ :=
+    (IsLocalization.Away.algebraMap_isUnit z).unit
+  let iz : Localization.Away z :=
+    ((u⁻¹ : (Localization.Away z)ˣ) : Localization.Away z)
+  let e : MvPolynomial (Fin 2) ℤ_[2] →ₐ[ℤ_[2]]
+      Localization.Away z :=
+    MvPolynomial.aeval ![q (MvPolynomial.X 0) * iz,
+      q (MvPolynomial.X 1) * iz]
+  obtain ⟨H, hH⟩ := Ideal.mem_span_singleton'.mp hdehom
+  have hp' := homogeneous_Z_away_dehom p hp
+  change q p = (q z) ^ n *
+    e ((MvPolynomial.aeval
+      ![(MvPolynomial.X 0 : MvPolynomial (Fin 2) ℤ_[2]),
+        MvPolynomial.X 1, 1]) p) at hp'
+  have hF := homogeneous_Z_away_dehom
+    (projectiveWeierstrassCubic W)
+    (projectiveWeierstrassCubic_isHomogeneous W)
+  change q (projectiveWeierstrassCubic W) =
+    (q z) ^ 3 * e ((MvPolynomial.aeval
+      ![(MvPolynomial.X 0 : MvPolynomial (Fin 2) ℤ_[2]),
+        MvPolynomial.X 1, 1]) (projectiveWeierstrassCubic W)) at hF
+  rw [projectiveWeierstrassCubic_dehomogenize_Z] at hF
+  refine ⟨e H, ?_⟩
+  change (q z) ^ 3 * q p =
+    (q z) ^ n * q (projectiveWeierstrassCubic W) * e H
+  calc
+    (q z) ^ 3 * q p =
+        (q z) ^ 3 * ((q z) ^ n * (e H *
+          e (localSurfaceEquation W 0 0))) := by
+            rw [hp', ← hH, map_mul]
+    _ = (q z) ^ n * ((q z) ^ 3 *
+          e (localSurfaceEquation W 0 0)) * e H := by ring
+    _ = (q z) ^ n * q (projectiveWeierstrassCubic W) * e H := by
+          rw [← hF]
+
+/-- The analogous localized saturation identity for the `Y = 1`
+dehomogenization and the infinity-chart equation. -/
+theorem projectiveWeierstrassCubic_Y_localized_saturation
+    (W : WeierstrassCurve ℤ_[2])
+    (p : MvPolynomial (Fin 3) ℤ_[2]) {n : ℕ}
+    (hp : p.IsHomogeneous n)
+    (hdehom : (MvPolynomial.aeval
+      ![(MvPolynomial.X 0 : MvPolynomial (Fin 2) ℤ_[2]),
+        1, MvPolynomial.X 1]) p ∈
+        Ideal.span {weierstrassInfinityChartEquation W}) :
+    let y := MvPolynomial.X (1 : Fin 3)
+    let q := algebraMap (MvPolynomial (Fin 3) ℤ_[2]) (Localization.Away y)
+    ∃ t : Localization.Away y,
+      (q y) ^ 3 * q p =
+        (q y) ^ n * q (projectiveWeierstrassCubic W) * t := by
+  classical
+  let y : MvPolynomial (Fin 3) ℤ_[2] := MvPolynomial.X 1
+  let q : MvPolynomial (Fin 3) ℤ_[2] →+* Localization.Away y :=
+    algebraMap _ _
+  let u : (Localization.Away y)ˣ :=
+    (IsLocalization.Away.algebraMap_isUnit y).unit
+  let iy : Localization.Away y :=
+    ((u⁻¹ : (Localization.Away y)ˣ) : Localization.Away y)
+  let e : MvPolynomial (Fin 2) ℤ_[2] →ₐ[ℤ_[2]]
+      Localization.Away y :=
+    MvPolynomial.aeval ![q (MvPolynomial.X 0) * iy,
+      q (MvPolynomial.X 2) * iy]
+  obtain ⟨H, hH⟩ := Ideal.mem_span_singleton'.mp hdehom
+  have hp' := homogeneous_Y_away_dehom p hp
+  change q p = (q y) ^ n *
+    e ((MvPolynomial.aeval
+      ![(MvPolynomial.X 0 : MvPolynomial (Fin 2) ℤ_[2]),
+        1, MvPolynomial.X 1]) p) at hp'
+  have hF := homogeneous_Y_away_dehom
+    (projectiveWeierstrassCubic W)
+    (projectiveWeierstrassCubic_isHomogeneous W)
+  change q (projectiveWeierstrassCubic W) =
+    (q y) ^ 3 * e ((MvPolynomial.aeval
+      ![(MvPolynomial.X 0 : MvPolynomial (Fin 2) ℤ_[2]),
+        1, MvPolynomial.X 1]) (projectiveWeierstrassCubic W)) at hF
+  rw [projectiveWeierstrassCubic_dehomogenize_Y] at hF
+  refine ⟨e H, ?_⟩
+  change (q y) ^ 3 * q p =
+    (q y) ^ n * q (projectiveWeierstrassCubic W) * e H
+  calc
+    (q y) ^ 3 * q p =
+        (q y) ^ 3 * ((q y) ^ n * (e H *
+          e (weierstrassInfinityChartEquation W))) := by
+            rw [hp', ← hH, map_mul]
+    _ = (q y) ^ n * ((q y) ^ 3 *
+          e (weierstrassInfinityChartEquation W)) * e H := by ring
+    _ = (q y) ^ n * q (projectiveWeierstrassCubic W) * e H := by
+          rw [← hF]
+
+/-- The saturated relation descends to zero in the localization of
+the cubic quotient at the image of `Z`. -/
+theorem projectiveWeierstrass_Z_quotient_localization_zero
+    (W : WeierstrassCurve ℤ_[2])
+    (p : MvPolynomial (Fin 3) ℤ_[2]) {n : ℕ}
+    (hp : p.IsHomogeneous n)
+    (hdehom : (MvPolynomial.aeval
+      ![(MvPolynomial.X 0 : MvPolynomial (Fin 2) ℤ_[2]),
+        MvPolynomial.X 1, 1]) p ∈
+        Ideal.span {localSurfaceEquation W 0 0}) :
+    let I : Ideal (MvPolynomial (Fin 3) ℤ_[2]) :=
+      Ideal.span {projectiveWeierstrassCubic W}
+    let zb : projectiveWeierstrassCoordinateRing W :=
+      (Ideal.Quotient.mk I) (MvPolynomial.X 2)
+    (algebraMap (projectiveWeierstrassCoordinateRing W)
+      (Localization.Away zb)) ((Ideal.Quotient.mk I) p) = 0 := by
+  let P := MvPolynomial (Fin 3) ℤ_[2]
+  let I : Ideal P := Ideal.span {projectiveWeierstrassCubic W}
+  let z : P := MvPolynomial.X 2
+  let zb : projectiveWeierstrassCoordinateRing W :=
+    (Ideal.Quotient.mk I) z
+  let q := algebraMap P (Localization.Away z)
+  let g : P →+* Localization.Away zb :=
+    (algebraMap (projectiveWeierstrassCoordinateRing W)
+      (Localization.Away zb)).comp (Ideal.Quotient.mk I)
+  have hz : IsUnit (g z) := by
+    change IsUnit ((algebraMap (projectiveWeierstrassCoordinateRing W)
+      (Localization.Away zb)) zb)
+    exact IsLocalization.Away.algebraMap_isUnit
+      (S := Localization.Away zb) zb
+  let φ : Localization.Away z →+* Localization.Away zb :=
+    IsLocalization.Away.lift (S := Localization.Away z)
+      (g := g) z hz
+  have hφ (a : P) : φ (q a) = g a := by
+    change (IsLocalization.Away.lift (S := Localization.Away z)
+      (g := g) z hz) ((algebraMap P (Localization.Away z)) a) = g a
+    exact IsLocalization.lift_eq _ a
+  have hF : g (projectiveWeierstrassCubic W) = 0 := by
+    change (algebraMap (projectiveWeierstrassCoordinateRing W)
+      (Localization.Away zb))
+        ((Ideal.Quotient.mk I) (projectiveWeierstrassCubic W)) = 0
+    rw [Ideal.Quotient.eq_zero_iff_mem.mpr
+      (Ideal.mem_span_singleton_self _)]
+    exact map_zero _
+  obtain ⟨t, ht⟩ :=
+    projectiveWeierstrassCubic_Z_localized_saturation W p hp hdehom
+  change (q z) ^ 3 * q p =
+    (q z) ^ n * q (projectiveWeierstrassCubic W) * t at ht
+  have ht' := congrArg φ ht
+  simp only [map_mul, map_pow, hφ] at ht'
+  change g p = 0
+  have hz0 : (0 : Localization.Away zb) =
+      @Zero.zero (Localization.Away zb) MulZeroClass.toZero := by rfl
+  have hzero : (g z) ^ 3 * g p = 0 := by
+    calc
+      (g z) ^ 3 * g p = (g z) ^ n * 0 * φ t := by rw [← hF]; exact ht'
+      _ = 0 := by
+        have hmul : (g z) ^ n * 0 = 0 := by
+          rw [hz0]
+          exact mul_zero _
+        rw [hmul]
+        rw [hz0]
+        exact zero_mul _
+  apply (hz.pow 3).mul_left_cancel
+  have hmul : (g z) ^ 3 * 0 = 0 := by
+    rw [hz0]
+    exact mul_zero _
+  exact hzero.trans hmul.symm
+
+/-- The corresponding zero statement in the quotient localization
+at the image of `Y`. -/
+theorem projectiveWeierstrass_Y_quotient_localization_zero
+    (W : WeierstrassCurve ℤ_[2])
+    (p : MvPolynomial (Fin 3) ℤ_[2]) {n : ℕ}
+    (hp : p.IsHomogeneous n)
+    (hdehom : (MvPolynomial.aeval
+      ![(MvPolynomial.X 0 : MvPolynomial (Fin 2) ℤ_[2]),
+        1, MvPolynomial.X 1]) p ∈
+        Ideal.span {weierstrassInfinityChartEquation W}) :
+    let I : Ideal (MvPolynomial (Fin 3) ℤ_[2]) :=
+      Ideal.span {projectiveWeierstrassCubic W}
+    let yb : projectiveWeierstrassCoordinateRing W :=
+      (Ideal.Quotient.mk I) (MvPolynomial.X 1)
+    (algebraMap (projectiveWeierstrassCoordinateRing W)
+      (Localization.Away yb)) ((Ideal.Quotient.mk I) p) = 0 := by
+  let P := MvPolynomial (Fin 3) ℤ_[2]
+  let I : Ideal P := Ideal.span {projectiveWeierstrassCubic W}
+  let y : P := MvPolynomial.X 1
+  let yb : projectiveWeierstrassCoordinateRing W :=
+    (Ideal.Quotient.mk I) y
+  let q := algebraMap P (Localization.Away y)
+  let g : P →+* Localization.Away yb :=
+    (algebraMap (projectiveWeierstrassCoordinateRing W)
+      (Localization.Away yb)).comp (Ideal.Quotient.mk I)
+  have hy : IsUnit (g y) := by
+    change IsUnit ((algebraMap (projectiveWeierstrassCoordinateRing W)
+      (Localization.Away yb)) yb)
+    exact IsLocalization.Away.algebraMap_isUnit
+      (S := Localization.Away yb) yb
+  let φ : Localization.Away y →+* Localization.Away yb :=
+    IsLocalization.Away.lift (S := Localization.Away y)
+      (g := g) y hy
+  have hφ (a : P) : φ (q a) = g a := by
+    change (IsLocalization.Away.lift (S := Localization.Away y)
+      (g := g) y hy) ((algebraMap P (Localization.Away y)) a) = g a
+    exact IsLocalization.lift_eq _ a
+  have hF : g (projectiveWeierstrassCubic W) = 0 := by
+    change (algebraMap (projectiveWeierstrassCoordinateRing W)
+      (Localization.Away yb))
+        ((Ideal.Quotient.mk I) (projectiveWeierstrassCubic W)) = 0
+    rw [Ideal.Quotient.eq_zero_iff_mem.mpr
+      (Ideal.mem_span_singleton_self _)]
+    exact map_zero _
+  obtain ⟨t, ht⟩ :=
+    projectiveWeierstrassCubic_Y_localized_saturation W p hp hdehom
+  change (q y) ^ 3 * q p =
+    (q y) ^ n * q (projectiveWeierstrassCubic W) * t at ht
+  have ht' := congrArg φ ht
+  simp only [map_mul, map_pow, hφ] at ht'
+  change g p = 0
+  have hy0 : (0 : Localization.Away yb) =
+      @Zero.zero (Localization.Away yb) MulZeroClass.toZero := by rfl
+  have hzero : (g y) ^ 3 * g p = 0 := by
+    calc
+      (g y) ^ 3 * g p = (g y) ^ n * 0 * φ t := by rw [← hF]; exact ht'
+      _ = 0 := by
+        have hmul : (g y) ^ n * 0 = 0 := by
+          rw [hy0]
+          exact mul_zero _
+        rw [hmul]
+        rw [hy0]
+        exact zero_mul _
+  apply (hy.pow 3).mul_left_cancel
+  have hmul : (g y) ^ 3 * 0 = 0 := by
+    rw [hy0]
+    exact mul_zero _
+  exact hzero.trans hmul.symm
+
+/-- Clearing the `Z`-localization denominator gives an actual
+ambient polynomial relation in the principal cubic ideal. -/
+theorem projectiveWeierstrassCubic_Z_power_mem_ideal
+    (W : WeierstrassCurve ℤ_[2])
+    (p : MvPolynomial (Fin 3) ℤ_[2]) {n : ℕ}
+    (hp : p.IsHomogeneous n)
+    (hdehom : (MvPolynomial.aeval
+      ![(MvPolynomial.X 0 : MvPolynomial (Fin 2) ℤ_[2]),
+        MvPolynomial.X 1, 1]) p ∈
+        Ideal.span {localSurfaceEquation W 0 0}) :
+    ∃ N : ℕ, (MvPolynomial.X (2 : Fin 3)) ^ N * p ∈
+      Ideal.span {projectiveWeierstrassCubic W} := by
+  let I : Ideal (MvPolynomial (Fin 3) ℤ_[2]) :=
+    Ideal.span {projectiveWeierstrassCubic W}
+  let zb : projectiveWeierstrassCoordinateRing W :=
+    (Ideal.Quotient.mk I) (MvPolynomial.X 2)
+  have hloc := projectiveWeierstrass_Z_quotient_localization_zero
+    W p hp hdehom
+  change (algebraMap (projectiveWeierstrassCoordinateRing W)
+    (Localization.Away zb)) ((Ideal.Quotient.mk I) p) = 0 at hloc
+  obtain ⟨m, hm⟩ := (IsLocalization.map_eq_zero_iff
+    (Submonoid.powers zb) (Localization.Away zb)
+    ((Ideal.Quotient.mk I) p)).mp hloc
+  obtain ⟨N, hN⟩ :=
+    (Submonoid.mem_powers_iff m.val zb).mp m.property
+  refine ⟨N, Ideal.Quotient.eq_zero_iff_mem.mp ?_⟩
+  rw [map_mul, map_pow]
+  change zb ^ N * (Ideal.Quotient.mk I) p = 0
+  rw [hN]
+  exact hm
+
+/-- The same ambient denominator clearing on the `Y = 1` chart. -/
+theorem projectiveWeierstrassCubic_Y_power_mem_ideal
+    (W : WeierstrassCurve ℤ_[2])
+    (p : MvPolynomial (Fin 3) ℤ_[2]) {n : ℕ}
+    (hp : p.IsHomogeneous n)
+    (hdehom : (MvPolynomial.aeval
+      ![(MvPolynomial.X 0 : MvPolynomial (Fin 2) ℤ_[2]),
+        1, MvPolynomial.X 1]) p ∈
+        Ideal.span {weierstrassInfinityChartEquation W}) :
+    ∃ N : ℕ, (MvPolynomial.X (1 : Fin 3)) ^ N * p ∈
+      Ideal.span {projectiveWeierstrassCubic W} := by
+  let I : Ideal (MvPolynomial (Fin 3) ℤ_[2]) :=
+    Ideal.span {projectiveWeierstrassCubic W}
+  let yb : projectiveWeierstrassCoordinateRing W :=
+    (Ideal.Quotient.mk I) (MvPolynomial.X 1)
+  have hloc := projectiveWeierstrass_Y_quotient_localization_zero
+    W p hp hdehom
+  change (algebraMap (projectiveWeierstrassCoordinateRing W)
+    (Localization.Away yb)) ((Ideal.Quotient.mk I) p) = 0 at hloc
+  obtain ⟨m, hm⟩ := (IsLocalization.map_eq_zero_iff
+    (Submonoid.powers yb) (Localization.Away yb)
+    ((Ideal.Quotient.mk I) p)).mp hloc
+  obtain ⟨N, hN⟩ :=
+    (Submonoid.mem_powers_iff m.val yb).mp m.property
+  refine ⟨N, Ideal.Quotient.eq_zero_iff_mem.mp ?_⟩
+  rw [map_mul, map_pow]
+  change yb ^ N * (Ideal.Quotient.mk I) p = 0
+  rw [hN]
+  exact hm
+
+/-- The integral affine `Z = 1` chart's coordinate ring. -/
 abbrev projectiveWeierstrassZChartRing
     (W : WeierstrassCurve ℤ_[2]) : Type :=
   MvPolynomial (Fin 2) ℤ_[2] ⧸ Ideal.span {localSurfaceEquation W 0 0}
@@ -453,8 +935,7 @@ theorem projectiveWeierstrassYDehomMap_Y
   simp [projectiveWeierstrassYDehomMap]
 
 /-- Comparison from the *actual degree-zero localization ring* on
-`Z ≠ 0` to the proposed affine chart quotient. This is a ring map,
-not yet a proven isomorphism. -/
+`Z ≠ 0` to the affine chart quotient. -/
 noncomputable def projectiveWeierstrassZChartComparisonMap
     (W : WeierstrassCurve ℤ_[2]) :
     letI : GradedAlgebra (projectiveWeierstrassQuotientComponent W) :=
@@ -697,6 +1178,227 @@ theorem projectiveWeierstrassYChartComparisonMap_surjective
   obtain ⟨p, rfl⟩ := Ideal.Quotient.mk_surjective a
   exact hpoly p
 
+/-- The `Z` chart comparison has no kernel: a vanishing fraction has
+a homogeneous numerator whose dehomogenization lies in the affine
+equation ideal, hence vanishes in the localized cubic quotient. -/
+theorem projectiveWeierstrassZChartComparisonMap_injective
+    (W : WeierstrassCurve ℤ_[2]) :
+    Function.Injective (projectiveWeierstrassZChartComparisonMap W) := by
+  letI : GradedAlgebra (projectiveWeierstrassQuotientComponent W) :=
+    projectiveWeierstrassQuotientGrading W
+  let P := MvPolynomial (Fin 3) ℤ_[2]
+  let I : Ideal P := Ideal.span {projectiveWeierstrassCubic W}
+  let J : Ideal (MvPolynomial (Fin 2) ℤ_[2]) :=
+    Ideal.span {localSurfaceEquation W 0 0}
+  let R := projectiveWeierstrassCoordinateRing W
+  let z : R := (Ideal.Quotient.mk I) (MvPolynomial.X 2)
+  let S := Localization.Away z
+  let d := (projectiveWeierstrassZDehomMap W).toRingHom
+  have hz : IsUnit (d z) := by
+    change IsUnit (projectiveWeierstrassZDehomMap W
+      ((Ideal.Quotient.mk I) (MvPolynomial.X 2)))
+    rw [projectiveWeierstrassZDehomMap_Z]
+    exact isUnit_one
+  let φ : S →+* projectiveWeierstrassZChartRing W :=
+    IsLocalization.Away.lift (S := S) (g := d) z hz
+  have hφ (a : R) : φ ((algebraMap R S) a) = d a := by
+    change (IsLocalization.Away.lift (S := S) (g := d) z hz)
+      ((algebraMap R S) a) = d a
+    exact IsLocalization.lift_eq _ a
+  have hz0 : (0 : S) = @Zero.zero S MulZeroClass.toZero := by rfl
+  have hkernel (t : HomogeneousLocalization.Away
+      (projectiveWeierstrassQuotientComponent W) z)
+      (ht : projectiveWeierstrassZChartComparisonMap W t = 0) : t = 0 := by
+    have hcmp : φ t.val = 0 := by
+      change φ t.val = 0 at ht
+      exact ht
+    have hden := HomogeneousLocalization.den_smul_val t
+    have hsmul : t.den • t.val =
+        (algebraMap R S) t.den * t.val := by
+      calc
+        t.den • t.val =
+            ((algebraMap R S) t.den) • t.val := by
+              rw [← IsLocalization.mk'_one
+                (M := Submonoid.powers z) S t.den,
+                ← Localization.mk_eq_mk']
+              exact (OreLocalization.oreDiv_one_smul t.den t.val).symm
+        _ = (algebraMap R S) t.den * t.val := smul_eq_mul S
+    rw [hsmul] at hden
+    have hdenimage := congrArg φ hden
+    rw [map_mul, hφ, hcmp] at hdenimage
+    have hnum : d t.num = 0 := by
+      rw [hφ] at hdenimage
+      simpa using hdenimage.symm
+    obtain ⟨p, hp, heq⟩ :=
+      Submodule.mem_map.mp (HomogeneousLocalization.num_mem_deg t)
+    have heq' : (Ideal.Quotient.mk I) p = t.num := by
+      simpa only [AlgHom.toLinearMap_apply] using heq
+    have hdehom : (MvPolynomial.aeval
+        ![(MvPolynomial.X 0 : MvPolynomial (Fin 2) ℤ_[2]),
+          MvPolynomial.X 1, 1]) p ∈ J := by
+      apply Ideal.Quotient.eq_zero_iff_mem.mp
+      calc
+        (Ideal.Quotient.mk J) ((MvPolynomial.aeval
+            ![(MvPolynomial.X 0 : MvPolynomial (Fin 2) ℤ_[2]),
+              MvPolynomial.X 1, 1]) p) =
+          projectiveWeierstrassZDehomMap W ((Ideal.Quotient.mk I) p) := by
+            simp [projectiveWeierstrassZDehomMap]
+        _ = d t.num := by rw [heq']; rfl
+        _ = 0 := hnum
+    have hloc := projectiveWeierstrass_Z_quotient_localization_zero
+      W p hp hdehom
+    change (algebraMap R S) ((Ideal.Quotient.mk I) p) = 0 at hloc
+    rw [heq'] at hloc
+    rw [hloc] at hden
+    have hunit : IsUnit ((algebraMap R S) t.den) :=
+      IsLocalization.map_units S ⟨t.den, t.den_mem⟩
+    have hval : t.val = 0 := by
+      apply hunit.mul_right_eq_zero.mp
+      rw [hz0]
+      exact hden
+    apply HomogeneousLocalization.val_injective (Submonoid.powers z)
+    simpa only [HomogeneousLocalization.val_zero] using hval
+  intro a b hab
+  have hdiff : projectiveWeierstrassZChartComparisonMap W (a - b) = 0 := by
+    rw [map_sub, hab, sub_self]
+  exact sub_eq_zero.mp (hkernel (a - b) hdiff)
+
+/-- The `Y` comparison is injective by the same homogeneous
+numerator and localized saturation argument. -/
+theorem projectiveWeierstrassYChartComparisonMap_injective
+    (W : WeierstrassCurve ℤ_[2]) :
+    Function.Injective (projectiveWeierstrassYChartComparisonMap W) := by
+  letI : GradedAlgebra (projectiveWeierstrassQuotientComponent W) :=
+    projectiveWeierstrassQuotientGrading W
+  let P := MvPolynomial (Fin 3) ℤ_[2]
+  let I : Ideal P := Ideal.span {projectiveWeierstrassCubic W}
+  let J : Ideal (MvPolynomial (Fin 2) ℤ_[2]) :=
+    Ideal.span {weierstrassInfinityChartEquation W}
+  let R := projectiveWeierstrassCoordinateRing W
+  let y : R := (Ideal.Quotient.mk I) (MvPolynomial.X 1)
+  let S := Localization.Away y
+  let d := (projectiveWeierstrassYDehomMap W).toRingHom
+  have hy : IsUnit (d y) := by
+    change IsUnit (projectiveWeierstrassYDehomMap W
+      ((Ideal.Quotient.mk I) (MvPolynomial.X 1)))
+    rw [projectiveWeierstrassYDehomMap_Y]
+    exact isUnit_one
+  let φ : S →+* projectiveWeierstrassYChartRing W :=
+    IsLocalization.Away.lift (S := S) (g := d) y hy
+  have hφ (a : R) : φ ((algebraMap R S) a) = d a := by
+    change (IsLocalization.Away.lift (S := S) (g := d) y hy)
+      ((algebraMap R S) a) = d a
+    exact IsLocalization.lift_eq _ a
+  have hy0 : (0 : S) = @Zero.zero S MulZeroClass.toZero := by rfl
+  have hkernel (t : HomogeneousLocalization.Away
+      (projectiveWeierstrassQuotientComponent W) y)
+      (ht : projectiveWeierstrassYChartComparisonMap W t = 0) : t = 0 := by
+    have hcmp : φ t.val = 0 := by
+      change φ t.val = 0 at ht
+      exact ht
+    have hden := HomogeneousLocalization.den_smul_val t
+    have hsmul : t.den • t.val =
+        (algebraMap R S) t.den * t.val := by
+      calc
+        t.den • t.val =
+            ((algebraMap R S) t.den) • t.val := by
+              rw [← IsLocalization.mk'_one
+                (M := Submonoid.powers y) S t.den,
+                ← Localization.mk_eq_mk']
+              exact (OreLocalization.oreDiv_one_smul t.den t.val).symm
+        _ = (algebraMap R S) t.den * t.val := smul_eq_mul S
+    rw [hsmul] at hden
+    have hdenimage := congrArg φ hden
+    rw [map_mul, hφ, hcmp] at hdenimage
+    have hnum : d t.num = 0 := by
+      rw [hφ] at hdenimage
+      simpa using hdenimage.symm
+    obtain ⟨p, hp, heq⟩ :=
+      Submodule.mem_map.mp (HomogeneousLocalization.num_mem_deg t)
+    have heq' : (Ideal.Quotient.mk I) p = t.num := by
+      simpa only [AlgHom.toLinearMap_apply] using heq
+    have hdehom : (MvPolynomial.aeval
+        ![(MvPolynomial.X 0 : MvPolynomial (Fin 2) ℤ_[2]),
+          1, MvPolynomial.X 1]) p ∈ J := by
+      apply Ideal.Quotient.eq_zero_iff_mem.mp
+      calc
+        (Ideal.Quotient.mk J) ((MvPolynomial.aeval
+            ![(MvPolynomial.X 0 : MvPolynomial (Fin 2) ℤ_[2]),
+              1, MvPolynomial.X 1]) p) =
+          projectiveWeierstrassYDehomMap W ((Ideal.Quotient.mk I) p) := by
+            simp [projectiveWeierstrassYDehomMap]
+        _ = d t.num := by rw [heq']; rfl
+        _ = 0 := hnum
+    have hloc := projectiveWeierstrass_Y_quotient_localization_zero
+      W p hp hdehom
+    change (algebraMap R S) ((Ideal.Quotient.mk I) p) = 0 at hloc
+    rw [heq'] at hloc
+    rw [hloc] at hden
+    have hunit : IsUnit ((algebraMap R S) t.den) :=
+      IsLocalization.map_units S ⟨t.den, t.den_mem⟩
+    have hval : t.val = 0 := by
+      apply hunit.mul_right_eq_zero.mp
+      rw [hy0]
+      exact hden
+    apply HomogeneousLocalization.val_injective (Submonoid.powers y)
+    simpa only [HomogeneousLocalization.val_zero] using hval
+  intro a b hab
+  have hdiff : projectiveWeierstrassYChartComparisonMap W (a - b) = 0 := by
+    rw [map_sub, hab, sub_self]
+  exact sub_eq_zero.mp (hkernel (a - b) hdiff)
+
+/-- The degree-zero `Z ≠ 0` localization is the explicit integral
+affine Weierstrass chart, as an isomorphism of rings. -/
+noncomputable def projectiveWeierstrassZChartRingEquiv
+    (W : WeierstrassCurve ℤ_[2]) :
+    letI : GradedAlgebra (projectiveWeierstrassQuotientComponent W) :=
+      projectiveWeierstrassQuotientGrading W
+    HomogeneousLocalization.Away
+      (projectiveWeierstrassQuotientComponent W)
+      ((Ideal.Quotient.mk (Ideal.span {projectiveWeierstrassCubic W}))
+        (MvPolynomial.X 2)) ≃+* projectiveWeierstrassZChartRing W := by
+  letI : GradedAlgebra (projectiveWeierstrassQuotientComponent W) :=
+    projectiveWeierstrassQuotientGrading W
+  exact RingEquiv.ofBijective (projectiveWeierstrassZChartComparisonMap W)
+    ⟨projectiveWeierstrassZChartComparisonMap_injective W,
+      projectiveWeierstrassZChartComparisonMap_surjective W⟩
+
+/-- The degree-zero `Y ≠ 0` localization is the explicit integral
+infinity chart, as an isomorphism of rings. -/
+noncomputable def projectiveWeierstrassYChartRingEquiv
+    (W : WeierstrassCurve ℤ_[2]) :
+    letI : GradedAlgebra (projectiveWeierstrassQuotientComponent W) :=
+      projectiveWeierstrassQuotientGrading W
+    HomogeneousLocalization.Away
+      (projectiveWeierstrassQuotientComponent W)
+      ((Ideal.Quotient.mk (Ideal.span {projectiveWeierstrassCubic W}))
+        (MvPolynomial.X 1)) ≃+* projectiveWeierstrassYChartRing W := by
+  letI : GradedAlgebra (projectiveWeierstrassQuotientComponent W) :=
+    projectiveWeierstrassQuotientGrading W
+  exact RingEquiv.ofBijective (projectiveWeierstrassYChartComparisonMap W)
+    ⟨projectiveWeierstrassYChartComparisonMap_injective W,
+      projectiveWeierstrassYChartComparisonMap_surjective W⟩
+
+/-- The `Z ≠ 0` basic open of the projective model is the spectrum
+of the explicit integral affine Weierstrass quotient. -/
+noncomputable def projectiveWeierstrassExplicitZChartIso
+    (W : WeierstrassCurve ℤ_[2]) := by
+  letI : GradedAlgebra (projectiveWeierstrassQuotientComponent W) :=
+    projectiveWeierstrassQuotientGrading W
+  exact (projectiveWeierstrassZChartIso W).trans
+    (AlgebraicGeometry.Spec.toLocallyRingedSpace.mapIso
+      (projectiveWeierstrassZChartRingEquiv W).symm.toCommRingCatIso.op)
+
+/-- The `Y ≠ 0` basic open is the spectrum of the explicit
+integral infinity-chart quotient. -/
+noncomputable def projectiveWeierstrassExplicitYChartIso
+    (W : WeierstrassCurve ℤ_[2]) := by
+  letI : GradedAlgebra (projectiveWeierstrassQuotientComponent W) :=
+    projectiveWeierstrassQuotientGrading W
+  exact (projectiveWeierstrassYChartIso W).trans
+    (AlgebraicGeometry.Spec.toLocallyRingedSpace.mapIso
+      (projectiveWeierstrassYChartRingEquiv W).symm.toCommRingCatIso.op)
+
 /-- On the projective cubic, a prime containing `Z` also contains
 `X`: modulo `Z` the equation is `-X³`. This holds for scheme points
 over the integral base, not only for field-valued points, and shows
@@ -782,6 +1484,18 @@ theorem projectiveWeierstrassCubic_two_chart_cover
 #print axioms projectiveWeierstrassYChartComparisonMap_Z
 #print axioms projectiveWeierstrassZChartComparisonMap_surjective
 #print axioms projectiveWeierstrassYChartComparisonMap_surjective
+#print axioms projectiveWeierstrassCubic_Z_localized_saturation
+#print axioms projectiveWeierstrassCubic_Y_localized_saturation
+#print axioms projectiveWeierstrass_Z_quotient_localization_zero
+#print axioms projectiveWeierstrass_Y_quotient_localization_zero
+#print axioms projectiveWeierstrassCubic_Z_power_mem_ideal
+#print axioms projectiveWeierstrassCubic_Y_power_mem_ideal
+#print axioms projectiveWeierstrassZChartComparisonMap_injective
+#print axioms projectiveWeierstrassYChartComparisonMap_injective
+#print axioms projectiveWeierstrassZChartRingEquiv
+#print axioms projectiveWeierstrassYChartRingEquiv
+#print axioms projectiveWeierstrassExplicitZChartIso
+#print axioms projectiveWeierstrassExplicitYChartIso
 #print axioms projectiveWeierstrassCubic_X_mem_of_Z_mem
 #print axioms projectiveWeierstrassCubic_two_chart_cover
 
