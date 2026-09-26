@@ -2,6 +2,7 @@ import Beal.«Beal.General».TateI1Classification
 import Mathlib.RingTheory.MvPolynomial.Homogeneous
 import Mathlib.RingTheory.GradedAlgebra.HomogeneousIdeal
 import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Scheme
+import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
 
 /-!
 The homogeneous equation for the candidate projective Weierstrass
@@ -11,7 +12,8 @@ actual scheme. The ambient projective plane and the cubic's closed
 topological locus are also constructed. Homogeneous normal forms
 and localized saturation prove that dehomogenization identifies both
 degree-zero chart localizations with their explicit affine quotients.
-The closed immersion relating the schemes, properness, all-stalk
+Each explicit affine chart is a closed subscheme of its affine plane.
+The global projective closed immersion, properness, all-stalk
 regularity, relative minimality, and Kodaira classification remain
 to be proved.
 -/
@@ -100,6 +102,17 @@ abbrev projectiveWeierstrassCoordinateRing
     (W : WeierstrassCurve ℤ_[2]) : Type :=
   MvPolynomial (Fin 3) ℤ_[2] ⧸
     Ideal.span {projectiveWeierstrassCubic W}
+
+/-- The homogeneous coordinate ring is finitely generated over
+`ℤ_[2]`. This alone does not prove `Proj` proper. -/
+theorem projectiveWeierstrassCoordinateRing_finiteType
+    (W : WeierstrassCurve ℤ_[2]) :
+    Algebra.FiniteType ℤ_[2] (projectiveWeierstrassCoordinateRing W) := by
+  exact Algebra.FiniteType.of_surjective
+    (R := ℤ_[2]) (A := MvPolynomial (Fin 3) ℤ_[2])
+    (by infer_instance)
+    (Ideal.Quotient.mkₐ ℤ_[2] (Ideal.span {projectiveWeierstrassCubic W}))
+    Ideal.Quotient.mk_surjective
 
 /-- The degree-`n` candidate in the coordinate quotient: the image
 of ambient homogeneous polynomials of degree `n`. Proving these images
@@ -858,6 +871,49 @@ abbrev projectiveWeierstrassYChartRing
   MvPolynomial (Fin 2) ℤ_[2] ⧸
     Ideal.span {weierstrassInfinityChartEquation W}
 
+/-- The explicit `Z = 1` chart is a closed subscheme of the
+corresponding affine plane. This does not construct the global
+closed immersion into projective space. -/
+noncomputable def projectiveWeierstrassZChartAffineImmersion
+    (W : WeierstrassCurve ℤ_[2]) :
+    AlgebraicGeometry.Scheme.Spec.obj
+        (Opposite.op (CommRingCat.of (projectiveWeierstrassZChartRing W))) ⟶
+      AlgebraicGeometry.Scheme.Spec.obj
+        (Opposite.op (CommRingCat.of (MvPolynomial (Fin 2) ℤ_[2]))) :=
+  AlgebraicGeometry.Spec.map
+    (CommRingCat.ofHom
+      (Ideal.Quotient.mk (Ideal.span {localSurfaceEquation W 0 0})))
+
+theorem projectiveWeierstrassZChartAffineImmersion_isClosed
+    (W : WeierstrassCurve ℤ_[2]) :
+    AlgebraicGeometry.IsClosedImmersion
+      (projectiveWeierstrassZChartAffineImmersion W) := by
+  unfold projectiveWeierstrassZChartAffineImmersion
+  exact AlgebraicGeometry.IsClosedImmersion.spec_of_quotient_mk
+    (R := CommRingCat.of (MvPolynomial (Fin 2) ℤ_[2]))
+    (Ideal.span {localSurfaceEquation W 0 0})
+
+/-- The explicit `Y = 1` chart is likewise a closed subscheme
+of its affine plane. -/
+noncomputable def projectiveWeierstrassYChartAffineImmersion
+    (W : WeierstrassCurve ℤ_[2]) :
+    AlgebraicGeometry.Scheme.Spec.obj
+        (Opposite.op (CommRingCat.of (projectiveWeierstrassYChartRing W))) ⟶
+      AlgebraicGeometry.Scheme.Spec.obj
+        (Opposite.op (CommRingCat.of (MvPolynomial (Fin 2) ℤ_[2]))) :=
+  AlgebraicGeometry.Spec.map
+    (CommRingCat.ofHom
+      (Ideal.Quotient.mk (Ideal.span {weierstrassInfinityChartEquation W})))
+
+theorem projectiveWeierstrassYChartAffineImmersion_isClosed
+    (W : WeierstrassCurve ℤ_[2]) :
+    AlgebraicGeometry.IsClosedImmersion
+      (projectiveWeierstrassYChartAffineImmersion W) := by
+  unfold projectiveWeierstrassYChartAffineImmersion
+  exact AlgebraicGeometry.IsClosedImmersion.spec_of_quotient_mk
+    (R := CommRingCat.of (MvPolynomial (Fin 2) ℤ_[2]))
+    (Ideal.span {weierstrassInfinityChartEquation W})
+
 /-- Setting `Z = 1` gives a well-defined algebra map from the
 homogeneous coordinate quotient to the explicit affine chart ring. -/
 noncomputable def projectiveWeierstrassZDehomMap
@@ -1454,6 +1510,7 @@ theorem projectiveWeierstrassCubic_two_chart_cover
 
 #print axioms projectiveWeierstrassCubic_isHomogeneous
 #print axioms projectiveWeierstrassCubic_ideal_isHomogeneous
+#print axioms projectiveWeierstrassCoordinateRing_finiteType
 #print axioms projectiveWeierstrassQuotientComponent_iSup_eq_top
 #print axioms projectiveWeierstrassCubic_sum_mem_ideal_iff
 #print axioms projectiveWeierstrassQuotientGradedMonoid
@@ -1488,6 +1545,8 @@ theorem projectiveWeierstrassCubic_two_chart_cover
 #print axioms projectiveWeierstrassCubic_Y_localized_saturation
 #print axioms projectiveWeierstrass_Z_quotient_localization_zero
 #print axioms projectiveWeierstrass_Y_quotient_localization_zero
+#print axioms projectiveWeierstrassZChartAffineImmersion_isClosed
+#print axioms projectiveWeierstrassYChartAffineImmersion_isClosed
 #print axioms projectiveWeierstrassCubic_Z_power_mem_ideal
 #print axioms projectiveWeierstrassCubic_Y_power_mem_ideal
 #print axioms projectiveWeierstrassZChartComparisonMap_injective

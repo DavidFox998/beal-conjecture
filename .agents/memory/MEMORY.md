@@ -9,3 +9,4 @@
 - [Finite residue proofs](finite-residue-proofs.md) — split constrained cases before exhaustive Lean decisions; a monolithic check can time out in the full module.
 - [Quotient domain transport](quotient-domain-transport.md) — transport primality of the ideal, then rebuild quotient-domain instances instead of rewriting their dependent types.
 - [Projective grading in pinned Mathlib](projective-grading.md) — explicit grading instances and localization action/zero diamonds matter for chart proofs.
+- [Projective geometry API boundary](projective-geometry-api-boundary.md) — affine quotient immersions do not supply a global Proj morphism or properness theorem in the pinned library.
