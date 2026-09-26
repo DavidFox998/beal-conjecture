@@ -25,6 +25,7 @@ lean_lib BealGeneral where
   globs := #[.one `Beal.«Beal.General».Frey,
     .one `Beal.«Beal.General».Minimal,
     .one `Beal.«Beal.General».LocalHeight,
+    .one `Beal.«Beal.General».PrincipalIdealTheorem,
     .one `Beal.«Beal.General».TateReduction,
     .one `Beal.«Beal.General».Conductor,
     .one `Beal.«Beal.General».TwoPower,

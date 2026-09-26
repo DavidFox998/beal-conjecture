@@ -134,8 +134,8 @@ theorem nilradical_eq_unique_prime {R : Type*} [CommRing R]
     rwa [hunique Q hQ]
 
 /-- A Noetherian local ring with only its maximal prime has nilpotent
-maximal ideal. A separate finite-length argument is needed to deduce
-that the ring is Artinian. -/
+maximal ideal. The Artinian consequence is proved below using a
+finite maximal-ideal filtration. -/
 theorem noetherian_local_unique_prime_maximal_nilpotent
     {R : Type*} [CommRing R] [LocalRing R] [IsNoetherianRing R]
     (hunique : ∀ P : Ideal R, P.IsPrime →
