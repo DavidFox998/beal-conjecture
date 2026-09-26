@@ -26,3 +26,9 @@ After an isolated worktree is reattached, Lake may report changed dependency URL
 **Why:** A documentation-only check initially could not launch Lake; after making the pinned toolchain available, the build passed, but the temporary package setup had changed tracked project configuration.
 
 **How to apply:** Distinguish a missing executable or missing Mathlib objects from a Lean proof failure; restore the pinned cache if needed. Check the final working-tree diff after setting up verification tools, and do not leave toolchain configuration changes in a source-only task unless they were requested.
+
+**Repeated scratch-check pitfall:** A vendored path dependency can spell a Git repository URL with a `.git` suffix while the root project spells the same URL without it. Some Lake invocations treat the spellings as different and re-clone the same pinned dependency, discarding its compiled objects. A direct Lean invocation with an explicit library search path avoids dependency materialization for scratch checks.
+
+**Why:** A scratch check using Lake repeatedly removed previously restored Mathlib objects even though the pinned commit and root manifest did not change; inspecting the two package declarations revealed the differing URL spellings.
+
+**How to apply:** If Lake reports “URL has changed” unexpectedly, compare *all* path-package dependency declarations, not just Git's remote URL and the root manifest. Prefer direct Lean checks after cache restoration for local proof experiments; still run the requested full Lake build and check its exit status separately.

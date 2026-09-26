@@ -283,6 +283,140 @@ theorem projectiveWeierstrassCoordinate_mem_degree_one
   apply Submodule.mem_map.mpr
   exact ⟨MvPolynomial.X i, MvPolynomial.isHomogeneous_X _ _, rfl⟩
 
+/-- The quotient map on homogeneous coordinate rings induces the
+contravariant map of coordinate rings on every corresponding basic
+projective chart. A compatible scheme morphism on all of `Proj`
+still needs to be constructed. -/
+noncomputable def projectiveWeierstrassBasicChartQuotientMap
+    (W : WeierstrassCurve ℤ_[2]) (i : Fin 3) :
+    letI : GradedAlgebra (MvPolynomial.homogeneousSubmodule (Fin 3) ℤ_[2]) :=
+      MvPolynomial.gradedAlgebra
+    letI : GradedAlgebra (projectiveWeierstrassQuotientComponent W) :=
+      projectiveWeierstrassQuotientGrading W
+    HomogeneousLocalization.Away (MvPolynomial.homogeneousSubmodule (Fin 3) ℤ_[2])
+      (MvPolynomial.X i) →+*
+      HomogeneousLocalization.Away (projectiveWeierstrassQuotientComponent W)
+        ((Ideal.Quotient.mk (Ideal.span {projectiveWeierstrassCubic W}))
+          (MvPolynomial.X i)) := by
+  letI : GradedAlgebra (MvPolynomial.homogeneousSubmodule (Fin 3) ℤ_[2]) :=
+    MvPolynomial.gradedAlgebra
+  letI : GradedAlgebra (projectiveWeierstrassQuotientComponent W) :=
+    projectiveWeierstrassQuotientGrading W
+  apply HomogeneousLocalization.map
+    (MvPolynomial.homogeneousSubmodule (Fin 3) ℤ_[2])
+    (projectiveWeierstrassQuotientComponent W)
+    (Ideal.Quotient.mk (Ideal.span {projectiveWeierstrassCubic W}))
+  · intro a ha
+    obtain ⟨n, hn⟩ := (Submonoid.mem_powers_iff a (MvPolynomial.X i)).mp ha
+    apply (Submonoid.mem_powers_iff _ _).mpr
+    refine ⟨n, ?_⟩
+    rw [← map_pow, hn]
+  · intro n p hp
+    exact Submodule.mem_map.mpr ⟨p, hp, rfl⟩
+
+/-- Every degree-zero fraction in the quotient chart lifts to the
+ambient degree-zero chart. If a power of the inverted coordinate
+vanishes, the quotient chart is the zero ring; otherwise homogeneity
+forces the degree of its denominator to equal that power. -/
+theorem projectiveWeierstrassBasicChartQuotientMap_surjective
+    (W : WeierstrassCurve ℤ_[2]) (i : Fin 3) :
+    Function.Surjective (projectiveWeierstrassBasicChartQuotientMap W i) := by
+  classical
+  letI : GradedAlgebra (MvPolynomial.homogeneousSubmodule (Fin 3) ℤ_[2]) :=
+    MvPolynomial.gradedAlgebra
+  letI : GradedAlgebra (projectiveWeierstrassQuotientComponent W) :=
+    projectiveWeierstrassQuotientGrading W
+  let I : Ideal (MvPolynomial (Fin 3) ℤ_[2]) :=
+    Ideal.span {projectiveWeierstrassCubic W}
+  let q : MvPolynomial (Fin 3) ℤ_[2] →+* projectiveWeierstrassCoordinateRing W :=
+    Ideal.Quotient.mk I
+  let x : MvPolynomial (Fin 3) ℤ_[2] := MvPolynomial.X i
+  let xq : projectiveWeierstrassCoordinateRing W := q x
+  intro t
+  obtain ⟨v, rfl⟩ := HomogeneousLocalization.mk_surjective t
+  obtain ⟨k, hk⟩ := (Submonoid.mem_powers_iff v.den.val xq).mp v.den_mem
+  by_cases hzero : xq ^ k = 0
+  · have h0 : (0 : projectiveWeierstrassCoordinateRing W) ∈
+        Submonoid.powers xq := by
+      rw [← hzero]
+      exact Submonoid.pow_mem _ (Submonoid.mem_powers xq) k
+    letI : Subsingleton (Localization.Away xq) :=
+      IsLocalization.subsingleton h0
+    refine ⟨0, ?_⟩
+    apply HomogeneousLocalization.val_injective (Submonoid.powers xq)
+    exact Subsingleton.elim _ _
+  · have hdegree : k = v.deg := by
+      have hmem : xq ^ k ∈ projectiveWeierstrassQuotientComponent W k := by
+        simpa only [nsmul_eq_mul, mul_one] using
+          (SetLike.pow_mem_graded k
+            (projectiveWeierstrassCoordinate_mem_degree_one W i))
+      exact DirectSum.degree_eq_of_mem_mem
+        (projectiveWeierstrassQuotientComponent W)
+        hmem (hk.symm ▸ v.den.2) hzero
+    subst k
+    obtain ⟨p, hp, heq⟩ := Submodule.mem_map.mp v.num.2
+    have hx : x ∈ MvPolynomial.homogeneousSubmodule (Fin 3) ℤ_[2] 1 := by
+      change (MvPolynomial.X i).IsHomogeneous 1
+      exact MvPolynomial.isHomogeneous_X _ _
+    have hpow : x ^ v.deg ∈
+        MvPolynomial.homogeneousSubmodule (Fin 3) ℤ_[2] v.deg := by
+      simpa only [nsmul_eq_mul, mul_one] using
+        (SetLike.pow_mem_graded v.deg hx)
+    let u : HomogeneousLocalization.NumDenSameDeg
+        (MvPolynomial.homogeneousSubmodule (Fin 3) ℤ_[2])
+        (Submonoid.powers x) :=
+      { deg := v.deg
+        num := ⟨p, hp⟩
+        den := ⟨x ^ v.deg, hpow⟩
+        den_mem := Submonoid.pow_mem _ (Submonoid.mem_powers x) v.deg }
+    refine ⟨HomogeneousLocalization.mk u, ?_⟩
+    change (HomogeneousLocalization.map
+      (MvPolynomial.homogeneousSubmodule (Fin 3) ℤ_[2])
+      (projectiveWeierstrassQuotientComponent W) q
+      (by
+        intro a ha
+        obtain ⟨n, hn⟩ := (Submonoid.mem_powers_iff a x).mp ha
+        apply (Submonoid.mem_powers_iff _ _).mpr
+        exact ⟨n, by rw [← map_pow, hn]⟩)
+      (by
+        intro n p hp
+        exact Submodule.mem_map.mpr ⟨p, hp, rfl⟩))
+        (HomogeneousLocalization.mk u) = HomogeneousLocalization.mk v
+    rw [HomogeneousLocalization.map_mk]
+    congr 1
+    refine HomogeneousLocalization.NumDenSameDeg.ext
+      (Submonoid.powers xq) rfl ?_ ?_
+    · simpa only [AlgHom.toLinearMap_apply] using heq
+    · change q (x ^ v.deg) = v.den
+      rw [map_pow]
+      exact hk
+
+/-- The actual basic-chart scheme map induced by the homogeneous
+quotient, with source and target the spectra of degree-zero
+homogeneous localizations. -/
+noncomputable def projectiveWeierstrassBasicChartSchemeMap
+    (W : WeierstrassCurve ℤ_[2]) (i : Fin 3) :=
+  letI : GradedAlgebra (MvPolynomial.homogeneousSubmodule (Fin 3) ℤ_[2]) :=
+    MvPolynomial.gradedAlgebra
+  letI : GradedAlgebra (projectiveWeierstrassQuotientComponent W) :=
+    projectiveWeierstrassQuotientGrading W
+  AlgebraicGeometry.Spec.map
+    (CommRingCat.ofHom (projectiveWeierstrassBasicChartQuotientMap W i))
+
+/-- Each quotient map on the genuine basic opens of `Proj` is a
+closed immersion of affine schemes. Global gluing is still open. -/
+theorem projectiveWeierstrassBasicChartSchemeMap_isClosed
+    (W : WeierstrassCurve ℤ_[2]) (i : Fin 3) :
+    AlgebraicGeometry.IsClosedImmersion
+      (projectiveWeierstrassBasicChartSchemeMap W i) := by
+  letI : GradedAlgebra (MvPolynomial.homogeneousSubmodule (Fin 3) ℤ_[2]) :=
+    MvPolynomial.gradedAlgebra
+  letI : GradedAlgebra (projectiveWeierstrassQuotientComponent W) :=
+    projectiveWeierstrassQuotientGrading W
+  unfold projectiveWeierstrassBasicChartSchemeMap
+  exact AlgebraicGeometry.IsClosedImmersion.spec_of_surjective _
+    (projectiveWeierstrassBasicChartQuotientMap_surjective W i)
+
 /-- Mathlib's scheme isomorphism from a basic open of the
 quotient `Proj` to the spectrum of its degree-zero homogeneous
 localization. The explicit affine chart ring identifications are
