@@ -337,6 +337,19 @@ theorem homogeneousLocalization_map_restrict
     HomogeneousLocalization.map_mk]
   rfl
 
+/-- A product denominator can be viewed in the double localization.
+This is a comparison map, not yet a proof that it is an isomorphism. -/
+noncomputable def homogeneousLocalization_productToDouble
+    {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
+    (𝒜 : ℕ → Submodule R A) [GradedAlgebra 𝒜] (x y : A) :
+    HomogeneousLocalization 𝒜 (Submonoid.powers (x * y)) →+*
+      HomogeneousLocalization 𝒜 (Submonoid.powers x ⊔ Submonoid.powers y) :=
+  HomogeneousLocalization.mapId 𝒜 <|
+    Submonoid.powers_le.mpr <|
+      (Submonoid.powers x ⊔ Submonoid.powers y).mul_mem
+        (Submonoid.mem_sup_left (Submonoid.mem_powers x))
+        (Submonoid.mem_sup_right (Submonoid.mem_powers y))
+
 /-- Every degree-zero fraction in the quotient chart lifts to the
 ambient degree-zero chart. If a power of the inverted coordinate
 vanishes, the quotient chart is the zero ring; otherwise homogeneity
@@ -742,6 +755,75 @@ noncomputable def projectiveWeierstrassProductChartQuotientMap
     rw [← map_mul, ← map_pow, hn]
   · intro n p hp
     exact Submodule.mem_map.mpr ⟨p, hp, rfl⟩
+
+/-- The actual product-chart quotient map and the double-localization
+quotient map agree after the canonical comparison into the double
+localization. This does not identify that comparison with a restriction
+of scheme charts. -/
+theorem projectiveWeierstrassProductToDouble_commutes
+    (W : WeierstrassCurve ℤ_[2]) (i j : Fin 3) :
+    letI : GradedAlgebra (MvPolynomial.homogeneousSubmodule (Fin 3) ℤ_[2]) :=
+      MvPolynomial.gradedAlgebra
+    letI : GradedAlgebra (projectiveWeierstrassQuotientComponent W) :=
+      projectiveWeierstrassQuotientGrading W
+    (homogeneousLocalization_productToDouble
+      (projectiveWeierstrassQuotientComponent W)
+      ((Ideal.Quotient.mk (Ideal.span {projectiveWeierstrassCubic W}))
+        (MvPolynomial.X i))
+      ((Ideal.Quotient.mk (Ideal.span {projectiveWeierstrassCubic W}))
+        (MvPolynomial.X j))).comp
+      (projectiveWeierstrassProductChartQuotientMap W i j) =
+    (projectiveWeierstrassOverlapQuotientMap W i j).comp
+      (homogeneousLocalization_productToDouble
+        (MvPolynomial.homogeneousSubmodule (Fin 3) ℤ_[2])
+        (MvPolynomial.X i) (MvPolynomial.X j)) := by
+  letI : GradedAlgebra (MvPolynomial.homogeneousSubmodule (Fin 3) ℤ_[2]) :=
+    MvPolynomial.gradedAlgebra
+  letI : GradedAlgebra (projectiveWeierstrassQuotientComponent W) :=
+    projectiveWeierstrassQuotientGrading W
+  apply RingHom.ext
+  intro s
+  obtain ⟨v, rfl⟩ := HomogeneousLocalization.mk_surjective s
+  simp only [RingHom.comp_apply, homogeneousLocalization_productToDouble,
+    HomogeneousLocalization.mapId, projectiveWeierstrassProductChartQuotientMap,
+    projectiveWeierstrassOverlapQuotientMap, HomogeneousLocalization.map_mk]
+  rfl
+
+open CategoryTheory
+
+/-- The preceding comparison square also commutes as a square of
+affine schemes. It is not yet the restriction square for the two
+`Proj` chart morphisms. -/
+theorem projectiveWeierstrassProductToDouble_spec_commutes
+    (W : WeierstrassCurve ℤ_[2]) (i j : Fin 3) :
+    letI : GradedAlgebra (MvPolynomial.homogeneousSubmodule (Fin 3) ℤ_[2]) :=
+      MvPolynomial.gradedAlgebra
+    letI : GradedAlgebra (projectiveWeierstrassQuotientComponent W) :=
+      projectiveWeierstrassQuotientGrading W
+    AlgebraicGeometry.Spec.map
+        (CommRingCat.ofHom
+          (homogeneousLocalization_productToDouble
+            (projectiveWeierstrassQuotientComponent W)
+            ((Ideal.Quotient.mk (Ideal.span {projectiveWeierstrassCubic W}))
+              (MvPolynomial.X i))
+            ((Ideal.Quotient.mk (Ideal.span {projectiveWeierstrassCubic W}))
+              (MvPolynomial.X j)))) ≫
+      AlgebraicGeometry.Spec.map
+        (CommRingCat.ofHom (projectiveWeierstrassProductChartQuotientMap W i j)) =
+    AlgebraicGeometry.Spec.map
+        (CommRingCat.ofHom (projectiveWeierstrassOverlapQuotientMap W i j)) ≫
+      AlgebraicGeometry.Spec.map
+        (CommRingCat.ofHom
+          (homogeneousLocalization_productToDouble
+            (MvPolynomial.homogeneousSubmodule (Fin 3) ℤ_[2])
+            (MvPolynomial.X i) (MvPolynomial.X j))) := by
+  letI : GradedAlgebra (MvPolynomial.homogeneousSubmodule (Fin 3) ℤ_[2]) :=
+    MvPolynomial.gradedAlgebra
+  letI : GradedAlgebra (projectiveWeierstrassQuotientComponent W) :=
+    projectiveWeierstrassQuotientGrading W
+  rw [← AlgebraicGeometry.Spec.map_comp, ← AlgebraicGeometry.Spec.map_comp]
+  exact congrArg (fun f => AlgebraicGeometry.Spec.map (CommRingCat.ofHom f))
+    (projectiveWeierstrassProductToDouble_commutes W i j)
 
 /-- Every degree-zero fraction on the product basic chart of the
 quotient lifts from the corresponding ambient product chart. -/
