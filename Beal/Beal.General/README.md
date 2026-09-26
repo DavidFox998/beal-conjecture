@@ -22,6 +22,9 @@ feed the projective model and its chart calculations.
   contain local node, special-fibre, valuation-one, and even-valuation
   certificates. Their statements distinguish the nodal tangent cone from the
   full cubic and retain explicit nonzero-discriminant hypotheses where needed.
+- `GenericFibreNonsingular.lean` proves pointwise projective nonsingularity
+  over every field with an injective map from `ℤ_[2]`, assuming `W.Δ ≠ 0`.
+  It combines the affine discriminant criterion with the infinity argument.
 
 ## Current boundary
 
@@ -37,6 +40,8 @@ it silently.
 **All-stalk regularity remains unproved.** Local results about the
 valuation-one node, the special fibre, and the linear term in the infinity
 chart are not yet statements about every local ring of both affine charts.
+Neither is pointwise nonsingularity of the generic fibre by itself an
+all-stalk regularity result for the integral scheme.
 Consequently they cannot yet identify the projective cubic with a minimal
 regular model. A split nodal tangent cone by itself does not establish Kodaira
 type `I₁`, and the even-branch polynomial identity does not establish a

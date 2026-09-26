@@ -33,6 +33,7 @@ lean_lib BealGeneral where
     .one `Beal.«Beal.General».TateSplitNode,
     .one `Beal.«Beal.General».TateI1Split,
     .one `Beal.«Beal.General».TateI1Classification,
+    .one `Beal.«Beal.General».GenericFibreNonsingular,
     .one `Beal.«Beal.General».TateI1MinimalRegularModel,
     .one `Beal.«Beal.General».TwoChartGlobalMorphism,
     .one `Beal.«Beal.General».TargetOpenPreimages,
