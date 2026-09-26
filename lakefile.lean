@@ -35,6 +35,8 @@ lean_lib BealGeneral where
     .one `Beal.«Beal.General».TateI1Classification,
     .one `Beal.«Beal.General».TateI1MinimalRegularModel,
     .one `Beal.«Beal.General».TwoChartGlobalMorphism,
+    .one `Beal.«Beal.General».TargetOpenPreimages,
+    .one `Beal.«Beal.General».GlobalClosedImmersion,
     .one `Beal.«Beal.General».TateEvenBranch,
     .one `Beal.«Beal.General».TateReduction,
     .one `Beal.«Beal.General».Conductor,

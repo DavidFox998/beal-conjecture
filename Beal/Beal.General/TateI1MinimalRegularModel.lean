@@ -14,9 +14,9 @@ topological locus are also constructed. Homogeneous normal forms
 and localized saturation prove that dehomogenization identifies both
 degree-zero chart localizations with their explicit affine quotients.
 Each explicit affine chart is a closed subscheme of its affine plane.
-The global projective closed immersion, properness, all-stalk
-regularity, relative minimality, and Kodaira classification remain
-to be proved.
+The glued projective closed immersion is established in
+`GlobalClosedImmersion`. Properness, all-stalk regularity, relative
+minimality, and Kodaira classification remain to be proved.
 -/
 
 namespace Beal.General
@@ -890,8 +890,8 @@ noncomputable def projectiveWeierstrassBasicChartSchemeMap
     (CommRingCat.ofHom (projectiveWeierstrassBasicChartQuotientMap W i))
 
 /-- Each quotient map on the genuine basic opens of `Proj` is a
-closed immersion of affine schemes. The global map is glued in
-`TwoChartGlobalMorphism`, but global closed immersion remains open. -/
+closed immersion of affine schemes. The glued map and its global
+closed-immersion proof are in the subsequent modules. -/
 theorem projectiveWeierstrassBasicChartSchemeMap_isClosed
     (W : WeierstrassCurve ℤ_[2]) (i : Fin 3) :
     AlgebraicGeometry.IsClosedImmersion
