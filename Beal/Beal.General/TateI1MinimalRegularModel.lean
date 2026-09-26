@@ -761,6 +761,28 @@ theorem projective_chart_compat_of_ring_square
                 pa.inv ≫ ka ≫ ia.hom := by
                   simp only [Category.assoc]
 
+/-- The two orderings of a product define the same basic open of `Proj`.
+This equality is at the level of opens, not merely their underlying sets. -/
+theorem projective_basicOpen_mul_comm
+    {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
+    (𝒜 : ℕ → Submodule R A) [GradedAlgebra 𝒜] (x y : A) :
+    ProjectiveSpectrum.basicOpen 𝒜 (x * y) =
+      ProjectiveSpectrum.basicOpen 𝒜 (y * x) := by
+  rw [mul_comm x y]
+
+/-- The ordered product opens also give literally equal restricted
+schemes, so the two chart restriction statements have one source. -/
+theorem projective_restrictedScheme_mul_comm
+    {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
+    (𝒜 : ℕ → Submodule R A) [GradedAlgebra 𝒜] (x y : A) :
+    (AlgebraicGeometry.«Proj» 𝒜).restrict
+      (TopologicalSpace.Opens.openEmbedding
+        (ProjectiveSpectrum.basicOpen 𝒜 (x * y))) =
+    (AlgebraicGeometry.«Proj» 𝒜).restrict
+      (TopologicalSpace.Opens.openEmbedding
+        (ProjectiveSpectrum.basicOpen 𝒜 (y * x))) := by
+  rw [projective_basicOpen_mul_comm 𝒜 x y]
+
 /-- Thus the comparison of affine spectra is an isomorphism. No
 identification with the restrictions of `projIsoSpec` is implied. -/
 theorem homogeneousLocalization_productToDouble_spec_isIso
@@ -1183,6 +1205,20 @@ noncomputable def projectiveWeierstrassProductChartQuotientMap
   · intro n p hp
     exact Submodule.mem_map.mpr ⟨p, hp, rfl⟩
 
+/-- Swapping the two inverted coordinates leaves the quotient map
+unchanged after identifying the denominator submonoids by commutativity.
+The domain and codomain are dependent on the product, hence `HEq`. -/
+theorem projectiveWeierstrassProductChartQuotientMap_comm
+    (W : WeierstrassCurve ℤ_[2]) (i j : Fin 3) :
+    HEq (projectiveWeierstrassProductChartQuotientMap W i j)
+      (projectiveWeierstrassProductChartQuotientMap W j i) := by
+  unfold projectiveWeierstrassProductChartQuotientMap
+  dsimp only
+  congr 1
+  · exact congrArg Submonoid.powers (mul_comm _ _)
+  · exact congrArg Submonoid.powers (mul_comm _ _)
+  · exact proof_irrel_heq _ _
+
 /-- The actual product-chart quotient map and the double-localization
 quotient map agree after the canonical comparison into the double
 localization. This does not identify that comparison with a restriction
@@ -1537,6 +1573,18 @@ noncomputable def projectiveWeierstrassProductChartIso
         (projectiveWeierstrassCoordinate_mem_degree_one W j)))
     (by decide : 0 < 2)
 
+/-- Reordering the factors leaves the quotient product-chart
+`projIsoSpec` unchanged after transporting its dependent source and
+target across commutativity of the product. -/
+theorem projectiveWeierstrassProductChartIso_comm
+    (W : WeierstrassCurve ℤ_[2]) (i j : Fin 3) :
+    HEq (projectiveWeierstrassProductChartIso W i j)
+      (projectiveWeierstrassProductChartIso W j i) := by
+  unfold projectiveWeierstrassProductChartIso
+  congr 1
+  · exact mul_comm _ _
+  · exact proof_irrel_heq _ _
+
 /-- The `Z ≠ 0` chart as an actual affine open of the quotient `Proj`. -/
 noncomputable def projectiveWeierstrassZChartIso
     (W : WeierstrassCurve ℤ_[2]) :=
@@ -1601,6 +1649,16 @@ noncomputable def projectiveWeierstrassAmbientProductChartIso (i j : Fin 3) :=
         MvPolynomial.isHomogeneous_X _ _
       simpa only [one_add_one_eq_two] using hi.mul hj)
     (by decide : 0 < 2)
+
+/-- The ambient `projIsoSpec` product-chart isomorphism is likewise
+independent of the ordering after transport. -/
+theorem projectiveWeierstrassAmbientProductChartIso_comm (i j : Fin 3) :
+    HEq (projectiveWeierstrassAmbientProductChartIso i j)
+      (projectiveWeierstrassAmbientProductChartIso j i) := by
+  unfold projectiveWeierstrassAmbientProductChartIso
+  congr 1
+  · exact mul_comm _ _
+  · exact proof_irrel_heq _ _
 
 /-- The local morphism from the quotient `Proj` chart into the actual
 ambient projective chart, obtained by conjugating the affine quotient
