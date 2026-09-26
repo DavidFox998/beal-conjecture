@@ -3,7 +3,7 @@ name: Lake cache rehydration
 description: Scratch Lean checks can lose compiled dependencies after an isolated worktree is reattached.
 ---
 
-After an isolated worktree is reattached, Lake may report changed dependency URLs and re-clone packages, discarding compiled Mathlib objects even though the pinned manifest and tracked source remain unchanged.
+After an isolated worktree is reattached, Lake may report changed dependency URLs and re-clone packages, discarding compiled Mathlib objects even though the pinned manifest and tracked source remain unchanged. The same re-clone can recur on a later Lean invocation in an otherwise unchanged worktree.
 
 **Why:** This happened during repeat scratch checks; the immediate "unknown module prefix Mathlib" error reflected missing object files, not a proof error or an intentional dependency update.
 

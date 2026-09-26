@@ -1291,6 +1291,74 @@ theorem splitNode_projective_singular_only_at_node
       (P 0 / P 2) (P 1 / P 2) hdx hdy
   exact ⟨hz, hx, by simpa only [map_pow, map_add] using hy⟩
 
+/-- In the integral `Y = 1` chart of the projective Weierstrass
+equation, `U = X/Y` and `V = Z/Y`. This retains the base coefficients;
+unlike a residue-field point test it is an equation over `ℤ_[2]`. -/
+noncomputable def weierstrassInfinityChartEquation
+    (W : WeierstrassCurve ℤ_[2]) :
+    MvPolynomial (Fin 2) ℤ_[2] :=
+  let U : MvPolynomial (Fin 2) ℤ_[2] := MvPolynomial.X 0
+  let V : MvPolynomial (Fin 2) ℤ_[2] := MvPolynomial.X 1
+  V + MvPolynomial.C W.a₁ * U * V + MvPolynomial.C W.a₃ * V ^ 2 -
+    (U ^ 3 + MvPolynomial.C W.a₂ * U ^ 2 * V +
+      MvPolynomial.C W.a₄ * U * V ^ 2 +
+      MvPolynomial.C W.a₆ * V ^ 3)
+
+/-- The integral infinity-chart polynomial is exactly the
+dehomogenization `Y = 1` of the projective equation. -/
+theorem weierstrassInfinityChartEquation_iff
+    (W : WeierstrassCurve ℤ_[2]) (u v : ℤ_[2]) :
+    W.toProjective.Equation ![u, 1, v] ↔
+      MvPolynomial.eval
+        (fun i : Fin 2 => if i = 0 then u else v)
+        (weierstrassInfinityChartEquation W) = 0 := by
+  simp [WeierstrassCurve.Projective.equation_iff,
+    weierstrassInfinityChartEquation]
+
+/-- The total equation at infinity has linear term `V` with unit
+coefficient, modulo the square of the coordinate ideal `(U,V)`.
+This is a first-order chart certificate, not a scheme-theoretic
+regularity or proper-model theorem. -/
+theorem weierstrassInfinityChartEquation_linear
+    (W : WeierstrassCurve ℤ_[2]) :
+    let S := MvPolynomial (Fin 2) ℤ_[2]
+    let m : Ideal S := Ideal.span {MvPolynomial.X 0, MvPolynomial.X 1}
+    weierstrassInfinityChartEquation W - MvPolynomial.X 1 ∈ m ^ 2 := by
+  let S := MvPolynomial (Fin 2) ℤ_[2]
+  let U : S := MvPolynomial.X 0
+  let V : S := MvPolynomial.X 1
+  let m : Ideal S := Ideal.span {U, V}
+  have hU : U ∈ m := Ideal.subset_span (by simp [m, U])
+  have hV : V ∈ m := Ideal.subset_span (by simp [m, V])
+  have hproduct (a b : S) (ha : a ∈ m) (hb : b ∈ m) :
+      a * b ∈ m ^ 2 := by
+    simpa only [pow_two] using (Ideal.mul_mem_mul ha hb)
+  have htriple (c a b : S) (ha : a ∈ m) (hb : b ∈ m) :
+      c * a * b ∈ m ^ 2 := by
+    convert Ideal.mul_mem_left (m ^ 2) c (hproduct a b ha hb) using 1 <;> ring
+  have h1 : MvPolynomial.C W.a₁ * U * V ∈ m ^ 2 :=
+    htriple _ _ _ hU hV
+  have h2 : MvPolynomial.C W.a₃ * V ^ 2 ∈ m ^ 2 := by
+    convert htriple (MvPolynomial.C W.a₃) V V hV hV using 1 <;> ring
+  have h3 : U ^ 3 ∈ m ^ 2 := by
+    convert htriple U U U hU hU using 1 <;> ring
+  have h4 : MvPolynomial.C W.a₂ * U ^ 2 * V ∈ m ^ 2 := by
+    convert Ideal.mul_mem_left (m ^ 2)
+      (MvPolynomial.C W.a₂ * V) (hproduct U U hU hU) using 1 <;> ring
+  have h5 : MvPolynomial.C W.a₄ * U * V ^ 2 ∈ m ^ 2 := by
+    convert Ideal.mul_mem_left (m ^ 2)
+      (MvPolynomial.C W.a₄ * U) (hproduct V V hV hV) using 1 <;> ring
+  have h6 : MvPolynomial.C W.a₆ * V ^ 3 ∈ m ^ 2 := by
+    convert Ideal.mul_mem_left (m ^ 2)
+      (MvPolynomial.C W.a₆ * V) (hproduct V V hV hV) using 1 <;> ring
+  change weierstrassInfinityChartEquation W - V ∈ m ^ 2
+  convert Ideal.sub_mem (m ^ 2)
+    (Ideal.add_mem (m ^ 2) h1 h2)
+    (Ideal.add_mem (m ^ 2)
+      (Ideal.add_mem (m ^ 2)
+        (Ideal.add_mem (m ^ 2) h3 h4) h5) h6) using 1 <;>
+    simp only [weierstrassInfinityChartEquation, U, V] <;> ring
+
 #print axioms splitNode_surfaceEquation_modTwo
 #print axioms splitNodeCubic_atOne_irreducible
 #print axioms splitNodeCubic_ne_zero
@@ -1315,5 +1383,7 @@ theorem splitNode_projective_singular_only_at_node
 #print axioms splitNode_fibreGeneric_two_irreducible
 #print axioms weierstrass_projective_infinity_nonsingular
 #print axioms splitNode_projective_singular_only_at_node
+#print axioms weierstrassInfinityChartEquation_iff
+#print axioms weierstrassInfinityChartEquation_linear
 
 end Beal.General
