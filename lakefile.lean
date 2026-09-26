@@ -29,6 +29,7 @@ lean_lib BealGeneral where
     .one `Beal.«Beal.General».HeightInduction,
     .one `Beal.«Beal.General».HeightThree,
     .one `Beal.«Beal.General».HeightThreeSurface,
+    .one `Beal.«Beal.General».TateEisenstein,
     .one `Beal.«Beal.General».TateReduction,
     .one `Beal.«Beal.General».Conductor,
     .one `Beal.«Beal.General».TwoPower,
