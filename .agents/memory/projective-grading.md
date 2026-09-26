@@ -26,3 +26,9 @@ Dependent product-chart morphisms need more than commutativity of their denomina
 **Why:** Direct rewriting of a whole chart morphism and elimination of constituent heterogeneous equalities failed even though the factor order was mathematically immaterial. The missing data were instance and endpoint transports, not another ring identity.
 
 **How to apply:** Establish the ring-instance and `Spec` endpoint transports before lifting a ring-map equality to `Spec`. For the full chart composite, line up each intermediate object equality and compose the heterogeneous arrow equalities in the same grouping as the target expression; only then turn the result into an ordinary equality across identified opens.
+
+For a quotient `Proj` cover by coordinate opens, avoid first proving an equality between the quotient's irrelevant ideal and a variable-generated ideal. It is enough to show that each positive-degree quotient component belongs to any homogeneous prime containing every coordinate image; the zero component of an irrelevant element vanishes by definition.
+
+**Why:** Directly treating quotient relevance as the ambient polynomial prime-cover condition skips a genuine grading argument. The degreewise route also avoids an unnecessary quotient-ring presentation of the irrelevant ideal.
+
+**How to apply:** Lift a positive-degree quotient component to a homogeneous ambient polynomial, use the monomial support criterion to put it in the variable-generated ideal, then reassemble an irrelevant element by homogeneous decomposition. Only after establishing the actual quotient cover should chartwise morphisms be glued.
