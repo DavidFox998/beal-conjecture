@@ -8,9 +8,9 @@ The homogeneous equation for the candidate projective Weierstrass
 model over `ℤ_[2]`, together with checks on two affine charts.
 The quotient carries its inherited grading, so its `Proj` is an
 actual scheme. The ambient projective plane and the cubic's closed
-topological locus are also constructed. Dehomogenization defines maps
-from each degree-zero chart localization to its explicit affine
-quotient; their bijectivity is not yet proved. The closed immersion
+topological locus are also constructed. Dehomogenization defines
+surjective maps from each degree-zero chart localization to its
+explicit affine quotient; injectivity is not yet proved. The closed immersion
 relating the schemes, properness, all-stalk regularity, relative
 minimality, and Kodaira classification remain to be proved.
 -/
@@ -506,6 +506,197 @@ noncomputable def projectiveWeierstrassYChartComparisonMap
         (projectiveWeierstrassQuotientComponent W) y)
         (Localization.Away y))
 
+/-- The degree-zero coordinate ratio `Xᵢ / Xⱼ` in the genuine
+homogeneous localization of the quotient ring. -/
+noncomputable def projectiveWeierstrassCoordinateRatio
+    (W : WeierstrassCurve ℤ_[2]) (j i : Fin 3) :
+    letI : GradedAlgebra (projectiveWeierstrassQuotientComponent W) :=
+      projectiveWeierstrassQuotientGrading W
+    HomogeneousLocalization.Away
+      (projectiveWeierstrassQuotientComponent W)
+      ((Ideal.Quotient.mk (Ideal.span {projectiveWeierstrassCubic W}))
+        (MvPolynomial.X j)) := by
+  letI : GradedAlgebra (projectiveWeierstrassQuotientComponent W) :=
+    projectiveWeierstrassQuotientGrading W
+  exact HomogeneousLocalization.mk
+    { deg := 1
+      num := ⟨_, projectiveWeierstrassCoordinate_mem_degree_one W i⟩
+      den := ⟨_, projectiveWeierstrassCoordinate_mem_degree_one W j⟩
+      den_mem := Submonoid.mem_powers _ }
+
+/-- A base coefficient as a degree-zero fraction with denominator
+one in either basic chart. -/
+noncomputable def projectiveWeierstrassConstantFraction
+    (W : WeierstrassCurve ℤ_[2]) (j : Fin 3) (a : ℤ_[2]) :
+    letI : GradedAlgebra (projectiveWeierstrassQuotientComponent W) :=
+      projectiveWeierstrassQuotientGrading W
+    HomogeneousLocalization.Away
+      (projectiveWeierstrassQuotientComponent W)
+      ((Ideal.Quotient.mk (Ideal.span {projectiveWeierstrassCubic W}))
+        (MvPolynomial.X j)) := by
+  letI : GradedAlgebra (projectiveWeierstrassQuotientComponent W) :=
+    projectiveWeierstrassQuotientGrading W
+  have hC : (Ideal.Quotient.mk (Ideal.span {projectiveWeierstrassCubic W})
+      (MvPolynomial.C a) : projectiveWeierstrassCoordinateRing W) ∈
+      projectiveWeierstrassQuotientComponent W 0 :=
+    Submodule.mem_map.mpr
+      ⟨MvPolynomial.C a, MvPolynomial.isHomogeneous_C _ _, rfl⟩
+  exact HomogeneousLocalization.mk
+    { deg := 0
+      num := ⟨_, hC⟩
+      den := ⟨1, (projectiveWeierstrassQuotientGradedMonoid W).one_mem⟩
+      den_mem := Submonoid.one_mem _ }
+
+/-- The `Z` comparison fixes integral base coefficients. -/
+theorem projectiveWeierstrassZChartComparisonMap_C
+    (W : WeierstrassCurve ℤ_[2]) (a : ℤ_[2]) :
+    projectiveWeierstrassZChartComparisonMap W
+      (projectiveWeierstrassConstantFraction W 2 a) =
+        (Ideal.Quotient.mk (Ideal.span {localSurfaceEquation W 0 0}))
+          (MvPolynomial.C a) := by
+  simp [projectiveWeierstrassZChartComparisonMap,
+    projectiveWeierstrassConstantFraction,
+    Localization.mk_eq_mk']
+  unfold IsLocalization.Away.lift
+  erw [IsLocalization.lift_mk'_spec]
+  simp [projectiveWeierstrassZDehomMap]
+  rfl
+
+/-- The `Y` comparison fixes integral base coefficients. -/
+theorem projectiveWeierstrassYChartComparisonMap_C
+    (W : WeierstrassCurve ℤ_[2]) (a : ℤ_[2]) :
+    projectiveWeierstrassYChartComparisonMap W
+      (projectiveWeierstrassConstantFraction W 1 a) =
+        (Ideal.Quotient.mk (Ideal.span {weierstrassInfinityChartEquation W}))
+          (MvPolynomial.C a) := by
+  simp [projectiveWeierstrassYChartComparisonMap,
+    projectiveWeierstrassConstantFraction,
+    Localization.mk_eq_mk']
+  unfold IsLocalization.Away.lift
+  erw [IsLocalization.lift_mk'_spec]
+  simp [projectiveWeierstrassYDehomMap]
+  rfl
+
+/-- On the `Z ≠ 0` basic open, the comparison map sends `X/Z`
+to the affine variable `x`. -/
+theorem projectiveWeierstrassZChartComparisonMap_X
+    (W : WeierstrassCurve ℤ_[2]) :
+    projectiveWeierstrassZChartComparisonMap W
+      (projectiveWeierstrassCoordinateRatio W 2 0) =
+        (Ideal.Quotient.mk (Ideal.span {localSurfaceEquation W 0 0}))
+          (MvPolynomial.X 0) := by
+  simp [projectiveWeierstrassZChartComparisonMap,
+    projectiveWeierstrassCoordinateRatio,
+    Localization.mk_eq_mk']
+  unfold IsLocalization.Away.lift
+  erw [IsLocalization.lift_mk'_spec]
+  simp [projectiveWeierstrassZDehomMap]
+
+/-- The same comparison sends `Y/Z` to `y`. -/
+theorem projectiveWeierstrassZChartComparisonMap_Y
+    (W : WeierstrassCurve ℤ_[2]) :
+    projectiveWeierstrassZChartComparisonMap W
+      (projectiveWeierstrassCoordinateRatio W 2 1) =
+        (Ideal.Quotient.mk (Ideal.span {localSurfaceEquation W 0 0}))
+          (MvPolynomial.X 1) := by
+  simp [projectiveWeierstrassZChartComparisonMap,
+    projectiveWeierstrassCoordinateRatio,
+    Localization.mk_eq_mk']
+  unfold IsLocalization.Away.lift
+  erw [IsLocalization.lift_mk'_spec]
+  simp [projectiveWeierstrassZDehomMap]
+
+/-- On the `Y ≠ 0` chart, `X/Y` maps to `u`. -/
+theorem projectiveWeierstrassYChartComparisonMap_X
+    (W : WeierstrassCurve ℤ_[2]) :
+    projectiveWeierstrassYChartComparisonMap W
+      (projectiveWeierstrassCoordinateRatio W 1 0) =
+        (Ideal.Quotient.mk (Ideal.span {weierstrassInfinityChartEquation W}))
+          (MvPolynomial.X 0) := by
+  simp [projectiveWeierstrassYChartComparisonMap,
+    projectiveWeierstrassCoordinateRatio,
+    Localization.mk_eq_mk']
+  unfold IsLocalization.Away.lift
+  erw [IsLocalization.lift_mk'_spec]
+  simp [projectiveWeierstrassYDehomMap]
+
+/-- On the `Y ≠ 0` chart, `Z/Y` maps to `v`. -/
+theorem projectiveWeierstrassYChartComparisonMap_Z
+    (W : WeierstrassCurve ℤ_[2]) :
+    projectiveWeierstrassYChartComparisonMap W
+      (projectiveWeierstrassCoordinateRatio W 1 2) =
+        (Ideal.Quotient.mk (Ideal.span {weierstrassInfinityChartEquation W}))
+          (MvPolynomial.X 1) := by
+  simp [projectiveWeierstrassYChartComparisonMap,
+    projectiveWeierstrassCoordinateRatio,
+    Localization.mk_eq_mk']
+  unfold IsLocalization.Away.lift
+  erw [IsLocalization.lift_mk'_spec]
+  simp [projectiveWeierstrassYDehomMap]
+
+/-- Every element of the explicit affine chart ring is the image
+of a degree-zero fraction on `Z ≠ 0`. -/
+theorem projectiveWeierstrassZChartComparisonMap_surjective
+    (W : WeierstrassCurve ℤ_[2]) :
+    Function.Surjective (projectiveWeierstrassZChartComparisonMap W) := by
+  letI : GradedAlgebra (projectiveWeierstrassQuotientComponent W) :=
+    projectiveWeierstrassQuotientGrading W
+  let J : Ideal (MvPolynomial (Fin 2) ℤ_[2]) :=
+    Ideal.span {localSurfaceEquation W 0 0}
+  have hpoly (p : MvPolynomial (Fin 2) ℤ_[2]) :
+      ∃ t, projectiveWeierstrassZChartComparisonMap W t =
+        (Ideal.Quotient.mk J) p := by
+    apply MvPolynomial.induction_on p
+    · intro a
+      exact ⟨projectiveWeierstrassConstantFraction W 2 a,
+        projectiveWeierstrassZChartComparisonMap_C W a⟩
+    · intro p q hp hq
+      obtain ⟨s, hs⟩ := hp
+      obtain ⟨t, ht⟩ := hq
+      refine ⟨s + t, ?_⟩
+      simp [map_add, hs, ht]
+    · intro p i hp
+      obtain ⟨s, hs⟩ := hp
+      fin_cases i
+      · refine ⟨s * projectiveWeierstrassCoordinateRatio W 2 0, ?_⟩
+        simp [map_mul, hs, projectiveWeierstrassZChartComparisonMap_X]
+      · refine ⟨s * projectiveWeierstrassCoordinateRatio W 2 1, ?_⟩
+        simp [map_mul, hs, projectiveWeierstrassZChartComparisonMap_Y]
+  intro a
+  obtain ⟨p, rfl⟩ := Ideal.Quotient.mk_surjective a
+  exact hpoly p
+
+/-- The analogous surjectivity statement for the `Y ≠ 0` chart. -/
+theorem projectiveWeierstrassYChartComparisonMap_surjective
+    (W : WeierstrassCurve ℤ_[2]) :
+    Function.Surjective (projectiveWeierstrassYChartComparisonMap W) := by
+  letI : GradedAlgebra (projectiveWeierstrassQuotientComponent W) :=
+    projectiveWeierstrassQuotientGrading W
+  let J : Ideal (MvPolynomial (Fin 2) ℤ_[2]) :=
+    Ideal.span {weierstrassInfinityChartEquation W}
+  have hpoly (p : MvPolynomial (Fin 2) ℤ_[2]) :
+      ∃ t, projectiveWeierstrassYChartComparisonMap W t =
+        (Ideal.Quotient.mk J) p := by
+    apply MvPolynomial.induction_on p
+    · intro a
+      exact ⟨projectiveWeierstrassConstantFraction W 1 a,
+        projectiveWeierstrassYChartComparisonMap_C W a⟩
+    · intro p q hp hq
+      obtain ⟨s, hs⟩ := hp
+      obtain ⟨t, ht⟩ := hq
+      refine ⟨s + t, ?_⟩
+      simp [map_add, hs, ht]
+    · intro p i hp
+      obtain ⟨s, hs⟩ := hp
+      fin_cases i
+      · refine ⟨s * projectiveWeierstrassCoordinateRatio W 1 0, ?_⟩
+        simp [map_mul, hs, projectiveWeierstrassYChartComparisonMap_X]
+      · refine ⟨s * projectiveWeierstrassCoordinateRatio W 1 2, ?_⟩
+        simp [map_mul, hs, projectiveWeierstrassYChartComparisonMap_Z]
+  intro a
+  obtain ⟨p, rfl⟩ := Ideal.Quotient.mk_surjective a
+  exact hpoly p
+
 /-- On the projective cubic, a prime containing `Z` also contains
 `X`: modulo `Z` the equation is `-X³`. This holds for scheme points
 over the integral base, not only for field-valued points, and shows
@@ -581,6 +772,16 @@ theorem projectiveWeierstrassCubic_two_chart_cover
 #print axioms projectiveWeierstrassYDehomMap_Y
 #print axioms projectiveWeierstrassZChartComparisonMap
 #print axioms projectiveWeierstrassYChartComparisonMap
+#print axioms projectiveWeierstrassCoordinateRatio
+#print axioms projectiveWeierstrassConstantFraction
+#print axioms projectiveWeierstrassZChartComparisonMap_C
+#print axioms projectiveWeierstrassYChartComparisonMap_C
+#print axioms projectiveWeierstrassZChartComparisonMap_X
+#print axioms projectiveWeierstrassZChartComparisonMap_Y
+#print axioms projectiveWeierstrassYChartComparisonMap_X
+#print axioms projectiveWeierstrassYChartComparisonMap_Z
+#print axioms projectiveWeierstrassZChartComparisonMap_surjective
+#print axioms projectiveWeierstrassYChartComparisonMap_surjective
 #print axioms projectiveWeierstrassCubic_X_mem_of_Z_mem
 #print axioms projectiveWeierstrassCubic_two_chart_cover
 
