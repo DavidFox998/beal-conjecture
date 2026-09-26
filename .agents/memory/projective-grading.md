@@ -32,3 +32,9 @@ For a quotient `Proj` cover by coordinate opens, avoid first proving an equality
 **Why:** Directly treating quotient relevance as the ambient polynomial prime-cover condition skips a genuine grading argument. The degreewise route also avoids an unnecessary quotient-ring presentation of the irrelevant ideal.
 
 **How to apply:** Lift a positive-degree quotient component to a homogeneous ambient polynomial, use the monomial support criterion to put it in the variable-generated ideal, then reassemble an irrelevant element by homogeneous decomposition. Only after establishing the actual quotient cover should chartwise morphisms be glued.
+
+For gluing quotient `Proj` maps along a two-open scheme cover, the intersection equality alone is not the compatibility statement: the gluing theorem asks for an equality after composing with the pullback projections of the cover maps. Identify that pullback with the intersection via the open immersions' ranges, then cancel the open immersions to compare its projections to restriction maps. Transport the swapped product-chart morphism after composing with its ambient inclusion.
+
+**Why:** Direct attempts to rewrite restriction squares into the gluing equation failed because the product opens and their arrows have dependent endpoint types. An isomorphism from the intersection to the pullback turns the existing restriction equality into the exact gluing condition without pretending those schemes are definitionally equal.
+
+**How to apply:** Prove restriction compatibility on the ordered product open, use heterogeneous equality to exchange product order, and separately bridge that open to the pullback of the two scheme-cover inclusions before calling `glueMorphisms`. A source open cover alone does not imply a closed immersion: that property must be checked locally on a cover of the *target*.
