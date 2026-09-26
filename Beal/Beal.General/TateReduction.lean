@@ -1,4 +1,5 @@
 import Beal.«Beal.General».Minimal
+import Beal.«Beal.General».LocalHeight
 import Mathlib.AlgebraicGeometry.EllipticCurve.Affine
 import Mathlib.Algebra.MvPolynomial.Basic
 import Mathlib.FieldTheory.IsAlgClosed.Basic
