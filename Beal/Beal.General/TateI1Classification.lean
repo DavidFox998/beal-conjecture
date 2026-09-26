@@ -20,6 +20,16 @@ noncomputable def splitNodeCubic : MvPolynomial (Fin 2) (ZMod 2) :=
   MvPolynomial.X 1 * (MvPolynomial.X 1 + MvPolynomial.X 0) -
     MvPolynomial.X 0 ^ 3
 
+/-- The origin `(u,v)` in the coordinate ring of the split cubic. -/
+noncomputable def splitNode_originIdeal :
+    Ideal (MvPolynomial (Fin 2) (ZMod 2) ⧸
+      Ideal.span {splitNodeCubic}) :=
+  Ideal.span {
+    (Ideal.Quotient.mk (Ideal.span {splitNodeCubic}))
+      (MvPolynomial.X (0 : Fin 2)),
+    (Ideal.Quotient.mk (Ideal.span {splitNodeCubic}))
+      (MvPolynomial.X (1 : Fin 2))}
+
 /-- The specialization of the split nodal cubic at `v = 1` is
 an irreducible cubic over `ZMod 2`. -/
 theorem splitNodeCubic_atOne_irreducible :
@@ -237,6 +247,136 @@ noncomputable def splitNode_affineSpecialFibre_equiv
     (Ideal.quotEquivOfEq hker.symm)).trans
       (RingHom.quotientKerEquivOfSurjective hh)
 
+/-- On polynomial representatives, the affine special-fibre
+equivalence is coefficient reduction followed by the cubic quotient. -/
+theorem splitNode_affineSpecialFibre_equiv_mk
+    (W : WeierstrassCurve ℤ_[2])
+    (hnode : ReducedNodalPoint (W.map PadicInt.toZMod)
+      (PadicInt.toZMod W.a₃)
+      (PadicInt.toZMod (W.a₃ ^ 2 + W.a₄)))
+    (hsplit : 3 * PadicInt.toZMod W.a₃ +
+      (W.map PadicInt.toZMod).a₂ = 0)
+    (a : MvPolynomial (Fin 2) ℤ_[2]) :
+    let I : Ideal (MvPolynomial (Fin 2) ℤ_[2]) :=
+      Ideal.span {localSurfaceEquation W W.a₃ (W.a₃ ^ 2 + W.a₄)}
+    let K : Ideal (MvPolynomial (Fin 2) ℤ_[2]) :=
+      Ideal.span {MvPolynomial.C (2 : ℤ_[2])}
+    (splitNode_affineSpecialFibre_equiv W hnode hsplit)
+      (DoubleQuot.quotQuotMk I K a) =
+        (Ideal.Quotient.mk (Ideal.span {splitNodeCubic}))
+          (MvPolynomial.map PadicInt.toZMod a) := by
+  rfl
+
+/-- The centre of the affine surface specializes to the origin
+ideal of the nodal cubic under the affine fibre equivalence. -/
+theorem splitNode_fibreClosedPoint_eq_origin
+    (W : WeierstrassCurve ℤ_[2])
+    (hnode : ReducedNodalPoint (W.map PadicInt.toZMod)
+      (PadicInt.toZMod W.a₃)
+      (PadicInt.toZMod (W.a₃ ^ 2 + W.a₄)))
+    (hsplit : 3 * PadicInt.toZMod W.a₃ +
+      (W.map PadicInt.toZMod).a₂ = 0) :
+    let R := localSurfaceCoordinateRing W W.a₃ (W.a₃ ^ 2 + W.a₄)
+    let P : Ideal R :=
+      localSurfaceClosedPoint W W.a₃ (W.a₃ ^ 2 + W.a₄)
+    let F := localSurfaceSpecialFibreIdeal W W.a₃ (W.a₃ ^ 2 + W.a₄)
+    let e := splitNode_affineSpecialFibre_equiv W hnode hsplit
+    Ideal.map e.toRingHom (Ideal.map (Ideal.Quotient.mk F) P) =
+      Ideal.span {
+        (Ideal.Quotient.mk (Ideal.span {splitNodeCubic}))
+          (MvPolynomial.X (0 : Fin 2)),
+        (Ideal.Quotient.mk (Ideal.span {splitNodeCubic}))
+          (MvPolynomial.X (1 : Fin 2))} := by
+  let S := MvPolynomial (Fin 2) ℤ_[2]
+  let T := MvPolynomial (Fin 2) (ZMod 2)
+  let I : Ideal S :=
+    Ideal.span {localSurfaceEquation W W.a₃ (W.a₃ ^ 2 + W.a₄)}
+  let K : Ideal S := Ideal.span {MvPolynomial.C (2 : ℤ_[2])}
+  let J : Ideal T := Ideal.span {splitNodeCubic}
+  let R := localSurfaceCoordinateRing W W.a₃ (W.a₃ ^ 2 + W.a₄)
+  let P : Ideal R :=
+    localSurfaceClosedPoint W W.a₃ (W.a₃ ^ 2 + W.a₄)
+  let F : Ideal R :=
+    localSurfaceSpecialFibreIdeal W W.a₃ (W.a₃ ^ 2 + W.a₄)
+  let e := splitNode_affineSpecialFibre_equiv W hnode hsplit
+  let Q : Ideal (R ⧸ F) := Ideal.map (Ideal.Quotient.mk F) P
+  let φ : S →+* T := MvPolynomial.map PadicInt.toZMod
+  have hQ : Q = Ideal.map (DoubleQuot.quotQuotMk I K) localSurfaceCentre := by
+    dsimp [Q, P, F, localSurfaceClosedPoint,
+      localSurfaceSpecialFibreIdeal, I, K]
+    rw [Ideal.map_map]
+    rfl
+  have he : e.toRingHom.comp (DoubleQuot.quotQuotMk I K) =
+      (Ideal.Quotient.mk J).comp φ := by
+    apply RingHom.ext
+    intro a
+    exact splitNode_affineSpecialFibre_equiv_mk W hnode hsplit a
+  change Ideal.map e.toRingHom Q =
+    Ideal.span {(Ideal.Quotient.mk J) (MvPolynomial.X (0 : Fin 2)),
+      (Ideal.Quotient.mk J) (MvPolynomial.X (1 : Fin 2))}
+  calc
+    Ideal.map e.toRingHom Q =
+        Ideal.map (e.toRingHom.comp (DoubleQuot.quotQuotMk I K))
+          localSurfaceCentre := by rw [hQ, Ideal.map_map]
+    _ = Ideal.map ((Ideal.Quotient.mk J).comp φ) localSurfaceCentre := by
+      rw [he]
+    _ = _ := by
+      have hz : φ (MvPolynomial.C (2 : ℤ_[2])) = 0 := by
+        have htwo : (PadicInt.toZMod : ℤ_[2] →+* ZMod 2) 2 = 0 := by
+          have h : (2 : ZMod 2) = 0 := by decide
+          simpa only [map_ofNat] using h
+        change MvPolynomial.map PadicInt.toZMod
+          (MvPolynomial.C (2 : ℤ_[2])) = 0
+        rw [MvPolynomial.map_C, htwo, map_zero]
+      change Ideal.map ((Ideal.Quotient.mk J).comp φ)
+        (Ideal.span {MvPolynomial.C (2 : ℤ_[2]),
+          MvPolynomial.X 0, MvPolynomial.X 1}) = _
+      rw [Ideal.map_span]
+      simp only [Set.image_insert_eq, Set.image_singleton,
+        RingHom.coe_comp, Function.comp_apply, hz, map_zero]
+      have hX (i : Fin 2) : φ (MvPolynomial.X i) = MvPolynomial.X i :=
+        MvPolynomial.map_X PadicInt.toZMod i
+      rw [hX 0, hX 1]
+      simp only [Ideal.span_insert]
+      have hzero : (Ideal.span ({(0 : T ⧸ J)} : Set (T ⧸ J))) = ⊥ :=
+        Ideal.span_singleton_eq_bot.mpr rfl
+      rw [hzero]
+      simp only [bot_sup_eq]
+
+/-- The origin is the prime below the chosen node, transported
+through the affine special-fibre equivalence. -/
+theorem splitNode_originIdeal_isPrime
+    (W : WeierstrassCurve ℤ_[2])
+    (hnode : ReducedNodalPoint (W.map PadicInt.toZMod)
+      (PadicInt.toZMod W.a₃)
+      (PadicInt.toZMod (W.a₃ ^ 2 + W.a₄)))
+    (hsplit : 3 * PadicInt.toZMod W.a₃ +
+      (W.map PadicInt.toZMod).a₂ = 0) :
+    splitNode_originIdeal.IsPrime := by
+  let R := localSurfaceCoordinateRing W W.a₃ (W.a₃ ^ 2 + W.a₄)
+  let P : Ideal R :=
+    localSurfaceClosedPoint W W.a₃ (W.a₃ ^ 2 + W.a₄)
+  letI : P.IsPrime :=
+    (reducedPoint_hasClosedSurfacePoint W W.a₃
+      (W.a₃ ^ 2 + W.a₄) hnode.1).isPrime
+  let F := localSurfaceSpecialFibreIdeal W W.a₃ (W.a₃ ^ 2 + W.a₄)
+  let Q : Ideal (R ⧸ F) := Ideal.map (Ideal.Quotient.mk F) P
+  have hker : RingHom.ker (Ideal.Quotient.mk F) ≤ P := by
+    rw [Ideal.mk_ker]
+    change localSurfaceSpecialFibreIdeal W W.a₃ (W.a₃ ^ 2 + W.a₄) ≤
+      localSurfaceClosedPoint W W.a₃ (W.a₃ ^ 2 + W.a₄)
+    unfold localSurfaceSpecialFibreIdeal localSurfaceClosedPoint
+    apply Ideal.map_mono
+    apply (Ideal.span_singleton_le_iff_mem _).mpr
+    exact Ideal.subset_span (by simp [localSurfaceCentre])
+  letI : Q.IsPrime :=
+    Ideal.map_isPrime_of_surjective Ideal.Quotient.mk_surjective hker
+  let e := splitNode_affineSpecialFibre_equiv W hnode hsplit
+  have he : Ideal.map e.toRingHom Q = splitNode_originIdeal := by
+    exact splitNode_fibreClosedPoint_eq_origin W hnode hsplit
+  rw [← he]
+  exact Ideal.map_isPrime_of_equiv e
+
 /-- The actual affine special fibre is integral. This concerns the
 quotient by the base uniformizer, not just the tangent cone at the
 node or a finite-field equality of functions. -/
@@ -445,6 +585,292 @@ theorem splitNode_fibreClosedPoint_comap
     ← RingHom.ker_eq_comap_bot q]
   exact sup_eq_left.mpr hker
 
+/-- Quotienting a localization at a prime by the extension of a
+contained prime ideal is the localization of the quotient at the
+image of the original prime. -/
+noncomputable def quotientAtPrime_equiv
+    (R : Type*) [CommRing R] (P K : Ideal R) [P.IsPrime] [K.IsPrime]
+    (hKP : K ≤ P) :
+    let Q : Ideal (R ⧸ K) := Ideal.map (Ideal.Quotient.mk K) P
+    letI : Q.IsPrime :=
+      Ideal.map_isPrime_of_surjective Ideal.Quotient.mk_surjective
+        (by rw [Ideal.mk_ker]; exact hKP)
+    (Localization.AtPrime P ⧸ Ideal.map
+      (algebraMap R (Localization.AtPrime P)) K) ≃+*
+      Localization.AtPrime Q := by
+  let S := Localization.AtPrime P
+  let J : Ideal S := Ideal.map (algebraMap R S) K
+  let T := R ⧸ K
+  let q : R →+* T := Ideal.Quotient.mk K
+  let Q : Ideal T := Ideal.map q P
+  have hker : RingHom.ker q ≤ P := by
+    rw [Ideal.mk_ker]
+    exact hKP
+  letI : Q.IsPrime :=
+    Ideal.map_isPrime_of_surjective Ideal.Quotient.mk_surjective hker
+  have hQ : Ideal.comap q Q = P := by
+    change Ideal.comap q (Ideal.map q P) = P
+    rw [Ideal.comap_map_of_surjective q Ideal.Quotient.mk_surjective P,
+      ← RingHom.ker_eq_comap_bot q]
+    exact sup_eq_left.mpr hker
+  let f : T →+* S ⧸ J :=
+    Ideal.quotientMap J (algebraMap R S) Ideal.le_comap_map
+  letI : Algebra T (S ⧸ J) := f.toAlgebra
+  have hf (r : R) :
+      algebraMap T (S ⧸ J) (q r) =
+        (Ideal.Quotient.mk J) ((algebraMap R S) r) := by
+    change f (q r) = _
+    exact Ideal.quotientMap_mk
+  have hd : Disjoint (↑P.primeCompl : Set R) (↑K : Set R) := by
+    apply Set.disjoint_left.mpr
+    intro r hr hk
+    exact (show r ∉ P from hr) (hKP hk)
+  have hc : Ideal.comap (algebraMap R S) J = K :=
+    IsLocalization.comap_map_of_isPrime_disjoint P.primeCompl S K inferInstance hd
+  have hinj : Function.Injective f :=
+    Ideal.quotientMap_injective' (le_of_eq hc)
+  haveI : IsLocalization Q.primeCompl (S ⧸ J) := by
+    refine ⟨?_, ?_, ?_⟩
+    · intro s
+      obtain ⟨r, hr⟩ := Ideal.Quotient.mk_surjective (s : T)
+      have hrP : r ∉ P := by
+        intro hp
+        apply s.property
+        rw [← hr]
+        change r ∈ Ideal.comap q Q
+        rw [hQ]
+        exact hp
+      rw [← hr, hf]
+      exact (IsLocalization.map_units S (⟨r, hrP⟩ : P.primeCompl)).map
+        (Ideal.Quotient.mk J)
+    · intro z
+      obtain ⟨a, rfl⟩ := Ideal.Quotient.mk_surjective z
+      obtain ⟨r, s, hs⟩ := IsLocalization.mk'_surjective P.primeCompl a
+      have hnot : q s ∉ Q := by
+        intro h
+        have hsP : (s : R) ∈ P := by
+          exact (congrArg (fun I : Ideal R => (s : R) ∈ I) hQ).mp h
+        exact s.property hsP
+      refine ⟨(q r, (⟨q s, hnot⟩ : Q.primeCompl)), ?_⟩
+      change (Ideal.Quotient.mk J) a *
+        algebraMap T (S ⧸ J) (q s) = algebraMap T (S ⧸ J) (q r)
+      rw [hf, hf, ← map_mul]
+      exact congrArg (Ideal.Quotient.mk J)
+        ((IsLocalization.mk'_eq_iff_eq_mul).mp hs).symm
+    · intro x y hxy
+      exact ⟨1, by simpa using hinj hxy⟩
+  exact (IsLocalization.algEquiv Q.primeCompl (S ⧸ J)
+    (Localization.AtPrime Q)).toRingEquiv
+
+/-- The actual local special fibre is the localization of the
+affine special fibre at the closed point induced by the node. -/
+noncomputable def splitNode_localFibre_equiv_atClosedPoint
+    (W : WeierstrassCurve ℤ_[2])
+    (hnode : ReducedNodalPoint (W.map PadicInt.toZMod)
+      (PadicInt.toZMod W.a₃)
+      (PadicInt.toZMod (W.a₃ ^ 2 + W.a₄)))
+    (hsplit : 3 * PadicInt.toZMod W.a₃ +
+      (W.map PadicInt.toZMod).a₂ = 0) :
+    let R := localSurfaceCoordinateRing W W.a₃ (W.a₃ ^ 2 + W.a₄)
+    let P : Ideal R :=
+      localSurfaceClosedPoint W W.a₃ (W.a₃ ^ 2 + W.a₄)
+    letI : P.IsPrime :=
+      (reducedPoint_hasClosedSurfacePoint W W.a₃
+        (W.a₃ ^ 2 + W.a₄) hnode.1).isPrime
+    let K := localSurfaceSpecialFibreIdeal W W.a₃ (W.a₃ ^ 2 + W.a₄)
+    let Q : Ideal (R ⧸ K) := Ideal.map (Ideal.Quotient.mk K) P
+    letI : Q.IsPrime := (splitNode_fibreClosedPoint_comap W hnode).1
+    (Localization.AtPrime P ⧸ Ideal.map
+      (algebraMap R (Localization.AtPrime P)) K) ≃+*
+      Localization.AtPrime Q := by
+  let R := localSurfaceCoordinateRing W W.a₃ (W.a₃ ^ 2 + W.a₄)
+  let P : Ideal R :=
+    localSurfaceClosedPoint W W.a₃ (W.a₃ ^ 2 + W.a₄)
+  letI : P.IsPrime :=
+    (reducedPoint_hasClosedSurfacePoint W W.a₃
+      (W.a₃ ^ 2 + W.a₄) hnode.1).isPrime
+  let K : Ideal R :=
+    localSurfaceSpecialFibreIdeal W W.a₃ (W.a₃ ^ 2 + W.a₄)
+  letI : K.IsPrime :=
+    (Ideal.Quotient.isDomain_iff_prime K).mp
+      (splitNode_affineSpecialFibre_isDomain W hnode hsplit)
+  exact quotientAtPrime_equiv R P K
+    (localSurfaceSpecialFibreIdeal_le_closedPoint W W.a₃
+      (W.a₃ ^ 2 + W.a₄))
+
+/-- The fibre of the localized surface is exactly the local ring
+of `v(v+u)-u³` at its origin, not merely an integral ring with the
+same affine reduction. -/
+noncomputable def splitNode_localFibre_equiv_origin
+    (W : WeierstrassCurve ℤ_[2])
+    (hnode : ReducedNodalPoint (W.map PadicInt.toZMod)
+      (PadicInt.toZMod W.a₃)
+      (PadicInt.toZMod (W.a₃ ^ 2 + W.a₄)))
+    (hsplit : 3 * PadicInt.toZMod W.a₃ +
+      (W.map PadicInt.toZMod).a₂ = 0) :
+    let R := localSurfaceCoordinateRing W W.a₃ (W.a₃ ^ 2 + W.a₄)
+    let P : Ideal R :=
+      localSurfaceClosedPoint W W.a₃ (W.a₃ ^ 2 + W.a₄)
+    letI : P.IsPrime :=
+      (reducedPoint_hasClosedSurfacePoint W W.a₃
+        (W.a₃ ^ 2 + W.a₄) hnode.1).isPrime
+    let K := localSurfaceSpecialFibreIdeal W W.a₃ (W.a₃ ^ 2 + W.a₄)
+    letI : splitNode_originIdeal.IsPrime :=
+      splitNode_originIdeal_isPrime W hnode hsplit
+    (Localization.AtPrime P ⧸ Ideal.map
+      (algebraMap R (Localization.AtPrime P)) K) ≃+*
+      Localization.AtPrime splitNode_originIdeal := by
+  let R := localSurfaceCoordinateRing W W.a₃ (W.a₃ ^ 2 + W.a₄)
+  let P : Ideal R :=
+    localSurfaceClosedPoint W W.a₃ (W.a₃ ^ 2 + W.a₄)
+  letI : P.IsPrime :=
+    (reducedPoint_hasClosedSurfacePoint W W.a₃
+      (W.a₃ ^ 2 + W.a₄) hnode.1).isPrime
+  let K : Ideal R :=
+    localSurfaceSpecialFibreIdeal W W.a₃ (W.a₃ ^ 2 + W.a₄)
+  let Q : Ideal (R ⧸ K) := Ideal.map (Ideal.Quotient.mk K) P
+  letI : Q.IsPrime := (splitNode_fibreClosedPoint_comap W hnode).1
+  letI : splitNode_originIdeal.IsPrime :=
+    splitNode_originIdeal_isPrime W hnode hsplit
+  let e := splitNode_affineSpecialFibre_equiv W hnode hsplit
+  have hcomap : splitNode_originIdeal =
+      Ideal.comap e.symm.toRingHom Q := by
+    calc
+      splitNode_originIdeal = Ideal.map e.toRingHom Q :=
+        (splitNode_fibreClosedPoint_eq_origin W hnode hsplit).symm
+      _ = Ideal.comap e.symm.toRingHom Q :=
+        Ideal.map_comap_of_equiv Q e
+  have hm (x : MvPolynomial (Fin 2) (ZMod 2) ⧸
+      Ideal.span {splitNodeCubic}) :
+      x ∈ splitNode_originIdeal ↔ e.symm x ∈ Q := by
+    rw [hcomap, Ideal.mem_comap]
+    rfl
+  have hs : Submonoid.map e.toMonoidHom Q.primeCompl =
+      splitNode_originIdeal.primeCompl := by
+    ext x
+    rw [Submonoid.mem_map]
+    constructor
+    · rintro ⟨y, hy, rfl⟩
+      change y ∉ Q at hy
+      change e y ∉ splitNode_originIdeal
+      intro hz
+      exact hy (by simpa using (hm (e y)).mp hz)
+    · intro hx
+      change x ∉ splitNode_originIdeal at hx
+      refine ⟨e.symm x, ?_, by simp⟩
+      change e.symm x ∉ Q
+      intro hz
+      exact hx ((hm x).mpr hz)
+  exact (splitNode_localFibre_equiv_atClosedPoint W hnode hsplit).trans
+    (IsLocalization.ringEquivOfRingEquiv
+      (Localization.AtPrime Q)
+      (Localization.AtPrime splitNode_originIdeal) e hs)
+
+/-- The explicit base-uniformizer quotient of the localized surface
+is the nodal cubic's local ring at `(u,v)`. -/
+noncomputable def splitNode_localTwoQuotient_equiv_origin
+    (W : WeierstrassCurve ℤ_[2])
+    (hnode : ReducedNodalPoint (W.map PadicInt.toZMod)
+      (PadicInt.toZMod W.a₃)
+      (PadicInt.toZMod (W.a₃ ^ 2 + W.a₄)))
+    (hsplit : 3 * PadicInt.toZMod W.a₃ +
+      (W.map PadicInt.toZMod).a₂ = 0) :
+    let R := localSurfaceCoordinateRing W W.a₃ (W.a₃ ^ 2 + W.a₄)
+    let P : Ideal R :=
+      localSurfaceClosedPoint W W.a₃ (W.a₃ ^ 2 + W.a₄)
+    letI : P.IsPrime :=
+      (reducedPoint_hasClosedSurfacePoint W W.a₃
+        (W.a₃ ^ 2 + W.a₄) hnode.1).isPrime
+    let L := Localization.AtPrime P
+    let q : MvPolynomial (Fin 2) ℤ_[2] →+* R :=
+      Ideal.Quotient.mk (Ideal.span
+        {localSurfaceEquation W W.a₃ (W.a₃ ^ 2 + W.a₄)})
+    letI : splitNode_originIdeal.IsPrime :=
+      splitNode_originIdeal_isPrime W hnode hsplit
+    (L ⧸ Ideal.span {(algebraMap R L)
+      (q (MvPolynomial.C (2 : ℤ_[2])))}) ≃+*
+      Localization.AtPrime splitNode_originIdeal := by
+  let R := localSurfaceCoordinateRing W W.a₃ (W.a₃ ^ 2 + W.a₄)
+  let P : Ideal R :=
+    localSurfaceClosedPoint W W.a₃ (W.a₃ ^ 2 + W.a₄)
+  letI : P.IsPrime :=
+    (reducedPoint_hasClosedSurfacePoint W W.a₃
+      (W.a₃ ^ 2 + W.a₄) hnode.1).isPrime
+  let L := Localization.AtPrime P
+  let q : MvPolynomial (Fin 2) ℤ_[2] →+* R :=
+    Ideal.Quotient.mk (Ideal.span
+      {localSurfaceEquation W W.a₃ (W.a₃ ^ 2 + W.a₄)})
+  let K : Ideal R :=
+    localSurfaceSpecialFibreIdeal W W.a₃ (W.a₃ ^ 2 + W.a₄)
+  letI : splitNode_originIdeal.IsPrime :=
+    splitNode_originIdeal_isPrime W hnode hsplit
+  have hK : Ideal.map (algebraMap R L) K =
+      Ideal.span {(algebraMap R L)
+        (q (MvPolynomial.C (2 : ℤ_[2])))} := by
+    simp only [K, localSurfaceSpecialFibreIdeal_eq_span_two,
+      Ideal.map_span, Set.image_singleton]
+  exact (Ideal.quotEquivOfEq hK.symm).trans
+    (splitNode_localFibre_equiv_origin W hnode hsplit)
+
+/-- At the generic prime of the integral local special fibre, the
+maximal ideal of the further localization is generated by the
+image of `2`. This identifies the candidate uniformizer; a DVR or
+divisor-multiplicity assertion additionally needs total-space
+domain/regularity at this prime. -/
+theorem splitNode_fibreGeneric_maximalIdeal_span_two
+    (W : WeierstrassCurve ℤ_[2])
+    (hnode : ReducedNodalPoint (W.map PadicInt.toZMod)
+      (PadicInt.toZMod W.a₃)
+      (PadicInt.toZMod (W.a₃ ^ 2 + W.a₄)))
+    (hsplit : 3 * PadicInt.toZMod W.a₃ +
+      (W.map PadicInt.toZMod).a₂ = 0) :
+    let R := localSurfaceCoordinateRing W W.a₃ (W.a₃ ^ 2 + W.a₄)
+    let P : Ideal R :=
+      localSurfaceClosedPoint W W.a₃ (W.a₃ ^ 2 + W.a₄)
+    letI : P.IsPrime :=
+      (reducedPoint_hasClosedSurfacePoint W W.a₃
+        (W.a₃ ^ 2 + W.a₄) hnode.1).isPrime
+    let L := Localization.AtPrime P
+    let K : Ideal L := Ideal.map (algebraMap R L)
+      (localSurfaceSpecialFibreIdeal W W.a₃ (W.a₃ ^ 2 + W.a₄))
+    letI : K.IsPrime :=
+      (Ideal.Quotient.isDomain_iff_prime K).mp
+        (splitNode_localSpecialFibre_isDomain W hnode hsplit)
+    let G := Localization.AtPrime K
+    let q : MvPolynomial (Fin 2) ℤ_[2] →+* R :=
+      Ideal.Quotient.mk (Ideal.span
+        {localSurfaceEquation W W.a₃ (W.a₃ ^ 2 + W.a₄)})
+    LocalRing.maximalIdeal G =
+      Ideal.span {(algebraMap L G)
+        ((algebraMap R L) (q (MvPolynomial.C (2 : ℤ_[2]))))} := by
+  let R := localSurfaceCoordinateRing W W.a₃ (W.a₃ ^ 2 + W.a₄)
+  let P : Ideal R :=
+    localSurfaceClosedPoint W W.a₃ (W.a₃ ^ 2 + W.a₄)
+  letI : P.IsPrime :=
+    (reducedPoint_hasClosedSurfacePoint W W.a₃
+      (W.a₃ ^ 2 + W.a₄) hnode.1).isPrime
+  let L := Localization.AtPrime P
+  let K : Ideal L := Ideal.map (algebraMap R L)
+    (localSurfaceSpecialFibreIdeal W W.a₃ (W.a₃ ^ 2 + W.a₄))
+  letI : K.IsPrime :=
+    (Ideal.Quotient.isDomain_iff_prime K).mp
+      (splitNode_localSpecialFibre_isDomain W hnode hsplit)
+  let G := Localization.AtPrime K
+  let q : MvPolynomial (Fin 2) ℤ_[2] →+* R :=
+    Ideal.Quotient.mk (Ideal.span
+      {localSurfaceEquation W W.a₃ (W.a₃ ^ 2 + W.a₄)})
+  have hK : K = Ideal.span
+      {(algebraMap R L) (q (MvPolynomial.C (2 : ℤ_[2])))} := by
+    simp only [K, localSurfaceSpecialFibreIdeal_eq_span_two,
+      Ideal.map_span, Set.image_singleton]
+  calc
+    LocalRing.maximalIdeal G = Ideal.map (algebraMap L G) K :=
+      (Localization.AtPrime.map_eq_maximalIdeal (I := K)).symm
+    _ = Ideal.map (algebraMap L G)
+        (Ideal.span {(algebraMap R L) (q (MvPolynomial.C (2 : ℤ_[2])))}) :=
+      congrArg (Ideal.map (algebraMap L G)) hK
+    _ = _ := by simp only [Ideal.map_span, Set.image_singleton]
+
 #print axioms splitNode_surfaceEquation_modTwo
 #print axioms splitNodeCubic_atOne_irreducible
 #print axioms splitNodeCubic_ideal_isPrime
@@ -454,5 +880,13 @@ theorem splitNode_fibreClosedPoint_comap
 #print axioms splitNode_localTwoQuotient_isDomain
 #print axioms splitNode_affineToLocalFibre_injective
 #print axioms splitNode_fibreClosedPoint_comap
+#print axioms quotientAtPrime_equiv
+#print axioms splitNode_localFibre_equiv_atClosedPoint
+#print axioms splitNode_affineSpecialFibre_equiv_mk
+#print axioms splitNode_fibreClosedPoint_eq_origin
+#print axioms splitNode_originIdeal_isPrime
+#print axioms splitNode_localFibre_equiv_origin
+#print axioms splitNode_localTwoQuotient_equiv_origin
+#print axioms splitNode_fibreGeneric_maximalIdeal_span_two
 
 end Beal.General
