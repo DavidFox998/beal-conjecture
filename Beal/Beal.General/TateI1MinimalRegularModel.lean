@@ -8,10 +8,11 @@ The homogeneous equation for the candidate projective Weierstrass
 model over `ℤ_[2]`, together with checks on two affine charts.
 The quotient carries its inherited grading, so its `Proj` is an
 actual scheme. The ambient projective plane and the cubic's closed
-topological locus are also constructed. The closed immersion relating
-these schemes, explicit scheme-level chart identifications,
-properness, all-stalk regularity, relative minimality, and Kodaira
-classification remain to be proved.
+topological locus are also constructed. Dehomogenization defines maps
+from each degree-zero chart localization to its explicit affine
+quotient; their bijectivity is not yet proved. The closed immersion
+relating the schemes, properness, all-stalk regularity, relative
+minimality, and Kodaira classification remain to be proved.
 -/
 
 namespace Beal.General
@@ -166,9 +167,8 @@ theorem projectiveWeierstrassCubic_sum_mem_ideal_iff
   · intro h
     exact Ideal.sum_mem _ (fun n hn => h n hn)
 
-/-- The proposed quotient components also respect multiplication and
-contain `1` in degree zero. Together with the spanning and kernel
-statements, this prepares the still-unproved internal decomposition. -/
+/-- The quotient components respect multiplication and contain `1`
+in degree zero, providing the multiplicative part of the grading. -/
 noncomputable def projectiveWeierstrassQuotientGradedMonoid
     (W : WeierstrassCurve ℤ_[2]) :
     SetLike.GradedMonoid (projectiveWeierstrassQuotientComponent W) where
@@ -330,6 +330,16 @@ theorem projectiveWeierstrassLocus_isClosed
 
 /-- Dehomogenization on `Z = 1` gives the integral affine
 Weierstrass equation, with no reduction modulo `2`. -/
+theorem projectiveWeierstrassCubic_dehomogenize_Z
+    (W : WeierstrassCurve ℤ_[2]) :
+    (MvPolynomial.aeval
+      ![(MvPolynomial.X 0 : MvPolynomial (Fin 2) ℤ_[2]),
+        MvPolynomial.X 1, 1])
+      (projectiveWeierstrassCubic W) =
+        localSurfaceEquation W 0 0 := by
+  simp [projectiveWeierstrassCubic, localSurfaceEquation,
+    localWeierstrassEquation, WeierstrassCurve.map]
+
 theorem projectiveWeierstrassCubic_affine
     (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2]) :
     MvPolynomial.eval ![x, y, 1] (projectiveWeierstrassCubic W) =
@@ -338,11 +348,163 @@ theorem projectiveWeierstrassCubic_affine
 
 /-- Dehomogenization on `Y = 1` is the integral infinity
 chart's polynomial, not just its reduction at the point. -/
+theorem projectiveWeierstrassCubic_dehomogenize_Y
+    (W : WeierstrassCurve ℤ_[2]) :
+    (MvPolynomial.aeval
+      ![(MvPolynomial.X 0 : MvPolynomial (Fin 2) ℤ_[2]),
+        1, MvPolynomial.X 1])
+      (projectiveWeierstrassCubic W) =
+        weierstrassInfinityChartEquation W := by
+  simp [projectiveWeierstrassCubic, weierstrassInfinityChartEquation]
+
 theorem projectiveWeierstrassCubic_infinity
     (W : WeierstrassCurve ℤ_[2]) (u v : ℤ_[2]) :
     MvPolynomial.eval ![u, 1, v] (projectiveWeierstrassCubic W) =
       MvPolynomial.eval ![u, v] (weierstrassInfinityChartEquation W) := by
   simp [projectiveWeierstrassCubic, weierstrassInfinityChartEquation]
+
+/-- The integral affine `Z = 1` chart's coordinate ring. Its
+isomorphism with the degree-zero homogeneous localization is still
+to be proved. -/
+abbrev projectiveWeierstrassZChartRing
+    (W : WeierstrassCurve ℤ_[2]) : Type :=
+  MvPolynomial (Fin 2) ℤ_[2] ⧸ Ideal.span {localSurfaceEquation W 0 0}
+
+/-- The integral infinity `Y = 1` chart's coordinate ring. -/
+abbrev projectiveWeierstrassYChartRing
+    (W : WeierstrassCurve ℤ_[2]) : Type :=
+  MvPolynomial (Fin 2) ℤ_[2] ⧸
+    Ideal.span {weierstrassInfinityChartEquation W}
+
+/-- Setting `Z = 1` gives a well-defined algebra map from the
+homogeneous coordinate quotient to the explicit affine chart ring. -/
+noncomputable def projectiveWeierstrassZDehomMap
+    (W : WeierstrassCurve ℤ_[2]) :
+    projectiveWeierstrassCoordinateRing W →ₐ[ℤ_[2]]
+      projectiveWeierstrassZChartRing W := by
+  let h : MvPolynomial (Fin 3) ℤ_[2] →ₐ[ℤ_[2]]
+      projectiveWeierstrassZChartRing W :=
+    (Ideal.Quotient.mkₐ ℤ_[2] (Ideal.span {localSurfaceEquation W 0 0})).comp
+      (MvPolynomial.aeval
+        ![(MvPolynomial.X 0 : MvPolynomial (Fin 2) ℤ_[2]),
+          MvPolynomial.X 1, 1])
+  have hF : h (projectiveWeierstrassCubic W) = 0 := by
+    change (Ideal.Quotient.mk (Ideal.span {localSurfaceEquation W 0 0}))
+      ((MvPolynomial.aeval
+        ![(MvPolynomial.X 0 : MvPolynomial (Fin 2) ℤ_[2]),
+          MvPolynomial.X 1, 1]) (projectiveWeierstrassCubic W)) = 0
+    rw [projectiveWeierstrassCubic_dehomogenize_Z]
+    exact Ideal.Quotient.eq_zero_iff_mem.mpr
+      (Ideal.subset_span (Set.mem_singleton _))
+  have hker : Ideal.span {projectiveWeierstrassCubic W} ≤
+      RingHom.ker h.toRingHom := by
+    apply Ideal.span_le.mpr
+    intro p hp
+    rcases Set.mem_singleton_iff.mp hp with rfl
+    exact RingHom.mem_ker.mpr hF
+  exact Ideal.Quotient.liftₐ _ h
+    (fun p hp => RingHom.mem_ker.mp (hker hp))
+
+/-- Setting `Y = 1` gives a well-defined algebra map to the
+explicit infinity-chart quotient. -/
+noncomputable def projectiveWeierstrassYDehomMap
+    (W : WeierstrassCurve ℤ_[2]) :
+    projectiveWeierstrassCoordinateRing W →ₐ[ℤ_[2]]
+      projectiveWeierstrassYChartRing W := by
+  let h : MvPolynomial (Fin 3) ℤ_[2] →ₐ[ℤ_[2]]
+      projectiveWeierstrassYChartRing W :=
+    (Ideal.Quotient.mkₐ ℤ_[2]
+      (Ideal.span {weierstrassInfinityChartEquation W})).comp
+      (MvPolynomial.aeval
+        ![(MvPolynomial.X 0 : MvPolynomial (Fin 2) ℤ_[2]),
+          1, MvPolynomial.X 1])
+  have hF : h (projectiveWeierstrassCubic W) = 0 := by
+    change (Ideal.Quotient.mk
+      (Ideal.span {weierstrassInfinityChartEquation W}))
+      ((MvPolynomial.aeval
+        ![(MvPolynomial.X 0 : MvPolynomial (Fin 2) ℤ_[2]),
+          1, MvPolynomial.X 1]) (projectiveWeierstrassCubic W)) = 0
+    rw [projectiveWeierstrassCubic_dehomogenize_Y]
+    exact Ideal.Quotient.eq_zero_iff_mem.mpr
+      (Ideal.subset_span (Set.mem_singleton _))
+  have hker : Ideal.span {projectiveWeierstrassCubic W} ≤
+      RingHom.ker h.toRingHom := by
+    apply Ideal.span_le.mpr
+    intro p hp
+    rcases Set.mem_singleton_iff.mp hp with rfl
+    exact RingHom.mem_ker.mpr hF
+  exact Ideal.Quotient.liftₐ _ h
+    (fun p hp => RingHom.mem_ker.mp (hker hp))
+
+/-- The `Z = 1` quotient map sends the homogeneous coordinate `Z` to a unit. -/
+theorem projectiveWeierstrassZDehomMap_Z
+    (W : WeierstrassCurve ℤ_[2]) :
+    projectiveWeierstrassZDehomMap W
+      ((Ideal.Quotient.mk (Ideal.span {projectiveWeierstrassCubic W}))
+        (MvPolynomial.X 2)) = 1 := by
+  simp [projectiveWeierstrassZDehomMap]
+
+/-- The `Y = 1` quotient map sends the homogeneous coordinate `Y` to a unit. -/
+theorem projectiveWeierstrassYDehomMap_Y
+    (W : WeierstrassCurve ℤ_[2]) :
+    projectiveWeierstrassYDehomMap W
+      ((Ideal.Quotient.mk (Ideal.span {projectiveWeierstrassCubic W}))
+        (MvPolynomial.X 1)) = 1 := by
+  simp [projectiveWeierstrassYDehomMap]
+
+/-- Comparison from the *actual degree-zero localization ring* on
+`Z ≠ 0` to the proposed affine chart quotient. This is a ring map,
+not yet a proven isomorphism. -/
+noncomputable def projectiveWeierstrassZChartComparisonMap
+    (W : WeierstrassCurve ℤ_[2]) :
+    letI : GradedAlgebra (projectiveWeierstrassQuotientComponent W) :=
+      projectiveWeierstrassQuotientGrading W
+    HomogeneousLocalization.Away
+      (projectiveWeierstrassQuotientComponent W)
+      ((Ideal.Quotient.mk (Ideal.span {projectiveWeierstrassCubic W}))
+        (MvPolynomial.X 2)) →+* projectiveWeierstrassZChartRing W := by
+  letI : GradedAlgebra (projectiveWeierstrassQuotientComponent W) :=
+    projectiveWeierstrassQuotientGrading W
+  let z : projectiveWeierstrassCoordinateRing W :=
+    (Ideal.Quotient.mk (Ideal.span {projectiveWeierstrassCubic W}))
+      (MvPolynomial.X 2)
+  have hz : IsUnit ((projectiveWeierstrassZDehomMap W).toRingHom z) := by
+    change IsUnit (projectiveWeierstrassZDehomMap W
+      ((Ideal.Quotient.mk (Ideal.span {projectiveWeierstrassCubic W}))
+        (MvPolynomial.X 2)))
+    rw [projectiveWeierstrassZDehomMap_Z]
+    exact isUnit_one
+  exact (IsLocalization.Away.lift z
+    (g := (projectiveWeierstrassZDehomMap W).toRingHom) hz).comp
+      (algebraMap (HomogeneousLocalization.Away
+        (projectiveWeierstrassQuotientComponent W) z)
+        (Localization.Away z))
+
+/-- The corresponding comparison map on the `Y ≠ 0` chart. -/
+noncomputable def projectiveWeierstrassYChartComparisonMap
+    (W : WeierstrassCurve ℤ_[2]) :
+    letI : GradedAlgebra (projectiveWeierstrassQuotientComponent W) :=
+      projectiveWeierstrassQuotientGrading W
+    HomogeneousLocalization.Away
+      (projectiveWeierstrassQuotientComponent W)
+      ((Ideal.Quotient.mk (Ideal.span {projectiveWeierstrassCubic W}))
+        (MvPolynomial.X 1)) →+* projectiveWeierstrassYChartRing W := by
+  letI : GradedAlgebra (projectiveWeierstrassQuotientComponent W) :=
+    projectiveWeierstrassQuotientGrading W
+  let y : projectiveWeierstrassCoordinateRing W :=
+    (Ideal.Quotient.mk (Ideal.span {projectiveWeierstrassCubic W}))
+      (MvPolynomial.X 1)
+  have hy : IsUnit ((projectiveWeierstrassYDehomMap W).toRingHom y) := by
+    change IsUnit (projectiveWeierstrassYDehomMap W
+      ((Ideal.Quotient.mk (Ideal.span {projectiveWeierstrassCubic W}))
+        (MvPolynomial.X 1)))
+    rw [projectiveWeierstrassYDehomMap_Y]
+    exact isUnit_one
+  exact (IsLocalization.Away.lift y
+    (g := (projectiveWeierstrassYDehomMap W).toRingHom) hy).comp
+      (algebraMap (HomogeneousLocalization.Away
+        (projectiveWeierstrassQuotientComponent W) y)
+        (Localization.Away y))
 
 /-- On the projective cubic, a prime containing `Z` also contains
 `X`: modulo `Z` the equation is `-X³`. This holds for scheme points
@@ -410,7 +572,15 @@ theorem projectiveWeierstrassCubic_two_chart_cover
 #print axioms projectiveWeierstrassYChartIso
 #print axioms projectiveWeierstrassLocus_isClosed
 #print axioms projectiveWeierstrassCubic_affine
+#print axioms projectiveWeierstrassCubic_dehomogenize_Z
+#print axioms projectiveWeierstrassCubic_dehomogenize_Y
 #print axioms projectiveWeierstrassCubic_infinity
+#print axioms projectiveWeierstrassZDehomMap
+#print axioms projectiveWeierstrassYDehomMap
+#print axioms projectiveWeierstrassZDehomMap_Z
+#print axioms projectiveWeierstrassYDehomMap_Y
+#print axioms projectiveWeierstrassZChartComparisonMap
+#print axioms projectiveWeierstrassYChartComparisonMap
 #print axioms projectiveWeierstrassCubic_X_mem_of_Z_mem
 #print axioms projectiveWeierstrassCubic_two_chart_cover
 
