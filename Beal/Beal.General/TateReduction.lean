@@ -275,10 +275,15 @@ theorem localSurfaceAmbient_span_two_height_eq_one :
     simpa [s] using (Order.length_le_height_last (p := s))
 
 /-- Three successive special-fibre prime specializations give a lower
-bound for the ambient polynomial ring. This does not provide the
-missing upper bound or a dimension theorem for the hypersurface. -/
-theorem localSurfaceAmbient_ringKrullDim_ge_three :
-    (3 : WithBot (WithTop ℕ)) ≤ ringKrullDim (MvPolynomial (Fin 2) ℤ_[2]) := by
+bound at the ambient origin. The separate three-generator argument
+supplies the upper bound; neither result determines the hypersurface
+dimension. -/
+theorem localSurfaceAmbient_origin_height_ge_three :
+    (3 : WithTop ℕ) ≤ Order.height
+      (⟨RingHom.ker (MvPolynomial.eval₂Hom PadicInt.toZMod
+          (fun _ : Fin 2 => (0 : ZMod 2))),
+        RingHom.ker_isPrime _⟩ :
+        PrimeSpectrum (MvPolynomial (Fin 2) ℤ_[2])) := by
   let R := MvPolynomial (Fin 2) ℤ_[2]
   let S := MvPolynomial (Fin 2) (ZMod 2)
   let T := MvPolynomial (Fin 1) (ZMod 2)
@@ -368,7 +373,29 @@ theorem localSurfaceAmbient_ringKrullDim_ge_three :
       exact (MvPolynomial.X_ne_zero (R := ZMod 2) (0 : Fin 1)) hz
   let s : LTSeries (PrimeSpectrum R) :=
     ((RelSeries.singleton (· < ·) P₀).snoc P₁ h01).snoc P₂ h12 |>.snoc P₃ h23
-  simpa [ringKrullDim, s] using Order.LTSeries.length_le_krullDim s
+  simpa [s, P₃, w] using (Order.length_le_height_last (p := s))
+
+/-- The explicit chain through the residue-field origin also witnesses
+ambient Krull dimension at least three. -/
+theorem localSurfaceAmbient_ringKrullDim_ge_three :
+    (3 : WithBot (WithTop ℕ)) ≤ ringKrullDim (MvPolynomial (Fin 2) ℤ_[2]) := by
+  let R := MvPolynomial (Fin 2) ℤ_[2]
+  let w : R →+* ZMod 2 :=
+    MvPolynomial.eval₂Hom PadicInt.toZMod (fun _ => 0)
+  let P : PrimeSpectrum R := ⟨RingHom.ker w, RingHom.ker_isPrime w⟩
+  have h : (3 : WithTop ℕ) ≤ Order.height P :=
+    localSurfaceAmbient_origin_height_ge_three
+  have hle : (↑(Order.height P) : WithBot ℕ∞) ≤
+      ringKrullDim R := by
+    change (↑(Order.height P) : WithBot ℕ∞) ≤
+      Order.krullDim (PrimeSpectrum R)
+    rw [Order.krullDim_eq_iSup_height]
+    exact le_iSup_of_le P le_rfl
+  have h' : (3 : ℕ∞) ≤ Order.height P := h
+  have hbot : ((3 : ℕ∞) : WithBot ℕ∞) ≤
+      (↑(Order.height P) : WithBot ℕ∞) := WithBot.coe_le_coe.mpr h'
+  exact (by simpa using hbot : (3 : WithBot (WithTop ℕ)) ≤
+    (↑(Order.height P) : WithBot ℕ∞)).trans hle
 
 /-- The affine Weierstrass equation over the residue field. -/
 def reducedEquation (W : WeierstrassCurve (ZMod 2)) (x y : ZMod 2) : ZMod 2 :=
