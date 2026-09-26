@@ -14,3 +14,9 @@ When an ideal appears in the type of a denominator `s : P.primeCompl`, avoid rew
 **Why:** Rewriting `P` changes the dependent type of `s` and Lean may reject the rewrite even when the intended membership implication is mathematically immediate.
 
 **How to apply:** In localization-at-prime proofs, convert membership using the equality of ideals as an equality of propositions while leaving the denominator subtype and its prime instance fixed.
+
+In this Mathlib pin, a nested localization at a prime may not synthesize its domain instance automatically: the available instance takes a prime proof as an explicit argument. If a theorem *states* a DVR property of that localization, provide the base and nested domain instances before the DVR expression in the statement, as well as in the proof.
+
+**Why:** Adding domain instances only in the proof cannot repair a typeclass failure that occurs while Lean elaborates the theorem statement.
+
+**How to apply:** For DVR claims about a localization of a localization, explicitly construct the prime-localization domain instance at each layer before using the DVR predicate or its Noetherian-local equivalence.

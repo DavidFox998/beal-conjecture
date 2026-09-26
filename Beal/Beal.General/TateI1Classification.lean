@@ -2,6 +2,7 @@ import Beal.«Beal.General».TateI1Split
 import Mathlib.Algebra.Polynomial.SpecificDegree
 import Mathlib.RingTheory.Ideal.QuotientOperations
 import Mathlib.RingTheory.Localization.Ideal
+import Mathlib.RingTheory.DiscreteValuationRing.TFAE
 
 /-!
 Polynomial-level special-fibre prerequisites for a future `I₁`
@@ -15,10 +16,95 @@ point, not by maximal-ideal order at the node.
 
 namespace Beal.General
 
+/-- A regular principal prime in a Noetherian local ring detects
+zero divisors: repeatedly divide one factor by its generator and
+use Krull intersection for the other. -/
+private theorem isDomain_of_regular_principal_prime_local
+    (A : Type*) [CommRing A] [LocalRing A] [IsNoetherianRing A]
+    (t : A) (ht : ∀ a : A, t * a = 0 → a = 0)
+    (hp : (Ideal.span {t} : Ideal A).IsPrime) : IsDomain A := by
+  let I : Ideal A := Ideal.span {t}
+  have hsep : (⨅ n : ℕ, I ^ n) = ⊥ :=
+    Ideal.iInf_pow_eq_bot_of_localRing I hp.ne_top
+  have hprimitive (x y : A) (hx : x ∉ I) (hxy : x * y = 0) : y = 0 := by
+    have hdiv : ∀ n : ℕ, ∃ z : A, y = t ^ n * z ∧ x * z = 0 := by
+      intro n
+      induction n with
+      | zero => exact ⟨y, by simp, hxy⟩
+      | succ n ih =>
+        obtain ⟨z, hyz, hxz⟩ := ih
+        have hzmem : z ∈ I :=
+          (hp.mem_or_mem (by rw [hxz]; exact I.zero_mem)).resolve_left hx
+        obtain ⟨w, hw⟩ := Ideal.mem_span_singleton.mp hzmem
+        refine ⟨w, ?_, ?_⟩
+        · rw [hyz, hw, pow_succ]
+          ring
+        · apply ht
+          calc
+            t * (x * w) = x * z := by rw [hw]; ring
+            _ = 0 := hxz
+    have hall : y ∈ ⨅ n : ℕ, I ^ n := Ideal.mem_iInf.mpr (by
+      intro n
+      obtain ⟨z, hyz, _⟩ := hdiv n
+      change y ∈ (Ideal.span {t} : Ideal A) ^ n
+      rw [Ideal.span_singleton_pow]
+      exact Ideal.mem_span_singleton.mpr ⟨z, hyz⟩)
+    rw [hsep] at hall
+    exact Ideal.mem_bot.mp hall
+  have hnondiv : ∀ n : ℕ, ∀ x y : A, x ∉ I ^ n → x * y = 0 → y = 0 := by
+    intro n
+    induction n with
+    | zero =>
+        intro x y hx _
+        exact (hx (by simp)).elim
+    | succ n ih =>
+        intro x y hx hxy
+        by_cases hxm : x ∈ I
+        · obtain ⟨z, hz⟩ := Ideal.mem_span_singleton.mp hxm
+          have hznot : z ∉ I ^ n := by
+            intro hzmem
+            apply hx
+            change z ∈ (Ideal.span {t} : Ideal A) ^ n at hzmem
+            change x ∈ (Ideal.span {t} : Ideal A) ^ (n + 1)
+            rw [Ideal.span_singleton_pow] at hzmem ⊢
+            obtain ⟨w, hw⟩ := Ideal.mem_span_singleton.mp hzmem
+            exact Ideal.mem_span_singleton.mpr ⟨w, by rw [hz, hw, pow_succ]; ring⟩
+          have hzy : z * y = 0 := by
+            apply ht
+            calc
+              t * (z * y) = x * y := by rw [hz]; ring
+              _ = 0 := hxy
+          exact ih z y hznot hzy
+        · exact hprimitive x y hxm hxy
+  haveI : NoZeroDivisors A := ⟨by
+    intro x y hxy
+    by_cases hx : x = 0
+    · exact Or.inl hx
+    · right
+      have hex : ∃ n : ℕ, x ∉ I ^ n := by
+        by_contra h
+        have hall : x ∈ ⨅ n : ℕ, I ^ n := Ideal.mem_iInf.mpr (by
+          intro n
+          by_contra hn
+          exact h ⟨n, hn⟩)
+        rw [hsep] at hall
+        exact hx (Ideal.mem_bot.mp hall)
+      obtain ⟨n, hn⟩ := hex
+      exact hnondiv n x y hn hxy⟩
+  exact ⟨⟩
+
 /-- The translated split nodal cubic in two formal coordinates. -/
 noncomputable def splitNodeCubic : MvPolynomial (Fin 2) (ZMod 2) :=
   MvPolynomial.X 1 * (MvPolynomial.X 1 + MvPolynomial.X 0) -
     MvPolynomial.X 0 ^ 3
+
+/-- The defining cubic is a nonzero polynomial, not merely a nonzero
+function on the residue-field points. -/
+theorem splitNodeCubic_ne_zero : splitNodeCubic ≠ 0 := by
+  intro h
+  have he := congrArg
+    (MvPolynomial.eval (fun i : Fin 2 => if i = 0 then (1 : ZMod 2) else 0)) h
+  norm_num [splitNodeCubic] at he
 
 /-- The origin `(u,v)` in the coordinate ring of the split cubic. -/
 noncomputable def splitNode_originIdeal :
@@ -395,6 +481,72 @@ theorem splitNode_affineSpecialFibre_isDomain
   let e := splitNode_affineSpecialFibre_equiv W hnode hsplit
   exact e.injective.isDomain e.toRingHom
 
+/-- The image of the base uniformizer is a non-zero-divisor on the
+translated affine surface. This is a flatness step, independent of
+the singularity order at its closed point. -/
+theorem splitNode_surfaceTwo_regular
+    (W : WeierstrassCurve ℤ_[2])
+    (hnode : ReducedNodalPoint (W.map PadicInt.toZMod)
+      (PadicInt.toZMod W.a₃)
+      (PadicInt.toZMod (W.a₃ ^ 2 + W.a₄)))
+    (hsplit : 3 * PadicInt.toZMod W.a₃ +
+      (W.map PadicInt.toZMod).a₂ = 0) :
+    let R := localSurfaceCoordinateRing W W.a₃ (W.a₃ ^ 2 + W.a₄)
+    let q : MvPolynomial (Fin 2) ℤ_[2] →+* R :=
+      Ideal.Quotient.mk (Ideal.span
+        {localSurfaceEquation W W.a₃ (W.a₃ ^ 2 + W.a₄)})
+    ∀ a : R, q (MvPolynomial.C (2 : ℤ_[2])) * a = 0 → a = 0 := by
+  let S := MvPolynomial (Fin 2) ℤ_[2]
+  let T := MvPolynomial (Fin 2) (ZMod 2)
+  let f : S := localSurfaceEquation W W.a₃ (W.a₃ ^ 2 + W.a₄)
+  let R := localSurfaceCoordinateRing W W.a₃ (W.a₃ ^ 2 + W.a₄)
+  let q : S →+* R := Ideal.Quotient.mk (Ideal.span {f})
+  let φ : S →+* T := MvPolynomial.map PadicInt.toZMod
+  let t : S := MvPolynomial.C (2 : ℤ_[2])
+  have htφ : φ t = 0 := by
+    change MvPolynomial.map PadicInt.toZMod
+      (MvPolynomial.C (2 : ℤ_[2])) = 0
+    rw [MvPolynomial.map_C]
+    have htwo : (PadicInt.toZMod : ℤ_[2] →+* ZMod 2) 2 = 0 := by
+      have hz : (2 : ZMod 2) = 0 := by decide
+      simpa only [map_ofNat] using hz
+    rw [htwo, map_zero]
+  have htf : φ f ≠ 0 := by
+    rw [splitNode_surfaceEquation_modTwo W hnode hsplit]
+    exact splitNodeCubic_ne_zero
+  have ht : t ≠ 0 := by
+    intro hz
+    have htwo : (2 : ℤ_[2]) = 0 :=
+      (MvPolynomial.C_injective (Fin 2) ℤ_[2])
+        (by simpa only [t, map_zero] using hz)
+    norm_num at htwo
+  change ∀ a : R, q t * a = 0 → a = 0
+  intro a ha
+  obtain ⟨b, rfl⟩ := Ideal.Quotient.mk_surjective a
+  have hb : t * b ∈ Ideal.span {f} := by
+    apply Ideal.Quotient.eq_zero_iff_mem.mp
+    simpa only [map_mul] using ha
+  obtain ⟨c, hc⟩ := Ideal.mem_span_singleton.mp hb
+  have hfc : t * b = f * c := hc
+  have hφc : φ c = 0 := by
+    have hprod : φ f * φ c = 0 := by
+      calc
+        φ f * φ c = φ (f * c) := (map_mul φ f c).symm
+        _ = φ (t * b) := congrArg φ hfc.symm
+        _ = 0 := by rw [map_mul, htφ, zero_mul]
+    exact (mul_eq_zero.mp hprod).resolve_left htf
+  have hc : c ∈ Ideal.span {t} := by
+    rw [← localSurfaceAmbient_reduction_kernel_eq_span_two]
+    exact hφc
+  obtain ⟨d, hd⟩ := Ideal.mem_span_singleton.mp hc
+  have hcancel : b = f * d := by
+    apply mul_left_cancel₀ ht
+    calc
+      t * b = f * c := hfc
+      _ = t * (f * d) := by rw [hd]; ring
+  apply Ideal.Quotient.eq_zero_iff_mem.mpr
+  exact Ideal.mem_span_singleton.mpr ⟨d, by simpa only [mul_comm] using hcancel⟩
+
 /-- The base-uniformizer fibre ideal passes through the specified
 closed point of the affine hypersurface. -/
 theorem localSurfaceSpecialFibreIdeal_le_closedPoint
@@ -449,6 +601,62 @@ theorem splitNode_localSpecialFibre_isDomain
   haveI : (Ideal.map (algebraMap R L) K).IsPrime :=
     IsLocalization.isPrime_of_isPrime_disjoint P.primeCompl L K hK hd
   exact Ideal.Quotient.isDomain _
+
+/-- The localized total hypersurface is a domain. The proof uses
+flatness over `2`, the prime integral special fibre, and Krull
+intersection in this Noetherian local ring; it does not assume that
+regularity at the node alone implies domainhood. -/
+theorem splitNode_localSurface_isDomain
+    (W : WeierstrassCurve ℤ_[2])
+    (hnode : ReducedNodalPoint (W.map PadicInt.toZMod)
+      (PadicInt.toZMod W.a₃)
+      (PadicInt.toZMod (W.a₃ ^ 2 + W.a₄)))
+    (hsplit : 3 * PadicInt.toZMod W.a₃ +
+      (W.map PadicInt.toZMod).a₂ = 0) :
+    let R := localSurfaceCoordinateRing W W.a₃ (W.a₃ ^ 2 + W.a₄)
+    let P : Ideal R :=
+      localSurfaceClosedPoint W W.a₃ (W.a₃ ^ 2 + W.a₄)
+    letI : P.IsPrime :=
+      (reducedPoint_hasClosedSurfacePoint W W.a₃
+        (W.a₃ ^ 2 + W.a₄) hnode.1).isPrime
+    IsDomain (Localization.AtPrime P) := by
+  let R := localSurfaceCoordinateRing W W.a₃ (W.a₃ ^ 2 + W.a₄)
+  let P : Ideal R :=
+    localSurfaceClosedPoint W W.a₃ (W.a₃ ^ 2 + W.a₄)
+  letI : P.IsPrime :=
+    (reducedPoint_hasClosedSurfacePoint W W.a₃
+      (W.a₃ ^ 2 + W.a₄) hnode.1).isPrime
+  let L := Localization.AtPrime P
+  let q : MvPolynomial (Fin 2) ℤ_[2] →+* R :=
+    Ideal.Quotient.mk (Ideal.span
+      {localSurfaceEquation W W.a₃ (W.a₃ ^ 2 + W.a₄)})
+  let t : L := (algebraMap R L) (q (MvPolynomial.C (2 : ℤ_[2])))
+  let K : Ideal L := Ideal.map (algebraMap R L)
+    (localSurfaceSpecialFibreIdeal W W.a₃ (W.a₃ ^ 2 + W.a₄))
+  haveI : IsNoetherianRing R :=
+    isNoetherianRing_of_surjective
+      (MvPolynomial (Fin 2) ℤ_[2]) R q Ideal.Quotient.mk_surjective
+  haveI : IsNoetherianRing L :=
+    IsLocalization.isNoetherianRing P.primeCompl L inferInstance
+  have hregR : q (MvPolynomial.C (2 : ℤ_[2])) ∈
+      nonZeroDivisors R := by
+    rw [mem_nonZeroDivisors_iff]
+    intro a ha
+    exact splitNode_surfaceTwo_regular W hnode hsplit a
+      (by simpa only [mul_comm] using ha)
+  have hregL : t ∈ nonZeroDivisors L :=
+    IsLocalization.nonZeroDivisors_le_comap P.primeCompl L hregR
+  have hK : K = Ideal.span {t} := by
+    simp only [K, t, localSurfaceSpecialFibreIdeal_eq_span_two,
+      Ideal.map_span, Set.image_singleton]
+  have hprime : (Ideal.span {t} : Ideal L).IsPrime := by
+    rw [← hK]
+    exact (Ideal.Quotient.isDomain_iff_prime K).mp
+      (splitNode_localSpecialFibre_isDomain W hnode hsplit)
+  have hreg : ∀ a : L, t * a = 0 → a = 0 := by
+    intro a ha
+    exact hregL a (by simpa only [mul_comm] using ha)
+  exact isDomain_of_regular_principal_prime_local L t hreg hprime
 
 /-- In the localized hypersurface the literal quotient by the image
 of `2` is a domain. This makes the base-uniformizer ideal explicit;
@@ -814,9 +1022,7 @@ noncomputable def splitNode_localTwoQuotient_equiv_origin
 
 /-- At the generic prime of the integral local special fibre, the
 maximal ideal of the further localization is generated by the
-image of `2`. This identifies the candidate uniformizer; a DVR or
-divisor-multiplicity assertion additionally needs total-space
-domain/regularity at this prime. -/
+image of `2`. The next theorem supplies the domain/DVR bridge. -/
 theorem splitNode_fibreGeneric_maximalIdeal_span_two
     (W : WeierstrassCurve ℤ_[2])
     (hnode : ReducedNodalPoint (W.map PadicInt.toZMod)
@@ -871,12 +1077,166 @@ theorem splitNode_fibreGeneric_maximalIdeal_span_two
       congrArg (Ideal.map (algebraMap L G)) hK
     _ = _ := by simp only [Ideal.map_span, Set.image_singleton]
 
+/-- The total surface at the generic prime of its integral special
+fibre is a discrete valuation ring. Its maximal ideal is generated
+by the image of the base uniformizer `2`, so the component has
+generic multiplicity one. This remains a local statement, not a
+minimal-regular-model or Kodaira classification. -/
+theorem splitNode_fibreGeneric_discreteValuationRing
+    (W : WeierstrassCurve ℤ_[2])
+    (hnode : ReducedNodalPoint (W.map PadicInt.toZMod)
+      (PadicInt.toZMod W.a₃)
+      (PadicInt.toZMod (W.a₃ ^ 2 + W.a₄)))
+    (hsplit : 3 * PadicInt.toZMod W.a₃ +
+      (W.map PadicInt.toZMod).a₂ = 0) :
+    let R := localSurfaceCoordinateRing W W.a₃ (W.a₃ ^ 2 + W.a₄)
+    let P : Ideal R :=
+      localSurfaceClosedPoint W W.a₃ (W.a₃ ^ 2 + W.a₄)
+    letI : P.IsPrime :=
+      (reducedPoint_hasClosedSurfacePoint W W.a₃
+        (W.a₃ ^ 2 + W.a₄) hnode.1).isPrime
+    let L := Localization.AtPrime P
+    letI : IsDomain L :=
+      splitNode_localSurface_isDomain W hnode hsplit
+    let K : Ideal L := Ideal.map (algebraMap R L)
+      (localSurfaceSpecialFibreIdeal W W.a₃ (W.a₃ ^ 2 + W.a₄))
+    letI : K.IsPrime :=
+      (Ideal.Quotient.isDomain_iff_prime K).mp
+        (splitNode_localSpecialFibre_isDomain W hnode hsplit)
+    letI : IsDomain (Localization.AtPrime K) :=
+      IsLocalization.isDomain_of_local_atPrime (P := K) inferInstance
+    DiscreteValuationRing (Localization.AtPrime K) := by
+  let R := localSurfaceCoordinateRing W W.a₃ (W.a₃ ^ 2 + W.a₄)
+  let P : Ideal R :=
+    localSurfaceClosedPoint W W.a₃ (W.a₃ ^ 2 + W.a₄)
+  letI : P.IsPrime :=
+    (reducedPoint_hasClosedSurfacePoint W W.a₃
+      (W.a₃ ^ 2 + W.a₄) hnode.1).isPrime
+  let L := Localization.AtPrime P
+  letI : IsDomain L :=
+    splitNode_localSurface_isDomain W hnode hsplit
+  let q : MvPolynomial (Fin 2) ℤ_[2] →+* R :=
+    Ideal.Quotient.mk (Ideal.span
+      {localSurfaceEquation W W.a₃ (W.a₃ ^ 2 + W.a₄)})
+  let t : L := (algebraMap R L) (q (MvPolynomial.C (2 : ℤ_[2])))
+  let K : Ideal L := Ideal.map (algebraMap R L)
+    (localSurfaceSpecialFibreIdeal W W.a₃ (W.a₃ ^ 2 + W.a₄))
+  letI : K.IsPrime :=
+    (Ideal.Quotient.isDomain_iff_prime K).mp
+      (splitNode_localSpecialFibre_isDomain W hnode hsplit)
+  let G := Localization.AtPrime K
+  letI : IsDomain G :=
+    IsLocalization.isDomain_of_local_atPrime (P := K) inferInstance
+  haveI : IsNoetherianRing R :=
+    isNoetherianRing_of_surjective
+      (MvPolynomial (Fin 2) ℤ_[2]) R q Ideal.Quotient.mk_surjective
+  haveI : IsNoetherianRing L :=
+    IsLocalization.isNoetherianRing P.primeCompl L inferInstance
+  haveI : IsNoetherianRing G :=
+    IsLocalization.isNoetherianRing K.primeCompl G inferInstance
+  have hregR : q (MvPolynomial.C (2 : ℤ_[2])) ∈
+      nonZeroDivisors R := by
+    rw [mem_nonZeroDivisors_iff]
+    intro a ha
+    exact splitNode_surfaceTwo_regular W hnode hsplit a
+      (by simpa only [mul_comm] using ha)
+  have hregL : t ∈ nonZeroDivisors L :=
+    IsLocalization.nonZeroDivisors_le_comap P.primeCompl L hregR
+  have ht : t ≠ 0 := by
+    intro hz
+    have h1 : (1 : L) * t = 0 := by rw [hz, mul_zero]
+    exact one_ne_zero (hregL 1 h1)
+  have hK : K = Ideal.span {t} := by
+    simp only [K, t, localSurfaceSpecialFibreIdeal_eq_span_two,
+      Ideal.map_span, Set.image_singleton]
+  have hKne : K ≠ ⊥ := by
+    intro hz
+    apply ht
+    have hmem : t ∈ K := by
+      rw [hK]
+      exact Ideal.subset_span (by simp)
+    rw [hz] at hmem
+    exact Ideal.mem_bot.mp hmem
+  have hmax : LocalRing.maximalIdeal G =
+      Ideal.span {(algebraMap L G) t} :=
+    splitNode_fibreGeneric_maximalIdeal_span_two W hnode hsplit
+  have hprincipal : (LocalRing.maximalIdeal G).IsPrincipal := by
+    rw [hmax]
+    exact Submodule.IsPrincipal.mk ⟨_, rfl⟩
+  change DiscreteValuationRing G
+  exact ((DiscreteValuationRing.TFAE G
+    (IsLocalization.AtPrime.not_isField L hKne G)).out 4 0).mp hprincipal
+
+/-- The image of `2` is a uniformizer at the special fibre's generic
+point: it is irreducible in the DVR, so its generic order is one. -/
+theorem splitNode_fibreGeneric_two_irreducible
+    (W : WeierstrassCurve ℤ_[2])
+    (hnode : ReducedNodalPoint (W.map PadicInt.toZMod)
+      (PadicInt.toZMod W.a₃)
+      (PadicInt.toZMod (W.a₃ ^ 2 + W.a₄)))
+    (hsplit : 3 * PadicInt.toZMod W.a₃ +
+      (W.map PadicInt.toZMod).a₂ = 0) :
+    let R := localSurfaceCoordinateRing W W.a₃ (W.a₃ ^ 2 + W.a₄)
+    let P : Ideal R :=
+      localSurfaceClosedPoint W W.a₃ (W.a₃ ^ 2 + W.a₄)
+    letI : P.IsPrime :=
+      (reducedPoint_hasClosedSurfacePoint W W.a₃
+        (W.a₃ ^ 2 + W.a₄) hnode.1).isPrime
+    let L := Localization.AtPrime P
+    let K : Ideal L := Ideal.map (algebraMap R L)
+      (localSurfaceSpecialFibreIdeal W W.a₃ (W.a₃ ^ 2 + W.a₄))
+    letI : K.IsPrime :=
+      (Ideal.Quotient.isDomain_iff_prime K).mp
+        (splitNode_localSpecialFibre_isDomain W hnode hsplit)
+    let G := Localization.AtPrime K
+    let q : MvPolynomial (Fin 2) ℤ_[2] →+* R :=
+      Ideal.Quotient.mk (Ideal.span
+        {localSurfaceEquation W W.a₃ (W.a₃ ^ 2 + W.a₄)})
+    Irreducible ((algebraMap L G)
+      ((algebraMap R L) (q (MvPolynomial.C (2 : ℤ_[2]))))) := by
+  let R := localSurfaceCoordinateRing W W.a₃ (W.a₃ ^ 2 + W.a₄)
+  let P : Ideal R :=
+    localSurfaceClosedPoint W W.a₃ (W.a₃ ^ 2 + W.a₄)
+  letI : P.IsPrime :=
+    (reducedPoint_hasClosedSurfacePoint W W.a₃
+      (W.a₃ ^ 2 + W.a₄) hnode.1).isPrime
+  let L := Localization.AtPrime P
+  letI : IsDomain L :=
+    splitNode_localSurface_isDomain W hnode hsplit
+  let K : Ideal L := Ideal.map (algebraMap R L)
+    (localSurfaceSpecialFibreIdeal W W.a₃ (W.a₃ ^ 2 + W.a₄))
+  letI : K.IsPrime :=
+    (Ideal.Quotient.isDomain_iff_prime K).mp
+      (splitNode_localSpecialFibre_isDomain W hnode hsplit)
+  let G := Localization.AtPrime K
+  letI : IsDomain G :=
+    IsLocalization.isDomain_of_local_atPrime (P := K) inferInstance
+  letI : DiscreteValuationRing G :=
+    splitNode_fibreGeneric_discreteValuationRing W hnode hsplit
+  let q : MvPolynomial (Fin 2) ℤ_[2] →+* R :=
+    Ideal.Quotient.mk (Ideal.span
+      {localSurfaceEquation W W.a₃ (W.a₃ ^ 2 + W.a₄)})
+  let t : G := (algebraMap L G)
+    ((algebraMap R L) (q (MvPolynomial.C (2 : ℤ_[2]))))
+  have hmax : LocalRing.maximalIdeal G = Ideal.span {t} :=
+    splitNode_fibreGeneric_maximalIdeal_span_two W hnode hsplit
+  have ht : t ≠ 0 := by
+    intro hz
+    apply DiscreteValuationRing.not_a_field G
+    rw [hmax, hz]
+    exact Ideal.span_singleton_eq_bot.mpr rfl
+  change Irreducible t
+  exact DiscreteValuationRing.irreducible_of_span_eq_maximalIdeal t ht hmax
+
 #print axioms splitNode_surfaceEquation_modTwo
 #print axioms splitNodeCubic_atOne_irreducible
+#print axioms splitNodeCubic_ne_zero
 #print axioms splitNodeCubic_ideal_isPrime
 #print axioms splitNode_affineSpecialFibre_equiv
 #print axioms splitNode_affineSpecialFibre_isDomain
+#print axioms splitNode_surfaceTwo_regular
 #print axioms splitNode_localSpecialFibre_isDomain
+#print axioms splitNode_localSurface_isDomain
 #print axioms splitNode_localTwoQuotient_isDomain
 #print axioms splitNode_affineToLocalFibre_injective
 #print axioms splitNode_fibreClosedPoint_comap
@@ -888,5 +1248,7 @@ theorem splitNode_fibreGeneric_maximalIdeal_span_two
 #print axioms splitNode_localFibre_equiv_origin
 #print axioms splitNode_localTwoQuotient_equiv_origin
 #print axioms splitNode_fibreGeneric_maximalIdeal_span_two
+#print axioms splitNode_fibreGeneric_discreteValuationRing
+#print axioms splitNode_fibreGeneric_two_irreducible
 
 end Beal.General
