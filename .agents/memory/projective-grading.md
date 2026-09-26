@@ -38,3 +38,9 @@ For gluing quotient `Proj` maps along a two-open scheme cover, the intersection 
 **Why:** Direct attempts to rewrite restriction squares into the gluing equation failed because the product opens and their arrows have dependent endpoint types. An isomorphism from the intersection to the pullback turns the existing restriction equality into the exact gluing condition without pretending those schemes are definitionally equal.
 
 **How to apply:** Prove restriction compatibility on the ordered product open, use heterogeneous equality to exchange product order, and separately bridge that open to the pullback of the two scheme-cover inclusions before calling `glueMorphisms`. A source open cover alone does not imply a closed immersion: that property must be checked locally on a cover of the *target*.
+
+An isomorphism of locally ringed spaces between the underlying spaces of schemes may need to be rewrapped as an isomorphism in the category of schemes before scheme-level morphism-property instances recognize it.
+
+**Why:** The affine chart closed-immersion proof already existed, but inference could not transport it through the `projIsoSpec` isomorphisms until those locally ringed space isomorphisms were explicitly expressed as scheme isomorphisms.
+
+**How to apply:** When using a property such as `IsClosedImmersion` through a `projIsoSpec` conjugation, construct scheme isomorphisms with the same hom, inv and inverse laws, then let the property's respects-isomorphisms instance transport the affine result. This only proves closed immersion on matching opens, not the glued global map.

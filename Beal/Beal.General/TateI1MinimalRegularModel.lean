@@ -890,7 +890,8 @@ noncomputable def projectiveWeierstrassBasicChartSchemeMap
     (CommRingCat.ofHom (projectiveWeierstrassBasicChartQuotientMap W i))
 
 /-- Each quotient map on the genuine basic opens of `Proj` is a
-closed immersion of affine schemes. Global gluing is still open. -/
+closed immersion of affine schemes. The global map is glued in
+`TwoChartGlobalMorphism`, but global closed immersion remains open. -/
 theorem projectiveWeierstrassBasicChartSchemeMap_isClosed
     (W : WeierstrassCurve ℤ_[2]) (i : Fin 3) :
     AlgebraicGeometry.IsClosedImmersion

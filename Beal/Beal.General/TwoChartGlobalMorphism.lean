@@ -191,6 +191,55 @@ theorem projectiveWeierstrassTwoChartRestrictionAgreement (W : WeierstrassCurve 
   exact eq_of_heq (((heq_of_eq hz).trans hswap).trans
     (((heq_of_eq hy).symm).trans hright.symm))
 
+/-- On each matching coordinate basic open, the scheme morphism from
+the quotient `Proj` chart into the ambient `Proj` chart is a closed
+immersion. This is local to the displayed charts, not an assertion
+about the global map to the whole projective plane. -/
+theorem projectiveWeierstrassBasicProjChartMap_isClosed
+    (W : WeierstrassCurve ℤ_[2]) (i : Fin 3) :
+    letI : GradedAlgebra (MvPolynomial.homogeneousSubmodule (Fin 3) ℤ_[2]) :=
+      MvPolynomial.gradedAlgebra
+    letI : GradedAlgebra (projectiveWeierstrassQuotientComponent W) :=
+      projectiveWeierstrassQuotientGrading W
+    IsClosedImmersion (show
+      (show (projectiveWeierstrassScheme W).Opens from
+        ProjectiveSpectrum.basicOpen (projectiveWeierstrassQuotientComponent W)
+          ((Ideal.Quotient.mk (Ideal.span {projectiveWeierstrassCubic W}))
+            (MvPolynomial.X i))).toScheme ⟶
+      (show projectiveWeierstrassAmbientScheme.Opens from
+        ProjectiveSpectrum.basicOpen
+          (MvPolynomial.homogeneousSubmodule (Fin 3) ℤ_[2])
+          (MvPolynomial.X i)).toScheme from
+      projectiveWeierstrassBasicProjChartMap W i) := by
+  letI : GradedAlgebra (MvPolynomial.homogeneousSubmodule (Fin 3) ℤ_[2]) :=
+    MvPolynomial.gradedAlgebra
+  letI : GradedAlgebra (projectiveWeierstrassQuotientComponent W) :=
+    projectiveWeierstrassQuotientGrading W
+  let 𝒜 := MvPolynomial.homogeneousSubmodule (Fin 3) ℤ_[2]
+  let ℬ := projectiveWeierstrassQuotientComponent W
+  let q : MvPolynomial (Fin 3) ℤ_[2] →+* projectiveWeierstrassCoordinateRing W :=
+    Ideal.Quotient.mk (Ideal.span {projectiveWeierstrassCubic W})
+  let U : (projectiveWeierstrassScheme W).Opens :=
+    ProjectiveSpectrum.basicOpen ℬ (q (MvPolynomial.X i))
+  let V : projectiveWeierstrassAmbientScheme.Opens :=
+    ProjectiveSpectrum.basicOpen 𝒜 (MvPolynomial.X i)
+  let iq : U.toScheme ≅ AlgebraicGeometry.Spec
+      (CommRingCat.of (HomogeneousLocalization.Away ℬ (q (MvPolynomial.X i)))) := by
+    let e := projectiveWeierstrassBasicChartIso W i
+    exact ⟨e.hom, e.inv, e.hom_inv_id, e.inv_hom_id⟩
+  let ia : V.toScheme ≅ AlgebraicGeometry.Spec
+      (CommRingCat.of (HomogeneousLocalization.Away 𝒜 (MvPolynomial.X i))) := by
+    let e := projectiveWeierstrassAmbientBasicChartIso i
+    exact ⟨e.hom, e.inv, e.hom_inv_id, e.inv_hom_id⟩
+  change IsClosedImmersion
+    (iq.hom ≫ projectiveWeierstrassBasicChartSchemeMap W i ≫ ia.inv)
+  haveI : IsClosedImmersion
+      (projectiveWeierstrassBasicChartSchemeMap W i) :=
+    projectiveWeierstrassBasicChartSchemeMap_isClosed W i
+  haveI : IsIso iq.hom := iq.isIso_hom
+  haveI : IsIso ia.inv := ia.isIso_inv
+  infer_instance
+
 /-- The quotient homogeneous cubic has a globally glued scheme
 morphism into the ambient projective plane. This does not by itself
 establish that the morphism is a closed immersion. -/
@@ -252,5 +301,86 @@ noncomputable def projectiveWeierstrassGlobalMorphism
         (cancel_mono UZ.ι).mp pullback.condition
       exact congrArg (fun g => g ≫ fZ) hh
   exact 𝒰.glueMorphisms f hf
+
+/-- The glued morphism restricts to the specified map on each member
+of the actual two-open cover. -/
+theorem projectiveWeierstrassGlobalMorphism_onChart
+    (W : WeierstrassCurve ℤ_[2]) (i : Fin 3) (hi : i = 1 ∨ i = 2) :
+    letI : GradedAlgebra (projectiveWeierstrassQuotientComponent W) :=
+      projectiveWeierstrassQuotientGrading W
+    let ℬ := projectiveWeierstrassQuotientComponent W
+    let q : MvPolynomial (Fin 3) ℤ_[2] →+* projectiveWeierstrassCoordinateRing W :=
+      Ideal.Quotient.mk (Ideal.span {projectiveWeierstrassCubic W})
+    let U : (projectiveWeierstrassScheme W).Opens :=
+      ProjectiveSpectrum.basicOpen ℬ (q (MvPolynomial.X i))
+    U.ι ≫ projectiveWeierstrassGlobalMorphism W =
+      projectiveWeierstrassBasicChartToAmbient W i := by
+  rcases hi with rfl | rfl
+  · letI : GradedAlgebra (MvPolynomial.homogeneousSubmodule (Fin 3) ℤ_[2]) :=
+      MvPolynomial.gradedAlgebra
+    letI : GradedAlgebra (projectiveWeierstrassQuotientComponent W) :=
+      projectiveWeierstrassQuotientGrading W
+    change (projectiveWeierstrassTwoChartOpenCover W).map false ≫
+        projectiveWeierstrassGlobalMorphism W =
+      projectiveWeierstrassBasicChartToAmbient W 1
+    unfold projectiveWeierstrassGlobalMorphism
+    exact (projectiveWeierstrassTwoChartOpenCover W).ι_glueMorphisms _ _ false
+  · letI : GradedAlgebra (MvPolynomial.homogeneousSubmodule (Fin 3) ℤ_[2]) :=
+      MvPolynomial.gradedAlgebra
+    letI : GradedAlgebra (projectiveWeierstrassQuotientComponent W) :=
+      projectiveWeierstrassQuotientGrading W
+    change (projectiveWeierstrassTwoChartOpenCover W).map true ≫
+        projectiveWeierstrassGlobalMorphism W =
+      projectiveWeierstrassBasicChartToAmbient W 2
+    unfold projectiveWeierstrassGlobalMorphism
+    exact (projectiveWeierstrassTwoChartOpenCover W).ι_glueMorphisms _ _ true
+
+/-- A map that factors through an ambient open sends its chosen
+source open into the preimage of that ambient open. -/
+private theorem open_le_preimage_of_factor {X Y : Scheme}
+    (f : X ⟶ Y) (U : X.Opens) (V : Y.Opens)
+    (g : U.toScheme ⟶ V.toScheme) (h : U.ι ≫ f = g ≫ V.ι) :
+    U ≤ f ⁻¹ᵁ V := by
+  intro x hx
+  let y : U := ⟨x, hx⟩
+  have hp := congrArg (fun m : U.toScheme ⟶ Y => m.val.base y) h
+  change f.val.base x = (g.val.base y).val at hp
+  change f.val.base x ∈ (V : Set Y)
+  rw [hp]
+  exact (g.val.base y).property
+
+/-- On the two source charts, the quotient coordinate open lies in
+the preimage of the matching ambient coordinate open. The reverse
+inclusion, needed to apply target-local closed immersion, is not
+asserted here. -/
+theorem projectiveWeierstrassBasicChart_le_preimage
+    (W : WeierstrassCurve ℤ_[2]) (i : Fin 3) (hi : i = 1 ∨ i = 2) :
+    letI : GradedAlgebra (MvPolynomial.homogeneousSubmodule (Fin 3) ℤ_[2]) :=
+      MvPolynomial.gradedAlgebra
+    letI : GradedAlgebra (projectiveWeierstrassQuotientComponent W) :=
+      projectiveWeierstrassQuotientGrading W
+    let ℬ := projectiveWeierstrassQuotientComponent W
+    let 𝒜 := MvPolynomial.homogeneousSubmodule (Fin 3) ℤ_[2]
+    let q : MvPolynomial (Fin 3) ℤ_[2] →+* projectiveWeierstrassCoordinateRing W :=
+      Ideal.Quotient.mk (Ideal.span {projectiveWeierstrassCubic W})
+    ProjectiveSpectrum.basicOpen ℬ (q (MvPolynomial.X i)) ≤
+      (projectiveWeierstrassGlobalMorphism W) ⁻¹ᵁ
+        ProjectiveSpectrum.basicOpen 𝒜 (MvPolynomial.X i) := by
+  letI : GradedAlgebra (MvPolynomial.homogeneousSubmodule (Fin 3) ℤ_[2]) :=
+    MvPolynomial.gradedAlgebra
+  letI : GradedAlgebra (projectiveWeierstrassQuotientComponent W) :=
+    projectiveWeierstrassQuotientGrading W
+  let ℬ := projectiveWeierstrassQuotientComponent W
+  let 𝒜 := MvPolynomial.homogeneousSubmodule (Fin 3) ℤ_[2]
+  let q : MvPolynomial (Fin 3) ℤ_[2] →+* projectiveWeierstrassCoordinateRing W :=
+    Ideal.Quotient.mk (Ideal.span {projectiveWeierstrassCubic W})
+  let U : (projectiveWeierstrassScheme W).Opens :=
+    ProjectiveSpectrum.basicOpen ℬ (q (MvPolynomial.X i))
+  let V : projectiveWeierstrassAmbientScheme.Opens :=
+    ProjectiveSpectrum.basicOpen 𝒜 (MvPolynomial.X i)
+  let g : U.toScheme ⟶ V.toScheme := projectiveWeierstrassBasicProjChartMap W i
+  have h : U.ι ≫ projectiveWeierstrassGlobalMorphism W = g ≫ V.ι :=
+    projectiveWeierstrassGlobalMorphism_onChart W i hi
+  exact open_le_preimage_of_factor _ U V g h
 
 end Beal.General
