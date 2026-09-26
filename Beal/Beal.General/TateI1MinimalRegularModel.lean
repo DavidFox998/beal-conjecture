@@ -1,12 +1,15 @@
 import Beal.«Beal.General».TateI1Classification
 import Mathlib.RingTheory.MvPolynomial.Homogeneous
 import Mathlib.RingTheory.GradedAlgebra.HomogeneousIdeal
+import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Scheme
 
 /-!
 The homogeneous equation for the candidate projective Weierstrass
 model over `ℤ_[2]`, together with checks on two affine charts.
-No projective scheme, properness, regularity of all stalks, relative
-minimality, or Kodaira classification is constructed in this file yet.
+The ambient projective plane and the cubic's closed topological locus
+are constructed, but not the quotient `Proj` scheme of the cubic.
+Properness, regularity of all stalks, relative minimality, and
+Kodaira classification are not established in this file.
 -/
 
 namespace Beal.General
@@ -87,6 +90,47 @@ theorem projectiveWeierstrassCubic_ideal_isHomogeneous
   rcases Set.mem_singleton_iff.mp hf with rfl
   exact ⟨3, projectiveWeierstrassCubic_isHomogeneous W⟩
 
+/-- The proposed project's actual homogeneous coordinate *ring*.
+The quotient has not yet been equipped with the inherited grading,
+so this definition alone does not produce its `Proj` scheme. -/
+abbrev projectiveWeierstrassCoordinateRing
+    (W : WeierstrassCurve ℤ_[2]) : Type :=
+  MvPolynomial (Fin 3) ℤ_[2] ⧸
+    Ideal.span {projectiveWeierstrassCubic W}
+
+/-- The ambient projective plane as a scheme, before imposing the
+cubic equation. This is not the model of the elliptic curve. -/
+noncomputable def projectiveWeierstrassAmbientScheme :
+    AlgebraicGeometry.Scheme := by
+  letI : GradedAlgebra (MvPolynomial.homogeneousSubmodule (Fin 3) ℤ_[2]) :=
+    MvPolynomial.gradedAlgebra
+  exact AlgebraicGeometry.Proj
+    (MvPolynomial.homogeneousSubmodule (Fin 3) ℤ_[2])
+
+/-- The closed *topological* zero locus of the cubic in the ambient
+projective spectrum. A closed subset is not by itself a closed
+subscheme or the `Proj` of the coordinate ring quotient. -/
+noncomputable def projectiveWeierstrassLocus
+    (W : WeierstrassCurve ℤ_[2]) :
+    letI : GradedAlgebra (MvPolynomial.homogeneousSubmodule (Fin 3) ℤ_[2]) :=
+      MvPolynomial.gradedAlgebra
+    Set (ProjectiveSpectrum
+      (MvPolynomial.homogeneousSubmodule (Fin 3) ℤ_[2])) := by
+  letI : GradedAlgebra (MvPolynomial.homogeneousSubmodule (Fin 3) ℤ_[2]) :=
+    MvPolynomial.gradedAlgebra
+  exact ProjectiveSpectrum.zeroLocus
+    (MvPolynomial.homogeneousSubmodule (Fin 3) ℤ_[2])
+    {projectiveWeierstrassCubic W}
+
+theorem projectiveWeierstrassLocus_isClosed
+    (W : WeierstrassCurve ℤ_[2]) :
+    letI : GradedAlgebra (MvPolynomial.homogeneousSubmodule (Fin 3) ℤ_[2]) :=
+      MvPolynomial.gradedAlgebra
+    IsClosed (projectiveWeierstrassLocus W) := by
+  letI : GradedAlgebra (MvPolynomial.homogeneousSubmodule (Fin 3) ℤ_[2]) :=
+    MvPolynomial.gradedAlgebra
+  exact ProjectiveSpectrum.isClosed_zeroLocus _ _
+
 /-- Dehomogenization on `Z = 1` gives the integral affine
 Weierstrass equation, with no reduction modulo `2`. -/
 theorem projectiveWeierstrassCubic_affine
@@ -158,6 +202,7 @@ theorem projectiveWeierstrassCubic_two_chart_cover
 
 #print axioms projectiveWeierstrassCubic_isHomogeneous
 #print axioms projectiveWeierstrassCubic_ideal_isHomogeneous
+#print axioms projectiveWeierstrassLocus_isClosed
 #print axioms projectiveWeierstrassCubic_affine
 #print axioms projectiveWeierstrassCubic_infinity
 #print axioms projectiveWeierstrassCubic_X_mem_of_Z_mem
