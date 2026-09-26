@@ -492,6 +492,275 @@ noncomputable def homogeneousLocalization_productDoubleRingEquiv
     ⟨homogeneousLocalization_productToDouble_injective 𝒜 x y,
       homogeneousLocalization_productToDouble_surjective 𝒜 x y d hx hy⟩
 
+/-- The degree-zero chart map from the first coordinate open to the
+product open: first invert the second coordinate, then use the
+product/double comparison isomorphism. -/
+noncomputable def homogeneousLocalization_toProduct
+    {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
+    (𝒜 : ℕ → Submodule R A) [GradedAlgebra 𝒜]
+    (x y : A) (d : ℕ) (hx : x ∈ 𝒜 d) (hy : y ∈ 𝒜 d) :
+    HomogeneousLocalization.Away 𝒜 x →+*
+      HomogeneousLocalization.Away 𝒜 (x * y) :=
+  (homogeneousLocalization_productDoubleRingEquiv 𝒜 x y d hx hy).symm.toRingHom.comp
+    (HomogeneousLocalization.mapId 𝒜
+      (show Submonoid.powers x ≤ Submonoid.powers x ⊔ Submonoid.powers y
+        from le_sup_left))
+
+/-- Composing this map with the comparison to the double localization
+is exactly the ordinary inclusion of the first denominator monoid. -/
+theorem homogeneousLocalization_toProduct_commutes
+    {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
+    (𝒜 : ℕ → Submodule R A) [GradedAlgebra 𝒜]
+    (x y : A) (d : ℕ) (hx : x ∈ 𝒜 d) (hy : y ∈ 𝒜 d) :
+    (homogeneousLocalization_productToDouble 𝒜 x y).comp
+      (homogeneousLocalization_toProduct 𝒜 x y d hx hy) =
+    HomogeneousLocalization.mapId 𝒜
+      (show Submonoid.powers x ≤ Submonoid.powers x ⊔ Submonoid.powers y
+        from le_sup_left) := by
+  apply RingHom.ext
+  intro z
+  change (homogeneousLocalization_productDoubleRingEquiv 𝒜 x y d hx hy)
+      ((homogeneousLocalization_productDoubleRingEquiv 𝒜 x y d hx hy).symm
+        ((HomogeneousLocalization.mapId 𝒜
+          (show Submonoid.powers x ≤ Submonoid.powers x ⊔ Submonoid.powers y
+            from le_sup_left)) z)) = _
+  exact RingEquiv.apply_symm_apply _ _
+
+/-- Iterated inclusions of denominator monoids agree with the direct
+inclusion on homogeneous degree-zero localizations. -/
+theorem homogeneousLocalization_mapId_comp
+    {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
+    (𝒜 : ℕ → Submodule R A) [GradedAlgebra 𝒜]
+    {P Q T : Submonoid A} (hPQ : P ≤ Q) (hQT : Q ≤ T) :
+    (HomogeneousLocalization.mapId 𝒜 hQT).comp
+      (HomogeneousLocalization.mapId 𝒜 hPQ) =
+    HomogeneousLocalization.mapId 𝒜 (hPQ.trans hQT) := by
+  apply RingHom.ext
+  intro s
+  obtain ⟨v, rfl⟩ := HomogeneousLocalization.mk_surjective s
+  simp only [RingHom.comp_apply, HomogeneousLocalization.mapId,
+    HomogeneousLocalization.map_mk]
+  rfl
+
+open CategoryTheory
+
+/-- The ring map to the product chart is compatible with restriction
+of the explicit projective structure-sheaf sections. This is a
+section-level naturality statement; scheme-chart restriction still
+requires transporting it through the `Γ`/`Spec` adjunction. -/
+theorem homogeneousLocalization_toProduct_awayToSection
+    {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
+    (𝒜 : ℕ → Submodule R A) [GradedAlgebra 𝒜]
+    (x y : A) (d : ℕ) (hx : x ∈ 𝒜 d) (hy : y ∈ 𝒜 d) :
+    AlgebraicGeometry.ProjectiveSpectrum.Proj.awayToSection 𝒜 x ≫
+      (AlgebraicGeometry.ProjectiveSpectrum.Proj.structureSheaf 𝒜).1.map
+        (CategoryTheory.homOfLE
+          (ProjectiveSpectrum.basicOpen_mul_le_left 𝒜 x y)).op =
+    CommRingCat.ofHom (homogeneousLocalization_toProduct 𝒜 x y d hx hy) ≫
+      AlgebraicGeometry.ProjectiveSpectrum.Proj.awayToSection 𝒜 (x * y) := by
+  ext s
+  apply AlgebraicGeometry.Proj.ext 𝒜
+  funext t
+  change HomogeneousLocalization.mapId 𝒜
+      (Submonoid.powers_le.mpr ((ProjectiveSpectrum.basicOpen_mul_le_left 𝒜 x y) t.2)) s =
+    HomogeneousLocalization.mapId 𝒜 (Submonoid.powers_le.mpr t.2)
+      ((homogeneousLocalization_toProduct 𝒜 x y d hx hy) s)
+  let P := Submonoid.powers x
+  let M := Submonoid.powers (x * y)
+  let Q := Submonoid.powers x ⊔ Submonoid.powers y
+  let T := t.1.asHomogeneousIdeal.toIdeal.primeCompl
+  have hPQ : P ≤ Q := le_sup_left
+  have hMQ : M ≤ Q := by
+    apply Submonoid.powers_le.mpr
+    exact Q.mul_mem (Submonoid.mem_sup_left (Submonoid.mem_powers x))
+      (Submonoid.mem_sup_right (Submonoid.mem_powers y))
+  have hQT : Q ≤ T := by
+    apply sup_le
+    · exact Submonoid.powers_le.mpr
+        ((ProjectiveSpectrum.basicOpen_mul_le_left 𝒜 x y) t.2)
+    · exact Submonoid.powers_le.mpr
+        ((ProjectiveSpectrum.basicOpen_mul_le_right 𝒜 x y) t.2)
+  change (HomogeneousLocalization.mapId 𝒜 (hPQ.trans hQT)) s =
+    (HomogeneousLocalization.mapId 𝒜 (hMQ.trans hQT))
+      ((homogeneousLocalization_toProduct 𝒜 x y d hx hy) s)
+  calc
+    (HomogeneousLocalization.mapId 𝒜 (hPQ.trans hQT)) s =
+        (HomogeneousLocalization.mapId 𝒜 hQT)
+          ((HomogeneousLocalization.mapId 𝒜 hPQ) s) := by
+            rw [← homogeneousLocalization_mapId_comp 𝒜 hPQ hQT]
+            rfl
+    _ = (HomogeneousLocalization.mapId 𝒜 hQT)
+          ((homogeneousLocalization_productToDouble 𝒜 x y)
+            ((homogeneousLocalization_toProduct 𝒜 x y d hx hy) s)) := by
+            have hs := congrArg (fun f => f s)
+              (homogeneousLocalization_toProduct_commutes 𝒜 x y d hx hy)
+            exact congrArg (HomogeneousLocalization.mapId 𝒜 hQT)
+              (by simpa only [RingHom.comp_apply] using hs.symm)
+    _ = (HomogeneousLocalization.mapId 𝒜 (hMQ.trans hQT))
+          ((homogeneousLocalization_toProduct 𝒜 x y d hx hy) s) := by
+            rw [← homogeneousLocalization_mapId_comp 𝒜 hMQ hQT]
+            rfl
+
+/-- The canonical global-section comparison for a basic projective
+open sends `awayToΓ` back to its section on that open. -/
+theorem projective_awayToΓ_restrictFunctorΓ
+    {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
+    (𝒜 : ℕ → Submodule R A) [GradedAlgebra 𝒜] (f : A) :
+    AlgebraicGeometry.ProjectiveSpectrum.Proj.awayToΓ 𝒜 f ≫
+      ((AlgebraicGeometry.Scheme.restrictFunctorΓ
+        (X := AlgebraicGeometry.«Proj» 𝒜)).app
+        (Opposite.op (ProjectiveSpectrum.basicOpen 𝒜 f))).hom =
+    AlgebraicGeometry.ProjectiveSpectrum.Proj.awayToSection 𝒜 f := by
+  ext s
+  apply AlgebraicGeometry.Proj.ext 𝒜
+  funext t
+  rfl
+
+/-- Naturality of `awayToΓ` under the actual inclusion of product
+projective opens, expressed on the global sections of their
+restrictions of `Proj`. -/
+theorem homogeneousLocalization_toProduct_awayToΓ
+    {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
+    (𝒜 : ℕ → Submodule R A) [GradedAlgebra 𝒜]
+    (x y : A) (d : ℕ) (hx : x ∈ 𝒜 d) (hy : y ∈ 𝒜 d) :
+    let X := AlgebraicGeometry.«Proj» 𝒜
+    let i := CategoryTheory.homOfLE (ProjectiveSpectrum.basicOpen_mul_le_left 𝒜 x y)
+    let k := (X.restrictFunctor.map i).left
+    AlgebraicGeometry.ProjectiveSpectrum.Proj.awayToΓ 𝒜 x ≫
+        AlgebraicGeometry.LocallyRingedSpace.Γ.map (Opposite.op k) =
+      CommRingCat.ofHom (homogeneousLocalization_toProduct 𝒜 x y d hx hy) ≫
+        AlgebraicGeometry.ProjectiveSpectrum.Proj.awayToΓ 𝒜 (x * y) := by
+  intro X i k
+  let U := ProjectiveSpectrum.basicOpen 𝒜 x
+  let V := ProjectiveSpectrum.basicOpen 𝒜 (x * y)
+  let isoU := (AlgebraicGeometry.Scheme.restrictFunctorΓ (X := X)).app (Opposite.op U)
+  let isoV := (AlgebraicGeometry.Scheme.restrictFunctorΓ (X := X)).app (Opposite.op V)
+  have hnat := (AlgebraicGeometry.Scheme.restrictFunctorΓ (X := X)).hom.naturality
+    (Opposite.op i)
+  apply (cancel_mono isoV.hom).mp
+  calc
+    (AlgebraicGeometry.ProjectiveSpectrum.Proj.awayToΓ 𝒜 x ≫
+        AlgebraicGeometry.LocallyRingedSpace.Γ.map (Opposite.op k)) ≫ isoV.hom =
+      AlgebraicGeometry.ProjectiveSpectrum.Proj.awayToΓ 𝒜 x ≫
+        isoU.hom ≫ X.presheaf.map (Opposite.op i) := by
+          rw [Category.assoc,
+            ← Category.assoc (AlgebraicGeometry.ProjectiveSpectrum.Proj.awayToΓ 𝒜 x)]
+          exact congrArg (fun f =>
+            AlgebraicGeometry.ProjectiveSpectrum.Proj.awayToΓ 𝒜 x ≫ f) hnat
+    _ = AlgebraicGeometry.ProjectiveSpectrum.Proj.awayToSection 𝒜 x ≫
+        X.presheaf.map (Opposite.op i) := by
+          exact congrArg (fun f => f ≫ X.presheaf.map (Opposite.op i))
+            (projective_awayToΓ_restrictFunctorΓ 𝒜 x)
+    _ = CommRingCat.ofHom (homogeneousLocalization_toProduct 𝒜 x y d hx hy) ≫
+        AlgebraicGeometry.ProjectiveSpectrum.Proj.awayToSection 𝒜 (x * y) :=
+          homogeneousLocalization_toProduct_awayToSection 𝒜 x y d hx hy
+    _ = (CommRingCat.ofHom (homogeneousLocalization_toProduct 𝒜 x y d hx hy) ≫
+        AlgebraicGeometry.ProjectiveSpectrum.Proj.awayToΓ 𝒜 (x * y)) ≫ isoV.hom := by
+          rw [Category.assoc]
+          exact congrArg
+            (fun f => CommRingCat.ofHom
+              (homogeneousLocalization_toProduct 𝒜 x y d hx hy) ≫ f)
+            (projective_awayToΓ_restrictFunctorΓ 𝒜 (x * y)).symm
+
+/-- The `projIsoSpec` chart morphism restricted from `D₊(x)` to
+`D₊(xy)` is the `Spec` morphism of the product-chart ring map.
+Unlike the affine comparison square, this uses the actual open
+restriction morphism of `Proj` and the `Γ`/`Spec` adjunction. -/
+theorem projective_toSpec_product_restrict
+    {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
+    (𝒜 : ℕ → Submodule R A) [GradedAlgebra 𝒜]
+    (x y : A) (d : ℕ) (hx : x ∈ 𝒜 d) (hy : y ∈ 𝒜 d) :
+    let X := AlgebraicGeometry.«Proj» 𝒜
+    let i := CategoryTheory.homOfLE (ProjectiveSpectrum.basicOpen_mul_le_left 𝒜 x y)
+    (show (AlgebraicGeometry.Proj.toLocallyRingedSpace 𝒜).restrict
+        (TopologicalSpace.Opens.openEmbedding (ProjectiveSpectrum.basicOpen 𝒜 (x * y))) ⟶
+      (AlgebraicGeometry.Proj.toLocallyRingedSpace 𝒜).restrict
+        (TopologicalSpace.Opens.openEmbedding (ProjectiveSpectrum.basicOpen 𝒜 x)) from
+      (X.restrictFunctor.map i).left) ≫
+      AlgebraicGeometry.ProjectiveSpectrum.Proj.toSpec 𝒜 x =
+    AlgebraicGeometry.ProjectiveSpectrum.Proj.toSpec 𝒜 (x * y) ≫
+      AlgebraicGeometry.Spec.locallyRingedSpaceMap
+        (CommRingCat.ofHom (homogeneousLocalization_toProduct 𝒜 x y d hx hy)) := by
+  intro X i
+  let U := (AlgebraicGeometry.Proj.toLocallyRingedSpace 𝒜).restrict
+    (TopologicalSpace.Opens.openEmbedding (ProjectiveSpectrum.basicOpen 𝒜 x))
+  let V := (AlgebraicGeometry.Proj.toLocallyRingedSpace 𝒜).restrict
+    (TopologicalSpace.Opens.openEmbedding (ProjectiveSpectrum.basicOpen 𝒜 (x * y)))
+  let k : V ⟶ U := (X.restrictFunctor.map i).left
+  have hΓ := homogeneousLocalization_toProduct_awayToΓ 𝒜 x y d hx hy
+  change AlgebraicGeometry.ProjectiveSpectrum.Proj.awayToΓ 𝒜 x ≫
+    AlgebraicGeometry.LocallyRingedSpace.Γ.map (Opposite.op k) =
+    CommRingCat.ofHom (homogeneousLocalization_toProduct 𝒜 x y d hx hy) ≫
+      AlgebraicGeometry.ProjectiveSpectrum.Proj.awayToΓ 𝒜 (x * y) at hΓ
+  let adj := AlgebraicGeometry.ΓSpec.locallyRingedSpaceAdjunction
+  have hleft := adj.homEquiv_naturality_left k
+    (AlgebraicGeometry.ProjectiveSpectrum.Proj.awayToΓ 𝒜 x).op
+  have hright := adj.homEquiv_naturality_right
+    (AlgebraicGeometry.ProjectiveSpectrum.Proj.awayToΓ 𝒜 (x * y)).op
+    (CommRingCat.ofHom (homogeneousLocalization_toProduct 𝒜 x y d hx hy)).op
+  change k ≫ AlgebraicGeometry.ProjectiveSpectrum.Proj.toSpec 𝒜 x =
+    AlgebraicGeometry.ProjectiveSpectrum.Proj.toSpec 𝒜 (x * y) ≫
+      AlgebraicGeometry.Spec.locallyRingedSpaceMap
+        (CommRingCat.ofHom (homogeneousLocalization_toProduct 𝒜 x y d hx hy))
+  calc
+    k ≫ AlgebraicGeometry.ProjectiveSpectrum.Proj.toSpec 𝒜 x =
+        adj.homEquiv V (Opposite.op (CommRingCat.of (HomogeneousLocalization.Away 𝒜 x)))
+          ((AlgebraicGeometry.ProjectiveSpectrum.Proj.awayToΓ 𝒜 x ≫
+            AlgebraicGeometry.LocallyRingedSpace.Γ.map (Opposite.op k)).op) := by
+              simpa only [Functor.rightOp_map, ← op_comp,
+                AlgebraicGeometry.ProjectiveSpectrum.Proj.toSpec] using hleft.symm
+    _ = adj.homEquiv V (Opposite.op (CommRingCat.of (HomogeneousLocalization.Away 𝒜 x)))
+          ((CommRingCat.ofHom (homogeneousLocalization_toProduct 𝒜 x y d hx hy) ≫
+            AlgebraicGeometry.ProjectiveSpectrum.Proj.awayToΓ 𝒜 (x * y)).op) := by
+              rw [hΓ]
+    _ = AlgebraicGeometry.ProjectiveSpectrum.Proj.toSpec 𝒜 (x * y) ≫
+        AlgebraicGeometry.Spec.locallyRingedSpaceMap
+          (CommRingCat.ofHom (homogeneousLocalization_toProduct 𝒜 x y d hx hy)) := by
+            simpa only [← op_comp, AlgebraicGeometry.Spec.toLocallyRingedSpace_map,
+              AlgebraicGeometry.ProjectiveSpectrum.Proj.toSpec] using hright
+
+/-- Conjugated affine quotient maps agree across two opens whenever
+their restriction maps are the actual `toSpec` restriction squares
+and their coordinate ring maps form a commutative square. -/
+theorem projective_chart_compat_of_ring_square
+    {Uq Vq Ua Va : AlgebraicGeometry.LocallyRingedSpace}
+    {A B C D : CommRingCat}
+    (iq : Uq ≅ AlgebraicGeometry.Spec.locallyRingedSpaceObj B)
+    (pq : Vq ≅ AlgebraicGeometry.Spec.locallyRingedSpaceObj D)
+    (ia : Ua ≅ AlgebraicGeometry.Spec.locallyRingedSpaceObj A)
+    (pa : Va ≅ AlgebraicGeometry.Spec.locallyRingedSpaceObj C)
+    (kq : Vq ⟶ Uq) (ka : Va ⟶ Ua)
+    (q : A ⟶ B) (qp : C ⟶ D) (ta : A ⟶ C) (tq : B ⟶ D)
+    (hq : kq ≫ iq.hom = pq.hom ≫ AlgebraicGeometry.Spec.locallyRingedSpaceMap tq)
+    (ha : ka ≫ ia.hom = pa.hom ≫ AlgebraicGeometry.Spec.locallyRingedSpaceMap ta)
+    (hr : ta ≫ qp = q ≫ tq) :
+    kq ≫ (iq.hom ≫ AlgebraicGeometry.Spec.locallyRingedSpaceMap q ≫ ia.inv) =
+      (pq.hom ≫ AlgebraicGeometry.Spec.locallyRingedSpaceMap qp ≫ pa.inv) ≫ ka := by
+  apply (cancel_mono ia.hom).mp
+  simp only [Category.assoc, Iso.inv_hom_id, Category.comp_id]
+  calc
+    kq ≫ iq.hom ≫ AlgebraicGeometry.Spec.locallyRingedSpaceMap q =
+        pq.hom ≫ AlgebraicGeometry.Spec.locallyRingedSpaceMap tq ≫
+          AlgebraicGeometry.Spec.locallyRingedSpaceMap q := by
+          simpa only [Category.assoc] using
+            congrArg (fun f => f ≫ AlgebraicGeometry.Spec.locallyRingedSpaceMap q) hq
+    _ = pq.hom ≫ AlgebraicGeometry.Spec.locallyRingedSpaceMap qp ≫
+          AlgebraicGeometry.Spec.locallyRingedSpaceMap ta := by
+          simp only [← AlgebraicGeometry.Spec.locallyRingedSpaceMap_comp, hr]
+    _ = pq.hom ≫ AlgebraicGeometry.Spec.locallyRingedSpaceMap qp ≫
+          pa.inv ≫ ka ≫ ia.hom := by
+          calc
+            pq.hom ≫ AlgebraicGeometry.Spec.locallyRingedSpaceMap qp ≫
+                AlgebraicGeometry.Spec.locallyRingedSpaceMap ta =
+              pq.hom ≫ AlgebraicGeometry.Spec.locallyRingedSpaceMap qp ≫ pa.inv ≫
+                (pa.hom ≫ AlgebraicGeometry.Spec.locallyRingedSpaceMap ta) := by
+                  simp only [Category.assoc, Iso.inv_hom_id_assoc]
+            _ = pq.hom ≫ AlgebraicGeometry.Spec.locallyRingedSpaceMap qp ≫ pa.inv ≫
+                (ka ≫ ia.hom) := by rw [ha]
+            _ = pq.hom ≫ AlgebraicGeometry.Spec.locallyRingedSpaceMap qp ≫
+                pa.inv ≫ ka ≫ ia.hom := by
+                  simp only [Category.assoc]
+
 /-- Thus the comparison of affine spectra is an isomorphism. No
 identification with the restrictions of `projIsoSpec` is implied. -/
 theorem homogeneousLocalization_productToDouble_spec_isIso
@@ -947,6 +1216,94 @@ theorem projectiveWeierstrassProductToDouble_commutes
     projectiveWeierstrassOverlapQuotientMap, HomogeneousLocalization.map_mk]
   rfl
 
+/-- The first-coordinate chart quotient map commutes with restriction
+to the product basic open. Unlike the double-localization square, these
+are the ring maps of the actual product chart. -/
+theorem projectiveWeierstrassProductChartRestriction_commutes
+    (W : WeierstrassCurve ℤ_[2]) (i j : Fin 3) :
+    letI : GradedAlgebra (MvPolynomial.homogeneousSubmodule (Fin 3) ℤ_[2]) :=
+      MvPolynomial.gradedAlgebra
+    letI : GradedAlgebra (projectiveWeierstrassQuotientComponent W) :=
+      projectiveWeierstrassQuotientGrading W
+    (projectiveWeierstrassProductChartQuotientMap W i j).comp
+      (homogeneousLocalization_toProduct
+        (MvPolynomial.homogeneousSubmodule (Fin 3) ℤ_[2])
+        (MvPolynomial.X i) (MvPolynomial.X j) 1
+        (by change (MvPolynomial.X i).IsHomogeneous 1
+            exact MvPolynomial.isHomogeneous_X _ _)
+        (by change (MvPolynomial.X j).IsHomogeneous 1
+            exact MvPolynomial.isHomogeneous_X _ _)) =
+    (homogeneousLocalization_toProduct (projectiveWeierstrassQuotientComponent W)
+        ((Ideal.Quotient.mk (Ideal.span {projectiveWeierstrassCubic W}))
+          (MvPolynomial.X i))
+        ((Ideal.Quotient.mk (Ideal.span {projectiveWeierstrassCubic W}))
+          (MvPolynomial.X j)) 1
+        (projectiveWeierstrassCoordinate_mem_degree_one W i)
+        (projectiveWeierstrassCoordinate_mem_degree_one W j)).comp
+      (projectiveWeierstrassBasicChartQuotientMap W i) := by
+  letI : GradedAlgebra (MvPolynomial.homogeneousSubmodule (Fin 3) ℤ_[2]) :=
+    MvPolynomial.gradedAlgebra
+  letI : GradedAlgebra (projectiveWeierstrassQuotientComponent W) :=
+    projectiveWeierstrassQuotientGrading W
+  let 𝒜 := MvPolynomial.homogeneousSubmodule (Fin 3) ℤ_[2]
+  let ℬ := projectiveWeierstrassQuotientComponent W
+  let a : MvPolynomial (Fin 3) ℤ_[2] := MvPolynomial.X i
+  let b : MvPolynomial (Fin 3) ℤ_[2] := MvPolynomial.X j
+  let q : MvPolynomial (Fin 3) ℤ_[2] →+* projectiveWeierstrassCoordinateRing W :=
+    Ideal.Quotient.mk (Ideal.span {projectiveWeierstrassCubic W})
+  have ha : a ∈ 𝒜 1 := MvPolynomial.isHomogeneous_X _ _
+  have hb : b ∈ 𝒜 1 := MvPolynomial.isHomogeneous_X _ _
+  let ta := homogeneousLocalization_toProduct 𝒜 a b 1 ha hb
+  let tb := homogeneousLocalization_toProduct ℬ (q a) (q b) 1
+    (projectiveWeierstrassCoordinate_mem_degree_one W i)
+    (projectiveWeierstrassCoordinate_mem_degree_one W j)
+  let ea := homogeneousLocalization_productToDouble 𝒜 a b
+  let eb := homogeneousLocalization_productToDouble ℬ (q a) (q b)
+  let qa := projectiveWeierstrassBasicChartQuotientMap W i
+  let qp := projectiveWeierstrassProductChartQuotientMap W i j
+  let qd := projectiveWeierstrassOverlapQuotientMap W i j
+  have hprod : eb.comp qp = qd.comp ea :=
+    projectiveWeierstrassProductToDouble_commutes W i j
+  have hleft :
+      (HomogeneousLocalization.mapId ℬ
+        (le_sup_left : Submonoid.powers (q a) ≤
+          Submonoid.powers (q a) ⊔ Submonoid.powers (q b))).comp qa =
+      qd.comp (HomogeneousLocalization.mapId 𝒜
+        (le_sup_left : Submonoid.powers a ≤
+          Submonoid.powers a ⊔ Submonoid.powers b)) :=
+    projectiveWeierstrassOverlapQuotientMap_left W i j
+  have hta : ea.comp ta =
+      HomogeneousLocalization.mapId 𝒜
+        (le_sup_left : Submonoid.powers a ≤
+          Submonoid.powers a ⊔ Submonoid.powers b) :=
+    homogeneousLocalization_toProduct_commutes 𝒜 a b 1 ha hb
+  have htb : eb.comp tb =
+      HomogeneousLocalization.mapId ℬ
+        (le_sup_left : Submonoid.powers (q a) ≤
+          Submonoid.powers (q a) ⊔ Submonoid.powers (q b)) :=
+    homogeneousLocalization_toProduct_commutes ℬ (q a) (q b) 1
+      (projectiveWeierstrassCoordinate_mem_degree_one W i)
+      (projectiveWeierstrassCoordinate_mem_degree_one W j)
+  change qp.comp ta = tb.comp qa
+  apply RingHom.ext
+  intro s
+  apply homogeneousLocalization_productToDouble_injective ℬ (q a) (q b)
+  calc
+    eb (qp (ta s)) = qd (ea (ta s)) := by
+      simpa only [RingHom.comp_apply] using congrArg (fun f => f (ta s)) hprod
+    _ = qd ((HomogeneousLocalization.mapId 𝒜
+        (le_sup_left : Submonoid.powers a ≤
+          Submonoid.powers a ⊔ Submonoid.powers b)) s) := by
+      simpa only [RingHom.comp_apply] using
+        congrArg (fun f => qd (f s)) hta
+    _ = (HomogeneousLocalization.mapId ℬ
+        (le_sup_left : Submonoid.powers (q a) ≤
+          Submonoid.powers (q a) ⊔ Submonoid.powers (q b))) (qa s) := by
+      simpa only [RingHom.comp_apply] using congrArg (fun f => f s) hleft.symm
+    _ = eb (tb (qa s)) := by
+      simpa only [RingHom.comp_apply] using
+        congrArg (fun f => f (qa s)) htb.symm
+
 open CategoryTheory
 
 /-- The preceding comparison square also commutes as a square of
@@ -1215,6 +1572,18 @@ theorem projectiveWeierstrassAmbientBasicOpen_inter (i j : Fin 3) :
     MvPolynomial.gradedAlgebra
   exact ProjectiveSpectrum.basicOpen_mul _ _ _
 
+/-- The actual ambient coordinate basic open, equipped with Mathlib's
+`projIsoSpec` rather than an abstract affine comparison. -/
+noncomputable def projectiveWeierstrassAmbientBasicChartIso (i : Fin 3) :=
+  letI : GradedAlgebra (MvPolynomial.homogeneousSubmodule (Fin 3) ℤ_[2]) :=
+    MvPolynomial.gradedAlgebra
+  AlgebraicGeometry.projIsoSpec
+    (MvPolynomial.homogeneousSubmodule (Fin 3) ℤ_[2])
+    (MvPolynomial.X i)
+    (by change (MvPolynomial.X i).IsHomogeneous 1
+        exact MvPolynomial.isHomogeneous_X _ _)
+    (by decide : 0 < 1)
+
 /-- The actual ambient product basic open is the spectrum of its
 degree-zero homogeneous localization. -/
 noncomputable def projectiveWeierstrassAmbientProductChartIso (i j : Fin 3) :=
@@ -1232,6 +1601,111 @@ noncomputable def projectiveWeierstrassAmbientProductChartIso (i j : Fin 3) :=
         MvPolynomial.isHomogeneous_X _ _
       simpa only [one_add_one_eq_two] using hi.mul hj)
     (by decide : 0 < 2)
+
+/-- The local morphism from the quotient `Proj` chart into the actual
+ambient projective chart, obtained by conjugating the affine quotient
+map with the two `projIsoSpec` isomorphisms. -/
+noncomputable def projectiveWeierstrassBasicProjChartMap
+    (W : WeierstrassCurve ℤ_[2]) (i : Fin 3) :=
+  letI : GradedAlgebra (MvPolynomial.homogeneousSubmodule (Fin 3) ℤ_[2]) :=
+    MvPolynomial.gradedAlgebra
+  letI : GradedAlgebra (projectiveWeierstrassQuotientComponent W) :=
+    projectiveWeierstrassQuotientGrading W
+  (projectiveWeierstrassBasicChartIso W i).hom ≫
+    AlgebraicGeometry.Spec.locallyRingedSpaceMap
+      (CommRingCat.ofHom (projectiveWeierstrassBasicChartQuotientMap W i)) ≫
+    (projectiveWeierstrassAmbientBasicChartIso i).inv
+
+/-- The same local morphism on the intersection represented by the
+product basic open. -/
+noncomputable def projectiveWeierstrassProductProjChartMap
+    (W : WeierstrassCurve ℤ_[2]) (i j : Fin 3) :=
+  letI : GradedAlgebra (MvPolynomial.homogeneousSubmodule (Fin 3) ℤ_[2]) :=
+    MvPolynomial.gradedAlgebra
+  letI : GradedAlgebra (projectiveWeierstrassQuotientComponent W) :=
+    projectiveWeierstrassQuotientGrading W
+  (projectiveWeierstrassProductChartIso W i j).hom ≫
+    AlgebraicGeometry.Spec.locallyRingedSpaceMap
+      (CommRingCat.ofHom (projectiveWeierstrassProductChartQuotientMap W i j)) ≫
+    (projectiveWeierstrassAmbientProductChartIso i j).inv
+
+/-- The local quotient-to-ambient morphism is compatible with the
+actual open restrictions of both `Proj` schemes on `D₊(XᵢXⱼ)`. -/
+theorem projectiveWeierstrassProjChartRestriction_commutes
+    (W : WeierstrassCurve ℤ_[2]) (i j : Fin 3) :
+    letI : GradedAlgebra (MvPolynomial.homogeneousSubmodule (Fin 3) ℤ_[2]) :=
+      MvPolynomial.gradedAlgebra
+    letI : GradedAlgebra (projectiveWeierstrassQuotientComponent W) :=
+      projectiveWeierstrassQuotientGrading W
+    let 𝒜 := MvPolynomial.homogeneousSubmodule (Fin 3) ℤ_[2]
+    let ℬ := projectiveWeierstrassQuotientComponent W
+    let q : MvPolynomial (Fin 3) ℤ_[2] →+* projectiveWeierstrassCoordinateRing W :=
+      Ideal.Quotient.mk (Ideal.span {projectiveWeierstrassCubic W})
+    let a := MvPolynomial.X i
+    let b := MvPolynomial.X j
+    let kq :
+      (AlgebraicGeometry.Proj.toLocallyRingedSpace ℬ).restrict
+          (TopologicalSpace.Opens.openEmbedding (ProjectiveSpectrum.basicOpen ℬ
+            (q a * q b))) ⟶
+        (AlgebraicGeometry.Proj.toLocallyRingedSpace ℬ).restrict
+          (TopologicalSpace.Opens.openEmbedding (ProjectiveSpectrum.basicOpen ℬ (q a))) :=
+      ((AlgebraicGeometry.«Proj» ℬ).restrictFunctor.map
+        (CategoryTheory.homOfLE (ProjectiveSpectrum.basicOpen_mul_le_left ℬ (q a) (q b)))).left
+    let ka :
+      (AlgebraicGeometry.Proj.toLocallyRingedSpace 𝒜).restrict
+          (TopologicalSpace.Opens.openEmbedding (ProjectiveSpectrum.basicOpen 𝒜 (a * b))) ⟶
+        (AlgebraicGeometry.Proj.toLocallyRingedSpace 𝒜).restrict
+          (TopologicalSpace.Opens.openEmbedding (ProjectiveSpectrum.basicOpen 𝒜 a)) :=
+      ((AlgebraicGeometry.«Proj» 𝒜).restrictFunctor.map
+        (CategoryTheory.homOfLE (ProjectiveSpectrum.basicOpen_mul_le_left 𝒜 a b))).left
+    kq ≫ projectiveWeierstrassBasicProjChartMap W i =
+      projectiveWeierstrassProductProjChartMap W i j ≫ ka := by
+  letI : GradedAlgebra (MvPolynomial.homogeneousSubmodule (Fin 3) ℤ_[2]) :=
+    MvPolynomial.gradedAlgebra
+  letI : GradedAlgebra (projectiveWeierstrassQuotientComponent W) :=
+    projectiveWeierstrassQuotientGrading W
+  intro 𝒜 ℬ q a b kq ka
+  let ta := homogeneousLocalization_toProduct 𝒜 a b 1
+    (show a ∈ 𝒜 1 from MvPolynomial.isHomogeneous_X _ _)
+    (show b ∈ 𝒜 1 from MvPolynomial.isHomogeneous_X _ _)
+  let tq := homogeneousLocalization_toProduct ℬ (q a) (q b) 1
+    (projectiveWeierstrassCoordinate_mem_degree_one W i)
+    (projectiveWeierstrassCoordinate_mem_degree_one W j)
+  have hq := projective_toSpec_product_restrict ℬ (q a) (q b) 1
+    (projectiveWeierstrassCoordinate_mem_degree_one W i)
+    (projectiveWeierstrassCoordinate_mem_degree_one W j)
+  have ha := projective_toSpec_product_restrict 𝒜 a b 1
+    (show a ∈ 𝒜 1 from MvPolynomial.isHomogeneous_X _ _)
+    (show b ∈ 𝒜 1 from MvPolynomial.isHomogeneous_X _ _)
+  have hr := projectiveWeierstrassProductChartRestriction_commutes W i j
+  have hr' :
+      CommRingCat.ofHom ta ≫
+        CommRingCat.ofHom (projectiveWeierstrassProductChartQuotientMap W i j) =
+      CommRingCat.ofHom (projectiveWeierstrassBasicChartQuotientMap W i) ≫
+        CommRingCat.ofHom tq := by
+    ext s
+    simpa only [RingHom.comp_apply, CommRingCat.comp_apply] using
+      congrArg (fun f => f s) hr
+  change kq ≫ ((projectiveWeierstrassBasicChartIso W i).hom ≫
+      AlgebraicGeometry.Spec.locallyRingedSpaceMap
+        (CommRingCat.ofHom (projectiveWeierstrassBasicChartQuotientMap W i)) ≫
+      (projectiveWeierstrassAmbientBasicChartIso i).inv) =
+    ((projectiveWeierstrassProductChartIso W i j).hom ≫
+      AlgebraicGeometry.Spec.locallyRingedSpaceMap
+        (CommRingCat.ofHom (projectiveWeierstrassProductChartQuotientMap W i j)) ≫
+      (projectiveWeierstrassAmbientProductChartIso i j).inv) ≫ ka
+  apply projective_chart_compat_of_ring_square
+    (projectiveWeierstrassBasicChartIso W i)
+    (projectiveWeierstrassProductChartIso W i j)
+    (projectiveWeierstrassAmbientBasicChartIso i)
+    (projectiveWeierstrassAmbientProductChartIso i j)
+    kq ka
+    (CommRingCat.ofHom (projectiveWeierstrassBasicChartQuotientMap W i))
+    (CommRingCat.ofHom (projectiveWeierstrassProductChartQuotientMap W i j))
+    (CommRingCat.ofHom ta) (CommRingCat.ofHom tq)
+  · exact hq
+  · exact ha
+  · exact hr'
 
 /-- The closed *topological* zero locus of the cubic in the ambient
 projective spectrum. A closed subset is not by itself a closed
