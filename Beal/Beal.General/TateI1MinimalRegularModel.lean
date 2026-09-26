@@ -350,6 +350,164 @@ noncomputable def homogeneousLocalization_productToDouble
         (Submonoid.mem_sup_left (Submonoid.mem_powers x))
         (Submonoid.mem_sup_right (Submonoid.mem_powers y))
 
+/-- Inverting a product also inverts each factor, even when the base
+ring has zero divisors. At the level of full localizations, the
+product and double denominator monoids give the same localization. -/
+theorem localization_product_isLocalization_double
+    {A : Type*} [CommRing A] (x y : A) :
+    IsLocalization (Submonoid.powers x ⊔ Submonoid.powers y)
+      (Localization (Submonoid.powers (x * y))) := by
+  apply IsLocalization.isLocalization_of_is_exists_mul_mem
+    (Localization (Submonoid.powers (x * y)))
+    (Submonoid.powers (x * y))
+    (Submonoid.powers x ⊔ Submonoid.powers y)
+  · apply Submonoid.powers_le.mpr
+    exact (Submonoid.powers x ⊔ Submonoid.powers y).mul_mem
+      (Submonoid.mem_sup_left (Submonoid.mem_powers x))
+      (Submonoid.mem_sup_right (Submonoid.mem_powers y))
+  · intro z
+    obtain ⟨a, ha, b, hb, hab⟩ := Submonoid.mem_sup.mp z.2
+    obtain ⟨k, hka⟩ := (Submonoid.mem_powers_iff a x).mp ha
+    obtain ⟨l, hlb⟩ := (Submonoid.mem_powers_iff b y).mp hb
+    refine ⟨x ^ l * y ^ k, (Submonoid.mem_powers_iff _ _).mpr ⟨k + l, ?_⟩⟩
+    change (x * y) ^ (k + l) = (x ^ l * y ^ k) * z
+    rw [← hab, ← hka, ← hlb]
+    simp only [mul_pow, pow_add]
+    ring
+
+/-- The corresponding full localizations are canonically isomorphic,
+without requiring either coordinate to be a non-zero-divisor. The
+degree-zero subrings still require a separate comparison proof. -/
+noncomputable def localization_productDoubleEquiv
+    {A : Type*} [CommRing A] (x y : A) :
+    Localization (Submonoid.powers (x * y)) ≃ₐ[A]
+      Localization (Submonoid.powers x ⊔ Submonoid.powers y) := by
+  letI : IsLocalization (Submonoid.powers x ⊔ Submonoid.powers y)
+      (Localization (Submonoid.powers (x * y))) :=
+    localization_product_isLocalization_double x y
+  exact IsLocalization.algEquiv (Submonoid.powers x ⊔ Submonoid.powers y) _ _
+
+/-- The product-to-double map is injective on the degree-zero subrings:
+it is the restriction of the injective full-localization map. This
+does not assert surjectivity onto the double degree-zero localization. -/
+theorem homogeneousLocalization_productToDouble_injective
+    {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
+    (𝒜 : ℕ → Submodule R A) [GradedAlgebra 𝒜] (x y : A) :
+    Function.Injective (homogeneousLocalization_productToDouble 𝒜 x y) := by
+  let M := Submonoid.powers (x * y)
+  let N := Submonoid.powers x ⊔ Submonoid.powers y
+  have hMN : M ≤ N := by
+    apply Submonoid.powers_le.mpr
+    exact N.mul_mem (Submonoid.mem_sup_left (Submonoid.mem_powers x))
+      (Submonoid.mem_sup_right (Submonoid.mem_powers y))
+  letI : IsLocalization N (Localization M) :=
+    localization_product_isLocalization_double x y
+  let full : Localization M →+* Localization N :=
+    IsLocalization.map (T := N) (Localization N) (RingHom.id A)
+      (show M ≤ N.comap (RingHom.id A) from hMN)
+  have hfull : Function.Injective full := by
+    apply (IsLocalization.bijective N full ?_).1
+    apply RingHom.ext
+    intro a
+    simp only [RingHom.comp_apply, full, IsLocalization.map_eq, RingHom.id_apply]
+  have hval (z : HomogeneousLocalization 𝒜 M) :
+      full z.val = (homogeneousLocalization_productToDouble 𝒜 x y z).val := by
+    obtain ⟨v, rfl⟩ := HomogeneousLocalization.mk_surjective z
+    simp only [full, homogeneousLocalization_productToDouble,
+      HomogeneousLocalization.mapId, HomogeneousLocalization.map_mk,
+      HomogeneousLocalization.val_mk, Localization.mk_eq_mk'_apply,
+      IsLocalization.map_mk']
+  intro a b hab
+  apply HomogeneousLocalization.val_injective M
+  apply hfull
+  rw [hval a, hval b]
+  exact congrArg HomogeneousLocalization.val hab
+
+/-- If each denominator of a larger monoid has a homogeneous
+complement whose product lies in the smaller monoid, then the
+degree-zero localization map is surjective. -/
+theorem homogeneousLocalization_mapId_surjective_of_complements
+    {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
+    (𝒜 : ℕ → Submodule R A) [GradedAlgebra 𝒜]
+    (P Q : Submonoid A) (hPQ : P ≤ Q)
+    (hc : ∀ z : Q, ∃ (d : ℕ) (m : A), m ∈ 𝒜 d ∧ m * z ∈ P) :
+    Function.Surjective (HomogeneousLocalization.mapId 𝒜 hPQ) := by
+  intro t
+  obtain ⟨v, rfl⟩ := HomogeneousLocalization.mk_surjective t
+  obtain ⟨d, m, hm, hmP⟩ := hc ⟨v.den, v.den_mem⟩
+  let w : HomogeneousLocalization.NumDenSameDeg 𝒜 P :=
+    { deg := d + v.deg
+      num := ⟨m * v.num, SetLike.mul_mem_graded hm v.num.prop⟩
+      den := ⟨m * v.den, SetLike.mul_mem_graded hm v.den.prop⟩
+      den_mem := hmP }
+  refine ⟨HomogeneousLocalization.mk w, ?_⟩
+  apply HomogeneousLocalization.val_injective Q
+  simp only [HomogeneousLocalization.mapId, HomogeneousLocalization.map_mk,
+    HomogeneousLocalization.val_mk, RingHom.id_apply]
+  rw [Localization.mk_eq_mk_iff, Localization.r_eq_r']
+  refine ⟨1, ?_⟩
+  simp only [Submonoid.coe_one, one_mul]
+  ring
+
+/-- When both factors are homogeneous of the same degree, the
+product-to-double map is surjective also on degree-zero fractions.
+The complementary powers preserve homogeneity. -/
+theorem homogeneousLocalization_productToDouble_surjective
+    {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
+    (𝒜 : ℕ → Submodule R A) [GradedAlgebra 𝒜]
+    (x y : A) (d : ℕ) (hx : x ∈ 𝒜 d) (hy : y ∈ 𝒜 d) :
+    Function.Surjective (homogeneousLocalization_productToDouble 𝒜 x y) := by
+  let P := Submonoid.powers (x * y)
+  let Q := Submonoid.powers x ⊔ Submonoid.powers y
+  have hPQ : P ≤ Q := by
+    apply Submonoid.powers_le.mpr
+    exact Q.mul_mem (Submonoid.mem_sup_left (Submonoid.mem_powers x))
+      (Submonoid.mem_sup_right (Submonoid.mem_powers y))
+  apply homogeneousLocalization_mapId_surjective_of_complements 𝒜 P Q hPQ
+  intro z
+  obtain ⟨a, ha, b, hb, hab⟩ := Submonoid.mem_sup.mp z.2
+  obtain ⟨k, hka⟩ := (Submonoid.mem_powers_iff a x).mp ha
+  obtain ⟨l, hlb⟩ := (Submonoid.mem_powers_iff b y).mp hb
+  refine ⟨(l + k) * d, x ^ l * y ^ k, ?_, ?_⟩
+  · have hm : x ^ l * y ^ k ∈ 𝒜 (l * d + k * d) := by
+      simpa only [nsmul_eq_mul] using
+        (SetLike.mul_mem_graded (SetLike.pow_mem_graded l hx)
+          (SetLike.pow_mem_graded k hy))
+    simpa only [add_mul] using hm
+  · refine (Submonoid.mem_powers_iff _ _).mpr ⟨k + l, ?_⟩
+    change (x * y) ^ (k + l) = (x ^ l * y ^ k) * z
+    rw [← hab, ← hka, ← hlb]
+    simp only [mul_pow, pow_add]
+    ring
+
+/-- The product and double degree-zero localizations are isomorphic
+when the inverted factors are homogeneous of the same degree. -/
+noncomputable def homogeneousLocalization_productDoubleRingEquiv
+    {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
+    (𝒜 : ℕ → Submodule R A) [GradedAlgebra 𝒜]
+    (x y : A) (d : ℕ) (hx : x ∈ 𝒜 d) (hy : y ∈ 𝒜 d) :
+    HomogeneousLocalization 𝒜 (Submonoid.powers (x * y)) ≃+*
+      HomogeneousLocalization 𝒜 (Submonoid.powers x ⊔ Submonoid.powers y) :=
+  RingEquiv.ofBijective (homogeneousLocalization_productToDouble 𝒜 x y)
+    ⟨homogeneousLocalization_productToDouble_injective 𝒜 x y,
+      homogeneousLocalization_productToDouble_surjective 𝒜 x y d hx hy⟩
+
+/-- Thus the comparison of affine spectra is an isomorphism. No
+identification with the restrictions of `projIsoSpec` is implied. -/
+theorem homogeneousLocalization_productToDouble_spec_isIso
+    {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
+    (𝒜 : ℕ → Submodule R A) [GradedAlgebra 𝒜]
+    (x y : A) (d : ℕ) (hx : x ∈ 𝒜 d) (hy : y ∈ 𝒜 d) :
+    CategoryTheory.IsIso
+      (AlgebraicGeometry.Spec.map
+        (CommRingCat.ofHom (homogeneousLocalization_productToDouble 𝒜 x y))) := by
+  let e := homogeneousLocalization_productDoubleRingEquiv 𝒜 x y d hx hy
+  have he : CategoryTheory.IsIso
+      (CommRingCat.ofHom (homogeneousLocalization_productToDouble 𝒜 x y)) := by
+    change CategoryTheory.IsIso e.toCommRingCatIso.hom
+    infer_instance
+  infer_instance
+
 /-- Every degree-zero fraction in the quotient chart lifts to the
 ambient degree-zero chart. If a power of the inverted coordinate
 vanishes, the quotient chart is the zero ring; otherwise homogeneity
@@ -824,6 +982,47 @@ theorem projectiveWeierstrassProductToDouble_spec_commutes
   rw [← AlgebraicGeometry.Spec.map_comp, ← AlgebraicGeometry.Spec.map_comp]
   exact congrArg (fun f => AlgebraicGeometry.Spec.map (CommRingCat.ofHom f))
     (projectiveWeierstrassProductToDouble_commutes W i j)
+
+/-- Both vertical maps in the preceding affine-scheme comparison
+square are isomorphisms, for the quotient and for the ambient plane.
+The square has not been identified with the restriction of either
+`projIsoSpec` chart. -/
+theorem projectiveWeierstrassProductToDouble_spec_isIso
+    (W : WeierstrassCurve ℤ_[2]) (i j : Fin 3) :
+    letI : GradedAlgebra (MvPolynomial.homogeneousSubmodule (Fin 3) ℤ_[2]) :=
+      MvPolynomial.gradedAlgebra
+    letI : GradedAlgebra (projectiveWeierstrassQuotientComponent W) :=
+      projectiveWeierstrassQuotientGrading W
+    CategoryTheory.IsIso
+      (AlgebraicGeometry.Spec.map
+        (CommRingCat.ofHom
+          (homogeneousLocalization_productToDouble
+            (projectiveWeierstrassQuotientComponent W)
+            ((Ideal.Quotient.mk (Ideal.span {projectiveWeierstrassCubic W}))
+              (MvPolynomial.X i))
+            ((Ideal.Quotient.mk (Ideal.span {projectiveWeierstrassCubic W}))
+              (MvPolynomial.X j))))) ∧
+    CategoryTheory.IsIso
+      (AlgebraicGeometry.Spec.map
+        (CommRingCat.ofHom
+          (homogeneousLocalization_productToDouble
+            (MvPolynomial.homogeneousSubmodule (Fin 3) ℤ_[2])
+            (MvPolynomial.X i) (MvPolynomial.X j)))) := by
+  letI : GradedAlgebra (MvPolynomial.homogeneousSubmodule (Fin 3) ℤ_[2]) :=
+    MvPolynomial.gradedAlgebra
+  letI : GradedAlgebra (projectiveWeierstrassQuotientComponent W) :=
+    projectiveWeierstrassQuotientGrading W
+  constructor
+  · apply homogeneousLocalization_productToDouble_spec_isIso _ _ _ 1
+    · exact Submodule.mem_map.mpr
+        ⟨MvPolynomial.X i, MvPolynomial.isHomogeneous_X _ _, rfl⟩
+    · exact Submodule.mem_map.mpr
+        ⟨MvPolynomial.X j, MvPolynomial.isHomogeneous_X _ _, rfl⟩
+  · apply homogeneousLocalization_productToDouble_spec_isIso _ _ _ 1
+    · change (MvPolynomial.X i).IsHomogeneous 1
+      exact MvPolynomial.isHomogeneous_X _ _
+    · change (MvPolynomial.X j).IsHomogeneous 1
+      exact MvPolynomial.isHomogeneous_X _ _
 
 /-- Every degree-zero fraction on the product basic chart of the
 quotient lifts from the corresponding ambient product chart. -/
