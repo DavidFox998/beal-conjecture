@@ -289,4 +289,14 @@ theorem projectiveWeierstrassGlobalMorphism_isClosed
     projectiveWeierstrassAmbient_basicOpen_iSup
     (fun i => projectiveWeierstrassGlobalMorphism_restrict_isClosed W i)
 
+/-- The quotient `Proj` has closed image in the ambient projective
+plane. Closedness of this map does not establish universal closedness
+of the ambient plane's as-yet-unconstructed structure morphism. -/
+theorem projectiveWeierstrassGlobalMorphism_closedImage
+    (W : WeierstrassCurve ℤ_[2]) :
+    IsClosed (Set.range (projectiveWeierstrassGlobalMorphism W).val.base) := by
+  letI : IsClosedImmersion (projectiveWeierstrassGlobalMorphism W) :=
+    projectiveWeierstrassGlobalMorphism_isClosed W
+  exact ((IsClosedImmersion.closedEmbedding _).isClosedMap).isClosed_range
+
 end Beal.General
