@@ -8,7 +8,7 @@ package beal_level_26_foundations where
   leanOptions := #[⟨`autoImplicit, false⟩]
 
 require mathlib from git
-  "https://github.com/leanprover-community/mathlib4.git" @ "v4.12.0"
+  "https://github.com/leanprover-community/mathlib4" @ "v4.12.0"
 
 /-- Import closure of BealMatveevThm14 + BealBakerB0ReductionCertificate
     (83 modules). Explicit `.one` globs so Lake schedules
