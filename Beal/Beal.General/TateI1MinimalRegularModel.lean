@@ -6,10 +6,12 @@ import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Scheme
 /-!
 The homogeneous equation for the candidate projective Weierstrass
 model over `ℤ_[2]`, together with checks on two affine charts.
-The ambient projective plane and the cubic's closed topological locus
-are constructed, but not the quotient `Proj` scheme of the cubic.
-Properness, regularity of all stalks, relative minimality, and
-Kodaira classification are not established in this file.
+The quotient carries its inherited grading, so its `Proj` is an
+actual scheme. The ambient projective plane and the cubic's closed
+topological locus are also constructed. The closed immersion relating
+these schemes, explicit scheme-level chart identifications,
+properness, all-stalk regularity, relative minimality, and Kodaira
+classification remain to be proved.
 -/
 
 namespace Beal.General
@@ -97,6 +99,201 @@ abbrev projectiveWeierstrassCoordinateRing
     (W : WeierstrassCurve ℤ_[2]) : Type :=
   MvPolynomial (Fin 3) ℤ_[2] ⧸
     Ideal.span {projectiveWeierstrassCubic W}
+
+/-- The degree-`n` candidate in the coordinate quotient: the image
+of ambient homogeneous polynomials of degree `n`. Proving these images
+are an *internal direct sum* is still needed to grade the quotient. -/
+noncomputable def projectiveWeierstrassQuotientComponent
+    (W : WeierstrassCurve ℤ_[2]) (n : ℕ) :
+    Submodule ℤ_[2] (projectiveWeierstrassCoordinateRing W) :=
+  Submodule.map
+    (Ideal.Quotient.mkₐ ℤ_[2]
+      (Ideal.span {projectiveWeierstrassCubic W})).toLinearMap
+    (MvPolynomial.homogeneousSubmodule (Fin 3) ℤ_[2] n)
+
+/-- The candidate homogeneous components span the coordinate ring.
+This proves surjectivity of recomposition but not injectivity: that
+remaining step must use homogeneity of the defining ideal. -/
+theorem projectiveWeierstrassQuotientComponent_iSup_eq_top
+    (W : WeierstrassCurve ℤ_[2]) :
+    (⨆ n : ℕ, projectiveWeierstrassQuotientComponent W n) = ⊤ := by
+  classical
+  unfold projectiveWeierstrassQuotientComponent
+  rw [← Submodule.map_iSup]
+  letI : DirectSum.Decomposition
+      (MvPolynomial.homogeneousSubmodule (Fin 3) ℤ_[2]) :=
+    MvPolynomial.decomposition
+  rw [DirectSum.IsInternal.submodule_iSup_eq_top
+    (DirectSum.Decomposition.isInternal
+      (MvPolynomial.homogeneousSubmodule (Fin 3) ℤ_[2]))]
+  rw [Submodule.map_top]
+  exact LinearMap.range_eq_top.mpr
+    (Ideal.Quotient.mkₐ_surjective ℤ_[2]
+      (Ideal.span {projectiveWeierstrassCubic W}))
+
+/-- If a finite sum of homogeneous polynomials of distinct degrees
+vanishes in the cubic quotient, each summand vanishes there. This
+is the key kernel calculation needed for injectivity of the quotient
+grading's recomposition map. -/
+theorem projectiveWeierstrassCubic_sum_mem_ideal_iff
+    (W : WeierstrassCurve ℤ_[2])
+    (s : Finset ℕ)
+    (p : ℕ → MvPolynomial (Fin 3) ℤ_[2])
+    (hp : ∀ n ∈ s, (p n).IsHomogeneous n) :
+    (∑ n ∈ s, p n) ∈ Ideal.span {projectiveWeierstrassCubic W} ↔
+      ∀ n ∈ s, p n ∈ Ideal.span {projectiveWeierstrassCubic W} := by
+  let 𝒜 := MvPolynomial.homogeneousSubmodule (Fin 3) ℤ_[2]
+  letI : GradedRing 𝒜 := projectiveWeierstrassStandardGrading
+  constructor
+  · intro hsum n hn
+    have hproj_eq : GradedRing.proj 𝒜 n (∑ j ∈ s, p j) = p n := by
+      rw [map_sum]
+      calc
+        (∑ j ∈ s, GradedRing.proj 𝒜 n (p j)) =
+            ∑ j ∈ s, if j = n then p j else 0 := by
+          apply Finset.sum_congr rfl
+          intro j hj
+          by_cases h : j = n
+          · subst j
+            simp [GradedRing.proj_apply,
+              DirectSum.decompose_of_mem_same 𝒜 (hp n hj)]
+          · simp [h, GradedRing.proj_apply,
+              DirectSum.decompose_of_mem_ne 𝒜 (hp j hj) h]
+        _ = p n := by simp [hn]
+    have hproj := (projectiveWeierstrassCubic_ideal_isHomogeneous W) n hsum
+    rw [GradedRing.proj_apply] at hproj_eq
+    rwa [hproj_eq] at hproj
+  · intro h
+    exact Ideal.sum_mem _ (fun n hn => h n hn)
+
+/-- The proposed quotient components also respect multiplication and
+contain `1` in degree zero. Together with the spanning and kernel
+statements, this prepares the still-unproved internal decomposition. -/
+noncomputable def projectiveWeierstrassQuotientGradedMonoid
+    (W : WeierstrassCurve ℤ_[2]) :
+    SetLike.GradedMonoid (projectiveWeierstrassQuotientComponent W) where
+  one_mem := by
+    apply Submodule.mem_map.mpr
+    refine ⟨1, MvPolynomial.isHomogeneous_one _ _, ?_⟩
+    simp
+  mul_mem := by
+    intro i j a b ha hb
+    obtain ⟨a', ha', rfl⟩ := Submodule.mem_map.mp ha
+    obtain ⟨b', hb', rfl⟩ := Submodule.mem_map.mp hb
+    apply Submodule.mem_map.mpr
+    refine ⟨a' * b', (ha'.mul hb'), ?_⟩
+    exact (Ideal.Quotient.mkₐ ℤ_[2]
+      (Ideal.span {projectiveWeierstrassCubic W})).map_mul a' b'
+
+/-- The homogeneous images form an internal direct sum in the
+quotient; injectivity uses componentwise membership in the
+homogeneous defining ideal, not just the spanning result. -/
+theorem projectiveWeierstrassQuotient_isInternal
+    (W : WeierstrassCurve ℤ_[2]) :
+    DirectSum.IsInternal (projectiveWeierstrassQuotientComponent W) := by
+  classical
+  let Q := projectiveWeierstrassQuotientComponent W
+  let I : Ideal (MvPolynomial (Fin 3) ℤ_[2]) :=
+    Ideal.span {projectiveWeierstrassCubic W}
+  have hzero (t : DirectSum ℕ (fun n => Q n))
+      (ht : (DirectSum.coeAddMonoidHom Q) t = 0) : t = 0 := by
+    have hrep (n : ℕ) :
+        ∃ p : MvPolynomial (Fin 3) ℤ_[2],
+          p.IsHomogeneous n ∧
+            (Ideal.Quotient.mk I) p =
+              (t n : projectiveWeierstrassCoordinateRing W) := by
+      obtain ⟨p, hp, heq⟩ := (Submodule.mem_map.mp (t n).property)
+      exact ⟨p, hp, heq⟩
+    let p : ℕ → MvPolynomial (Fin 3) ℤ_[2] := fun n => Classical.choose (hrep n)
+    have hp (n : ℕ) : (p n).IsHomogeneous n :=
+      (Classical.choose_spec (hrep n)).1
+    have hq (n : ℕ) :
+        (Ideal.Quotient.mk I) (p n) =
+          (t n : projectiveWeierstrassCoordinateRing W) :=
+      (Classical.choose_spec (hrep n)).2
+    have hsum : (∑ n ∈ t.support, p n) ∈ I := by
+      apply Ideal.Quotient.eq_zero_iff_mem.mp
+      rw [map_sum]
+      calc
+        (∑ n ∈ t.support, (Ideal.Quotient.mk I) (p n)) =
+            (DirectSum.coeAddMonoidHom Q) t := by
+          rw [DirectSum.coeAddMonoidHom_eq_dfinsupp_sum]
+          simp only [DFinsupp.sum, hq]
+        _ = 0 := ht
+    have hcomponent := (projectiveWeierstrassCubic_sum_mem_ideal_iff
+      W t.support p (fun n _ => hp n)).mp hsum
+    apply DFinsupp.ext
+    intro n
+    rw [DFinsupp.zero_apply]
+    by_cases hn : n ∈ t.support
+    · apply Submodule.coe_eq_zero.mp
+      rw [← hq n]
+      exact Ideal.Quotient.eq_zero_iff_mem.mpr (hcomponent n hn)
+    · exact DFinsupp.not_mem_support_iff.mp hn
+  have hinj : Function.Injective (DirectSum.coeAddMonoidHom Q) := by
+    intro t₁ t₂ h
+    have hdiff : (DirectSum.coeAddMonoidHom Q) (t₁ - t₂) = 0 := by
+      rw [map_sub, h, sub_self]
+    exact sub_eq_zero.mp (hzero (t₁ - t₂) hdiff)
+  have hspan := projectiveWeierstrassQuotientComponent_iSup_eq_top W
+  change (⨆ n, Q n) = ⊤ at hspan
+  rw [Submodule.iSup_eq_range_dfinsupp_lsum, LinearMap.range_eq_top] at hspan
+  exact ⟨hinj, hspan⟩
+
+/-- The homogeneous cubic's coordinate quotient inherits a genuine
+grading from the ambient polynomial ring. -/
+noncomputable def projectiveWeierstrassQuotientGrading
+    (W : WeierstrassCurve ℤ_[2]) :
+    GradedAlgebra (projectiveWeierstrassQuotientComponent W) := by
+  letI : SetLike.GradedMonoid
+      (projectiveWeierstrassQuotientComponent W) :=
+    projectiveWeierstrassQuotientGradedMonoid W
+  exact DirectSum.IsInternal.gradedAlgebra
+    (projectiveWeierstrassQuotient_isInternal W)
+
+/-- The scheme `Proj(ℤ_[2][X,Y,Z]/(F))`, formed using the checked
+inherited grading. No properness or regularity theorem is asserted. -/
+noncomputable def projectiveWeierstrassScheme
+    (W : WeierstrassCurve ℤ_[2]) : AlgebraicGeometry.Scheme := by
+  letI : GradedAlgebra (projectiveWeierstrassQuotientComponent W) :=
+    projectiveWeierstrassQuotientGrading W
+  exact AlgebraicGeometry.Proj
+    (projectiveWeierstrassQuotientComponent W)
+
+/-- Every image of a coordinate variable has degree one in the
+inherited grading. -/
+theorem projectiveWeierstrassCoordinate_mem_degree_one
+    (W : WeierstrassCurve ℤ_[2]) (i : Fin 3) :
+    (Ideal.Quotient.mk (Ideal.span {projectiveWeierstrassCubic W})
+      (MvPolynomial.X i) : projectiveWeierstrassCoordinateRing W) ∈
+      projectiveWeierstrassQuotientComponent W 1 := by
+  apply Submodule.mem_map.mpr
+  exact ⟨MvPolynomial.X i, MvPolynomial.isHomogeneous_X _ _, rfl⟩
+
+/-- Mathlib's actual scheme isomorphism from a basic open of the
+quotient `Proj` to the spectrum of its degree-zero homogeneous
+localization. This does not yet identify that localization with
+the explicit affine Weierstrass quotient. -/
+noncomputable def projectiveWeierstrassBasicChartIso
+    (W : WeierstrassCurve ℤ_[2]) (i : Fin 3) :=
+  letI : GradedAlgebra (projectiveWeierstrassQuotientComponent W) :=
+    projectiveWeierstrassQuotientGrading W
+  AlgebraicGeometry.projIsoSpec
+    (projectiveWeierstrassQuotientComponent W)
+    ((Ideal.Quotient.mk (Ideal.span {projectiveWeierstrassCubic W}))
+      (MvPolynomial.X i))
+    (projectiveWeierstrassCoordinate_mem_degree_one W i)
+    (by decide : 0 < 1)
+
+/-- The `Z ≠ 0` chart as an actual affine open of the quotient `Proj`. -/
+noncomputable def projectiveWeierstrassZChartIso
+    (W : WeierstrassCurve ℤ_[2]) :=
+  projectiveWeierstrassBasicChartIso W 2
+
+/-- The `Y ≠ 0` chart as an actual affine open of the quotient `Proj`. -/
+noncomputable def projectiveWeierstrassYChartIso
+    (W : WeierstrassCurve ℤ_[2]) :=
+  projectiveWeierstrassBasicChartIso W 1
 
 /-- The ambient projective plane as a scheme, before imposing the
 cubic equation. This is not the model of the elliptic curve. -/
@@ -202,6 +399,15 @@ theorem projectiveWeierstrassCubic_two_chart_cover
 
 #print axioms projectiveWeierstrassCubic_isHomogeneous
 #print axioms projectiveWeierstrassCubic_ideal_isHomogeneous
+#print axioms projectiveWeierstrassQuotientComponent_iSup_eq_top
+#print axioms projectiveWeierstrassCubic_sum_mem_ideal_iff
+#print axioms projectiveWeierstrassQuotientGradedMonoid
+#print axioms projectiveWeierstrassQuotient_isInternal
+#print axioms projectiveWeierstrassQuotientGrading
+#print axioms projectiveWeierstrassScheme
+#print axioms projectiveWeierstrassCoordinate_mem_degree_one
+#print axioms projectiveWeierstrassZChartIso
+#print axioms projectiveWeierstrassYChartIso
 #print axioms projectiveWeierstrassLocus_isClosed
 #print axioms projectiveWeierstrassCubic_affine
 #print axioms projectiveWeierstrassCubic_infinity
