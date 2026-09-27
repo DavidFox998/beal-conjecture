@@ -112,8 +112,11 @@ feed the projective model and its chart calculations.
   its equation is monic in `Y`, and its quotient is a domain.
   It proves that this ring and every prime localization have
   dimension at most one in the prime-chain sense, including
-  non-rational primes. The comparison and localization modules
-  below transport this bound to actual generic-prime stalks.
+  non-rational primes. Every nonzero curve prime contracts to a
+  maximal ideal of `K[X]`; its principal generator is a possible
+  polynomial parameter, but is not proved to generate the curve
+  stalk's maximal ideal. The comparison and localization modules
+  below transport the dimension bound to actual generic-prime stalks.
 - `ZChartGenericFibreComparison.lean` constructs the coefficient-extension
   map from the actual `Z = 1` ring to the field-valued Weierstrass
   coordinate ring. Every nonzero base coefficient maps to a unit, so

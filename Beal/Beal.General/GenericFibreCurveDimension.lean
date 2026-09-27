@@ -59,6 +59,77 @@ theorem weierstrass_affine_field_dimensionLEOne
   exact dimensionLEOne_of_integral_pid
     (Polynomial K) (AdjoinRoot f)
 
+/-- At every nonzero prime of the field-valued affine curve,
+the contraction to `K[X]` is a maximal (hence principal) ideal.
+Its generator is the polynomial parameter for a possible
+finite-projection argument; this does not say that its image
+generates the maximal ideal in the local curve ring. -/
+theorem weierstrass_affine_field_nonzeroPrime_contraction_maximal
+    {K : Type*} [Field K] (W : WeierstrassCurve K)
+    (P : Ideal (AdjoinRoot W.toAffine.polynomial))
+    [P.IsPrime] (hP : P ≠ ⊥) :
+    (Ideal.comap
+      (algebraMap (Polynomial K) (AdjoinRoot W.toAffine.polynomial))
+      P).IsMaximal := by
+  let f : Polynomial (Polynomial K) := W.toAffine.polynomial
+  have hf : f.Monic := W.toAffine.monic_polynomial
+  letI : IsDomain (AdjoinRoot f) :=
+    weierstrass_affine_field_isDomain W
+  letI : Module.Finite (Polynomial K) (AdjoinRoot f) :=
+    (AdjoinRoot.powerBasis' hf).finite
+  letI : Algebra.IsIntegral (Polynomial K) (AdjoinRoot f) :=
+    Algebra.IsIntegral.of_finite (Polynomial K) (AdjoinRoot f)
+  let J : Ideal (Polynomial K) :=
+    Ideal.comap (algebraMap (Polynomial K) (AdjoinRoot f)) P
+  have hJ : J ≠ ⊥ := by
+    obtain ⟨x, hx, hne⟩ := P.ne_bot_iff.mp hP
+    exact Ideal.comap_ne_bot_of_integral_mem hne hx
+      (Algebra.IsIntegral.isIntegral x)
+  haveI : J.IsPrime :=
+    Ideal.comap_isPrime (algebraMap (Polynomial K) (AdjoinRoot f)) P
+  letI : Ring.DimensionLEOne (Polynomial K) :=
+    Ring.DimensionLEOne.principal_ideal_ring (Polynomial K)
+  exact Ring.DimensionLEOne.maximalOfPrime hJ inferInstance
+
+/-- A nonzero prime lies over a principal base prime defined by
+an irreducible polynomial, even when its residue field is not
+the base field. The polynomial is not yet a proved local
+uniformizer of the curve. -/
+theorem weierstrass_affine_field_nonzeroPrime_basePolynomial
+    {K : Type*} [Field K] (W : WeierstrassCurve K)
+    (P : Ideal (AdjoinRoot W.toAffine.polynomial))
+    [P.IsPrime] (hP : P ≠ ⊥) :
+    ∃ g : Polynomial K, Irreducible g ∧
+      Ideal.comap
+        (algebraMap (Polynomial K) (AdjoinRoot W.toAffine.polynomial))
+        P = Ideal.span {g} := by
+  let f : Polynomial (Polynomial K) := W.toAffine.polynomial
+  have hf : f.Monic := W.toAffine.monic_polynomial
+  letI : IsDomain (AdjoinRoot f) :=
+    weierstrass_affine_field_isDomain W
+  letI : Module.Finite (Polynomial K) (AdjoinRoot f) :=
+    (AdjoinRoot.powerBasis' hf).finite
+  letI : Algebra.IsIntegral (Polynomial K) (AdjoinRoot f) :=
+    Algebra.IsIntegral.of_finite (Polynomial K) (AdjoinRoot f)
+  let J : Ideal (Polynomial K) :=
+    Ideal.comap (algebraMap (Polynomial K) (AdjoinRoot f)) P
+  have hJne : J ≠ ⊥ := by
+    obtain ⟨x, hx, hne⟩ := P.ne_bot_iff.mp hP
+    exact Ideal.comap_ne_bot_of_integral_mem hne hx
+      (Algebra.IsIntegral.isIntegral x)
+  letI : J.IsMaximal :=
+    weierstrass_affine_field_nonzeroPrime_contraction_maximal W P hP
+  letI : J.IsPrincipal := IsPrincipalIdealRing.principal J
+  let g := Submodule.IsPrincipal.generator J
+  have hspan : Ideal.span {g} = J :=
+    Submodule.IsPrincipal.span_singleton_generator J
+  have hg : g ≠ 0 := by
+    intro hz
+    exact hJne ((Submodule.IsPrincipal.eq_bot_iff_generator_eq_zero J).mpr hz)
+  refine ⟨g, ?_, hspan.symm⟩
+  apply irreducible_iff_prime.mpr
+  exact (Ideal.span_singleton_prime hg).mp (hspan ▸ inferInstance)
+
 /-- At every prime of the field-valued affine Weierstrass
 coordinate ring, including non-rational primes, the local ring
 has dimension at most one in the prime-chain sense. -/
