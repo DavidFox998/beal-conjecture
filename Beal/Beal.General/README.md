@@ -116,6 +116,16 @@ feed the projective model and its chart calculations.
   ring with the generic fibre of the **actual** integral chart
   is not yet constructed; these results cannot be asserted for
   the actual-chart localizations without that transport.
+- `ZChartGenericFibreComparison.lean` constructs the coefficient-extension
+  map from the actual `Z = 1` ring to the field-valued Weierstrass
+  coordinate ring. Every nonzero base coefficient maps to a unit, so
+  this map factors through any localization of the actual ring that
+  inverts `2`. It also constructs a map back from the field-valued
+  ring into every generic-fibre prime localization of the actual
+  chart, using the fraction-field coefficient map and the affine
+  equation. These maps have not been proved inverse (even after
+  localization), so they do not transfer the field-valued dimension
+  bound or supply a regular parameter in an actual-chart stalk.
 
 ## Current boundary
 
@@ -141,8 +151,8 @@ regularity transported from the `Z = 1` chart. Generic-fibre primes
 of `Z = 1` have not been proved regular: the checked generic-fibre
 Jacobian-unit statement from `W.Δ ≠ 0` has not been promoted to a
 local maximal-ideal generator, and the field-valued coordinate
-ring's prime-chain bound has not been transported across the
-generic-fibre comparison to the actual local rings. The generic
+  ring's prime-chain bound has not been transported across a proved
+  generic-fibre equivalence to the actual local rings. The generic
 point of the generic fibre would have dimension zero, not one;
 an upper bound of one is the appropriate uniform target there.
 Consequently they cannot yet identify the projective cubic with a minimal
