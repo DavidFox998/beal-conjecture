@@ -65,8 +65,12 @@ feed the projective model and its chart calculations.
   applies to non-rational closed points as well as rational ones.
   It also computes both partials of the **full** reduced cubic and
   proves that an ideal containing both must contain the node ideal.
-  Neither fact provides the missing upper dimension and local
-  parameter arguments at points away from the node.
+  More strongly, every reduced-cubic prime containing `u` contains
+  the node, so the same `v` partial avoids every non-node prime.
+  Conditional on a two-generated maximal ideal at a strict
+  special-fibre specialization, the existing local height theorem
+  gives Krull dimension exactly two. The two-generator statement
+  itself has **not** been proved away from the node.
 - `ZChartGenericFibre.lean` proves that at any chart prime not
   containing `2`, the base DVR maps injectively into the prime
   quotient. Consequently `W.Δ ≠ 0` remains nonzero there.
@@ -90,7 +94,10 @@ actual `Z = 1` coordinate ring. Under the split nodal hypotheses,
 the generic special-fibre prime also has a dimension-one/
 one-generator certificate. Its strict specializations have a
 proved dimension lower bound of two, but still need corresponding
-upper bounds and two-generator maximal-ideal certificates.
+two-generator maximal-ideal certificates (which would also give
+the upper bound). The non-node partial-derivative statement is
+currently in the reduced cubic, not a criterion proving those
+local parameters for the integral chart.
 The infinity boundary `V = 0` is covered by the two local-ring
 certificates above, but primes on the overlap `V ≠ 0` still need
 regularity transported from the `Z = 1` chart. The pointwise generic-
@@ -99,7 +106,9 @@ regular-local-ring theorems for every other prime of the `Z = 1`
 chart, including generic-fibre primes and special-fibre primes
 away from the node. In particular, closed points of the special
 fibre need not have coordinates in `𝔽₂`; a rational-coordinate
-case split would not cover them.
+case split would not cover them. The generic point of the generic
+fibre would have dimension zero, not dimension one; an upper bound
+of one is the appropriate uniform target there.
 Consequently they cannot yet identify the projective cubic with a minimal
 regular model. A split nodal tangent cone by itself does not establish Kodaira
 type `I₁`, and the even-branch polynomial identity does not establish a

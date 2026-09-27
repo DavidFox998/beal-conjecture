@@ -94,7 +94,8 @@ theorem splitNodeCubic_partials_only_at_origin
       simpa only [pow_two] using J.mul_mem_left
         (MvPolynomial.X (0 : Fin 2)) hX0
     have hd := J.sub_mem hsum hp
-    convert hd using 1 <;> ring
+    convert hd using 1
+    ring
   exact ⟨hX0, hX1⟩
 
 /-- In the coordinate ring of the *full* reduced affine cubic,
@@ -122,6 +123,68 @@ theorem splitNodeCubic_quotient_partials_only_at_node
   rcases ha with rfl | rfl
   · exact hxy.1
   · exact hxy.2
+
+/-- Every prime of the reduced nodal cubic that contains `u`
+also contains `v`: reducing the full equation modulo `u`
+gives `v² = 0`. This includes non-rational primes. -/
+theorem splitNodeCubic_prime_contains_u_implies_node
+    (J : Ideal (MvPolynomial (Fin 2) (ZMod 2) ⧸
+      Ideal.span {splitNodeCubic})) [J.IsPrime]
+    (hu : (Ideal.Quotient.mk (Ideal.span {splitNodeCubic}))
+      (MvPolynomial.X (0 : Fin 2)) ∈ J) :
+    splitNode_originIdeal ≤ J := by
+  let S := MvPolynomial (Fin 2) (ZMod 2)
+  let I : Ideal S := Ideal.span {splitNodeCubic}
+  let q : S →+* S ⧸ I := Ideal.Quotient.mk I
+  let K : Ideal S := J.comap q
+  haveI : K.IsPrime := Ideal.comap_isPrime q J
+  have hF : splitNodeCubic ∈ K := by
+    change q splitNodeCubic ∈ J
+    have hz : q splitNodeCubic = 0 :=
+      Ideal.Quotient.eq_zero_iff_mem.mpr
+        (Ideal.subset_span (Set.mem_singleton _))
+    rw [hz]
+    exact J.zero_mem
+  have hu' : MvPolynomial.X (0 : Fin 2) ∈ K := hu
+  have hVU : (MvPolynomial.X (1 : Fin 2) *
+      MvPolynomial.X (0 : Fin 2) : S) ∈ K :=
+    K.mul_mem_left _ hu'
+  have hu3 : (MvPolynomial.X (0 : Fin 2) : S) ^ 3 ∈ K := by
+    convert K.mul_mem_left
+      ((MvPolynomial.X (0 : Fin 2) : S) ^ 2) hu' using 1
+  have hv2 : (MvPolynomial.X (1 : Fin 2) : S) ^ 2 ∈ K := by
+    have heq : (MvPolynomial.X (1 : Fin 2) : S) ^ 2 =
+        splitNodeCubic - MvPolynomial.X 1 * MvPolynomial.X 0 +
+          MvPolynomial.X 0 ^ 3 := by
+      dsimp [splitNodeCubic]
+      ring
+    rw [heq]
+    exact K.add_mem (K.sub_mem hF hVU) hu3
+  have hv : MvPolynomial.X (1 : Fin 2) ∈ K :=
+    (‹K.IsPrime›).mem_of_pow_mem 2 hv2
+  change Ideal.span {q (MvPolynomial.X (0 : Fin 2)),
+    q (MvPolynomial.X (1 : Fin 2))} ≤ J
+  apply Ideal.span_le.mpr
+  intro a ha
+  simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at ha
+  rcases ha with rfl | rfl
+  · exact hu'
+  · exact hv
+
+/-- Away from the node, the same `v` partial is outside every
+special-fibre prime. Its image is therefore a unit in each such
+localization; this does not yet supply a regular-parameter proof
+for the integral chart. -/
+theorem splitNodeCubic_pderiv_v_avoids_nonNode_prime
+    (J : Ideal (MvPolynomial (Fin 2) (ZMod 2) ⧸
+      Ideal.span {splitNodeCubic})) [J.IsPrime]
+    (hJ : ¬ splitNode_originIdeal ≤ J) :
+    (Ideal.Quotient.mk (Ideal.span {splitNodeCubic}))
+      (MvPolynomial.pderiv (1 : Fin 2) splitNodeCubic) ∉ J := by
+  intro hv
+  apply hJ
+  apply splitNodeCubic_prime_contains_u_implies_node J
+  simpa only [splitNodeCubic_pderiv_v] using hv
 
 private theorem exists_prime_below_of_height_ge_one
     {A : Type*} [CommRing A]
@@ -269,5 +332,52 @@ theorem splitNode_ZChart_strictSpecialFibrePrime_height_ge_two
   have hheight : (2 : ℕ∞) ≤ Order.height S₂ := by
     simpa [chain] using (Order.length_le_height_last (p := chain))
   exact hheight.trans (by simpa [S₂] using height_le_atPrime_maximal_height Q)
+
+/-- Once a maximal ideal at a strict specialization of `(2)` has
+two generators, the existing local height bound gives dimension
+exactly two. This deliberately leaves the required generator
+construction at non-node primes as a separate obligation. -/
+theorem splitNode_ZChart_strictSpecialFibrePrime_dim_two_of_pair
+    (W : WeierstrassCurve ℤ_[2])
+    (hnode : ReducedNodalPoint (W.map PadicInt.toZMod)
+      (PadicInt.toZMod W.a₃)
+      (PadicInt.toZMod (W.a₃ ^ 2 + W.a₄)))
+    (hsplit : 3 * PadicInt.toZMod W.a₃ +
+      (W.map PadicInt.toZMod).a₂ = 0)
+    (Q : Ideal (projectiveWeierstrassZChartRing W)) [Q.IsPrime]
+    (hPQ : (Ideal.span {(Ideal.Quotient.mk
+      (Ideal.span {localSurfaceEquation W 0 0}))
+        (MvPolynomial.C (2 : ℤ_[2]))} :
+        Ideal (projectiveWeierstrassZChartRing W)) < Q)
+    (a b : Localization.AtPrime Q)
+    (hmax : LocalRing.maximalIdeal (Localization.AtPrime Q) =
+      Ideal.span {a, b}) :
+    ringKrullDim (Localization.AtPrime Q) = 2 := by
+  let L := Localization.AtPrime Q
+  let M : PrimeSpectrum L :=
+    ⟨LocalRing.maximalIdeal L, (LocalRing.maximalIdeal.isMaximal L).isPrime⟩
+  haveI : IsNoetherianRing L :=
+    projectiveWeierstrassZChart_atPrime_isNoetherian W Q
+  have hmin : LocalRing.maximalIdeal L ∈
+      (Ideal.span {a, b}).minimalPrimes := by
+    rw [← hmax]
+    exact ⟨⟨(LocalRing.maximalIdeal.isMaximal L).isPrime, le_rfl⟩,
+      fun J hJ _ => hJ.2⟩
+  have hheight : Order.height M = 2 :=
+    le_antisymm (local_pair_minimal_height_le_two a b hmin)
+      (splitNode_ZChart_strictSpecialFibrePrime_height_ge_two
+        W hnode hsplit Q hPQ)
+  have hDim : ringKrullDim L = (↑(Order.height M) : WithBot ℕ∞) := by
+    change Order.krullDim (PrimeSpectrum L) =
+      (↑(Order.height M) : WithBot ℕ∞)
+    rw [Order.krullDim_eq_iSup_height]
+    apply le_antisymm
+    · apply iSup_le
+      intro S
+      exact WithBot.coe_le_coe.mpr
+        (Order.height_mono (show S ≤ M from
+          LocalRing.le_maximalIdeal S.isPrime.ne_top))
+    · exact le_iSup_of_le M le_rfl
+  simpa only [hheight] using hDim
 
 end Beal.General
