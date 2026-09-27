@@ -48,6 +48,8 @@ lean_lib BealGeneral where
     .one `Beal.«Beal.General».ZChartGenericFibre,
     .one `Beal.«Beal.General».GenericFibreCurveDimension,
     .one `Beal.«Beal.General».GenericFibreSimpleFibre,
+    .one `Beal.«Beal.General».GenericFibreLocalQuotient,
+    .one `Beal.«Beal.General».GenericFibreProjectionX,
     .one `Beal.«Beal.General».ZChartGenericFibreComparison,
     .one `Beal.«Beal.General».ZChartGenericFibreLocalization,
     .one `Beal.«Beal.General».ZChartGenericFibrePrincipalCriterion,
