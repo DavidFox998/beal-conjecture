@@ -48,9 +48,17 @@ feed the projective model and its chart calculations.
   prime supplies the dimension lower bound.
 - `TranslatedZChartNode.lean` transports this valuation-one
   regular-parameter certificate to the localization at the
-  corresponding prime of the actual integral `Z = 1` chart ring. It constructs the coordinate
-  translation and quotient-ring equivalence rather than equating only
-  their reduced equations.
+  corresponding prime of the actual integral `Z = 1` chart ring. It
+  constructs the coordinate translation and quotient-ring equivalence
+  rather than equating only their reduced equations.
+- `ZChartFlatness.lean` proves, under the nodal split-fibre
+  hypotheses, that `2` is a non-zero-divisor in the actual integral
+  `Z = 1` chart and all its prime localizations. It transports
+  integrality of the special fibre from the translated cubic, then
+  proves a Noetherian dimension-one/principal-maximal-ideal
+  certificate at its generic prime in the actual chart. Every
+  prime localization of the chart is Noetherian; this alone does
+  not make the remaining primes regular.
 
 ## Current boundary
 
@@ -63,15 +71,18 @@ construct that morphism and prove the required projective-space property (or
 prove the property directly for the cubic); no theorem in this folder assumes
 it silently.
 
-**All-stalk regularity remains unproved.** The valuation-one node is
-now covered by a Noetherian dimension-two/two-generator certificate in
-the actual `Z = 1` coordinate ring.
+**All-stalk regularity remains unproved.** The valuation-one node
+has a Noetherian dimension-two/two-generator certificate in the
+actual `Z = 1` coordinate ring. Under the split nodal hypotheses,
+the generic special-fibre prime also has a dimension-one/
+one-generator certificate.
 The infinity boundary `V = 0` is covered by the two local-ring
 certificates above, but primes on the overlap `V ≠ 0` still need
 regularity transported from the `Z = 1` chart. The pointwise generic-
 and special-fibre nonsingularity statements have not been promoted to
 regular-local-ring theorems for every other prime of the `Z = 1`
-chart.
+chart, including generic-fibre primes and special-fibre primes
+away from the node.
 Consequently they cannot yet identify the projective cubic with a minimal
 regular model. A split nodal tangent cone by itself does not establish Kodaira
 type `I₁`, and the even-branch polynomial identity does not establish a

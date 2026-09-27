@@ -20,3 +20,9 @@ In this Mathlib pin, a nested localization at a prime may not synthesize its dom
 **Why:** Adding domain instances only in the proof cannot repair a typeclass failure that occurs while Lean elaborates the theorem statement.
 
 **How to apply:** For DVR claims about a localization of a localization, explicitly construct the prime-localization domain instance at each layer before using the DVR predicate or its Noetherian-local equivalence.
+
+For a ring equivalence transporting the dimension of a localization at a prime, state the target at the prime defined by comapping through the equivalence. Prove separately that this prime equals the desired principal ideal, and use that equality only to compute its maximal ideal.
+
+**Why:** Rewriting an equality of primes directly inside `ringKrullDim (Localization.AtPrime P)` can fail dependent elimination because the localization's prime instance depends on the presentation of `P`. A direct equality transport may also run into elaboration timeouts even with proof irrelevance.
+
+**How to apply:** Let the transported prime be the primary definition in the theorem, obtain dimension from the local-ring equivalence without rewriting its type, and use the ideal equality under `Ideal.map` to show the explicit regular parameter.
