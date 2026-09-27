@@ -247,8 +247,16 @@ feed the projective model and its chart calculations.
   coordinate is outside it, so the corresponding closed
   `2`-vanishing locus **inside the actual quotient `Proj`**
   has a generic point and is topologically irreducible.
-  A separate graded quotient and scheme base-change proof is
-  still required to identify this closed locus with the
+- `GradedProjectiveSpecialFibre.lean` constructs the grading on the
+  quotient of the **actual** projective coordinate ring by `2`,
+  and separately on the canonical split cubic's coordinate ring.
+  It defines both `Proj` schemes and proves their underlying
+  projective spectra irreducible. On polynomial representatives,
+  the ring equivalence is coefficient reduction followed by the
+  homogeneous translation, and both the equivalence and its inverse
+  preserve each homogeneous degree. The **scheme-level Proj and
+  base-change isomorphisms are not yet proved**; even a graded
+  coordinate-ring equivalence alone does not identify the actual
   scheme-theoretic special fibre.
 
 ## Current boundary

@@ -64,6 +64,7 @@ lean_lib BealGeneral where
     .one `Beal.«Beal.General».ProjectiveRegularLocalCriterion,
     .one `Beal.«Beal.General».SplitProjectiveSpecialFibre,
     .one `Beal.«Beal.General».ProjectiveFibreIrreducibility,
+    .one `Beal.«Beal.General».GradedProjectiveSpecialFibre,
     .one `Beal.«Beal.General».TwoChartGlobalMorphism,
     .one `Beal.«Beal.General».TargetOpenPreimages,
     .one `Beal.«Beal.General».GlobalClosedImmersion,
