@@ -81,8 +81,17 @@ feed the projective model and its chart calculations.
   special-fibre specializations of the actual `Z = 1` chart, where
   the existing height lower bound then makes the local dimension
   exactly two. Principality of the reduced cubic's local maximal
-  ideal at arbitrary non-node primes remains a **premise**, not a
-  theorem in this folder.
+  ideal after passing through the integral-local quotient still
+  remains a **premise** of the actual-chart theorem.
+- `SplitNodeParametrization.lean` constructs `t = v/u` inside the
+  reduced cubic's localization at every non-node prime, proving
+  `u = t²+t` and `v = tu`. It uses this to exhibit a surjection
+  from a localization of `𝔽₂[t]`, proving that **every** such
+  reduced-cubic prime localization is a principal-ideal ring,
+  including primes with non-rational residue fields. The
+  identification of this local ring with the quotient of the
+  corresponding *integral* chart localization by `2` has not
+  yet been applied at arbitrary non-node primes.
 - `ZChartGenericFibre.lean` proves that at any chart prime not
   containing `2`, the base DVR maps injectively into the prime
   quotient. Consequently `W.Δ ≠ 0` remains nonzero there.
@@ -111,9 +120,12 @@ two-generator maximal-ideal certificates (which would also give
   statement now holds in the integral chart localizations, it is
   not a criterion proving those local parameters. The lifting
   theorem reduces the missing two-generator proof to the
-  principality of the corresponding reduced-curve local maximal
-  ideal; that principality has not been established for arbitrary
-  non-rational points.
+  principality of the maximal ideal in the integral-local quotient
+  by `2`. Principality **is** now proved for the matching reduced
+  cubic's local ring at arbitrary non-node primes. The remaining
+  special-fibre step is to transport it across the quotient/
+  localization and coordinate equivalences at those primes, then
+  lift a generator into the actual chart localization.
 The infinity boundary `V = 0` is covered by the two local-ring
 certificates above, but primes on the overlap `V ≠ 0` still need
 regularity transported from the `Z = 1` chart. The pointwise generic-
