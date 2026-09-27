@@ -39,8 +39,8 @@ theorem ideal_eq_span_pair_of_principal_reduction
 /-- At a strict specialization of the split special fibre,
 principality of the maximal ideal modulo the image of `2`
 would supply both parameters and dimension two in the *actual*
-integral chart. The unproved premise is precisely the missing
-arbitrary-degree smooth-curve local parameter. -/
+integral chart. The separate non-node transport theorem discharges
+this premise away from the node without a rational-point restriction. -/
 theorem splitNode_ZChart_dim_two_of_principal_reduction
     (W : WeierstrassCurve ℤ_[2])
     (hnode : ReducedNodalPoint (W.map PadicInt.toZMod)
