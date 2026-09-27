@@ -240,6 +240,16 @@ feed the projective model and its chart calculations.
   This does not yet identify their `Proj` with the
   scheme-theoretic special fibre of the integral quotient; that
   base-change comparison is still required.
+- `ProjectiveFibreIrreducibility.lean` identifies the quotient of
+  the **actual projective coordinate ring** by the image of `2`
+  with the canonical split cubic's coordinate ring. The fibre
+  ideal is homogeneous and prime. The degree-one infinity
+  coordinate is outside it, so the corresponding closed
+  `2`-vanishing locus **inside the actual quotient `Proj`**
+  has a generic point and is topologically irreducible.
+  A separate graded quotient and scheme base-change proof is
+  still required to identify this closed locus with the
+  scheme-theoretic special fibre.
 
 ## Current boundary
 
@@ -257,9 +267,11 @@ dimension-matched regular-local-ring predicate**, including
 non-rational points. In the low-dimensional branch, domainhood
 excludes the zero-dimensional non-field case; a principal maximal
 ideal and an upper dimension bound alone would not suffice.
-This does not cover the even-valuation node. A separate theorem about
-the entire *projective* special fibre being irreducible, together with
-the requisite model and minimality argument, is still needed.
+This does not cover the even-valuation node. Although the closed
+`2`-vanishing locus of the actual quotient `Proj` is now topologically
+irreducible in the split nodal case, its identification with the
+scheme-theoretic special fibre, and the requisite model and
+minimality argument, are still needed.
 Consequently these results cannot yet identify the projective cubic
 with a minimal regular model. The split nodal tangent cone has two
 distinct tangent lines, but this alone does not establish Kodaira
