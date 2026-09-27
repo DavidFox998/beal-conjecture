@@ -4,8 +4,9 @@ import Beal.«Beal.General».ZChartFlatness
 The coefficient DVR remains visible at every generic-fibre prime
 of the actual integral `Z = 1` chart. The nonzero discriminant
 forces a full affine partial derivative to be a unit at each
-such localization. These are algebraic Jacobian certificates,
-not regular-local-ring theorems.
+such localization. Every nonzero base coefficient is a unit,
+so each such local ring receives the base fraction field.
+These are algebraic certificates, not regular-local-ring theorems.
 -/
 
 namespace Beal.General
@@ -36,6 +37,59 @@ theorem projectiveWeierstrassZChart_genericPrime_base_injective
       apply Ideal.Quotient.eq_zero_iff_mem.mp
       exact htwo
   exact (RingHom.injective_iff_ker_eq_bot φ).mpr hker
+
+/-- Every nonzero coefficient of the base DVR becomes a unit in
+an actual-chart generic-fibre prime localization. -/
+theorem projectiveWeierstrassZChart_genericPrime_base_unit
+    (W : WeierstrassCurve ℤ_[2])
+    (Q : Ideal (projectiveWeierstrassZChartRing W)) [Q.IsPrime]
+    (h2 : algebraMap ℤ_[2] (projectiveWeierstrassZChartRing W) 2 ∉ Q)
+    (a : ℤ_[2]) (ha : a ≠ 0) :
+    let R := projectiveWeierstrassZChartRing W
+    let L := Localization.AtPrime Q
+    IsUnit ((algebraMap R L) ((algebraMap ℤ_[2] R) a)) := by
+  let R := projectiveWeierstrassZChartRing W
+  let L := Localization.AtPrime Q
+  let φ : ℤ_[2] →+* R ⧸ Q :=
+    (Ideal.Quotient.mk Q).comp (algebraMap ℤ_[2] R)
+  apply (IsLocalization.AtPrime.isUnit_to_map_iff L Q _).mpr
+  intro hz
+  have heq : φ a = 0 := Ideal.Quotient.eq_zero_iff_mem.mpr hz
+  exact ha ((projectiveWeierstrassZChart_genericPrime_base_injective
+    W Q h2) (by simpa only [map_zero] using heq))
+
+/-- The generic-fibre local ring of the actual chart receives the
+fraction field `ℚ_[2]` of the coefficient DVR. The map is constructed
+using the fact that every nonzero base coefficient is invertible at
+the chosen prime, without assuming that the local ring is a field. -/
+noncomputable def projectiveWeierstrassZChart_genericPrime_fractionMap
+    (W : WeierstrassCurve ℤ_[2])
+    (Q : Ideal (projectiveWeierstrassZChartRing W)) [Q.IsPrime]
+    (h2 : algebraMap ℤ_[2] (projectiveWeierstrassZChartRing W) 2 ∉ Q) :
+    ℚ_[2] →+* Localization.AtPrime Q := by
+  let R := projectiveWeierstrassZChartRing W
+  let L := Localization.AtPrime Q
+  let g : ℤ_[2] →+* L :=
+    (algebraMap R L).comp (algebraMap ℤ_[2] R)
+  have hunit (s : nonZeroDivisors ℤ_[2]) : IsUnit (g (s : ℤ_[2])) := by
+    exact projectiveWeierstrassZChart_genericPrime_base_unit
+      W Q h2 s (mem_nonZeroDivisors_iff_ne_zero.mp s.property)
+  exact IsLocalization.lift (S := ℚ_[2]) (g := g) hunit
+
+/-- The fraction-field map extends the coefficient map of the
+actual integral chart. -/
+theorem projectiveWeierstrassZChart_genericPrime_fractionMap_base
+    (W : WeierstrassCurve ℤ_[2])
+    (Q : Ideal (projectiveWeierstrassZChartRing W)) [Q.IsPrime]
+    (h2 : algebraMap ℤ_[2] (projectiveWeierstrassZChartRing W) 2 ∉ Q)
+    (a : ℤ_[2]) :
+    projectiveWeierstrassZChart_genericPrime_fractionMap W Q h2
+      (algebraMap ℤ_[2] ℚ_[2] a) =
+    (algebraMap (projectiveWeierstrassZChartRing W)
+      (Localization.AtPrime Q))
+      ((algebraMap ℤ_[2] (projectiveWeierstrassZChartRing W)) a) := by
+  simp only [projectiveWeierstrassZChart_genericPrime_fractionMap,
+    IsLocalization.lift_eq, RingHom.comp_apply]
 
 /-- If `W.Δ ≠ 0`, the discriminant remains nonzero at every
 generic-fibre prime of the actual affine chart. This is the
