@@ -41,6 +41,8 @@ lean_lib BealGeneral where
     .one `Beal.«Beal.General».InfinityLocalRegularity,
     .one `Beal.«Beal.General».TranslatedZChartNode,
     .one `Beal.«Beal.General».ZChartFlatness,
+    .one `Beal.«Beal.General».ZChartSpecialFibreHeight,
+    .one `Beal.«Beal.General».ZChartGenericFibre,
     .one `Beal.«Beal.General».TwoChartGlobalMorphism,
     .one `Beal.«Beal.General».TargetOpenPreimages,
     .one `Beal.«Beal.General».GlobalClosedImmersion,

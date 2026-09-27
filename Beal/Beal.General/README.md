@@ -59,6 +59,19 @@ feed the projective model and its chart calculations.
   certificate at its generic prime in the actual chart. Every
   prime localization of the chart is Noetherian; this alone does
   not make the remaining primes regular.
+- `ZChartSpecialFibreHeight.lean` proves that every prime of the
+  actual `Z = 1` chart strictly containing the generic split
+  special-fibre prime `(2)` has local height at least two. The proof
+  applies to non-rational closed points as well as rational ones.
+  It also computes both partials of the **full** reduced cubic and
+  proves that an ideal containing both must contain the node ideal.
+  Neither fact provides the missing upper dimension and local
+  parameter arguments at points away from the node.
+- `ZChartGenericFibre.lean` proves that at any chart prime not
+  containing `2`, the base DVR maps injectively into the prime
+  quotient. Consequently `W.Δ ≠ 0` remains nonzero there.
+  This does not turn generic-fibre pointwise nonsingularity into
+  regularity of the integral chart's local rings.
 
 ## Current boundary
 
@@ -75,14 +88,18 @@ it silently.
 has a Noetherian dimension-two/two-generator certificate in the
 actual `Z = 1` coordinate ring. Under the split nodal hypotheses,
 the generic special-fibre prime also has a dimension-one/
-one-generator certificate.
+one-generator certificate. Its strict specializations have a
+proved dimension lower bound of two, but still need corresponding
+upper bounds and two-generator maximal-ideal certificates.
 The infinity boundary `V = 0` is covered by the two local-ring
 certificates above, but primes on the overlap `V ≠ 0` still need
 regularity transported from the `Z = 1` chart. The pointwise generic-
 and special-fibre nonsingularity statements have not been promoted to
 regular-local-ring theorems for every other prime of the `Z = 1`
 chart, including generic-fibre primes and special-fibre primes
-away from the node.
+away from the node. In particular, closed points of the special
+fibre need not have coordinates in `𝔽₂`; a rational-coordinate
+case split would not cover them.
 Consequently they cannot yet identify the projective cubic with a minimal
 regular model. A split nodal tangent cone by itself does not establish Kodaira
 type `I₁`, and the even-branch polynomial identity does not establish a

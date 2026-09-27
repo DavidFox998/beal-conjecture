@@ -11,3 +11,4 @@
 - [Projective grading in pinned Mathlib](projective-grading.md) — explicit grading instances and localization action/zero diamonds matter for chart proofs.
 - [Projective geometry API boundary](projective-geometry-api-boundary.md) — the global closed immersion is separate from the missing projective-space properness result.
 - [Multivariate zero evaluation](multivariate-zero-evaluation.md) — at zero, simplification may stop at constantCoeff; use eval₂Hom lemmas directly for coordinate kernels.
+- [Characteristic-two polynomial derivatives](char-two-polynomial-derivatives.md) — expose scalar numerals through `C` before canceling derivative coefficients in multivariate polynomials.
