@@ -10,3 +10,4 @@
 - [Quotient domain transport](quotient-domain-transport.md) — transport primality of the ideal, then rebuild quotient-domain instances instead of rewriting their dependent types.
 - [Projective grading in pinned Mathlib](projective-grading.md) — explicit grading instances and localization action/zero diamonds matter for chart proofs.
 - [Projective geometry API boundary](projective-geometry-api-boundary.md) — the global closed immersion is separate from the missing projective-space properness result.
+- [Multivariate zero evaluation](multivariate-zero-evaluation.md) — at zero, simplification may stop at constantCoeff; use eval₂Hom lemmas directly for coordinate kernels.

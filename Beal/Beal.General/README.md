@@ -36,8 +36,12 @@ feed the projective model and its chart calculations.
 - `InfinityPrimeLocus.lean` proves directly in the integral `Y = 1`
   chart ring that `U³ = V · H`, with `H` a unit at every prime
   containing `V`. Thus such primes also contain `U`, and `V` lies
-  in `(U)` in each corresponding localization. This narrows the
-  infinity-chart regularity problem but does not solve it.
+  in `(U)` in each corresponding localization.
+- `InfinityLocalRegularity.lean` proves that the only `Y = 1`
+  chart primes containing `V` are the generic and closed infinity
+  section primes. Their local rings satisfy explicit Noetherian
+  regular-parameter certificates of dimensions one and two,
+  respectively; the latter has maximal ideal `(2,U)`.
 - `TateEisenstein.lean` already proves that the translated valuation-one
   node has a Noetherian local ring of dimension two, a two-generated
   maximal ideal, and no single generator; its Eisenstein intermediate
@@ -61,15 +65,13 @@ it silently.
 
 **All-stalk regularity remains unproved.** The valuation-one node is
 now covered by a Noetherian dimension-two/two-generator certificate in
-the actual `Z = 1` coordinate ring. The pointwise generic- and
-special-fibre nonsingularity statements have not been promoted to
-regular-local-ring theorems for every other prime of either chart.
-The infinity derivative is a certificate at one point, not a local-ring
-regularity result for every `Y = 1` stalk. The infinity-boundary
-prime and unit-factor results still need a dimension and maximal-ideal
-argument, together with regularity away from that boundary.
-The translated nodal special-fibre
-equation is not the integral infinity-chart equation.
+the actual `Z = 1` coordinate ring.
+The infinity boundary `V = 0` is covered by the two local-ring
+certificates above, but primes on the overlap `V ≠ 0` still need
+regularity transported from the `Z = 1` chart. The pointwise generic-
+and special-fibre nonsingularity statements have not been promoted to
+regular-local-ring theorems for every other prime of the `Z = 1`
+chart.
 Consequently they cannot yet identify the projective cubic with a minimal
 regular model. A split nodal tangent cone by itself does not establish Kodaira
 type `I₁`, and the even-branch polynomial identity does not establish a
