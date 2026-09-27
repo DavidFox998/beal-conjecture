@@ -195,9 +195,22 @@ feed the projective model and its chart calculations.
   stalks or cover the even-valuation branch.
 - `YChartOverlapEquation.lean` checks the coordinate substitutions
   `u = x/y`, `v = 1/y` and their reverse at the level of the two
-  defining equations in arbitrary commutative rings. It does
-  **not** yet construct an equivalence of the localized chart rings
-  or transport the regular-parameter certificates to `Y = 1`.
+  defining equations in arbitrary commutative rings.
+- `YChartOverlapLocalization.lean` uses those equations to construct
+  inverse quotient-ring maps after inverting `y = Y/Z` on `Z = 1`
+  and `V = Z/Y` on `Y = 1`. Their localized extensions give a
+  checked ring equivalence; `x = X/Z` is **not** the inverted
+  coordinate on this overlap.
+- `YChartOverlapPrime.lean` matches every prime away from `V` with
+  a prime away from `y`, and proves an equivalence of their
+  localized rings, without assuming a rational residue field.
+- `YChartAllPrimeParameters.lean` transports the split
+  valuation-one `Z = 1` certificates through that equivalence and
+  combines them with the existing generic and closed infinity
+  boundary certificates. The result covers every prime localization
+  of the actual `Y = 1` affine coordinate ring under the same
+  explicit nodal, split, discriminant, and valuation-one hypotheses.
+  It does not yet identify these local rings with `Proj` stalks.
 
 ## Current boundary
 
@@ -211,17 +224,15 @@ prove the property directly for the cubic); no theorem in this folder assumes
 it silently.
 
 **All projective-stalk regularity remains unproved.** In the split
-valuation-one case the actual `Z = 1` coordinate ring now has a
-single theorem covering every prime with the appropriate
-Noetherian/dimension/generator certificate, including non-rational
-special-fibre and generic-fibre primes. This does not apply to the
-even-valuation node.
-The infinity boundary `V = 0` is covered by the two local-ring
-certificates above, but primes on the overlap `V ≠ 0` still need
-regularity transported from the `Z = 1` chart. The equation-level
-overlap identities alone do not identify the corresponding chart
-localizations or the `Proj` stalks.
-Consequently they cannot yet identify the projective cubic with a minimal
+valuation-one case both actual affine coordinate rings now have
+all-prime Noetherian/dimension/generator certificates. The
+overlap is checked as a localized ring equivalence and its
+prime-localizations are compared. The existing scheme isomorphisms
+from the two basic opens of the quotient `Proj` to these affine
+spectra still need an explicit stalk comparison carrying the
+certificates to *every projective stalk*. The valuation-one node
+certificate does not cover the even-valuation branch.
+Consequently these results cannot yet identify the projective cubic with a minimal
 regular model. A split nodal tangent cone by itself does not establish Kodaira
 type `I₁`, and the even-branch polynomial identity does not establish a
 blow-up or conductor exponent. Any subsequent model or conductor theorem

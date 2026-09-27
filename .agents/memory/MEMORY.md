@@ -15,3 +15,4 @@
 - [Hypersurface dimension bounds](hypersurface-dimension-bounds.md) — prefer local generator height bounds; the pinned polynomial dimension formula is only a proof_wanted declaration.
 - [Two-adic generic-fibre comparisons](two-adic-generic-fibre-comparisons.md) — justify coefficient inversion from DVR factorization, then compare abstract localizations before specializing.
 - [Smooth curve local parameters](smooth-curve-local-normality.md) — choose the projection by the opposite unit partial; generic-chart parameters do not settle projective overlaps.
+- [Away-prime localization transport](away-prime-localization-transport.md) — use an abstract ring-instance bridge before specializing an overlap equivalence to prime local rings.
