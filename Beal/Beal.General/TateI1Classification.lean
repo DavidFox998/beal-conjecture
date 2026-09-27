@@ -20,7 +20,7 @@ namespace Beal.General
 /-- A regular principal prime in a Noetherian local ring detects
 zero divisors: repeatedly divide one factor by its generator and
 use Krull intersection for the other. -/
-private theorem isDomain_of_regular_principal_prime_local
+theorem isDomain_of_regular_principal_prime_local
     (A : Type*) [CommRing A] [LocalRing A] [IsNoetherianRing A]
     (t : A) (ht : ∀ a : A, t * a = 0 → a = 0)
     (hp : (Ideal.span {t} : Ideal A).IsPrime) : IsDomain A := by

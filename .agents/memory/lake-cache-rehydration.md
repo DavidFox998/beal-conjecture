@@ -38,3 +38,9 @@ After an isolated worktree is reattached, Lake may report changed dependency URL
 **Why:** A small field-dimension helper existed in the pinned source tree, but its module was outside the compiled import closure. The project-local proof compiled using the already available prime-spectrum definitions instead.
 
 **How to apply:** Before adding a Mathlib import solely for a small lemma during direct checks, verify its compiled object exists; if not, either compile it deliberately or prove the short fact from available imports. Always confirm the final project build independently.
+
+**Stale compiled visibility pitfall:** Directly checking a downstream Lean source after changing an upstream declaration from `private` to public can report `unknown identifier` even when the upstream source compiles. The downstream import still loads the previously compiled upstream `.olean`, where that public name did not exist.
+
+**Why:** The updated upstream file passed a direct source check, while the downstream file could see every other declaration but not the newly exposed helper. A full Lake rebuild compiled the upstream module first and then the downstream theorem successfully.
+
+**How to apply:** When a newly public upstream declaration is the sole unknown name in a direct downstream check, rebuild the actual dependency chain before diagnosing it as a proof error. A temporary single-module `.olean` outside the project's normal library tree may not be sufficient, because Lean resolves imports through a complete compiled-library root.
