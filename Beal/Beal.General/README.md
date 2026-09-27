@@ -233,11 +233,13 @@ feed the projective model and its chart calculations.
   explicit split valuation-one hypotheses.
 - `SplitProjectiveSpecialFibre.lean` proves that the homogeneous
   split nodal cubic `z v(v+u) - u³` generates a prime ideal over
-  `ZMod 2`, so the canonical homogeneous coordinate ring is a
-  domain even at infinity. This does not yet identify its `Proj`
-  with the scheme-theoretic special fibre of the actual integral
-  quotient; that base-change and translated-coordinate comparison
-  is still required.
+  `ZMod 2`. It also checks the reversible degree-preserving
+  coordinate translation of the **actual** projective equation
+  reduced modulo `2`, the induced equivalence of the two reduced
+  coordinate rings, and primality of the actual reduced equation.
+  This does not yet identify their `Proj` with the
+  scheme-theoretic special fibre of the integral quotient; that
+  base-change comparison is still required.
 
 ## Current boundary
 

@@ -17,3 +17,4 @@
 - [Smooth curve local parameters](smooth-curve-local-normality.md) — choose the projection by the opposite unit partial; generic-chart parameters do not settle projective overlaps.
 - [Away-prime localization transport](away-prime-localization-transport.md) — use an abstract ring-instance bridge before specializing an overlap equivalence to prime local rings.
 - [Lean let-binders in statements](lean-let-statement-binders.md) — introduce a let-bound open before the quantified point to avoid misleading Proj chart type errors.
+- [Polynomial substitution inverses](polynomial-substitution-inverses.md) — prove eval₂Hom images on constants and generators explicitly before composing translations.
