@@ -107,6 +107,15 @@ feed the projective model and its chart calculations.
   primes. This does not identify the entire generic-fibre
   coordinate ring or give a principal localized maximal ideal
   or its dimension bound.
+- `GenericFibreCurveDimension.lean` proves the field-valued
+  affine Weierstrass coordinate ring is integral over `K[X]`:
+  its equation is monic in `Y`, and its quotient is a domain.
+  It proves that this ring and every prime localization have
+  dimension at most one in the prime-chain sense, including
+  non-rational primes. The identification of this field-valued
+  ring with the generic fibre of the **actual** integral chart
+  is not yet constructed; these results cannot be asserted for
+  the actual-chart localizations without that transport.
 
 ## Current boundary
 
@@ -131,7 +140,9 @@ certificates above, but primes on the overlap `V ≠ 0` still need
 regularity transported from the `Z = 1` chart. Generic-fibre primes
 of `Z = 1` have not been proved regular: the checked generic-fibre
 Jacobian-unit statement from `W.Δ ≠ 0` has not been promoted to a
-local maximal-ideal generator and dimension bound. The generic
+local maximal-ideal generator, and the field-valued coordinate
+ring's prime-chain bound has not been transported across the
+generic-fibre comparison to the actual local rings. The generic
 point of the generic fibre would have dimension zero, not one;
 an upper bound of one is the appropriate uniform target there.
 Consequently they cannot yet identify the projective cubic with a minimal

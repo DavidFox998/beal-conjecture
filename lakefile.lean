@@ -46,6 +46,7 @@ lean_lib BealGeneral where
     .one `Beal.«Beal.General».SplitNodeParametrization,
     .one `Beal.«Beal.General».ZChartNonNodeRegularity,
     .one `Beal.«Beal.General».ZChartGenericFibre,
+    .one `Beal.«Beal.General».GenericFibreCurveDimension,
     .one `Beal.«Beal.General».TwoChartGlobalMorphism,
     .one `Beal.«Beal.General».TargetOpenPreimages,
     .one `Beal.«Beal.General».GlobalClosedImmersion,
