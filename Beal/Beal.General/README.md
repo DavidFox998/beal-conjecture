@@ -231,6 +231,13 @@ feed the projective model and its chart calculations.
   certificates. The two-open cover then gives the formal predicate
   at **every stalk of the actual quotient `Proj`** under the
   explicit split valuation-one hypotheses.
+- `SplitProjectiveSpecialFibre.lean` proves that the homogeneous
+  split nodal cubic `z v(v+u) - u³` generates a prime ideal over
+  `ZMod 2`, so the canonical homogeneous coordinate ring is a
+  domain even at infinity. This does not yet identify its `Proj`
+  with the scheme-theoretic special fibre of the actual integral
+  quotient; that base-change and translated-coordinate comparison
+  is still required.
 
 ## Current boundary
 
