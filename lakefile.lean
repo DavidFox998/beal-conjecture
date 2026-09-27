@@ -60,6 +60,7 @@ lean_lib BealGeneral where
     .one `Beal.«Beal.General».YChartOverlapLocalization,
     .one `Beal.«Beal.General».YChartOverlapPrime,
     .one `Beal.«Beal.General».YChartAllPrimeParameters,
+    .one `Beal.«Beal.General».ProjectiveChartStalks,
     .one `Beal.«Beal.General».TwoChartGlobalMorphism,
     .one `Beal.«Beal.General».TargetOpenPreimages,
     .one `Beal.«Beal.General».GlobalClosedImmersion,

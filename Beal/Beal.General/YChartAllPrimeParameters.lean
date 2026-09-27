@@ -46,7 +46,7 @@ private theorem dimensionLEOne_of_ringEquiv
 
 /-- Equivalence of local rings transports the same dimension and
 maximal-ideal generator alternatives as the `Z = 1` certificate. -/
-private theorem localParameters_of_ringEquiv
+theorem localParameters_of_ringEquiv
     {A B : Type*} [CommRing A] [CommRing B]
     [LocalRing A] [LocalRing B] (e : A ≃+* B)
     (hB : IsNoetherianRing B ∧

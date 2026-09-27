@@ -16,3 +16,4 @@
 - [Two-adic generic-fibre comparisons](two-adic-generic-fibre-comparisons.md) — justify coefficient inversion from DVR factorization, then compare abstract localizations before specializing.
 - [Smooth curve local parameters](smooth-curve-local-normality.md) — choose the projection by the opposite unit partial; generic-chart parameters do not settle projective overlaps.
 - [Away-prime localization transport](away-prime-localization-transport.md) — use an abstract ring-instance bridge before specializing an overlap equivalence to prime local rings.
+- [Lean let-binders in statements](lean-let-statement-binders.md) — introduce a let-bound open before the quantified point to avoid misleading Proj chart type errors.

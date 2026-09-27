@@ -210,7 +210,14 @@ feed the projective model and its chart calculations.
   boundary certificates. The result covers every prime localization
   of the actual `Y = 1` affine coordinate ring under the same
   explicit nodal, split, discriminant, and valuation-one hypotheses.
-  It does not yet identify these local rings with `Proj` stalks.
+- `ProjectiveChartStalks.lean` identifies the stalk at every point
+  of the actual quotient `Proj` with a corresponding prime
+  localization of one of those two affine coordinate rings. It
+  combines the existing two-open cover and both explicit affine
+  chart isomorphisms with the structure-sheaf stalk equivalence,
+  then transfers the Noetherian/dimension/generator certificate
+  to **every projective stalk** in the split valuation-one case.
+  It does not assert a minimal regular model or properness.
 
 ## Current boundary
 
@@ -223,17 +230,17 @@ construct that morphism and prove the required projective-space property (or
 prove the property directly for the cubic); no theorem in this folder assumes
 it silently.
 
-**All projective-stalk regularity remains unproved.** In the split
-valuation-one case both actual affine coordinate rings now have
-all-prime Noetherian/dimension/generator certificates. The
-overlap is checked as a localized ring equivalence and its
-prime-localizations are compared. The existing scheme isomorphisms
-from the two basic opens of the quotient `Proj` to these affine
-spectra still need an explicit stalk comparison carrying the
-certificates to *every projective stalk*. The valuation-one node
-certificate does not cover the even-valuation branch.
-Consequently these results cannot yet identify the projective cubic with a minimal
-regular model. A split nodal tangent cone by itself does not establish Kodaira
-type `I₁`, and the even-branch polynomial identity does not establish a
-blow-up or conductor exponent. Any subsequent model or conductor theorem
-must keep `W.Δ ≠ 0` explicit and discharge those geometric steps separately.
+**The split valuation-one local-parameter certificates now cover
+all projective stalks**, including non-rational points. Each has the
+stated Noetherian, dimension, and maximal-ideal generator data.
+This does not cover the even-valuation node. A separate theorem about
+the entire *projective* special fibre being irreducible, together with
+the requisite model and minimality argument, is still needed.
+Consequently these results cannot yet identify the projective cubic
+with a minimal regular model. The split nodal tangent cone has two
+distinct tangent lines, but this alone does not establish Kodaira
+type `I₁`; at the node the partial derivative with respect to `v`
+is `u = 0`, not a unit. The even-branch polynomial identity does not
+establish a blow-up or conductor exponent. Any subsequent model or
+conductor theorem must keep `W.Δ ≠ 0` explicit and discharge those
+geometric steps separately.
