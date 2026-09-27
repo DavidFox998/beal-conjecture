@@ -184,6 +184,20 @@ feed the projective model and its chart calculations.
   uses the proved fraction-curve equivalence, and compares the
   prime localizations. No rationality of the residue field is
   assumed.
+- `ZChartAllPrimeParameters.lean` combines the generic and
+  special-fibre cases into an all-prime regular-parameter certificate
+  for the actual `Z = 1` chart, **under the split-node hypotheses and
+  the valuation-one condition**. Generic-fibre primes have dimension
+  at most one and principal local maximal ideals; the generic
+  special-fibre prime has dimension one and a principal maximal
+  ideal; all strict special-fibre primes have dimension two and
+  two-generated maximal ideals. It does not identify projective
+  stalks or cover the even-valuation branch.
+- `YChartOverlapEquation.lean` checks the coordinate substitutions
+  `u = x/y`, `v = 1/y` and their reverse at the level of the two
+  defining equations in arbitrary commutative rings. It does
+  **not** yet construct an equivalence of the localized chart rings
+  or transport the regular-parameter certificates to `Y = 1`.
 
 ## Current boundary
 
@@ -196,19 +210,17 @@ construct that morphism and prove the required projective-space property (or
 prove the property directly for the cubic); no theorem in this folder assumes
 it silently.
 
-**All-stalk regularity remains unproved.** The valuation-one node
-has a Noetherian dimension-two/two-generator certificate in the
-actual `Z = 1` coordinate ring. Under the split nodal hypotheses,
-the generic special-fibre prime also has a dimension-one/
-one-generator certificate. At every non-node strict special-fibre
-specialization, including non-rational primes, the integral chart
-now has a checked dimension-two/two-generator certificate.
+**All projective-stalk regularity remains unproved.** In the split
+valuation-one case the actual `Z = 1` coordinate ring now has a
+single theorem covering every prime with the appropriate
+Noetherian/dimension/generator certificate, including non-rational
+special-fibre and generic-fibre primes. This does not apply to the
+even-valuation node.
 The infinity boundary `V = 0` is covered by the two local-ring
 certificates above, but primes on the overlap `V ≠ 0` still need
-regularity transported from the `Z = 1` chart. Generic-fibre
-primes of `Z = 1` now have both a dimension-at-most-one bound
-and a principal local maximal ideal under `W.Δ ≠ 0`, including
-non-rational primes; the generic point has zero maximal ideal.
+regularity transported from the `Z = 1` chart. The equation-level
+overlap identities alone do not identify the corresponding chart
+localizations or the `Proj` stalks.
 Consequently they cannot yet identify the projective cubic with a minimal
 regular model. A split nodal tangent cone by itself does not establish Kodaira
 type `I₁`, and the even-branch polynomial identity does not establish a
