@@ -33,6 +33,15 @@ feed the projective model and its chart calculations.
   even after arbitrary base change. This certificate refers to the
   homogeneous cubic defining the actual quotient `Proj`, but is not a
   scheme-theoretic regularity theorem.
+- `TateEisenstein.lean` already proves that the translated valuation-one
+  node has a Noetherian local ring of dimension two, a two-generated
+  maximal ideal, and no single generator; its Eisenstein intermediate
+  prime supplies the dimension lower bound.
+- `TranslatedZChartNode.lean` transports this valuation-one
+  regular-parameter certificate to the localization at the
+  corresponding prime of the actual integral `Z = 1` chart ring. It constructs the coordinate
+  translation and quotient-ring equivalence rather than equating only
+  their reduced equations.
 
 ## Current boundary
 
@@ -45,13 +54,14 @@ construct that morphism and prove the required projective-space property (or
 prove the property directly for the cubic); no theorem in this folder assumes
 it silently.
 
-**All-stalk regularity remains unproved.** The two fibrewise nonsingularity
-statements do not identify the local rings of the integral quotient or
-prove their regularity. The infinity derivative is a certificate at one
-point, not at every `Y = 1` stalk. At the valuation-one node, the
-two-generator upper bound on the local dimension still needs a matching
-lower bound and a regular-local-ring criterion. The translated nodal
-special-fibre equation is not the integral infinity-chart equation.
+**All-stalk regularity remains unproved.** The valuation-one node is
+now covered by a Noetherian dimension-two/two-generator certificate in
+the actual `Z = 1` coordinate ring. The pointwise generic- and
+special-fibre nonsingularity statements have not been promoted to
+regular-local-ring theorems for every other prime of either chart.
+The infinity derivative is a certificate at one point, not a local-ring
+result for every `Y = 1` stalk. The translated nodal special-fibre
+equation is not the integral infinity-chart equation.
 Consequently they cannot yet identify the projective cubic with a minimal
 regular model. A split nodal tangent cone by itself does not establish Kodaira
 type `I₁`, and the even-branch polynomial identity does not establish a
