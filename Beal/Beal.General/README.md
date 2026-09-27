@@ -25,6 +25,14 @@ feed the projective model and its chart calculations.
 - `GenericFibreNonsingular.lean` proves pointwise projective nonsingularity
   over every field with an injective map from `ℤ_[2]`, assuming `W.Δ ≠ 0`.
   It combines the affine discriminant criterion with the infinity argument.
+- `SpecialFibreSmoothLocus.lean` identifies the smooth geometric points
+  of a nodal special fibre away from its unique affine node, over every
+  field extension of `𝔽₂`. This does not prove regularity of total-space stalks.
+- `InfinityChartJacobian.lean` computes the `V = Z/Y` partial derivative
+  of the **integral** `Y = 1` dehomogenization at infinity: it equals `1`,
+  even after arbitrary base change. This certificate refers to the
+  homogeneous cubic defining the actual quotient `Proj`, but is not a
+  scheme-theoretic regularity theorem.
 
 ## Current boundary
 
@@ -37,11 +45,13 @@ construct that morphism and prove the required projective-space property (or
 prove the property directly for the cubic); no theorem in this folder assumes
 it silently.
 
-**All-stalk regularity remains unproved.** Local results about the
-valuation-one node, the special fibre, and the linear term in the infinity
-chart are not yet statements about every local ring of both affine charts.
-Neither is pointwise nonsingularity of the generic fibre by itself an
-all-stalk regularity result for the integral scheme.
+**All-stalk regularity remains unproved.** The two fibrewise nonsingularity
+statements do not identify the local rings of the integral quotient or
+prove their regularity. The infinity derivative is a certificate at one
+point, not at every `Y = 1` stalk. At the valuation-one node, the
+two-generator upper bound on the local dimension still needs a matching
+lower bound and a regular-local-ring criterion. The translated nodal
+special-fibre equation is not the integral infinity-chart equation.
 Consequently they cannot yet identify the projective cubic with a minimal
 regular model. A split nodal tangent cone by itself does not establish Kodaira
 type `I₁`, and the even-branch polynomial identity does not establish a
