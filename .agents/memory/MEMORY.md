@@ -9,7 +9,7 @@
 - [Finite residue proofs](finite-residue-proofs.md) — split constrained cases before exhaustive Lean decisions; a monolithic check can time out in the full module.
 - [Quotient domain transport](quotient-domain-transport.md) — transport primality of the ideal, then rebuild quotient-domain instances instead of rewriting their dependent types.
 - [Projective grading in pinned Mathlib](projective-grading.md) — explicit grading instances and localization action/zero diamonds matter for chart proofs.
-- [Projective geometry API boundary](projective-geometry-api-boundary.md) — the global closed immersion is separate from the missing projective-space properness result.
+- [Projective geometry API boundary](projective-geometry-api-boundary.md) — neither a graded quotient nor its Proj automatically identifies a scheme fibre; properness is also separate.
 - [Multivariate zero evaluation](multivariate-zero-evaluation.md) — at zero, simplification may stop at constantCoeff; use eval₂Hom lemmas directly for coordinate kernels.
 - [Characteristic-two polynomial derivatives](char-two-polynomial-derivatives.md) — expose scalar numerals through `C` before canceling derivative coefficients in multivariate polynomials.
 - [Hypersurface dimension bounds](hypersurface-dimension-bounds.md) — prefer local generator height bounds; the pinned polynomial dimension formula is only a proof_wanted declaration.

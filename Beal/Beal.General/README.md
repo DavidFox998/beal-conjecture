@@ -258,6 +258,15 @@ feed the projective model and its chart calculations.
   base-change isomorphisms are not yet proved**; even a graded
   coordinate-ring equivalence alone does not identify the actual
   scheme-theoretic special fibre.
+- `ProjectiveBaseMorphism.lean` constructs scalar global sections of
+  the quotient `Proj` structure sheaf and uses the Γ–Spec adjunction
+  to define its structure morphism to `Spec ℤ_[2]`. It also defines
+  the **actual scheme-theoretic special fibre** as the pullback along
+  `Spec (ZMod 2) → Spec ℤ_[2]`. The chartwise base-change comparison
+  between this pullback and the graded quotient `Proj`, and the
+  scheme-level comparison with the canonical split cubic, remain
+  unproved. No reduction classification follows from these
+  definitions alone.
 
 ## Current boundary
 
