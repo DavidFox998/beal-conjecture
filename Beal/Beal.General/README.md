@@ -112,10 +112,8 @@ feed the projective model and its chart calculations.
   its equation is monic in `Y`, and its quotient is a domain.
   It proves that this ring and every prime localization have
   dimension at most one in the prime-chain sense, including
-  non-rational primes. The identification of this field-valued
-  ring with the generic fibre of the **actual** integral chart
-  is not yet constructed; these results cannot be asserted for
-  the actual-chart localizations without that transport.
+  non-rational primes. The comparison and localization modules
+  below transport this bound to actual generic-prime stalks.
 - `ZChartGenericFibreComparison.lean` constructs the coefficient-extension
   map from the actual `Z = 1` ring to the field-valued Weierstrass
   coordinate ring. Every nonzero base coefficient maps to a unit, so
@@ -123,9 +121,18 @@ feed the projective model and its chart calculations.
   inverts `2`. It also constructs a map back from the field-valued
   ring into every generic-fibre prime localization of the actual
   chart, using the fraction-field coefficient map and the affine
-  equation. These maps have not been proved inverse (even after
-  localization), so they do not transfer the field-valued dimension
-  bound or supply a regular parameter in an actual-chart stalk.
+  equation. The next module proves inverse laws after inverting `2`;
+  these maps alone do not supply a regular parameter.
+- `ZChartGenericFibreLocalization.lean` proves that inverting `2`
+  in the actual integral chart also inverts every nonzero base
+  coefficient. It constructs the reverse map from the field-valued
+  curve into any such localization, proves both composite maps
+  are identities, and obtains a ring equivalence with the
+  field-valued affine Weierstrass coordinate ring. It transfers
+  dimension at most one to the inverted chart and then to **every**
+  localization of the actual chart at a prime not containing `2`,
+  including non-rational primes. It does not prove that their
+  maximal ideals are principal.
 
 ## Current boundary
 
@@ -148,11 +155,10 @@ now has a checked dimension-two/two-generator certificate.
 The infinity boundary `V = 0` is covered by the two local-ring
 certificates above, but primes on the overlap `V ≠ 0` still need
 regularity transported from the `Z = 1` chart. Generic-fibre primes
-of `Z = 1` have not been proved regular: the checked generic-fibre
-Jacobian-unit statement from `W.Δ ≠ 0` has not been promoted to a
-local maximal-ideal generator, and the field-valued coordinate
-  ring's prime-chain bound has not been transported across a proved
-  generic-fibre equivalence to the actual local rings. The generic
+ of `Z = 1` have not been proved regular: although they now have a
+ dimension-at-most-one bound, the generic-fibre Jacobian-unit
+ statement from `W.Δ ≠ 0` has not been promoted to a local
+ maximal-ideal generator at arbitrary primes. The generic
 point of the generic fibre would have dimension zero, not one;
 an upper bound of one is the appropriate uniform target there.
 Consequently they cannot yet identify the projective cubic with a minimal
