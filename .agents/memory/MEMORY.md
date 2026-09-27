@@ -14,3 +14,4 @@
 - [Characteristic-two polynomial derivatives](char-two-polynomial-derivatives.md) — expose scalar numerals through `C` before canceling derivative coefficients in multivariate polynomials.
 - [Hypersurface dimension bounds](hypersurface-dimension-bounds.md) — prefer local generator height bounds; the pinned polynomial dimension formula is only a proof_wanted declaration.
 - [Two-adic generic-fibre comparisons](two-adic-generic-fibre-comparisons.md) — justify coefficient inversion from DVR factorization, then compare abstract localizations before specializing.
+- [Smooth curve local normality](smooth-curve-local-normality.md) — Jacobian units and dimension bounds need a separate non-rational local normality or parameter argument.

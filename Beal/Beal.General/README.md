@@ -133,6 +133,14 @@ feed the projective model and its chart calculations.
   localization of the actual chart at a prime not containing `2`,
   including non-rational primes. It does not prove that their
   maximal ideals are principal.
+- `ZChartGenericFibrePrincipalCriterion.lean` proves every actual
+  generic-prime localization is a domain. It gives a **conditional**
+  principal-maximal-ideal theorem: if that local ring is integrally
+  closed, its existing Noetherian and dimension-at-most-one bounds
+  make it a Dedekind domain, so its maximal ideal is principal.
+  The local integral-closedness hypothesis is not discharged by
+  the Jacobian-unit certificate; this is not an all-stalk
+  regularity result.
 
 ## Current boundary
 
@@ -158,7 +166,8 @@ regularity transported from the `Z = 1` chart. Generic-fibre primes
  of `Z = 1` have not been proved regular: although they now have a
  dimension-at-most-one bound, the generic-fibre Jacobian-unit
  statement from `W.Δ ≠ 0` has not been promoted to a local
- maximal-ideal generator at arbitrary primes. The generic
+ integral-closedness proof or a direct local maximal-ideal
+ generator at arbitrary primes. The generic
 point of the generic fibre would have dimension zero, not one;
 an upper bound of one is the appropriate uniform target there.
 Consequently they cannot yet identify the projective cubic with a minimal
