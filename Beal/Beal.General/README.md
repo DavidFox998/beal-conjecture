@@ -66,7 +66,10 @@ feed the projective model and its chart calculations.
   It also computes both partials of the **full** reduced cubic and
   proves that an ideal containing both must contain the node ideal.
   More strongly, every reduced-cubic prime containing `u` contains
-  the node, so the same `v` partial avoids every non-node prime.
+  the node. This support statement is transported through the whole
+  special-fibre quotient and the integral coordinate translation to
+  the actual `Z = 1` chart: the translated `u` coordinate is a unit
+  in every non-node special-fibre prime localization.
   Conditional on a two-generated maximal ideal at a strict
   special-fibre specialization, the existing local height theorem
   gives Krull dimension exactly two. The two-generator statement
@@ -95,9 +98,9 @@ the generic special-fibre prime also has a dimension-one/
 one-generator certificate. Its strict specializations have a
 proved dimension lower bound of two, but still need corresponding
 two-generator maximal-ideal certificates (which would also give
-the upper bound). The non-node partial-derivative statement is
-currently in the reduced cubic, not a criterion proving those
-local parameters for the integral chart.
+  the upper bound). Although the uniform non-node coordinate-unit
+  statement now holds in the integral chart localizations, it is
+  not a criterion proving those local parameters.
 The infinity boundary `V = 0` is covered by the two local-ring
 certificates above, but primes on the overlap `V ≠ 0` still need
 regularity transported from the `Z = 1` chart. The pointwise generic-

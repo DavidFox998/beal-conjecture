@@ -186,6 +186,183 @@ theorem splitNodeCubic_pderiv_v_avoids_nonNode_prime
   apply splitNodeCubic_prime_contains_u_implies_node J
   simpa only [splitNodeCubic_pderiv_v] using hv
 
+/-- In the integral translated surface, a special-fibre prime
+containing `u` also contains the closed node ideal. The argument
+passes through the *whole* reduced-cubic quotient, so it does not
+restrict the residue field to `𝔽₂`. -/
+theorem splitNode_surface_specialPrime_contains_u_implies_node
+    (W : WeierstrassCurve ℤ_[2])
+    (hnode : ReducedNodalPoint (W.map PadicInt.toZMod)
+      (PadicInt.toZMod W.a₃)
+      (PadicInt.toZMod (W.a₃ ^ 2 + W.a₄)))
+    (hsplit : 3 * PadicInt.toZMod W.a₃ +
+      (W.map PadicInt.toZMod).a₂ = 0)
+    (Q : Ideal (localSurfaceCoordinateRing W W.a₃ (W.a₃ ^ 2 + W.a₄)))
+    [Q.IsPrime]
+    (hF : localSurfaceSpecialFibreIdeal W W.a₃ (W.a₃ ^ 2 + W.a₄) ≤ Q)
+    (hu : (Ideal.Quotient.mk (Ideal.span
+      {localSurfaceEquation W W.a₃ (W.a₃ ^ 2 + W.a₄)}))
+        (MvPolynomial.X (0 : Fin 2)) ∈ Q) :
+    localSurfaceClosedPoint W W.a₃ (W.a₃ ^ 2 + W.a₄) ≤ Q := by
+  let S := MvPolynomial (Fin 2) ℤ_[2]
+  let R := localSurfaceCoordinateRing W W.a₃ (W.a₃ ^ 2 + W.a₄)
+  let I : Ideal S :=
+    Ideal.span {localSurfaceEquation W W.a₃ (W.a₃ ^ 2 + W.a₄)}
+  let F : Ideal R :=
+    localSurfaceSpecialFibreIdeal W W.a₃ (W.a₃ ^ 2 + W.a₄)
+  let r : S →+* R := Ideal.Quotient.mk I
+  let f : R →+* R ⧸ F := Ideal.Quotient.mk F
+  let e : (R ⧸ F) ≃+*
+      (MvPolynomial (Fin 2) (ZMod 2) ⧸
+        Ideal.span {splitNodeCubic}) :=
+    splitNode_affineSpecialFibre_equiv W hnode hsplit
+  let J₀ : Ideal (R ⧸ F) := Q.map f
+  haveI : J₀.IsPrime := by
+    apply Ideal.map_isPrime_of_surjective Ideal.Quotient.mk_surjective
+    simpa only [Ideal.mk_ker] using hF
+  let J : Ideal (MvPolynomial (Fin 2) (ZMod 2) ⧸
+    Ideal.span {splitNodeCubic}) := J₀.map e.toRingHom
+  have hker : RingHom.ker e.toRingHom = ⊥ :=
+    (RingHom.injective_iff_ker_eq_bot e.toRingHom).mp e.injective
+  haveI : J.IsPrime := by
+    apply Ideal.map_isPrime_of_surjective e.surjective
+    change RingHom.ker e.toRingHom ≤ J₀
+    rw [hker]
+    exact bot_le
+  have hU : f (r (MvPolynomial.X (0 : Fin 2))) ∈ J₀ :=
+    Ideal.mem_map_of_mem f hu
+  have hEq : e (f (r (MvPolynomial.X (0 : Fin 2)))) =
+      (Ideal.Quotient.mk (Ideal.span {splitNodeCubic}))
+        (MvPolynomial.X (0 : Fin 2)) := by
+    change e (DoubleQuot.quotQuotMk I
+      (Ideal.span {MvPolynomial.C (2 : ℤ_[2])})
+        (MvPolynomial.X (0 : Fin 2))) =
+      (Ideal.Quotient.mk (Ideal.span {splitNodeCubic}))
+        (MvPolynomial.X (0 : Fin 2))
+    simpa only [MvPolynomial.map_X] using
+      (splitNode_affineSpecialFibre_equiv_mk W hnode hsplit
+        (MvPolynomial.X (0 : Fin 2)))
+  have hU' : (Ideal.Quotient.mk (Ideal.span {splitNodeCubic}))
+      (MvPolynomial.X (0 : Fin 2)) ∈ J := by
+    rw [← hEq]
+    exact Ideal.mem_map_of_mem e.toRingHom hU
+  have hnodeJ : splitNode_originIdeal ≤ J :=
+    splitNodeCubic_prime_contains_u_implies_node J hU'
+  let C : Ideal R :=
+    localSurfaceClosedPoint W W.a₃ (W.a₃ ^ 2 + W.a₄)
+  have hmapC : Ideal.map e.toRingHom (Ideal.map f C) =
+      splitNode_originIdeal :=
+    splitNode_fibreClosedPoint_eq_origin W hnode hsplit
+  have hmap : Ideal.map f C ≤ J₀ := by
+    have hh : Ideal.map e.toRingHom (Ideal.map f C) ≤
+        Ideal.map e.toRingHom J₀ := by
+      rw [hmapC]
+      exact hnodeJ
+    have hc := Ideal.comap_mono (f := e.toRingHom) hh
+    simpa only [Ideal.comap_map_of_surjective e.toRingHom e.surjective,
+      ← RingHom.ker_eq_comap_bot, hker, sup_bot_eq] using hc
+  have hc := Ideal.comap_mono (f := f) hmap
+  have hkerf : RingHom.ker f = F := Ideal.mk_ker
+  have hs : C ⊔ F ≤ Q ⊔ F := by
+    simpa only [Ideal.comap_map_of_surjective f Ideal.Quotient.mk_surjective,
+      ← RingHom.ker_eq_comap_bot, hkerf] using hc
+  have hs' : C ⊔ F ≤ Q := by simpa only [sup_eq_left.mpr hF] using hs
+  exact le_trans le_sup_left hs'
+
+/-- The same support statement in the actual integral `Z = 1`
+chart. Here `u` is the *translated* coordinate obtained through
+the chart equivalence, not the original `X` polynomial. -/
+theorem splitNode_ZChart_specialPrime_contains_shifted_u_implies_node
+    (W : WeierstrassCurve ℤ_[2])
+    (hnode : ReducedNodalPoint (W.map PadicInt.toZMod)
+      (PadicInt.toZMod W.a₃)
+      (PadicInt.toZMod (W.a₃ ^ 2 + W.a₄)))
+    (hsplit : 3 * PadicInt.toZMod W.a₃ +
+      (W.map PadicInt.toZMod).a₂ = 0)
+    (Q : Ideal (projectiveWeierstrassZChartRing W)) [Q.IsPrime]
+    (h2 : (Ideal.Quotient.mk
+      (Ideal.span {localSurfaceEquation W 0 0}))
+        (MvPolynomial.C (2 : ℤ_[2])) ∈ Q)
+    (hu : (projectiveWeierstrassZChart_shiftEquiv W W.a₃
+      (W.a₃ ^ 2 + W.a₄)).symm
+        ((Ideal.Quotient.mk (Ideal.span
+          {localSurfaceEquation W W.a₃ (W.a₃ ^ 2 + W.a₄)}))
+            (MvPolynomial.X (0 : Fin 2))) ∈ Q) :
+    projectiveWeierstrassZChart_shiftPrime W W.a₃
+      (W.a₃ ^ 2 + W.a₄)
+        (localSurfaceClosedPoint W W.a₃ (W.a₃ ^ 2 + W.a₄)) ≤ Q := by
+  let R := projectiveWeierstrassZChartRing W
+  let T := localSurfaceCoordinateRing W W.a₃ (W.a₃ ^ 2 + W.a₄)
+  let e : R ≃ₐ[ℤ_[2]] T :=
+    projectiveWeierstrassZChart_shiftEquiv W W.a₃ (W.a₃ ^ 2 + W.a₄)
+  let q : MvPolynomial (Fin 2) ℤ_[2] →+* R :=
+    Ideal.Quotient.mk (Ideal.span {localSurfaceEquation W 0 0})
+  let r : MvPolynomial (Fin 2) ℤ_[2] →+* T :=
+    Ideal.Quotient.mk (Ideal.span
+      {localSurfaceEquation W W.a₃ (W.a₃ ^ 2 + W.a₄)})
+  let Q' : Ideal T := Q.map e.toRingEquiv.toRingHom
+  have hker : RingHom.ker e.toRingEquiv.toRingHom = ⊥ :=
+    (RingHom.injective_iff_ker_eq_bot _).mp e.injective
+  haveI : Q'.IsPrime := by
+    apply Ideal.map_isPrime_of_surjective e.surjective
+    change RingHom.ker e.toRingEquiv.toRingHom ≤ Q
+    rw [hker]
+    exact bot_le
+  have hbase : e (q (MvPolynomial.C (2 : ℤ_[2]))) =
+      r (MvPolynomial.C (2 : ℤ_[2])) := by
+    change e (algebraMap ℤ_[2] R 2) = algebraMap ℤ_[2] T 2
+    exact e.commutes 2
+  have hF : localSurfaceSpecialFibreIdeal W W.a₃
+      (W.a₃ ^ 2 + W.a₄) ≤ Q' := by
+    rw [localSurfaceSpecialFibreIdeal_eq_span_two]
+    apply (Ideal.span_singleton_le_iff_mem Q').mpr
+    rw [← hbase]
+    exact Ideal.mem_map_of_mem e.toRingEquiv.toRingHom h2
+  have hu' : r (MvPolynomial.X (0 : Fin 2)) ∈ Q' := by
+    rw [← e.apply_symm_apply (r (MvPolynomial.X (0 : Fin 2)))]
+    exact Ideal.mem_map_of_mem e.toRingEquiv.toRingHom hu
+  have hC : localSurfaceClosedPoint W W.a₃ (W.a₃ ^ 2 + W.a₄) ≤ Q' :=
+    splitNode_surface_specialPrime_contains_u_implies_node
+      W hnode hsplit Q' hF hu'
+  have hc := Ideal.comap_mono (f := e.toRingEquiv.toRingHom) hC
+  change (localSurfaceClosedPoint W W.a₃
+    (W.a₃ ^ 2 + W.a₄)).comap e.toRingEquiv.toRingHom ≤ Q
+  simpa only [Q', Ideal.comap_map_of_surjective
+    e.toRingEquiv.toRingHom e.surjective,
+    ← RingHom.ker_eq_comap_bot, hker, sup_bot_eq] using hc
+
+/-- At every non-node special-fibre prime of the actual integral
+chart, the translated `u` coordinate (and hence the reduced
+`v` partial) is a unit after localization. This does not assert
+that the localized maximal ideal has two generators. -/
+theorem splitNode_ZChart_shifted_u_unit_at_nonNode_specialPrime
+    (W : WeierstrassCurve ℤ_[2])
+    (hnode : ReducedNodalPoint (W.map PadicInt.toZMod)
+      (PadicInt.toZMod W.a₃)
+      (PadicInt.toZMod (W.a₃ ^ 2 + W.a₄)))
+    (hsplit : 3 * PadicInt.toZMod W.a₃ +
+      (W.map PadicInt.toZMod).a₂ = 0)
+    (Q : Ideal (projectiveWeierstrassZChartRing W)) [Q.IsPrime]
+    (h2 : (Ideal.Quotient.mk
+      (Ideal.span {localSurfaceEquation W 0 0}))
+        (MvPolynomial.C (2 : ℤ_[2])) ∈ Q)
+    (hnotNode : ¬ projectiveWeierstrassZChart_shiftPrime W W.a₃
+      (W.a₃ ^ 2 + W.a₄)
+        (localSurfaceClosedPoint W W.a₃ (W.a₃ ^ 2 + W.a₄)) ≤ Q) :
+    IsUnit ((algebraMap (projectiveWeierstrassZChartRing W)
+      (Localization.AtPrime Q))
+        ((projectiveWeierstrassZChart_shiftEquiv W W.a₃
+          (W.a₃ ^ 2 + W.a₄)).symm
+            ((Ideal.Quotient.mk (Ideal.span
+              {localSurfaceEquation W W.a₃ (W.a₃ ^ 2 + W.a₄)}))
+                (MvPolynomial.X (0 : Fin 2))))) := by
+  apply (IsLocalization.AtPrime.isUnit_to_map_iff
+    (Localization.AtPrime Q) Q _).mpr
+  intro hu
+  exact hnotNode
+    (splitNode_ZChart_specialPrime_contains_shifted_u_implies_node
+      W hnode hsplit Q h2 hu)
+
 private theorem exists_prime_below_of_height_ge_one
     {A : Type*} [CommRing A]
     (M : PrimeSpectrum A) (hM : (1 : ℕ∞) ≤ Order.height M) :
