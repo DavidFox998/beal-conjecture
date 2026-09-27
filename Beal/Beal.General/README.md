@@ -218,6 +218,17 @@ feed the projective model and its chart calculations.
   then transfers the Noetherian/dimension/generator certificate
   to **every projective stalk** in the split valuation-one case.
   It does not assert a minimal regular model or properness.
+- `ProjectiveRegularLocalCriterion.lean` defines a project-local
+  regular-local-ring predicate by matching a finite generating family
+  for the maximal ideal to the exact Krull dimension. The pinned
+  Mathlib lacks this ring-level predicate. The checked exact
+  dimension-one and dimension-two projective-stalk alternatives meet
+  it; the dimension-at-most-one alternative remains separate.
+  A conditional theorem isolates the missing obligation: each
+  low-dimensional stalk must be a field or have dimension exactly one.
+  A principal maximal ideal and an upper dimension bound alone do
+  not establish that condition (a zero-dimensional non-field local
+  ring is a counterexample).
 
 ## Current boundary
 
@@ -233,6 +244,10 @@ it silently.
 **The split valuation-one local-parameter certificates now cover
 all projective stalks**, including non-rational points. Each has the
 stated Noetherian, dimension, and maximal-ideal generator data.
+The formal regular-local predicate is checked for the exact
+dimension-one and dimension-two alternatives, but not yet for every
+stalk: the remaining low-dimensional case needs a domain/reducedness
+argument or an exact dimension/field argument.
 This does not cover the even-valuation node. A separate theorem about
 the entire *projective* special fibre being irreducible, together with
 the requisite model and minimality argument, is still needed.
