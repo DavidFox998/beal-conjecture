@@ -14,3 +14,9 @@ The pinned Proj construction does not automatically give a structure morphism to
 **Why:** A graded coordinate-ring equivalence and an irreducible uniformizer zero locus do not identify the scheme structure of the actual fibre; confusing these gave an unjustified shortcut toward reduction claims.
 
 **How to apply:** When reasoning about a projective special fibre, distinguish the actual pullback from Proj of the graded coordinate quotient until the chartwise base-change isomorphisms and their overlap compatibility are proved. Do not transfer scheme-theoretic irreducibility or reduction classification across an unproved comparison.
+
+For a Proj chart, equality of scalar sections in the projective structure sheaf is not yet equality of maps into the global sections of the *restricted scheme*. Transport through the canonical comparison between those two section rings before using the Γ–Spec adjunction; then use the adjunction's naturality to identify the restricted base morphism.
+
+**Why:** A direct large calculation at the scheme level stalled Lean elaboration, while the sheaf and restricted-scheme section rings required an explicit isomorphism. The staged proof made the base-map identity checkable without assuming the desired pullback comparison.
+
+**How to apply:** In future local-to-global Proj comparisons, first check the sheaf restriction square, move to Γ of the open subscheme through the canonical comparison, and only then compare the associated scheme morphisms. The fact that a restricted chart is open in the actual fibre still does not imply its local isomorphism glues over the overlap.
