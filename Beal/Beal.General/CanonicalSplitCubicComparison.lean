@@ -13,6 +13,95 @@ open AlgebraicGeometry CategoryTheory
 
 universe u
 
+/-- Restriction of the graded equivalence to the product chart agrees
+with restriction of its degree-zero localization on the first chart.
+The product denominator on the target is the product of the translated
+denominators. -/
+theorem gradedEquivAwayHom_toProduct
+    {R S A B : Type u} [CommRing R] [CommRing S]
+    [CommRing A] [CommRing B] [Algebra R A] [Algebra S B]
+    (𝒜 : ℕ → Submodule R A) (ℬ : ℕ → Submodule S B)
+    [GradedAlgebra 𝒜] [GradedAlgebra ℬ]
+    (e : A ≃+* B)
+    (he : ∀ n (a : A), a ∈ 𝒜 n → e a ∈ ℬ n)
+    (f g : A) (d : ℕ) (hf : f ∈ 𝒜 d) (hg : g ∈ 𝒜 d) :
+    let hfg : HomogeneousLocalization.Away 𝒜 (f * g) →+*
+        HomogeneousLocalization.Away ℬ (e f * e g) :=
+      gradedLocalizationMap 𝒜 ℬ e.toRingHom
+        (by
+          intro a ha
+          obtain ⟨n, hn⟩ := (Submonoid.mem_powers_iff a (f * g)).mp ha
+          apply (Submonoid.mem_powers_iff _ _).mpr
+          exact ⟨n, by
+            simpa only [map_pow, e.map_mul] using congrArg e hn⟩)
+        he
+    (homogeneousLocalization_toProduct ℬ (e f) (e g) d
+      (he d f hf) (he d g hg)).comp
+        (gradedEquivAwayHom 𝒜 ℬ e he f) =
+      hfg.comp (homogeneousLocalization_toProduct 𝒜 f g d hf hg) := by
+  let hP : Submonoid.powers f ≤
+      (Submonoid.powers (e f)).comap e.toRingHom := by
+    intro a ha
+    obtain ⟨n, hn⟩ := (Submonoid.mem_powers_iff a f).mp ha
+    apply (Submonoid.mem_powers_iff _ _).mpr
+    exact ⟨n, by simpa only [map_pow] using congrArg e hn⟩
+  let hQ : Submonoid.powers f ⊔ Submonoid.powers g ≤
+      (Submonoid.powers (e f) ⊔ Submonoid.powers (e g)).comap e.toRingHom := by
+    apply sup_le
+    · intro a ha
+      exact Submonoid.mem_sup_left (hP ha)
+    · intro a ha
+      obtain ⟨n, hn⟩ := (Submonoid.mem_powers_iff a g).mp ha
+      apply Submonoid.mem_sup_right
+      apply (Submonoid.mem_powers_iff _ _).mpr
+      exact ⟨n, by simpa only [map_pow] using congrArg e hn⟩
+  let hdouble := gradedLocalizationMap 𝒜 ℬ e.toRingHom hQ he
+  have hleft :
+      (HomogeneousLocalization.mapId ℬ le_sup_left).comp
+          (gradedEquivAwayHom 𝒜 ℬ e he f) =
+        hdouble.comp (HomogeneousLocalization.mapId 𝒜 le_sup_left) :=
+    (gradedLocalizationMap_restrict 𝒜 ℬ e.toRingHom
+      le_sup_left le_sup_left hP hQ he)
+  have hproduct :
+      hdouble.comp (homogeneousLocalization_productToDouble 𝒜 f g) =
+        (homogeneousLocalization_productToDouble ℬ (e f) (e g)).comp
+          (gradedLocalizationMap 𝒜 ℬ e.toRingHom
+            (by
+              intro a ha
+              obtain ⟨n, hn⟩ := (Submonoid.mem_powers_iff a (f * g)).mp ha
+              apply (Submonoid.mem_powers_iff _ _).mpr
+              exact ⟨n, by
+                simpa only [map_pow, e.map_mul] using congrArg e hn⟩)
+            he) := by
+    apply RingHom.ext
+    intro x
+    obtain ⟨v, rfl⟩ := HomogeneousLocalization.mk_surjective x
+    simp only [RingHom.comp_apply, gradedLocalizationMap_mk,
+      homogeneousLocalization_productToDouble, HomogeneousLocalization.mapId,
+      HomogeneousLocalization.map_mk]
+    rfl
+  apply RingHom.ext
+  intro x
+  apply homogeneousLocalization_productToDouble_injective ℬ (e f) (e g)
+  calc
+    _ = (HomogeneousLocalization.mapId ℬ le_sup_left)
+          ((gradedEquivAwayHom 𝒜 ℬ e he f) x) := by
+      simpa only [RingHom.comp_apply] using congrArg
+        (fun h => h ((gradedEquivAwayHom 𝒜 ℬ e he f) x))
+        (homogeneousLocalization_toProduct_commutes ℬ (e f) (e g) d
+          (he d f hf) (he d g hg))
+    _ = hdouble ((HomogeneousLocalization.mapId 𝒜 le_sup_left) x) := by
+      exact congrArg (fun h => h x) hleft
+    _ = hdouble ((homogeneousLocalization_productToDouble 𝒜 f g)
+          ((homogeneousLocalization_toProduct 𝒜 f g d hf hg) x)) := by
+      exact congrArg hdouble (by
+        simpa only [RingHom.comp_apply] using congrArg (fun h => h x)
+          (homogeneousLocalization_toProduct_commutes 𝒜 f g d hf hg).symm)
+    _ = _ := by
+      simpa only [RingHom.comp_apply] using congrArg
+        (fun h => h ((homogeneousLocalization_toProduct 𝒜 f g d hf hg) x))
+        hproduct
+
 /-- The degree-zero localization equivalence induced by a graded ring
 equivalence lifts through the standard affine charts of both `Proj`s. -/
 noncomputable def gradedEquivProjBasicSchemeIso

@@ -27,6 +27,12 @@ Dependent product-chart morphisms need more than commutativity of their denomina
 
 **How to apply:** Establish the ring-instance and `Spec` endpoint transports before lifting a ring-map equality to `Spec`. For the full chart composite, line up each intermediate object equality and compose the heterogeneous arrow equalities in the same grouping as the target expression; only then turn the result into an ordinary equality across identified opens.
 
+For a degree-preserving equivalence between graded coordinate rings, prove restriction naturality on a product basic chart by comparing both paths in the **double localization**. The translated product denominator must be treated as the product of the translated factors, not as a syntactically unchanged chart coordinate.
+
+**Why:** Direct normalization of the product-chart map stalled because it is defined through the inverse of a product-to-double equivalence; even the translated product's target type needed an explicit bridge. Mapping the square into the double localization exposes two ordinary localization-map naturality squares and an injective comparison.
+
+**How to apply:** First establish the graded map on the double denominator submonoid, then compare its restrictions from a single factor and from the product by checking homogeneous fractions. Use injectivity of the target product-to-double map to recover the desired product-chart equality. This is a ring-level result; scheme-map compatibility and gluing still require their own proof.
+
 For a quotient `Proj` cover by coordinate opens, avoid first proving an equality between the quotient's irrelevant ideal and a variable-generated ideal. It is enough to show that each positive-degree quotient component belongs to any homogeneous prime containing every coordinate image; the zero component of an irrelevant element vanishes by definition.
 
 **Why:** Directly treating quotient relevance as the ambient polynomial prime-cover condition skips a genuine grading argument. The degreewise route also avoids an unnecessary quotient-ring presentation of the irrelevant ideal.

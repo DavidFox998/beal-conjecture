@@ -347,9 +347,13 @@ feed the projective model and its chart calculations.
   degree-zero localization and its affine `Spec`. Its chosen `Z` and
   `Y` specializations compare the quotient `Proj` with the canonical
   split cubic at the **translated** chart coordinates; the image of
-  `Y` is not silently identified with `Y`. Compatibility of these
-  particular local scheme maps on their overlap and the resulting
-  global scheme isomorphism are not yet proved.
+  `Y` is not silently identified with `Y`. The graded equivalence
+  now commutes with restriction from a basic chart to its product
+  chart at the level of degree-zero localization rings, including
+  the translated product denominator. Applying this to the other
+  factor reverses the product order; matching those two presentations
+  of the same overlap at the **scheme-map** level and gluing the
+  particular local isomorphisms are not yet proved.
 
 ## Current boundary
 
