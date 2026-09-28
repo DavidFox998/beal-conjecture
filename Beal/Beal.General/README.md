@@ -323,14 +323,24 @@ feed the projective model and its chart calculations.
    corresponding chosen chart isomorphisms over `ZMod 2` are natural
    for either ordered product. The chosen product-chart isomorphism
    is invariant under swapping its factors after dependent transport.
-   Separately, the graded special-fibre quotient's own `Proj` now has
-   a proved `Z`/`Y` open cover, and each member is isomorphic to the
-   corresponding member of the pulled-back cover of the global fibre.
-   To glue these local isomorphisms, it remains to identify their
-   cover intersections with the product-chart restrictions, transport
-   the `Y·Z` comparison to the named `Z·Y` overlap, and prove the
-   resulting transition-map compatibility. There is no glued global
-   isomorphism yet.
+    Separately, the graded special-fibre quotient's own `Proj` has a
+    proved `Z`/`Y` open cover, and each member is isomorphic to the
+    corresponding member of the pulled-back cover of the global fibre.
+    Both scheme-theoretic cover intersections are now identified with
+    their named `Z·Y` product basic opens: on the actual fibre by
+    base-changing an intersection of opens, and on the quotient `Proj`
+    by identifying the pullback of its two open immersions. The
+    projection to either member is verified against the ordinary
+    product-open inclusion on the actual fibre; the first projection
+    is likewise checked on the quotient `Proj`. Pullback pasting carries the
+    actual-fibre inclusion to the restricted-fibre inclusion, and the
+    **chosen cover-level chart isomorphisms** commute with the
+    product-open restriction. To glue, it remains to transport the
+    second projection's comparison with the reversed `Y·Z`
+    restriction across product commutativity, and prove the two
+    transition maps coincide on the cover intersection. No global
+    isomorphism or downstream Kodaira/conductor classification follows
+    from these chartwise squares alone.
 
 ## Current boundary
 

@@ -1886,4 +1886,542 @@ noncomputable def splitNodeSpecialFibreTwoChartSchemeIso
       (fun n => pow_ne_zero n
         (splitNode_projectiveSpecialFibreCoordinate_Z_ne_zero W hnode hsplit))
 
+/-- Base-changing an intersection of two opens is the intersection
+of their base changes, as an isomorphism of schemes over the source. -/
+noncomputable def pulledBackOpenInfIso {X F : Scheme}
+    (p : F ⟶ X) (U V : X.Opens) :
+    pullback (U ⊓ V).ι p ≅
+      pullback (pullback.snd U.ι p) (pullback.snd V.ι p) := by
+  let a := pullback.snd (U ⊓ V).ι p
+  let b := pullback.fst (pullback.snd U.ι p)
+      (pullback.snd V.ι p) ≫ pullback.snd U.ι p
+  apply IsOpenImmersion.isoOfRangeEq a b
+  rw [IsOpenImmersion.range_pullback_to_base_of_left,
+    IsOpenImmersion.range_pullback_snd_of_left,
+    IsOpenImmersion.range_pullback_snd_of_left,
+    IsOpenImmersion.range_pullback_snd_of_left]
+  simp only [Scheme.Opens.opensRange_ι, TopologicalSpace.Opens.carrier_eq_coe,
+    TopologicalSpace.Opens.map_coe,
+    TopologicalSpace.Opens.coe_inf, Set.preimage_inter]
+
+/-- The same identification when the named overlap is equal to the
+intersection but is not definitionally presented as that infimum. -/
+noncomputable def pulledBackOpenEqInfIso {X F : Scheme}
+    (p : F ⟶ X) (T U V : X.Opens) (hT : T = U ⊓ V) :
+    pullback T.ι p ≅
+      pullback (pullback.snd U.ι p) (pullback.snd V.ι p) := by
+  apply IsOpenImmersion.isoOfRangeEq (pullback.snd T.ι p)
+    (pullback.fst (pullback.snd U.ι p)
+      (pullback.snd V.ι p) ≫ pullback.snd U.ι p)
+  rw [IsOpenImmersion.range_pullback_to_base_of_left,
+    IsOpenImmersion.range_pullback_snd_of_left,
+    IsOpenImmersion.range_pullback_snd_of_left,
+    IsOpenImmersion.range_pullback_snd_of_left]
+  simp only [Scheme.Opens.opensRange_ι, TopologicalSpace.Opens.carrier_eq_coe,
+    TopologicalSpace.Opens.map_coe, hT, TopologicalSpace.Opens.coe_inf,
+    Set.preimage_inter]
+
+/-- The first overlap projection is over the identity of the
+base-changed scheme. -/
+theorem pulledBackOpenEqInfIso_hom_fst_snd {X F : Scheme}
+    (p : F ⟶ X) (T U V : X.Opens) (hT : T = U ⊓ V) :
+    (pulledBackOpenEqInfIso p T U V hT).hom ≫
+        pullback.fst (pullback.snd U.ι p) (pullback.snd V.ι p) ≫
+          pullback.snd U.ι p =
+      pullback.snd T.ι p := by
+  unfold pulledBackOpenEqInfIso
+  exact IsOpenImmersion.isoOfRangeEq_hom_fac _ _ _
+
+/-- The second overlap projection has the same composite to the
+base-changed scheme. -/
+theorem pulledBackOpenEqInfIso_hom_snd_snd {X F : Scheme}
+    (p : F ⟶ X) (T U V : X.Opens) (hT : T = U ⊓ V) :
+    (pulledBackOpenEqInfIso p T U V hT).hom ≫
+        pullback.snd (pullback.snd U.ι p) (pullback.snd V.ι p) ≫
+          pullback.snd V.ι p =
+      pullback.snd T.ι p := by
+  rw [← pulledBackOpenEqInfIso_hom_fst_snd p T U V hT]
+  simp only [Category.assoc, pullback.condition]
+
+/-- The intersection of two projective opens is their scheme
+pullback over the projective scheme. -/
+noncomputable def openInfPullbackIso {X : Scheme} (U V : X.Opens) :
+    (U ⊓ V).toScheme ≅ pullback U.ι V.ι := by
+  apply IsOpenImmersion.isoOfRangeEq (U ⊓ V).ι
+    (pullback.fst U.ι V.ι ≫ U.ι)
+  rw [Scheme.Opens.range_ι, IsOpenImmersion.range_pullback_to_base_of_left,
+    Scheme.Opens.range_ι, Scheme.Opens.range_ι]
+  exact TopologicalSpace.Opens.coe_inf U V
+
+/-- The first projection of the overlap is the usual restriction
+from the intersection to its first open. -/
+theorem openInfPullbackIso_hom_fst {X : Scheme} (U V : X.Opens) :
+    (openInfPullbackIso U V).hom ≫ pullback.fst U.ι V.ι =
+      (X.restrictFunctor.map (homOfLE inf_le_left)).left := by
+  apply (cancel_mono U.ι).mp
+  unfold openInfPullbackIso
+  rw [Category.assoc, IsOpenImmersion.isoOfRangeEq_hom_fac,
+    Scheme.restrictFunctor_map_ofRestrict]
+
+/-- The second projection is restriction to the second open. -/
+theorem openInfPullbackIso_hom_snd {X : Scheme} (U V : X.Opens) :
+    (openInfPullbackIso U V).hom ≫ pullback.snd U.ι V.ι =
+      (X.restrictFunctor.map (homOfLE inf_le_right)).left := by
+  apply (cancel_mono V.ι).mp
+  unfold openInfPullbackIso
+  rw [Category.assoc, ← pullback.condition,
+    IsOpenImmersion.isoOfRangeEq_hom_fac,
+    Scheme.restrictFunctor_map_ofRestrict]
+
+/-- An explicitly named open equal to an intersection has the same
+scheme-theoretic overlap. -/
+noncomputable def openEqInfPullbackIso {X : Scheme}
+    (T U V : X.Opens) (hT : T = U ⊓ V) :
+    T.toScheme ≅ pullback U.ι V.ι := by
+  apply IsOpenImmersion.isoOfRangeEq T.ι
+    (pullback.fst U.ι V.ι ≫ U.ι)
+  rw [Scheme.Opens.range_ι, IsOpenImmersion.range_pullback_to_base_of_left,
+    Scheme.Opens.range_ι, Scheme.Opens.range_ι, hT]
+  exact TopologicalSpace.Opens.coe_inf U V
+
+/-- Projection of a named intersection to its first constituent. -/
+theorem openEqInfPullbackIso_hom_fst {X : Scheme}
+    (T U V : X.Opens) (hT : T = U ⊓ V) (hU : T ≤ U) :
+    (openEqInfPullbackIso T U V hT).hom ≫ pullback.fst U.ι V.ι =
+      (X.restrictFunctor.map (homOfLE hU)).left := by
+  apply (cancel_mono U.ι).mp
+  unfold openEqInfPullbackIso
+  rw [Category.assoc, IsOpenImmersion.isoOfRangeEq_hom_fac,
+    Scheme.restrictFunctor_map_ofRestrict]
+
+/-- Projection of a named intersection to its second constituent. -/
+theorem openEqInfPullbackIso_hom_snd {X : Scheme}
+    (T U V : X.Opens) (hT : T = U ⊓ V) (hV : T ≤ V) :
+    (openEqInfPullbackIso T U V hT).hom ≫ pullback.snd U.ι V.ι =
+      (X.restrictFunctor.map (homOfLE hV)).left := by
+  apply (cancel_mono V.ι).mp
+  unfold openEqInfPullbackIso
+  rw [Category.assoc, ← pullback.condition,
+    IsOpenImmersion.isoOfRangeEq_hom_fac,
+    Scheme.restrictFunctor_map_ofRestrict]
+
+/-- The product-open pullback is the intersection of the two
+restricted basic opens inside the actual special fibre. -/
+noncomputable def homogeneousProjBasicZModCoverProductOverlapIso
+    {A : Type} [CommRing A] [Algebra ℤ_[2] A]
+    (𝒜 : ℕ → Submodule ℤ_[2] A) [GradedAlgebra 𝒜]
+    (f g : A) :
+    let X := AlgebraicGeometry.«Proj» 𝒜
+    let U : X.Opens := ProjectiveSpectrum.basicOpen 𝒜 f
+    let V : X.Opens := ProjectiveSpectrum.basicOpen 𝒜 g
+    let T : X.Opens := ProjectiveSpectrum.basicOpen 𝒜 (f * g)
+    let base := (ΓSpec.adjunction.homEquiv X
+      (Opposite.op (CommRingCat.of ℤ_[2]))
+      (CommRingCat.ofHom (projectiveScalarToGamma 𝒜)).op)
+    let residue := Spec.map (CommRingCat.ofHom
+      (PadicInt.toZMod : ℤ_[2] →+* ZMod 2))
+    let p := pullback.fst base residue
+    pullback T.ι p ≅
+      pullback (pullback.snd U.ι p) (pullback.snd V.ι p) := by
+  exact pulledBackOpenEqInfIso _ _ _ _
+    (ProjectiveSpectrum.basicOpen_mul 𝒜 f g)
+
+/-- The graded-quotient product chart is the intersection of its two
+basic opens in the quotient `Proj` itself. -/
+noncomputable def homogeneousQuotientProjProductOverlapIso
+    {A : Type} [CommRing A] [Algebra ℤ_[2] A]
+    (𝒜 : ℕ → Submodule ℤ_[2] A) [GradedAlgebra 𝒜]
+    (I : Ideal A) (hI : I.IsHomogeneous 𝒜) (f g : A) :
+    letI : GradedAlgebra (homogeneousQuotientComponent 𝒜 I) :=
+      homogeneousQuotientGrading 𝒜 I hI
+    let ℬ := homogeneousQuotientComponent 𝒜 I
+    let q := Ideal.Quotient.mk I
+    let X := AlgebraicGeometry.«Proj» ℬ
+    let U : X.Opens := ProjectiveSpectrum.basicOpen ℬ (q f)
+    let V : X.Opens := ProjectiveSpectrum.basicOpen ℬ (q g)
+    let T : X.Opens := ProjectiveSpectrum.basicOpen ℬ (q (f * g))
+    T.toScheme ≅ pullback U.ι V.ι := by
+  letI : GradedAlgebra (homogeneousQuotientComponent 𝒜 I) :=
+    homogeneousQuotientGrading 𝒜 I hI
+  let ℬ := homogeneousQuotientComponent 𝒜 I
+  let q := Ideal.Quotient.mk I
+  have hT :
+      ProjectiveSpectrum.basicOpen ℬ (q (f * g)) =
+        ProjectiveSpectrum.basicOpen ℬ (q f) ⊓
+          ProjectiveSpectrum.basicOpen ℬ (q g) := by
+    rw [map_mul]
+    exact ProjectiveSpectrum.basicOpen_mul ℬ (q f) (q g)
+  exact openEqInfPullbackIso _ _ _ hT
+
+/-- The quotient-`Proj` product overlap projects to the first basic
+open by its ordinary open restriction map. -/
+theorem homogeneousQuotientProjProductOverlapIso_hom_fst
+    {A : Type} [CommRing A] [Algebra ℤ_[2] A]
+    (𝒜 : ℕ → Submodule ℤ_[2] A) [GradedAlgebra 𝒜]
+    (I : Ideal A) (hI : I.IsHomogeneous 𝒜) (f g : A) :
+    letI : GradedAlgebra (homogeneousQuotientComponent 𝒜 I) :=
+      homogeneousQuotientGrading 𝒜 I hI
+    let ℬ := homogeneousQuotientComponent 𝒜 I
+    let q := Ideal.Quotient.mk I
+    let X := AlgebraicGeometry.«Proj» ℬ
+    let U : X.Opens := ProjectiveSpectrum.basicOpen ℬ (q f)
+    let V : X.Opens := ProjectiveSpectrum.basicOpen ℬ (q g)
+    let T : X.Opens := ProjectiveSpectrum.basicOpen ℬ (q (f * g))
+    (homogeneousQuotientProjProductOverlapIso 𝒜 I hI f g).hom ≫
+        pullback.fst U.ι V.ι =
+      (X.restrictFunctor.map (homOfLE
+        (show T ≤ U from by
+          change ProjectiveSpectrum.basicOpen ℬ (q (f * g)) ≤
+            ProjectiveSpectrum.basicOpen ℬ (q f)
+          rw [map_mul]
+          exact ProjectiveSpectrum.basicOpen_mul_le_left ℬ (q f) (q g)))).left := by
+  letI : GradedAlgebra (homogeneousQuotientComponent 𝒜 I) :=
+    homogeneousQuotientGrading 𝒜 I hI
+  let ℬ := homogeneousQuotientComponent 𝒜 I
+  let q := Ideal.Quotient.mk I
+  let X := AlgebraicGeometry.«Proj» ℬ
+  let U : X.Opens := ProjectiveSpectrum.basicOpen ℬ (q f)
+  let V : X.Opens := ProjectiveSpectrum.basicOpen ℬ (q g)
+  let T : X.Opens := ProjectiveSpectrum.basicOpen ℬ (q (f * g))
+  have hT : T = U ⊓ V := by
+    dsimp [T, U, V]
+    rw [map_mul]
+    exact ProjectiveSpectrum.basicOpen_mul ℬ (q f) (q g)
+  have hU : T ≤ U := hT.le.trans inf_le_left
+  exact openEqInfPullbackIso_hom_fst T U V hT hU
+
+/-- In the actual two-open cover of the special fibre, the
+`Z`/`Y` scheme-theoretic intersection is the pullback of the
+integral `Z·Y` basic open. -/
+noncomputable def projectiveWeierstrassSpecialFibreCoverOverlapIso
+    (W : WeierstrassCurve ℤ_[2]) :
+    letI : GradedAlgebra (projectiveWeierstrassQuotientComponent W) :=
+      projectiveWeierstrassQuotientGrading W
+    let q := Ideal.Quotient.mk (Ideal.span {projectiveWeierstrassCubic W})
+    let z := q (MvPolynomial.X (2 : Fin 3))
+    let y := q (MvPolynomial.X (1 : Fin 3))
+    let U : (projectiveWeierstrassScheme W).Opens :=
+      ProjectiveSpectrum.basicOpen (projectiveWeierstrassQuotientComponent W)
+        (z * y)
+    let base := projectiveWeierstrassBaseMap W
+    let residue := Spec.map (CommRingCat.ofHom
+      (PadicInt.toZMod : ℤ_[2] →+* ZMod 2))
+    pullback U.ι (pullback.fst base residue) ≅
+      pullback
+        ((projectiveWeierstrassSpecialFibreTwoChartOpenCover W).map true)
+        ((projectiveWeierstrassSpecialFibreTwoChartOpenCover W).map false) := by
+  letI : GradedAlgebra (projectiveWeierstrassQuotientComponent W) :=
+    projectiveWeierstrassQuotientGrading W
+  exact homogeneousProjBasicZModCoverProductOverlapIso
+    (projectiveWeierstrassQuotientComponent W)
+    ((Ideal.Quotient.mk (Ideal.span {projectiveWeierstrassCubic W}))
+      (MvPolynomial.X (2 : Fin 3)))
+    ((Ideal.Quotient.mk (Ideal.span {projectiveWeierstrassCubic W}))
+      (MvPolynomial.X (1 : Fin 3)))
+
+/-- The matching intersection in the graded-quotient `Proj` is
+its `Z·Y` product basic open, at scheme level. -/
+noncomputable def projectiveWeierstrassSpecialFibreProjCoverOverlapIso
+    (W : WeierstrassCurve ℤ_[2]) :
+    letI : GradedAlgebra (projectiveWeierstrassQuotientComponent W) :=
+      projectiveWeierstrassQuotientGrading W
+    letI : GradedAlgebra (projectiveWeierstrassSpecialFibreComponent W) :=
+      projectiveWeierstrassSpecialFibreGrading W
+    let q := Ideal.Quotient.mk (Ideal.span {projectiveWeierstrassCubic W})
+    let r := Ideal.Quotient.mk (projectiveWeierstrassSpecialFibreIdeal W)
+    let z := q (MvPolynomial.X (2 : Fin 3))
+    let y := q (MvPolynomial.X (1 : Fin 3))
+    let T : (AlgebraicGeometry.«Proj»
+        (projectiveWeierstrassSpecialFibreComponent W)).Opens :=
+      ProjectiveSpectrum.basicOpen (projectiveWeierstrassSpecialFibreComponent W)
+        (r (z * y))
+    T.toScheme ≅
+      pullback
+        ((projectiveWeierstrassSpecialFibreProjTwoChartOpenCover W).map true)
+        ((projectiveWeierstrassSpecialFibreProjTwoChartOpenCover W).map false) := by
+  letI : GradedAlgebra (projectiveWeierstrassQuotientComponent W) :=
+    projectiveWeierstrassQuotientGrading W
+  letI : GradedAlgebra (projectiveWeierstrassSpecialFibreComponent W) :=
+    projectiveWeierstrassSpecialFibreGrading W
+  exact homogeneousQuotientProjProductOverlapIso
+    (projectiveWeierstrassQuotientComponent W)
+    (projectiveWeierstrassSpecialFibreIdeal W)
+    (projectiveWeierstrassSpecialFibreIdeal_isHomogeneous W)
+    ((Ideal.Quotient.mk (Ideal.span {projectiveWeierstrassCubic W}))
+      (MvPolynomial.X (2 : Fin 3)))
+    ((Ideal.Quotient.mk (Ideal.span {projectiveWeierstrassCubic W}))
+      (MvPolynomial.X (1 : Fin 3)))
+
+/-- Inclusion of the product member of the pulled-back global-fibre
+cover into its first member, before pullback pasting. -/
+noncomputable def homogeneousProjBasicZModCoverInclusion
+    {A : Type} [CommRing A] [Algebra ℤ_[2] A]
+    (𝒜 : ℕ → Submodule ℤ_[2] A) [GradedAlgebra 𝒜]
+    (f g : A) :
+    let X := AlgebraicGeometry.«Proj» 𝒜
+    let U : X.Opens := ProjectiveSpectrum.basicOpen 𝒜 f
+    let T : X.Opens := ProjectiveSpectrum.basicOpen 𝒜 (f * g)
+    let base := (ΓSpec.adjunction.homEquiv X
+      (Opposite.op (CommRingCat.of ℤ_[2]))
+      (CommRingCat.ofHom (projectiveScalarToGamma 𝒜)).op)
+    let residue := Spec.map (CommRingCat.ofHom
+      (PadicInt.toZMod : ℤ_[2] →+* ZMod 2))
+    let p := pullback.fst base residue
+    pullback T.ι p ⟶ pullback U.ι p := by
+  let X := AlgebraicGeometry.«Proj» 𝒜
+  let U : X.Opens := ProjectiveSpectrum.basicOpen 𝒜 f
+  let T : X.Opens := ProjectiveSpectrum.basicOpen 𝒜 (f * g)
+  let base := (ΓSpec.adjunction.homEquiv X
+    (Opposite.op (CommRingCat.of ℤ_[2]))
+    (CommRingCat.ofHom (projectiveScalarToGamma 𝒜)).op)
+  let residue := Spec.map (CommRingCat.ofHom
+    (PadicInt.toZMod : ℤ_[2] →+* ZMod 2))
+  let p := pullback.fst base residue
+  let i := homOfLE (ProjectiveSpectrum.basicOpen_mul_le_left 𝒜 f g)
+  let k := (X.restrictFunctor.map i).left
+  exact pullback.map T.ι p U.ι p k (𝟙 _) (𝟙 _)
+    (by simpa only [Category.comp_id] using
+      (X.restrictFunctor_map_ofRestrict i).symm)
+    (by simp)
+
+/-- The first projection from the actual fibre-cover intersection
+agrees with the product-open inclusion. -/
+theorem homogeneousProjBasicZModCoverProductOverlapIso_hom_fst
+    {A : Type} [CommRing A] [Algebra ℤ_[2] A]
+    (𝒜 : ℕ → Submodule ℤ_[2] A) [GradedAlgebra 𝒜]
+    (f g : A) :
+    let X := AlgebraicGeometry.«Proj» 𝒜
+    let U : X.Opens := ProjectiveSpectrum.basicOpen 𝒜 f
+    let V : X.Opens := ProjectiveSpectrum.basicOpen 𝒜 g
+    let base := (ΓSpec.adjunction.homEquiv X
+      (Opposite.op (CommRingCat.of ℤ_[2]))
+      (CommRingCat.ofHom (projectiveScalarToGamma 𝒜)).op)
+    let residue := Spec.map (CommRingCat.ofHom
+      (PadicInt.toZMod : ℤ_[2] →+* ZMod 2))
+    let p := pullback.fst base residue
+    (homogeneousProjBasicZModCoverProductOverlapIso 𝒜 f g).hom ≫
+        pullback.fst (pullback.snd U.ι p) (pullback.snd V.ι p) =
+      homogeneousProjBasicZModCoverInclusion 𝒜 f g := by
+  let X := AlgebraicGeometry.«Proj» 𝒜
+  let U : X.Opens := ProjectiveSpectrum.basicOpen 𝒜 f
+  let V : X.Opens := ProjectiveSpectrum.basicOpen 𝒜 g
+  let T : X.Opens := ProjectiveSpectrum.basicOpen 𝒜 (f * g)
+  let base := (ΓSpec.adjunction.homEquiv X
+    (Opposite.op (CommRingCat.of ℤ_[2]))
+    (CommRingCat.ofHom (projectiveScalarToGamma 𝒜)).op)
+  let residue := Spec.map (CommRingCat.ofHom
+    (PadicInt.toZMod : ℤ_[2] →+* ZMod 2))
+  let p := pullback.fst base residue
+  apply (cancel_mono (pullback.snd U.ι p)).mp
+  rw [Category.assoc]
+  change (pulledBackOpenEqInfIso p T U V
+    (ProjectiveSpectrum.basicOpen_mul 𝒜 f g)).hom ≫
+      pullback.fst (pullback.snd U.ι p) (pullback.snd V.ι p) ≫
+        pullback.snd U.ι p =
+    homogeneousProjBasicZModCoverInclusion 𝒜 f g ≫ pullback.snd U.ι p
+  rw [pulledBackOpenEqInfIso_hom_fst_snd]
+  unfold homogeneousProjBasicZModCoverInclusion
+  simp only [pullback.map, pullback.lift_snd, Category.comp_id]
+
+/-- Inclusion of the same product member into the second member of
+the pulled-back cover. -/
+noncomputable def homogeneousProjBasicZModCoverInclusionRight
+    {A : Type} [CommRing A] [Algebra ℤ_[2] A]
+    (𝒜 : ℕ → Submodule ℤ_[2] A) [GradedAlgebra 𝒜]
+    (f g : A) :
+    let X := AlgebraicGeometry.«Proj» 𝒜
+    let V : X.Opens := ProjectiveSpectrum.basicOpen 𝒜 g
+    let T : X.Opens := ProjectiveSpectrum.basicOpen 𝒜 (f * g)
+    let base := (ΓSpec.adjunction.homEquiv X
+      (Opposite.op (CommRingCat.of ℤ_[2]))
+      (CommRingCat.ofHom (projectiveScalarToGamma 𝒜)).op)
+    let residue := Spec.map (CommRingCat.ofHom
+      (PadicInt.toZMod : ℤ_[2] →+* ZMod 2))
+    let p := pullback.fst base residue
+    pullback T.ι p ⟶ pullback V.ι p := by
+  let X := AlgebraicGeometry.«Proj» 𝒜
+  let V : X.Opens := ProjectiveSpectrum.basicOpen 𝒜 g
+  let T : X.Opens := ProjectiveSpectrum.basicOpen 𝒜 (f * g)
+  let base := (ΓSpec.adjunction.homEquiv X
+    (Opposite.op (CommRingCat.of ℤ_[2]))
+    (CommRingCat.ofHom (projectiveScalarToGamma 𝒜)).op)
+  let residue := Spec.map (CommRingCat.ofHom
+    (PadicInt.toZMod : ℤ_[2] →+* ZMod 2))
+  let p := pullback.fst base residue
+  let i := homOfLE (ProjectiveSpectrum.basicOpen_mul_le_right 𝒜 f g)
+  let k := (X.restrictFunctor.map i).left
+  exact pullback.map T.ι p V.ι p k (𝟙 _) (𝟙 _)
+    (by simpa only [Category.comp_id] using
+      (X.restrictFunctor_map_ofRestrict i).symm)
+    (by simp)
+
+/-- The second projection from the actual fibre-cover intersection
+agrees with the other product-open inclusion. -/
+theorem homogeneousProjBasicZModCoverProductOverlapIso_hom_snd
+    {A : Type} [CommRing A] [Algebra ℤ_[2] A]
+    (𝒜 : ℕ → Submodule ℤ_[2] A) [GradedAlgebra 𝒜]
+    (f g : A) :
+    let X := AlgebraicGeometry.«Proj» 𝒜
+    let U : X.Opens := ProjectiveSpectrum.basicOpen 𝒜 f
+    let V : X.Opens := ProjectiveSpectrum.basicOpen 𝒜 g
+    let base := (ΓSpec.adjunction.homEquiv X
+      (Opposite.op (CommRingCat.of ℤ_[2]))
+      (CommRingCat.ofHom (projectiveScalarToGamma 𝒜)).op)
+    let residue := Spec.map (CommRingCat.ofHom
+      (PadicInt.toZMod : ℤ_[2] →+* ZMod 2))
+    let p := pullback.fst base residue
+    (homogeneousProjBasicZModCoverProductOverlapIso 𝒜 f g).hom ≫
+        pullback.snd (pullback.snd U.ι p) (pullback.snd V.ι p) =
+      homogeneousProjBasicZModCoverInclusionRight 𝒜 f g := by
+  let X := AlgebraicGeometry.«Proj» 𝒜
+  let U : X.Opens := ProjectiveSpectrum.basicOpen 𝒜 f
+  let V : X.Opens := ProjectiveSpectrum.basicOpen 𝒜 g
+  let T : X.Opens := ProjectiveSpectrum.basicOpen 𝒜 (f * g)
+  let base := (ΓSpec.adjunction.homEquiv X
+    (Opposite.op (CommRingCat.of ℤ_[2]))
+    (CommRingCat.ofHom (projectiveScalarToGamma 𝒜)).op)
+  let residue := Spec.map (CommRingCat.ofHom
+    (PadicInt.toZMod : ℤ_[2] →+* ZMod 2))
+  let p := pullback.fst base residue
+  apply (cancel_mono (pullback.snd V.ι p)).mp
+  rw [Category.assoc]
+  change (pulledBackOpenEqInfIso p T U V
+    (ProjectiveSpectrum.basicOpen_mul 𝒜 f g)).hom ≫
+      pullback.snd (pullback.snd U.ι p) (pullback.snd V.ι p) ≫
+        pullback.snd V.ι p =
+    homogeneousProjBasicZModCoverInclusionRight 𝒜 f g ≫
+      pullback.snd V.ι p
+  rw [pulledBackOpenEqInfIso_hom_snd_snd]
+  unfold homogeneousProjBasicZModCoverInclusionRight
+  simp only [pullback.map, pullback.lift_snd, Category.comp_id]
+
+/-- Inclusion into a member of the pulled-back cover is carried by
+pullback pasting to the previously checked restricted-fibre inclusion. -/
+theorem homogeneousProjBasicZModCoverInclusion_pasting
+    {A : Type} [CommRing A] [Algebra ℤ_[2] A]
+    (𝒜 : ℕ → Submodule ℤ_[2] A) [GradedAlgebra 𝒜]
+    (f g : A) :
+    let X := AlgebraicGeometry.«Proj» 𝒜
+    let U : X.Opens := ProjectiveSpectrum.basicOpen 𝒜 f
+    let T : X.Opens := ProjectiveSpectrum.basicOpen 𝒜 (f * g)
+    let base := (ΓSpec.adjunction.homEquiv X
+      (Opposite.op (CommRingCat.of ℤ_[2]))
+      (CommRingCat.ofHom (projectiveScalarToGamma 𝒜)).op)
+    let residue := Spec.map (CommRingCat.ofHom
+      (PadicInt.toZMod : ℤ_[2] →+* ZMod 2))
+    homogeneousProjBasicZModCoverInclusion 𝒜 f g ≫
+        (pullbackRightPullbackFstIso base residue U.ι).hom =
+      (pullbackRightPullbackFstIso base residue T.ι).hom ≫
+        homogeneousProjBasicZModPullbackInclusion 𝒜 f g := by
+  apply pullback.hom_ext
+  · simp only [Category.assoc, pullbackRightPullbackFstIso_hom_fst,
+      homogeneousProjBasicZModCoverInclusion,
+      homogeneousProjBasicZModPullbackInclusion, pullback.map,
+      pullback.lift_fst_assoc, pullback.lift_fst, Category.comp_id]
+    rw [← Category.assoc, pullbackRightPullbackFstIso_hom_fst]
+  · simp only [Category.assoc, pullbackRightPullbackFstIso_hom_snd,
+      homogeneousProjBasicZModCoverInclusion,
+      homogeneousProjBasicZModPullbackInclusion, pullback.map,
+      pullback.lift_snd_assoc, pullback.lift_snd, Category.comp_id]
+
+set_option maxHeartbeats 1000000
+/-- The chosen isomorphisms from members of the pulled-back cover to
+opens of the quotient `Proj` respect the product-open restriction. -/
+theorem homogeneousProjBasicZModCoverChartSchemeIso_toProduct
+    {A : Type} [CommRing A] [Algebra ℤ_[2] A]
+    (𝒜 : ℕ → Submodule ℤ_[2] A) [GradedAlgebra 𝒜]
+    (I : Ideal A) (hI : I.IsHomogeneous 𝒜)
+    (hgen : I = Ideal.span {algebraMap ℤ_[2] A 2})
+    (f g : A) (d : ℕ) (hf : f ∈ 𝒜 d) (hg : g ∈ 𝒜 d)
+    (hd : 0 < d)
+    (hpowf : ∀ n : ℕ, (Ideal.Quotient.mk I f) ^ n ≠ 0)
+    (hpowfg : ∀ n : ℕ, (Ideal.Quotient.mk I (f * g)) ^ n ≠ 0) :
+    letI : GradedAlgebra (homogeneousQuotientComponent 𝒜 I) :=
+      homogeneousQuotientGrading 𝒜 I hI
+    let ℬ := homogeneousQuotientComponent 𝒜 I
+    let q := Ideal.Quotient.mk I
+    let Q := AlgebraicGeometry.«Proj» ℬ
+    let UF : Q.Opens := ProjectiveSpectrum.basicOpen ℬ (q f)
+    let UFG : Q.Opens := ProjectiveSpectrum.basicOpen ℬ (q (f * g))
+    let k := (Q.restrictFunctor.map (homOfLE
+      (show UFG ≤ UF from by
+        change ProjectiveSpectrum.basicOpen ℬ (q (f * g)) ≤
+          ProjectiveSpectrum.basicOpen ℬ (q f)
+        rw [map_mul]
+        exact ProjectiveSpectrum.basicOpen_mul_le_left ℬ (q f) (q g)))).left
+    homogeneousProjBasicZModCoverInclusion 𝒜 f g ≫
+        (homogeneousProjBasicZModCoverChartSchemeIso
+          𝒜 I hI hgen f d hf hd hpowf).hom =
+      (homogeneousProjBasicZModCoverChartSchemeIso
+        𝒜 I hI hgen (f * g) (d + d)
+          (SetLike.GradedMul.mul_mem hf hg) (by omega) hpowfg).hom ≫ k := by
+  letI : GradedAlgebra (homogeneousQuotientComponent 𝒜 I) :=
+    homogeneousQuotientGrading 𝒜 I hI
+  let ℬ := homogeneousQuotientComponent 𝒜 I
+  let q := Ideal.Quotient.mk I
+  let Q := AlgebraicGeometry.«Proj» ℬ
+  let hfq : q f ∈ ℬ d := Submodule.mem_map.mpr ⟨f, hf, rfl⟩
+  let hgq : q g ∈ ℬ d := Submodule.mem_map.mpr ⟨g, hg, rfl⟩
+  let X := AlgebraicGeometry.«Proj» 𝒜
+  let U : X.Opens := ProjectiveSpectrum.basicOpen 𝒜 f
+  let T : X.Opens := ProjectiveSpectrum.basicOpen 𝒜 (f * g)
+  let base := (ΓSpec.adjunction.homEquiv X
+    (Opposite.op (CommRingCat.of ℤ_[2]))
+    (CommRingCat.ofHom (projectiveScalarToGamma 𝒜)).op)
+  let residue := Spec.map (CommRingCat.ofHom
+    (PadicInt.toZMod : ℤ_[2] →+* ZMod 2))
+  let pF := pullbackRightPullbackFstIso base residue U.ι
+  let pFG := pullbackRightPullbackFstIso base residue T.ι
+  let zF := homogeneousProjBasicZModPullbackSchemeIso
+    𝒜 I hI hgen f d hf hd hpowf
+  let zFG := homogeneousProjBasicZModPullbackSchemeIso
+    𝒜 I hI hgen (f * g) (d + d)
+      (SetLike.GradedMul.mul_mem hf hg) (by omega) hpowfg
+  let cF := homogeneousProjBasicSchemeIso ℬ (q f) d hfq hd
+  let cFG := homogeneousProjBasicSchemeIso ℬ (q (f * g)) (d + d)
+    (Submodule.mem_map.mpr
+      ⟨f * g, SetLike.GradedMul.mul_mem hf hg, rfl⟩) (by omega)
+  let r := Spec.map (CommRingCat.ofHom
+    (homogeneousLocalization_toProduct ℬ (q f) (q g) d hfq hgq))
+  let UF : Q.Opens := ProjectiveSpectrum.basicOpen ℬ (q f)
+  let UFG : Q.Opens := ProjectiveSpectrum.basicOpen ℬ (q (f * g))
+  let k := (Q.restrictFunctor.map (homOfLE
+    (show UFG ≤ UF from by
+      change ProjectiveSpectrum.basicOpen ℬ (q (f * g)) ≤
+        ProjectiveSpectrum.basicOpen ℬ (q f)
+      rw [map_mul]
+      exact ProjectiveSpectrum.basicOpen_mul_le_left ℬ (q f) (q g)))).left
+  have hPasting :
+      homogeneousProjBasicZModCoverInclusion 𝒜 f g ≫ pF.hom =
+        pFG.hom ≫ homogeneousProjBasicZModPullbackInclusion 𝒜 f g :=
+    homogeneousProjBasicZModCoverInclusion_pasting 𝒜 f g
+  have hChosen :
+      homogeneousProjBasicZModPullbackInclusion 𝒜 f g ≫ zF.hom =
+        zFG.hom ≫ r :=
+    restrictedChartIso_inv_square zF.symm zFG.symm r
+      (homogeneousProjBasicZModPullbackInclusion 𝒜 f g)
+      (homogeneousProjBasicZModPullbackSchemeIso_toProduct
+        𝒜 I hI hgen f g d hf hg hd hpowf hpowfg)
+  have hTarget : r ≫ cF.inv = cFG.inv ≫ k := by
+    apply restrictedChartIso_inv_square cF cFG k r
+    simpa only [map_mul] using
+      (homogeneousProjBasicSchemeIso_toProduct
+        ℬ (q f) (q g) d hfq hgq hd)
+  change (homogeneousProjBasicZModCoverInclusion 𝒜 f g ≫ pF.hom) ≫
+      zF.hom ≫ cF.inv =
+    (pFG.hom ≫ zFG.hom) ≫ cFG.inv ≫ k
+  calc
+    (homogeneousProjBasicZModCoverInclusion 𝒜 f g ≫ pF.hom) ≫
+        zF.hom ≫ cF.inv =
+      (pFG.hom ≫ homogeneousProjBasicZModPullbackInclusion 𝒜 f g) ≫
+        zF.hom ≫ cF.inv := by rw [hPasting]
+    _ = pFG.hom ≫
+        (homogeneousProjBasicZModPullbackInclusion 𝒜 f g ≫ zF.hom) ≫
+          cF.inv := by simp only [Category.assoc]
+    _ = pFG.hom ≫ (zFG.hom ≫ r) ≫ cF.inv := by rw [hChosen]
+    _ = pFG.hom ≫ zFG.hom ≫ (r ≫ cF.inv) := by simp only [Category.assoc]
+    _ = pFG.hom ≫ zFG.hom ≫ (cFG.inv ≫ k) := by rw [hTarget]
+    _ = (pFG.hom ≫ zFG.hom) ≫ cFG.inv ≫ k := by
+      simp only [Category.assoc]
+
 end Beal.General
