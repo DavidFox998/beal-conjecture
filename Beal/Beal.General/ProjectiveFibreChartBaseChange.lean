@@ -1438,6 +1438,73 @@ theorem homogeneousProjBasicZModPullbackSchemeIso_toProduct
   rw [hQuotient, Category.assoc, hBaseChange]
   simp only [Category.assoc]
 
+/-- The two ordered products give the same chosen restricted-fibre
+chart isomorphism after transporting its dependent source and target
+along commutativity. This does not identify the two restriction maps
+from the individual `f` and `g` charts. -/
+theorem homogeneousProjBasicZModPullbackSchemeIso_mul_comm
+    {A : Type} [CommRing A] [Algebra ℤ_[2] A]
+    (𝒜 : ℕ → Submodule ℤ_[2] A) [GradedAlgebra 𝒜]
+    (I : Ideal A) (hI : I.IsHomogeneous 𝒜)
+    (hgen : I = Ideal.span {algebraMap ℤ_[2] A 2})
+    (f g : A) (d : ℕ) (hf : f ∈ 𝒜 d) (hg : g ∈ 𝒜 d)
+    (hd : 0 < d)
+    (hpowfg : ∀ n : ℕ, (Ideal.Quotient.mk I (f * g)) ^ n ≠ 0)
+    (hpowgf : ∀ n : ℕ, (Ideal.Quotient.mk I (g * f)) ^ n ≠ 0) :
+    HEq
+      (homogeneousProjBasicZModPullbackSchemeIso
+        𝒜 I hI hgen (f * g) (d + d)
+        (SetLike.GradedMul.mul_mem hf hg) (by omega) hpowfg)
+      (homogeneousProjBasicZModPullbackSchemeIso
+        𝒜 I hI hgen (g * f) (d + d)
+        (SetLike.GradedMul.mul_mem hg hf) (by omega) hpowgf) := by
+  congr 1
+  · exact mul_comm f g
+  · apply proof_irrel_heq
+  · apply proof_irrel_heq
+
+/-- A pulled-back basic open of the global fibre is isomorphic to the
+corresponding open subscheme of the graded-quotient `Proj`. The first
+isomorphism is pullback pasting, not an identification by definition. -/
+noncomputable def homogeneousProjBasicZModCoverChartSchemeIso
+    {A : Type} [CommRing A] [Algebra ℤ_[2] A]
+    (𝒜 : ℕ → Submodule ℤ_[2] A) [GradedAlgebra 𝒜]
+    (I : Ideal A) (hI : I.IsHomogeneous 𝒜)
+    (hgen : I = Ideal.span {algebraMap ℤ_[2] A 2})
+    (f : A) (d : ℕ) (hf : f ∈ 𝒜 d) (hd : 0 < d)
+    (hpow : ∀ n : ℕ, (Ideal.Quotient.mk I f) ^ n ≠ 0) :
+    letI : GradedAlgebra (homogeneousQuotientComponent 𝒜 I) :=
+      homogeneousQuotientGrading 𝒜 I hI
+    let X := AlgebraicGeometry.«Proj» 𝒜
+    let U : X.Opens := ProjectiveSpectrum.basicOpen 𝒜 f
+    let base := (ΓSpec.adjunction.homEquiv X
+      (Opposite.op (CommRingCat.of ℤ_[2]))
+      (CommRingCat.ofHom (projectiveScalarToGamma 𝒜)).op)
+    let residue := Spec.map (CommRingCat.ofHom
+      (PadicInt.toZMod : ℤ_[2] →+* ZMod 2))
+    let q := Ideal.Quotient.mk I
+    pullback U.ι (pullback.fst base residue) ≅
+      Scheme.Opens.toScheme (X := AlgebraicGeometry.«Proj»
+        (homogeneousQuotientComponent 𝒜 I))
+        (ProjectiveSpectrum.basicOpen (homogeneousQuotientComponent 𝒜 I) (q f)) := by
+  letI : GradedAlgebra (homogeneousQuotientComponent 𝒜 I) :=
+    homogeneousQuotientGrading 𝒜 I hI
+  let X := AlgebraicGeometry.«Proj» 𝒜
+  let U : X.Opens := ProjectiveSpectrum.basicOpen 𝒜 f
+  let base := (ΓSpec.adjunction.homEquiv X
+    (Opposite.op (CommRingCat.of ℤ_[2]))
+    (CommRingCat.ofHom (projectiveScalarToGamma 𝒜)).op)
+  let residue := Spec.map (CommRingCat.ofHom
+    (PadicInt.toZMod : ℤ_[2] →+* ZMod 2))
+  let q := Ideal.Quotient.mk I
+  let hfq : q f ∈ homogeneousQuotientComponent 𝒜 I d :=
+    Submodule.mem_map.mpr ⟨f, hf, rfl⟩
+  exact (pullbackRightPullbackFstIso base residue U.ι).trans
+    ((homogeneousProjBasicZModPullbackSchemeIso
+      𝒜 I hI hgen f d hf hd hpow).trans
+      (homogeneousProjBasicSchemeIso
+        (homogeneousQuotientComponent 𝒜 I) (q f) d hfq hd).symm)
+
 set_option maxHeartbeats 200000
 /-- Under the split-node hypotheses, any positive-degree projective
 coordinate that survives modulo `2` gives a chart of the restricted
@@ -1599,5 +1666,224 @@ noncomputable def projectiveWeierstrassSpecialFibreTwoChartOpenCover
     (pullback.fst (projectiveWeierstrassBaseMap W)
       (Spec.map (CommRingCat.ofHom
         (PadicInt.toZMod : ℤ_[2] →+* ZMod 2))))
+
+/-- Positive-degree homogeneous polynomials vanish at the origin of
+the three-variable affine cone. -/
+private theorem specialFibrePositiveHomogeneous_mem_variables
+    {n : ℕ} (hn : 0 < n)
+    {p : MvPolynomial (Fin 3) ℤ_[2]} (hp : p.IsHomogeneous n) :
+    p ∈ Ideal.span (MvPolynomial.X '' (Set.univ : Set (Fin 3))) := by
+  apply MvPolynomial.mem_ideal_span_X_image.mpr
+  intro m hm
+  have hmdeg : m.degree = n := by
+    simpa only [Finsupp.degree_eq_weight_one] using hp (Finsupp.mem_support_iff.mp hm)
+  have hmne : m ≠ 0 := by
+    intro h
+    subst m
+    simp [Finsupp.degree_zero] at hmdeg
+    omega
+  by_contra hnone
+  have hzero : m = 0 := by
+    ext i
+    by_contra hi
+    exact hnone ⟨i, Set.mem_univ _, hi⟩
+  exact hmne hzero
+
+/-- Every relevant prime of the graded special-fibre quotient avoids
+at least one coordinate image. This is proved for the quotient's
+own grading, rather than inferred from the integral `Proj` cover. -/
+theorem projectiveWeierstrassSpecialFibre_relevant_coordinate
+    (W : WeierstrassCurve ℤ_[2]) :
+    letI : GradedAlgebra (projectiveWeierstrassQuotientComponent W) :=
+      projectiveWeierstrassQuotientGrading W
+    letI : GradedAlgebra (projectiveWeierstrassSpecialFibreComponent W) :=
+      projectiveWeierstrassSpecialFibreGrading W
+    ∀ x : ProjectiveSpectrum (projectiveWeierstrassSpecialFibreComponent W),
+      ∃ i : Fin 3,
+        (Ideal.Quotient.mk (projectiveWeierstrassSpecialFibreIdeal W))
+          ((Ideal.Quotient.mk (Ideal.span {projectiveWeierstrassCubic W}))
+            (MvPolynomial.X i)) ∉ x.asHomogeneousIdeal := by
+  classical
+  letI : GradedAlgebra (projectiveWeierstrassQuotientComponent W) :=
+    projectiveWeierstrassQuotientGrading W
+  letI : GradedAlgebra (projectiveWeierstrassSpecialFibreComponent W) :=
+    projectiveWeierstrassSpecialFibreGrading W
+  let ℬ := projectiveWeierstrassSpecialFibreComponent W
+  let q : MvPolynomial (Fin 3) ℤ_[2] →+* projectiveWeierstrassCoordinateRing W :=
+    Ideal.Quotient.mk (Ideal.span {projectiveWeierstrassCubic W})
+  let r : projectiveWeierstrassCoordinateRing W →+*
+      (projectiveWeierstrassCoordinateRing W ⧸
+        projectiveWeierstrassSpecialFibreIdeal W) :=
+    Ideal.Quotient.mk (projectiveWeierstrassSpecialFibreIdeal W)
+  intro x
+  by_contra hn
+  have hall (i : Fin 3) : r (q (MvPolynomial.X i)) ∈ x.asHomogeneousIdeal := by
+    by_contra hi
+    exact hn ⟨i, hi⟩
+  have hspan : Ideal.span (MvPolynomial.X '' (Set.univ : Set (Fin 3))) ≤
+      (x.asHomogeneousIdeal.toIdeal.comap r).comap q := by
+    apply Ideal.span_le.mpr
+    rintro p ⟨i, -, rfl⟩
+    exact hall i
+  have hpos (n : ℕ) (hn : 0 < n)
+      (z : projectiveWeierstrassCoordinateRing W ⧸
+        projectiveWeierstrassSpecialFibreIdeal W)
+      (hz : z ∈ ℬ n) : z ∈ x.asHomogeneousIdeal.toIdeal := by
+    obtain ⟨u, hu, heq⟩ := Submodule.mem_map.mp hz
+    obtain ⟨p, hp, heq'⟩ := Submodule.mem_map.mp hu
+    rw [← heq, ← heq']
+    exact hspan (specialFibrePositiveHomogeneous_mem_variables hn hp)
+  apply x.not_irrelevant_le
+  intro z hz
+  rw [← DirectSum.sum_support_decompose ℬ z]
+  apply Ideal.sum_mem
+  intro n hn
+  by_cases hn0 : n = 0
+  · subst n
+    change GradedRing.proj ℬ 0 z = 0 at hz
+    have h0 : (↑(((DirectSum.decompose ℬ) z) 0) :
+        projectiveWeierstrassCoordinateRing W ⧸
+          projectiveWeierstrassSpecialFibreIdeal W) = 0 := by
+      simpa only [GradedRing.proj_apply] using hz
+    rw [h0]
+    exact x.asHomogeneousIdeal.toIdeal.zero_mem
+  · exact hpos n (Nat.pos_of_ne_zero hn0) _ (SetLike.coe_mem _)
+
+/-- At a prime of the graded special-fibre coordinate ring, the
+cubic still forces the `X` coordinate into any prime containing `Z`. -/
+theorem projectiveWeierstrassSpecialFibre_X_mem_of_Z_mem
+    (W : WeierstrassCurve ℤ_[2])
+    (Q : Ideal (projectiveWeierstrassCoordinateRing W ⧸
+      projectiveWeierstrassSpecialFibreIdeal W)) (hQ : Q.IsPrime)
+    (hZ : (Ideal.Quotient.mk (projectiveWeierstrassSpecialFibreIdeal W))
+      ((Ideal.Quotient.mk (Ideal.span {projectiveWeierstrassCubic W}))
+        (MvPolynomial.X (2 : Fin 3))) ∈ Q) :
+    (Ideal.Quotient.mk (projectiveWeierstrassSpecialFibreIdeal W))
+      ((Ideal.Quotient.mk (Ideal.span {projectiveWeierstrassCubic W}))
+        (MvPolynomial.X (0 : Fin 3))) ∈ Q := by
+  let r : projectiveWeierstrassCoordinateRing W →+*
+      (projectiveWeierstrassCoordinateRing W ⧸
+        projectiveWeierstrassSpecialFibreIdeal W) :=
+    Ideal.Quotient.mk (projectiveWeierstrassSpecialFibreIdeal W)
+  exact projectiveWeierstrassQuotient_X_mem_of_Z_mem W
+    (Q.comap r) (hQ.comap r) hZ
+
+/-- The `Z` and `Y` basic opens cover the `Proj` of the actual graded
+special-fibre coordinate quotient. This is the target-side cover
+needed for a future gluing argument. -/
+theorem projectiveWeierstrassSpecialFibreBasicOpen_Z_sup_Y
+    (W : WeierstrassCurve ℤ_[2]) :
+    letI : GradedAlgebra (projectiveWeierstrassQuotientComponent W) :=
+      projectiveWeierstrassQuotientGrading W
+    letI : GradedAlgebra (projectiveWeierstrassSpecialFibreComponent W) :=
+      projectiveWeierstrassSpecialFibreGrading W
+    let q := Ideal.Quotient.mk (Ideal.span {projectiveWeierstrassCubic W})
+    let r := Ideal.Quotient.mk (projectiveWeierstrassSpecialFibreIdeal W)
+    ProjectiveSpectrum.basicOpen (projectiveWeierstrassSpecialFibreComponent W)
+        (r (q (MvPolynomial.X (2 : Fin 3)))) ⊔
+      ProjectiveSpectrum.basicOpen (projectiveWeierstrassSpecialFibreComponent W)
+        (r (q (MvPolynomial.X (1 : Fin 3)))) = ⊤ := by
+  letI : GradedAlgebra (projectiveWeierstrassQuotientComponent W) :=
+    projectiveWeierstrassQuotientGrading W
+  letI : GradedAlgebra (projectiveWeierstrassSpecialFibreComponent W) :=
+    projectiveWeierstrassSpecialFibreGrading W
+  let q : MvPolynomial (Fin 3) ℤ_[2] →+* projectiveWeierstrassCoordinateRing W :=
+    Ideal.Quotient.mk (Ideal.span {projectiveWeierstrassCubic W})
+  let r : projectiveWeierstrassCoordinateRing W →+*
+      (projectiveWeierstrassCoordinateRing W ⧸
+        projectiveWeierstrassSpecialFibreIdeal W) :=
+    Ideal.Quotient.mk (projectiveWeierstrassSpecialFibreIdeal W)
+  apply le_antisymm le_top
+  intro x _
+  obtain ⟨i, hi⟩ := projectiveWeierstrassSpecialFibre_relevant_coordinate W x
+  fin_cases i
+  · change r (q (MvPolynomial.X (2 : Fin 3))) ∉ x.asHomogeneousIdeal ∨
+      r (q (MvPolynomial.X (1 : Fin 3))) ∉ x.asHomogeneousIdeal
+    exact Or.inl (fun hz => hi
+      (projectiveWeierstrassSpecialFibre_X_mem_of_Z_mem W
+        x.asHomogeneousIdeal.toIdeal x.isPrime hz))
+  · exact Or.inr hi
+  · exact Or.inl hi
+
+/-- The quotient `Proj` has its own two-chart open cover, indexed by
+`true` for `Z` and `false` for `Y`. -/
+noncomputable def projectiveWeierstrassSpecialFibreProjTwoChartOpenCover
+    (W : WeierstrassCurve ℤ_[2]) :
+    letI : GradedAlgebra (projectiveWeierstrassQuotientComponent W) :=
+      projectiveWeierstrassQuotientGrading W
+    letI : GradedAlgebra (projectiveWeierstrassSpecialFibreComponent W) :=
+      projectiveWeierstrassSpecialFibreGrading W
+    (AlgebraicGeometry.«Proj» (projectiveWeierstrassSpecialFibreComponent W)).OpenCover := by
+  letI : GradedAlgebra (projectiveWeierstrassQuotientComponent W) :=
+    projectiveWeierstrassQuotientGrading W
+  letI : GradedAlgebra (projectiveWeierstrassSpecialFibreComponent W) :=
+    projectiveWeierstrassSpecialFibreGrading W
+  let ℬ := projectiveWeierstrassSpecialFibreComponent W
+  let q : MvPolynomial (Fin 3) ℤ_[2] →+* projectiveWeierstrassCoordinateRing W :=
+    Ideal.Quotient.mk (Ideal.span {projectiveWeierstrassCubic W})
+  let r : projectiveWeierstrassCoordinateRing W →+*
+      (projectiveWeierstrassCoordinateRing W ⧸
+        projectiveWeierstrassSpecialFibreIdeal W) :=
+    Ideal.Quotient.mk (projectiveWeierstrassSpecialFibreIdeal W)
+  let U : Bool → (AlgebraicGeometry.«Proj» ℬ).Opens := fun b =>
+    if b then ProjectiveSpectrum.basicOpen ℬ (r (q (MvPolynomial.X 2)))
+      else ProjectiveSpectrum.basicOpen ℬ (r (q (MvPolynomial.X 1)))
+  apply (AlgebraicGeometry.«Proj» ℬ).openCoverOfISupEqTop U
+  simpa only [iSup_bool_eq, U, Bool.cond_true, Bool.cond_false] using
+    projectiveWeierstrassSpecialFibreBasicOpen_Z_sup_Y W
+
+/-- On each member of the two actual open covers, base change is the
+chosen comparison with the corresponding graded-quotient `Proj` open.
+Overlap compatibility and gluing are separate statements. -/
+noncomputable def splitNodeSpecialFibreTwoChartSchemeIso
+    (W : WeierstrassCurve ℤ_[2])
+    (hnode : ReducedNodalPoint (W.map PadicInt.toZMod)
+      (PadicInt.toZMod W.a₃)
+      (PadicInt.toZMod (W.a₃ ^ 2 + W.a₄)))
+    (hsplit : 3 * PadicInt.toZMod W.a₃ +
+      (W.map PadicInt.toZMod).a₂ = 0)
+    (b : Bool) :
+    letI : GradedAlgebra (projectiveWeierstrassQuotientComponent W) :=
+      projectiveWeierstrassQuotientGrading W
+    letI : GradedAlgebra (projectiveWeierstrassSpecialFibreComponent W) :=
+      projectiveWeierstrassSpecialFibreGrading W
+    (projectiveWeierstrassSpecialFibreTwoChartOpenCover W).obj b ≅
+      (projectiveWeierstrassSpecialFibreProjTwoChartOpenCover W).obj b := by
+  letI : GradedAlgebra (projectiveWeierstrassQuotientComponent W) :=
+    projectiveWeierstrassQuotientGrading W
+  letI : GradedAlgebra (projectiveWeierstrassSpecialFibreComponent W) :=
+    projectiveWeierstrassSpecialFibreGrading W
+  haveI : IsDomain (projectiveWeierstrassCoordinateRing W ⧸
+      projectiveWeierstrassSpecialFibreIdeal W) := by
+    have e := splitNode_projectiveSpecialFibreCoordinateRing_equiv W hnode hsplit
+    haveI : IsDomain (MvPolynomial (Fin 3) (ZMod 2) ⧸
+        Ideal.span {splitNodeProjectiveCubic}) :=
+      splitNodeProjectiveCoordinateRing_isDomain
+    exact e.toMulEquiv.isDomain _
+  cases b
+  · exact homogeneousProjBasicZModCoverChartSchemeIso
+      (projectiveWeierstrassQuotientComponent W)
+      (projectiveWeierstrassSpecialFibreIdeal W)
+      (projectiveWeierstrassSpecialFibreIdeal_isHomogeneous W)
+      (projectiveWeierstrassSpecialFibreIdeal_eq_scalar_span W)
+      ((Ideal.Quotient.mk (Ideal.span {projectiveWeierstrassCubic W}))
+        (MvPolynomial.X (1 : Fin 3))) 1
+      (projectiveWeierstrassCoordinate_mem_degree_one W 1)
+      (by decide)
+      (fun n => pow_ne_zero n (by
+        intro hz
+        exact projectiveWeierstrassSpecialFibreIdeal_not_Y W
+          (Ideal.Quotient.eq_zero_iff_mem.mp hz)))
+  · exact homogeneousProjBasicZModCoverChartSchemeIso
+      (projectiveWeierstrassQuotientComponent W)
+      (projectiveWeierstrassSpecialFibreIdeal W)
+      (projectiveWeierstrassSpecialFibreIdeal_isHomogeneous W)
+      (projectiveWeierstrassSpecialFibreIdeal_eq_scalar_span W)
+      ((Ideal.Quotient.mk (Ideal.span {projectiveWeierstrassCubic W}))
+        (MvPolynomial.X (2 : Fin 3))) 1
+      (projectiveWeierstrassCoordinate_mem_degree_one W 2)
+      (by decide)
+      (fun n => pow_ne_zero n
+        (splitNode_projectiveSpecialFibreCoordinate_Z_ne_zero W hnode hsplit))
 
 end Beal.General

@@ -300,8 +300,8 @@ feed the projective model and its chart calculations.
   denominator. In the split-node case it instantiates this for the
   actual `Z`, `Y`, and `ZY` restrictions. The quotient base and
   `ZMod 2` are explicitly identified. Pasting for pullbacks shows
-  each restricted fibre is an open subscheme of the **global** fibre;
-  pulling back the integral two-chart cover gives an open cover of
+   each restricted fibre is an open subscheme of the **global** fibre;
+   pulling back the integral two-chart cover gives an open cover of
    that fibre. The scalar chart maps preserve restriction to a product
    open. Restriction therefore descends to the chart quotients by the
    base scalar, and the resulting quotient-chart ring isomorphisms
@@ -321,12 +321,16 @@ feed the projective model and its chart calculations.
    Proj-fibre isomorphisms** under a product-open inclusion. The
    residue-field comparison also respects that inclusion, so the
    corresponding chosen chart isomorphisms over `ZMod 2` are natural
-   for either ordered product. To glue the named `Z`, `Y`, and `ZY`
-   charts, it remains to transport the `Y·Z` comparison to the
-   chosen `Z·Y` overlap, identify both restricted fibre charts with
-   intersections in the global fibre, and construct the matching
-   open cover and transition maps on the graded-quotient `Proj`.
-   There is no glued global isomorphism yet.
+   for either ordered product. The chosen product-chart isomorphism
+   is invariant under swapping its factors after dependent transport.
+   Separately, the graded special-fibre quotient's own `Proj` now has
+   a proved `Z`/`Y` open cover, and each member is isomorphic to the
+   corresponding member of the pulled-back cover of the global fibre.
+   To glue these local isomorphisms, it remains to identify their
+   cover intersections with the product-chart restrictions, transport
+   the `Y·Z` comparison to the named `Z·Y` overlap, and prove the
+   resulting transition-map compatibility. There is no glued global
+   isomorphism yet.
 
 ## Current boundary
 
