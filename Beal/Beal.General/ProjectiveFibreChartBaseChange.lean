@@ -138,6 +138,39 @@ theorem homogeneousProjBasicSchemeIso_baseMap
   rw [hsection, ΓSpec.adjunction.homEquiv_naturality_right]
   rfl
 
+/-- The particular Proj-to-affine-chart isomorphisms respect the
+inclusion of the product basic open. -/
+theorem homogeneousProjBasicSchemeIso_toProduct
+    (f g : A) (d : ℕ) (hf : f ∈ 𝒜 d) (hg : g ∈ 𝒜 d)
+    (hd : 0 < d) :
+    let X := AlgebraicGeometry.«Proj» 𝒜
+    let i := homOfLE (ProjectiveSpectrum.basicOpen_mul_le_left 𝒜 f g)
+    let k := (X.restrictFunctor.map i).left
+    k ≫ (homogeneousProjBasicSchemeIso 𝒜 f d hf hd).hom =
+      (homogeneousProjBasicSchemeIso 𝒜 (f * g) (d + d)
+        (SetLike.GradedMul.mul_mem hf hg) (by omega)).hom ≫
+        Spec.map (CommRingCat.ofHom
+          (homogeneousLocalization_toProduct 𝒜 f g d hf hg)) := by
+  let X := AlgebraicGeometry.«Proj» 𝒜
+  let i := homOfLE (ProjectiveSpectrum.basicOpen_mul_le_left 𝒜 f g)
+  let k := (X.restrictFunctor.map i).left
+  change k ≫
+    (ΓSpec.adjunction.homEquiv
+      (Scheme.Opens.toScheme (X := X) (ProjectiveSpectrum.basicOpen 𝒜 f))
+      (Opposite.op (CommRingCat.of (HomogeneousLocalization.Away 𝒜 f))))
+      (ProjectiveSpectrum.Proj.awayToΓ 𝒜 f).op = _
+  erw [← ΓSpec.adjunction.homEquiv_naturality_left k
+    (ProjectiveSpectrum.Proj.awayToΓ 𝒜 f).op]
+  have hsection :
+      Scheme.Γ.rightOp.map k ≫ (ProjectiveSpectrum.Proj.awayToΓ 𝒜 f).op =
+        (ProjectiveSpectrum.Proj.awayToΓ 𝒜 (f * g)).op ≫
+          (CommRingCat.ofHom
+            (homogeneousLocalization_toProduct 𝒜 f g d hf hg)).op := by
+    simpa only [op_comp] using congrArg (fun h => h.op)
+      (homogeneousLocalization_toProduct_awayToΓ 𝒜 f g d hf hg)
+  rw [hsection, ΓSpec.adjunction.homEquiv_naturality_right]
+  rfl
+
 /-- Algebraically, tensoring the degree-zero chart ring with a
 quotient of the base is its quotient by the same scalar fraction. -/
 noncomputable def homogeneousAwayTensorQuotientRingEquiv
@@ -156,6 +189,23 @@ noncomputable def homogeneousAwayTensorQuotientRingEquiv
     (Ideal.quotEquivOfEq (by
       simp only [Ideal.map_span, Set.image_singleton]
       rfl))
+
+/-- On pure tensors, the affine base-change equivalence is reduction
+of a chart fraction multiplied by the corresponding scalar. -/
+theorem homogeneousAwayTensorQuotientRingEquiv_tmul
+    (f : A) (t r : R) (s : HomogeneousLocalization.Away 𝒜 f) :
+    letI : Algebra R (HomogeneousLocalization.Away 𝒜 f) :=
+      (homogeneousScalarAwayHom 𝒜 f).toAlgebra
+    (homogeneousAwayTensorQuotientRingEquiv 𝒜 f t)
+      (s ⊗ₜ[R] Ideal.Quotient.mk (Ideal.span {t}) r) =
+    Ideal.Quotient.mk
+      (Ideal.span {homogeneousScalarAway 𝒜 f t})
+      (s * homogeneousScalarAway 𝒜 f r) := by
+  letI : Algebra R (HomogeneousLocalization.Away 𝒜 f) :=
+    (homogeneousScalarAwayHom 𝒜 f).toAlgebra
+  simp [homogeneousAwayTensorQuotientRingEquiv, affineFibreTensorRingEquiv,
+    affineFibreTensorAlgHom, Algebra.smul_def, mul_comm]
+  congr 1
 
 /-- The algebraic affine pullback chart is the chart ring of the
 graded homogeneous quotient, when the denominator survives. -/
@@ -356,6 +406,37 @@ theorem homogeneousScalarAwayHom_toProduct
   intro t
   exact homogeneousScalarAway_toProduct 𝒜 f g d hf hg t
 
+/-- The integral chart restriction as a homomorphism over the
+grading base, for use in the affine pullback square. -/
+noncomputable def homogeneousLocalization_toProductAlgHom
+    (f g : A) (d : ℕ) (hf : f ∈ 𝒜 d) (hg : g ∈ 𝒜 d) :
+    letI : Algebra R (HomogeneousLocalization.Away 𝒜 f) :=
+      (homogeneousScalarAwayHom 𝒜 f).toAlgebra
+    letI : Algebra R (HomogeneousLocalization.Away 𝒜 (f * g)) :=
+      (homogeneousScalarAwayHom 𝒜 (f * g)).toAlgebra
+    HomogeneousLocalization.Away 𝒜 f →ₐ[R]
+      HomogeneousLocalization.Away 𝒜 (f * g) := by
+  letI : Algebra R (HomogeneousLocalization.Away 𝒜 f) :=
+    (homogeneousScalarAwayHom 𝒜 f).toAlgebra
+  letI : Algebra R (HomogeneousLocalization.Away 𝒜 (f * g)) :=
+    (homogeneousScalarAwayHom 𝒜 (f * g)).toAlgebra
+  exact ⟨homogeneousLocalization_toProduct 𝒜 f g d hf hg,
+    fun t => congrArg (fun h => h t)
+      (homogeneousScalarAwayHom_toProduct 𝒜 f g d hf hg)⟩
+
+/-- The integral affine chart restriction lies over the same base
+map as the product chart, now as a square of affine schemes. -/
+theorem homogeneousScalarAwayHom_toProduct_spec
+    (f g : A) (d : ℕ) (hf : f ∈ 𝒜 d) (hg : g ∈ 𝒜 d) :
+    Spec.map (CommRingCat.ofHom
+        (homogeneousLocalization_toProduct 𝒜 f g d hf hg)) ≫
+      Spec.map (CommRingCat.ofHom (homogeneousScalarAwayHom 𝒜 f)) =
+    Spec.map (CommRingCat.ofHom
+      (homogeneousScalarAwayHom 𝒜 (f * g))) := by
+  rw [← Spec.map_comp]
+  exact congrArg (fun h => Spec.map (CommRingCat.ofHom h))
+    (homogeneousScalarAwayHom_toProduct 𝒜 f g d hf hg)
+
 /-- Restriction of an integral basic chart descends to the quotient
 by the scalar cutting out the special fibre. -/
 noncomputable def homogeneousScalarQuotientToProduct
@@ -392,6 +473,48 @@ theorem homogeneousScalarQuotientToProduct_comp_mk
   intro s
   simp only [RingHom.comp_apply, homogeneousScalarQuotientToProduct,
     Ideal.quotientMap_mk]
+
+/-- The affine tensor-to-quotient comparison respects a restriction
+of basic charts over the base ring. -/
+theorem homogeneousAwayTensorQuotientRingEquiv_toProduct
+    (f g : A) (d : ℕ) (hf : f ∈ 𝒜 d) (hg : g ∈ 𝒜 d)
+    (t : R) :
+    letI : Algebra R (HomogeneousLocalization.Away 𝒜 f) :=
+      (homogeneousScalarAwayHom 𝒜 f).toAlgebra
+    letI : Algebra R (HomogeneousLocalization.Away 𝒜 (f * g)) :=
+      (homogeneousScalarAwayHom 𝒜 (f * g)).toAlgebra
+    (homogeneousScalarQuotientToProduct 𝒜 f g d hf hg t).comp
+      (homogeneousAwayTensorQuotientRingEquiv 𝒜 f t).toRingHom =
+    (homogeneousAwayTensorQuotientRingEquiv 𝒜 (f * g) t).toRingHom.comp
+      (Algebra.TensorProduct.map
+        (homogeneousLocalization_toProductAlgHom 𝒜 f g d hf hg)
+        (AlgHom.id R (R ⧸ Ideal.span {t}))).toRingHom := by
+  letI : Algebra R (HomogeneousLocalization.Away 𝒜 f) :=
+    (homogeneousScalarAwayHom 𝒜 f).toAlgebra
+  letI : Algebra R (HomogeneousLocalization.Away 𝒜 (f * g)) :=
+    (homogeneousScalarAwayHom 𝒜 (f * g)).toAlgebra
+  apply RingHom.ext
+  intro x
+  induction x using TensorProduct.induction_on with
+  | zero => simp
+  | tmul s q =>
+      obtain ⟨r, rfl⟩ := Ideal.Quotient.mk_surjective q
+      change (homogeneousScalarQuotientToProduct 𝒜 f g d hf hg t)
+          ((homogeneousAwayTensorQuotientRingEquiv 𝒜 f t)
+            (s ⊗ₜ[R] Ideal.Quotient.mk (Ideal.span {t}) r)) =
+        (homogeneousAwayTensorQuotientRingEquiv 𝒜 (f * g) t)
+          ((Algebra.TensorProduct.map
+            (homogeneousLocalization_toProductAlgHom 𝒜 f g d hf hg)
+            (AlgHom.id R (R ⧸ Ideal.span {t})))
+            (s ⊗ₜ[R] Ideal.Quotient.mk (Ideal.span {t}) r))
+      rw [homogeneousAwayTensorQuotientRingEquiv_tmul,
+        Algebra.TensorProduct.map_tmul, AlgHom.id_apply,
+        homogeneousAwayTensorQuotientRingEquiv_tmul]
+      rw [← RingHom.comp_apply, homogeneousScalarQuotientToProduct_comp_mk]
+      simp only [RingHom.comp_apply, map_mul,
+        homogeneousScalarAway_toProduct]
+      rfl
+  | add x y hx hy => simp only [map_add, hx, hy]
 
 /-- The quotient-by-scalar chart isomorphisms commute with restriction
 to the product overlap, as maps between the actual quotient rings. -/
@@ -473,6 +596,171 @@ theorem homogeneousQuotientChartRestriction_spec_square
     (homogeneousQuotientChartRestriction_square
       𝒜 I hI t hgen f g d hf hg hpowf hpowfg)
 
+/-- The complete affine tensor-to-graded-quotient chart equivalence
+is natural for restriction to the product basic open. -/
+theorem homogeneousAwayTensorQuotientChartEquiv_toProduct
+    (I : Ideal A) (hI : I.IsHomogeneous 𝒜)
+    (t : R) (hgen : I = Ideal.span {algebraMap R A t})
+    (f g : A) (d : ℕ) (hf : f ∈ 𝒜 d) (hg : g ∈ 𝒜 d)
+    (hpowf : ∀ n : ℕ, (Ideal.Quotient.mk I f) ^ n ≠ 0)
+    (hpowfg : ∀ n : ℕ, (Ideal.Quotient.mk I (f * g)) ^ n ≠ 0) :
+    letI : Algebra R (HomogeneousLocalization.Away 𝒜 f) :=
+      (homogeneousScalarAwayHom 𝒜 f).toAlgebra
+    letI : Algebra R (HomogeneousLocalization.Away 𝒜 (f * g)) :=
+      (homogeneousScalarAwayHom 𝒜 (f * g)).toAlgebra
+    letI : GradedAlgebra (homogeneousQuotientComponent 𝒜 I) :=
+      homogeneousQuotientGrading 𝒜 I hI
+    let q := Ideal.Quotient.mk I
+    let hfq : q f ∈ homogeneousQuotientComponent 𝒜 I d :=
+      Submodule.mem_map.mpr ⟨f, hf, rfl⟩
+    let hgq : q g ∈ homogeneousQuotientComponent 𝒜 I d :=
+      Submodule.mem_map.mpr ⟨g, hg, rfl⟩
+    (homogeneousLocalization_toProduct
+        (homogeneousQuotientComponent 𝒜 I)
+        (q f) (q g) d hfq hgq).comp
+      (homogeneousAwayTensorQuotientChartEquiv
+        𝒜 I hI t hgen f d hf hpowf).toRingHom =
+    (homogeneousAwayTensorQuotientChartEquiv
+        𝒜 I hI t hgen (f * g) (d + d)
+        (SetLike.GradedMul.mul_mem hf hg) hpowfg).toRingHom.comp
+      (Algebra.TensorProduct.map
+        (homogeneousLocalization_toProductAlgHom 𝒜 f g d hf hg)
+        (AlgHom.id R (R ⧸ Ideal.span {t}))).toRingHom := by
+  letI : Algebra R (HomogeneousLocalization.Away 𝒜 f) :=
+    (homogeneousScalarAwayHom 𝒜 f).toAlgebra
+  letI : Algebra R (HomogeneousLocalization.Away 𝒜 (f * g)) :=
+    (homogeneousScalarAwayHom 𝒜 (f * g)).toAlgebra
+  letI : GradedAlgebra (homogeneousQuotientComponent 𝒜 I) :=
+    homogeneousQuotientGrading 𝒜 I hI
+  apply RingHom.ext
+  intro x
+  have hquot := congrArg
+    (fun ψ => ψ ((homogeneousAwayTensorQuotientRingEquiv 𝒜 f t) x))
+    (homogeneousQuotientChartRestriction_square
+      𝒜 I hI t hgen f g d hf hg hpowf hpowfg)
+  have htensor := congrArg (fun ψ => ψ x)
+    (homogeneousAwayTensorQuotientRingEquiv_toProduct
+      𝒜 f g d hf hg t)
+  simpa only [RingHom.comp_apply, homogeneousAwayTensorQuotientChartEquiv,
+    RingEquiv.trans_apply] using
+    hquot.trans (congrArg
+      (homogeneousQuotientAwayRingEquiv 𝒜 I hI t hgen
+        (f * g) (d + d) (SetLike.GradedMul.mul_mem hf hg) hpowfg)
+      htensor)
+
+/-- The tensor-chart-to-quotient-chart isomorphisms respect restriction
+as morphisms of affine schemes. The pullback-to-tensor naturality is
+still a separate comparison. -/
+theorem homogeneousAwayTensorQuotientChartEquiv_spec_square
+    (I : Ideal A) (hI : I.IsHomogeneous 𝒜)
+    (t : R) (hgen : I = Ideal.span {algebraMap R A t})
+    (f g : A) (d : ℕ) (hf : f ∈ 𝒜 d) (hg : g ∈ 𝒜 d)
+    (hpowf : ∀ n : ℕ, (Ideal.Quotient.mk I f) ^ n ≠ 0)
+    (hpowfg : ∀ n : ℕ, (Ideal.Quotient.mk I (f * g)) ^ n ≠ 0) :
+    letI : Algebra R (HomogeneousLocalization.Away 𝒜 f) :=
+      (homogeneousScalarAwayHom 𝒜 f).toAlgebra
+    letI : Algebra R (HomogeneousLocalization.Away 𝒜 (f * g)) :=
+      (homogeneousScalarAwayHom 𝒜 (f * g)).toAlgebra
+    letI : GradedAlgebra (homogeneousQuotientComponent 𝒜 I) :=
+      homogeneousQuotientGrading 𝒜 I hI
+    let q := Ideal.Quotient.mk I
+    let hfq : q f ∈ homogeneousQuotientComponent 𝒜 I d :=
+      Submodule.mem_map.mpr ⟨f, hf, rfl⟩
+    let hgq : q g ∈ homogeneousQuotientComponent 𝒜 I d :=
+      Submodule.mem_map.mpr ⟨g, hg, rfl⟩
+    Spec.map (CommRingCat.ofHom
+        (homogeneousLocalization_toProduct
+          (homogeneousQuotientComponent 𝒜 I)
+          (q f) (q g) d hfq hgq)) ≫
+      Spec.map (CommRingCat.ofHom
+        (homogeneousAwayTensorQuotientChartEquiv
+          𝒜 I hI t hgen f d hf hpowf).toRingHom) =
+    Spec.map (CommRingCat.ofHom
+        (homogeneousAwayTensorQuotientChartEquiv
+          𝒜 I hI t hgen (f * g) (d + d)
+          (SetLike.GradedMul.mul_mem hf hg) hpowfg).toRingHom) ≫
+      Spec.map (CommRingCat.ofHom
+        (Algebra.TensorProduct.map
+          (homogeneousLocalization_toProductAlgHom 𝒜 f g d hf hg)
+          (AlgHom.id R (R ⧸ Ideal.span {t}))).toRingHom) := by
+  letI : Algebra R (HomogeneousLocalization.Away 𝒜 f) :=
+    (homogeneousScalarAwayHom 𝒜 f).toAlgebra
+  letI : Algebra R (HomogeneousLocalization.Away 𝒜 (f * g)) :=
+    (homogeneousScalarAwayHom 𝒜 (f * g)).toAlgebra
+  letI : GradedAlgebra (homogeneousQuotientComponent 𝒜 I) :=
+    homogeneousQuotientGrading 𝒜 I hI
+  dsimp only
+  rw [← Spec.map_comp, ← Spec.map_comp]
+  exact congrArg (fun h => Spec.map (CommRingCat.ofHom h))
+    (homogeneousAwayTensorQuotientChartEquiv_toProduct
+      𝒜 I hI t hgen f g d hf hg hpowf hpowfg)
+
+/-- Naturality of the chosen pullback-to-tensor isomorphism under
+restriction of homogeneous affine charts. It is enough to compare
+its two projections, not to identify pullback objects by rewriting. -/
+theorem homogeneousPullbackSpecIso_toProduct
+    (f g : A) (d : ℕ) (hf : f ∈ 𝒜 d) (hg : g ∈ 𝒜 d)
+    (t : R) :
+    letI : Algebra R (HomogeneousLocalization.Away 𝒜 f) :=
+      (homogeneousScalarAwayHom 𝒜 f).toAlgebra
+    letI : Algebra R (HomogeneousLocalization.Away 𝒜 (f * g)) :=
+      (homogeneousScalarAwayHom 𝒜 (f * g)).toAlgebra
+    let residue := Spec.map (CommRingCat.ofHom
+      (algebraMap R (R ⧸ Ideal.span {t})))
+    let baseF := Spec.map (CommRingCat.ofHom
+      (algebraMap R (HomogeneousLocalization.Away 𝒜 f)))
+    let baseFG := Spec.map (CommRingCat.ofHom
+      (algebraMap R (HomogeneousLocalization.Away 𝒜 (f * g))))
+    let restriction := Spec.map (CommRingCat.ofHom
+      (homogeneousLocalization_toProduct 𝒜 f g d hf hg))
+    let e := pullback.map baseFG residue baseF residue
+      restriction (𝟙 _) (𝟙 _)
+      (by simpa only [Category.comp_id] using
+        (homogeneousScalarAwayHom_toProduct_spec 𝒜 f g d hf hg).symm)
+      (by simp)
+    (pullbackSpecIso R (HomogeneousLocalization.Away 𝒜 (f * g))
+        (R ⧸ Ideal.span {t})).inv ≫ e =
+      Spec.map (CommRingCat.ofHom
+        (Algebra.TensorProduct.map
+          (homogeneousLocalization_toProductAlgHom 𝒜 f g d hf hg)
+          (AlgHom.id R (R ⧸ Ideal.span {t}))).toRingHom) ≫
+        (pullbackSpecIso R (HomogeneousLocalization.Away 𝒜 f)
+          (R ⧸ Ideal.span {t})).inv := by
+  letI : Algebra R (HomogeneousLocalization.Away 𝒜 f) :=
+    (homogeneousScalarAwayHom 𝒜 f).toAlgebra
+  letI : Algebra R (HomogeneousLocalization.Away 𝒜 (f * g)) :=
+    (homogeneousScalarAwayHom 𝒜 (f * g)).toAlgebra
+  dsimp only
+  apply pullback.hom_ext
+  · simp only [Category.assoc, pullback.lift_fst]
+    simp_rw [← Category.assoc]
+    rw [pullbackSpecIso_inv_fst]
+    rw [Category.assoc, pullbackSpecIso_inv_fst]
+    rw [← Spec.map_comp, ← Spec.map_comp]
+    exact congrArg (fun h => Spec.map (CommRingCat.ofHom h))
+      (congrArg AlgHom.toRingHom
+        (Algebra.TensorProduct.map_comp_includeLeft
+          (homogeneousLocalization_toProductAlgHom 𝒜 f g d hf hg)
+          (AlgHom.id R (R ⧸ Ideal.span {t}))))
+  · simp only [Category.assoc, pullback.lift_snd, Category.comp_id]
+    simp_rw [← Category.assoc]
+    rw [pullbackSpecIso_inv_snd]
+    rw [Category.assoc, pullbackSpecIso_inv_snd]
+    rw [← Spec.map_comp]
+    change Spec.map (CommRingCat.ofHom
+        Algebra.TensorProduct.includeRight.toRingHom) =
+      Spec.map (CommRingCat.ofHom
+        ((Algebra.TensorProduct.map
+          (homogeneousLocalization_toProductAlgHom 𝒜 f g d hf hg)
+          (AlgHom.id R (R ⧸ Ideal.span {t}))).comp
+          Algebra.TensorProduct.includeRight).toRingHom)
+    simpa only [AlgHom.comp_id] using
+      (congrArg (fun h => Spec.map (CommRingCat.ofHom h))
+        (congrArg AlgHom.toRingHom
+          (Algebra.TensorProduct.map_comp_includeRight
+            (homogeneousLocalization_toProductAlgHom 𝒜 f g d hf hg)
+            (AlgHom.id R (R ⧸ Ideal.span {t}))))).symm
+
 /-- The *affine* base change of a homogeneous basic chart is `Spec`
 of the matching chart ring of the graded quotient. This states a
 scheme isomorphism for the pullback of the explicitly constructed
@@ -502,6 +790,78 @@ noncomputable def homogeneousAwayPullbackSchemeIso
     (R ⧸ Ideal.span {t})).trans
       (Scheme.Spec.mapIso ((homogeneousAwayTensorQuotientChartEquiv
         𝒜 I hI t hgen f d hf hpow).symm.toCommRingCatIso.op))
+
+/-- Naturality of the *chosen* affine pullback-to-quotient-chart
+isomorphisms, stated in the inverse direction. This includes both
+the pullback-to-tensor and tensor-to-quotient comparisons. -/
+theorem homogeneousAwayPullbackSchemeIso_toProduct
+    (I : Ideal A) (hI : I.IsHomogeneous 𝒜)
+    (t : R) (hgen : I = Ideal.span {algebraMap R A t})
+    (f g : A) (d : ℕ) (hf : f ∈ 𝒜 d) (hg : g ∈ 𝒜 d)
+    (hpowf : ∀ n : ℕ, (Ideal.Quotient.mk I f) ^ n ≠ 0)
+    (hpowfg : ∀ n : ℕ, (Ideal.Quotient.mk I (f * g)) ^ n ≠ 0) :
+    letI : Algebra R (HomogeneousLocalization.Away 𝒜 f) :=
+      (homogeneousScalarAwayHom 𝒜 f).toAlgebra
+    letI : Algebra R (HomogeneousLocalization.Away 𝒜 (f * g)) :=
+      (homogeneousScalarAwayHom 𝒜 (f * g)).toAlgebra
+    letI : GradedAlgebra (homogeneousQuotientComponent 𝒜 I) :=
+      homogeneousQuotientGrading 𝒜 I hI
+    let q := Ideal.Quotient.mk I
+    let hfq : q f ∈ homogeneousQuotientComponent 𝒜 I d :=
+      Submodule.mem_map.mpr ⟨f, hf, rfl⟩
+    let hgq : q g ∈ homogeneousQuotientComponent 𝒜 I d :=
+      Submodule.mem_map.mpr ⟨g, hg, rfl⟩
+    let residue := Spec.map (CommRingCat.ofHom
+      (algebraMap R (R ⧸ Ideal.span {t})))
+    let baseF := Spec.map (CommRingCat.ofHom
+      (algebraMap R (HomogeneousLocalization.Away 𝒜 f)))
+    let baseFG := Spec.map (CommRingCat.ofHom
+      (algebraMap R (HomogeneousLocalization.Away 𝒜 (f * g))))
+    let restriction := Spec.map (CommRingCat.ofHom
+      (homogeneousLocalization_toProduct 𝒜 f g d hf hg))
+    let e := pullback.map baseFG residue baseF residue
+      restriction (𝟙 _) (𝟙 _)
+      (by simpa only [Category.comp_id] using
+        (homogeneousScalarAwayHom_toProduct_spec 𝒜 f g d hf hg).symm)
+      (by simp)
+    Spec.map (CommRingCat.ofHom
+        (homogeneousLocalization_toProduct
+          (homogeneousQuotientComponent 𝒜 I)
+          (q f) (q g) d hfq hgq)) ≫
+      (homogeneousAwayPullbackSchemeIso
+        𝒜 I hI t hgen f d hf hpowf).inv =
+    (homogeneousAwayPullbackSchemeIso
+        𝒜 I hI t hgen (f * g) (d + d)
+        (SetLike.GradedMul.mul_mem hf hg) hpowfg).inv ≫ e := by
+  letI : Algebra R (HomogeneousLocalization.Away 𝒜 f) :=
+    (homogeneousScalarAwayHom 𝒜 f).toAlgebra
+  letI : Algebra R (HomogeneousLocalization.Away 𝒜 (f * g)) :=
+    (homogeneousScalarAwayHom 𝒜 (f * g)).toAlgebra
+  letI : GradedAlgebra (homogeneousQuotientComponent 𝒜 I) :=
+    homogeneousQuotientGrading 𝒜 I hI
+  dsimp only
+  change
+    (Spec.map (CommRingCat.ofHom
+        (homogeneousLocalization_toProduct
+          (homogeneousQuotientComponent 𝒜 I)
+          (Ideal.Quotient.mk I f) (Ideal.Quotient.mk I g) d
+          (Submodule.mem_map.mpr ⟨f, hf, rfl⟩)
+          (Submodule.mem_map.mpr ⟨g, hg, rfl⟩))) ≫
+      Spec.map (CommRingCat.ofHom
+        (homogeneousAwayTensorQuotientChartEquiv
+          𝒜 I hI t hgen f d hf hpowf).toRingHom)) ≫
+        (pullbackSpecIso R (HomogeneousLocalization.Away 𝒜 f)
+          (R ⧸ Ideal.span {t})).inv =
+    (Spec.map (CommRingCat.ofHom
+        (homogeneousAwayTensorQuotientChartEquiv
+          𝒜 I hI t hgen (f * g) (d + d)
+          (SetLike.GradedMul.mul_mem hf hg) hpowfg).toRingHom) ≫
+      (pullbackSpecIso R (HomogeneousLocalization.Away 𝒜 (f * g))
+        (R ⧸ Ideal.span {t})).inv) ≫
+      pullback.map _ _ _ _ _ _ _ _ _
+  rw [homogeneousAwayTensorQuotientChartEquiv_spec_square]
+  simp only [Category.assoc]
+  rw [homogeneousPullbackSpecIso_toProduct]
 
 /-- An actual restricted Proj fibre chart: first restrict the
 scalar-induced global structure morphism to `D(f)`, then pull back

@@ -308,10 +308,17 @@ feed the projective model and its chart calculations.
    commute with restriction to the product overlap. This also gives
    a commuting square of the corresponding affine `Spec` maps; the
    same argument applies with `Z` and `Y` interchanged, since their
-   products define the same basic open. Compatibility of the
-   **restricted pullback scheme isomorphisms themselves** with these
-   overlap maps remains unproved, so there is still no glued global
-   isomorphism with the graded quotient `Proj`.
+   products define the same basic open. The tensor-to-quotient
+   base-change isomorphism and the complete tensor-to-graded-quotient
+   chart isomorphism now commute with that restriction, as do their
+   affine `Spec` maps. The chosen pullback-to-tensor isomorphism and
+   the chosen **affine** pullback-to-graded-quotient isomorphism are
+   natural under product-chart restriction. Independently, the
+   particular Proj-to-affine basic-chart isomorphisms commute with
+   the actual inclusion of projective opens. Composing these squares
+   through the pullback maps of the **restricted Proj morphism** is
+   still unproved; there is no glued global isomorphism with the
+   graded quotient `Proj`.
 
 ## Current boundary
 
