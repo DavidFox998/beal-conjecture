@@ -18,3 +18,4 @@
 - [Away-prime localization transport](away-prime-localization-transport.md) — use an abstract ring-instance bridge before specializing an overlap equivalence to prime local rings.
 - [Lean let-binders in statements](lean-let-statement-binders.md) — introduce a let-bound open before the quantified point to avoid misleading Proj chart type errors.
 - [Polynomial substitution inverses](polynomial-substitution-inverses.md) — prove eval₂Hom images on constants and generators explicitly before composing translations.
+- [Affine quotient transport](affine-quotient-transport.md) — avoid rewriting dependent quotient expressions directly; transport through a quotient equivalence with a representative lemma.

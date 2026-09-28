@@ -267,6 +267,22 @@ feed the projective model and its chart calculations.
   scheme-level comparison with the canonical split cubic, remain
   unproved. No reduction classification follows from these
   definitions alone.
+- `ProjectiveChartComparison.lean` constructs degree-zero localization
+  maps for degree-preserving ring homomorphisms even when the two
+  gradings use different coefficient rings. It proves that these
+  maps commute with enlargement of the denominator submonoid and
+  that a graded coordinate-ring equivalence induces an isomorphism
+  of basic-chart rings. This applies to the quotient special-fibre
+  coordinate ring and the canonical split cubic, with the image of
+  each chart denominator kept explicit. These ring maps have not
+  yet been promoted to an isomorphism of the two `Proj` schemes.
+- `AffineFibreTensor.lean` proves the general affine base-change
+  ring isomorphism `S ⊗[R] (R ⧸ I) ≃+* S ⧸ I S`. Applying this to the
+  pullback's charts still requires identifying the extended ideal
+  in each integral degree-zero localization and comparing its
+  quotient with the corresponding localization of the graded
+  coordinate quotient. No chartwise pullback-to-quotient
+  isomorphism or gluing theorem is asserted here.
 
 ## Current boundary
 
