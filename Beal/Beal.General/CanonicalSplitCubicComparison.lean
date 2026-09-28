@@ -102,10 +102,9 @@ theorem gradedEquivAwayHom_toProduct
         (fun h => h ((homogeneousLocalization_toProduct 𝒜 f g d hf hg) x))
         hproduct
 
-/-- On a product chart, the homogeneous translation is a ring
-equivalence even when its target denominator is written as a product
-of the two translated factors. -/
-noncomputable def gradedEquivAway_product
+/-- A degree-preserving equivalence on degree-zero localizations,
+indexed by the denominators rather than their presentations. -/
+noncomputable def gradedEquivAway_at
     {R S A B : Type u} [CommRing R] [CommRing S]
     [CommRing A] [CommRing B] [Algebra R A] [Algebra S B]
     (𝒜 : ℕ → Submodule R A) (ℬ : ℕ → Submodule S B)
@@ -113,28 +112,28 @@ noncomputable def gradedEquivAway_product
     (e : A ≃+* B)
     (he : ∀ n (a : A), a ∈ 𝒜 n → e a ∈ ℬ n)
     (he' : ∀ n (b : B), b ∈ ℬ n → e.symm b ∈ 𝒜 n)
-    (f g : A) :
-    HomogeneousLocalization.Away 𝒜 (f * g) ≃+*
-      HomogeneousLocalization.Away ℬ (e f * e g) := by
-  let h : HomogeneousLocalization.Away 𝒜 (f * g) →+*
-      HomogeneousLocalization.Away ℬ (e f * e g) :=
+    (t : A) (s : B) (ht : e t = s) :
+    HomogeneousLocalization.Away 𝒜 t ≃+*
+      HomogeneousLocalization.Away ℬ s := by
+  let h : HomogeneousLocalization.Away 𝒜 t →+*
+      HomogeneousLocalization.Away ℬ s :=
     gradedLocalizationMap 𝒜 ℬ e.toRingHom
       (by
         intro a ha
-        obtain ⟨n, hn⟩ := (Submonoid.mem_powers_iff a (f * g)).mp ha
+        obtain ⟨n, hn⟩ := (Submonoid.mem_powers_iff a t).mp ha
         apply (Submonoid.mem_powers_iff _ _).mpr
         exact ⟨n, by
-          simpa only [map_pow, e.map_mul] using congrArg e hn⟩)
+          simpa only [map_pow, ht] using congrArg e hn⟩)
       he
-  let k : HomogeneousLocalization.Away ℬ (e f * e g) →+*
-      HomogeneousLocalization.Away 𝒜 (f * g) :=
+  let k : HomogeneousLocalization.Away ℬ s →+*
+      HomogeneousLocalization.Away 𝒜 t :=
     gradedLocalizationMap ℬ 𝒜 e.symm.toRingHom
       (by
         intro a ha
-        obtain ⟨n, hn⟩ := (Submonoid.mem_powers_iff a (e f * e g)).mp ha
+        obtain ⟨n, hn⟩ := (Submonoid.mem_powers_iff a s).mp ha
         apply (Submonoid.mem_powers_iff _ _).mpr
         exact ⟨n, by
-          simpa only [map_pow, map_mul, e.symm_apply_apply] using congrArg e.symm hn⟩)
+          simpa only [map_pow, ← ht, e.symm_apply_apply] using congrArg e.symm hn⟩)
       he'
   refine RingEquiv.ofBijective h ⟨?_, ?_⟩
   · intro x y hxy
@@ -152,6 +151,41 @@ noncomputable def gradedEquivAway_product
     obtain ⟨v, rfl⟩ := HomogeneousLocalization.mk_surjective y
     simp only [h, k, gradedLocalizationMap_mk]
     simp
+
+/-- On a product chart, the homogeneous translation is a ring
+equivalence even when its target denominator is written as a product
+of the two translated factors. -/
+noncomputable def gradedEquivAway_product
+    {R S A B : Type u} [CommRing R] [CommRing S]
+    [CommRing A] [CommRing B] [Algebra R A] [Algebra S B]
+    (𝒜 : ℕ → Submodule R A) (ℬ : ℕ → Submodule S B)
+    [GradedAlgebra 𝒜] [GradedAlgebra ℬ]
+    (e : A ≃+* B)
+    (he : ∀ n (a : A), a ∈ 𝒜 n → e a ∈ ℬ n)
+    (he' : ∀ n (b : B), b ∈ ℬ n → e.symm b ∈ 𝒜 n)
+    (f g : A) :
+    HomogeneousLocalization.Away 𝒜 (f * g) ≃+*
+      HomogeneousLocalization.Away ℬ (e f * e g) :=
+  gradedEquivAway_at 𝒜 ℬ e he he' (f * g) (e f * e g) (e.map_mul f g)
+
+/-- The product translation does not depend on the ordering of its
+two factors after transporting the source and target denominators. -/
+theorem gradedEquivAway_product_mul_comm
+    {R S A B : Type u} [CommRing R] [CommRing S]
+    [CommRing A] [CommRing B] [Algebra R A] [Algebra S B]
+    (𝒜 : ℕ → Submodule R A) (ℬ : ℕ → Submodule S B)
+    [GradedAlgebra 𝒜] [GradedAlgebra ℬ]
+    (e : A ≃+* B)
+    (he : ∀ n (a : A), a ∈ 𝒜 n → e a ∈ ℬ n)
+    (he' : ∀ n (b : B), b ∈ ℬ n → e.symm b ∈ 𝒜 n)
+    (f g : A) :
+    HEq (gradedEquivAway_product 𝒜 ℬ e he he' f g)
+      (gradedEquivAway_product 𝒜 ℬ e he he' g f) := by
+  unfold gradedEquivAway_product
+  congr 1
+  · exact mul_comm f g
+  · exact mul_comm (e f) (e g)
+  · apply proof_irrel_heq
 
 /-- The inverse chart equivalences obey the same product restriction
 square. This is the direction needed for the contravariant affine
@@ -258,6 +292,27 @@ noncomputable def gradedEquivProjBasicSchemeIso
       ((gradedEquivAway 𝒜 ℬ e he he' f).symm.toCommRingCatIso.op)).trans
         (homogeneousProjBasicSchemeIso ℬ (e f) d (he d f hf) hd).symm)
 
+/-- The projective chart comparison indexed by matched denominators
+and their common homogeneous degree. -/
+noncomputable def gradedEquivProjBasicSchemeIso_at
+    {R S A B : Type u} [CommRing R] [CommRing S]
+    [CommRing A] [CommRing B] [Algebra R A] [Algebra S B]
+    (𝒜 : ℕ → Submodule R A) (ℬ : ℕ → Submodule S B)
+    [GradedAlgebra 𝒜] [GradedAlgebra ℬ]
+    (e : A ≃+* B)
+    (he : ∀ n (a : A), a ∈ 𝒜 n → e a ∈ ℬ n)
+    (he' : ∀ n (b : B), b ∈ ℬ n → e.symm b ∈ 𝒜 n)
+    (t : A) (s : B) (ht : e t = s)
+    (n : ℕ) (htA : t ∈ 𝒜 n) (hsB : s ∈ ℬ n) (hn : 0 < n) :
+    Scheme.Opens.toScheme (X := AlgebraicGeometry.«Proj» 𝒜)
+        (ProjectiveSpectrum.basicOpen 𝒜 t) ≅
+      Scheme.Opens.toScheme (X := AlgebraicGeometry.«Proj» ℬ)
+        (ProjectiveSpectrum.basicOpen ℬ s) := by
+  exact (homogeneousProjBasicSchemeIso 𝒜 t n htA hn).trans
+    ((Scheme.Spec.mapIso
+      ((gradedEquivAway_at 𝒜 ℬ e he he' t s ht).symm.toCommRingCatIso.op)).trans
+        (homogeneousProjBasicSchemeIso ℬ s n hsB hn).symm)
+
 /-- The projective product chart is compared with the chart at the
 product of the two translated denominators. -/
 noncomputable def gradedEquivProjProductBasicSchemeIso
@@ -273,14 +328,33 @@ noncomputable def gradedEquivProjProductBasicSchemeIso
     Scheme.Opens.toScheme (X := AlgebraicGeometry.«Proj» 𝒜)
         (ProjectiveSpectrum.basicOpen 𝒜 (f * g)) ≅
       Scheme.Opens.toScheme (X := AlgebraicGeometry.«Proj» ℬ)
-        (ProjectiveSpectrum.basicOpen ℬ (e f * e g)) := by
-  exact (homogeneousProjBasicSchemeIso 𝒜 (f * g) (d + d)
-      (SetLike.GradedMul.mul_mem hf hg) (by omega)).trans
-    ((Scheme.Spec.mapIso
-      ((gradedEquivAway_product 𝒜 ℬ e he he' f g).symm.toCommRingCatIso.op)).trans
-        (homogeneousProjBasicSchemeIso ℬ (e f * e g) (d + d)
-          (SetLike.GradedMul.mul_mem (he d f hf) (he d g hg))
-          (by omega)).symm)
+        (ProjectiveSpectrum.basicOpen ℬ (e f * e g)) :=
+  gradedEquivProjBasicSchemeIso_at 𝒜 ℬ e he he'
+    (f * g) (e f * e g) (e.map_mul f g) (d + d)
+    (SetLike.GradedMul.mul_mem hf hg)
+    (SetLike.GradedMul.mul_mem (he d f hf) (he d g hg)) (by omega)
+
+/-- The chosen product-open scheme comparison agrees after exchanging
+the two presentations of the overlap. -/
+theorem gradedEquivProjProductBasicSchemeIso_mul_comm
+    {R S A B : Type u} [CommRing R] [CommRing S]
+    [CommRing A] [CommRing B] [Algebra R A] [Algebra S B]
+    (𝒜 : ℕ → Submodule R A) (ℬ : ℕ → Submodule S B)
+    [GradedAlgebra 𝒜] [GradedAlgebra ℬ]
+    (e : A ≃+* B)
+    (he : ∀ n (a : A), a ∈ 𝒜 n → e a ∈ ℬ n)
+    (he' : ∀ n (b : B), b ∈ ℬ n → e.symm b ∈ 𝒜 n)
+    (f g : A) (d : ℕ) (hf : f ∈ 𝒜 d) (hg : g ∈ 𝒜 d)
+    (hd : 0 < d) :
+    HEq (gradedEquivProjProductBasicSchemeIso 𝒜 ℬ e he he' f g d hf hg hd)
+      (gradedEquivProjProductBasicSchemeIso 𝒜 ℬ e he he' g f d hg hf hd) := by
+  unfold gradedEquivProjProductBasicSchemeIso
+  congr 1
+  · exact mul_comm f g
+  · exact mul_comm (e f) (e g)
+  · apply proof_irrel_heq
+  · apply proof_irrel_heq
+  · apply proof_irrel_heq
 
 /-- The chosen projective basic-chart isomorphism is natural for
 restriction to a product open, with the translated denominator on
@@ -376,6 +450,56 @@ theorem gradedEquivProjBasicSchemeIso_toProduct
             (homogeneousLocalization_toProduct ℬ (e f) (e g) d
               (he d f hf) (he d g hg))))
       simp only [Category.assoc, Iso.inv_hom_id_assoc]
+
+/-- The second restriction uses the same chosen comparison on the
+`f·g` overlap, after transporting the reversed product presentation. -/
+theorem gradedEquivProjBasicSchemeIso_toProduct_right
+    {R S A B : Type u} [CommRing R] [CommRing S]
+    [CommRing A] [CommRing B] [Algebra R A] [Algebra S B]
+    (𝒜 : ℕ → Submodule R A) (ℬ : ℕ → Submodule S B)
+    [GradedAlgebra 𝒜] [GradedAlgebra ℬ]
+    (e : A ≃+* B)
+    (he : ∀ n (a : A), a ∈ 𝒜 n → e a ∈ ℬ n)
+    (he' : ∀ n (b : B), b ∈ ℬ n → e.symm b ∈ 𝒜 n)
+    (f g : A) (d : ℕ) (hf : f ∈ 𝒜 d) (hg : g ∈ 𝒜 d)
+    (hd : 0 < d) :
+    let X := AlgebraicGeometry.«Proj» 𝒜
+    let Y := AlgebraicGeometry.«Proj» ℬ
+    let ka := (X.restrictFunctor.map
+      (homOfLE (ProjectiveSpectrum.basicOpen_mul_le_right 𝒜 f g))).left
+    let kb := (Y.restrictFunctor.map
+      (homOfLE (ProjectiveSpectrum.basicOpen_mul_le_right ℬ (e f) (e g)))).left
+    ka ≫ (gradedEquivProjBasicSchemeIso 𝒜 ℬ e he he' g d hg hd).hom =
+      (gradedEquivProjProductBasicSchemeIso 𝒜 ℬ e he he' f g d hf hg hd).hom ≫
+        kb := by
+  let X := AlgebraicGeometry.«Proj» 𝒜
+  let Y := AlgebraicGeometry.«Proj» ℬ
+  let ka := (X.restrictFunctor.map
+    (homOfLE (ProjectiveSpectrum.basicOpen_mul_le_right 𝒜 f g))).left
+  let ka' := (X.restrictFunctor.map
+    (homOfLE (ProjectiveSpectrum.basicOpen_mul_le_left 𝒜 g f))).left
+  let kb := (Y.restrictFunctor.map
+    (homOfLE (ProjectiveSpectrum.basicOpen_mul_le_right ℬ (e f) (e g)))).left
+  let kb' := (Y.restrictFunctor.map
+    (homOfLE (ProjectiveSpectrum.basicOpen_mul_le_left ℬ (e g) (e f)))).left
+  have hA : ProjectiveSpectrum.basicOpen 𝒜 (f * g) =
+      ProjectiveSpectrum.basicOpen 𝒜 (g * f) := by rw [mul_comm f g]
+  have hB : ProjectiveSpectrum.basicOpen ℬ (e f * e g) =
+      ProjectiveSpectrum.basicOpen ℬ (e g * e f) := by
+    rw [mul_comm (e f) (e g)]
+  change ka ≫ (gradedEquivProjBasicSchemeIso 𝒜 ℬ e he he' g d hg hd).hom =
+    (gradedEquivProjProductBasicSchemeIso 𝒜 ℬ e he he' f g d hf hg hd).hom ≫ kb
+  exact schemeIsoRestrictionSquare_of_heq ka ka'
+    (gradedEquivProjBasicSchemeIso 𝒜 ℬ e he he' g d hg hd)
+    (gradedEquivProjProductBasicSchemeIso 𝒜 ℬ e he he' f g d hf hg hd)
+    (gradedEquivProjProductBasicSchemeIso 𝒜 ℬ e he he' g f d hg hf hd)
+    kb kb'
+    (congrArg (fun T : X.Opens => T.toScheme) hA)
+    (congrArg (fun T : Y.Opens => T.toScheme) hB)
+    (openRestriction_heq hA _ _)
+    (gradedEquivProjProductBasicSchemeIso_mul_comm 𝒜 ℬ e he he' f g d hf hg hd)
+    (openRestriction_heq hB _ _)
+    (gradedEquivProjBasicSchemeIso_toProduct 𝒜 ℬ e he he' g f d hg hf hd)
 
 /-- The graded translation identifies each source projective basic
 chart with the canonical split cubic's chart at its translated

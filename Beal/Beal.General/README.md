@@ -353,11 +353,14 @@ feed the projective model and its chart calculations.
    the translated product denominator. Its inverse ring square and
    affine `Spec` square have also been checked. Together with the
    pinned `Proj`-to-`Spec` restriction comparison, these prove that
-   the **chosen projective chart scheme isomorphism** commutes with
-   restriction to the product open. Applying this to the other factor
-   reverses the product order; transporting and identifying the two
-   chosen overlap isomorphisms across `Y·Z = Z·Y`, then gluing the
-   local isomorphisms, are not yet proved.
+    the **chosen projective chart scheme isomorphism** commutes with
+    restriction to the product open. The ring and scheme comparisons
+    on that overlap are indexed by their actual source and translated
+    target denominators: this identifies their two ordered
+    presentations after transporting across `Y·Z = Z·Y`. Both chart
+    restriction squares therefore use the **same** chosen overlap
+    isomorphism. Showing that the translated target charts cover its
+    `Proj` and gluing the local isomorphisms remain unproved.
 
 ## Current boundary
 
