@@ -917,6 +917,247 @@ noncomputable def homogeneousProjBasicPullbackSchemeIso
   exact (asIso e).trans
     (homogeneousAwayPullbackSchemeIso 𝒜 I hI t hgen f d hf hpow)
 
+/-- Inclusion of product basic opens, pulled back along the same
+residue morphism. Kept as a named map so later squares do not
+re-elaborate the full pullback expression. -/
+noncomputable def homogeneousProjBasicPullbackInclusion
+    (f g : A) (t : R) :
+    let X := AlgebraicGeometry.«Proj» 𝒜
+    let U : X.Opens := ProjectiveSpectrum.basicOpen 𝒜 f
+    let V : X.Opens := ProjectiveSpectrum.basicOpen 𝒜 (f * g)
+    let base := (ΓSpec.adjunction.homEquiv X
+      (Opposite.op (CommRingCat.of R))
+      (CommRingCat.ofHom (projectiveScalarToGamma 𝒜)).op)
+    let residue := Spec.map (CommRingCat.ofHom
+      (Ideal.Quotient.mk (Ideal.span {t})))
+    pullback (V.ι ≫ base) residue ⟶
+      pullback (U.ι ≫ base) residue := by
+  let X := AlgebraicGeometry.«Proj» 𝒜
+  let U : X.Opens := ProjectiveSpectrum.basicOpen 𝒜 f
+  let V : X.Opens := ProjectiveSpectrum.basicOpen 𝒜 (f * g)
+  let base := (ΓSpec.adjunction.homEquiv X
+    (Opposite.op (CommRingCat.of R))
+    (CommRingCat.ofHom (projectiveScalarToGamma 𝒜)).op)
+  let residue := Spec.map (CommRingCat.ofHom
+    (Ideal.Quotient.mk (Ideal.span {t})))
+  let i := homOfLE (ProjectiveSpectrum.basicOpen_mul_le_left 𝒜 f g)
+  let k := (X.restrictFunctor.map i).left
+  exact pullback.map (V.ι ≫ base) residue (U.ι ≫ base)
+    residue k (𝟙 _) (𝟙 _)
+    (by
+      have h := X.restrictFunctor_map_ofRestrict i
+      simpa only [Category.comp_id, Category.assoc] using
+        (congrArg (fun ψ => ψ ≫ base) h).symm)
+    (by simp)
+
+set_option maxHeartbeats 1000000
+/-- The Proj-to-affine-chart part of the chosen restricted fibre
+isomorphism, as a separately typed pullback morphism. -/
+noncomputable def homogeneousProjBasicPullbackToAffine
+    (f : A) (d : ℕ) (hf : f ∈ 𝒜 d) (hd : 0 < d)
+    (t : R) :
+    letI : Algebra R (HomogeneousLocalization.Away 𝒜 f) :=
+      (homogeneousScalarAwayHom 𝒜 f).toAlgebra
+    let X := AlgebraicGeometry.«Proj» 𝒜
+    let U : X.Opens := ProjectiveSpectrum.basicOpen 𝒜 f
+    let base := (ΓSpec.adjunction.homEquiv X
+      (Opposite.op (CommRingCat.of R))
+      (CommRingCat.ofHom (projectiveScalarToGamma 𝒜)).op)
+    let residue := Spec.map (CommRingCat.ofHom
+      (Ideal.Quotient.mk (Ideal.span {t})))
+    pullback (U.ι ≫ base) residue ⟶
+      pullback
+        (Spec.map (CommRingCat.ofHom (homogeneousScalarAwayHom 𝒜 f)))
+        residue := by
+  letI : Algebra R (HomogeneousLocalization.Away 𝒜 f) :=
+    (homogeneousScalarAwayHom 𝒜 f).toAlgebra
+  let X := AlgebraicGeometry.«Proj» 𝒜
+  let U : X.Opens := ProjectiveSpectrum.basicOpen 𝒜 f
+  let base := (ΓSpec.adjunction.homEquiv X
+    (Opposite.op (CommRingCat.of R))
+    (CommRingCat.ofHom (projectiveScalarToGamma 𝒜)).op)
+  let residue := Spec.map (CommRingCat.ofHom
+    (Ideal.Quotient.mk (Ideal.span {t})))
+  let chart := homogeneousProjBasicSchemeIso 𝒜 f d hf hd
+  exact pullback.map (U.ι ≫ base) residue
+    (Spec.map (CommRingCat.ofHom (homogeneousScalarAwayHom 𝒜 f)))
+    residue chart.hom (𝟙 _) (𝟙 _)
+    (homogeneousProjBasicSchemeIso_baseMap 𝒜 f d hf hd)
+    (by simp)
+
+/-- Restriction between the affine chart pullbacks, using the
+algebra structure induced by the explicit scalar maps. -/
+noncomputable def homogeneousAffinePullbackInclusion
+    (f g : A) (d : ℕ) (hf : f ∈ 𝒜 d) (hg : g ∈ 𝒜 d)
+    (t : R) :
+    letI : Algebra R (HomogeneousLocalization.Away 𝒜 f) :=
+      (homogeneousScalarAwayHom 𝒜 f).toAlgebra
+    letI : Algebra R (HomogeneousLocalization.Away 𝒜 (f * g)) :=
+      (homogeneousScalarAwayHom 𝒜 (f * g)).toAlgebra
+    let residue := Spec.map (CommRingCat.ofHom
+      (Ideal.Quotient.mk (Ideal.span {t})))
+    let baseF := Spec.map (CommRingCat.ofHom
+      (homogeneousScalarAwayHom 𝒜 f))
+    let baseFG := Spec.map (CommRingCat.ofHom
+      (homogeneousScalarAwayHom 𝒜 (f * g)))
+    pullback baseFG residue ⟶ pullback baseF residue := by
+  letI : Algebra R (HomogeneousLocalization.Away 𝒜 f) :=
+    (homogeneousScalarAwayHom 𝒜 f).toAlgebra
+  letI : Algebra R (HomogeneousLocalization.Away 𝒜 (f * g)) :=
+    (homogeneousScalarAwayHom 𝒜 (f * g)).toAlgebra
+  let residue := Spec.map (CommRingCat.ofHom
+    (Ideal.Quotient.mk (Ideal.span {t})))
+  let baseF := Spec.map (CommRingCat.ofHom
+    (homogeneousScalarAwayHom 𝒜 f))
+  let baseFG := Spec.map (CommRingCat.ofHom
+    (homogeneousScalarAwayHom 𝒜 (f * g)))
+  exact pullback.map baseFG residue baseF residue
+    (Spec.map (CommRingCat.ofHom
+      (homogeneousLocalization_toProduct 𝒜 f g d hf hg)))
+    (𝟙 _) (𝟙 _)
+    (by simpa only [Category.comp_id] using
+      (homogeneousScalarAwayHom_toProduct_spec 𝒜 f g d hf hg).symm)
+    (by simp)
+
+/-- Naturality of the Proj-to-affine part of the restricted fibre
+comparison, before applying the affine base-change isomorphism. -/
+theorem homogeneousProjBasicPullbackToAffine_toProduct
+    (f g : A) (d : ℕ) (hf : f ∈ 𝒜 d) (hg : g ∈ 𝒜 d)
+    (hd : 0 < d) (t : R) :
+    letI : Algebra R (HomogeneousLocalization.Away 𝒜 f) :=
+      (homogeneousScalarAwayHom 𝒜 f).toAlgebra
+    letI : Algebra R (HomogeneousLocalization.Away 𝒜 (f * g)) :=
+      (homogeneousScalarAwayHom 𝒜 (f * g)).toAlgebra
+    homogeneousProjBasicPullbackInclusion 𝒜 f g t ≫
+        homogeneousProjBasicPullbackToAffine 𝒜 f d hf hd t =
+      homogeneousProjBasicPullbackToAffine 𝒜 (f * g) (d + d)
+          (SetLike.GradedMul.mul_mem hf hg) (by omega) t ≫
+        homogeneousAffinePullbackInclusion 𝒜 f g d hf hg t := by
+  letI : Algebra R (HomogeneousLocalization.Away 𝒜 f) :=
+    (homogeneousScalarAwayHom 𝒜 f).toAlgebra
+  letI : Algebra R (HomogeneousLocalization.Away 𝒜 (f * g)) :=
+    (homogeneousScalarAwayHom 𝒜 (f * g)).toAlgebra
+  let X := AlgebraicGeometry.«Proj» 𝒜
+  let V : X.Opens := ProjectiveSpectrum.basicOpen 𝒜 (f * g)
+  let base := (ΓSpec.adjunction.homEquiv X
+    (Opposite.op (CommRingCat.of R))
+    (CommRingCat.ofHom (projectiveScalarToGamma 𝒜)).op)
+  let residue := Spec.map (CommRingCat.ofHom
+    (Ideal.Quotient.mk (Ideal.span {t})))
+  apply pullback.hom_ext
+  · simp only [Category.assoc,
+      homogeneousProjBasicPullbackInclusion,
+      homogeneousProjBasicPullbackToAffine,
+      homogeneousAffinePullbackInclusion, pullback.map]
+    simp only [pullback.lift_fst_assoc, pullback.lift_fst,
+      Category.comp_id]
+    simp only [Category.assoc, pullback.lift_fst_assoc,
+      pullback.lift_fst, Category.comp_id]
+    simp_rw [← Category.assoc]
+    exact congrArg (fun ψ => pullback.fst (V.ι ≫ base) residue ≫ ψ)
+      (homogeneousProjBasicSchemeIso_toProduct 𝒜 f g d hf hg hd)
+  · simp only [Category.assoc,
+      homogeneousProjBasicPullbackInclusion,
+      homogeneousProjBasicPullbackToAffine,
+      homogeneousAffinePullbackInclusion, pullback.map]
+    simp only [pullback.lift_snd_assoc, pullback.lift_snd,
+      Category.comp_id]
+
+/-- Inverting the two vertical isomorphisms reverses a commuting
+restriction square. -/
+private theorem restrictedChartIso_inv_square
+    {X X' Y Y' : Scheme} (a : X ≅ Y) (b : X' ≅ Y')
+    (r : X' ⟶ X) (s : Y' ⟶ Y)
+    (h : r ≫ a.hom = b.hom ≫ s) :
+    s ≫ a.inv = b.inv ≫ r := by
+  calc
+    s ≫ a.inv = (b.inv ≫ b.hom) ≫ s ≫ a.inv := by simp
+    _ = b.inv ≫ (r ≫ a.hom) ≫ a.inv := by
+      simpa only [Category.assoc] using
+        congrArg (fun ψ => b.inv ≫ ψ ≫ a.inv) h.symm
+    _ = b.inv ≫ r := by simp [Category.assoc]
+
+/-- The chosen isomorphisms of the actual restricted Proj fibres
+respect the product-open inclusion, in the inverse direction. -/
+theorem homogeneousProjBasicPullbackSchemeIso_toProduct
+    (I : Ideal A) (hI : I.IsHomogeneous 𝒜)
+    (t : R) (hgen : I = Ideal.span {algebraMap R A t})
+    (f g : A) (d : ℕ) (hf : f ∈ 𝒜 d) (hg : g ∈ 𝒜 d)
+    (hd : 0 < d)
+    (hpowf : ∀ n : ℕ, (Ideal.Quotient.mk I f) ^ n ≠ 0)
+    (hpowfg : ∀ n : ℕ, (Ideal.Quotient.mk I (f * g)) ^ n ≠ 0) :
+    letI : Algebra R (HomogeneousLocalization.Away 𝒜 f) :=
+      (homogeneousScalarAwayHom 𝒜 f).toAlgebra
+    letI : Algebra R (HomogeneousLocalization.Away 𝒜 (f * g)) :=
+      (homogeneousScalarAwayHom 𝒜 (f * g)).toAlgebra
+    letI : GradedAlgebra (homogeneousQuotientComponent 𝒜 I) :=
+      homogeneousQuotientGrading 𝒜 I hI
+    let q := Ideal.Quotient.mk I
+    let hfq : q f ∈ homogeneousQuotientComponent 𝒜 I d :=
+      Submodule.mem_map.mpr ⟨f, hf, rfl⟩
+    let hgq : q g ∈ homogeneousQuotientComponent 𝒜 I d :=
+      Submodule.mem_map.mpr ⟨g, hg, rfl⟩
+    Spec.map (CommRingCat.ofHom
+        (homogeneousLocalization_toProduct
+          (homogeneousQuotientComponent 𝒜 I)
+          (q f) (q g) d hfq hgq)) ≫
+      (homogeneousProjBasicPullbackSchemeIso
+        𝒜 I hI t hgen f d hf hd hpowf).inv =
+    (homogeneousProjBasicPullbackSchemeIso
+        𝒜 I hI t hgen (f * g) (d + d)
+        (SetLike.GradedMul.mul_mem hf hg) (by omega) hpowfg).inv ≫
+      homogeneousProjBasicPullbackInclusion 𝒜 f g t := by
+  letI : Algebra R (HomogeneousLocalization.Away 𝒜 f) :=
+    (homogeneousScalarAwayHom 𝒜 f).toAlgebra
+  letI : Algebra R (HomogeneousLocalization.Away 𝒜 (f * g)) :=
+    (homogeneousScalarAwayHom 𝒜 (f * g)).toAlgebra
+  letI : GradedAlgebra (homogeneousQuotientComponent 𝒜 I) :=
+    homogeneousQuotientGrading 𝒜 I hI
+  let q := Ideal.Quotient.mk I
+  let hfq : q f ∈ homogeneousQuotientComponent 𝒜 I d :=
+    Submodule.mem_map.mpr ⟨f, hf, rfl⟩
+  let hgq : q g ∈ homogeneousQuotientComponent 𝒜 I d :=
+    Submodule.mem_map.mpr ⟨g, hg, rfl⟩
+  let restriction := Spec.map (CommRingCat.ofHom
+    (homogeneousLocalization_toProduct
+      (homogeneousQuotientComponent 𝒜 I)
+      (q f) (q g) d hfq hgq))
+  let cF := homogeneousProjBasicPullbackToAffine 𝒜 f d hf hd t
+  let cFG := homogeneousProjBasicPullbackToAffine 𝒜 (f * g) (d + d)
+    (SetLike.GradedMul.mul_mem hf hg) (by omega) t
+  haveI : IsIso cF := by
+    dsimp [cF, homogeneousProjBasicPullbackToAffine]
+    infer_instance
+  haveI : IsIso cFG := by
+    dsimp [cFG, homogeneousProjBasicPullbackToAffine]
+    infer_instance
+  let awayF := homogeneousAwayPullbackSchemeIso
+    𝒜 I hI t hgen f d hf hpowf
+  let awayFG := homogeneousAwayPullbackSchemeIso
+    𝒜 I hI t hgen (f * g) (d + d)
+      (SetLike.GradedMul.mul_mem hf hg) hpowfg
+  have hChart :
+      homogeneousAffinePullbackInclusion 𝒜 f g d hf hg t ≫
+        (asIso cF).inv =
+      (asIso cFG).inv ≫ homogeneousProjBasicPullbackInclusion 𝒜 f g t :=
+    restrictedChartIso_inv_square (asIso cF) (asIso cFG)
+      (homogeneousProjBasicPullbackInclusion 𝒜 f g t)
+      (homogeneousAffinePullbackInclusion 𝒜 f g d hf hg t)
+      (homogeneousProjBasicPullbackToAffine_toProduct
+        𝒜 f g d hf hg hd t)
+  have hAffine :
+      restriction ≫ awayF.inv =
+        awayFG.inv ≫ homogeneousAffinePullbackInclusion
+          𝒜 f g d hf hg t :=
+    homogeneousAwayPullbackSchemeIso_toProduct
+      𝒜 I hI t hgen f g d hf hg hpowf hpowfg
+  change (restriction ≫ awayF.inv) ≫ (asIso cF).inv =
+    (awayFG.inv ≫ (asIso cFG).inv) ≫
+      homogeneousProjBasicPullbackInclusion 𝒜 f g t
+  rw [hAffine, Category.assoc, hChart]
+  simp only [Category.assoc]
+
+set_option maxHeartbeats 200000
 end Beal.General
 
 namespace Beal.General
@@ -1015,6 +1256,189 @@ noncomputable def homogeneousProjBasicZModPullbackSchemeIso
   exact (asIso e).trans
     (homogeneousProjBasicPullbackSchemeIso 𝒜 I hI 2 hgen f d hf hd hpow)
 
+/-- The product-open inclusion on actual `ZMod 2` pullbacks,
+separate from the corresponding quotient-base inclusion. -/
+noncomputable def homogeneousProjBasicZModPullbackInclusion
+    {A : Type} [CommRing A] [Algebra ℤ_[2] A]
+    (𝒜 : ℕ → Submodule ℤ_[2] A) [GradedAlgebra 𝒜]
+    (f g : A) :
+    let X := AlgebraicGeometry.«Proj» 𝒜
+    let U : X.Opens := ProjectiveSpectrum.basicOpen 𝒜 f
+    let V : X.Opens := ProjectiveSpectrum.basicOpen 𝒜 (f * g)
+    let base := (ΓSpec.adjunction.homEquiv X
+      (Opposite.op (CommRingCat.of ℤ_[2]))
+      (CommRingCat.ofHom (projectiveScalarToGamma 𝒜)).op)
+    let residue := Spec.map (CommRingCat.ofHom
+      (PadicInt.toZMod : ℤ_[2] →+* ZMod 2))
+    pullback (V.ι ≫ base) residue ⟶
+      pullback (U.ι ≫ base) residue := by
+  let X := AlgebraicGeometry.«Proj» 𝒜
+  let U : X.Opens := ProjectiveSpectrum.basicOpen 𝒜 f
+  let V : X.Opens := ProjectiveSpectrum.basicOpen 𝒜 (f * g)
+  let base := (ΓSpec.adjunction.homEquiv X
+    (Opposite.op (CommRingCat.of ℤ_[2]))
+    (CommRingCat.ofHom (projectiveScalarToGamma 𝒜)).op)
+  let residue := Spec.map (CommRingCat.ofHom
+    (PadicInt.toZMod : ℤ_[2] →+* ZMod 2))
+  let i := homOfLE (ProjectiveSpectrum.basicOpen_mul_le_left 𝒜 f g)
+  let k := (X.restrictFunctor.map i).left
+  exact pullback.map (V.ι ≫ base) residue (U.ι ≫ base)
+    residue k (𝟙 _) (𝟙 _)
+    (by
+      have h := X.restrictFunctor_map_ofRestrict i
+      simpa only [Category.comp_id, Category.assoc] using
+        (congrArg (fun ψ => ψ ≫ base) h).symm)
+    (by simp)
+
+/-- The residue-field change from the actual `ZMod 2` chart pullback
+to the pullback over the abstract quotient base. -/
+noncomputable def homogeneousProjBasicZModToQuotient
+    {A : Type} [CommRing A] [Algebra ℤ_[2] A]
+    (𝒜 : ℕ → Submodule ℤ_[2] A) [GradedAlgebra 𝒜]
+    (f : A) :
+    let X := AlgebraicGeometry.«Proj» 𝒜
+    let U : X.Opens := ProjectiveSpectrum.basicOpen 𝒜 f
+    let base := (ΓSpec.adjunction.homEquiv X
+      (Opposite.op (CommRingCat.of ℤ_[2]))
+      (CommRingCat.ofHom (projectiveScalarToGamma 𝒜)).op)
+    let residue := Spec.map (CommRingCat.ofHom
+      (PadicInt.toZMod : ℤ_[2] →+* ZMod 2))
+    let quotient := Spec.map (CommRingCat.ofHom
+      (Ideal.Quotient.mk (Ideal.span {(2 : ℤ_[2])})))
+    pullback (U.ι ≫ base) residue ⟶
+      pullback (U.ι ≫ base) quotient := by
+  let X := AlgebraicGeometry.«Proj» 𝒜
+  let U : X.Opens := ProjectiveSpectrum.basicOpen 𝒜 f
+  let base := (ΓSpec.adjunction.homEquiv X
+    (Opposite.op (CommRingCat.of ℤ_[2]))
+    (CommRingCat.ofHom (projectiveScalarToGamma 𝒜)).op)
+  let residue := Spec.map (CommRingCat.ofHom
+    (PadicInt.toZMod : ℤ_[2] →+* ZMod 2))
+  let quotient := Spec.map (CommRingCat.ofHom
+    (Ideal.Quotient.mk (Ideal.span {(2 : ℤ_[2])})))
+  exact pullback.map (U.ι ≫ base) residue (U.ι ≫ base) quotient
+    (𝟙 _) (Scheme.Spec.mapIso
+      (twoAdicResidueQuotientEquiv.toCommRingCatIso.op)).hom (𝟙 _)
+    (by simp) (by simpa only using twoAdicResidueSpecMap)
+
+instance homogeneousProjBasicZModToQuotient_isIso
+    {A : Type} [CommRing A] [Algebra ℤ_[2] A]
+    (𝒜 : ℕ → Submodule ℤ_[2] A) [GradedAlgebra 𝒜]
+    (f : A) :
+    IsIso (homogeneousProjBasicZModToQuotient 𝒜 f) := by
+  let X := AlgebraicGeometry.«Proj» 𝒜
+  let U : X.Opens := ProjectiveSpectrum.basicOpen 𝒜 f
+  let base := (ΓSpec.adjunction.homEquiv X
+    (Opposite.op (CommRingCat.of ℤ_[2]))
+    (CommRingCat.ofHom (projectiveScalarToGamma 𝒜)).op)
+  let residue := Spec.map (CommRingCat.ofHom
+    (PadicInt.toZMod : ℤ_[2] →+* ZMod 2))
+  let quotient := Spec.map (CommRingCat.ofHom
+    (Ideal.Quotient.mk (Ideal.span {(2 : ℤ_[2])})))
+  let e := pullback.map (U.ι ≫ base) residue (U.ι ≫ base)
+    quotient (𝟙 _) (Scheme.Spec.mapIso
+      (twoAdicResidueQuotientEquiv.toCommRingCatIso.op)).hom (𝟙 _)
+    (by simp) (by simpa only using twoAdicResidueSpecMap)
+  change IsIso e
+  infer_instance
+
+set_option maxHeartbeats 1000000
+/-- The residue-field comparison commutes with the product-open
+inclusion on the two actual restricted pullbacks. -/
+theorem homogeneousProjBasicZModToQuotient_toProduct
+    {A : Type} [CommRing A] [Algebra ℤ_[2] A]
+    (𝒜 : ℕ → Submodule ℤ_[2] A) [GradedAlgebra 𝒜]
+    (f g : A) :
+    homogeneousProjBasicZModPullbackInclusion 𝒜 f g ≫
+      homogeneousProjBasicZModToQuotient 𝒜 f =
+    homogeneousProjBasicZModToQuotient 𝒜 (f * g) ≫
+      homogeneousProjBasicPullbackInclusion 𝒜 f g 2 := by
+  apply pullback.hom_ext
+  · simp only [Category.assoc,
+      homogeneousProjBasicZModPullbackInclusion,
+      homogeneousProjBasicZModToQuotient,
+      homogeneousProjBasicPullbackInclusion, pullback.map,
+      pullback.lift_fst_assoc, pullback.lift_fst, Category.comp_id]
+  · simp only [Category.assoc,
+      homogeneousProjBasicZModPullbackInclusion,
+      homogeneousProjBasicZModToQuotient,
+      homogeneousProjBasicPullbackInclusion, pullback.map,
+      pullback.lift_snd_assoc, pullback.lift_snd, Category.comp_id]
+
+/-- The chosen chart isomorphisms of the actual fibre over `ZMod 2`
+respect a product-open inclusion, in the inverse direction. -/
+theorem homogeneousProjBasicZModPullbackSchemeIso_toProduct
+    {A : Type} [CommRing A] [Algebra ℤ_[2] A]
+    (𝒜 : ℕ → Submodule ℤ_[2] A) [GradedAlgebra 𝒜]
+    (I : Ideal A) (hI : I.IsHomogeneous 𝒜)
+    (hgen : I = Ideal.span {algebraMap ℤ_[2] A 2})
+    (f g : A) (d : ℕ) (hf : f ∈ 𝒜 d) (hg : g ∈ 𝒜 d)
+    (hd : 0 < d)
+    (hpowf : ∀ n : ℕ, (Ideal.Quotient.mk I f) ^ n ≠ 0)
+    (hpowfg : ∀ n : ℕ, (Ideal.Quotient.mk I (f * g)) ^ n ≠ 0) :
+    letI : Algebra ℤ_[2] (HomogeneousLocalization.Away 𝒜 f) :=
+      (homogeneousScalarAwayHom 𝒜 f).toAlgebra
+    letI : Algebra ℤ_[2] (HomogeneousLocalization.Away 𝒜 (f * g)) :=
+      (homogeneousScalarAwayHom 𝒜 (f * g)).toAlgebra
+    letI : GradedAlgebra (homogeneousQuotientComponent 𝒜 I) :=
+      homogeneousQuotientGrading 𝒜 I hI
+    let q := Ideal.Quotient.mk I
+    let hfq : q f ∈ homogeneousQuotientComponent 𝒜 I d :=
+      Submodule.mem_map.mpr ⟨f, hf, rfl⟩
+    let hgq : q g ∈ homogeneousQuotientComponent 𝒜 I d :=
+      Submodule.mem_map.mpr ⟨g, hg, rfl⟩
+    Spec.map (CommRingCat.ofHom
+        (homogeneousLocalization_toProduct
+          (homogeneousQuotientComponent 𝒜 I)
+          (q f) (q g) d hfq hgq)) ≫
+      (homogeneousProjBasicZModPullbackSchemeIso
+        𝒜 I hI hgen f d hf hd hpowf).inv =
+    (homogeneousProjBasicZModPullbackSchemeIso
+        𝒜 I hI hgen (f * g) (d + d)
+        (SetLike.GradedMul.mul_mem hf hg) (by omega) hpowfg).inv ≫
+      homogeneousProjBasicZModPullbackInclusion 𝒜 f g := by
+  letI : Algebra ℤ_[2] (HomogeneousLocalization.Away 𝒜 f) :=
+    (homogeneousScalarAwayHom 𝒜 f).toAlgebra
+  letI : Algebra ℤ_[2] (HomogeneousLocalization.Away 𝒜 (f * g)) :=
+    (homogeneousScalarAwayHom 𝒜 (f * g)).toAlgebra
+  letI : GradedAlgebra (homogeneousQuotientComponent 𝒜 I) :=
+    homogeneousQuotientGrading 𝒜 I hI
+  let q := Ideal.Quotient.mk I
+  let hfq : q f ∈ homogeneousQuotientComponent 𝒜 I d :=
+    Submodule.mem_map.mpr ⟨f, hf, rfl⟩
+  let hgq : q g ∈ homogeneousQuotientComponent 𝒜 I d :=
+    Submodule.mem_map.mpr ⟨g, hg, rfl⟩
+  let restriction := Spec.map (CommRingCat.ofHom
+    (homogeneousLocalization_toProduct
+      (homogeneousQuotientComponent 𝒜 I)
+      (q f) (q g) d hfq hgq))
+  let zF := homogeneousProjBasicZModToQuotient 𝒜 f
+  let zFG := homogeneousProjBasicZModToQuotient 𝒜 (f * g)
+  let quotientF := homogeneousProjBasicPullbackSchemeIso
+    𝒜 I hI 2 hgen f d hf hd hpowf
+  let quotientFG := homogeneousProjBasicPullbackSchemeIso
+    𝒜 I hI 2 hgen (f * g) (d + d)
+      (SetLike.GradedMul.mul_mem hf hg) (by omega) hpowfg
+  have hBaseChange :
+      homogeneousProjBasicPullbackInclusion 𝒜 f g 2 ≫
+        (asIso zF).inv =
+      (asIso zFG).inv ≫ homogeneousProjBasicZModPullbackInclusion 𝒜 f g :=
+    restrictedChartIso_inv_square (asIso zF) (asIso zFG)
+      (homogeneousProjBasicZModPullbackInclusion 𝒜 f g)
+      (homogeneousProjBasicPullbackInclusion 𝒜 f g 2)
+      (homogeneousProjBasicZModToQuotient_toProduct 𝒜 f g)
+  have hQuotient :
+      restriction ≫ quotientF.inv =
+        quotientFG.inv ≫ homogeneousProjBasicPullbackInclusion 𝒜 f g 2 :=
+    homogeneousProjBasicPullbackSchemeIso_toProduct
+      𝒜 I hI 2 hgen f g d hf hg hd hpowf hpowfg
+  change (restriction ≫ quotientF.inv) ≫ (asIso zF).inv =
+    (quotientFG.inv ≫ (asIso zFG).inv) ≫
+      homogeneousProjBasicZModPullbackInclusion 𝒜 f g
+  rw [hQuotient, Category.assoc, hBaseChange]
+  simp only [Category.assoc]
+
+set_option maxHeartbeats 200000
 /-- Under the split-node hypotheses, any positive-degree projective
 coordinate that survives modulo `2` gives a chart of the restricted
 actual scheme-theoretic fibre. -/

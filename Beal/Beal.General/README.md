@@ -315,10 +315,18 @@ feed the projective model and its chart calculations.
    the chosen **affine** pullback-to-graded-quotient isomorphism are
    natural under product-chart restriction. Independently, the
    particular Proj-to-affine basic-chart isomorphisms commute with
-   the actual inclusion of projective opens. Composing these squares
-   through the pullback maps of the **restricted Proj morphism** is
-   still unproved; there is no glued global isomorphism with the
-   graded quotient `Proj`.
+   the actual inclusion of projective opens. Their separately typed
+   pullback maps now form a commuting square, and composing it with
+   affine base change proves naturality of the **chosen restricted
+   Proj-fibre isomorphisms** under a product-open inclusion. The
+   residue-field comparison also respects that inclusion, so the
+   corresponding chosen chart isomorphisms over `ZMod 2` are natural
+   for either ordered product. To glue the named `Z`, `Y`, and `ZY`
+   charts, it remains to transport the `Y·Z` comparison to the
+   chosen `Z·Y` overlap, identify both restricted fibre charts with
+   intersections in the global fibre, and construct the matching
+   open cover and transition maps on the graded-quotient `Proj`.
+   There is no glued global isomorphism yet.
 
 ## Current boundary
 
