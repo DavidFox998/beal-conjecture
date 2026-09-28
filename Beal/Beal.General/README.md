@@ -341,6 +341,15 @@ feed the projective model and its chart calculations.
    `Proj`. It transports the proved irreducibility of that `Proj` to
    the actual fibre. This does not yet identify the fibre with the
    canonical split cubic's `Proj` or classify its Kodaira type.
+- `CanonicalSplitCubicComparison.lean` lifts the checked
+  degree-preserving coordinate-ring equivalence to an isomorphism on
+  **every projective basic chart**, by passing through the
+  degree-zero localization and its affine `Spec`. Its chosen `Z` and
+  `Y` specializations compare the quotient `Proj` with the canonical
+  split cubic at the **translated** chart coordinates; the image of
+  `Y` is not silently identified with `Y`. Compatibility of these
+  particular local scheme maps on their overlap and the resulting
+  global scheme isomorphism are not yet proved.
 
 ## Current boundary
 
@@ -362,7 +371,8 @@ This does not cover the even-valuation node. The actual scheme-theoretic
 special fibre is now identified with the graded quotient's `Proj` and
 proved irreducible in the split nodal case. A graded-ring-compatible
 **scheme** isomorphism from that `Proj` to the canonical split cubic,
-and the requisite model and minimality argument, are still needed.
+not merely isomorphisms of its individual basic charts, and the
+requisite model and minimality argument, are still needed.
 Consequently these results cannot yet identify the projective cubic
 with a minimal regular model. The split nodal tangent cone has two
 distinct tangent lines, but this alone does not establish Kodaira

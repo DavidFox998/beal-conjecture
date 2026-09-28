@@ -7,4 +7,4 @@ In a Lean theorem statement of the form `let U := ...; ∀ x : ..., ...`, `intro
 
 **Why:** A projective chart-stalk proof produced an apparently impossible type mismatch: the supposed point had the type of an open subset. The error was not a discrepancy between `Proj` and the chart. The first `intro` had named the let-bound open, leaving the point unintroduced.
 
-**How to apply:** If an `intro`-bound term unexpectedly has the type of a chart open, inspect the leading `let` binders in the goal before changing geometric definitions or adding transports.
+**How to apply:** If an `intro`-bound term unexpectedly has the type of a chart open, inspect the leading `let` binders in the goal before changing geometric definitions or adding transports. For a statement with several `letI` and `let` binders followed by a quantified chart index, explicitly `change ∀ index, ...` after setting up the local instances and definitions; then introduce and case-split the index. Otherwise a branch can appear to expect the still-unintroduced function.

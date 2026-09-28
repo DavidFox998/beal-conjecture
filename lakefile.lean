@@ -69,6 +69,7 @@ lean_lib BealGeneral where
     .one `Beal.«Beal.General».ProjectiveChartComparison,
     .one `Beal.«Beal.General».ProjectiveQuotientChart,
     .one `Beal.«Beal.General».ProjectiveFibreChartBaseChange,
+    .one `Beal.«Beal.General».CanonicalSplitCubicComparison,
     .one `Beal.«Beal.General».AffineFibreTensor,
     .one `Beal.«Beal.General».TwoChartGlobalMorphism,
     .one `Beal.«Beal.General».TargetOpenPreimages,
