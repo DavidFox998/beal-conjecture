@@ -359,8 +359,15 @@ feed the projective model and its chart calculations.
     target denominators: this identifies their two ordered
     presentations after transporting across `Y·Z = Z·Y`. Both chart
     restriction squares therefore use the **same** chosen overlap
-    isomorphism. Showing that the translated target charts cover its
-    `Proj` and gluing the local isomorphisms remain unproved.
+    isomorphism. The canonical `Z`/`V` opens cover its `Proj`, as do
+    the actual translated `Z`/`V+bZ` opens. The product basic open
+    is identified with the pullback of each pair of chart inclusions;
+    its two projection squares make the local maps compatible on
+    those pullbacks. Gluing the maps and their inverses gives a
+    global scheme isomorphism from the quotient `Proj` to the
+    canonical split cubic's `Proj`. Composing with the previously
+    proved base-change isomorphism identifies the **actual
+    scheme-theoretic special fibre** with this canonical cubic.
 
 ## Current boundary
 
@@ -379,13 +386,11 @@ non-rational points. In the low-dimensional branch, domainhood
 excludes the zero-dimensional non-field case; a principal maximal
 ideal and an upper dimension bound alone would not suffice.
 This does not cover the even-valuation node. The actual scheme-theoretic
-special fibre is now identified with the graded quotient's `Proj` and
-proved irreducible in the split nodal case. A graded-ring-compatible
-**scheme** isomorphism from that `Proj` to the canonical split cubic,
-not merely isomorphisms of its individual basic charts, and the
-requisite model and minimality argument, are still needed.
-Consequently these results cannot yet identify the projective cubic
-with a minimal regular model. The split nodal tangent cone has two
+special fibre is now identified with the canonical split cubic's
+`Proj` as a **scheme** and proved irreducible in the split nodal
+case. This identification alone does not identify the cubic as the
+special fibre of a minimal regular model; the requisite model and
+minimality argument is still needed. The split nodal tangent cone has two
 distinct tangent lines, but this alone does not establish Kodaira
 type `I₁`; at the node the partial derivative with respect to `v`
 is `u = 0`, not a unit. The even-branch polynomial identity does not

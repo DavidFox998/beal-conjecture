@@ -51,6 +51,12 @@ For gluing quotient `Proj` maps along a two-open scheme cover, the intersection 
 
 **How to apply:** Prove restriction compatibility on the ordered product open, use heterogeneous equality to exchange product order, and separately bridge that open to the pullback of the two scheme-cover inclusions before calling `glueMorphisms`. A source open cover alone does not imply a closed immersion: that property must be checked locally on a cover of the *target*.
 
+In this Mathlib pin, generalizing a `Proj` two-chart gluing construction over arbitrary `Type u` can produce an `OpenCover` index universe `max (u + 1) 1` that will not unify with the exact universe expected by `OpenCover.glueMorphisms`. Specialize the ring types to `Type` when gluing the concrete arithmetic curves; the chart and pullback comparison lemmas can remain universe-polymorphic.
+
+**Why:** The proofs of the two pullback-projection squares checked, but the final gluing failed on an index-universe mismatch even with fully explicit cover and morphism arguments.
+
+**How to apply:** If explicit cover arguments still leave a universe mismatch at `glueMorphisms`, check the inferred `OpenCover` universes before changing the compatibility proof. Do not conceal this mismatch with an unchecked coercion.
+
 An isomorphism of locally ringed spaces between the underlying spaces of schemes may need to be rewrapped as an isomorphism in the category of schemes before scheme-level morphism-property instances recognize it.
 
 **Why:** The affine chart closed-immersion proof already existed, but inference could not transport it through the `projIsoSpec` isomorphisms until those locally ringed space isomorphisms were explicitly expressed as scheme isomorphisms.

@@ -9,7 +9,7 @@ the translation need not fix the `Y` coordinate.
 
 namespace Beal.General
 
-open AlgebraicGeometry CategoryTheory
+open AlgebraicGeometry CategoryTheory CategoryTheory.Limits
 
 universe u
 
@@ -501,6 +501,289 @@ theorem gradedEquivProjBasicSchemeIso_toProduct_right
     (openRestriction_heq hB _ _)
     (gradedEquivProjBasicSchemeIso_toProduct 𝒜 ℬ e he he' g f d hg hf hd)
 
+/-- The translated product chart compares the scheme-theoretic
+intersection of the two basic opens on each side. -/
+noncomputable def gradedEquivProjProductOverlapIso
+    {R S A B : Type u} [CommRing R] [CommRing S]
+    [CommRing A] [CommRing B] [Algebra R A] [Algebra S B]
+    (𝒜 : ℕ → Submodule R A) (ℬ : ℕ → Submodule S B)
+    [GradedAlgebra 𝒜] [GradedAlgebra ℬ]
+    (e : A ≃+* B)
+    (he : ∀ n (a : A), a ∈ 𝒜 n → e a ∈ ℬ n)
+    (he' : ∀ n (b : B), b ∈ ℬ n → e.symm b ∈ 𝒜 n)
+    (f g : A) (d : ℕ) (hf : f ∈ 𝒜 d) (hg : g ∈ 𝒜 d)
+    (hd : 0 < d) :
+    let X := AlgebraicGeometry.«Proj» 𝒜
+    let Y := AlgebraicGeometry.«Proj» ℬ
+    let U : X.Opens := ProjectiveSpectrum.basicOpen 𝒜 f
+    let V : X.Opens := ProjectiveSpectrum.basicOpen 𝒜 g
+    let U' : Y.Opens := ProjectiveSpectrum.basicOpen ℬ (e f)
+    let V' : Y.Opens := ProjectiveSpectrum.basicOpen ℬ (e g)
+    pullback U.ι V.ι ≅ pullback U'.ι V'.ι := by
+  let X := AlgebraicGeometry.«Proj» 𝒜
+  let Y := AlgebraicGeometry.«Proj» ℬ
+  let U : X.Opens := ProjectiveSpectrum.basicOpen 𝒜 f
+  let V : X.Opens := ProjectiveSpectrum.basicOpen 𝒜 g
+  let T : X.Opens := ProjectiveSpectrum.basicOpen 𝒜 (f * g)
+  let U' : Y.Opens := ProjectiveSpectrum.basicOpen ℬ (e f)
+  let V' : Y.Opens := ProjectiveSpectrum.basicOpen ℬ (e g)
+  let T' : Y.Opens := ProjectiveSpectrum.basicOpen ℬ (e f * e g)
+  have hT : T = U ⊓ V := ProjectiveSpectrum.basicOpen_mul 𝒜 f g
+  have hT' : T' = U' ⊓ V' :=
+    ProjectiveSpectrum.basicOpen_mul ℬ (e f) (e g)
+  exact (openEqInfPullbackIso T U V hT).symm.trans
+    ((gradedEquivProjProductBasicSchemeIso 𝒜 ℬ e he he' f g d hf hg hd).trans
+      (openEqInfPullbackIso T' U' V' hT'))
+
+/-- The chosen overlap comparison restricts to the two chosen basic
+chart comparisons under both pullback projections. -/
+theorem gradedEquivProjProductOverlapIso_projections
+    {R S A B : Type u} [CommRing R] [CommRing S]
+    [CommRing A] [CommRing B] [Algebra R A] [Algebra S B]
+    (𝒜 : ℕ → Submodule R A) (ℬ : ℕ → Submodule S B)
+    [GradedAlgebra 𝒜] [GradedAlgebra ℬ]
+    (e : A ≃+* B)
+    (he : ∀ n (a : A), a ∈ 𝒜 n → e a ∈ ℬ n)
+    (he' : ∀ n (b : B), b ∈ ℬ n → e.symm b ∈ 𝒜 n)
+    (f g : A) (d : ℕ) (hf : f ∈ 𝒜 d) (hg : g ∈ 𝒜 d)
+    (hd : 0 < d) :
+    let X := AlgebraicGeometry.«Proj» 𝒜
+    let Y := AlgebraicGeometry.«Proj» ℬ
+    let U : X.Opens := ProjectiveSpectrum.basicOpen 𝒜 f
+    let V : X.Opens := ProjectiveSpectrum.basicOpen 𝒜 g
+    let U' : Y.Opens := ProjectiveSpectrum.basicOpen ℬ (e f)
+    let V' : Y.Opens := ProjectiveSpectrum.basicOpen ℬ (e g)
+    let o := gradedEquivProjProductOverlapIso 𝒜 ℬ e he he' f g d hf hg hd
+    (pullback.fst U.ι V.ι ≫
+        (gradedEquivProjBasicSchemeIso 𝒜 ℬ e he he' f d hf hd).hom =
+      o.hom ≫ pullback.fst U'.ι V'.ι) ∧
+    (pullback.snd U.ι V.ι ≫
+        (gradedEquivProjBasicSchemeIso 𝒜 ℬ e he he' g d hg hd).hom =
+      o.hom ≫ pullback.snd U'.ι V'.ι) := by
+  let X := AlgebraicGeometry.«Proj» 𝒜
+  let Y := AlgebraicGeometry.«Proj» ℬ
+  let U : X.Opens := ProjectiveSpectrum.basicOpen 𝒜 f
+  let V : X.Opens := ProjectiveSpectrum.basicOpen 𝒜 g
+  let T : X.Opens := ProjectiveSpectrum.basicOpen 𝒜 (f * g)
+  let U' : Y.Opens := ProjectiveSpectrum.basicOpen ℬ (e f)
+  let V' : Y.Opens := ProjectiveSpectrum.basicOpen ℬ (e g)
+  let T' : Y.Opens := ProjectiveSpectrum.basicOpen ℬ (e f * e g)
+  have hT : T = U ⊓ V := ProjectiveSpectrum.basicOpen_mul 𝒜 f g
+  have hT' : T' = U' ⊓ V' :=
+    ProjectiveSpectrum.basicOpen_mul ℬ (e f) (e g)
+  let a := openEqInfPullbackIso T U V hT
+  let b := openEqInfPullbackIso T' U' V' hT'
+  let p := gradedEquivProjProductBasicSchemeIso 𝒜 ℬ e he he' f g d hf hg hd
+  let o := gradedEquivProjProductOverlapIso 𝒜 ℬ e he he' f g d hf hg hd
+  have ha : a.hom ≫ pullback.fst U.ι V.ι =
+      (X.restrictFunctor.map
+        (homOfLE (ProjectiveSpectrum.basicOpen_mul_le_left 𝒜 f g))).left :=
+    openEqInfPullbackIso_hom_fst T U V hT _
+  have hb : b.hom ≫ pullback.fst U'.ι V'.ι =
+      (Y.restrictFunctor.map
+        (homOfLE (ProjectiveSpectrum.basicOpen_mul_le_left ℬ (e f) (e g)))).left :=
+    openEqInfPullbackIso_hom_fst T' U' V' hT' _
+  have hc : a.hom ≫ pullback.snd U.ι V.ι =
+      (X.restrictFunctor.map
+        (homOfLE (ProjectiveSpectrum.basicOpen_mul_le_right 𝒜 f g))).left :=
+    openEqInfPullbackIso_hom_snd T U V hT _
+  have hd' : b.hom ≫ pullback.snd U'.ι V'.ι =
+      (Y.restrictFunctor.map
+        (homOfLE (ProjectiveSpectrum.basicOpen_mul_le_right ℬ (e f) (e g)))).left :=
+    openEqInfPullbackIso_hom_snd T' U' V' hT' _
+  have hf' := gradedEquivProjBasicSchemeIso_toProduct
+    𝒜 ℬ e he he' f g d hf hg hd
+  have hg' := gradedEquivProjBasicSchemeIso_toProduct_right
+    𝒜 ℬ e he he' f g d hf hg hd
+  change (pullback.fst U.ι V.ι ≫
+      (gradedEquivProjBasicSchemeIso 𝒜 ℬ e he he' f d hf hd).hom =
+      o.hom ≫ pullback.fst U'.ι V'.ι) ∧
+    (pullback.snd U.ι V.ι ≫
+      (gradedEquivProjBasicSchemeIso 𝒜 ℬ e he he' g d hg hd).hom =
+      o.hom ≫ pullback.snd U'.ι V'.ι)
+  constructor
+  · apply (cancel_epi a.hom).mp
+    calc
+      a.hom ≫ (pullback.fst U.ι V.ι ≫
+          (gradedEquivProjBasicSchemeIso 𝒜 ℬ e he he' f d hf hd).hom) =
+        (a.hom ≫ pullback.fst U.ι V.ι) ≫
+          (gradedEquivProjBasicSchemeIso 𝒜 ℬ e he he' f d hf hd).hom := by
+        rw [Category.assoc]
+      _ = p.hom ≫ (b.hom ≫ pullback.fst U'.ι V'.ι) := by
+        rw [ha, hb]
+        exact hf'
+      _ = a.hom ≫ (o.hom ≫ pullback.fst U'.ι V'.ι) := by
+        change p.hom ≫ (b.hom ≫ pullback.fst U'.ι V'.ι) =
+          a.hom ≫ ((a.inv ≫ p.hom ≫ b.hom) ≫ pullback.fst U'.ι V'.ι)
+        simp only [Category.assoc, Iso.hom_inv_id_assoc]
+  · apply (cancel_epi a.hom).mp
+    calc
+      a.hom ≫ (pullback.snd U.ι V.ι ≫
+          (gradedEquivProjBasicSchemeIso 𝒜 ℬ e he he' g d hg hd).hom) =
+        (a.hom ≫ pullback.snd U.ι V.ι) ≫
+          (gradedEquivProjBasicSchemeIso 𝒜 ℬ e he he' g d hg hd).hom := by
+        rw [Category.assoc]
+      _ = p.hom ≫ (b.hom ≫ pullback.snd U'.ι V'.ι) := by
+        rw [hc, hd']
+        exact hg'
+      _ = a.hom ≫ (o.hom ≫ pullback.snd U'.ι V'.ι) := by
+        change p.hom ≫ (b.hom ≫ pullback.snd U'.ι V'.ι) =
+          a.hom ≫ ((a.inv ≫ p.hom ≫ b.hom) ≫ pullback.snd U'.ι V'.ι)
+        simp only [Category.assoc, Iso.hom_inv_id_assoc]
+
+/-- A graded equivalence glues its two chosen projective chart maps
+when the corresponding opens cover both `Proj`s. -/
+noncomputable def gradedEquivProjTwoChartSchemeIso
+    {R S A B : Type} [CommRing R] [CommRing S]
+    [CommRing A] [CommRing B] [Algebra R A] [Algebra S B]
+    (𝒜 : ℕ → Submodule R A) (ℬ : ℕ → Submodule S B)
+    [GradedAlgebra 𝒜] [GradedAlgebra ℬ]
+    (e : A ≃+* B)
+    (he : ∀ n (a : A), a ∈ 𝒜 n → e a ∈ ℬ n)
+    (he' : ∀ n (b : B), b ∈ ℬ n → e.symm b ∈ 𝒜 n)
+    (f g : A) (d : ℕ) (hf : f ∈ 𝒜 d) (hg : g ∈ 𝒜 d)
+    (hd : 0 < d)
+    (hcoverA : ProjectiveSpectrum.basicOpen 𝒜 f ⊔
+      ProjectiveSpectrum.basicOpen 𝒜 g = ⊤)
+    (hcoverB : ProjectiveSpectrum.basicOpen ℬ (e f) ⊔
+      ProjectiveSpectrum.basicOpen ℬ (e g) = ⊤) :
+    AlgebraicGeometry.«Proj» 𝒜 ≅ AlgebraicGeometry.«Proj» ℬ := by
+  let X := AlgebraicGeometry.«Proj» 𝒜
+  let Y := AlgebraicGeometry.«Proj» ℬ
+  let U : Bool → X.Opens := fun b =>
+    if b then ProjectiveSpectrum.basicOpen 𝒜 f
+      else ProjectiveSpectrum.basicOpen 𝒜 g
+  let V : Bool → Y.Opens := fun b =>
+    if b then ProjectiveSpectrum.basicOpen ℬ (e f)
+      else ProjectiveSpectrum.basicOpen ℬ (e g)
+  have hU : ⨆ b, U b = ⊤ := by
+    simpa only [iSup_bool_eq, U, Bool.cond_true, Bool.cond_false] using hcoverA
+  have hV : ⨆ b, V b = ⊤ := by
+    simpa only [iSup_bool_eq, V, Bool.cond_true, Bool.cond_false] using hcoverB
+  let C := X.openCoverOfISupEqTop U hU
+  let D := Y.openCoverOfISupEqTop V hV
+  let c : ∀ i : Bool, C.obj i ≅ D.obj i := by
+    intro i
+    cases i
+    · exact gradedEquivProjBasicSchemeIso 𝒜 ℬ e he he' g d hg hd
+    · exact gradedEquivProjBasicSchemeIso 𝒜 ℬ e he he' f d hf hd
+  let o := gradedEquivProjProductOverlapIso 𝒜 ℬ e he he' f g d hf hg hd
+  have hfirst : pullback.fst (C.map true) (C.map false) ≫ (c true).hom =
+      o.hom ≫ pullback.fst (D.map true) (D.map false) := by
+    exact (gradedEquivProjProductOverlapIso_projections
+      𝒜 ℬ e he he' f g d hf hg hd).1
+  have hsecond : pullback.snd (C.map true) (C.map false) ≫ (c false).hom =
+      o.hom ≫ pullback.snd (D.map true) (D.map false) := by
+    exact (gradedEquivProjProductOverlapIso_projections
+      𝒜 ℬ e he he' f g d hf hg hd).2
+  have hforward : ∀ i j : Bool,
+      pullback.fst (C.map i) (C.map j) ≫ (c i).hom ≫ D.map i =
+        pullback.snd (C.map i) (C.map j) ≫ (c j).hom ≫ D.map j := by
+    intro i j
+    cases i <;> cases j
+    · have h : pullback.fst (C.map false) (C.map false) =
+          pullback.snd (C.map false) (C.map false) :=
+        (cancel_mono (C.map false)).mp pullback.condition
+      rw [h]
+    · apply (cancel_epi
+        (pullbackSymmetry (C.map true) (C.map false)).hom).mp
+      simp only [← Category.assoc, pullbackSymmetry_hom_comp_fst,
+        pullbackSymmetry_hom_comp_snd]
+      calc
+        _ = (o.hom ≫ pullback.snd (D.map true) (D.map false)) ≫
+            D.map false := by
+          simpa only [Category.assoc] using
+            congrArg (fun t => t ≫ D.map false) hsecond
+        _ = (o.hom ≫ pullback.fst (D.map true) (D.map false)) ≫
+            D.map true := by simp only [Category.assoc, pullback.condition]
+        _ = _ := by
+          simpa only [Category.assoc] using
+            congrArg (fun t => t ≫ D.map true) hfirst.symm
+    · calc
+        _ = (o.hom ≫ pullback.fst (D.map true) (D.map false)) ≫
+            D.map true := by
+          simpa only [Category.assoc] using
+            congrArg (fun t => t ≫ D.map true) hfirst
+        _ = (o.hom ≫ pullback.snd (D.map true) (D.map false)) ≫
+            D.map false := by simp only [Category.assoc, pullback.condition]
+        _ = _ := by
+          simpa only [Category.assoc] using
+            congrArg (fun t => t ≫ D.map false) hsecond.symm
+    · have h : pullback.fst (C.map true) (C.map true) =
+          pullback.snd (C.map true) (C.map true) :=
+        (cancel_mono (C.map true)).mp pullback.condition
+      rw [h]
+  have hreverse : ∀ i j : Bool,
+      pullback.fst (D.map i) (D.map j) ≫ (c i).inv ≫ C.map i =
+        pullback.snd (D.map i) (D.map j) ≫ (c j).inv ≫ C.map j := by
+    have hif : pullback.fst (D.map true) (D.map false) ≫ (c true).inv =
+        o.inv ≫ pullback.fst (C.map true) (C.map false) :=
+      schemeIsoRestrictionSquare_inverse (c true) o _ _ hfirst
+    have his : pullback.snd (D.map true) (D.map false) ≫ (c false).inv =
+        o.inv ≫ pullback.snd (C.map true) (C.map false) :=
+      schemeIsoRestrictionSquare_inverse (c false) o _ _ hsecond
+    intro i j
+    cases i <;> cases j
+    · have h : pullback.fst (D.map false) (D.map false) =
+          pullback.snd (D.map false) (D.map false) :=
+        (cancel_mono (D.map false)).mp pullback.condition
+      rw [h]
+    · apply (cancel_epi
+        (pullbackSymmetry (D.map true) (D.map false)).hom).mp
+      simp only [← Category.assoc, pullbackSymmetry_hom_comp_fst,
+        pullbackSymmetry_hom_comp_snd]
+      calc
+        _ = (o.inv ≫ pullback.snd (C.map true) (C.map false)) ≫
+            C.map false := by
+          simpa only [Category.assoc] using
+            congrArg (fun t => t ≫ C.map false) his
+        _ = (o.inv ≫ pullback.fst (C.map true) (C.map false)) ≫
+            C.map true := by simp only [Category.assoc, pullback.condition]
+        _ = _ := by
+          simpa only [Category.assoc] using
+            congrArg (fun t => t ≫ C.map true) hif.symm
+    · calc
+        _ = (o.inv ≫ pullback.fst (C.map true) (C.map false)) ≫
+            C.map true := by
+          simpa only [Category.assoc] using
+            congrArg (fun t => t ≫ C.map true) hif
+        _ = (o.inv ≫ pullback.snd (C.map true) (C.map false)) ≫
+            C.map false := by simp only [Category.assoc, pullback.condition]
+        _ = _ := by
+          simpa only [Category.assoc] using
+            congrArg (fun t => t ≫ C.map false) his.symm
+    · have h : pullback.fst (D.map true) (D.map true) =
+          pullback.snd (D.map true) (D.map true) :=
+        (cancel_mono (D.map true)).mp pullback.condition
+      rw [h]
+  let f' : ∀ i : Bool, C.obj i ⟶ Y := fun i => (c i).hom ≫ D.map i
+  let g' : ∀ i : Bool, D.obj i ⟶ X := fun i => (c i).inv ≫ C.map i
+  have hf' : ∀ i j, pullback.fst (C.map i) (C.map j) ≫ f' i =
+      pullback.snd (C.map i) (C.map j) ≫ f' j := by
+    intro i j
+    simpa only [f', Category.assoc] using hforward i j
+  have hg' : ∀ i j, pullback.fst (D.map i) (D.map j) ≫ g' i =
+      pullback.snd (D.map i) (D.map j) ≫ g' j := by
+    intro i j
+    simpa only [g', Category.assoc] using hreverse i j
+  let F : X ⟶ Y := @Scheme.OpenCover.glueMorphisms X C Y f' hf'
+  let G : Y ⟶ X := @Scheme.OpenCover.glueMorphisms Y D X g' hg'
+  refine { hom := F, inv := G, hom_inv_id := ?_, inv_hom_id := ?_ }
+  · apply C.hom_ext
+    intro i
+    change C.map i ≫ (F ≫ G) = C.map i ≫ 𝟙 _
+    rw [← Category.assoc, C.ι_glueMorphisms, Category.assoc,
+      D.ι_glueMorphisms]
+    simp only [f', g', ← Category.assoc, Iso.hom_inv_id,
+      Category.id_comp, Category.comp_id]
+  · apply D.hom_ext
+    intro i
+    change D.map i ≫ (G ≫ F) = D.map i ≫ 𝟙 _
+    rw [← Category.assoc, D.ι_glueMorphisms, Category.assoc,
+      C.ι_glueMorphisms]
+    simp only [f', g', ← Category.assoc, Iso.inv_hom_id,
+      Category.id_comp, Category.comp_id]
+
 /-- The graded translation identifies each source projective basic
 chart with the canonical split cubic's chart at its translated
 coordinate, as schemes. -/
@@ -603,5 +886,164 @@ noncomputable def splitNodeProjectiveTwoChartSchemeIso
       (Submodule.mem_map.mpr
         ⟨_, projectiveWeierstrassCoordinate_mem_degree_one W 2, rfl⟩)
       (by decide)
+
+/-- The two translated denominators are `Z` and `V + b Z`, not
+necessarily `Z` and `V` themselves. -/
+theorem splitNodeProjectiveTranslatedCoordinates
+    (W : WeierstrassCurve ℤ_[2])
+    (hnode : ReducedNodalPoint (W.map PadicInt.toZMod)
+      (PadicInt.toZMod W.a₃)
+      (PadicInt.toZMod (W.a₃ ^ 2 + W.a₄)))
+    (hsplit : 3 * PadicInt.toZMod W.a₃ +
+      (W.map PadicInt.toZMod).a₂ = 0) :
+    let q := Ideal.Quotient.mk (Ideal.span {projectiveWeierstrassCubic W})
+    let r := Ideal.Quotient.mk (projectiveWeierstrassSpecialFibreIdeal W)
+    let z := r (q (MvPolynomial.X (2 : Fin 3)))
+    let y := r (q (MvPolynomial.X (1 : Fin 3)))
+    let e := splitNode_projectiveSpecialFibreCoordinateRing_equiv W hnode hsplit
+    let Q := Ideal.Quotient.mk (Ideal.span {splitNodeProjectiveCubic})
+    e z = Q (MvPolynomial.X (2 : Fin 3)) ∧
+      e y = Q (MvPolynomial.X (1 : Fin 3) +
+        MvPolynomial.C (PadicInt.toZMod (W.a₃ ^ 2 + W.a₄)) *
+          MvPolynomial.X 2) := by
+  constructor
+  · simpa only [MvPolynomial.map_X, projectivePlaneTranslation_Z] using
+      (splitNode_projectiveSpecialFibreCoordinateRing_equiv_apply W hnode hsplit
+        (MvPolynomial.X (2 : Fin 3)))
+  · have hY : (projectivePlaneTranslation (ZMod 2)
+        (PadicInt.toZMod W.a₃)
+        (PadicInt.toZMod (W.a₃ ^ 2 + W.a₄)))
+          (MvPolynomial.X (1 : Fin 3)) =
+          MvPolynomial.X 1 +
+            MvPolynomial.C (PadicInt.toZMod (W.a₃ ^ 2 + W.a₄)) *
+              MvPolynomial.X 2 := by
+      change (MvPolynomial.eval₂Hom MvPolynomial.C
+        ![MvPolynomial.X 0 +
+            MvPolynomial.C (PadicInt.toZMod W.a₃) * MvPolynomial.X 2,
+          MvPolynomial.X 1 +
+            MvPolynomial.C (PadicInt.toZMod (W.a₃ ^ 2 + W.a₄)) *
+              MvPolynomial.X 2,
+          MvPolynomial.X 2])
+        (MvPolynomial.X (1 : Fin 3)) = _
+      exact MvPolynomial.eval₂Hom_X' _ _ _
+    simpa only [MvPolynomial.map_X, hY] using
+      (splitNode_projectiveSpecialFibreCoordinateRing_equiv_apply W hnode hsplit
+        (MvPolynomial.X (1 : Fin 3)))
+
+/-- The target opens at the actual translated `Z` and `Y` coordinates
+cover the canonical cubic's projective spectrum. -/
+theorem splitNodeProjectiveTranslatedBasicOpen_Z_sup_Y
+    (W : WeierstrassCurve ℤ_[2])
+    (hnode : ReducedNodalPoint (W.map PadicInt.toZMod)
+      (PadicInt.toZMod W.a₃)
+      (PadicInt.toZMod (W.a₃ ^ 2 + W.a₄)))
+    (hsplit : 3 * PadicInt.toZMod W.a₃ +
+      (W.map PadicInt.toZMod).a₂ = 0) :
+    letI : GradedAlgebra splitNodeProjectiveQuotientComponent :=
+      splitNodeProjectiveQuotientGrading
+    let q := Ideal.Quotient.mk (Ideal.span {projectiveWeierstrassCubic W})
+    let r := Ideal.Quotient.mk (projectiveWeierstrassSpecialFibreIdeal W)
+    let z := r (q (MvPolynomial.X (2 : Fin 3)))
+    let y := r (q (MvPolynomial.X (1 : Fin 3)))
+    let e := splitNode_projectiveSpecialFibreCoordinateRing_equiv W hnode hsplit
+    ProjectiveSpectrum.basicOpen splitNodeProjectiveQuotientComponent (e z) ⊔
+      ProjectiveSpectrum.basicOpen splitNodeProjectiveQuotientComponent (e y) =
+        ⊤ := by
+  letI : GradedAlgebra splitNodeProjectiveQuotientComponent :=
+    splitNodeProjectiveQuotientGrading
+  rcases splitNodeProjectiveTranslatedCoordinates W hnode hsplit with ⟨hZ, hY⟩
+  dsimp only
+  rw [hZ, hY]
+  exact splitNodeProjectiveBasicOpen_Z_sup_V_add
+    (PadicInt.toZMod (W.a₃ ^ 2 + W.a₄))
+
+/-- The images of the source `Z` and `Y` charts form an actual open
+cover of the canonical cubic, with the translated `Y` retained. -/
+noncomputable def splitNodeProjectiveTranslatedTwoChartOpenCover
+    (W : WeierstrassCurve ℤ_[2])
+    (hnode : ReducedNodalPoint (W.map PadicInt.toZMod)
+      (PadicInt.toZMod W.a₃)
+      (PadicInt.toZMod (W.a₃ ^ 2 + W.a₄)))
+    (hsplit : 3 * PadicInt.toZMod W.a₃ +
+      (W.map PadicInt.toZMod).a₂ = 0) :
+    letI : GradedAlgebra splitNodeProjectiveQuotientComponent :=
+      splitNodeProjectiveQuotientGrading
+    (AlgebraicGeometry.«Proj» splitNodeProjectiveQuotientComponent).OpenCover := by
+  letI : GradedAlgebra splitNodeProjectiveQuotientComponent :=
+    splitNodeProjectiveQuotientGrading
+  let q := Ideal.Quotient.mk (Ideal.span {projectiveWeierstrassCubic W})
+  let r := Ideal.Quotient.mk (projectiveWeierstrassSpecialFibreIdeal W)
+  let z := r (q (MvPolynomial.X (2 : Fin 3)))
+  let y := r (q (MvPolynomial.X (1 : Fin 3)))
+  let e := splitNode_projectiveSpecialFibreCoordinateRing_equiv W hnode hsplit
+  let X := AlgebraicGeometry.«Proj» splitNodeProjectiveQuotientComponent
+  let U : Bool → X.Opens := fun b =>
+    if b then ProjectiveSpectrum.basicOpen splitNodeProjectiveQuotientComponent
+      (e z) else ProjectiveSpectrum.basicOpen splitNodeProjectiveQuotientComponent
+        (e y)
+  apply X.openCoverOfISupEqTop U
+  simpa only [iSup_bool_eq, U, Bool.cond_true, Bool.cond_false] using
+    splitNodeProjectiveTranslatedBasicOpen_Z_sup_Y W hnode hsplit
+
+/-- The degree-preserving translated coordinate equivalence glues
+across the full `Z`/`Y` cover to identify the quotient `Proj` with
+the canonical split cubic as a scheme. -/
+noncomputable def splitNodeProjectiveSchemeIso
+    (W : WeierstrassCurve ℤ_[2])
+    (hnode : ReducedNodalPoint (W.map PadicInt.toZMod)
+      (PadicInt.toZMod W.a₃)
+      (PadicInt.toZMod (W.a₃ ^ 2 + W.a₄)))
+    (hsplit : 3 * PadicInt.toZMod W.a₃ +
+      (W.map PadicInt.toZMod).a₂ = 0) :
+    letI : GradedAlgebra (projectiveWeierstrassQuotientComponent W) :=
+      projectiveWeierstrassQuotientGrading W
+    letI : GradedAlgebra (projectiveWeierstrassSpecialFibreComponent W) :=
+      projectiveWeierstrassSpecialFibreGrading W
+    letI : GradedAlgebra splitNodeProjectiveQuotientComponent :=
+      splitNodeProjectiveQuotientGrading
+    AlgebraicGeometry.«Proj» (projectiveWeierstrassSpecialFibreComponent W) ≅
+      splitNodeProjectiveScheme := by
+  letI : GradedAlgebra (projectiveWeierstrassQuotientComponent W) :=
+    projectiveWeierstrassQuotientGrading W
+  letI : GradedAlgebra (projectiveWeierstrassSpecialFibreComponent W) :=
+    projectiveWeierstrassSpecialFibreGrading W
+  letI : GradedAlgebra splitNodeProjectiveQuotientComponent :=
+    splitNodeProjectiveQuotientGrading
+  let q := Ideal.Quotient.mk (Ideal.span {projectiveWeierstrassCubic W})
+  let r := Ideal.Quotient.mk (projectiveWeierstrassSpecialFibreIdeal W)
+  let z := r (q (MvPolynomial.X (2 : Fin 3)))
+  let y := r (q (MvPolynomial.X (1 : Fin 3)))
+  let e := splitNode_projectiveSpecialFibreCoordinateRing_equiv W hnode hsplit
+  exact gradedEquivProjTwoChartSchemeIso
+    (projectiveWeierstrassSpecialFibreComponent W)
+    splitNodeProjectiveQuotientComponent e
+    (fun n a ha =>
+      splitNode_projectiveSpecialFibreCoordinateRing_equiv_homogeneous
+        W hnode hsplit n a ha)
+    (fun n b hb =>
+      splitNode_projectiveSpecialFibreCoordinateRing_equiv_symm_homogeneous
+        W hnode hsplit n b hb)
+    z y 1
+    (Submodule.mem_map.mpr
+      ⟨_, projectiveWeierstrassCoordinate_mem_degree_one W 2, rfl⟩)
+    (Submodule.mem_map.mpr
+      ⟨_, projectiveWeierstrassCoordinate_mem_degree_one W 1, rfl⟩)
+    (by decide)
+    (projectiveWeierstrassSpecialFibreBasicOpen_Z_sup_Y W)
+    (splitNodeProjectiveTranslatedBasicOpen_Z_sup_Y W hnode hsplit)
+
+/-- The actual scheme-theoretic special fibre is the canonical
+split cubic, not merely chartwise equivalent to it. -/
+noncomputable def splitNodeSpecialFibreCanonicalSchemeIso
+    (W : WeierstrassCurve ℤ_[2])
+    (hnode : ReducedNodalPoint (W.map PadicInt.toZMod)
+      (PadicInt.toZMod W.a₃)
+      (PadicInt.toZMod (W.a₃ ^ 2 + W.a₄)))
+    (hsplit : 3 * PadicInt.toZMod W.a₃ +
+      (W.map PadicInt.toZMod).a₂ = 0) :
+    projectiveWeierstrassSpecialFibreScheme W ≅
+      splitNodeProjectiveScheme := by
+  exact (splitNodeSpecialFibreProjSchemeIso W hnode hsplit).trans
+    (splitNodeProjectiveSchemeIso W hnode hsplit)
 
 end Beal.General
