@@ -33,6 +33,12 @@ For a degree-preserving equivalence between graded coordinate rings, prove restr
 
 **How to apply:** First establish the graded map on the double denominator submonoid, then compare its restrictions from a single factor and from the product by checking homogeneous fractions. Use injectivity of the target product-to-double map to recover the desired product-chart equality. This is a ring-level result; scheme-map compatibility and gluing still require their own proof.
 
+The two ordered product presentations of a translated overlap require a separate coherence argument even after each chosen chart isomorphism has a verified scheme restriction square.
+
+**Why:** The direct product equivalence is assembled from a localization map with proof-dependent source and target types. Attempting to identify the swapped equivalences merely by case-splitting equalities of the two `Away` types failed during dependent elimination of the underlying quotient and instances; commutativity of denominators alone does not establish the heterogeneous equality of the chosen maps.
+
+**How to apply:** Establish equality on homogeneous fractions after explicitly transporting both localization instances, or choose a single denominator-indexed equivalence whose ordered presentations are provably the same. Only then transfer both scheme restriction squares to a common overlap and glue.
+
 For a quotient `Proj` cover by coordinate opens, avoid first proving an equality between the quotient's irrelevant ideal and a variable-generated ideal. It is enough to show that each positive-degree quotient component belongs to any homogeneous prime containing every coordinate image; the zero component of an irrelevant element vanishes by definition.
 
 **Why:** Directly treating quotient relevance as the ambient polynomial prime-cover condition skips a genuine grading argument. The degreewise route also avoids an unnecessary quotient-ring presentation of the irrelevant ideal.

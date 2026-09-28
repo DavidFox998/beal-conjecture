@@ -102,6 +102,142 @@ theorem gradedEquivAwayHom_toProduct
         (fun h => h ((homogeneousLocalization_toProduct 𝒜 f g d hf hg) x))
         hproduct
 
+/-- On a product chart, the homogeneous translation is a ring
+equivalence even when its target denominator is written as a product
+of the two translated factors. -/
+noncomputable def gradedEquivAway_product
+    {R S A B : Type u} [CommRing R] [CommRing S]
+    [CommRing A] [CommRing B] [Algebra R A] [Algebra S B]
+    (𝒜 : ℕ → Submodule R A) (ℬ : ℕ → Submodule S B)
+    [GradedAlgebra 𝒜] [GradedAlgebra ℬ]
+    (e : A ≃+* B)
+    (he : ∀ n (a : A), a ∈ 𝒜 n → e a ∈ ℬ n)
+    (he' : ∀ n (b : B), b ∈ ℬ n → e.symm b ∈ 𝒜 n)
+    (f g : A) :
+    HomogeneousLocalization.Away 𝒜 (f * g) ≃+*
+      HomogeneousLocalization.Away ℬ (e f * e g) := by
+  let h : HomogeneousLocalization.Away 𝒜 (f * g) →+*
+      HomogeneousLocalization.Away ℬ (e f * e g) :=
+    gradedLocalizationMap 𝒜 ℬ e.toRingHom
+      (by
+        intro a ha
+        obtain ⟨n, hn⟩ := (Submonoid.mem_powers_iff a (f * g)).mp ha
+        apply (Submonoid.mem_powers_iff _ _).mpr
+        exact ⟨n, by
+          simpa only [map_pow, e.map_mul] using congrArg e hn⟩)
+      he
+  let k : HomogeneousLocalization.Away ℬ (e f * e g) →+*
+      HomogeneousLocalization.Away 𝒜 (f * g) :=
+    gradedLocalizationMap ℬ 𝒜 e.symm.toRingHom
+      (by
+        intro a ha
+        obtain ⟨n, hn⟩ := (Submonoid.mem_powers_iff a (e f * e g)).mp ha
+        apply (Submonoid.mem_powers_iff _ _).mpr
+        exact ⟨n, by
+          simpa only [map_pow, map_mul, e.symm_apply_apply] using congrArg e.symm hn⟩)
+      he'
+  refine RingEquiv.ofBijective h ⟨?_, ?_⟩
+  · intro x y hxy
+    have hx : k (h x) = x := by
+      obtain ⟨v, rfl⟩ := HomogeneousLocalization.mk_surjective x
+      simp only [h, k, gradedLocalizationMap_mk]
+      simp
+    have hy : k (h y) = y := by
+      obtain ⟨v, rfl⟩ := HomogeneousLocalization.mk_surjective y
+      simp only [h, k, gradedLocalizationMap_mk]
+      simp
+    rw [← hx, ← hy, hxy]
+  · intro y
+    refine ⟨k y, ?_⟩
+    obtain ⟨v, rfl⟩ := HomogeneousLocalization.mk_surjective y
+    simp only [h, k, gradedLocalizationMap_mk]
+    simp
+
+/-- The inverse chart equivalences obey the same product restriction
+square. This is the direction needed for the contravariant affine
+`Spec` comparison. -/
+theorem gradedEquivAway_symm_toProduct
+    {R S A B : Type u} [CommRing R] [CommRing S]
+    [CommRing A] [CommRing B] [Algebra R A] [Algebra S B]
+    (𝒜 : ℕ → Submodule R A) (ℬ : ℕ → Submodule S B)
+    [GradedAlgebra 𝒜] [GradedAlgebra ℬ]
+    (e : A ≃+* B)
+    (he : ∀ n (a : A), a ∈ 𝒜 n → e a ∈ ℬ n)
+    (he' : ∀ n (b : B), b ∈ ℬ n → e.symm b ∈ 𝒜 n)
+    (f g : A) (d : ℕ) (hf : f ∈ 𝒜 d) (hg : g ∈ 𝒜 d) :
+    let F := gradedEquivAway 𝒜 ℬ e he he' f
+    let P := gradedEquivAway_product 𝒜 ℬ e he he' f g
+    (homogeneousLocalization_toProduct 𝒜 f g d hf hg).comp
+        F.symm.toRingHom =
+      P.symm.toRingHom.comp
+        (homogeneousLocalization_toProduct ℬ (e f) (e g) d
+          (he d f hf) (he d g hg)) := by
+  let F := gradedEquivAway 𝒜 ℬ e he he' f
+  let P := gradedEquivAway_product 𝒜 ℬ e he he' f g
+  have hforward :
+      (homogeneousLocalization_toProduct ℬ (e f) (e g) d
+        (he d f hf) (he d g hg)).comp F.toRingHom =
+        P.toRingHom.comp (homogeneousLocalization_toProduct 𝒜 f g d hf hg) := by
+    change (homogeneousLocalization_toProduct ℬ (e f) (e g) d
+        (he d f hf) (he d g hg)).comp (gradedEquivAwayHom 𝒜 ℬ e he f) =
+      (gradedLocalizationMap 𝒜 ℬ e.toRingHom
+        (by
+          intro a ha
+          obtain ⟨n, hn⟩ := (Submonoid.mem_powers_iff a (f * g)).mp ha
+          apply (Submonoid.mem_powers_iff _ _).mpr
+          exact ⟨n, by
+            simpa only [map_pow, e.map_mul] using congrArg e hn⟩)
+        he).comp (homogeneousLocalization_toProduct 𝒜 f g d hf hg)
+    exact
+      (gradedEquivAwayHom_toProduct 𝒜 ℬ e he f g d hf hg)
+  apply RingHom.ext
+  intro x
+  apply P.injective
+  have hx := congrArg (fun h => h (F.symm x)) hforward
+  change P ((homogeneousLocalization_toProduct 𝒜 f g d hf hg) (F.symm x)) =
+    P (P.symm ((homogeneousLocalization_toProduct ℬ (e f) (e g) d
+      (he d f hf) (he d g hg)) x))
+  rw [P.apply_symm_apply]
+  change
+    (homogeneousLocalization_toProduct ℬ (e f) (e g) d
+      (he d f hf) (he d g hg)) (F (F.symm x)) =
+      P ((homogeneousLocalization_toProduct 𝒜 f g d hf hg) (F.symm x)) at hx
+  simpa only [F.apply_symm_apply] using hx.symm
+
+/-- The affine spectra of the translated projective charts commute
+with restriction to the product chart. This square still has to be
+compared with the actual open immersions of the two `Proj`s. -/
+theorem gradedEquivAway_spec_toProduct
+    {R S A B : Type u} [CommRing R] [CommRing S]
+    [CommRing A] [CommRing B] [Algebra R A] [Algebra S B]
+    (𝒜 : ℕ → Submodule R A) (ℬ : ℕ → Submodule S B)
+    [GradedAlgebra 𝒜] [GradedAlgebra ℬ]
+    (e : A ≃+* B)
+    (he : ∀ n (a : A), a ∈ 𝒜 n → e a ∈ ℬ n)
+    (he' : ∀ n (b : B), b ∈ ℬ n → e.symm b ∈ 𝒜 n)
+    (f g : A) (d : ℕ) (hf : f ∈ 𝒜 d) (hg : g ∈ 𝒜 d) :
+    let F := gradedEquivAway 𝒜 ℬ e he he' f
+    let P := gradedEquivAway_product 𝒜 ℬ e he he' f g
+    Spec.map (CommRingCat.ofHom
+        (homogeneousLocalization_toProduct 𝒜 f g d hf hg)) ≫
+      Spec.map (CommRingCat.ofHom F.symm.toRingHom) =
+    Spec.map (CommRingCat.ofHom P.symm.toRingHom) ≫
+      Spec.map (CommRingCat.ofHom
+        (homogeneousLocalization_toProduct ℬ (e f) (e g) d
+          (he d f hf) (he d g hg))) := by
+  let F := gradedEquivAway 𝒜 ℬ e he he' f
+  let P := gradedEquivAway_product 𝒜 ℬ e he he' f g
+  change Spec.map (CommRingCat.ofHom
+        (homogeneousLocalization_toProduct 𝒜 f g d hf hg)) ≫
+      Spec.map (CommRingCat.ofHom F.symm.toRingHom) =
+    Spec.map (CommRingCat.ofHom P.symm.toRingHom) ≫
+      Spec.map (CommRingCat.ofHom
+        (homogeneousLocalization_toProduct ℬ (e f) (e g) d
+          (he d f hf) (he d g hg)))
+  rw [← Spec.map_comp, ← Spec.map_comp]
+  exact congrArg (fun h => Spec.map (CommRingCat.ofHom h))
+    (gradedEquivAway_symm_toProduct 𝒜 ℬ e he he' f g d hf hg)
+
 /-- The degree-zero localization equivalence induced by a graded ring
 equivalence lifts through the standard affine charts of both `Proj`s. -/
 noncomputable def gradedEquivProjBasicSchemeIso
@@ -121,6 +257,125 @@ noncomputable def gradedEquivProjBasicSchemeIso
     ((Scheme.Spec.mapIso
       ((gradedEquivAway 𝒜 ℬ e he he' f).symm.toCommRingCatIso.op)).trans
         (homogeneousProjBasicSchemeIso ℬ (e f) d (he d f hf) hd).symm)
+
+/-- The projective product chart is compared with the chart at the
+product of the two translated denominators. -/
+noncomputable def gradedEquivProjProductBasicSchemeIso
+    {R S A B : Type u} [CommRing R] [CommRing S]
+    [CommRing A] [CommRing B] [Algebra R A] [Algebra S B]
+    (𝒜 : ℕ → Submodule R A) (ℬ : ℕ → Submodule S B)
+    [GradedAlgebra 𝒜] [GradedAlgebra ℬ]
+    (e : A ≃+* B)
+    (he : ∀ n (a : A), a ∈ 𝒜 n → e a ∈ ℬ n)
+    (he' : ∀ n (b : B), b ∈ ℬ n → e.symm b ∈ 𝒜 n)
+    (f g : A) (d : ℕ) (hf : f ∈ 𝒜 d) (hg : g ∈ 𝒜 d)
+    (hd : 0 < d) :
+    Scheme.Opens.toScheme (X := AlgebraicGeometry.«Proj» 𝒜)
+        (ProjectiveSpectrum.basicOpen 𝒜 (f * g)) ≅
+      Scheme.Opens.toScheme (X := AlgebraicGeometry.«Proj» ℬ)
+        (ProjectiveSpectrum.basicOpen ℬ (e f * e g)) := by
+  exact (homogeneousProjBasicSchemeIso 𝒜 (f * g) (d + d)
+      (SetLike.GradedMul.mul_mem hf hg) (by omega)).trans
+    ((Scheme.Spec.mapIso
+      ((gradedEquivAway_product 𝒜 ℬ e he he' f g).symm.toCommRingCatIso.op)).trans
+        (homogeneousProjBasicSchemeIso ℬ (e f * e g) (d + d)
+          (SetLike.GradedMul.mul_mem (he d f hf) (he d g hg))
+          (by omega)).symm)
+
+/-- The chosen projective basic-chart isomorphism is natural for
+restriction to a product open, with the translated denominator on
+the target. -/
+theorem gradedEquivProjBasicSchemeIso_toProduct
+    {R S A B : Type u} [CommRing R] [CommRing S]
+    [CommRing A] [CommRing B] [Algebra R A] [Algebra S B]
+    (𝒜 : ℕ → Submodule R A) (ℬ : ℕ → Submodule S B)
+    [GradedAlgebra 𝒜] [GradedAlgebra ℬ]
+    (e : A ≃+* B)
+    (he : ∀ n (a : A), a ∈ 𝒜 n → e a ∈ ℬ n)
+    (he' : ∀ n (b : B), b ∈ ℬ n → e.symm b ∈ 𝒜 n)
+    (f g : A) (d : ℕ) (hf : f ∈ 𝒜 d) (hg : g ∈ 𝒜 d)
+    (hd : 0 < d) :
+    let X := AlgebraicGeometry.«Proj» 𝒜
+    let Y := AlgebraicGeometry.«Proj» ℬ
+    let ka := (X.restrictFunctor.map
+      (homOfLE (ProjectiveSpectrum.basicOpen_mul_le_left 𝒜 f g))).left
+    let kb := (Y.restrictFunctor.map
+      (homOfLE (ProjectiveSpectrum.basicOpen_mul_le_left ℬ (e f) (e g)))).left
+    ka ≫ (gradedEquivProjBasicSchemeIso 𝒜 ℬ e he he' f d hf hd).hom =
+      (gradedEquivProjProductBasicSchemeIso 𝒜 ℬ e he he' f g d hf hg hd).hom ≫
+        kb := by
+  let X := AlgebraicGeometry.«Proj» 𝒜
+  let Y := AlgebraicGeometry.«Proj» ℬ
+  let ka := (X.restrictFunctor.map
+    (homOfLE (ProjectiveSpectrum.basicOpen_mul_le_left 𝒜 f g))).left
+  let kb := (Y.restrictFunctor.map
+    (homOfLE (ProjectiveSpectrum.basicOpen_mul_le_left ℬ (e f) (e g)))).left
+  let sf := homogeneousProjBasicSchemeIso 𝒜 f d hf hd
+  let sp := homogeneousProjBasicSchemeIso 𝒜 (f * g) (d + d)
+    (SetLike.GradedMul.mul_mem hf hg) (by omega)
+  let tf := homogeneousProjBasicSchemeIso ℬ (e f) d (he d f hf) hd
+  let tp := homogeneousProjBasicSchemeIso ℬ (e f * e g) (d + d)
+    (SetLike.GradedMul.mul_mem (he d f hf) (he d g hg)) (by omega)
+  let ef := (Scheme.Spec.mapIso
+    ((gradedEquivAway 𝒜 ℬ e he he' f).symm.toCommRingCatIso.op)).hom
+  let ep := (Scheme.Spec.mapIso
+    ((gradedEquivAway_product 𝒜 ℬ e he he' f g).symm.toCommRingCatIso.op)).hom
+  have hs : ka ≫ sf.hom =
+      sp.hom ≫ Spec.map (CommRingCat.ofHom
+        (homogeneousLocalization_toProduct 𝒜 f g d hf hg)) :=
+    homogeneousProjBasicSchemeIso_toProduct 𝒜 f g d hf hg hd
+  have ht : kb ≫ tf.hom =
+      tp.hom ≫ Spec.map (CommRingCat.ofHom
+        (homogeneousLocalization_toProduct ℬ (e f) (e g) d
+          (he d f hf) (he d g hg))) :=
+    homogeneousProjBasicSchemeIso_toProduct ℬ (e f) (e g) d
+      (he d f hf) (he d g hg) hd
+  have hm :
+      Spec.map (CommRingCat.ofHom
+        (homogeneousLocalization_toProduct 𝒜 f g d hf hg)) ≫ ef =
+      ep ≫ Spec.map (CommRingCat.ofHom
+        (homogeneousLocalization_toProduct ℬ (e f) (e g) d
+          (he d f hf) (he d g hg))) := by
+    change Spec.map (CommRingCat.ofHom
+        (homogeneousLocalization_toProduct 𝒜 f g d hf hg)) ≫
+        Spec.map (CommRingCat.ofHom
+          (gradedEquivAway 𝒜 ℬ e he he' f).symm.toRingHom) =
+      Spec.map (CommRingCat.ofHom
+        (gradedEquivAway_product 𝒜 ℬ e he he' f g).symm.toRingHom) ≫
+        Spec.map (CommRingCat.ofHom
+          (homogeneousLocalization_toProduct ℬ (e f) (e g) d
+            (he d f hf) (he d g hg)))
+    exact gradedEquivAway_spec_toProduct 𝒜 ℬ e he he' f g d hf hg
+  change ka ≫ (gradedEquivProjBasicSchemeIso 𝒜 ℬ e he he' f d hf hd).hom =
+    (gradedEquivProjProductBasicSchemeIso 𝒜 ℬ e he he' f g d hf hg hd).hom ≫ kb
+  apply (cancel_mono tf.hom).mp
+  calc
+    (ka ≫ (gradedEquivProjBasicSchemeIso 𝒜 ℬ e he he' f d hf hd).hom) ≫ tf.hom =
+        (sp.hom ≫
+          Spec.map (CommRingCat.ofHom
+            (homogeneousLocalization_toProduct 𝒜 f g d hf hg))) ≫ ef := by
+      change ((ka ≫ sf.hom ≫ ef ≫ tf.inv) ≫ tf.hom) = _
+      simp only [Category.assoc, tf.inv_hom_id, Category.comp_id]
+      simpa only [Category.assoc] using congrArg (fun h => h ≫ ef) hs
+    _ = (sp.hom ≫ ep) ≫ Spec.map (CommRingCat.ofHom
+          (homogeneousLocalization_toProduct ℬ (e f) (e g) d
+            (he d f hf) (he d g hg))) := by
+      simpa only [Category.assoc] using
+        congrArg (fun h => sp.hom ≫ h) hm
+    _ = ((gradedEquivProjProductBasicSchemeIso 𝒜 ℬ e he he' f g d hf hg hd).hom ≫
+        kb) ≫ tf.hom := by
+      rw [Category.assoc
+        (gradedEquivProjProductBasicSchemeIso 𝒜 ℬ e he he' f g d hf hg hd).hom
+        kb tf.hom, ht]
+      change (sp.hom ≫ ep) ≫
+          Spec.map (CommRingCat.ofHom
+            (homogeneousLocalization_toProduct ℬ (e f) (e g) d
+              (he d f hf) (he d g hg))) =
+        (sp.hom ≫ ep ≫ tp.inv) ≫
+          (tp.hom ≫ Spec.map (CommRingCat.ofHom
+            (homogeneousLocalization_toProduct ℬ (e f) (e g) d
+              (he d f hf) (he d g hg))))
+      simp only [Category.assoc, Iso.inv_hom_id_assoc]
 
 /-- The graded translation identifies each source projective basic
 chart with the canonical split cubic's chart at its translated
