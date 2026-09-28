@@ -179,6 +179,300 @@ noncomputable def homogeneousAwayTensorQuotientChartEquiv
   exact (homogeneousAwayTensorQuotientRingEquiv 𝒜 f t).trans
     (homogeneousQuotientAwayRingEquiv 𝒜 I hI t hgen f d hf hpow)
 
+/-- Quotienting the homogeneous coordinate ring commutes with passing
+from the product basic open to the double localization. -/
+theorem homogeneousQuotientAwayMap_productToDouble
+    (I : Ideal A) (hI : I.IsHomogeneous 𝒜) (f g : A) :
+    letI : GradedAlgebra (homogeneousQuotientComponent 𝒜 I) :=
+      homogeneousQuotientGrading 𝒜 I hI
+    (homogeneousLocalization_productToDouble
+        (homogeneousQuotientComponent 𝒜 I)
+        (Ideal.Quotient.mk I f) (Ideal.Quotient.mk I g)).comp
+      (homogeneousQuotientAwayMap 𝒜 I hI (f * g)) =
+    (homogeneousQuotientDoubleMap 𝒜 I hI f g).comp
+      (homogeneousLocalization_productToDouble 𝒜 f g) := by
+  letI : GradedAlgebra (homogeneousQuotientComponent 𝒜 I) :=
+    homogeneousQuotientGrading 𝒜 I hI
+  apply RingHom.ext
+  intro s
+  obtain ⟨v, rfl⟩ := HomogeneousLocalization.mk_surjective s
+  simp only [RingHom.comp_apply, homogeneousLocalization_productToDouble,
+    HomogeneousLocalization.mapId, HomogeneousLocalization.map_mk,
+    homogeneousQuotientAwayMap, homogeneousQuotientDoubleMap,
+    gradedLocalizationMap_mk]
+  rfl
+
+/-- On the first basic chart, reduction commutes with restriction to
+the product chart. Both paths are compared in the double localization. -/
+theorem homogeneousQuotientAwayMap_toProduct_left
+    (I : Ideal A) (hI : I.IsHomogeneous 𝒜)
+    (f g : A) (d : ℕ) (hf : f ∈ 𝒜 d) (hg : g ∈ 𝒜 d) :
+    letI : GradedAlgebra (homogeneousQuotientComponent 𝒜 I) :=
+      homogeneousQuotientGrading 𝒜 I hI
+    (homogeneousLocalization_toProduct
+        (homogeneousQuotientComponent 𝒜 I)
+        (Ideal.Quotient.mk I f) (Ideal.Quotient.mk I g) d
+        (Submodule.mem_map.mpr ⟨f, hf, rfl⟩)
+        (Submodule.mem_map.mpr ⟨g, hg, rfl⟩)).comp
+      (homogeneousQuotientAwayMap 𝒜 I hI f) =
+    (homogeneousQuotientAwayMap 𝒜 I hI (f * g)).comp
+      (homogeneousLocalization_toProduct 𝒜 f g d hf hg) := by
+  letI : GradedAlgebra (homogeneousQuotientComponent 𝒜 I) :=
+    homogeneousQuotientGrading 𝒜 I hI
+  let q := Ideal.Quotient.mk I
+  have hfq : q f ∈ homogeneousQuotientComponent 𝒜 I d :=
+    Submodule.mem_map.mpr ⟨f, hf, rfl⟩
+  have hgq : q g ∈ homogeneousQuotientComponent 𝒜 I d :=
+    Submodule.mem_map.mpr ⟨g, hg, rfl⟩
+  apply RingHom.ext
+  intro s
+  apply homogeneousLocalization_productToDouble_injective
+    (homogeneousQuotientComponent 𝒜 I) (q f) (q g)
+  simp only [RingHom.comp_apply]
+  calc
+    (homogeneousLocalization_productToDouble
+        (homogeneousQuotientComponent 𝒜 I) (q f) (q g))
+        ((homogeneousLocalization_toProduct
+          (homogeneousQuotientComponent 𝒜 I) (q f) (q g) d hfq hgq)
+          ((homogeneousQuotientAwayMap 𝒜 I hI f) s)) =
+      (HomogeneousLocalization.mapId (homogeneousQuotientComponent 𝒜 I)
+        (le_sup_left : Submonoid.powers (q f) ≤
+          Submonoid.powers (q f) ⊔ Submonoid.powers (q g)))
+        ((homogeneousQuotientAwayMap 𝒜 I hI f) s) := by
+          exact congrArg (fun h => h ((homogeneousQuotientAwayMap 𝒜 I hI f) s))
+            (homogeneousLocalization_toProduct_commutes
+              (homogeneousQuotientComponent 𝒜 I) (q f) (q g) d hfq hgq)
+    _ = (homogeneousQuotientDoubleMap 𝒜 I hI f g)
+          ((HomogeneousLocalization.mapId 𝒜
+            (le_sup_left : Submonoid.powers f ≤
+              Submonoid.powers f ⊔ Submonoid.powers g)) s) := by
+          exact congrArg (fun h => h s)
+            (homogeneousQuotientAwayMap_double_left 𝒜 I hI f g)
+    _ = (homogeneousQuotientDoubleMap 𝒜 I hI f g)
+          ((homogeneousLocalization_productToDouble 𝒜 f g)
+            ((homogeneousLocalization_toProduct 𝒜 f g d hf hg) s)) := by
+          rw [← (homogeneousLocalization_toProduct_commutes
+            𝒜 f g d hf hg : _)]
+          rfl
+    _ = (homogeneousLocalization_productToDouble
+          (homogeneousQuotientComponent 𝒜 I) (q f) (q g))
+          ((homogeneousQuotientAwayMap 𝒜 I hI (f * g))
+            ((homogeneousLocalization_toProduct 𝒜 f g d hf hg) s)) := by
+          exact (congrArg (fun h => h
+            ((homogeneousLocalization_toProduct 𝒜 f g d hf hg) s))
+            (homogeneousQuotientAwayMap_productToDouble 𝒜 I hI f g)).symm
+
+/-- The ring equivalence of a quotient chart is induced by the
+original map from the integral chart. -/
+theorem homogeneousQuotientAwayRingEquiv_comp_mk
+    (I : Ideal A) (hI : I.IsHomogeneous 𝒜)
+    (t : R) (hgen : I = Ideal.span {algebraMap R A t})
+    (f : A) (d : ℕ) (hf : f ∈ 𝒜 d)
+    (hpow : ∀ n : ℕ, (Ideal.Quotient.mk I f) ^ n ≠ 0) :
+    letI : GradedAlgebra (homogeneousQuotientComponent 𝒜 I) :=
+      homogeneousQuotientGrading 𝒜 I hI
+    (homogeneousQuotientAwayRingEquiv 𝒜 I hI t hgen f d hf hpow).toRingHom.comp
+      (Ideal.Quotient.mk
+        (Ideal.span {homogeneousScalarAway 𝒜 f t})) =
+      homogeneousQuotientAwayMap 𝒜 I hI f := by
+  letI : GradedAlgebra (homogeneousQuotientComponent 𝒜 I) :=
+    homogeneousQuotientGrading 𝒜 I hI
+  apply RingHom.ext
+  intro s
+  simp only [RingHom.comp_apply, homogeneousQuotientAwayRingEquiv,
+    RingEquiv.trans_apply,
+    RingHom.quotientKerEquivOfSurjective]
+  rfl
+
+/-- The quotient-chart equivalences respect the first restriction
+to the product overlap, tested on every integral chart fraction. -/
+theorem homogeneousQuotientChartRestriction_left
+    (I : Ideal A) (hI : I.IsHomogeneous 𝒜)
+    (t : R) (hgen : I = Ideal.span {algebraMap R A t})
+    (f g : A) (d : ℕ) (hf : f ∈ 𝒜 d) (hg : g ∈ 𝒜 d)
+    (hpowf : ∀ n : ℕ, (Ideal.Quotient.mk I f) ^ n ≠ 0)
+    (hpowfg : ∀ n : ℕ, (Ideal.Quotient.mk I (f * g)) ^ n ≠ 0) :
+    letI : GradedAlgebra (homogeneousQuotientComponent 𝒜 I) :=
+      homogeneousQuotientGrading 𝒜 I hI
+    let q := Ideal.Quotient.mk I
+    let hfq : q f ∈ homogeneousQuotientComponent 𝒜 I d :=
+      Submodule.mem_map.mpr ⟨f, hf, rfl⟩
+    let hgq : q g ∈ homogeneousQuotientComponent 𝒜 I d :=
+      Submodule.mem_map.mpr ⟨g, hg, rfl⟩
+    (homogeneousLocalization_toProduct
+        (homogeneousQuotientComponent 𝒜 I)
+        (q f) (q g) d hfq hgq).comp
+      ((homogeneousQuotientAwayRingEquiv
+        𝒜 I hI t hgen f d hf hpowf).toRingHom.comp
+        (Ideal.Quotient.mk
+          (Ideal.span {homogeneousScalarAway 𝒜 f t}))) =
+    ((homogeneousQuotientAwayRingEquiv
+        𝒜 I hI t hgen (f * g) (d + d)
+        (SetLike.GradedMul.mul_mem hf hg) hpowfg).toRingHom.comp
+      (Ideal.Quotient.mk
+        (Ideal.span {homogeneousScalarAway 𝒜 (f * g) t}))).comp
+      (homogeneousLocalization_toProduct 𝒜 f g d hf hg) := by
+  letI : GradedAlgebra (homogeneousQuotientComponent 𝒜 I) :=
+    homogeneousQuotientGrading 𝒜 I hI
+  let q := Ideal.Quotient.mk I
+  let hfq : q f ∈ homogeneousQuotientComponent 𝒜 I d :=
+    Submodule.mem_map.mpr ⟨f, hf, rfl⟩
+  let hgq : q g ∈ homogeneousQuotientComponent 𝒜 I d :=
+    Submodule.mem_map.mpr ⟨g, hg, rfl⟩
+  change (homogeneousLocalization_toProduct
+      (homogeneousQuotientComponent 𝒜 I)
+      (q f) (q g) d hfq hgq).comp
+    ((homogeneousQuotientAwayRingEquiv
+      𝒜 I hI t hgen f d hf hpowf).toRingHom.comp
+      (Ideal.Quotient.mk
+        (Ideal.span {homogeneousScalarAway 𝒜 f t}))) = _
+  rw [homogeneousQuotientAwayRingEquiv_comp_mk]
+  rw [homogeneousQuotientAwayRingEquiv_comp_mk]
+  exact homogeneousQuotientAwayMap_toProduct_left 𝒜 I hI f g d hf hg
+
+/-- Restriction to the product basic open preserves the scalar
+fraction defining the base fibre on both charts. -/
+theorem homogeneousScalarAway_toProduct
+    (f g : A) (d : ℕ) (hf : f ∈ 𝒜 d) (hg : g ∈ 𝒜 d)
+    (t : R) :
+    (homogeneousLocalization_toProduct 𝒜 f g d hf hg)
+      (homogeneousScalarAway 𝒜 f t) =
+    homogeneousScalarAway 𝒜 (f * g) t := by
+  apply homogeneousLocalization_productToDouble_injective 𝒜 f g
+  have h := congrArg (fun ψ => ψ (homogeneousScalarAway 𝒜 f t))
+    (homogeneousLocalization_toProduct_commutes 𝒜 f g d hf hg)
+  simp only [RingHom.comp_apply] at h
+  rw [h]
+  simp only [homogeneousScalarAway, homogeneousLocalization_productToDouble,
+    HomogeneousLocalization.mapId, HomogeneousLocalization.map_mk]
+
+/-- The chart restriction is a map over the grading base. -/
+theorem homogeneousScalarAwayHom_toProduct
+    (f g : A) (d : ℕ) (hf : f ∈ 𝒜 d) (hg : g ∈ 𝒜 d) :
+    (homogeneousLocalization_toProduct 𝒜 f g d hf hg).comp
+      (homogeneousScalarAwayHom 𝒜 f) =
+    homogeneousScalarAwayHom 𝒜 (f * g) := by
+  apply RingHom.ext
+  intro t
+  exact homogeneousScalarAway_toProduct 𝒜 f g d hf hg t
+
+/-- Restriction of an integral basic chart descends to the quotient
+by the scalar cutting out the special fibre. -/
+noncomputable def homogeneousScalarQuotientToProduct
+    (f g : A) (d : ℕ) (hf : f ∈ 𝒜 d) (hg : g ∈ 𝒜 d)
+    (t : R) :
+    (HomogeneousLocalization.Away 𝒜 f ⧸
+      Ideal.span {homogeneousScalarAway 𝒜 f t}) →+*
+    (HomogeneousLocalization.Away 𝒜 (f * g) ⧸
+      Ideal.span {homogeneousScalarAway 𝒜 (f * g) t}) :=
+  Ideal.quotientMap
+    (Ideal.span {homogeneousScalarAway 𝒜 (f * g) t})
+    (homogeneousLocalization_toProduct 𝒜 f g d hf hg)
+    (by
+      apply Ideal.span_le.mpr
+      intro x hx
+      rcases Set.mem_singleton_iff.mp hx with rfl
+      change (homogeneousLocalization_toProduct 𝒜 f g d hf hg)
+        (homogeneousScalarAway 𝒜 f t) ∈
+          Ideal.span {homogeneousScalarAway 𝒜 (f * g) t}
+      rw [homogeneousScalarAway_toProduct 𝒜 f g d hf hg t]
+      exact Ideal.subset_span (Set.mem_singleton _))
+
+/-- The induced quotient restriction is the restriction of an
+integral fraction followed by reduction modulo the base scalar. -/
+theorem homogeneousScalarQuotientToProduct_comp_mk
+    (f g : A) (d : ℕ) (hf : f ∈ 𝒜 d) (hg : g ∈ 𝒜 d)
+    (t : R) :
+    (homogeneousScalarQuotientToProduct 𝒜 f g d hf hg t).comp
+      (Ideal.Quotient.mk (Ideal.span {homogeneousScalarAway 𝒜 f t})) =
+    (Ideal.Quotient.mk
+      (Ideal.span {homogeneousScalarAway 𝒜 (f * g) t})).comp
+      (homogeneousLocalization_toProduct 𝒜 f g d hf hg) := by
+  apply RingHom.ext
+  intro s
+  simp only [RingHom.comp_apply, homogeneousScalarQuotientToProduct,
+    Ideal.quotientMap_mk]
+
+/-- The quotient-by-scalar chart isomorphisms commute with restriction
+to the product overlap, as maps between the actual quotient rings. -/
+theorem homogeneousQuotientChartRestriction_square
+    (I : Ideal A) (hI : I.IsHomogeneous 𝒜)
+    (t : R) (hgen : I = Ideal.span {algebraMap R A t})
+    (f g : A) (d : ℕ) (hf : f ∈ 𝒜 d) (hg : g ∈ 𝒜 d)
+    (hpowf : ∀ n : ℕ, (Ideal.Quotient.mk I f) ^ n ≠ 0)
+    (hpowfg : ∀ n : ℕ, (Ideal.Quotient.mk I (f * g)) ^ n ≠ 0) :
+    letI : GradedAlgebra (homogeneousQuotientComponent 𝒜 I) :=
+      homogeneousQuotientGrading 𝒜 I hI
+    let q := Ideal.Quotient.mk I
+    let hfq : q f ∈ homogeneousQuotientComponent 𝒜 I d :=
+      Submodule.mem_map.mpr ⟨f, hf, rfl⟩
+    let hgq : q g ∈ homogeneousQuotientComponent 𝒜 I d :=
+      Submodule.mem_map.mpr ⟨g, hg, rfl⟩
+    (homogeneousLocalization_toProduct
+        (homogeneousQuotientComponent 𝒜 I)
+        (q f) (q g) d hfq hgq).comp
+      (homogeneousQuotientAwayRingEquiv
+        𝒜 I hI t hgen f d hf hpowf).toRingHom =
+    (homogeneousQuotientAwayRingEquiv
+        𝒜 I hI t hgen (f * g) (d + d)
+        (SetLike.GradedMul.mul_mem hf hg) hpowfg).toRingHom.comp
+      (homogeneousScalarQuotientToProduct 𝒜 f g d hf hg t) := by
+  letI : GradedAlgebra (homogeneousQuotientComponent 𝒜 I) :=
+    homogeneousQuotientGrading 𝒜 I hI
+  apply RingHom.ext
+  intro s
+  obtain ⟨v, rfl⟩ := Ideal.Quotient.mk_surjective s
+  have h := congrArg (fun ψ => ψ v)
+    (homogeneousQuotientChartRestriction_left 𝒜 I hI t hgen
+      f g d hf hg hpowf hpowfg)
+  have hm := congrArg (fun ψ => ψ v)
+    (homogeneousScalarQuotientToProduct_comp_mk 𝒜 f g d hf hg t)
+  simpa only [RingHom.comp_apply, hm] using h
+
+/-- Reversing the two coordinates describes the same product basic
+open; the restriction square above applies in both orders. -/
+theorem homogeneousProductBasicOpen_comm (f g : A) :
+    ProjectiveSpectrum.basicOpen 𝒜 (f * g) =
+      ProjectiveSpectrum.basicOpen 𝒜 (g * f) := by
+  rw [mul_comm f g]
+
+/-- The quotient-chart compatibility is also a commutative square of
+affine schemes. This is not yet compatibility of the restricted
+pullback-to-Proj chart isomorphisms. -/
+theorem homogeneousQuotientChartRestriction_spec_square
+    (I : Ideal A) (hI : I.IsHomogeneous 𝒜)
+    (t : R) (hgen : I = Ideal.span {algebraMap R A t})
+    (f g : A) (d : ℕ) (hf : f ∈ 𝒜 d) (hg : g ∈ 𝒜 d)
+    (hpowf : ∀ n : ℕ, (Ideal.Quotient.mk I f) ^ n ≠ 0)
+    (hpowfg : ∀ n : ℕ, (Ideal.Quotient.mk I (f * g)) ^ n ≠ 0) :
+    letI : GradedAlgebra (homogeneousQuotientComponent 𝒜 I) :=
+      homogeneousQuotientGrading 𝒜 I hI
+    let q := Ideal.Quotient.mk I
+    let hfq : q f ∈ homogeneousQuotientComponent 𝒜 I d :=
+      Submodule.mem_map.mpr ⟨f, hf, rfl⟩
+    let hgq : q g ∈ homogeneousQuotientComponent 𝒜 I d :=
+      Submodule.mem_map.mpr ⟨g, hg, rfl⟩
+    Spec.map (CommRingCat.ofHom
+        (homogeneousLocalization_toProduct
+          (homogeneousQuotientComponent 𝒜 I)
+          (q f) (q g) d hfq hgq)) ≫
+      Spec.map (CommRingCat.ofHom
+        (homogeneousQuotientAwayRingEquiv
+          𝒜 I hI t hgen f d hf hpowf).toRingHom) =
+    Spec.map (CommRingCat.ofHom
+        (homogeneousQuotientAwayRingEquiv
+          𝒜 I hI t hgen (f * g) (d + d)
+          (SetLike.GradedMul.mul_mem hf hg) hpowfg).toRingHom) ≫
+      Spec.map (CommRingCat.ofHom
+        (homogeneousScalarQuotientToProduct 𝒜 f g d hf hg t)) := by
+  letI : GradedAlgebra (homogeneousQuotientComponent 𝒜 I) :=
+    homogeneousQuotientGrading 𝒜 I hI
+  dsimp only
+  rw [← Spec.map_comp, ← Spec.map_comp]
+  exact congrArg (fun h => Spec.map (CommRingCat.ofHom h))
+    (homogeneousQuotientChartRestriction_square
+      𝒜 I hI t hgen f g d hf hg hpowf hpowfg)
+
 /-- The *affine* base change of a homogeneous basic chart is `Spec`
 of the matching chart ring of the graded quotient. This states a
 scheme isomorphism for the pullback of the explicitly constructed

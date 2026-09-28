@@ -20,3 +20,9 @@ For a Proj chart, equality of scalar sections in the projective structure sheaf 
 **Why:** A direct large calculation at the scheme level stalled Lean elaboration, while the sheaf and restricted-scheme section rings required an explicit isomorphism. The staged proof made the base-map identity checkable without assuming the desired pullback comparison.
 
 **How to apply:** In future local-to-global Proj comparisons, first check the sheaf restriction square, move to Γ of the open subscheme through the canonical comparison, and only then compare the associated scheme morphisms. The fact that a restricted chart is open in the actual fibre still does not imply its local isomorphism glues over the overlap.
+
+A commutative square of scalar-quotient chart rings (or of their affine spectra) is only the algebraic part of fibre-chart overlap compatibility. It does not automatically transport through the *chosen* pullback-to-affine-chart and Proj-to-affine-chart isomorphisms.
+
+**Why:** These isomorphisms involve separate tensor/base-change and chart-identification steps. A quotient-ring square can be checked without proving those steps natural under restriction, so claiming global gluing at that point would skip a scheme-level obligation.
+
+**How to apply:** Before using chartwise comparisons to identify the global scheme-theoretic fibre with a graded-quotient Proj, establish naturality of each intervening scheme isomorphism under both overlap inclusions and then use the open-cover gluing API. Reversing product coordinates also needs an explicit transport: the two product opens agree by commutativity, but their chart-ring types are not definitionally identical.

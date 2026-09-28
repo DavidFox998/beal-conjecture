@@ -302,9 +302,16 @@ feed the projective model and its chart calculations.
   `ZMod 2` are explicitly identified. Pasting for pullbacks shows
   each restricted fibre is an open subscheme of the **global** fibre;
   pulling back the integral two-chart cover gives an open cover of
-  that fibre. The resulting isomorphisms are **not yet proved
-  compatible on `ZY`**, nor glued to a global scheme isomorphism with
-  the graded quotient `Proj`.
+   that fibre. The scalar chart maps preserve restriction to a product
+   open. Restriction therefore descends to the chart quotients by the
+   base scalar, and the resulting quotient-chart ring isomorphisms
+   commute with restriction to the product overlap. This also gives
+   a commuting square of the corresponding affine `Spec` maps; the
+   same argument applies with `Z` and `Y` interchanged, since their
+   products define the same basic open. Compatibility of the
+   **restricted pullback scheme isomorphisms themselves** with these
+   overlap maps remains unproved, so there is still no glued global
+   isomorphism with the graded quotient `Proj`.
 
 ## Current boundary
 
