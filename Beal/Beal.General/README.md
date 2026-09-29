@@ -400,9 +400,18 @@ divided `2`-chart equation under `W.Δ ≠ 0`, positive even
 reduction has linear coefficients `B+v` and `C+u`, so its sole
 candidate critical point is `(u,v)=(C,B)`; a proved residual-scalar
 equation decides whether that point lies on the reduced chart.
-This is not a constructed scheme-theoretic blow-up, strict transform,
-or resolution; it gives no Kodaira type or conductor exponent. Any
+The uniform factorization has also been lifted from pointwise
+identities to a polynomial identity `f(2U,2V)=4F`. The quotient by
+`F` now has a checked coordinate-ring map from the translated total
+surface, sending its two coordinates to `2U` and `2V` and fixing
+base scalars; this induces an actual affine-scheme morphism. The
+reduction of `F` is proved nonzero under the genuine even-valuation
+nodal hypotheses, by detecting its odd `UV` coefficient.
+Its identification with the `2`-chart of a scheme-theoretic blow-up,
+including saturation/strict transform, generic-fibre comparison,
+the other charts and their gluing, is **not proved**. Nor is a
+resolution, Kodaira type, or conductor exponent. Any
 subsequent model or conductor theorem must keep `W.Δ ≠ 0` explicit
-and discharge those geometric steps separately. In the split branch, the relevant
-discriminant hypothesis is `v₂(W.Δ) = 1`; the genuinely even-valuation
+and discharge those geometric steps separately. In the split branch,
+the relevant discriminant hypothesis is `v₂(W.Δ) = 1`; the genuinely even-valuation
 `Iₙ` branch requires even `v₂(Δ)`, not merely `4 ∣ Δ`.
