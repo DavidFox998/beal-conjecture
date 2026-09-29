@@ -44,3 +44,9 @@ After an isolated worktree is reattached, Lake may report changed dependency URL
 **Why:** The updated upstream file passed a direct source check, while the downstream file could see every other declaration but not the newly exposed helper. A full Lake rebuild compiled the upstream module first and then the downstream theorem successfully.
 
 **How to apply:** When a newly public upstream declaration is the sole unknown name in a direct downstream check, rebuild the actual dependency chain before diagnosing it as a proof error. A temporary single-module `.olean` outside the project's normal library tree may not be sufficient, because Lean resolves imports through a complete compiled-library root.
+
+**Elan proxy pitfall:** Even when the pinned Lean toolchain is already installed, invoking the `elan` wrapper can attempt a fresh network download and hang; calling the installed toolchain's `bin/lean` directly can check a source file with an explicit `LEAN_PATH` without touching the dependency cache.
+
+**Why:** A direct source check stalled while the wrapper tried to download the pinned release, but the installed compiler binary checked the same file successfully.
+
+**How to apply:** For verification-only direct checks, inspect the installed toolchain before assuming its wrapper must initialize it. Do not mistake a wrapper download timeout for a Lean proof failure, and do not present direct source compilation as a successful full Lake build.
