@@ -78,6 +78,25 @@ noncomputable def twoAdicResiduePullbackToQuotient
       (twoAdicResidueQuotientEquiv.toCommRingCatIso.op)).hom
     (𝟙 _) (by simp) (by simpa only using twoAdicResidueSpecMap)
 
+/-- The residue-field comparison is an isomorphism on every
+pullback, including empty charts. -/
+noncomputable def twoAdicResiduePullbackIso
+    {X : Scheme} (π : X ⟶ Spec (CommRingCat.of ℤ_[2])) :
+    pullback π (Spec.map (CommRingCat.ofHom
+      (PadicInt.toZMod : ℤ_[2] →+* ZMod 2))) ≅
+    pullback π (Spec.map (CommRingCat.ofHom
+      (Ideal.Quotient.mk (Ideal.span {(2 : ℤ_[2])})))) := by
+  let z := pullback.map π
+    (Spec.map (CommRingCat.ofHom
+      (PadicInt.toZMod : ℤ_[2] →+* ZMod 2)))
+    π (Spec.map (CommRingCat.ofHom
+      (Ideal.Quotient.mk (Ideal.span {(2 : ℤ_[2])}))))
+    (𝟙 _) (Scheme.Spec.mapIso
+      (twoAdicResidueQuotientEquiv.toCommRingCatIso.op)).hom
+    (𝟙 _) (by simp) (by simpa only using twoAdicResidueSpecMap)
+  haveI : IsIso z := inferInstance
+  exact asIso z
+
 /-- Changing the residue presentation commutes with every map of
 schemes over the 2-adic base, before making any affine or Proj
 chart identification. -/
@@ -105,6 +124,50 @@ theorem twoAdicResiduePullbackToQuotient_natural
   · simp only [Category.assoc, twoAdicResiduePullbackToQuotient,
       pullback.map, pullback.lift_snd_assoc, pullback.lift_snd,
       Category.comp_id]
+
+/-- Transport a base-changed chart along its original affine
+presentation, without altering its structural map. -/
+noncomputable def pullbackChangeChart
+    {X B T S : Scheme}
+    (π : X ⟶ S) (β : B ⟶ S) (ρ : T ⟶ S)
+    (e : X ⟶ B) (he : π = e ≫ β) :
+    pullback π ρ ⟶ pullback β ρ :=
+  pullback.map π ρ β ρ e (𝟙 _) (𝟙 _) he (by simp)
+
+/-- Base change of a chosen affine chart is an isomorphism. -/
+noncomputable def pullbackChangeChartIso
+    {X B T S : Scheme}
+    (π : X ⟶ S) (β : B ⟶ S) (ρ : T ⟶ S)
+    (e : X ≅ B) (he : π = e.hom ≫ β) :
+    pullback π ρ ≅ pullback β ρ := by
+  let c := pullback.map π ρ β ρ e.hom (𝟙 _) (𝟙 _) he (by simp)
+  haveI : IsIso c := inferInstance
+  exact asIso c
+
+/-- The change of chart and restriction commute on both pullback
+projections. No nonemptiness assumption on either pullback is used. -/
+theorem pullbackChangeChart_natural
+    {X Y B C T S : Scheme}
+    (πX : X ⟶ S) (πY : Y ⟶ S)
+    (βB : B ⟶ S) (βC : C ⟶ S) (ρ : T ⟶ S)
+    (eX : X ⟶ B) (eY : Y ⟶ C)
+    (k : Y ⟶ X) (s : C ⟶ B)
+    (hX : πX = eX ≫ βB) (hY : πY = eY ≫ βC)
+    (hk : k ≫ πX = πY) (hs : k ≫ eX = eY ≫ s)
+    (hβ : s ≫ βB = βC) :
+    pullback.map πY ρ πX ρ k (𝟙 _) (𝟙 _)
+        (by simpa only [Category.comp_id] using hk.symm) (by simp) ≫
+      pullbackChangeChart πX βB ρ eX hX =
+    pullbackChangeChart πY βC ρ eY hY ≫
+      pullback.map βC ρ βB ρ s (𝟙 _) (𝟙 _)
+        (by simpa only [Category.comp_id] using hβ.symm) (by simp) := by
+  apply pullback.hom_ext
+  · simp only [Category.assoc, pullbackChangeChart, pullback.map,
+      pullback.lift_fst_assoc, pullback.lift_fst, Category.comp_id]
+    simp_rw [← Category.assoc]
+    exact congrArg (fun φ => pullback.fst πY ρ ≫ φ) hs
+  · simp only [Category.assoc, pullbackChangeChart, pullback.map,
+      pullback.lift_snd_assoc, pullback.lift_snd, Category.comp_id]
 
 /-- The chosen Rees `D₊(2t)` chart is mapped to the base by its
 original scalar map followed by the surface coefficient map. -/
@@ -662,6 +725,41 @@ theorem affineFibrePullbackQuotientIso_natural
   rw [← affinePullbackSpecIso_natural h]
   simp only [Category.assoc]
 
+/-- The actual residue-field pullback of an affine presentation,
+factored into the residue comparison, chart change, and chosen
+affine quotient-base-change isomorphism. -/
+noncomputable def twoAdicAffineSpecialFibreIso
+    {X : Scheme} {B : Type} [CommRing B] [Algebra ℤ_[2] B]
+    (π : X ⟶ Spec (CommRingCat.of ℤ_[2]))
+    (e : X ≅ Spec (CommRingCat.of B))
+    (h : π = e.hom ≫
+      Spec.map (CommRingCat.ofHom (algebraMap ℤ_[2] B))) :
+    pullback π (Spec.map (CommRingCat.ofHom
+      (PadicInt.toZMod : ℤ_[2] →+* ZMod 2))) ≅
+      Spec (CommRingCat.of (B ⧸
+        Ideal.map (algebraMap ℤ_[2] B)
+          (Ideal.span {(2 : ℤ_[2])}))) := by
+  let J : Ideal ℤ_[2] := Ideal.span {(2 : ℤ_[2])}
+  let β := Spec.map (CommRingCat.ofHom (algebraMap ℤ_[2] B))
+  let q := Spec.map (CommRingCat.ofHom (Ideal.Quotient.mk J))
+  exact ((twoAdicResiduePullbackIso π).trans
+    (pullbackChangeChartIso π β q e h)).trans
+      (affineFibrePullbackQuotientIso (B := B) J)
+
+/-- The factored affine presentation is exactly the previously
+chosen chart isomorphism, not an arbitrary alternative. -/
+theorem twoAdicChartSpecialFibreIso_eq_affine
+    {X : Scheme} {B : Type} [CommRing B]
+    (U : X.Opens) (π : X ⟶ Spec (CommRingCat.of ℤ_[2]))
+    (e : U.toScheme ≅ Spec (CommRingCat.of B))
+    (β : ℤ_[2] →+* B)
+    (h : U.ι ≫ π =
+      e.hom ≫ Spec.map (CommRingCat.ofHom β)) :
+    letI : Algebra ℤ_[2] B := β.toAlgebra
+    twoAdicChartSpecialFibreIso U π e β h =
+      twoAdicAffineSpecialFibreIso (U.ι ≫ π) e h := by
+  rfl
+
 /-- The complete tensor-to-graded-quotient comparison respects
 product restriction without requiring either reduced denominator
 to be nonnilpotent. -/
@@ -897,6 +995,280 @@ private theorem restrictedChartIso_inv_square_any
       simpa only [Category.assoc] using
         congrArg (fun ψ => b.inv ≫ ψ ≫ a.inv) h.symm
     _ = b.inv ≫ r := by simp [Category.assoc]
+
+/-- The chosen affine special-fibre isomorphisms commute with a
+restriction of affine presentations over the 2-adic base. This
+statement uses the actual residue-field morphism and does not
+require any surviving reduced denominator. -/
+theorem twoAdicAffineSpecialFibreIso_natural
+    {X Y : Scheme} {B C : Type}
+    [CommRing B] [CommRing C]
+    [Algebra ℤ_[2] B] [Algebra ℤ_[2] C]
+    (πX : X ⟶ Spec (CommRingCat.of ℤ_[2]))
+    (πY : Y ⟶ Spec (CommRingCat.of ℤ_[2]))
+    (eX : X ≅ Spec (CommRingCat.of B))
+    (eY : Y ≅ Spec (CommRingCat.of C))
+    (hX : πX = eX.hom ≫
+      Spec.map (CommRingCat.ofHom (algebraMap ℤ_[2] B)))
+    (hY : πY = eY.hom ≫
+      Spec.map (CommRingCat.ofHom (algebraMap ℤ_[2] C)))
+    (s : B →ₐ[ℤ_[2]] C) (k : Y ⟶ X)
+    (hπ : k ≫ πX = πY)
+    (hchart : k ≫ eX.hom =
+      eY.hom ≫ Spec.map (CommRingCat.ofHom s.toRingHom)) :
+    let J : Ideal ℤ_[2] := Ideal.span {(2 : ℤ_[2])}
+    let residue := Spec.map (CommRingCat.ofHom
+      (PadicInt.toZMod : ℤ_[2] →+* ZMod 2))
+    let r := pullback.map πY residue πX residue k (𝟙 _) (𝟙 _)
+      (by simpa only [Category.comp_id] using hπ.symm) (by simp)
+    Spec.map (CommRingCat.ofHom (affineFibreQuotientMap J s)) ≫
+      (twoAdicAffineSpecialFibreIso πX eX hX).inv =
+    (twoAdicAffineSpecialFibreIso πY eY hY).inv ≫ r := by
+  let J : Ideal ℤ_[2] := Ideal.span {(2 : ℤ_[2])}
+  let residue := Spec.map (CommRingCat.ofHom
+    (PadicInt.toZMod : ℤ_[2] →+* ZMod 2))
+  let quotient := Spec.map (CommRingCat.ofHom (Ideal.Quotient.mk J))
+  let baseB := Spec.map (CommRingCat.ofHom (algebraMap ℤ_[2] B))
+  let baseC := Spec.map (CommRingCat.ofHom (algebraMap ℤ_[2] C))
+  let rs := Spec.map (CommRingCat.ofHom s.toRingHom)
+  let r := pullback.map πY residue πX residue k (𝟙 _) (𝟙 _)
+    (by simpa only [Category.comp_id] using hπ.symm) (by simp)
+  let rq := pullback.map πY quotient πX quotient k (𝟙 _) (𝟙 _)
+    (by simpa only [Category.comp_id] using hπ.symm) (by simp)
+  have hbase : rs ≫ baseB = baseC := by
+    rw [← Spec.map_comp]
+    exact congrArg (fun ψ => Spec.map (CommRingCat.ofHom ψ))
+      (by
+        apply RingHom.ext
+        intro t
+        exact s.commutes t :
+        s.toRingHom.comp (algebraMap ℤ_[2] B) =
+          algebraMap ℤ_[2] C)
+  let ra := pullback.map baseC quotient baseB quotient
+    rs (𝟙 _) (𝟙 _)
+    (by simpa only [Category.comp_id] using hbase.symm) (by simp)
+  let zX := twoAdicResiduePullbackIso πX
+  let zY := twoAdicResiduePullbackIso πY
+  let cX := pullbackChangeChartIso πX baseB quotient eX hX
+  let cY := pullbackChangeChartIso πY baseC quotient eY hY
+  let aX := affineFibrePullbackQuotientIso (B := B) J
+  let aY := affineFibrePullbackQuotientIso (B := C) J
+  have hz : rq ≫ zX.inv = zY.inv ≫ r :=
+    restrictedChartIso_inv_square_any zX zY r rq
+      (twoAdicResiduePullbackToQuotient_natural πX πY k hπ)
+  have hc : ra ≫ cX.inv = cY.inv ≫ rq :=
+    restrictedChartIso_inv_square_any cX cY rq ra
+      (pullbackChangeChart_natural πX πY baseB baseC quotient
+        eX.hom eY.hom k rs hX hY hπ hchart hbase)
+  have ha :
+      Spec.map (CommRingCat.ofHom (affineFibreQuotientMap J s)) ≫
+        aX.inv = aY.inv ≫ ra :=
+    affineFibrePullbackQuotientIso_natural J s
+  change
+    (Spec.map (CommRingCat.ofHom (affineFibreQuotientMap J s)) ≫
+      aX.inv) ≫ cX.inv ≫ zX.inv =
+    (aY.inv ≫ cY.inv ≫ zY.inv) ≫ r
+  calc
+    (Spec.map (CommRingCat.ofHom (affineFibreQuotientMap J s)) ≫
+        aX.inv) ≫ cX.inv ≫ zX.inv =
+      aY.inv ≫ (ra ≫ cX.inv) ≫ zX.inv := by
+        rw [ha]
+        simp only [Category.assoc]
+    _ = aY.inv ≫ (cY.inv ≫ rq) ≫ zX.inv := by rw [hc]
+    _ = aY.inv ≫ cY.inv ≫ (rq ≫ zX.inv) := by
+      simp only [Category.assoc]
+    _ = aY.inv ≫ cY.inv ≫ (zY.inv ≫ r) := by rw [hz]
+    _ = (aY.inv ≫ cY.inv ≫ zY.inv) ≫ r := by
+      simp only [Category.assoc]
+
+/-- The product-open restriction is a morphism over the actual
+2-adic base, even when the grading base is a larger surface ring. -/
+noncomputable def homogeneousLocalization_toProductTwoAdicAlgHom
+    {R A : Type u} [CommRing R] [CommRing A] [Algebra R A]
+    (𝒜 : ℕ → Submodule R A) [GradedAlgebra 𝒜]
+    (ρ : ℤ_[2] →+* R)
+    (f g : A) (d : ℕ) (hf : f ∈ 𝒜 d) (hg : g ∈ 𝒜 d) :
+    let βf := (homogeneousScalarAwayHom 𝒜 f).comp ρ
+    let βfg := (homogeneousScalarAwayHom 𝒜 (f * g)).comp ρ
+    letI : Algebra ℤ_[2] (HomogeneousLocalization.Away 𝒜 f) :=
+      βf.toAlgebra
+    letI : Algebra ℤ_[2] (HomogeneousLocalization.Away 𝒜 (f * g)) :=
+      βfg.toAlgebra
+    HomogeneousLocalization.Away 𝒜 f →ₐ[ℤ_[2]]
+      HomogeneousLocalization.Away 𝒜 (f * g) := by
+  let βf := (homogeneousScalarAwayHom 𝒜 f).comp ρ
+  let βfg := (homogeneousScalarAwayHom 𝒜 (f * g)).comp ρ
+  letI : Algebra ℤ_[2] (HomogeneousLocalization.Away 𝒜 f) :=
+    βf.toAlgebra
+  letI : Algebra ℤ_[2] (HomogeneousLocalization.Away 𝒜 (f * g)) :=
+    βfg.toAlgebra
+  let h := homogeneousLocalization_toProduct 𝒜 f g d hf hg
+  have hc : h.comp βf = βfg := by
+    change (h.comp (homogeneousScalarAwayHom 𝒜 f)).comp ρ =
+      (homogeneousScalarAwayHom 𝒜 (f * g)).comp ρ
+    rw [homogeneousScalarAwayHom_toProduct]
+  exact ⟨h, fun t => congrArg (fun φ => φ t) hc⟩
+
+/-- The affine quotient by the actual 2-adic base scalar agrees with
+the homogeneous quotient chart, without assuming that its reduced
+denominator is nonnilpotent. -/
+noncomputable def homogeneousTwoAdicAwayQuotientEquiv_any
+    {R A : Type u} [CommRing R] [CommRing A] [Algebra R A]
+    (𝒜 : ℕ → Submodule R A) [GradedAlgebra 𝒜]
+    (ρ : ℤ_[2] →+* R)
+    (I : Ideal A) (hI : I.IsHomogeneous 𝒜)
+    (hgen : I = Ideal.span {algebraMap R A (ρ 2)})
+    (f : A) (d : ℕ) (hf : f ∈ 𝒜 d) :
+    letI : GradedAlgebra (homogeneousQuotientComponent 𝒜 I) :=
+      homogeneousQuotientGrading 𝒜 I hI
+    let β := (homogeneousScalarAwayHom 𝒜 f).comp ρ
+    (HomogeneousLocalization.Away 𝒜 f ⧸
+      Ideal.map β (Ideal.span {(2 : ℤ_[2])})) ≃+*
+      HomogeneousLocalization.Away
+        (homogeneousQuotientComponent 𝒜 I) (Ideal.Quotient.mk I f) := by
+  letI : GradedAlgebra (homogeneousQuotientComponent 𝒜 I) :=
+    homogeneousQuotientGrading 𝒜 I hI
+  let β := (homogeneousScalarAwayHom 𝒜 f).comp ρ
+  have hmap : Ideal.map β (Ideal.span {(2 : ℤ_[2])}) =
+      Ideal.span {homogeneousScalarAway 𝒜 f (ρ 2)} := by
+    simp only [Ideal.map_span, Set.image_singleton]
+    rfl
+  exact (Ideal.quotEquivOfEq hmap).trans
+    (homogeneousQuotientAwayRingEquiv_any 𝒜 I hI
+      (ρ 2) hgen f d hf)
+
+/-- Transporting both quotient ideals along equalities leaves an
+induced map unchanged. The comparison is checked on integral
+representatives, rather than rewriting dependent quotient types. -/
+theorem quotientEquivOfEq_natural
+    {B C : Type u} [CommRing B] [CommRing C]
+    (h : B →+* C) (I I' : Ideal B) (J J' : Ideal C)
+    (hI : I = I') (hJ : J = J')
+    (hIJ : I ≤ J.comap h) (hI'J' : I' ≤ J'.comap h) :
+    (Ideal.quotEquivOfEq hJ).toRingHom.comp
+      (Ideal.quotientMap J h hIJ) =
+    (Ideal.quotientMap J' h hI'J').comp
+      (Ideal.quotEquivOfEq hI).toRingHom := by
+  apply RingHom.ext
+  intro z
+  obtain ⟨v, rfl⟩ := Ideal.Quotient.mk_surjective z
+  simp only [RingHom.comp_apply, Ideal.quotientMap_mk]
+  rfl
+
+/-- The 2-adic structure map of an arbitrary graded `Proj` whose
+grading base is an algebra over the 2-adic integers. -/
+noncomputable def homogeneousProjTwoAdicBase
+    {R A : Type} [CommRing R] [CommRing A] [Algebra R A]
+    (𝒜 : ℕ → Submodule R A) [GradedAlgebra 𝒜]
+    (ρ : ℤ_[2] →+* R) :
+    AlgebraicGeometry.«Proj» 𝒜 ⟶ Spec (CommRingCat.of ℤ_[2]) :=
+  (ΓSpec.adjunction.homEquiv
+    (AlgebraicGeometry.«Proj» 𝒜)
+    (Opposite.op (CommRingCat.of R))
+    (CommRingCat.ofHom (projectiveScalarToGamma 𝒜)).op) ≫
+    Spec.map (CommRingCat.ofHom ρ)
+
+/-- The chosen homogeneous chart presentation respects the actual
+2-adic structural map, not just the surface-ring structural map. -/
+theorem homogeneousProjBasicTwoAdic_baseMap
+    {R A : Type} [CommRing R] [CommRing A] [Algebra R A]
+    (𝒜 : ℕ → Submodule R A) [GradedAlgebra 𝒜]
+    (ρ : ℤ_[2] →+* R)
+    (f : A) (d : ℕ) (hf : f ∈ 𝒜 d) (hd : 0 < d) :
+    let U : (AlgebraicGeometry.«Proj» 𝒜).Opens :=
+      ProjectiveSpectrum.basicOpen 𝒜 f
+    U.ι ≫ homogeneousProjTwoAdicBase 𝒜 ρ =
+      (homogeneousProjBasicSchemeIso 𝒜 f d hf hd).hom ≫
+        Spec.map (CommRingCat.ofHom
+          ((homogeneousScalarAwayHom 𝒜 f).comp ρ)) := by
+  change _ ≫
+      ((ΓSpec.adjunction.homEquiv
+        (AlgebraicGeometry.«Proj» 𝒜)
+        (Opposite.op (CommRingCat.of R))
+        (CommRingCat.ofHom (projectiveScalarToGamma 𝒜)).op) ≫
+        Spec.map (CommRingCat.ofHom ρ)) = _
+  rw [← Category.assoc,
+    homogeneousProjBasicSchemeIso_baseMap 𝒜 f d hf hd]
+  rw [Category.assoc, ← Spec.map_comp]
+  rfl
+
+/-- The chosen actual `ZMod 2` affine chart isomorphisms respect
+product-open restriction for any graded algebra over a 2-adic
+algebra. This is the affine part of the eventual quotient-`Proj`
+overlap square; no assumption is made that either reduced
+denominator survives. -/
+noncomputable def homogeneousProjBasicTwoAdicAffine_toProduct
+    {R A : Type} [CommRing R] [CommRing A] [Algebra R A]
+    (𝒜 : ℕ → Submodule R A) [GradedAlgebra 𝒜]
+    (ρ : ℤ_[2] →+* R)
+    (f g : A) (d : ℕ) (hf : f ∈ 𝒜 d) (hg : g ∈ 𝒜 d)
+    (hd : 0 < d) :
+    letI : Algebra ℤ_[2] (HomogeneousLocalization.Away 𝒜 f) :=
+      ((homogeneousScalarAwayHom 𝒜 f).comp ρ).toAlgebra
+    letI : Algebra ℤ_[2] (HomogeneousLocalization.Away 𝒜 (f * g)) :=
+      ((homogeneousScalarAwayHom 𝒜 (f * g)).comp ρ).toAlgebra
+    let X := AlgebraicGeometry.«Proj» 𝒜
+    let U : X.Opens := ProjectiveSpectrum.basicOpen 𝒜 f
+    let V : X.Opens := ProjectiveSpectrum.basicOpen 𝒜 (f * g)
+    let π := homogeneousProjTwoAdicBase 𝒜 ρ
+    let eF := homogeneousProjBasicSchemeIso 𝒜 f d hf hd
+    let eFG := homogeneousProjBasicSchemeIso 𝒜 (f * g) (d + d)
+      (SetLike.GradedMul.mul_mem hf hg) (by omega)
+    let k := (X.restrictFunctor.map
+      (homOfLE (ProjectiveSpectrum.basicOpen_mul_le_left 𝒜 f g))).left
+    let s := homogeneousLocalization_toProductTwoAdicAlgHom 𝒜 ρ
+      f g d hf hg
+    let J : Ideal ℤ_[2] := Ideal.span {(2 : ℤ_[2])}
+    let residue := Spec.map (CommRingCat.ofHom
+      (PadicInt.toZMod : ℤ_[2] →+* ZMod 2))
+    let r := pullback.map (V.ι ≫ π) residue (U.ι ≫ π) residue
+      k (𝟙 _) (𝟙 _)
+      (by
+        have h := X.restrictFunctor_map_ofRestrict
+          (homOfLE (ProjectiveSpectrum.basicOpen_mul_le_left 𝒜 f g))
+        simpa only [Category.comp_id, Category.assoc] using
+          (congrArg (fun ψ => ψ ≫ π) h).symm)
+      (by simp)
+    Spec.map (CommRingCat.ofHom (affineFibreQuotientMap J s)) ≫
+      (twoAdicAffineSpecialFibreIso (U.ι ≫ π) eF
+        (homogeneousProjBasicTwoAdic_baseMap 𝒜 ρ f d hf hd)).inv =
+    (twoAdicAffineSpecialFibreIso (V.ι ≫ π) eFG
+      (homogeneousProjBasicTwoAdic_baseMap 𝒜 ρ (f * g) (d + d)
+        (SetLike.GradedMul.mul_mem hf hg) (by omega))).inv ≫ r := by
+  letI : Algebra ℤ_[2] (HomogeneousLocalization.Away 𝒜 f) :=
+    ((homogeneousScalarAwayHom 𝒜 f).comp ρ).toAlgebra
+  letI : Algebra ℤ_[2] (HomogeneousLocalization.Away 𝒜 (f * g)) :=
+    ((homogeneousScalarAwayHom 𝒜 (f * g)).comp ρ).toAlgebra
+  let X := AlgebraicGeometry.«Proj» 𝒜
+  let U : X.Opens := ProjectiveSpectrum.basicOpen 𝒜 f
+  let V : X.Opens := ProjectiveSpectrum.basicOpen 𝒜 (f * g)
+  let π := homogeneousProjTwoAdicBase 𝒜 ρ
+  let eF := homogeneousProjBasicSchemeIso 𝒜 f d hf hd
+  let eFG := homogeneousProjBasicSchemeIso 𝒜 (f * g) (d + d)
+    (SetLike.GradedMul.mul_mem hf hg) (by omega)
+  let i := homOfLE (ProjectiveSpectrum.basicOpen_mul_le_left 𝒜 f g)
+  let k := (X.restrictFunctor.map i).left
+  let s := homogeneousLocalization_toProductTwoAdicAlgHom 𝒜 ρ
+    f g d hf hg
+  have hF : U.ι ≫ π = eF.hom ≫
+      Spec.map (CommRingCat.ofHom
+        (algebraMap ℤ_[2] (HomogeneousLocalization.Away 𝒜 f))) :=
+    homogeneousProjBasicTwoAdic_baseMap 𝒜 ρ f d hf hd
+  have hFG : V.ι ≫ π = eFG.hom ≫
+      Spec.map (CommRingCat.ofHom
+        (algebraMap ℤ_[2]
+          (HomogeneousLocalization.Away 𝒜 (f * g)))) :=
+    homogeneousProjBasicTwoAdic_baseMap 𝒜 ρ (f * g) (d + d)
+      (SetLike.GradedMul.mul_mem hf hg) (by omega)
+  have hk : k ≫ (U.ι ≫ π) = V.ι ≫ π := by
+    have h := X.restrictFunctor_map_ofRestrict i
+    simpa only [Category.assoc] using
+      congrArg (fun ψ => ψ ≫ π) h
+  have hs : k ≫ eF.hom =
+      eFG.hom ≫ Spec.map (CommRingCat.ofHom s.toRingHom) := by
+    exact homogeneousProjBasicSchemeIso_toProduct 𝒜 f g d hf hg hd
+  exact twoAdicAffineSpecialFibreIso_natural
+    (U.ι ≫ π) (V.ι ≫ π) eF eFG hF hFG s k hk hs
 
 /-- Both inclusions of each ordered pairwise product open commute
 with the chosen pullback-to-graded-quotient chart isomorphisms. This
@@ -1499,8 +1871,46 @@ noncomputable def localSurfaceCentreReesSpecialGenerator_specToProduct
     (localSurfaceCentreReesGenerator_mem_degree_one W x y i)
     (localSurfaceCentreReesGenerator_mem_degree_one W x y j)
 
+/-- The abstract 2-adic `Proj` map specializes to the structural
+map of the actual surface-centre Rees scheme. -/
+theorem localSurfaceCentreReesToBase_eq_homogeneous
+    (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2]) :
+    letI : GradedAlgebra
+        (centreReesComponent (localSurfaceClosedPoint W x y)) :=
+      centreReesGrading (localSurfaceClosedPoint W x y)
+    let q : MvPolynomial (Fin 2) ℤ_[2] →+*
+        localSurfaceCoordinateRing W x y :=
+      Ideal.Quotient.mk (Ideal.span {localSurfaceEquation W x y})
+    localSurfaceCentreReesToBase W x y =
+      homogeneousProjTwoAdicBase
+        (centreReesComponent (localSurfaceClosedPoint W x y))
+        (q.comp MvPolynomial.C) := by
+  rfl
+
+/-- The actual residue-field affine comparison on all ordered pairs
+of Rees generator charts, with the original global structural map.
+For distinct indices this covers the six directed pairwise
+restrictions. -/
+noncomputable abbrev localSurfaceCentreReesSpecialGenerator_actualAffine_toProduct
+    (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2]) (i j : Fin 3) :=
+  letI : GradedAlgebra
+      (centreReesComponent (localSurfaceClosedPoint W x y)) :=
+    centreReesGrading (localSurfaceClosedPoint W x y)
+  let q : MvPolynomial (Fin 2) ℤ_[2] →+*
+      localSurfaceCoordinateRing W x y :=
+    Ideal.Quotient.mk (Ideal.span {localSurfaceEquation W x y})
+  homogeneousProjBasicTwoAdicAffine_toProduct
+    (centreReesComponent (localSurfaceClosedPoint W x y))
+    (q.comp MvPolynomial.C)
+    (localSurfaceCentreReesGenerator W x y i)
+    (localSurfaceCentreReesGenerator W x y j) 1
+    (localSurfaceCentreReesGenerator_mem_degree_one W x y i)
+    (localSurfaceCentreReesGenerator_mem_degree_one W x y j)
+    (by decide)
+
 #print axioms twoAdicChartSpecialFibreIso
 #print axioms twoAdicResiduePullbackToQuotient_natural
+#print axioms pullbackChangeChart_natural
 #print axioms localSurfaceCentreTwoSpecialFibreIso
 #print axioms localSurfaceCentreSpecialFibreOpenCover
 #print axioms localSurfaceCentreGeneratorSpecialFibreIso
@@ -1513,6 +1923,13 @@ noncomputable def localSurfaceCentreReesSpecialGenerator_specToProduct
 #print axioms affineFibreTensorRingEquiv_natural
 #print axioms affinePullbackSpecIso_natural
 #print axioms affineFibrePullbackQuotientIso_natural
+#print axioms twoAdicChartSpecialFibreIso_eq_affine
+#print axioms twoAdicAffineSpecialFibreIso_natural
+#print axioms homogeneousLocalization_toProductTwoAdicAlgHom
+#print axioms homogeneousTwoAdicAwayQuotientEquiv_any
+#print axioms quotientEquivOfEq_natural
+#print axioms homogeneousProjBasicTwoAdic_baseMap
+#print axioms homogeneousProjBasicTwoAdicAffine_toProduct
 #print axioms homogeneousAwayTensorQuotientChartEquiv_spec_square_any
 #print axioms homogeneousAwayPullbackSchemeIso_toProduct_any
 #print axioms homogeneousProjBasicPullbackSchemeIso_toProduct_any
@@ -1529,5 +1946,7 @@ noncomputable def localSurfaceCentreReesSpecialGenerator_specToProduct
 #print axioms localSurfaceCentreGeneratorFibreQuotientOpenIso
 #print axioms localSurfaceCentreReesSpecialGenerator_toProduct
 #print axioms localSurfaceCentreReesSpecialGenerator_specToProduct
+#print axioms localSurfaceCentreReesToBase_eq_homogeneous
+#print axioms localSurfaceCentreReesSpecialGenerator_actualAffine_toProduct
 
 end Beal.General
