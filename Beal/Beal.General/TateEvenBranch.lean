@@ -1,4 +1,5 @@
 import Beal.«Beal.General».TateI1Split
+import Beal.«Beal.General».TateEvenReesChart
 import Mathlib.AlgebraicGeometry.Scheme
 import Mathlib.RingTheory.Ideal.QuotientOperations
 
@@ -730,6 +731,46 @@ theorem evenNodeTwoChart_centre_image
         ⟨q (MvPolynomial.X 1), by ring⟩
   · exact Ideal.span_mono (by simp)
 
+/-- The centre-image equality in the surface coordinate ring, so
+the degree-one Rees elements map into the principal ideal `(2)` on
+the divided chart. -/
+theorem evenNodeTwoChart_surfaceCentre_image
+    (W : WeierstrassCurve ℤ_[2]) (x y a b c : ℤ_[2])
+    (hF : localWeierstrassEquation W x y = 4 * a)
+    (hX : W.a₁ * y - (3 * x ^ 2 + 2 * W.a₂ * x + W.a₄) = 2 * b)
+    (hY : 2 * y + W.a₁ * x + W.a₃ = 2 * c) :
+    Ideal.map (evenNodeTwoChartToSurfaceRing W x y a b c hF hX hY)
+      (localSurfaceClosedPoint W x y) =
+    Ideal.span
+      {(Ideal.Quotient.mk
+        (Ideal.span {evenNodeTwoChartPolynomial W x a b c}))
+        (MvPolynomial.C (2 : ℤ_[2]))} := by
+  rw [localSurfaceClosedPoint, Ideal.map_map]
+  exact evenNodeTwoChart_centre_image W x y a b c hF hX hY
+
+/-- The actual Rees algebra of the surface centre maps to the Rees
+algebra of the principal image ideal `(2)` on the candidate chart.
+This is coefficientwise and not yet a morphism of graded `Proj`
+schemes or a `D₊(2t)` chart equivalence. -/
+noncomputable def evenNodeTwoChart_reesMap
+    (W : WeierstrassCurve ℤ_[2]) (x y a b c : ℤ_[2])
+    (hF : localWeierstrassEquation W x y = 4 * a)
+    (hX : W.a₁ * y - (3 * x ^ 2 + 2 * W.a₂ * x + W.a₄) = 2 * b)
+    (hY : 2 * y + W.a₁ * x + W.a₃ = 2 * c) :
+    localSurfaceCentreRees W x y →+*
+      reesAlgebra (Ideal.span
+        {(Ideal.Quotient.mk
+          (Ideal.span {evenNodeTwoChartPolynomial W x a b c}))
+          (MvPolynomial.C (2 : ℤ_[2]))}) := by
+  let f := evenNodeTwoChartToSurfaceRing W x y a b c hF hX hY
+  have hi : Ideal.map f (localSurfaceClosedPoint W x y) =
+      Ideal.span
+        {(Ideal.Quotient.mk
+          (Ideal.span {evenNodeTwoChartPolynomial W x a b c}))
+          (MvPolynomial.C (2 : ℤ_[2]))} :=
+    evenNodeTwoChart_surfaceCentre_image W x y a b c hF hX hY
+  exact hi ▸ centreReesMap f (localSurfaceClosedPoint W x y)
+
 /-- The divided chart maps to the original translated surface as a
 scheme. It is not yet proved to be the strict-transform chart of a
 scheme-theoretic blow-up. -/
@@ -823,6 +864,8 @@ theorem evenNodeTwoChartReduced_critical_on_curve
 #print axioms evenVal_node_twoChart_substitutedEquation_saturation
 #print axioms evenVal_node_twoChart_localizedPullback_kernel
 #print axioms evenNodeTwoChart_centre_image
+#print axioms evenNodeTwoChart_surfaceCentre_image
+#print axioms evenNodeTwoChart_reesMap
 #print axioms evenNodeTwoChartToSurface
 #print axioms evenNodeTwoChartReduced_increment
 #print axioms evenNode_twoChart_critical_point

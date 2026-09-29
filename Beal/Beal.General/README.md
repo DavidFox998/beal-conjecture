@@ -417,8 +417,16 @@ to the pulled-back hypersurface after localizing at `2`. Consequently
 the quotient by `(F)` embeds in that localization; this is the affine
 schematic-closure calculation under the explicit even-valuation
 hypotheses, not an identification of the ambient chart with the
-`D₊(2t)` open of the Rees-algebra blow-up. That scheme-theoretic
-chart identification,
+`D₊(2t)` open of the Rees-algebra blow-up. The actual Rees algebra
+of the centre's image in the translated surface ring is now named,
+with its degree-one elements `2t`, `Xt`, and `Yt` and the checked
+relations `2 · (Xᵢt) = Xᵢ · (2t)`. A coefficientwise map sends
+this actual Rees algebra to the Rees algebra of the chart's
+principal image ideal `(2)`, preserving degree-one generators.
+Its grading, degree-zero
+localization at `2t`, and equivalence with the candidate affine
+chart have **not** been constructed. That scheme-theoretic chart
+identification,
 generic-fibre comparison, the other charts and their gluing remain
 **unproved**. Nor is a
 resolution, Kodaira type, or conductor exponent. Any

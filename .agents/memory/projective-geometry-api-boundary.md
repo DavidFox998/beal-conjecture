@@ -44,3 +44,9 @@ For affine schematic-closure calculations in this pin, the localization kernel c
 **Why:** A correct injectivity proof stalled twice on an unavailable lemma name/import after the kernel calculation had already checked. The resulting embedding still only describes closure in the chosen affine ambient ring.
 
 **How to apply:** Establish the kernel using the away-localization zero criterion and a separately proved saturation equality, then use the ring-homomorphism quotient-lift injectivity theorem. Do not treat the embedding as a Rees `D₊` comparison until its graded chart equivalence is proved.
+
+When the target is the blow-up **of the surface** at its centre, take the Rees algebra of the centre ideal *after mapping it into the surface coordinate ring*. The ambient plane's Rees algebra constructs a different blow-up, even though the surface strict transform may later be compared inside it.
+
+**Why:** The affine saturation calculation starts in an ambient plane, which makes it easy to conflate the ambient blow-up with the surface blow-up. Neither its ideal kernel nor its coefficientwise Rees map supplies the required graded basic-open equivalence.
+
+**How to apply:** Build the surface-centre Rees grading, its degree-zero localization at the chosen degree-one denominator, and the comparison with the divided chart. Prove the image ideal becomes principal on that chart, but do not substitute this principalization for the missing `Proj` comparison.
