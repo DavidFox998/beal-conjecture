@@ -314,6 +314,220 @@ theorem centreReesDegreeOne_mem {R : Type*} [CommRing R]
   apply Subtype.ext
   rfl
 
+/-- A normalized homogeneous fraction `r tⁿ/(f t)ⁿ`, for
+`r ∈ Iⁿ`. These fractions generate the degree-zero basic open when
+the corresponding degree-one fractions generate it. -/
+noncomputable def centreReesNormalizedFraction
+    {R : Type*} [CommRing R] (I : Ideal R)
+    (f : R) (hf : f ∈ I) (n : ℕ) (r : R) (hr : r ∈ I ^ n) :
+    letI : GradedAlgebra (centreReesComponent I) := centreReesGrading I
+    HomogeneousLocalization.Away (centreReesComponent I)
+      (centreReesDegreeOne I f hf) := by
+  letI : GradedAlgebra (centreReesComponent I) := centreReesGrading I
+  let g := centreReesDegreeOne I f hf
+  have hg : g ∈ centreReesComponent I 1 :=
+    centreReesDegreeOne_mem I f hf
+  have hpow : g ^ n ∈ centreReesComponent I n := by
+    simpa using (SetLike.pow_mem_graded n hg)
+  exact HomogeneousLocalization.mk
+    ⟨n, ⟨centreReesMonomial I n ⟨r, hr⟩,
+        centreReesComponent_monomial I n r hr⟩,
+      ⟨g ^ n, hpow⟩,
+      (Submonoid.mem_powers_iff (g ^ n) g).mpr ⟨n, rfl⟩⟩
+
+theorem centreReesNormalizedFraction_add
+    {R : Type*} [CommRing R] (I : Ideal R)
+    (f : R) (hf : f ∈ I) (n : ℕ)
+    (r s : R) (hr : r ∈ I ^ n) (hs : s ∈ I ^ n) :
+    letI : GradedAlgebra (centreReesComponent I) := centreReesGrading I
+    centreReesNormalizedFraction I f hf n (r + s)
+        (Ideal.add_mem _ hr hs) =
+      centreReesNormalizedFraction I f hf n r hr +
+        centreReesNormalizedFraction I f hf n s hs := by
+  letI : GradedAlgebra (centreReesComponent I) := centreReesGrading I
+  apply HomogeneousLocalization.val_injective
+    (Submonoid.powers (centreReesDegreeOne I f hf))
+  simp only [HomogeneousLocalization.val_add,
+    centreReesNormalizedFraction, HomogeneousLocalization.val_mk]
+  rw [Localization.add_mk_self]
+  congr 1
+  apply Subtype.ext
+  simp [centreReesMonomial, Polynomial.monomial_add]
+
+theorem centreReesNormalizedFraction_zero
+    {R : Type*} [CommRing R] (I : Ideal R)
+    (f : R) (hf : f ∈ I) (n : ℕ) :
+    letI : GradedAlgebra (centreReesComponent I) := centreReesGrading I
+    centreReesNormalizedFraction I f hf n 0 (Ideal.zero_mem _) = 0 := by
+  letI : GradedAlgebra (centreReesComponent I) := centreReesGrading I
+  apply HomogeneousLocalization.val_injective
+    (Submonoid.powers (centreReesDegreeOne I f hf))
+  rw [HomogeneousLocalization.val_zero]
+  change Localization.mk (centreReesMonomial I n ⟨0, Ideal.zero_mem _⟩)
+    ⟨(centreReesDegreeOne I f hf) ^ n, by
+      exact (Submonoid.mem_powers_iff _ _).mpr ⟨n, rfl⟩⟩ = 0
+  have h : centreReesMonomial I n ⟨0, Ideal.zero_mem _⟩ = 0 := by
+    apply Subtype.ext
+    simp [centreReesMonomial]
+  rw [h]
+  exact Localization.mk_zero _
+
+theorem centreReesNormalizedFraction_mul
+    {R : Type*} [CommRing R] (I : Ideal R)
+    (f : R) (hf : f ∈ I) (m n : ℕ)
+    (r s : R) (hr : r ∈ I ^ m) (hs : s ∈ I ^ n) :
+    letI : GradedAlgebra (centreReesComponent I) := centreReesGrading I
+    centreReesNormalizedFraction I f hf (m + n) (r * s)
+        (by rw [pow_add]; exact Ideal.mul_mem_mul hr hs) =
+      centreReesNormalizedFraction I f hf m r hr *
+        centreReesNormalizedFraction I f hf n s hs := by
+  letI : GradedAlgebra (centreReesComponent I) := centreReesGrading I
+  apply HomogeneousLocalization.val_injective
+    (Submonoid.powers (centreReesDegreeOne I f hf))
+  simp only [HomogeneousLocalization.val_mul,
+    centreReesNormalizedFraction, HomogeneousLocalization.val_mk]
+  rw [Localization.mk_mul]
+  congr 1
+  · apply Subtype.ext
+    simp [centreReesMonomial, Polynomial.monomial_mul_monomial]
+  · simp [pow_add]
+
+/-- To put every normalized fraction in a ring-homomorphism's
+image, it suffices to handle degrees zero and one. Induction on
+ideal powers then handles all higher degrees. -/
+theorem centreReesNormalizedFraction_range_of_zero_one
+    {R S : Type*} [CommRing R] [CommRing S]
+    (I : Ideal R) (f : R) (hf : f ∈ I) :
+    letI : GradedAlgebra (centreReesComponent I) := centreReesGrading I
+    ∀ (φ : S →+*
+        HomogeneousLocalization.Away (centreReesComponent I)
+          (centreReesDegreeOne I f hf))
+      (hzero : ∀ r : R,
+        centreReesNormalizedFraction I f hf 0 r (by simp) ∈ φ.range)
+      (hone : ∀ (r : R) (hr : r ∈ I),
+        centreReesNormalizedFraction I f hf 1 r
+          (by simpa only [pow_one] using hr) ∈ φ.range),
+      ∀ (n : ℕ) (r : R) (hr : r ∈ I ^ n),
+        centreReesNormalizedFraction I f hf n r hr ∈ φ.range := by
+  letI : GradedAlgebra (centreReesComponent I) := centreReesGrading I
+  intro φ hzero hone
+  intro n
+  induction n with
+  | zero =>
+      intro r hr
+      exact hzero r
+  | succ n ih =>
+      intro r hr
+      have hr' : r ∈ I • (I ^ n) := by simpa only [pow_succ'] using hr
+      induction hr' using Submodule.smul_induction_on' with
+      | smul a ha b hb =>
+          have hm := centreReesNormalizedFraction_mul I f hf
+            1 n a b (by simpa only [pow_one] using ha) hb
+          have h := (φ.range).mul_mem (hone a ha) (ih b hb)
+          rw [← hm] at h
+          simpa only [add_comm 1 n, smul_eq_mul] using h
+      | add a ha b hb ihA ihB =>
+          have ha' : a ∈ I ^ (n + 1) := by
+            simpa only [pow_succ'] using ha
+          have hb' : b ∈ I ^ (n + 1) := by
+            simpa only [pow_succ'] using hb
+          rw [centreReesNormalizedFraction_add I f hf (n + 1)
+            a b ha' hb']
+          exact (φ.range).add_mem (ihA ha') (ihB hb')
+
+/-- Degree-one normalized fractions of a spanning set generate all
+degree-one fractions once scalars are in the image. -/
+theorem centreReesNormalizedFraction_range_of_span
+    {R S : Type*} [CommRing R] [CommRing S]
+    (I : Ideal R) (f : R) (hf : f ∈ I)
+    (s : Set R) (hspan : I = Ideal.span s) :
+    letI : GradedAlgebra (centreReesComponent I) := centreReesGrading I
+    ∀ (φ : S →+*
+        HomogeneousLocalization.Away (centreReesComponent I)
+          (centreReesDegreeOne I f hf))
+      (hzero : ∀ r : R,
+        centreReesNormalizedFraction I f hf 0 r (by simp) ∈ φ.range)
+      (hgen : ∀ (r : R) (hr : r ∈ s) (hI : r ∈ I),
+        centreReesNormalizedFraction I f hf 1 r
+          (by simpa only [pow_one] using hI) ∈ φ.range),
+      ∀ (r : R) (hr : r ∈ I),
+        centreReesNormalizedFraction I f hf 1 r
+          (by simpa only [pow_one] using hr) ∈ φ.range := by
+  letI : GradedAlgebra (centreReesComponent I) := centreReesGrading I
+  intro φ hzero hgen r hr
+  have hrspan : r ∈ Submodule.span R s := by
+    rw [hspan] at hr
+    exact hr
+  induction hrspan using Submodule.span_induction' with
+  | mem a ha =>
+      have haI : a ∈ I := by rw [hspan]; exact Submodule.subset_span ha
+      exact hgen a ha haI
+  | zero =>
+      rw [centreReesNormalizedFraction_zero]
+      exact (φ.range).zero_mem
+  | add a ha b hb ihA ihB =>
+      have haI : a ∈ I := by rw [hspan]; exact ha
+      have hbI : b ∈ I := by rw [hspan]; exact hb
+      rw [centreReesNormalizedFraction_add I f hf 1 a b
+        (by simpa only [pow_one] using haI)
+        (by simpa only [pow_one] using hbI)]
+      exact (φ.range).add_mem (ihA haI) (ihB hbI)
+  | smul a b hb ihB =>
+      have hbI : b ∈ I := by rw [hspan]; exact hb
+      have hm := centreReesNormalizedFraction_mul I f hf 0 1
+        a b (by simp) (by simpa only [pow_one] using hbI)
+      have h := (φ.range).mul_mem (hzero a) (ihB hbI)
+      rw [← hm] at h
+      simpa only [zero_add, smul_eq_mul] using h
+
+set_option synthInstance.maxHeartbeats 200000 in
+/-- Every degree-zero fraction in a Rees basic open admits a
+homogeneous numerator of degree `n` and denominator `(ft)ⁿ`,
+including the case where the denominator is a zero divisor. -/
+theorem centreReesNormalizedFraction_surjective
+    {R : Type*} [CommRing R]
+    (I : Ideal R) (f : R) (hf : f ∈ I) :
+    letI : GradedAlgebra (centreReesComponent I) := centreReesGrading I
+    ∀ z : HomogeneousLocalization.Away (centreReesComponent I)
+        (centreReesDegreeOne I f hf),
+      ∃ (n : ℕ) (r : R) (hr : r ∈ I ^ n),
+        centreReesNormalizedFraction I f hf n r hr = z := by
+  letI : GradedAlgebra (centreReesComponent I) := centreReesGrading I
+  let A := reesAlgebra I
+  let g : A := centreReesDegreeOne I f hf
+  let L := Localization.Away g
+  intro z
+  have hg : g ∈ centreReesComponent I 1 :=
+    centreReesDegreeOne_mem I f hf
+  have he := HomogeneousLocalization.Away.eventually_smul_mem hg z
+  obtain ⟨n, hn⟩ := he.exists
+  simp only [nsmul_eq_mul, mul_one] at hn
+  obtain ⟨p, hp, heq⟩ := hn
+  change ∃ s : ↥(I ^ n), centreReesMonomial I n s = p at hp
+  obtain ⟨⟨r, hr⟩, rfl⟩ := hp
+  refine ⟨n, r, hr, ?_⟩
+  let v := centreReesNormalizedFraction I f hf n r hr
+  have hpow : g ^ n ∈ Submonoid.powers g :=
+    (Submonoid.mem_powers_iff (g ^ n) g).mpr ⟨n, rfl⟩
+  have hv : algebraMap A L (g ^ n) * v.val =
+      algebraMap A L (centreReesMonomial I n ⟨r, hr⟩) := by
+    change algebraMap A L (g ^ n) *
+      Localization.mk (centreReesMonomial I n ⟨r, hr⟩) ⟨g ^ n, hpow⟩ =
+        algebraMap A L (centreReesMonomial I n ⟨r, hr⟩)
+    rw [Localization.mk_eq_mk']
+    exact IsLocalization.mk'_spec' L
+      (centreReesMonomial I n ⟨r, hr⟩) ⟨g ^ n, hpow⟩
+  have hz : algebraMap A L (g ^ n) * z.val =
+      algebraMap A L (centreReesMonomial I n ⟨r, hr⟩) := by
+    calc
+      algebraMap A L (g ^ n) * z.val =
+          (g ^ n) • z.val := (Algebra.smul_def (g ^ n) z.val).symm
+      _ = algebraMap A L (centreReesMonomial I n ⟨r, hr⟩) := heq.symm
+  have hu : IsUnit (algebraMap A L (g ^ n)) :=
+    IsLocalization.map_units L ⟨g ^ n, hpow⟩
+  apply HomogeneousLocalization.val_injective (Submonoid.powers g)
+  exact hu.mul_left_cancel (hv.trans hz.symm)
+
 /-- A ring map sends a Rees algebra to the Rees algebra of the image
 ideal, coefficient by coefficient. This records the graded-compatible
 map algebraically; a map on `Proj` is not yet constructed. -/
@@ -432,6 +646,25 @@ noncomputable def localSurfaceCentreTwoRatio
         localSurfaceCentreReesTwo_mem_degree_one W x y⟩,
       Submonoid.mem_powers _⟩
 
+/-- A normalized fraction on the `D₊(2t)` chart of the surface
+centre, with numerator coefficient in the `n`th ideal power. -/
+noncomputable def localSurfaceCentreTwoNormalizedFraction
+    (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2])
+    (n : ℕ) (r : localSurfaceCoordinateRing W x y)
+    (hr : r ∈ (localSurfaceClosedPoint W x y) ^ n) :
+    localSurfaceCentreTwoAway W x y := by
+  let q : MvPolynomial (Fin 2) ℤ_[2] →+*
+      localSurfaceCoordinateRing W x y :=
+    Ideal.Quotient.mk (Ideal.span {localSurfaceEquation W x y})
+  letI : GradedAlgebra
+      (centreReesComponent (localSurfaceClosedPoint W x y)) :=
+    centreReesGrading (localSurfaceClosedPoint W x y)
+  exact centreReesNormalizedFraction (localSurfaceClosedPoint W x y)
+    (q (MvPolynomial.C (2 : ℤ_[2])))
+    (Ideal.mem_map_of_mem q
+      (Ideal.subset_span (by simp [localSurfaceCentre])))
+    n r hr
+
 /-- Forgetting the Rees parameter `t` takes homogeneous fractions
 on `D₊(2t)` to fractions on the original surface away from `2`.
 This comparison will detect whether a polynomial in the two ratios
@@ -478,8 +711,8 @@ noncomputable def localSurfaceCentreTwoAwayToSurfaceLocalization
       (Localization.Away f))
 
 /-- The pinned Proj basic-open theorem identifies the actual
-`D₊(2t)` with the spectrum of its degree-zero localization. This
-still does not identify that ring with the divided equation chart. -/
+`D₊(2t)` with the spectrum of its degree-zero localization.
+The divided-equation comparison is proved separately. -/
 noncomputable def localSurfaceCentreTwoBasicSchemeIso
     (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2]) :
     letI : GradedAlgebra
@@ -502,9 +735,8 @@ noncomputable def localSurfaceCentreTwoBasicSchemeIso
       (localSurfaceCentreReesTwo_mem_degree_one W x y)
       (by decide))
 
-/-- The Rees generators satisfy `2 · (Xᵢt) = Xᵢ · (2t)`.
-After the missing graded chart construction, these are the
-relations that give the ratios `X/2` and `Y/2`. -/
+/-- The Rees generators satisfy `2 · (Xᵢt) = Xᵢ · (2t)`;
+these relations govern the chart ratios `X/2` and `Y/2`. -/
 theorem localSurfaceCentreRees_relation
     (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2]) (i : Fin 2) :
     let R := localSurfaceCoordinateRing W x y
@@ -539,6 +771,11 @@ theorem localSurfaceCentreRees_relation
 #print axioms centreReesEvalOne
 #print axioms centreReesEvalOne_degreeOne
 #print axioms centreReesEvalOne_scalar
+#print axioms centreReesNormalizedFraction_zero
+#print axioms centreReesNormalizedFraction_range_of_zero_one
+#print axioms centreReesNormalizedFraction_range_of_span
+#print axioms centreReesNormalizedFraction_surjective
+#print axioms localSurfaceCentreTwoNormalizedFraction
 #print axioms localSurfaceCentreTwoAwayToSurfaceLocalization
 #print axioms localSurfaceEquation_reduction_ne_zero
 #print axioms localSurfaceCoordinateRing_two_regular

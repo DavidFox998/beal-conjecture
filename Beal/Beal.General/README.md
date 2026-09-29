@@ -415,9 +415,9 @@ Cartier-centre conditions **inside the candidate ambient `2`-chart**,
 and the ideal `(F)` is identified as the kernel of the ambient ring map
 to the pulled-back hypersurface after localizing at `2`. Consequently
 the quotient by `(F)` embeds in that localization; this is the affine
-schematic-closure calculation under the explicit even-valuation
-hypotheses, not an identification of the ambient chart with the
-`D₊(2t)` open of the Rees-algebra blow-up. The actual Rees algebra
+ schematic-closure calculation under the explicit even-valuation
+ hypotheses; this calculation alone does not identify the ambient
+ chart with the `D₊(2t)` open of the Rees-algebra blow-up. The actual Rees algebra
 of the centre's image in the translated surface ring is now named,
 with its degree-one elements `2t`, `Xt`, and `Yt` and the checked
 relations `2 · (Xᵢt) = Xᵢ · (2t)`. A coefficientwise map sends
@@ -432,15 +432,17 @@ localization. The relations `2 · (Xᵢt/(2t)) = Xᵢ` give a checked
 commutative square with the translated surface quotient. Its equation
 pulls back to `4F`; the translated surface has non-zero-divisor `2`,
 which remains regular in the Rees localization, so `F` itself maps to
-zero. Thus `(F)` is contained in the ratio map's kernel and there is
-a canonical map from the candidate divided chart to the actual
-`D₊(2t)` coordinate ring. The **reverse kernel inclusion and
-surjectivity** needed to identify these rings have not been proved; neither
-has the structural morphism of this `Proj` to the original surface.
-Consequently the candidate chart is still not proved to be a
-blow-up strict transform. That chart equivalence, generic-fibre
-comparison, the other charts, and their gluing remain **unproved**.
-So do the resolution, Kodaira type, and conductor exponent. Any
+ zero. The ratio map's kernel is **exactly `(F)`** under the stated odd
+ mixed-coefficient and division hypotheses. Every degree-zero Rees
+ fraction has a normalized numerator in a power of `(2,X,Y)`; induction
+ on ideal powers and the three centre generators proves that the ratio
+ map is **surjective**. Hence the divided hypersurface ring is
+ isomorphic to the actual `D₊(2t)` coordinate ring, and their affine
+ schemes are isomorphic using the `Proj` basic-open theorem. The
+ structural morphism of this `Proj` to the original surface has not
+ been compared with the divided chart's surface map; the generic-fibre
+ comparison, other charts, and their gluing remain **unproved**.
+ So do the full resolution, Kodaira type, and conductor exponent. Any
 subsequent model or conductor theorem must keep `W.Δ ≠ 0` explicit
 and discharge those geometric steps separately. In the split branch,
 the relevant discriminant hypothesis is `v₂(W.Δ) = 1`; the genuinely even-valuation

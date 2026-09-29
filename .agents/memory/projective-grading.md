@@ -21,6 +21,12 @@ In the pinned localization API, the scalar action on a full localization used by
 
 **How to apply:** Bridge the scalar actions using the Ore-localization fraction-at-one action and the localization algebra map before rewriting with ring homomorphisms. When `mul_zero` cannot match the zero in a localized goal, first state the equality of its direct zero and multiplicative-structure zero (provable by reflexivity here), then rewrite explicitly.
 
+For a homogeneous Rees basic open, clearing a power of the degree-one denominator does not require that denominator to be nonzero or regular: its image in the localization is a unit, even when the localization collapses. The eventual-clearing result covers the zero-divisor case.
+
+**Why:** Trying to convert the eventual scalar-action equality with a broad simplifier failed to select the intended localization algebra instance; separately imposing a nonzero-denominator assumption would have weakened the result unnecessarily.
+
+**How to apply:** Compare the cleared fractions after mapping to the full localization, bridge the action to multiplication with an explicitly instantiated algebra-scalar identity, and cancel the mapped unit. This proves degree-zero fraction normalization without a domain assumption before inducting on ideal powers.
+
 Dependent product-chart morphisms need more than commutativity of their denominators: transporting the induced `Spec` map also transports the localization ring instances, and composing heterogeneously equal arrows requires equalities at every intermediate object. Composition must follow the expression's actual association.
 
 **Why:** Direct rewriting of a whole chart morphism and elimination of constituent heterogeneous equalities failed even though the factor order was mathematically immaterial. The missing data were instance and endpoint transports, not another ring identity.
