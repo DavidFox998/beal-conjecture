@@ -483,9 +483,19 @@ which remains regular in the Rees localization, so `F` itself maps to
     isomorphism of the **actual Rees blow-up's fibre product over
     `D(2)`** with the localized translated surface, and the
     resulting diagram over `D(2)` is formally proved to commute.
-    This comparison does not establish the special-fibre
-    resolution, Kodaira type, minimality, or conductor exponent;
-    those remain **unproved**. Any
+    `TateEvenSpecialFibre.lean` forms the **actual** special fibre
+    as the pullback of this Rees `Proj` along
+    `Spec (ZMod 2) → Spec ℤ_[2]`. Pulling back the three generating
+    Rees opens gives a cover of the entire special fibre. On each
+    open, the restricted pullback is isomorphic to the spectrum of
+    the genuine degree-zero Rees chart ring quotiented by the image
+    of the base uniformizer `2`; the chart identifications use the
+    proved structural map, not just an abstract ring equivalence.
+    A global isomorphism with `Proj` of the graded special-fibre
+    quotient, and compatibility of these three identifications on
+    overlaps, have **not** been proved. Neither comparison establishes
+    special-fibre resolution, Kodaira type, minimality, or conductor
+    exponent; those remain **unproved**. Any
 subsequent model or conductor theorem must keep `W.Δ ≠ 0` explicit
 and discharge those geometric steps separately. In the split branch,
 the relevant discriminant hypothesis is `v₂(W.Δ) = 1`; the genuinely even-valuation

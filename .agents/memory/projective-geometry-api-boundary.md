@@ -56,3 +56,9 @@ For generic base change of a Rees `Proj`, first identify the inverse image of th
 **Why:** The inverse-image open and its structure sheaf must be transported through the chart's canonical scheme isomorphism. The scalar-localized ring equivalence must then respect the surface scalars; otherwise the resulting spectrum isomorphism need not commute with the base map.
 
 **How to apply:** Establish each restriction and localization factorization over the original base. To upgrade a proved commuting square over the ambient base to one over its principal open, use the open immersion's monicity after constructing the target's canonical map to that open. Do not infer special-fibre geometry, minimality, or conductor data from the generic comparison.
+
+When comparing a Rees blow-up with its special fibre, reducing each **integral** degree-zero chart ring by the base uniformizer is a sound first stage that does not need its denominator to survive in the graded quotient. A chartwise quotient-`Proj` comparison can require nonvanishing of every power of the reduced denominator; integral chart coverage does not supply that property.
+
+**Why:** The available homogeneous-quotient localization comparison imposes precisely this power condition to transport degrees. Assuming it silently would turn a true affine base-change statement into an unsupported global scheme isomorphism.
+
+**How to apply:** First prove the actual pullback is covered by base-changed integral charts and identify each with its affine scalar quotient. Separately prove denominator survival or handle nilpotent cases, then check overlap naturality before gluing to the `Proj` of the graded quotient.
