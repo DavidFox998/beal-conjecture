@@ -288,6 +288,23 @@ noncomputable def centreReesDegreeOne {R : Type*} [CommRing R]
   ⟨Polynomial.monomial 1 r,
     (reesAlgebra.monomial_mem).mpr (by simpa only [pow_one] using hr)⟩
 
+/-- Evaluation at `t = 1` forgets the Rees grading while retaining
+the original coefficient in the surface coordinate ring. -/
+noncomputable def centreReesEvalOne {R : Type*} [CommRing R]
+    (I : Ideal R) : reesAlgebra I →+* R :=
+  (Polynomial.evalRingHom (1 : R)).comp
+    (Subalgebra.val (reesAlgebra I)).toRingHom
+
+theorem centreReesEvalOne_degreeOne {R : Type*} [CommRing R]
+    (I : Ideal R) (r : R) (hr : r ∈ I) :
+    centreReesEvalOne I (centreReesDegreeOne I r hr) = r := by
+  simp [centreReesEvalOne, centreReesDegreeOne, Polynomial.eval_monomial]
+
+theorem centreReesEvalOne_scalar {R : Type*} [CommRing R]
+    (I : Ideal R) (r : R) :
+    centreReesEvalOne I (algebraMap R (reesAlgebra I) r) = r := by
+  simp [centreReesEvalOne]
+
 theorem centreReesDegreeOne_mem {R : Type*} [CommRing R]
     (I : Ideal R) (r : R) (hr : r ∈ I) :
     centreReesDegreeOne I r hr ∈ centreReesComponent I 1 := by
@@ -415,6 +432,51 @@ noncomputable def localSurfaceCentreTwoRatio
         localSurfaceCentreReesTwo_mem_degree_one W x y⟩,
       Submonoid.mem_powers _⟩
 
+/-- Forgetting the Rees parameter `t` takes homogeneous fractions
+on `D₊(2t)` to fractions on the original surface away from `2`.
+This comparison will detect whether a polynomial in the two ratios
+vanishes on the generic fibre. -/
+noncomputable def localSurfaceCentreTwoAwayToSurfaceLocalization
+    (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2]) :
+    let R := localSurfaceCoordinateRing W x y
+    let q : MvPolynomial (Fin 2) ℤ_[2] →+* R :=
+      Ideal.Quotient.mk (Ideal.span {localSurfaceEquation W x y})
+    letI : GradedAlgebra
+        (centreReesComponent (localSurfaceClosedPoint W x y)) :=
+      centreReesGrading (localSurfaceClosedPoint W x y)
+    HomogeneousLocalization.Away
+        (centreReesComponent (localSurfaceClosedPoint W x y))
+        (localSurfaceCentreReesTwo W x y) →+*
+      Localization.Away (q (MvPolynomial.C (2 : ℤ_[2]))) := by
+  let R := localSurfaceCoordinateRing W x y
+  let q : MvPolynomial (Fin 2) ℤ_[2] →+* R :=
+    Ideal.Quotient.mk (Ideal.span {localSurfaceEquation W x y})
+  let I := localSurfaceClosedPoint W x y
+  let A := localSurfaceCentreRees W x y
+  let f : A := localSurfaceCentreReesTwo W x y
+  let t : R := q (MvPolynomial.C (2 : ℤ_[2]))
+  let 𝒜 := centreReesComponent I
+  letI : GradedAlgebra 𝒜 := centreReesGrading I
+  let e : A →+* R := centreReesEvalOne I
+  have ht : e f = t := by
+    exact centreReesEvalOne_degreeOne I t
+      (Ideal.mem_map_of_mem q
+        (Ideal.subset_span (by simp [localSurfaceCentre])))
+  let g : A →+* Localization.Away t :=
+    (algebraMap R (Localization.Away t)).comp e
+  have hg : ∀ s : Submonoid.powers f, IsUnit (g s) := by
+    intro s
+    obtain ⟨n, hn⟩ := (Submonoid.mem_powers_iff s.1 f).mp s.2
+    have hu : IsUnit (algebraMap R (Localization.Away t) t) :=
+      IsLocalization.map_units (Localization.Away t)
+        ⟨t, Submonoid.mem_powers t⟩
+    change IsUnit ((algebraMap R (Localization.Away t)) (e s))
+    rw [← hn, map_pow, ht, map_pow]
+    exact hu.pow n
+  exact (IsLocalization.lift (S := Localization.Away f) (g := g) hg).comp
+    (algebraMap (HomogeneousLocalization.Away 𝒜 f)
+      (Localization.Away f))
+
 /-- The pinned Proj basic-open theorem identifies the actual
 `D₊(2t)` with the spectrum of its degree-zero localization. This
 still does not identify that ring with the divided equation chart. -/
@@ -474,6 +536,10 @@ theorem localSurfaceCentreRees_relation
 #print axioms centreReesComponent_isInternal
 #print axioms centreReesGrading
 #print axioms centreReesScalar_regular
+#print axioms centreReesEvalOne
+#print axioms centreReesEvalOne_degreeOne
+#print axioms centreReesEvalOne_scalar
+#print axioms localSurfaceCentreTwoAwayToSurfaceLocalization
 #print axioms localSurfaceEquation_reduction_ne_zero
 #print axioms localSurfaceCoordinateRing_two_regular
 #print axioms localSurfaceCentreReesProj
