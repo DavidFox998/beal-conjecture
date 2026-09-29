@@ -339,8 +339,9 @@ feed the projective model and its chart calculations.
    `splitNodeSpecialFibreProjSchemeIso`, an isomorphism between the
    **actual scheme-theoretic special fibre** and the graded quotient's
    `Proj`. It transports the proved irreducibility of that `Proj` to
-   the actual fibre. This does not yet identify the fibre with the
-   canonical split cubic's `Proj` or classify its Kodaira type.
+    the actual fibre. The subsequent global translated comparison
+    below identifies it with the canonical split cubic's `Proj`;
+    neither identification classifies its Kodaira type.
 - `CanonicalSplitCubicComparison.lean` lifts the checked
   degree-preserving coordinate-ring equivalence to an isomorphism on
   **every projective basic chart**, by passing through the
@@ -393,9 +394,15 @@ special fibre of a minimal regular model; the requisite model and
 minimality argument is still needed. The split nodal tangent cone has two
 distinct tangent lines, but this alone does not establish Kodaira
 type `I₁`; at the node the partial derivative with respect to `v`
-is `u = 0`, not a unit. The even-branch polynomial identity does not
-establish a blow-up or conductor exponent. Any subsequent model or
-conductor theorem must keep `W.Δ ≠ 0` explicit and discharge those
-geometric steps separately. In the split branch, the relevant
+is `u = 0`, not a unit. The even branch now has a **uniform**
+divided `2`-chart equation under `W.Δ ≠ 0`, positive even
+`v₂(W.Δ)`, and the reduced-node hypothesis. Its characteristic-two
+reduction has linear coefficients `B+v` and `C+u`, so its sole
+candidate critical point is `(u,v)=(C,B)`; a proved residual-scalar
+equation decides whether that point lies on the reduced chart.
+This is not a constructed scheme-theoretic blow-up, strict transform,
+or resolution; it gives no Kodaira type or conductor exponent. Any
+subsequent model or conductor theorem must keep `W.Δ ≠ 0` explicit
+and discharge those geometric steps separately. In the split branch, the relevant
 discriminant hypothesis is `v₂(W.Δ) = 1`; the genuinely even-valuation
 `Iₙ` branch requires even `v₂(Δ)`, not merely `4 ∣ Δ`.
