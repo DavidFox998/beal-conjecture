@@ -62,3 +62,9 @@ When comparing a Rees blow-up with its special fibre, reducing each **integral**
 **Why:** The available homogeneous-quotient localization comparison imposes precisely this power condition to transport degrees. Assuming it silently would turn a true affine base-change statement into an unsupported global scheme isomorphism.
 
 **How to apply:** First prove the actual pullback is covered by base-changed integral charts and identify each with its affine scalar quotient. Separately prove denominator survival or handle nilpotent cases, then check overlap naturality before gluing to the `Proj` of the graded quotient.
+
+If a reduced denominator is nilpotent, its homogeneous localization is the zero ring, so quotient-chart surjectivity follows without a nonvanishing hypothesis. This removes a genuine obstruction to *local* comparison but does not establish scheme-level overlap compatibility.
+
+**Why:** An attempt to specialize a large `Proj`-open isomorphism with fully expanded project-specific types caused unresolved grading instances and repeated definitional-reduction timeouts. The algebraic result itself was sound; the large dependent scheme type was the elaboration obstacle.
+
+**How to apply:** State the affine-open comparison generically with the actual structural map and grading as parameters. Specialize using a small inferred-type wrapper rather than spelling out a deeply nested `Proj`-open target. Keep product-overlap ring squares separate from the open-immersion and pullback-pasting squares needed for gluing.

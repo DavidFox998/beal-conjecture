@@ -491,11 +491,20 @@ which remains regular in the Rees localization, so `F` itself maps to
     the genuine degree-zero Rees chart ring quotiented by the image
     of the base uniformizer `2`; the chart identifications use the
     proved structural map, not just an abstract ring equivalence.
-    A global isomorphism with `Proj` of the graded special-fibre
-    quotient, and compatibility of these three identifications on
-    overlaps, have **not** been proved. Neither comparison establishes
-    special-fibre resolution, Kodaira type, minimality, or conductor
-    exponent; those remain **unproved**. Any
+    The image of base `2` defines a homogeneous ideal in the actual
+    Rees algebra. Its graded quotient has a `Proj` covered by the
+    images of the same three generators. Each restricted pullback
+    chart is **proved isomorphic** to the corresponding quotient-`Proj`
+    basic open, even if the reduced denominator is nilpotent (when
+    both affine chart rings are zero). The local ring equivalence is
+    induced by the canonical quotient map; that map commutes with
+    restriction to each ordered product overlap on the integral chart
+    rings. The further compatibility of the **chosen scheme
+    isomorphisms** with both overlap inclusions, and hence a glued
+    global isomorphism between the actual special fibre and this
+    graded-quotient `Proj`, have **not** been proved. Neither
+    comparison establishes special-fibre resolution, Kodaira type,
+    minimality, or conductor exponent; those remain **unproved**. Any
 subsequent model or conductor theorem must keep `W.Δ ≠ 0` explicit
 and discharge those geometric steps separately. In the split branch,
 the relevant discriminant hypothesis is `v₂(W.Δ) = 1`; the genuinely even-valuation
