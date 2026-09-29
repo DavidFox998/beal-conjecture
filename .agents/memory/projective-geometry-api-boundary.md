@@ -32,3 +32,9 @@ For a candidate affine chart represented by a polynomial quotient, a noncomputab
 **Why:** The candidate divided chart's ring hom failed during elaboration before its proof, even though the quotient was a ring; then its scheme morphism failed because only the lower-level `Spec` module was imported. Neither was a mathematical obstruction to defining the chart map.
 
 **How to apply:** Use a reducible alias for the quotient coordinate ring, establish the polynomial identity before quotient-lifting, and import the scheme-level interface to construct the induced `Spec.map`. A chart morphism to the original surface still does not identify a blow-up or a strict transform: saturation and the other charts remain separate obligations.
+
+An affine candidate can pass both the equation-saturation test and the Cartier-centre test without being identified as an open of the blow-up. The pinned Rees-algebra development defines an algebraic subalgebra, not a ready-to-use scheme blow-up with a proved `D₊` chart comparison.
+
+**Why:** Local ideal calculations do not construct the graded `Proj`, prove the affine-chart equivalence, or glue the other charts. Calling the candidate morphism a strict transform on that basis would promote a necessary condition into the missing geometric theorem.
+
+**How to apply:** Use saturation and non-zero-divisibility as inputs to a future Rees/Proj chart proof; only then identify the chart morphism with the blow-up and compare global fibres. Do not infer resolution, minimality, Kodaira type, or conductor from the local calculation alone.

@@ -286,6 +286,142 @@ abbrev evenNodeTwoChartRing
   MvPolynomial (Fin 2) ℤ_[2] ⧸
     Ideal.span {evenNodeTwoChartPolynomial W x a b c}
 
+/-- A nonzero reduction of the divided equation makes the base
+uniformizer a non-zero-divisor in its quotient coordinate ring. -/
+theorem evenNodeTwoChart_two_regular
+    (W : WeierstrassCurve ℤ_[2]) (x a b c : ℤ_[2])
+    (ha : PadicInt.toZMod W.a₁ = 1) :
+    let R := evenNodeTwoChartRing W x a b c
+    let q : MvPolynomial (Fin 2) ℤ_[2] →+* R :=
+      Ideal.Quotient.mk (Ideal.span {evenNodeTwoChartPolynomial W x a b c})
+    ∀ z : R, q (MvPolynomial.C (2 : ℤ_[2])) * z = 0 → z = 0 := by
+  let S := MvPolynomial (Fin 2) ℤ_[2]
+  let T := MvPolynomial (Fin 2) (ZMod 2)
+  let f : S := evenNodeTwoChartPolynomial W x a b c
+  let R := evenNodeTwoChartRing W x a b c
+  let q : S →+* R := Ideal.Quotient.mk (Ideal.span {f})
+  let φ : S →+* T := MvPolynomial.map PadicInt.toZMod
+  let t : S := MvPolynomial.C (2 : ℤ_[2])
+  have htφ : φ t = 0 := by
+    change MvPolynomial.map PadicInt.toZMod
+      (MvPolynomial.C (2 : ℤ_[2])) = 0
+    rw [MvPolynomial.map_C]
+    have htwo : (PadicInt.toZMod : ℤ_[2] →+* ZMod 2) 2 = 0 := by
+      have hz : (2 : ZMod 2) = 0 := by decide
+      simpa only [map_ofNat] using hz
+    rw [htwo, map_zero]
+  have htf : φ f ≠ 0 :=
+    evenNodeTwoChartPolynomial_reduction_ne_zero W x a b c ha
+  have ht : t ≠ 0 := by
+    intro hz
+    have htwo : (2 : ℤ_[2]) = 0 :=
+      (MvPolynomial.C_injective (Fin 2) ℤ_[2])
+        (by simpa only [t, map_zero] using hz)
+    norm_num at htwo
+  change ∀ z : R, q t * z = 0 → z = 0
+  intro z hz
+  obtain ⟨p, rfl⟩ := Ideal.Quotient.mk_surjective z
+  have hp : t * p ∈ Ideal.span {f} := by
+    apply Ideal.Quotient.eq_zero_iff_mem.mp
+    simpa only [map_mul] using hz
+  obtain ⟨d, hd⟩ := Ideal.mem_span_singleton.mp hp
+  have hfd : t * p = f * d := hd
+  have hφd : φ d = 0 := by
+    have hprod : φ f * φ d = 0 := by
+      calc
+        φ f * φ d = φ (f * d) := (map_mul φ f d).symm
+        _ = φ (t * p) := congrArg φ hfd.symm
+        _ = 0 := by rw [map_mul, htφ, zero_mul]
+    exact (mul_eq_zero.mp hprod).resolve_left htf
+  have hdmem : d ∈ Ideal.span {t} := by
+    rw [← localSurfaceAmbient_reduction_kernel_eq_span_two]
+    exact hφd
+  obtain ⟨e, he⟩ := Ideal.mem_span_singleton.mp hdmem
+  have hcancel : p = f * e := by
+    apply mul_left_cancel₀ ht
+    calc
+      t * p = f * d := hfd
+      _ = t * (f * e) := by rw [he]; ring
+  apply Ideal.Quotient.eq_zero_iff_mem.mpr
+  exact Ideal.mem_span_singleton.mpr
+    ⟨e, by simpa only [mul_comm] using hcancel⟩
+
+/-- The divided equation generates an ideal saturated with respect
+to the base uniformizer. This checks the closure condition in the
+candidate ambient `2`-chart, without constructing the blow-up. -/
+theorem evenNodeTwoChart_ideal_two_saturated
+    (W : WeierstrassCurve ℤ_[2]) (x a b c : ℤ_[2])
+    (ha : PadicInt.toZMod W.a₁ = 1)
+    (p : MvPolynomial (Fin 2) ℤ_[2]) :
+    (∃ n : ℕ,
+      (MvPolynomial.C (2 : ℤ_[2])) ^ n * p ∈
+        Ideal.span {evenNodeTwoChartPolynomial W x a b c}) ↔
+      p ∈ Ideal.span {evenNodeTwoChartPolynomial W x a b c} := by
+  let S := MvPolynomial (Fin 2) ℤ_[2]
+  let f : S := evenNodeTwoChartPolynomial W x a b c
+  let R := evenNodeTwoChartRing W x a b c
+  let q : S →+* R := Ideal.Quotient.mk (Ideal.span {f})
+  let t : S := MvPolynomial.C (2 : ℤ_[2])
+  have hreg : ∀ z : R, q t * z = 0 → z = 0 :=
+    evenNodeTwoChart_two_regular W x a b c ha
+  have hpower : ∀ n : ℕ, ∀ z : R, (q t) ^ n * z = 0 → z = 0 := by
+    intro n
+    induction n with
+    | zero =>
+        intro z hz
+        simpa using hz
+    | succ n ih =>
+        intro z hz
+        apply ih z
+        apply hreg ((q t) ^ n * z)
+        calc
+          q t * ((q t) ^ n * z) = ((q t) ^ n * q t) * z := by ac_rfl
+          _ = 0 := by simpa only [pow_succ] using hz
+  constructor
+  · rintro ⟨n, hn⟩
+    have hq : (q t) ^ n * q p = 0 := by
+      rw [← map_pow, ← map_mul]
+      exact Ideal.Quotient.eq_zero_iff_mem.mpr hn
+    exact Ideal.Quotient.eq_zero_iff_mem.mp (hpower n (q p) hq)
+  · intro hp
+    exact ⟨0, by simpa using hp⟩
+
+/-- Saturating the pullback equation `4F` by powers of `2`
+recovers exactly the divided equation `F` in the candidate affine
+ambient chart. Identification of that ambient chart with an open of
+the Rees-algebra blow-up is still separate. -/
+theorem evenNodeTwoChart_pulledEquation_saturation
+    (W : WeierstrassCurve ℤ_[2]) (x a b c : ℤ_[2])
+    (ha : PadicInt.toZMod W.a₁ = 1)
+    (p : MvPolynomial (Fin 2) ℤ_[2]) :
+    (∃ n : ℕ,
+      (MvPolynomial.C (2 : ℤ_[2])) ^ n * p ∈
+        Ideal.span {MvPolynomial.C (4 : ℤ_[2]) *
+          evenNodeTwoChartPolynomial W x a b c}) ↔
+      p ∈ Ideal.span {evenNodeTwoChartPolynomial W x a b c} := by
+  let S := MvPolynomial (Fin 2) ℤ_[2]
+  let f : S := evenNodeTwoChartPolynomial W x a b c
+  let t : S := MvPolynomial.C (2 : ℤ_[2])
+  have ht2 : t ^ 2 = MvPolynomial.C (4 : ℤ_[2]) := by
+    change MvPolynomial.C (2 : ℤ_[2]) ^ 2 = MvPolynomial.C (4 : ℤ_[2])
+    rw [← map_pow]
+    norm_num
+  constructor
+  · rintro ⟨n, hn⟩
+    apply (evenNodeTwoChart_ideal_two_saturated W x a b c ha p).mp
+    refine ⟨n, ?_⟩
+    obtain ⟨d, hd⟩ := Ideal.mem_span_singleton.mp hn
+    apply Ideal.mem_span_singleton.mpr
+    refine ⟨MvPolynomial.C (4 : ℤ_[2]) * d, ?_⟩
+    rw [hd]
+    ring
+  · intro hp
+    obtain ⟨d, hd⟩ := Ideal.mem_span_singleton.mp hp
+    refine ⟨2, Ideal.mem_span_singleton.mpr ⟨d, ?_⟩⟩
+    change t ^ 2 * p = (MvPolynomial.C (4 : ℤ_[2]) * f) * d
+    rw [hd, ht2]
+    ring
+
 /-- The substituted surface equation vanishes on the divided chart,
 so ambient substitution descends to an actual map of coordinate
 rings. -/
@@ -343,6 +479,109 @@ theorem evenNodeTwoChartToSurfaceRing_C
       (MvPolynomial.C r) := by
   simp [evenNodeTwoChartToSurfaceRing, evenNodeTwoChartSubstitution,
     MvPolynomial.eval₂Hom_C]
+
+/-- The ideal of the *actual substituted equation* becomes the
+divided hypersurface ideal after saturation by powers of `2`.
+This is a closure calculation inside the candidate affine ambient
+chart, not yet an identification with a Rees-algebra blow-up. -/
+theorem evenNodeTwoChart_substitutedEquation_saturation
+    (W : WeierstrassCurve ℤ_[2]) (x y a b c : ℤ_[2])
+    (ha : PadicInt.toZMod W.a₁ = 1)
+    (hF : localWeierstrassEquation W x y = 4 * a)
+    (hX : W.a₁ * y - (3 * x ^ 2 + 2 * W.a₂ * x + W.a₄) = 2 * b)
+    (hY : 2 * y + W.a₁ * x + W.a₃ = 2 * c)
+    (p : MvPolynomial (Fin 2) ℤ_[2]) :
+    (∃ n : ℕ, (MvPolynomial.C (2 : ℤ_[2])) ^ n * p ∈
+      Ideal.span {evenNodeTwoChartSubstitution (localSurfaceEquation W x y)}) ↔
+      p ∈ Ideal.span {evenNodeTwoChartPolynomial W x a b c} := by
+  rw [evenNodeTwoChartSubstitution_surface W x y a b c hF hX hY]
+  exact evenNodeTwoChart_pulledEquation_saturation W x a b c ha p
+
+/-- In the genuinely positive even-valuation nodal branch, one
+uniform divided polynomial is the saturated pullback of the surface
+equation in the candidate `2`-chart. The remaining identification
+of the ambient chart with a blow-up open is not asserted. -/
+theorem evenVal_node_twoChart_substitutedEquation_saturation
+    (W : WeierstrassCurve ℤ_[2])
+    (hnode : ReducedNodalPoint (W.map PadicInt.toZMod)
+      (PadicInt.toZMod W.a₃)
+      (PadicInt.toZMod (W.a₃ ^ 2 + W.a₄)))
+    (hΔ : W.Δ ≠ 0)
+    (hpositive : 0 < Padic.valuation (W.Δ : ℚ_[2]))
+    (heven : ∃ k : ℤ, Padic.valuation (W.Δ : ℚ_[2]) = 2 * k) :
+    ∃ a b c : ℤ_[2],
+      ∀ p : MvPolynomial (Fin 2) ℤ_[2],
+        (∃ n : ℕ, (MvPolynomial.C (2 : ℤ_[2])) ^ n * p ∈
+          Ideal.span {evenNodeTwoChartSubstitution
+            (localSurfaceEquation W W.a₃ (W.a₃ ^ 2 + W.a₄))}) ↔
+          p ∈ Ideal.span {evenNodeTwoChartPolynomial W W.a₃ a b c} := by
+  obtain ⟨k, hk⟩ := heven
+  have hge : 2 ≤ Padic.valuation (W.Δ : ℚ_[2]) := by omega
+  have hfour : (4 : ℤ_[2]) ∣ W.Δ :=
+    four_dvd_delta_of_val_ge_two W hΔ hge
+  obtain ⟨_, b, c, _, hX, hY⟩ :=
+    reducedNodalPoint_liftEvenCoefficients
+      W W.a₃ (W.a₃ ^ 2 + W.a₄) hnode
+  have ha0 : PadicInt.toZMod W.a₁ ≠ 0 := by
+    simpa only [WeierstrassCurve.map_a₁] using hnode.2.2.2
+  have ha : PadicInt.toZMod W.a₁ = 1 := by
+    have hcases (z : ZMod 2) : z = 0 ∨ z = 1 := by
+      fin_cases z <;> simp
+    exact (hcases _).resolve_left ha0
+  obtain ⟨a, hF⟩ :=
+    four_dvd_nodeConstant_of_four_dvd_delta W ha0 hfour
+  exact ⟨a, b, c, fun p =>
+    evenNodeTwoChart_substitutedEquation_saturation W W.a₃
+      (W.a₃ ^ 2 + W.a₄) a b c ha hF hX hY p⟩
+
+/-- Under the candidate chart map, the image of the entire centre
+ideal `(2,X,Y)` is generated by `2`. Together with regularity of
+`2` on the chart, this is the expected Cartier-centre condition for
+a blow-up chart; the universal blow-up scheme is not constructed here. -/
+theorem evenNodeTwoChart_centre_image
+    (W : WeierstrassCurve ℤ_[2]) (x y a b c : ℤ_[2])
+    (hF : localWeierstrassEquation W x y = 4 * a)
+    (hX : W.a₁ * y - (3 * x ^ 2 + 2 * W.a₂ * x + W.a₄) = 2 * b)
+    (hY : 2 * y + W.a₁ * x + W.a₃ = 2 * c) :
+    Ideal.map
+      ((evenNodeTwoChartToSurfaceRing W x y a b c hF hX hY).comp
+        (Ideal.Quotient.mk (Ideal.span {localSurfaceEquation W x y})))
+      localSurfaceCentre =
+      Ideal.span
+        {(Ideal.Quotient.mk
+          (Ideal.span {evenNodeTwoChartPolynomial W x a b c}))
+          (MvPolynomial.C (2 : ℤ_[2]))} := by
+  let S := MvPolynomial (Fin 2) ℤ_[2]
+  let q : S →+* evenNodeTwoChartRing W x a b c :=
+    Ideal.Quotient.mk (Ideal.span {evenNodeTwoChartPolynomial W x a b c})
+  let g : S →+* evenNodeTwoChartRing W x a b c :=
+    (evenNodeTwoChartToSurfaceRing W x y a b c hF hX hY).comp
+      (Ideal.Quotient.mk (Ideal.span {localSurfaceEquation W x y}))
+  have hc : g (MvPolynomial.C (2 : ℤ_[2])) =
+      q (MvPolynomial.C (2 : ℤ_[2])) :=
+    evenNodeTwoChartToSurfaceRing_C W x y a b c 2 hF hX hY
+  have hx (i : Fin 2) :
+      g (MvPolynomial.X i) =
+        q (MvPolynomial.C (2 : ℤ_[2]) * MvPolynomial.X i) :=
+    evenNodeTwoChartToSurfaceRing_X W x y a b c hF hX hY i
+  change Ideal.map g
+    (Ideal.span {MvPolynomial.C (2 : ℤ_[2]),
+      MvPolynomial.X 0, MvPolynomial.X 1}) =
+    Ideal.span {q (MvPolynomial.C (2 : ℤ_[2]))}
+  rw [Ideal.map_span]
+  simp only [Set.image_insert_eq, Set.image_singleton]
+  rw [hc, hx 0, hx 1]
+  apply le_antisymm
+  · apply Ideal.span_le.mpr
+    rintro z (rfl | rfl | rfl)
+    · exact Ideal.subset_span (by simp)
+    · rw [map_mul]
+      exact Ideal.mem_span_singleton.mpr
+        ⟨q (MvPolynomial.X 0), by ring⟩
+    · rw [map_mul]
+      exact Ideal.mem_span_singleton.mpr
+        ⟨q (MvPolynomial.X 1), by ring⟩
+  · exact Ideal.span_mono (by simp)
 
 /-- The divided chart maps to the original translated surface as a
 scheme. It is not yet proved to be the strict-transform chart of a
@@ -424,9 +663,15 @@ theorem evenNodeTwoChartReduced_critical_on_curve
 #print axioms evenNodeTwoChartPolynomial_reduction_ne_zero
 #print axioms evenVal_node_twoChart_uniform_reduction_ne_zero
 #print axioms evenNodeTwoChartSubstitution_surface
+#print axioms evenNodeTwoChart_two_regular
+#print axioms evenNodeTwoChart_ideal_two_saturated
+#print axioms evenNodeTwoChart_pulledEquation_saturation
 #print axioms evenNodeTwoChartToSurfaceRing
 #print axioms evenNodeTwoChartToSurfaceRing_X
 #print axioms evenNodeTwoChartToSurfaceRing_C
+#print axioms evenNodeTwoChart_substitutedEquation_saturation
+#print axioms evenVal_node_twoChart_substitutedEquation_saturation
+#print axioms evenNodeTwoChart_centre_image
 #print axioms evenNodeTwoChartToSurface
 #print axioms evenNodeTwoChartReduced_increment
 #print axioms evenNode_twoChart_critical_point
