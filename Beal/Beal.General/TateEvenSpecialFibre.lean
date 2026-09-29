@@ -340,6 +340,79 @@ theorem homogeneousQuotientAwayRingEquiv_any_comp_mk
     RingEquiv.trans_apply, RingHom.quotientKerEquivOfSurjective]
   rfl
 
+universe u
+
+/-- The scalar-quotient chart equivalences respect restriction to a
+product basic open, without assuming that either reduced denominator
+survives. Swapping `f` and `g` gives the reverse ordered square;
+identifying the two product coordinates is a separate transport. -/
+noncomputable def homogeneousQuotientChartRestriction_square_any
+    {R A : Type u} [CommRing R] [CommRing A] [Algebra R A]
+    (𝒜 : ℕ → Submodule R A) [GradedAlgebra 𝒜]
+    (I : Ideal A) (hI : I.IsHomogeneous 𝒜)
+    (t : R) (hgen : I = Ideal.span {algebraMap R A t})
+    (f g : A) (d : ℕ) (hf : f ∈ 𝒜 d) (hg : g ∈ 𝒜 d) := by
+  letI : GradedAlgebra (homogeneousQuotientComponent 𝒜 I) :=
+    homogeneousQuotientGrading 𝒜 I hI
+  let ℬ := homogeneousQuotientComponent 𝒜 I
+  let q := Ideal.Quotient.mk I
+  let hfq : q f ∈ ℬ d := Submodule.mem_map.mpr ⟨f, hf, rfl⟩
+  let hgq : q g ∈ ℬ d := Submodule.mem_map.mpr ⟨g, hg, rfl⟩
+  let eF := homogeneousQuotientAwayRingEquiv_any
+    𝒜 I hI t hgen f d hf
+  let eFG := homogeneousQuotientAwayRingEquiv_any
+    𝒜 I hI t hgen (f * g) (d + d)
+      (SetLike.GradedMul.mul_mem hf hg)
+  have h :
+      (homogeneousLocalization_toProduct ℬ
+        (q f) (q g) d hfq hgq).comp eF.toRingHom =
+      eFG.toRingHom.comp
+        (homogeneousScalarQuotientToProduct 𝒜 f g d hf hg t) := by
+    apply RingHom.ext
+    intro s
+    obtain ⟨v, rfl⟩ := Ideal.Quotient.mk_surjective s
+    have hraw := congrArg (fun ψ => ψ v)
+      (homogeneousQuotientAwayMap_toProduct_left 𝒜 I hI f g d hf hg)
+    have hmod := congrArg (fun ψ => ψ v)
+      (homogeneousScalarQuotientToProduct_comp_mk 𝒜 f g d hf hg t)
+    simpa only [RingHom.comp_apply,
+      homogeneousQuotientAwayRingEquiv_any_comp_mk, hmod] using hraw
+  exact h
+
+/-- The unconditional quotient-chart restriction square after applying
+the contravariant `Spec.map`. The reversed ordering gives the other
+projection before identifying the two product coordinates. -/
+noncomputable def homogeneousQuotientChartRestriction_spec_square_any
+    {R A : Type u} [CommRing R] [CommRing A] [Algebra R A]
+    (𝒜 : ℕ → Submodule R A) [GradedAlgebra 𝒜]
+    (I : Ideal A) (hI : I.IsHomogeneous 𝒜)
+    (t : R) (hgen : I = Ideal.span {algebraMap R A t})
+    (f g : A) (d : ℕ) (hf : f ∈ 𝒜 d) (hg : g ∈ 𝒜 d) := by
+  letI : GradedAlgebra (homogeneousQuotientComponent 𝒜 I) :=
+    homogeneousQuotientGrading 𝒜 I hI
+  let ℬ := homogeneousQuotientComponent 𝒜 I
+  let q := Ideal.Quotient.mk I
+  let hfq : q f ∈ ℬ d := Submodule.mem_map.mpr ⟨f, hf, rfl⟩
+  let hgq : q g ∈ ℬ d := Submodule.mem_map.mpr ⟨g, hg, rfl⟩
+  let eF := homogeneousQuotientAwayRingEquiv_any
+    𝒜 I hI t hgen f d hf
+  let eFG := homogeneousQuotientAwayRingEquiv_any
+    𝒜 I hI t hgen (f * g) (d + d)
+      (SetLike.GradedMul.mul_mem hf hg)
+  have h :
+      Spec.map (CommRingCat.ofHom
+          (homogeneousLocalization_toProduct ℬ
+            (q f) (q g) d hfq hgq)) ≫
+        Spec.map (CommRingCat.ofHom eF.toRingHom) =
+      Spec.map (CommRingCat.ofHom eFG.toRingHom) ≫
+        Spec.map (CommRingCat.ofHom
+          (homogeneousScalarQuotientToProduct 𝒜 f g d hf hg t)) := by
+    rw [← Spec.map_comp, ← Spec.map_comp]
+    exact congrArg (fun φ => Spec.map (CommRingCat.ofHom φ))
+      (homogeneousQuotientChartRestriction_square_any
+        𝒜 I hI t hgen f g d hf hg)
+  exact h
+
 /-- A general affine-open comparison with the graded-quotient
 `Proj`, valid even if the reduced chart denominator is nilpotent.
 The actual structural map of the original scheme is an explicit
@@ -613,6 +686,40 @@ theorem localSurfaceCentreReesSpecialGenerator_cover
     (fun i => ⟨1, localSurfaceCentreReesGenerator_mem_degree_one W x y i⟩)
     (localSurfaceCentreReesGenerator_cover W x y)
 
+/-- The three reduced basic opens, as an open cover of the quotient
+`Proj` for subsequent scheme-level gluing. -/
+noncomputable def localSurfaceCentreReesSpecialProjOpenCover
+    (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2]) := by
+  let R := localSurfaceCoordinateRing W x y
+  letI : GradedAlgebra
+      (centreReesComponent (localSurfaceClosedPoint W x y)) :=
+    centreReesGrading (localSurfaceClosedPoint W x y)
+  let 𝒜 : ℕ → Submodule R (localSurfaceCentreRees W x y) :=
+    centreReesComponent (localSurfaceClosedPoint W x y)
+  let I : Ideal (localSurfaceCentreRees W x y) :=
+    localSurfaceCentreReesSpecialIdeal W x y
+  let ℬ : ℕ → Submodule R (localSurfaceCentreRees W x y ⧸ I) :=
+    homogeneousQuotientComponent 𝒜 I
+  letI : GradedAlgebra ℬ :=
+    homogeneousQuotientGrading 𝒜 I
+      (localSurfaceCentreReesSpecialIdeal_isHomogeneous W x y)
+  let Q : Scheme := @AlgebraicGeometry.«Proj» R
+    (localSurfaceCentreRees W x y ⧸ I)
+    _ _ _ ℬ
+    (homogeneousQuotientGrading 𝒜 I
+      (localSurfaceCentreReesSpecialIdeal_isHomogeneous W x y))
+  let U : Fin 3 → Q.Opens := fun i => by
+    change TopologicalSpace.Opens (ProjectiveSpectrum
+      (R := R) (A := localSurfaceCentreRees W x y ⧸ I) ℬ)
+    exact ProjectiveSpectrum.basicOpen
+      (R := R) (A := localSurfaceCentreRees W x y ⧸ I) ℬ
+      ((Ideal.Quotient.mk I) (localSurfaceCentreReesGenerator W x y i))
+  apply Q.openCoverOfISupEqTop U
+  change (⨆ i : Fin 3, ProjectiveSpectrum.basicOpen
+    (R := R) (A := localSurfaceCentreRees W x y ⧸ I) ℬ
+    ((Ideal.Quotient.mk I) (localSurfaceCentreReesGenerator W x y i))) = ⊤
+  exact localSurfaceCentreReesSpecialGenerator_cover W x y
+
 /-- The quotient-`Proj` chart comparison, pasted into an open of the
 global actual special fibre rather than just a restricted pullback. -/
 noncomputable def localSurfaceCentreGeneratorFibreQuotientOpenIso
@@ -650,6 +757,29 @@ noncomputable def localSurfaceCentreReesSpecialGenerator_toProduct
     (localSurfaceCentreReesGenerator_mem_degree_one W x y i)
     (localSurfaceCentreReesGenerator_mem_degree_one W x y j)
 
+/-- The affine scheme overlap square for each ordered pair of actual
+surface-centre Rees generators. Applying this with `(i,j)` and `(j,i)`
+gives the two ordered squares; compatibility of the chosen opens of
+the global special fibre still needs a separate scheme-level proof. -/
+noncomputable def localSurfaceCentreReesSpecialGenerator_specToProduct
+    (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2])
+    (i j : Fin 3) := by
+  letI : GradedAlgebra
+      (centreReesComponent (localSurfaceClosedPoint W x y)) :=
+    centreReesGrading (localSurfaceClosedPoint W x y)
+  let 𝒜 := centreReesComponent (localSurfaceClosedPoint W x y)
+  let I := localSurfaceCentreReesSpecialIdeal W x y
+  let q : MvPolynomial (Fin 2) ℤ_[2] →+*
+      localSurfaceCoordinateRing W x y :=
+    Ideal.Quotient.mk (Ideal.span {localSurfaceEquation W x y})
+  exact homogeneousQuotientChartRestriction_spec_square_any 𝒜 I
+    (localSurfaceCentreReesSpecialIdeal_isHomogeneous W x y)
+    (q (MvPolynomial.C 2)) rfl
+    (localSurfaceCentreReesGenerator W x y i)
+    (localSurfaceCentreReesGenerator W x y j) 1
+    (localSurfaceCentreReesGenerator_mem_degree_one W x y i)
+    (localSurfaceCentreReesGenerator_mem_degree_one W x y j)
+
 #print axioms twoAdicChartSpecialFibreIso
 #print axioms localSurfaceCentreTwoSpecialFibreIso
 #print axioms localSurfaceCentreSpecialFibreOpenCover
@@ -657,13 +787,17 @@ noncomputable def localSurfaceCentreReesSpecialGenerator_toProduct
 #print axioms localSurfaceCentreGeneratorFibreOpenSchemeIso
 #print axioms homogeneousQuotientAwayRingEquiv_any
 #print axioms homogeneousQuotientAwayRingEquiv_any_comp_mk
+#print axioms homogeneousQuotientChartRestriction_square_any
+#print axioms homogeneousQuotientChartRestriction_spec_square_any
 #print axioms twoAdicChartQuotientProjIso
 #print axioms homogeneousQuotientProjBasicOpen_cover
 #print axioms localSurfaceCentreReesSpecialIdeal_isHomogeneous
 #print axioms localSurfaceCentreGeneratorQuotientRingEquiv
 #print axioms localSurfaceCentreGeneratorQuotientProjChartIso
 #print axioms localSurfaceCentreReesSpecialGenerator_cover
+#print axioms localSurfaceCentreReesSpecialProjOpenCover
 #print axioms localSurfaceCentreGeneratorFibreQuotientOpenIso
 #print axioms localSurfaceCentreReesSpecialGenerator_toProduct
+#print axioms localSurfaceCentreReesSpecialGenerator_specToProduct
 
 end Beal.General

@@ -68,3 +68,9 @@ If a reduced denominator is nilpotent, its homogeneous localization is the zero 
 **Why:** An attempt to specialize a large `Proj`-open isomorphism with fully expanded project-specific types caused unresolved grading instances and repeated definitional-reduction timeouts. The algebraic result itself was sound; the large dependent scheme type was the elaboration obstacle.
 
 **How to apply:** State the affine-open comparison generically with the actual structural map and grading as parameters. Specialize using a small inferred-type wrapper rather than spelling out a deeply nested `Proj`-open target. Keep product-overlap ring squares separate from the open-immersion and pullback-pasting squares needed for gluing.
+
+For a quotient-`Proj` open cover built from a local grading alias, the elaborator may leave the graded-algebra instance unresolved even when that instance is present. Supply the `Proj` grading arguments explicitly and name both the base and ambient quotient ring when constructing `ProjectiveSpectrum.basicOpen`.
+
+**Why:** Repeated attempts with a bare `Proj` alias or just the base-ring annotation failed before proof elaboration; the fully specified ambient ring let the same cover theorem check.
+
+**How to apply:** Use this only at the dependent `Proj`/open-cover boundary. A `Spec.map` square for affine quotient charts still does not establish naturality of the chosen pullback-to-`Proj` isomorphisms or license global gluing.
