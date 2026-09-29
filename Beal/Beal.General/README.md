@@ -472,18 +472,20 @@ which remains regular in the Rees localization, so `F` itself maps to
    if `Xᵢⁿp ∈ Jᵢ` for some natural number `n`. It does not assume
    that `Xᵢ` is regular, and it does not identify the relation ideal
    with the *unsaturated* graph ideal. The three-variable
-   presentation is not minimal. `TateEvenGenericFibre.lean` proves
-   that the centre becomes the unit ideal after inverting `2`,
-   that the actual `D₊(2t)` ring localized at the surface scalar `2`
-   is isomorphic to the original surface ring localized at `2`,
-   and that the scalar-`2` basic open of the Rees `Proj` lies inside
-   `D₊(2t)`. It also gives an isomorphism of the spectra of those
-   localized rings. **The global scheme-level generic-fibre
-   comparison remains unproved:** these statements do not yet
-   identify the scalar basic open with the inverse image of the
-   base generic open or establish the required scheme base-change
-   square. The full resolution, Kodaira type, and conductor
-   exponent likewise remain **unproved**. Any
+    presentation is not minimal. `TateEvenGenericFibre.lean` proves
+    that the centre becomes the unit ideal after inverting `2`,
+    identifies the inverse image of the 2-adic base open `D(2)`
+    with the scalar-`2` open of the **actual** Rees `Proj`, and proves
+    that this open lies inside `D₊(2t)`. The restricted open scheme
+    is identified with the spectrum of the localized `D₊(2t)` ring;
+    its ring equivalence with the translated surface localized at
+    `2` respects the surface scalars. Together these yield an
+    isomorphism of the **actual Rees blow-up's fibre product over
+    `D(2)`** with the localized translated surface, and the
+    resulting diagram over `D(2)` is formally proved to commute.
+    This comparison does not establish the special-fibre
+    resolution, Kodaira type, minimality, or conductor exponent;
+    those remain **unproved**. Any
 subsequent model or conductor theorem must keep `W.Δ ≠ 0` explicit
 and discharge those geometric steps separately. In the split branch,
 the relevant discriminant hypothesis is `v₂(W.Δ) = 1`; the genuinely even-valuation

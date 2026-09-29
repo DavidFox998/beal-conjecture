@@ -50,3 +50,9 @@ When the target is the blow-up **of the surface** at its centre, take the Rees a
 **Why:** The affine saturation calculation starts in an ambient plane, which makes it easy to conflate the ambient blow-up with the surface blow-up. Neither its ideal kernel nor its coefficientwise Rees map supplies the required graded basic-open equivalence.
 
 **How to apply:** Use the surface-centre Rees grading and its degree-zero basic-open localization as the actual `D₊` object, then prove the ratio-coordinate map has precisely the divided ideal as kernel and is surjective. Principalization of the image ideal is necessary but does not replace this ring equivalence or the structural morphism to the original surface.
+
+For generic base change of a Rees `Proj`, first identify the inverse image of the base principal open through the actual structural morphism, then restrict that open inside an affine `D₊` chart. An abstract isomorphism of localized chart rings is not yet a relative isomorphism of the fibre product.
+
+**Why:** The inverse-image open and its structure sheaf must be transported through the chart's canonical scheme isomorphism. The scalar-localized ring equivalence must then respect the surface scalars; otherwise the resulting spectrum isomorphism need not commute with the base map.
+
+**How to apply:** Establish each restriction and localization factorization over the original base. To upgrade a proved commuting square over the ambient base to one over its principal open, use the open immersion's monicity after constructing the target's canonical map to that open. Do not infer special-fibre geometry, minimality, or conductor data from the generic comparison.
