@@ -38,3 +38,9 @@ An affine candidate can pass both the equation-saturation test and the Cartier-c
 **Why:** Local ideal calculations do not construct the graded `Proj`, prove the affine-chart equivalence, or glue the other charts. Calling the candidate morphism a strict transform on that basis would promote a necessary condition into the missing geometric theorem.
 
 **How to apply:** Use saturation and non-zero-divisibility as inputs to a future Rees/Proj chart proof; only then identify the chart morphism with the blow-up and compare global fibres. Do not infer resolution, minimality, Kodaira type, or conductor from the local calculation alone.
+
+For affine schematic-closure calculations in this pin, the localization kernel can be computed directly from powers of the chosen denominator, then the quotient by that kernel embeds in the localization. The quotient-lift injectivity result is in the ring-homomorphism namespace of the separate quotient-operations module, not the ideal-quotient namespace.
+
+**Why:** A correct injectivity proof stalled twice on an unavailable lemma name/import after the kernel calculation had already checked. The resulting embedding still only describes closure in the chosen affine ambient ring.
+
+**How to apply:** Establish the kernel using the away-localization zero criterion and a separately proved saturation equality, then use the ring-homomorphism quotient-lift injectivity theorem. Do not treat the embedding as a Rees `D₊` comparison until its graded chart equivalence is proved.

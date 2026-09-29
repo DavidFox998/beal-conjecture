@@ -1,5 +1,6 @@
 import Beal.«Beal.General».TateI1Split
 import Mathlib.AlgebraicGeometry.Scheme
+import Mathlib.RingTheory.Ideal.QuotientOperations
 
 /-!
 Checked inputs for the even-valuation nodal chart. Dividing the
@@ -497,6 +498,113 @@ theorem evenNodeTwoChart_substitutedEquation_saturation
   rw [evenNodeTwoChartSubstitution_surface W x y a b c hF hX hY]
   exact evenNodeTwoChart_pulledEquation_saturation W x a b c ha p
 
+/-- Coordinate ring of the pulled-back hypersurface *before*
+removing its exceptional `2`-torsion. -/
+abbrev evenNodeTwoChartPullbackRing
+    (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2]) : Type :=
+  MvPolynomial (Fin 2) ℤ_[2] ⧸
+    Ideal.span {evenNodeTwoChartSubstitution (localSurfaceEquation W x y)}
+
+/-- The divided equation cuts out the scheme-theoretic closure of the
+away-from-`2` part of the pulled-back hypersurface inside the candidate
+affine ambient chart. This is a kernel equality, not only a pointwise
+equation. It does not construct the ambient blow-up chart. -/
+theorem evenNodeTwoChart_localizedPullback_kernel
+    (W : WeierstrassCurve ℤ_[2]) (x y a b c : ℤ_[2])
+    (ha : PadicInt.toZMod W.a₁ = 1)
+    (hF : localWeierstrassEquation W x y = 4 * a)
+    (hX : W.a₁ * y - (3 * x ^ 2 + 2 * W.a₂ * x + W.a₄) = 2 * b)
+    (hY : 2 * y + W.a₁ * x + W.a₃ = 2 * c) :
+    let S := MvPolynomial (Fin 2) ℤ_[2]
+    let Q := evenNodeTwoChartPullbackRing W x y
+    let q : S →+* Q := Ideal.Quotient.mk
+      (Ideal.span {evenNodeTwoChartSubstitution (localSurfaceEquation W x y)})
+    let t : Q := q (MvPolynomial.C (2 : ℤ_[2]))
+    RingHom.ker ((algebraMap Q (Localization.Away t)).comp q) =
+      Ideal.span {evenNodeTwoChartPolynomial W x a b c} := by
+  let S := MvPolynomial (Fin 2) ℤ_[2]
+  let Q := evenNodeTwoChartPullbackRing W x y
+  let q : S →+* Q := Ideal.Quotient.mk
+    (Ideal.span {evenNodeTwoChartSubstitution (localSurfaceEquation W x y)})
+  let t : Q := q (MvPolynomial.C (2 : ℤ_[2]))
+  ext p
+  change (algebraMap Q (Localization.Away t)) (q p) = 0 ↔
+    p ∈ Ideal.span {evenNodeTwoChartPolynomial W x a b c}
+  rw [IsLocalization.map_eq_zero_iff
+    (Submonoid.powers t) (Localization.Away t)]
+  constructor
+  · rintro ⟨m, hm⟩
+    obtain ⟨n, hn⟩ := (Submonoid.mem_powers_iff m.1 t).mp m.2
+    have hq : t ^ n * q p = 0 := by
+      rw [hn]
+      exact hm
+    have hmem :
+        (MvPolynomial.C (2 : ℤ_[2])) ^ n * p ∈
+          Ideal.span {evenNodeTwoChartSubstitution (localSurfaceEquation W x y)} := by
+      apply Ideal.Quotient.eq_zero_iff_mem.mp
+      simpa only [map_pow, map_mul] using hq
+    exact (evenNodeTwoChart_substitutedEquation_saturation
+      W x y a b c ha hF hX hY p).mp ⟨n, hmem⟩
+  · intro hp
+    obtain ⟨n, hn⟩ :=
+      (evenNodeTwoChart_substitutedEquation_saturation
+        W x y a b c ha hF hX hY p).mpr hp
+    have hq : t ^ n * q p = 0 := by
+      simpa only [map_pow, map_mul] using
+        (Ideal.Quotient.eq_zero_iff_mem.mpr hn :
+          q ((MvPolynomial.C (2 : ℤ_[2])) ^ n * p) = 0)
+    exact ⟨⟨t ^ n, (Submonoid.mem_powers_iff (t ^ n) t).mpr ⟨n, rfl⟩⟩, hq⟩
+
+/-- The divided chart coordinate ring embeds into the generic part
+of the pulled-back hypersurface. The embedding is the affine
+schematic-closure comparison, not a Rees `Proj` chart equivalence. -/
+noncomputable def evenNodeTwoChart_closureMap
+    (W : WeierstrassCurve ℤ_[2]) (x y a b c : ℤ_[2])
+    (ha : PadicInt.toZMod W.a₁ = 1)
+    (hF : localWeierstrassEquation W x y = 4 * a)
+    (hX : W.a₁ * y - (3 * x ^ 2 + 2 * W.a₂ * x + W.a₄) = 2 * b)
+    (hY : 2 * y + W.a₁ * x + W.a₃ = 2 * c) :
+    let Q := evenNodeTwoChartPullbackRing W x y
+    let q : MvPolynomial (Fin 2) ℤ_[2] →+* Q := Ideal.Quotient.mk
+      (Ideal.span {evenNodeTwoChartSubstitution (localSurfaceEquation W x y)})
+    evenNodeTwoChartRing W x a b c →+*
+      Localization.Away (q (MvPolynomial.C (2 : ℤ_[2]))) := by
+  let S := MvPolynomial (Fin 2) ℤ_[2]
+  let Q := evenNodeTwoChartPullbackRing W x y
+  let q : S →+* Q := Ideal.Quotient.mk
+    (Ideal.span {evenNodeTwoChartSubstitution (localSurfaceEquation W x y)})
+  let t : Q := q (MvPolynomial.C (2 : ℤ_[2]))
+  let h : S →+* Localization.Away t :=
+    (algebraMap Q (Localization.Away t)).comp q
+  have hk : RingHom.ker h =
+      Ideal.span {evenNodeTwoChartPolynomial W x a b c} :=
+    evenNodeTwoChart_localizedPullback_kernel W x y a b c ha hF hX hY
+  apply Ideal.Quotient.lift (Ideal.span {evenNodeTwoChartPolynomial W x a b c}) h
+  intro p hp
+  exact RingHom.mem_ker.mp (hk.symm ▸ hp)
+
+theorem evenNodeTwoChart_closureMap_injective
+    (W : WeierstrassCurve ℤ_[2]) (x y a b c : ℤ_[2])
+    (ha : PadicInt.toZMod W.a₁ = 1)
+    (hF : localWeierstrassEquation W x y = 4 * a)
+    (hX : W.a₁ * y - (3 * x ^ 2 + 2 * W.a₂ * x + W.a₄) = 2 * b)
+    (hY : 2 * y + W.a₁ * x + W.a₃ = 2 * c) :
+    Function.Injective
+      (evenNodeTwoChart_closureMap W x y a b c ha hF hX hY) := by
+  let S := MvPolynomial (Fin 2) ℤ_[2]
+  let Q := evenNodeTwoChartPullbackRing W x y
+  let q : S →+* Q := Ideal.Quotient.mk
+    (Ideal.span {evenNodeTwoChartSubstitution (localSurfaceEquation W x y)})
+  let t : Q := q (MvPolynomial.C (2 : ℤ_[2]))
+  let h : S →+* Localization.Away t :=
+    (algebraMap Q (Localization.Away t)).comp q
+  have hk : RingHom.ker h =
+      Ideal.span {evenNodeTwoChartPolynomial W x a b c} :=
+    evenNodeTwoChart_localizedPullback_kernel W x y a b c ha hF hX hY
+  unfold evenNodeTwoChart_closureMap
+  apply RingHom.lift_injective_of_ker_le_ideal
+  exact hk.le
+
 /-- In the genuinely positive even-valuation nodal branch, one
 uniform divided polynomial is the saturated pullback of the surface
 equation in the candidate `2`-chart. The remaining identification
@@ -533,6 +641,45 @@ theorem evenVal_node_twoChart_substitutedEquation_saturation
   exact ⟨a, b, c, fun p =>
     evenNodeTwoChart_substitutedEquation_saturation W W.a₃
       (W.a₃ ^ 2 + W.a₄) a b c ha hF hX hY p⟩
+
+/-- Under the genuine even-valuation assumptions the chart equation
+is the actual kernel of the ambient map to the pulled-back
+hypersurface localized away from `2`. This is a schematic-closure
+calculation in a candidate chart, not a Rees `D₊` identification. -/
+theorem evenVal_node_twoChart_localizedPullback_kernel
+    (W : WeierstrassCurve ℤ_[2])
+    (hnode : ReducedNodalPoint (W.map PadicInt.toZMod)
+      (PadicInt.toZMod W.a₃)
+      (PadicInt.toZMod (W.a₃ ^ 2 + W.a₄)))
+    (hΔ : W.Δ ≠ 0)
+    (hpositive : 0 < Padic.valuation (W.Δ : ℚ_[2]))
+    (heven : ∃ k : ℤ, Padic.valuation (W.Δ : ℚ_[2]) = 2 * k) :
+    ∃ a b c : ℤ_[2],
+      let S := MvPolynomial (Fin 2) ℤ_[2]
+      let Q := evenNodeTwoChartPullbackRing W W.a₃ (W.a₃ ^ 2 + W.a₄)
+      let q : S →+* Q := Ideal.Quotient.mk
+        (Ideal.span {evenNodeTwoChartSubstitution
+          (localSurfaceEquation W W.a₃ (W.a₃ ^ 2 + W.a₄))})
+      let t : Q := q (MvPolynomial.C (2 : ℤ_[2]))
+      RingHom.ker ((algebraMap Q (Localization.Away t)).comp q) =
+        Ideal.span {evenNodeTwoChartPolynomial W W.a₃ a b c} := by
+  obtain ⟨k, hk⟩ := heven
+  have hge : 2 ≤ Padic.valuation (W.Δ : ℚ_[2]) := by omega
+  have hfour : (4 : ℤ_[2]) ∣ W.Δ :=
+    four_dvd_delta_of_val_ge_two W hΔ hge
+  obtain ⟨_, b, c, _, hX, hY⟩ :=
+    reducedNodalPoint_liftEvenCoefficients
+      W W.a₃ (W.a₃ ^ 2 + W.a₄) hnode
+  have ha0 : PadicInt.toZMod W.a₁ ≠ 0 := by
+    simpa only [WeierstrassCurve.map_a₁] using hnode.2.2.2
+  have ha : PadicInt.toZMod W.a₁ = 1 := by
+    have hcases (z : ZMod 2) : z = 0 ∨ z = 1 := by
+      fin_cases z <;> simp
+    exact (hcases _).resolve_left ha0
+  obtain ⟨a, hF⟩ :=
+    four_dvd_nodeConstant_of_four_dvd_delta W ha0 hfour
+  exact ⟨a, b, c, evenNodeTwoChart_localizedPullback_kernel W W.a₃
+    (W.a₃ ^ 2 + W.a₄) a b c ha hF hX hY⟩
 
 /-- Under the candidate chart map, the image of the entire centre
 ideal `(2,X,Y)` is generated by `2`. Together with regularity of
@@ -670,7 +817,11 @@ theorem evenNodeTwoChartReduced_critical_on_curve
 #print axioms evenNodeTwoChartToSurfaceRing_X
 #print axioms evenNodeTwoChartToSurfaceRing_C
 #print axioms evenNodeTwoChart_substitutedEquation_saturation
+#print axioms evenNodeTwoChart_localizedPullback_kernel
+#print axioms evenNodeTwoChart_closureMap
+#print axioms evenNodeTwoChart_closureMap_injective
 #print axioms evenVal_node_twoChart_substitutedEquation_saturation
+#print axioms evenVal_node_twoChart_localizedPullback_kernel
 #print axioms evenNodeTwoChart_centre_image
 #print axioms evenNodeTwoChartToSurface
 #print axioms evenNodeTwoChartReduced_increment
