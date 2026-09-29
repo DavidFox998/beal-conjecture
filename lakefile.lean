@@ -77,6 +77,7 @@ lean_lib BealGeneral where
     .one `Beal.«Beal.General».TateEvenReesChart,
     .one `Beal.«Beal.General».TateEvenBranch,
     .one `Beal.«Beal.General».TateEvenCoordinateCharts,
+    .one `Beal.«Beal.General».TateEvenGenericFibre,
     .one `Beal.«Beal.General».TateReduction,
     .one `Beal.«Beal.General».Conductor,
     .one `Beal.«Beal.General».TwoPower,
