@@ -164,6 +164,118 @@ noncomputable def centreReesGrading {R : Type*} [CommRing R]
     centreReesGradedMonoid I
   exact DirectSum.IsInternal.gradedAlgebra (centreReesComponent_isInternal I)
 
+/-- A scalar that is regular in the coefficient ring remains regular
+in its Rees subalgebra, coefficient by coefficient. -/
+theorem centreReesScalar_regular {R : Type*} [CommRing R]
+    (I : Ideal R) (r : R)
+    (hr : ∀ z : R, r * z = 0 → z = 0) :
+    ∀ p : reesAlgebra I,
+      algebraMap R (reesAlgebra I) r * p = 0 → p = 0 := by
+  intro p hp
+  apply Subtype.ext
+  apply Polynomial.ext
+  intro n
+  have hc := congrArg
+    (fun q : reesAlgebra I => (q : R[X]).coeff n) hp
+  change (Polynomial.C r * (p : R[X])).coeff n = 0 at hc
+  simpa only [Polynomial.coeff_zero] using
+    hr ((p : R[X]).coeff n)
+      (by simpa only [Polynomial.coeff_C_mul] using hc)
+
+/-- The reduced translated surface equation is never the zero
+polynomial: after setting the first coordinate to zero, its second
+coordinate has monic quadratic term. -/
+theorem localSurfaceEquation_reduction_ne_zero
+    (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2]) :
+    MvPolynomial.map PadicInt.toZMod
+      (localSurfaceEquation W x y) ≠ 0 := by
+  intro hz
+  let e : MvPolynomial (Fin 2) (ZMod 2) →+* Polynomial (ZMod 2) :=
+    MvPolynomial.eval₂Hom Polynomial.C
+      (fun i => if i = 0 then 0 else Polynomial.X)
+  let W' := W.map PadicInt.toZMod
+  let x' := PadicInt.toZMod x
+  let y' := PadicInt.toZMod y
+  have heval :
+      e (MvPolynomial.map PadicInt.toZMod
+        (localSurfaceEquation W x y)) =
+      Polynomial.X ^ 2 +
+        Polynomial.C (2 * y' + W'.a₁ * x' + W'.a₃) * Polynomial.X +
+        Polynomial.C (localWeierstrassEquation W' x' y') := by
+    simp [e, W', x', y', localSurfaceEquation, localWeierstrassEquation,
+      WeierstrassCurve.map, MvPolynomial.eval_map,
+      MvPolynomial.eval₂Hom_C, MvPolynomial.eval₂Hom_X']
+    simp only [map_ofNat]
+    ring
+  have hzcoeff :
+      (Polynomial.X ^ 2 +
+        Polynomial.C (2 * y' + W'.a₁ * x' + W'.a₃) * Polynomial.X +
+        Polynomial.C (localWeierstrassEquation W' x' y') :
+          Polynomial (ZMod 2)).coeff 2 = 0 := by
+    rw [← heval, hz, map_zero, Polynomial.coeff_zero]
+  have hone : (1 : ZMod 2) = 0 := by
+    simpa [Polynomial.coeff_add, Polynomial.coeff_C_mul_X,
+      Polynomial.coeff_X_pow] using hzcoeff
+  exact one_ne_zero hone
+
+/-- The translated integral surface coordinate ring is flat at the
+base uniformizer for every Weierstrass equation: its defining
+polynomial has nonzero reduction, independently of split or even
+valuation assumptions. -/
+theorem localSurfaceCoordinateRing_two_regular
+    (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2]) :
+    let R := localSurfaceCoordinateRing W x y
+    let q : MvPolynomial (Fin 2) ℤ_[2] →+* R :=
+      Ideal.Quotient.mk (Ideal.span {localSurfaceEquation W x y})
+    ∀ z : R, q (MvPolynomial.C (2 : ℤ_[2])) * z = 0 → z = 0 := by
+  let S := MvPolynomial (Fin 2) ℤ_[2]
+  let T := MvPolynomial (Fin 2) (ZMod 2)
+  let f : S := localSurfaceEquation W x y
+  let R := localSurfaceCoordinateRing W x y
+  let q : S →+* R := Ideal.Quotient.mk (Ideal.span {f})
+  let φ : S →+* T := MvPolynomial.map PadicInt.toZMod
+  let t : S := MvPolynomial.C (2 : ℤ_[2])
+  have htφ : φ t = 0 := by
+    change MvPolynomial.map PadicInt.toZMod
+      (MvPolynomial.C (2 : ℤ_[2])) = 0
+    rw [MvPolynomial.map_C]
+    have htwo : (2 : ZMod 2) = 0 := by decide
+    rw [map_ofNat, htwo, map_zero]
+  have htf : φ f ≠ 0 := localSurfaceEquation_reduction_ne_zero W x y
+  have ht : t ≠ 0 := by
+    intro hz
+    have htwo : (2 : ℤ_[2]) = 0 :=
+      (MvPolynomial.C_injective (Fin 2) ℤ_[2])
+        (by simpa only [t, map_zero] using hz)
+    norm_num at htwo
+  change ∀ z : R, q t * z = 0 → z = 0
+  intro z hz
+  obtain ⟨p, rfl⟩ := Ideal.Quotient.mk_surjective z
+  have hp : t * p ∈ Ideal.span {f} := by
+    apply Ideal.Quotient.eq_zero_iff_mem.mp
+    simpa only [map_mul] using hz
+  obtain ⟨d, hd⟩ := Ideal.mem_span_singleton.mp hp
+  have hfd : t * p = f * d := hd
+  have hφd : φ d = 0 := by
+    have hprod : φ f * φ d = 0 := by
+      calc
+        φ f * φ d = φ (f * d) := (map_mul φ f d).symm
+        _ = φ (t * p) := congrArg φ hfd.symm
+        _ = 0 := by rw [map_mul, htφ, zero_mul]
+    exact (mul_eq_zero.mp hprod).resolve_left htf
+  have hdmem : d ∈ Ideal.span {t} := by
+    rw [← localSurfaceAmbient_reduction_kernel_eq_span_two]
+    exact hφd
+  obtain ⟨e, he⟩ := Ideal.mem_span_singleton.mp hdmem
+  have hcancel : p = f * e := by
+    apply mul_left_cancel₀ ht
+    calc
+      t * p = f * d := hfd
+      _ = t * (f * e) := by rw [he]; ring
+  apply Ideal.Quotient.eq_zero_iff_mem.mpr
+  exact Ideal.mem_span_singleton.mpr
+    ⟨e, by simpa only [mul_comm] using hcancel⟩
+
 /-- The Rees algebra of the image of `(2,X,Y)` in the local surface
 coordinate ring, rather than the Rees algebra of the ambient plane. -/
 abbrev localSurfaceCentreRees (W : WeierstrassCurve ℤ_[2])
@@ -361,6 +473,9 @@ theorem localSurfaceCentreRees_relation
 #print axioms centreReesMap_degreeOne
 #print axioms centreReesComponent_isInternal
 #print axioms centreReesGrading
+#print axioms centreReesScalar_regular
+#print axioms localSurfaceEquation_reduction_ne_zero
+#print axioms localSurfaceCoordinateRing_two_regular
 #print axioms localSurfaceCentreReesProj
 #print axioms localSurfaceCentreReesTwo_mem_degree_one
 #print axioms localSurfaceCentreTwoRatio

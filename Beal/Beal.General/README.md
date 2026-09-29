@@ -428,8 +428,14 @@ sum. Thus its `Proj` and the actual basic open `D₊(2t)` are formed,
 and the latter is identified with the spectrum of its degree-zero
 homogeneous localization. The fractions `Xt/(2t)` and `Yt/(2t)`
 define a map from the candidate ambient polynomial ring into this
-localization. The **kernel and surjectivity** needed to identify
-that ring with the quotient by `(F)` have not been proved; neither
+localization. The relations `2 · (Xᵢt/(2t)) = Xᵢ` give a checked
+commutative square with the translated surface quotient. Its equation
+pulls back to `4F`; the translated surface has non-zero-divisor `2`,
+which remains regular in the Rees localization, so `F` itself maps to
+zero. Thus `(F)` is contained in the ratio map's kernel and there is
+a canonical map from the candidate divided chart to the actual
+`D₊(2t)` coordinate ring. The **reverse kernel inclusion and
+surjectivity** needed to identify these rings have not been proved; neither
 has the structural morphism of this `Proj` to the original surface.
 Consequently the candidate chart is still not proved to be a
 blow-up strict transform. That chart equivalence, generic-fibre

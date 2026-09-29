@@ -804,6 +804,306 @@ theorem evenNodeTwoReesPolynomialMap_X
       localSurfaceCentreTwoRatio W x y i := by
   simp only [evenNodeTwoReesPolynomialMap, MvPolynomial.eval₂Hom_X']
 
+/-- The fractions on the actual Rees basic open satisfy `2 ·
+(Xᵢt/(2t)) = Xᵢ`. This checks compatibility with the original
+surface coordinates, independently of the still-missing chart
+quotient equivalence. -/
+theorem localSurfaceCentreTwoRatio_relation
+    (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2]) (i : Fin 2) :
+    letI : GradedAlgebra
+        (centreReesComponent (localSurfaceClosedPoint W x y)) :=
+      centreReesGrading (localSurfaceClosedPoint W x y)
+    let R := localSurfaceCoordinateRing W x y
+    let q : MvPolynomial (Fin 2) ℤ_[2] →+* R :=
+      Ideal.Quotient.mk (Ideal.span {localSurfaceEquation W x y})
+    homogeneousScalarAwayHom
+        (centreReesComponent (localSurfaceClosedPoint W x y))
+        (localSurfaceCentreReesTwo W x y)
+        (q (MvPolynomial.C (2 : ℤ_[2]))) *
+      localSurfaceCentreTwoRatio W x y i =
+    homogeneousScalarAwayHom
+        (centreReesComponent (localSurfaceClosedPoint W x y))
+        (localSurfaceCentreReesTwo W x y)
+        (q (MvPolynomial.X i)) := by
+  let R := localSurfaceCoordinateRing W x y
+  let q : MvPolynomial (Fin 2) ℤ_[2] →+* R :=
+    Ideal.Quotient.mk (Ideal.span {localSurfaceEquation W x y})
+  let A := localSurfaceCentreRees W x y
+  let f : A := localSurfaceCentreReesTwo W x y
+  let 𝒜 := centreReesComponent (localSurfaceClosedPoint W x y)
+  letI : GradedAlgebra 𝒜 :=
+    centreReesGrading (localSurfaceClosedPoint W x y)
+  let L := Localization.Away f
+  have hrel :
+      algebraMap R A (q (MvPolynomial.C (2 : ℤ_[2]))) *
+          localSurfaceCentreReesCoordinate W x y i =
+        algebraMap R A (q (MvPolynomial.X i)) * f :=
+    localSurfaceCentreRees_relation W x y i
+  apply HomogeneousLocalization.val_injective (Submonoid.powers f)
+  rw [HomogeneousLocalization.val_mul]
+  change (homogeneousScalarAway 𝒜 f (q (MvPolynomial.C (2 : ℤ_[2])))).val *
+      (localSurfaceCentreTwoRatio W x y i).val =
+    (homogeneousScalarAway 𝒜 f (q (MvPolynomial.X i))).val
+  rw [homogeneousScalarAway_val, homogeneousScalarAway_val]
+  change (algebraMap A L (algebraMap R A (q (MvPolynomial.C (2 : ℤ_[2]))))) *
+      Localization.mk (localSurfaceCentreReesCoordinate W x y i)
+        ⟨f, Submonoid.mem_powers _⟩ =
+    algebraMap A L (algebraMap R A (q (MvPolynomial.X i)))
+  rw [Localization.mk_eq_mk', IsLocalization.mul_mk'_eq_mk'_of_mul]
+  exact (IsLocalization.eq_mk'_of_mul_eq (S := L) hrel.symm).symm
+
+/-- Substituting `X = 2U`, `Y = 2V` and then mapping to the
+homogeneous Rees chart agrees with the scalar map from the original
+surface quotient. -/
+theorem evenNodeTwoReesPolynomialMap_substitution
+    (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2]) :
+    letI : GradedAlgebra
+        (centreReesComponent (localSurfaceClosedPoint W x y)) :=
+      centreReesGrading (localSurfaceClosedPoint W x y)
+    (evenNodeTwoReesPolynomialMap W x y).comp
+        evenNodeTwoChartSubstitution =
+      (homogeneousScalarAwayHom
+        (centreReesComponent (localSurfaceClosedPoint W x y))
+        (localSurfaceCentreReesTwo W x y)).comp
+        (Ideal.Quotient.mk
+          (Ideal.span {localSurfaceEquation W x y})) := by
+  letI : GradedAlgebra
+      (centreReesComponent (localSurfaceClosedPoint W x y)) :=
+    centreReesGrading (localSurfaceClosedPoint W x y)
+  apply MvPolynomial.ringHom_ext
+  · intro r
+    simp only [RingHom.comp_apply, evenNodeTwoReesPolynomialMap,
+      evenNodeTwoChartSubstitution, MvPolynomial.eval₂Hom_C,
+      RingHom.coe_comp, Function.comp_apply]
+    congr 1
+  · intro i
+    simpa [evenNodeTwoReesPolynomialMap, evenNodeTwoChartSubstitution,
+      MvPolynomial.eval₂Hom_C, MvPolynomial.eval₂Hom_X', map_mul]
+      using (localSurfaceCentreTwoRatio_relation W x y i)
+
+/-- The actual Rees `D₊(2t)` chart kills the pulled-back surface
+equation `4F`. Cancelling the four to obtain `F` is a further
+non-zero-divisor statement on this degree-zero localization. -/
+theorem evenNodeTwoReesPolynomialMap_four_mul_chart
+    (W : WeierstrassCurve ℤ_[2]) (x y a b c : ℤ_[2])
+    (hF : localWeierstrassEquation W x y = 4 * a)
+    (hX : W.a₁ * y - (3 * x ^ 2 + 2 * W.a₂ * x + W.a₄) = 2 * b)
+    (hY : 2 * y + W.a₁ * x + W.a₃ = 2 * c) :
+    letI : GradedAlgebra
+        (centreReesComponent (localSurfaceClosedPoint W x y)) :=
+      centreReesGrading (localSurfaceClosedPoint W x y)
+    evenNodeTwoReesPolynomialMap W x y
+      (MvPolynomial.C (4 : ℤ_[2]) *
+        evenNodeTwoChartPolynomial W x a b c) = 0 := by
+  letI : GradedAlgebra
+      (centreReesComponent (localSurfaceClosedPoint W x y)) :=
+    centreReesGrading (localSurfaceClosedPoint W x y)
+  let q : MvPolynomial (Fin 2) ℤ_[2] →+*
+      localSurfaceCoordinateRing W x y :=
+    Ideal.Quotient.mk (Ideal.span {localSurfaceEquation W x y})
+  have hz : q (localSurfaceEquation W x y) = 0 :=
+    Ideal.Quotient.eq_zero_iff_mem.mpr
+      (Ideal.subset_span (by simp))
+  calc
+    evenNodeTwoReesPolynomialMap W x y
+        (MvPolynomial.C (4 : ℤ_[2]) *
+          evenNodeTwoChartPolynomial W x a b c) =
+      evenNodeTwoReesPolynomialMap W x y
+        (evenNodeTwoChartSubstitution (localSurfaceEquation W x y)) :=
+          congrArg _ (evenNodeTwoChartSubstitution_surface
+            W x y a b c hF hX hY).symm
+    _ = (homogeneousScalarAwayHom
+          (centreReesComponent (localSurfaceClosedPoint W x y))
+          (localSurfaceCentreReesTwo W x y))
+          (q (localSurfaceEquation W x y)) := by
+            exact congrArg
+              (fun g => g (localSurfaceEquation W x y))
+              (evenNodeTwoReesPolynomialMap_substitution W x y)
+    _ = 0 := by rw [hz, map_zero]
+
+/- A regular scalar on the original surface stays regular on the
+degree-zero Rees chart: first in the polynomial Rees subalgebra,
+then in its localization, and finally in the subring of homogeneous
+fractions. -/
+set_option maxHeartbeats 800000 in
+theorem localSurfaceCentreTwoAway_scalar_regular
+    (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2])
+    (r : localSurfaceCoordinateRing W x y)
+    (hr : ∀ z : localSurfaceCoordinateRing W x y, r * z = 0 → z = 0) :
+    letI : GradedAlgebra
+        (centreReesComponent (localSurfaceClosedPoint W x y)) :=
+      centreReesGrading (localSurfaceClosedPoint W x y)
+    ∀ z : HomogeneousLocalization.Away
+        (centreReesComponent (localSurfaceClosedPoint W x y))
+        (localSurfaceCentreReesTwo W x y),
+      homogeneousScalarAwayHom
+          (centreReesComponent (localSurfaceClosedPoint W x y))
+          (localSurfaceCentreReesTwo W x y) r * z = 0 → z = 0 := by
+  let I := localSurfaceClosedPoint W x y
+  let A := localSurfaceCentreRees W x y
+  let f : A := localSurfaceCentreReesTwo W x y
+  let 𝒜 := centreReesComponent I
+  letI : GradedAlgebra 𝒜 := centreReesGrading I
+  let L := Localization.Away f
+  have hA : algebraMap (localSurfaceCoordinateRing W x y) A r ∈
+      nonZeroDivisors A := by
+    rw [mem_nonZeroDivisors_iff]
+    intro p hp
+    exact centreReesScalar_regular I r hr p
+      (by simpa only [mul_comm] using hp)
+  have hL : algebraMap A L (algebraMap (localSurfaceCoordinateRing W x y) A r) ∈
+      nonZeroDivisors L :=
+    IsLocalization.nonZeroDivisors_le_comap (Submonoid.powers f) L hA
+  intro z hz
+  apply HomogeneousLocalization.val_injective (Submonoid.powers f)
+  rw [HomogeneousLocalization.val_zero]
+  apply (mem_nonZeroDivisors_iff.mp hL) z.val
+  have hv := congrArg
+    (HomogeneousLocalization.val (𝒜 := 𝒜) (x := Submonoid.powers f)) hz
+  change (homogeneousScalarAway 𝒜 f r * z).val = (0 : HomogeneousLocalization.Away 𝒜 f).val at hv
+  simpa only [HomogeneousLocalization.val_mul,
+    homogeneousScalarAway_val, HomogeneousLocalization.val_zero, mul_comm] using hv
+
+/-- Flatness of the original surface at the base uniformizer cancels
+the `4` in the pullback equation on the Rees basic open. This proves
+that the divided equation vanishes there under an explicit regularity
+hypothesis, but does not yet compute the entire kernel. -/
+theorem evenNodeTwoReesPolynomialMap_chart_zero_of_surfaceTwo_regular
+    (W : WeierstrassCurve ℤ_[2]) (x y a b c : ℤ_[2])
+    (hF : localWeierstrassEquation W x y = 4 * a)
+    (hX : W.a₁ * y - (3 * x ^ 2 + 2 * W.a₂ * x + W.a₄) = 2 * b)
+    (hY : 2 * y + W.a₁ * x + W.a₃ = 2 * c)
+    (hreg : let R := localSurfaceCoordinateRing W x y
+      let q : MvPolynomial (Fin 2) ℤ_[2] →+* R :=
+        Ideal.Quotient.mk (Ideal.span {localSurfaceEquation W x y})
+      ∀ z : R, q (MvPolynomial.C (2 : ℤ_[2])) * z = 0 → z = 0) :
+    letI : GradedAlgebra
+        (centreReesComponent (localSurfaceClosedPoint W x y)) :=
+      centreReesGrading (localSurfaceClosedPoint W x y)
+    evenNodeTwoReesPolynomialMap W x y
+      (evenNodeTwoChartPolynomial W x a b c) = 0 := by
+  letI : GradedAlgebra
+      (centreReesComponent (localSurfaceClosedPoint W x y)) :=
+    centreReesGrading (localSurfaceClosedPoint W x y)
+  let q : MvPolynomial (Fin 2) ℤ_[2] →+*
+      localSurfaceCoordinateRing W x y :=
+    Ideal.Quotient.mk (Ideal.span {localSurfaceEquation W x y})
+  let φ := evenNodeTwoReesPolynomialMap W x y
+  let H := homogeneousScalarAwayHom
+    (centreReesComponent (localSurfaceClosedPoint W x y))
+    (localSurfaceCentreReesTwo W x y)
+  have h2 : φ (MvPolynomial.C (2 : ℤ_[2])) =
+      H (q (MvPolynomial.C (2 : ℤ_[2]))) := by
+    have hs := congrArg
+      (fun g => g (MvPolynomial.C (2 : ℤ_[2])))
+      (evenNodeTwoReesPolynomialMap_substitution W x y)
+    simpa only [RingHom.comp_apply, evenNodeTwoChartSubstitution,
+      MvPolynomial.eval₂Hom_C] using hs
+  have htwosq :
+      (MvPolynomial.C (2 : ℤ_[2]) :
+          MvPolynomial (Fin 2) ℤ_[2]) ^ 2 =
+        MvPolynomial.C (4 : ℤ_[2]) := by
+    rw [← map_pow]
+    norm_num
+  have h4 := evenNodeTwoReesPolynomialMap_four_mul_chart
+    W x y a b c hF hX hY
+  change φ (MvPolynomial.C 4 *
+    evenNodeTwoChartPolynomial W x a b c) = 0 at h4
+  rw [map_mul, ← htwosq, map_pow, h2] at h4
+  change ∀ z : localSurfaceCoordinateRing W x y,
+    q (MvPolynomial.C (2 : ℤ_[2])) * z = 0 → z = 0 at hreg
+  have hregAway :=
+    localSurfaceCentreTwoAway_scalar_regular W x y
+      (q (MvPolynomial.C (2 : ℤ_[2]))) hreg
+  apply hregAway
+  apply hregAway
+  simpa only [pow_two, mul_assoc] using h4
+
+/-- Under surface flatness the divided equation lies in the kernel
+of the actual Rees basic-open map. Equality of these ideals remains
+to be shown. -/
+theorem evenNodeTwoReesPolynomialMap_chart_ideal_le_kernel_of_surfaceTwo_regular
+    (W : WeierstrassCurve ℤ_[2]) (x y a b c : ℤ_[2])
+    (hF : localWeierstrassEquation W x y = 4 * a)
+    (hX : W.a₁ * y - (3 * x ^ 2 + 2 * W.a₂ * x + W.a₄) = 2 * b)
+    (hY : 2 * y + W.a₁ * x + W.a₃ = 2 * c)
+    (hreg : let R := localSurfaceCoordinateRing W x y
+      let q : MvPolynomial (Fin 2) ℤ_[2] →+* R :=
+        Ideal.Quotient.mk (Ideal.span {localSurfaceEquation W x y})
+      ∀ z : R, q (MvPolynomial.C (2 : ℤ_[2])) * z = 0 → z = 0) :
+    letI : GradedAlgebra
+        (centreReesComponent (localSurfaceClosedPoint W x y)) :=
+      centreReesGrading (localSurfaceClosedPoint W x y)
+    Ideal.span {evenNodeTwoChartPolynomial W x a b c} ≤
+      RingHom.ker (evenNodeTwoReesPolynomialMap W x y) := by
+  apply Ideal.span_le.mpr
+  rintro p (rfl)
+  exact evenNodeTwoReesPolynomialMap_chart_zero_of_surfaceTwo_regular
+    W x y a b c hF hX hY hreg
+
+/-- The divided candidate chart maps to the actual Rees
+`D₊(2t)` ring once surface flatness is supplied. The map is not
+yet proved injective or surjective. -/
+noncomputable def evenNodeTwoChartToReesAway_of_surfaceTwo_regular
+    (W : WeierstrassCurve ℤ_[2]) (x y a b c : ℤ_[2])
+    (hF : localWeierstrassEquation W x y = 4 * a)
+    (hX : W.a₁ * y - (3 * x ^ 2 + 2 * W.a₂ * x + W.a₄) = 2 * b)
+    (hY : 2 * y + W.a₁ * x + W.a₃ = 2 * c)
+    (hreg : let R := localSurfaceCoordinateRing W x y
+      let q : MvPolynomial (Fin 2) ℤ_[2] →+* R :=
+        Ideal.Quotient.mk (Ideal.span {localSurfaceEquation W x y})
+      ∀ z : R, q (MvPolynomial.C (2 : ℤ_[2])) * z = 0 → z = 0) :
+    letI : GradedAlgebra
+        (centreReesComponent (localSurfaceClosedPoint W x y)) :=
+      centreReesGrading (localSurfaceClosedPoint W x y)
+    evenNodeTwoChartRing W x a b c →+*
+      HomogeneousLocalization.Away
+        (centreReesComponent (localSurfaceClosedPoint W x y))
+        (localSurfaceCentreReesTwo W x y) := by
+  letI : GradedAlgebra
+      (centreReesComponent (localSurfaceClosedPoint W x y)) :=
+    centreReesGrading (localSurfaceClosedPoint W x y)
+  let J : Ideal (MvPolynomial (Fin 2) ℤ_[2]) :=
+    Ideal.span {evenNodeTwoChartPolynomial W x a b c}
+  let φ := evenNodeTwoReesPolynomialMap W x y
+  have hker : J ≤ RingHom.ker φ :=
+    evenNodeTwoReesPolynomialMap_chart_ideal_le_kernel_of_surfaceTwo_regular
+      W x y a b c hF hX hY hreg
+  exact Ideal.Quotient.lift J φ (fun p hp => RingHom.mem_ker.mp (hker hp))
+
+/-- The divided equation belongs to the kernel of the actual
+`D₊(2t)` polynomial map; no extra flatness hypothesis is needed. -/
+theorem evenNodeTwoReesPolynomialMap_chart_ideal_le_kernel
+    (W : WeierstrassCurve ℤ_[2]) (x y a b c : ℤ_[2])
+    (hF : localWeierstrassEquation W x y = 4 * a)
+    (hX : W.a₁ * y - (3 * x ^ 2 + 2 * W.a₂ * x + W.a₄) = 2 * b)
+    (hY : 2 * y + W.a₁ * x + W.a₃ = 2 * c) :
+    letI : GradedAlgebra
+        (centreReesComponent (localSurfaceClosedPoint W x y)) :=
+      centreReesGrading (localSurfaceClosedPoint W x y)
+    Ideal.span {evenNodeTwoChartPolynomial W x a b c} ≤
+      RingHom.ker (evenNodeTwoReesPolynomialMap W x y) :=
+  evenNodeTwoReesPolynomialMap_chart_ideal_le_kernel_of_surfaceTwo_regular
+    W x y a b c hF hX hY (localSurfaceCoordinateRing_two_regular W x y)
+
+/-- The canonical map from the divided candidate chart to the
+actual `D₊(2t)` blow-up chart. Injectivity and surjectivity remain
+to be proved. -/
+noncomputable def evenNodeTwoChartToReesAway
+    (W : WeierstrassCurve ℤ_[2]) (x y a b c : ℤ_[2])
+    (hF : localWeierstrassEquation W x y = 4 * a)
+    (hX : W.a₁ * y - (3 * x ^ 2 + 2 * W.a₂ * x + W.a₄) = 2 * b)
+    (hY : 2 * y + W.a₁ * x + W.a₃ = 2 * c) :
+    letI : GradedAlgebra
+        (centreReesComponent (localSurfaceClosedPoint W x y)) :=
+      centreReesGrading (localSurfaceClosedPoint W x y)
+    evenNodeTwoChartRing W x a b c →+*
+      HomogeneousLocalization.Away
+        (centreReesComponent (localSurfaceClosedPoint W x y))
+        (localSurfaceCentreReesTwo W x y) :=
+  evenNodeTwoChartToReesAway_of_surfaceTwo_regular
+    W x y a b c hF hX hY (localSurfaceCoordinateRing_two_regular W x y)
+
 /-- The divided chart maps to the original translated surface as a
 scheme. It is not yet proved to be the strict-transform chart of a
 scheme-theoretic blow-up. -/
@@ -901,6 +1201,13 @@ theorem evenNodeTwoChartReduced_critical_on_curve
 #print axioms evenNodeTwoChart_reesMap
 #print axioms evenNodeTwoReesPolynomialMap
 #print axioms evenNodeTwoReesPolynomialMap_X
+#print axioms localSurfaceCentreTwoRatio_relation
+#print axioms evenNodeTwoReesPolynomialMap_substitution
+#print axioms evenNodeTwoReesPolynomialMap_four_mul_chart
+#print axioms localSurfaceCentreTwoAway_scalar_regular
+#print axioms evenNodeTwoReesPolynomialMap_chart_zero_of_surfaceTwo_regular
+#print axioms evenNodeTwoReesPolynomialMap_chart_ideal_le_kernel
+#print axioms evenNodeTwoChartToReesAway
 #print axioms evenNodeTwoChartToSurface
 #print axioms evenNodeTwoChartReduced_increment
 #print axioms evenNode_twoChart_critical_point
