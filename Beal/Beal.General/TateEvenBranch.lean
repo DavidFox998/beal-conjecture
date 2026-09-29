@@ -1693,6 +1693,274 @@ theorem localSurfaceCentreReesToSurface_onTwo
     (localSurfaceCentreReesTwo W x y) 1
     (localSurfaceCentreReesTwo_mem_degree_one W x y) (by decide)
 
+/-- The three degree-one generators `2t`, `Xt`, and `Yt` of the
+surface-centre Rees algebra. -/
+noncomputable def localSurfaceCentreReesGenerator
+    (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2]) :
+    Fin 3 → localSurfaceCentreRees W x y :=
+  Fin.cases (localSurfaceCentreReesTwo W x y)
+    (localSurfaceCentreReesCoordinate W x y)
+
+theorem localSurfaceCentreReesGenerator_mem_degree_one
+    (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2]) (i : Fin 3) :
+    localSurfaceCentreReesGenerator W x y i ∈
+      centreReesComponent (localSurfaceClosedPoint W x y) 1 := by
+  fin_cases i
+  · exact localSurfaceCentreReesTwo_mem_degree_one W x y
+  · exact localSurfaceCentreReesCoordinate_mem_degree_one W x y 0
+  · exact localSurfaceCentreReesCoordinate_mem_degree_one W x y 1
+
+/-- The three degree-one generators cover the entire surface-centre
+Rees `Proj`, not just the part visible on `D₊(2t)`. -/
+theorem localSurfaceCentreReesGenerator_cover
+    (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2]) :
+    letI : GradedAlgebra
+        (centreReesComponent (localSurfaceClosedPoint W x y)) :=
+      centreReesGrading (localSurfaceClosedPoint W x y)
+    ⨆ i : Fin 3, ProjectiveSpectrum.basicOpen
+      (centreReesComponent (localSurfaceClosedPoint W x y))
+      (localSurfaceCentreReesGenerator W x y i) = ⊤ := by
+  classical
+  let R := localSurfaceCoordinateRing W x y
+  let I := localSurfaceClosedPoint W x y
+  let A := reesAlgebra I
+  let 𝒜 := centreReesComponent I
+  letI : GradedAlgebra 𝒜 := centreReesGrading I
+  let q : MvPolynomial (Fin 2) ℤ_[2] →+* R :=
+    Ideal.Quotient.mk (Ideal.span {localSurfaceEquation W x y})
+  apply le_antisymm le_top
+  intro p _
+  by_contra hp
+  have hall (i : Fin 3) :
+      localSurfaceCentreReesGenerator W x y i ∈
+        p.asHomogeneousIdeal.toIdeal := by
+    by_contra hi
+    apply hp
+    exact (le_iSup (fun j : Fin 3 =>
+      ProjectiveSpectrum.basicOpen 𝒜
+        (localSurfaceCentreReesGenerator W x y j)) i) hi
+  have hs : I = Ideal.span
+      {q (MvPolynomial.C (2 : ℤ_[2])),
+        q (MvPolynomial.X 0), q (MvPolynomial.X 1)} :=
+    localSurfaceClosedPoint_span_generators W x y
+  have hone (r : R) (hr : r ∈ I) :
+      centreReesDegreeOne I r hr ∈ p.asHomogeneousIdeal.toIdeal := by
+    have hspan : r ∈ Submodule.span R
+        {q (MvPolynomial.C (2 : ℤ_[2])),
+          q (MvPolynomial.X 0), q (MvPolynomial.X 1)} := by
+      rw [hs] at hr
+      exact hr
+    induction hspan using Submodule.span_induction' with
+    | mem a ha =>
+        rcases ha with rfl | rfl | rfl
+        · exact hall 0
+        · exact hall 1
+        · exact hall 2
+    | zero =>
+        convert p.asHomogeneousIdeal.toIdeal.zero_mem using 1
+        apply Subtype.ext
+        simp [centreReesDegreeOne]
+    | add a ha b hb ihA ihB =>
+        have haI : a ∈ I := by rw [hs]; exact ha
+        have hbI : b ∈ I := by rw [hs]; exact hb
+        have heq : centreReesDegreeOne I (a + b) (I.add_mem haI hbI) =
+            centreReesDegreeOne I a haI +
+              centreReesDegreeOne I b hbI := by
+          apply Subtype.ext
+          simp [centreReesDegreeOne]
+        rw [heq]
+        exact p.asHomogeneousIdeal.toIdeal.add_mem (ihA haI) (ihB hbI)
+    | smul a b hb ihB =>
+        have hbI : b ∈ I := by rw [hs]; exact hb
+        have heq : centreReesDegreeOne I (a • b) (I.smul_mem a hbI) =
+            algebraMap R A a * centreReesDegreeOne I b hbI := by
+          apply Subtype.ext
+          simp [centreReesDegreeOne, Polynomial.monomial_mul_monomial,
+            smul_eq_mul]
+        rw [heq]
+        exact p.asHomogeneousIdeal.toIdeal.mul_mem_left _ (ihB hbI)
+  have hpos (n : ℕ) (hn : 0 < n) (z : A) (hz : z ∈ 𝒜 n) :
+      z ∈ p.asHomogeneousIdeal.toIdeal := by
+    obtain ⟨r, rfl⟩ := hz
+    obtain ⟨n, rfl⟩ := Nat.exists_eq_succ_of_ne_zero (by omega : n ≠ 0)
+    have hr' : r.1 ∈ I • (I ^ n) := by
+      simpa only [pow_succ'] using r.2
+    have hcoeff (t : R) (ht : t ∈ I • (I ^ n)) :
+        centreReesMonomial I (n + 1)
+          ⟨t, by simpa only [pow_succ'] using ht⟩ ∈
+            p.asHomogeneousIdeal.toIdeal := by
+      induction ht using Submodule.smul_induction_on' with
+      | smul a ha b hb =>
+          have heq : centreReesMonomial I (n + 1)
+              ⟨a • b, by simpa only [pow_succ'] using
+                (Submodule.smul_mem_smul ha hb)⟩ =
+              centreReesDegreeOne I a ha *
+                centreReesMonomial I n ⟨b, hb⟩ := by
+            apply Subtype.ext
+            simp [centreReesMonomial, centreReesDegreeOne,
+              Polynomial.monomial_mul_monomial, smul_eq_mul, add_comm 1 n]
+          rw [heq]
+          exact p.asHomogeneousIdeal.toIdeal.mul_mem_right _ (hone a ha)
+      | add a ha b hb ihA ihB =>
+          have ha' : a ∈ I ^ (n + 1) := by
+            simpa only [pow_succ'] using ha
+          have hb' : b ∈ I ^ (n + 1) := by
+            simpa only [pow_succ'] using hb
+          have heq : centreReesMonomial I (n + 1)
+              ⟨a + b, (I ^ (n + 1)).add_mem ha' hb'⟩ =
+              centreReesMonomial I (n + 1) ⟨a, ha'⟩ +
+                centreReesMonomial I (n + 1) ⟨b, hb'⟩ := by
+            apply Subtype.ext
+            simp [centreReesMonomial]
+          rw [heq]
+          exact p.asHomogeneousIdeal.toIdeal.add_mem ihA ihB
+    exact hcoeff r.1 hr'
+  apply p.not_irrelevant_le
+  intro z hz
+  rw [← DirectSum.sum_support_decompose 𝒜 z]
+  apply Ideal.sum_mem
+  intro n hn
+  by_cases hn0 : n = 0
+  · subst n
+    change GradedRing.proj 𝒜 0 z = 0 at hz
+    have h0 : (↑(((DirectSum.decompose 𝒜) z) 0) : A) = 0 := by
+      simpa only [GradedRing.proj_apply] using hz
+    rw [h0]
+    exact p.asHomogeneousIdeal.toIdeal.zero_mem
+  · exact hpos n (Nat.pos_of_ne_zero hn0) _ (SetLike.coe_mem _)
+
+/-- Each of the three genuine Rees basic opens is affine, including
+the `Xt` and `Yt` charts without assuming a polynomial presentation
+for their degree-zero rings. -/
+noncomputable def localSurfaceCentreGeneratorBasicSchemeIso
+    (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2]) (i : Fin 3) :
+    letI : GradedAlgebra
+        (centreReesComponent (localSurfaceClosedPoint W x y)) :=
+      centreReesGrading (localSurfaceClosedPoint W x y)
+    Scheme.Opens.toScheme (X := localSurfaceCentreReesProj W x y)
+        (ProjectiveSpectrum.basicOpen
+          (centreReesComponent (localSurfaceClosedPoint W x y))
+          (localSurfaceCentreReesGenerator W x y i)) ≅
+      Spec (CommRingCat.of (HomogeneousLocalization.Away
+        (centreReesComponent (localSurfaceClosedPoint W x y))
+        (localSurfaceCentreReesGenerator W x y i))) := by
+  letI : GradedAlgebra
+      (centreReesComponent (localSurfaceClosedPoint W x y)) :=
+    centreReesGrading (localSurfaceClosedPoint W x y)
+  exact homogeneousProjBasicSchemeIso
+    (centreReesComponent (localSurfaceClosedPoint W x y))
+    (localSurfaceCentreReesGenerator W x y i) 1
+    (localSurfaceCentreReesGenerator_mem_degree_one W x y i)
+    (by decide)
+
+/-- The affine structure maps on all three Rees charts are
+restrictions of the same global map to the translated surface. -/
+theorem localSurfaceCentreGeneratorBasicSchemeIso_baseMap
+    (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2]) (i : Fin 3) :
+    letI : GradedAlgebra
+        (centreReesComponent (localSurfaceClosedPoint W x y)) :=
+      centreReesGrading (localSurfaceClosedPoint W x y)
+    let 𝒜 := centreReesComponent (localSurfaceClosedPoint W x y)
+    let f := localSurfaceCentreReesGenerator W x y i
+    let U : (localSurfaceCentreReesProj W x y).Opens :=
+      ProjectiveSpectrum.basicOpen 𝒜 f
+    U.ι ≫ localSurfaceCentreReesToSurface W x y =
+      (localSurfaceCentreGeneratorBasicSchemeIso W x y i).hom ≫
+        Spec.map (CommRingCat.ofHom (homogeneousScalarAwayHom 𝒜 f)) := by
+  letI : GradedAlgebra
+      (centreReesComponent (localSurfaceClosedPoint W x y)) :=
+    centreReesGrading (localSurfaceClosedPoint W x y)
+  exact homogeneousProjBasicSchemeIso_baseMap
+    (centreReesComponent (localSurfaceClosedPoint W x y))
+    (localSurfaceCentreReesGenerator W x y i) 1
+    (localSurfaceCentreReesGenerator_mem_degree_one W x y i)
+    (by decide)
+
+/-- For every ordered pair of generating charts, the restriction to
+their product basic open agrees with the canonical affine localization
+map. In particular this records all three pairwise overlaps. -/
+theorem localSurfaceCentreGeneratorBasicSchemeIso_toProduct
+    (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2]) (i j : Fin 3) :
+    letI : GradedAlgebra
+        (centreReesComponent (localSurfaceClosedPoint W x y)) :=
+      centreReesGrading (localSurfaceClosedPoint W x y)
+    let 𝒜 := centreReesComponent (localSurfaceClosedPoint W x y)
+    let f := localSurfaceCentreReesGenerator W x y i
+    let g := localSurfaceCentreReesGenerator W x y j
+    let X := localSurfaceCentreReesProj W x y
+    let k := (X.restrictFunctor.map
+      (homOfLE (ProjectiveSpectrum.basicOpen_mul_le_left 𝒜 f g))).left
+    k ≫ (localSurfaceCentreGeneratorBasicSchemeIso W x y i).hom =
+      (homogeneousProjBasicSchemeIso 𝒜 (f * g) (1 + 1)
+        (SetLike.GradedMul.mul_mem
+          (localSurfaceCentreReesGenerator_mem_degree_one W x y i)
+          (localSurfaceCentreReesGenerator_mem_degree_one W x y j))
+        (by decide)).hom ≫
+        Spec.map (CommRingCat.ofHom
+          (homogeneousLocalization_toProduct 𝒜 f g 1
+            (localSurfaceCentreReesGenerator_mem_degree_one W x y i)
+            (localSurfaceCentreReesGenerator_mem_degree_one W x y j))) := by
+  letI : GradedAlgebra
+      (centreReesComponent (localSurfaceClosedPoint W x y)) :=
+    centreReesGrading (localSurfaceClosedPoint W x y)
+  exact homogeneousProjBasicSchemeIso_toProduct
+    (centreReesComponent (localSurfaceClosedPoint W x y))
+    (localSurfaceCentreReesGenerator W x y i)
+    (localSurfaceCentreReesGenerator W x y j) 1
+    (localSurfaceCentreReesGenerator_mem_degree_one W x y i)
+    (localSurfaceCentreReesGenerator_mem_degree_one W x y j)
+    (by decide)
+
+/-- Each pairwise chart intersection is its product basic open in
+the same Rees `Proj`; this includes the `Xt`–`Yt` overlap. -/
+theorem localSurfaceCentreReesGenerator_inter
+    (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2]) (i j : Fin 3) :
+    letI : GradedAlgebra
+        (centreReesComponent (localSurfaceClosedPoint W x y)) :=
+      centreReesGrading (localSurfaceClosedPoint W x y)
+    ProjectiveSpectrum.basicOpen
+        (centreReesComponent (localSurfaceClosedPoint W x y))
+        (localSurfaceCentreReesGenerator W x y i) ⊓
+      ProjectiveSpectrum.basicOpen
+        (centreReesComponent (localSurfaceClosedPoint W x y))
+        (localSurfaceCentreReesGenerator W x y j) =
+      ProjectiveSpectrum.basicOpen
+        (centreReesComponent (localSurfaceClosedPoint W x y))
+        (localSurfaceCentreReesGenerator W x y i *
+          localSurfaceCentreReesGenerator W x y j) := by
+  letI : GradedAlgebra
+      (centreReesComponent (localSurfaceClosedPoint W x y)) :=
+    centreReesGrading (localSurfaceClosedPoint W x y)
+  exact (ProjectiveSpectrum.basicOpen_mul
+    (centreReesComponent (localSurfaceClosedPoint W x y))
+    (localSurfaceCentreReesGenerator W x y i)
+    (localSurfaceCentreReesGenerator W x y j)).symm
+
+/-- The restriction to every pairwise overlap preserves the
+original surface scalar map. -/
+theorem localSurfaceCentreReesGenerator_scalar_toProduct
+    (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2]) (i j : Fin 3) :
+    letI : GradedAlgebra
+        (centreReesComponent (localSurfaceClosedPoint W x y)) :=
+      centreReesGrading (localSurfaceClosedPoint W x y)
+    let 𝒜 := centreReesComponent (localSurfaceClosedPoint W x y)
+    let f := localSurfaceCentreReesGenerator W x y i
+    let g := localSurfaceCentreReesGenerator W x y j
+    (homogeneousLocalization_toProduct 𝒜 f g 1
+      (localSurfaceCentreReesGenerator_mem_degree_one W x y i)
+      (localSurfaceCentreReesGenerator_mem_degree_one W x y j)).comp
+        (homogeneousScalarAwayHom 𝒜 f) =
+      homogeneousScalarAwayHom 𝒜 (f * g) := by
+  letI : GradedAlgebra
+      (centreReesComponent (localSurfaceClosedPoint W x y)) :=
+    centreReesGrading (localSurfaceClosedPoint W x y)
+  exact homogeneousScalarAwayHom_toProduct
+    (centreReesComponent (localSurfaceClosedPoint W x y))
+    (localSurfaceCentreReesGenerator W x y i)
+    (localSurfaceCentreReesGenerator W x y j) 1
+    (localSurfaceCentreReesGenerator_mem_degree_one W x y i)
+    (localSurfaceCentreReesGenerator_mem_degree_one W x y j)
+
 /-- The divided affine chart identifies with the actual
 `D₊(2t)` open of the surface-centre blow-up. -/
 noncomputable def evenNodeTwoChartBasicSchemeIso
@@ -1780,6 +2048,81 @@ theorem evenNodeTwoChartBasicSchemeIso_surface
           (Scheme.Spec.mapIso e.toCommRingCatIso.op)).hom ≫
           Spec.map (CommRingCat.ofHom g)
       rw [Iso.trans_hom, Category.assoc, ← hspec]
+
+/-- On either `2t`–coordinate overlap, the divided-chart
+identification restricts by the canonical map to the product
+homogeneous localization. This connects the explicit divided
+presentation with both remaining Rees charts. -/
+theorem evenNodeTwoChartBasicSchemeIso_toCoordinateProduct
+    (W : WeierstrassCurve ℤ_[2]) (x y a b c : ℤ_[2])
+    (ha : PadicInt.toZMod W.a₁ = 1)
+    (hF : localWeierstrassEquation W x y = 4 * a)
+    (hX : W.a₁ * y - (3 * x ^ 2 + 2 * W.a₂ * x + W.a₄) = 2 * b)
+    (hY : 2 * y + W.a₁ * x + W.a₃ = 2 * c)
+    (i : Fin 2) :
+    letI : GradedAlgebra
+        (centreReesComponent (localSurfaceClosedPoint W x y)) :=
+      centreReesGrading (localSurfaceClosedPoint W x y)
+    let 𝒜 := centreReesComponent (localSurfaceClosedPoint W x y)
+    let f := localSurfaceCentreReesTwo W x y
+    let g := localSurfaceCentreReesCoordinate W x y i
+    let X := localSurfaceCentreReesProj W x y
+    let k := (X.restrictFunctor.map
+      (homOfLE (ProjectiveSpectrum.basicOpen_mul_le_left 𝒜 f g))).left
+    k ≫ (evenNodeTwoChartBasicSchemeIso W x y a b c ha hF hX hY).hom =
+      (homogeneousProjBasicSchemeIso 𝒜 (f * g) (1 + 1)
+        (SetLike.GradedMul.mul_mem
+          (localSurfaceCentreReesTwo_mem_degree_one W x y)
+          (localSurfaceCentreReesCoordinate_mem_degree_one W x y i))
+        (by decide)).hom ≫
+        Spec.map (CommRingCat.ofHom
+          ((homogeneousLocalization_toProduct 𝒜 f g 1
+            (localSurfaceCentreReesTwo_mem_degree_one W x y)
+            (localSurfaceCentreReesCoordinate_mem_degree_one W x y i)).comp
+            (evenNodeTwoChartReesAwayEquiv
+              W x y a b c ha hF hX hY).toRingHom)) := by
+  letI : GradedAlgebra
+      (centreReesComponent (localSurfaceClosedPoint W x y)) :=
+    centreReesGrading (localSurfaceClosedPoint W x y)
+  let 𝒜 := centreReesComponent (localSurfaceClosedPoint W x y)
+  let f := localSurfaceCentreReesTwo W x y
+  let g := localSurfaceCentreReesCoordinate W x y i
+  let e := evenNodeTwoChartReesAwayEquiv W x y a b c ha hF hX hY
+  let P := homogeneousProjBasicSchemeIso 𝒜 (f * g) (1 + 1)
+    (SetLike.GradedMul.mul_mem
+      (localSurfaceCentreReesTwo_mem_degree_one W x y)
+      (localSurfaceCentreReesCoordinate_mem_degree_one W x y i))
+    (by decide)
+  let h := homogeneousLocalization_toProduct 𝒜 f g 1
+    (localSurfaceCentreReesTwo_mem_degree_one W x y)
+    (localSurfaceCentreReesCoordinate_mem_degree_one W x y i)
+  let X := localSurfaceCentreReesProj W x y
+  let k := (X.restrictFunctor.map
+    (homOfLE (ProjectiveSpectrum.basicOpen_mul_le_left 𝒜 f g))).left
+  have hgeneric := homogeneousProjBasicSchemeIso_toProduct 𝒜 f g 1
+    (localSurfaceCentreReesTwo_mem_degree_one W x y)
+    (localSurfaceCentreReesCoordinate_mem_degree_one W x y i)
+    (by decide)
+  have hgeneric' :
+      k ≫ (localSurfaceCentreTwoBasicSchemeIso W x y).hom =
+        P.hom ≫ Spec.map (CommRingCat.ofHom h) := hgeneric
+  calc
+    _ = (k ≫ (localSurfaceCentreTwoBasicSchemeIso W x y).hom) ≫
+        (Scheme.Spec.mapIso e.toCommRingCatIso.op).hom := by
+          simp only [evenNodeTwoChartBasicSchemeIso, Iso.trans_hom,
+            Category.assoc]
+    _ = (P.hom ≫ Spec.map (CommRingCat.ofHom h)) ≫
+        (Scheme.Spec.mapIso e.toCommRingCatIso.op).hom := by
+          exact congrArg (fun v => v ≫
+            (Scheme.Spec.mapIso e.toCommRingCatIso.op).hom) hgeneric'
+    _ = P.hom ≫ Spec.map (CommRingCat.ofHom (h.comp e.toRingHom)) := by
+          rw [Category.assoc]
+          change P.hom ≫
+            (Spec.map (CommRingCat.ofHom h) ≫
+              Spec.map (CommRingCat.ofHom e.toRingHom)) =
+              P.hom ≫ Spec.map (CommRingCat.ofHom (h.comp e.toRingHom))
+          rw [← Spec.map_comp]
+          rfl
 
 /-- Linearization of the reduced chart equation at an arbitrary point.
 The remaining terms are quadratic in the increments, so the two
@@ -1890,7 +2233,15 @@ theorem evenNodeTwoChartReduced_critical_on_curve
 #print axioms evenNodeTwoChartToReesAway_surface
 #print axioms localSurfaceCentreReesToSurface
 #print axioms localSurfaceCentreReesToSurface_onTwo
+#print axioms localSurfaceCentreReesGenerator_mem_degree_one
+#print axioms localSurfaceCentreReesGenerator_cover
+#print axioms localSurfaceCentreGeneratorBasicSchemeIso
+#print axioms localSurfaceCentreGeneratorBasicSchemeIso_baseMap
+#print axioms localSurfaceCentreGeneratorBasicSchemeIso_toProduct
+#print axioms localSurfaceCentreReesGenerator_inter
+#print axioms localSurfaceCentreReesGenerator_scalar_toProduct
 #print axioms evenNodeTwoChartBasicSchemeIso_surface
+#print axioms evenNodeTwoChartBasicSchemeIso_toCoordinateProduct
 #print axioms evenNodeTwoChartToSurface
 #print axioms evenNodeTwoChartReduced_increment
 #print axioms evenNode_twoChart_critical_point

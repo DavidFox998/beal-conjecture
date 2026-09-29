@@ -442,9 +442,21 @@ which remains regular in the Rees localization, so `F` itself maps to
  global sections define the Rees `Proj` structure morphism to the
  original translated surface, and its restriction to `D₊(2t)` is
  **proved to agree** with the divided chart's map `X ↦ 2U`,
- `Y ↦ 2V` under that scheme isomorphism. The generic-fibre
- comparison, other charts, and their gluing remain **unproved**.
- So do the full resolution, Kodaira type, and conductor exponent. Any
+ `Y ↦ 2V` under that scheme isomorphism. The three opens `D₊(2t)`,
+ `D₊(Xt)`, and `D₊(Yt)` **cover the actual Rees `Proj`**. All three
+ are identified with spectra of their degree-zero homogeneous
+ localizations, and each affine scalar map is the restriction of the
+ same global morphism to the translated surface. Each pairwise
+ intersection is its product basic open; the chosen affine
+ isomorphisms restrict through the canonical product-localization
+ map, preserving the surface scalar map. On the `2t`–`Xt` and
+ `2t`–`Yt` overlaps, this restriction is also **proved compatible**
+ with the explicit divided-chart isomorphism. Thus these are
+ compatible charts of the already constructed Rees `Proj`; no
+ separate glued quotient-chart model is claimed. Explicit
+ polynomial-quotient presentations for the `Xt` and `Yt` rings, a
+ generic-fibre comparison, the full resolution, Kodaira type, and
+ conductor exponent remain **unproved**. Any
 subsequent model or conductor theorem must keep `W.Δ ≠ 0` explicit
 and discharge those geometric steps separately. In the split branch,
 the relevant discriminant hypothesis is `v₂(W.Δ) = 1`; the genuinely even-valuation
