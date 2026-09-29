@@ -7,8 +7,9 @@ import Mathlib.RingTheory.Ideal.QuotientOperations
 /-!
 Checked inputs for the even-valuation nodal chart. Dividing the
 pulled-back equation by four is justified here, but this polynomial
-identity is not yet a scheme-theoretic blow-up, a resolution, or an
-`Iₙ` classification.
+identity alone does not give the full blow-up, a resolution, or an
+`Iₙ` classification. The identified `D₊(2t)` chart and its map to the
+original surface are established below.
 -/
 
 namespace Beal.General
@@ -1614,6 +1615,84 @@ noncomputable def evenNodeTwoChartReesAwayEquiv
     ⟨evenNodeTwoChartToReesAway_injective W x y a b c ha hF hX hY,
      evenNodeTwoChartToReesAway_surjective W x y a b c hF hX hY⟩
 
+/-- The Rees chart map sends the divided chart's surface-coordinate
+substitution to the scalar action of the original surface ring. -/
+theorem evenNodeTwoChartToReesAway_surface
+    (W : WeierstrassCurve ℤ_[2]) (x y a b c : ℤ_[2])
+    (hF : localWeierstrassEquation W x y = 4 * a)
+    (hX : W.a₁ * y - (3 * x ^ 2 + 2 * W.a₂ * x + W.a₄) = 2 * b)
+    (hY : 2 * y + W.a₁ * x + W.a₃ = 2 * c) :
+    letI : GradedAlgebra
+        (centreReesComponent (localSurfaceClosedPoint W x y)) :=
+      centreReesGrading (localSurfaceClosedPoint W x y)
+    (evenNodeTwoChartToReesAway W x y a b c hF hX hY).comp
+        (evenNodeTwoChartToSurfaceRing W x y a b c hF hX hY) =
+      homogeneousScalarAwayHom
+        (centreReesComponent (localSurfaceClosedPoint W x y))
+        (localSurfaceCentreReesTwo W x y) := by
+  letI : GradedAlgebra
+      (centreReesComponent (localSurfaceClosedPoint W x y)) :=
+    centreReesGrading (localSurfaceClosedPoint W x y)
+  apply RingHom.ext
+  intro r
+  obtain ⟨p, rfl⟩ := Ideal.Quotient.mk_surjective r
+  calc
+    ((evenNodeTwoChartToReesAway W x y a b c hF hX hY).comp
+        (evenNodeTwoChartToSurfaceRing W x y a b c hF hX hY))
+        ((Ideal.Quotient.mk
+          (Ideal.span {localSurfaceEquation W x y})) p) =
+      evenNodeTwoReesPolynomialMap W x y
+        (evenNodeTwoChartSubstitution p) := by rfl
+    _ = homogeneousScalarAwayHom
+          (centreReesComponent (localSurfaceClosedPoint W x y))
+          (localSurfaceCentreReesTwo W x y)
+          ((Ideal.Quotient.mk
+            (Ideal.span {localSurfaceEquation W x y})) p) :=
+      congrArg (fun h => h p)
+        (evenNodeTwoReesPolynomialMap_substitution W x y)
+
+open CategoryTheory AlgebraicGeometry
+
+/-- The scalar global sections of the surface-centre Rees `Proj`
+define its structure map to the original translated surface. -/
+noncomputable def localSurfaceCentreReesToSurface
+    (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2]) :
+    localSurfaceCentreReesProj W x y ⟶
+      AlgebraicGeometry.Spec
+        (CommRingCat.of (localSurfaceCoordinateRing W x y)) := by
+  let I := localSurfaceClosedPoint W x y
+  letI : GradedAlgebra (centreReesComponent I) := centreReesGrading I
+  exact (AlgebraicGeometry.ΓSpec.adjunction.homEquiv
+    (localSurfaceCentreReesProj W x y)
+    (Opposite.op (CommRingCat.of (localSurfaceCoordinateRing W x y))))
+    (CommRingCat.ofHom
+      (projectiveScalarToGamma (centreReesComponent I))).op
+
+/-- On `D₊(2t)` the global Rees structure map is the affine map
+induced by the surface scalars in the homogeneous localization. -/
+theorem localSurfaceCentreReesToSurface_onTwo
+    (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2]) :
+    letI : GradedAlgebra
+        (centreReesComponent (localSurfaceClosedPoint W x y)) :=
+      centreReesGrading (localSurfaceClosedPoint W x y)
+    let U : (localSurfaceCentreReesProj W x y).Opens :=
+      ProjectiveSpectrum.basicOpen
+        (centreReesComponent (localSurfaceClosedPoint W x y))
+        (localSurfaceCentreReesTwo W x y)
+    U.ι ≫
+      localSurfaceCentreReesToSurface W x y =
+    (localSurfaceCentreTwoBasicSchemeIso W x y).hom ≫
+      AlgebraicGeometry.Spec.map (CommRingCat.ofHom
+        (homogeneousScalarAwayHom
+          (centreReesComponent (localSurfaceClosedPoint W x y))
+          (localSurfaceCentreReesTwo W x y))) := by
+  let I := localSurfaceClosedPoint W x y
+  letI : GradedAlgebra (centreReesComponent I) := centreReesGrading I
+  exact homogeneousProjBasicSchemeIso_baseMap
+    (centreReesComponent I)
+    (localSurfaceCentreReesTwo W x y) 1
+    (localSurfaceCentreReesTwo_mem_degree_one W x y) (by decide)
+
 /-- The divided affine chart identifies with the actual
 `D₊(2t)` open of the surface-centre blow-up. -/
 noncomputable def evenNodeTwoChartBasicSchemeIso
@@ -1640,8 +1719,8 @@ noncomputable def evenNodeTwoChartBasicSchemeIso
     (AlgebraicGeometry.Scheme.Spec.mapIso e.toCommRingCatIso.op)
 
 /-- The divided chart maps to the original translated surface as a
-scheme. It is not yet proved to be the strict-transform chart of a
-scheme-theoretic blow-up. -/
+scheme. Below, this map is identified with the restriction of the
+surface-centre Rees `Proj` structure map. -/
 noncomputable def evenNodeTwoChartToSurface
     (W : WeierstrassCurve ℤ_[2]) (x y a b c : ℤ_[2])
     (hF : localWeierstrassEquation W x y = 4 * a)
@@ -1653,6 +1732,54 @@ noncomputable def evenNodeTwoChartToSurface
         (CommRingCat.of (localSurfaceCoordinateRing W x y)) :=
   AlgebraicGeometry.Spec.map (CommRingCat.ofHom
     (evenNodeTwoChartToSurfaceRing W x y a b c hF hX hY))
+
+/-- The identified divided chart carries the restriction of the
+global Rees blow-up map to the original translated surface. -/
+theorem evenNodeTwoChartBasicSchemeIso_surface
+    (W : WeierstrassCurve ℤ_[2]) (x y a b c : ℤ_[2])
+    (ha : PadicInt.toZMod W.a₁ = 1)
+    (hF : localWeierstrassEquation W x y = 4 * a)
+    (hX : W.a₁ * y - (3 * x ^ 2 + 2 * W.a₂ * x + W.a₄) = 2 * b)
+    (hY : 2 * y + W.a₁ * x + W.a₃ = 2 * c) :
+    letI : GradedAlgebra
+        (centreReesComponent (localSurfaceClosedPoint W x y)) :=
+      centreReesGrading (localSurfaceClosedPoint W x y)
+    let U : (localSurfaceCentreReesProj W x y).Opens :=
+      ProjectiveSpectrum.basicOpen
+        (centreReesComponent (localSurfaceClosedPoint W x y))
+        (localSurfaceCentreReesTwo W x y)
+    U.ι ≫ localSurfaceCentreReesToSurface W x y =
+      (evenNodeTwoChartBasicSchemeIso W x y a b c ha hF hX hY).hom ≫
+        evenNodeTwoChartToSurface W x y a b c hF hX hY := by
+  let I := localSurfaceClosedPoint W x y
+  letI : GradedAlgebra (centreReesComponent I) := centreReesGrading I
+  let e := evenNodeTwoChartReesAwayEquiv W x y a b c ha hF hX hY
+  let H := homogeneousScalarAwayHom
+    (centreReesComponent I) (localSurfaceCentreReesTwo W x y)
+  let g := evenNodeTwoChartToSurfaceRing W x y a b c hF hX hY
+  have hring : H = e.toRingHom.comp g := by
+    exact (evenNodeTwoChartToReesAway_surface W x y a b c hF hX hY).symm
+  have hspec :
+      Spec.map (CommRingCat.ofHom H) =
+        (Scheme.Spec.mapIso e.toCommRingCatIso.op).hom ≫
+          Spec.map (CommRingCat.ofHom g) := by
+    change Spec.map (CommRingCat.ofHom H) =
+      Spec.map (CommRingCat.ofHom e.toRingHom) ≫
+        Spec.map (CommRingCat.ofHom g)
+    rw [← Spec.map_comp]
+    exact congrArg (fun h => Spec.map (CommRingCat.ofHom h)) hring
+  calc
+    _ = (localSurfaceCentreTwoBasicSchemeIso W x y).hom ≫
+        Spec.map (CommRingCat.ofHom H) :=
+      localSurfaceCentreReesToSurface_onTwo W x y
+    _ = (evenNodeTwoChartBasicSchemeIso W x y a b c ha hF hX hY).hom ≫
+        evenNodeTwoChartToSurface W x y a b c hF hX hY := by
+      change (localSurfaceCentreTwoBasicSchemeIso W x y).hom ≫
+          Spec.map (CommRingCat.ofHom H) =
+        ((localSurfaceCentreTwoBasicSchemeIso W x y).trans
+          (Scheme.Spec.mapIso e.toCommRingCatIso.op)).hom ≫
+          Spec.map (CommRingCat.ofHom g)
+      rw [Iso.trans_hom, Category.assoc, ← hspec]
 
 /-- Linearization of the reduced chart equation at an arbitrary point.
 The remaining terms are quadratic in the increments, so the two
@@ -1760,6 +1887,10 @@ theorem evenNodeTwoChartReduced_critical_on_curve
 #print axioms evenNodeTwoChartToReesAway_surjective
 #print axioms evenNodeTwoChartReesAwayEquiv
 #print axioms evenNodeTwoChartBasicSchemeIso
+#print axioms evenNodeTwoChartToReesAway_surface
+#print axioms localSurfaceCentreReesToSurface
+#print axioms localSurfaceCentreReesToSurface_onTwo
+#print axioms evenNodeTwoChartBasicSchemeIso_surface
 #print axioms evenNodeTwoChartToSurface
 #print axioms evenNodeTwoChartReduced_increment
 #print axioms evenNode_twoChart_critical_point

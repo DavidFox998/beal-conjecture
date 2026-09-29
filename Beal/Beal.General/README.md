@@ -438,9 +438,11 @@ which remains regular in the Rees localization, so `F` itself maps to
  on ideal powers and the three centre generators proves that the ratio
  map is **surjective**. Hence the divided hypersurface ring is
  isomorphic to the actual `D₊(2t)` coordinate ring, and their affine
- schemes are isomorphic using the `Proj` basic-open theorem. The
- structural morphism of this `Proj` to the original surface has not
- been compared with the divided chart's surface map; the generic-fibre
+ schemes are isomorphic using the `Proj` basic-open theorem. Scalar
+ global sections define the Rees `Proj` structure morphism to the
+ original translated surface, and its restriction to `D₊(2t)` is
+ **proved to agree** with the divided chart's map `X ↦ 2U`,
+ `Y ↦ 2V` under that scheme isomorphism. The generic-fibre
  comparison, other charts, and their gluing remain **unproved**.
  So do the full resolution, Kodaira type, and conductor exponent. Any
 subsequent model or conductor theorem must keep `W.Δ ≠ 0` explicit
