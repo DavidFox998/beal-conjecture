@@ -452,11 +452,24 @@ which remains regular in the Rees localization, so `F` itself maps to
  map, preserving the surface scalar map. On the `2t`–`Xt` and
  `2t`–`Yt` overlaps, this restriction is also **proved compatible**
  with the explicit divided-chart isomorphism. Thus these are
- compatible charts of the already constructed Rees `Proj`; no
- separate glued quotient-chart model is claimed. Explicit
- polynomial-quotient presentations for the `Xt` and `Yt` rings, a
- generic-fibre comparison, the full resolution, Kodaira type, and
- conductor exponent remain **unproved**. Any
+  compatible charts of the already constructed Rees `Proj`; no
+  separate glued quotient-chart model is claimed. Both coordinate
+  charts now also have **polynomial-quotient presentations over the
+  translated surface ring**: use three ratio variables
+  `T₂,Tₓ,Tᵧ`, mapping to `(2,X,Y)/X` on `D₊(Xt)` and to
+  `(2,X,Y)/Y` on `D₊(Yt)`. The exact relation ideal is defined
+  independently of the Rees algebra by evaluating these rational
+  substitutions in the corresponding localization of the surface
+  ring. The proof shows that the Rees ratio map is surjective and
+  that localization of the surface ring detects its kernel, even
+  when a chosen coordinate is a zero divisor. Thus quotient ring
+  equivalences and affine scheme isomorphisms follow, and the
+  surface-scalar maps still agree with the global Rees morphism.
+  The three-variable presentation is not minimal; the linear graph
+  equations hold, but **an equality with a finite graph ideal or
+  its explicit power saturation is not claimed**. A generic-fibre
+  comparison, the full resolution, Kodaira type, and conductor
+  exponent remain **unproved**. Any
 subsequent model or conductor theorem must keep `W.Δ ≠ 0` explicit
 and discharge those geometric steps separately. In the split branch,
 the relevant discriminant hypothesis is `v₂(W.Δ) = 1`; the genuinely even-valuation
