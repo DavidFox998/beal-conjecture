@@ -423,13 +423,18 @@ with its degree-one elements `2t`, `Xt`, and `Yt` and the checked
 relations `2 · (Xᵢt) = Xᵢ · (2t)`. A coefficientwise map sends
 this actual Rees algebra to the Rees algebra of the chart's
 principal image ideal `(2)`, preserving degree-one generators.
-Its grading, degree-zero
-localization at `2t`, and equivalence with the candidate affine
-chart have **not** been constructed. That scheme-theoretic chart
-identification,
-generic-fibre comparison, the other charts and their gluing remain
-**unproved**. Nor is a
-resolution, Kodaira type, or conductor exponent. Any
+Its grading by the ideal powers is now checked as an internal direct
+sum. Thus its `Proj` and the actual basic open `D₊(2t)` are formed,
+and the latter is identified with the spectrum of its degree-zero
+homogeneous localization. The fractions `Xt/(2t)` and `Yt/(2t)`
+define a map from the candidate ambient polynomial ring into this
+localization. The **kernel and surjectivity** needed to identify
+that ring with the quotient by `(F)` have not been proved; neither
+has the structural morphism of this `Proj` to the original surface.
+Consequently the candidate chart is still not proved to be a
+blow-up strict transform. That chart equivalence, generic-fibre
+comparison, the other charts, and their gluing remain **unproved**.
+So do the resolution, Kodaira type, and conductor exponent. Any
 subsequent model or conductor theorem must keep `W.Δ ≠ 0` explicit
 and discharge those geometric steps separately. In the split branch,
 the relevant discriminant hypothesis is `v₂(W.Δ) = 1`; the genuinely even-valuation

@@ -1,5 +1,6 @@
 import Beal.«Beal.General».TateI1Split
 import Beal.«Beal.General».TateEvenReesChart
+import Beal.«Beal.General».ProjectiveFibreChartBaseChange
 import Mathlib.AlgebraicGeometry.Scheme
 import Mathlib.RingTheory.Ideal.QuotientOperations
 
@@ -771,6 +772,38 @@ noncomputable def evenNodeTwoChart_reesMap
     evenNodeTwoChart_surfaceCentre_image W x y a b c hF hX hY
   exact hi ▸ centreReesMap f (localSurfaceClosedPoint W x y)
 
+/-- The candidate ambient coordinates map into the *actual* Rees
+`D₊(2t)` coordinate ring via `U = Xt/(2t)` and `V = Yt/(2t)`.
+The divided equation has not yet been proved to lie in its kernel. -/
+noncomputable def evenNodeTwoReesPolynomialMap
+    (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2]) :
+    letI : GradedAlgebra
+        (centreReesComponent (localSurfaceClosedPoint W x y)) :=
+      centreReesGrading (localSurfaceClosedPoint W x y)
+    MvPolynomial (Fin 2) ℤ_[2] →+*
+      HomogeneousLocalization.Away
+        (centreReesComponent (localSurfaceClosedPoint W x y))
+        (localSurfaceCentreReesTwo W x y) := by
+  letI : GradedAlgebra
+      (centreReesComponent (localSurfaceClosedPoint W x y)) :=
+    centreReesGrading (localSurfaceClosedPoint W x y)
+  let R := localSurfaceCoordinateRing W x y
+  exact MvPolynomial.eval₂Hom
+    ((homogeneousScalarAwayHom
+        (centreReesComponent (localSurfaceClosedPoint W x y))
+        (localSurfaceCentreReesTwo W x y)).comp
+      (algebraMap ℤ_[2] R))
+    (localSurfaceCentreTwoRatio W x y)
+
+theorem evenNodeTwoReesPolynomialMap_X
+    (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2]) (i : Fin 2) :
+    letI : GradedAlgebra
+        (centreReesComponent (localSurfaceClosedPoint W x y)) :=
+      centreReesGrading (localSurfaceClosedPoint W x y)
+    evenNodeTwoReesPolynomialMap W x y (MvPolynomial.X i) =
+      localSurfaceCentreTwoRatio W x y i := by
+  simp only [evenNodeTwoReesPolynomialMap, MvPolynomial.eval₂Hom_X']
+
 /-- The divided chart maps to the original translated surface as a
 scheme. It is not yet proved to be the strict-transform chart of a
 scheme-theoretic blow-up. -/
@@ -866,6 +899,8 @@ theorem evenNodeTwoChartReduced_critical_on_curve
 #print axioms evenNodeTwoChart_centre_image
 #print axioms evenNodeTwoChart_surfaceCentre_image
 #print axioms evenNodeTwoChart_reesMap
+#print axioms evenNodeTwoReesPolynomialMap
+#print axioms evenNodeTwoReesPolynomialMap_X
 #print axioms evenNodeTwoChartToSurface
 #print axioms evenNodeTwoChartReduced_increment
 #print axioms evenNode_twoChart_critical_point

@@ -33,7 +33,7 @@ For a candidate affine chart represented by a polynomial quotient, a noncomputab
 
 **How to apply:** Use a reducible alias for the quotient coordinate ring, establish the polynomial identity before quotient-lifting, and import the scheme-level interface to construct the induced `Spec.map`. A chart morphism to the original surface still does not identify a blow-up or a strict transform: saturation and the other charts remain separate obligations.
 
-An affine candidate can pass both the equation-saturation test and the Cartier-centre test without being identified as an open of the blow-up. The pinned Rees-algebra development defines an algebraic subalgebra, not a ready-to-use scheme blow-up with a proved `D₊` chart comparison.
+An affine candidate can pass both the equation-saturation test and the Cartier-centre test without being identified as an open of the blow-up. The pinned Rees-algebra development defines an algebraic subalgebra, not a ready-to-use scheme blow-up with a proved `D₊` chart comparison. Even after supplying a grading and a basic-open `Spec` description, identifying its degree-zero ring with the divided chart remains an independent kernel-and-surjectivity problem.
 
 **Why:** Local ideal calculations do not construct the graded `Proj`, prove the affine-chart equivalence, or glue the other charts. Calling the candidate morphism a strict transform on that basis would promote a necessary condition into the missing geometric theorem.
 
@@ -49,4 +49,4 @@ When the target is the blow-up **of the surface** at its centre, take the Rees a
 
 **Why:** The affine saturation calculation starts in an ambient plane, which makes it easy to conflate the ambient blow-up with the surface blow-up. Neither its ideal kernel nor its coefficientwise Rees map supplies the required graded basic-open equivalence.
 
-**How to apply:** Build the surface-centre Rees grading, its degree-zero localization at the chosen degree-one denominator, and the comparison with the divided chart. Prove the image ideal becomes principal on that chart, but do not substitute this principalization for the missing `Proj` comparison.
+**How to apply:** Use the surface-centre Rees grading and its degree-zero basic-open localization as the actual `D₊` object, then prove the ratio-coordinate map has precisely the divided ideal as kernel and is surjective. Principalization of the image ideal is necessary but does not replace this ring equivalence or the structural morphism to the original surface.
