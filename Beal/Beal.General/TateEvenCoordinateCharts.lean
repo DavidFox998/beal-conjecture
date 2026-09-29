@@ -325,9 +325,8 @@ theorem centreReesRatioQuotientEquiv_scalar
   rw [centreReesRatioQuotientEquiv_mk]
   simp [centreReesRatioPolynomialMap]
 
-/-- Each graph equation holds in the exact quotient ideal. No
-claim is made here that the unsaturated graph equations generate
-all its relations. -/
+/-- Each graph equation holds in the exact quotient ideal. The
+formula below identifies all further relations by saturation. -/
 theorem centreReesRatioRelations_graph
     {R : Type*} [CommRing R] (s : Fin 3 → R) (f : R) (j : Fin 3) :
     MvPolynomial.C f * MvPolynomial.X j - MvPolynomial.C (s j) ∈
@@ -343,6 +342,119 @@ theorem centreReesRatioRelations_graph
   rw [Localization.mk_eq_mk']
   exact IsLocalization.mk'_spec' (Localization.Away f) (s j)
     ⟨f, Submonoid.mem_powers f⟩
+
+/-- The finite graph ideal before removing denominator torsion. -/
+def centreReesRatioGraphIdeal
+    {R : Type*} [CommRing R] (s : Fin 3 → R) (f : R) :
+    Ideal (MvPolynomial (Fin 3) R) :=
+  Ideal.span (Set.range (fun j : Fin 3 =>
+    MvPolynomial.C f * MvPolynomial.X j - MvPolynomial.C (s j)))
+
+/-- Every ratio polynomial has a polynomial numerator modulo the
+graph equations after multiplying by a suitable denominator power. -/
+theorem centreReesRatioGraph_normalForm
+    {R : Type*} [CommRing R] (s : Fin 3 → R) (f : R)
+    (p : MvPolynomial (Fin 3) R) :
+    ∃ (n : ℕ) (a : R),
+      (MvPolynomial.C f) ^ n * p - MvPolynomial.C a ∈
+        centreReesRatioGraphIdeal s f := by
+  let J := centreReesRatioGraphIdeal s f
+  induction p using MvPolynomial.induction_on with
+  | h_C a =>
+      refine ⟨0, a, ?_⟩
+      simp [J]
+  | h_add p q hp hq =>
+      obtain ⟨n, a, ha⟩ := hp
+      obtain ⟨m, b, hb⟩ := hq
+      refine ⟨n + m, f ^ m * a + f ^ n * b, ?_⟩
+      have h := J.add_mem
+        (J.mul_mem_left ((MvPolynomial.C f) ^ m) ha)
+        (J.mul_mem_left ((MvPolynomial.C f) ^ n) hb)
+      convert h using 1
+      simp only [map_add, map_mul, map_pow, pow_add]
+      ring
+  | h_X p j hp =>
+      obtain ⟨n, a, ha⟩ := hp
+      refine ⟨n + 1, a * s j, ?_⟩
+      have hg : MvPolynomial.C f * MvPolynomial.X j -
+          MvPolynomial.C (s j) ∈ J :=
+        Ideal.subset_span ⟨j, rfl⟩
+      have h := J.add_mem
+        (J.mul_mem_right (MvPolynomial.C f * MvPolynomial.X j) ha)
+        (J.mul_mem_left (MvPolynomial.C a) hg)
+      convert h using 1
+      simp only [map_mul, pow_succ]
+      ring
+
+/-- The exact relations are the denominator-power saturation of the
+finite graph ideal. This holds even when `f` is a zero divisor. -/
+theorem centreReesRatioRelations_saturation
+    {R : Type*} [CommRing R] (s : Fin 3 → R) (f : R)
+    (p : MvPolynomial (Fin 3) R) :
+    p ∈ centreReesRatioRelations s f ↔
+      ∃ n : ℕ, (MvPolynomial.C f) ^ n * p ∈
+        centreReesRatioGraphIdeal s f := by
+  let J := centreReesRatioGraphIdeal s f
+  let L := Localization.Away f
+  let φ : MvPolynomial (Fin 3) R →+* L :=
+    MvPolynomial.eval₂Hom (algebraMap R L)
+      (fun i => Localization.mk (s i) ⟨f, Submonoid.mem_powers f⟩)
+  have hJ : J ≤ centreReesRatioRelations s f := by
+    change Ideal.span (Set.range (fun j : Fin 3 =>
+      MvPolynomial.C f * MvPolynomial.X j - MvPolynomial.C (s j))) ≤
+      centreReesRatioRelations s f
+    apply Ideal.span_le.mpr
+    rintro z ⟨j, rfl⟩
+    exact centreReesRatioRelations_graph s f j
+  constructor
+  · intro hp
+    obtain ⟨n, a, ha⟩ := centreReesRatioGraph_normalForm s f p
+    have he : φ ((MvPolynomial.C f) ^ n * p - MvPolynomial.C a) = 0 := by
+      exact RingHom.mem_ker.mp (hJ ha)
+    have hp0 : φ p = 0 := hp
+    have hae : algebraMap R L a = 0 := by
+      have h0 : φ (MvPolynomial.C a) = 0 := by
+        simpa only [map_sub, map_mul, map_pow,
+          hp0, mul_zero, zero_sub, neg_eq_zero] using he
+      simpa only [φ, MvPolynomial.eval₂Hom_C] using h0
+    obtain ⟨t, ht⟩ :=
+      (IsLocalization.map_eq_zero_iff (Submonoid.powers f) L a).mp hae
+    obtain ⟨k, hk⟩ := (Submonoid.mem_powers_iff t.1 f).mp t.2
+    have haz : f ^ k * a = 0 := by simpa only [hk] using ht
+    refine ⟨n + k, ?_⟩
+    have hzero :
+        (MvPolynomial.C f : MvPolynomial (Fin 3) R) ^ k *
+          MvPolynomial.C a = 0 := by
+      rw [← map_pow, ← map_mul, haz, map_zero]
+    have heq : (MvPolynomial.C f) ^ (n + k) * p =
+        (MvPolynomial.C f) ^ k *
+          ((MvPolynomial.C f) ^ n * p - MvPolynomial.C a) := by
+      rw [mul_sub, hzero, sub_zero, pow_add]
+      ring
+    rw [heq]
+    exact J.mul_mem_left ((MvPolynomial.C f) ^ k) ha
+  · rintro ⟨n, hn⟩
+    have h : φ ((MvPolynomial.C f) ^ n * p) = 0 :=
+      RingHom.mem_ker.mp (hJ hn)
+    have hu : IsUnit (algebraMap R L f) :=
+      IsLocalization.map_units L ⟨f, Submonoid.mem_powers f⟩
+    have hp0 : φ p = 0 := (hu.pow n).mul_left_cancel (by
+      have h' : φ (MvPolynomial.C f) ^ n * φ p = 0 := by
+        simpa only [map_mul, map_pow] using h
+      rw [show φ (MvPolynomial.C f) = algebraMap R L f by
+        simp [φ]] at h'
+      simpa only [mul_zero] using h')
+    exact hp0
+
+/-- Equality of the exact relation ideal's underlying set with the
+explicit power saturation of the finite graph ideal. -/
+theorem centreReesRatioRelations_eq_saturatedGraph
+    {R : Type*} [CommRing R] (s : Fin 3 → R) (f : R) :
+    (centreReesRatioRelations s f : Set (MvPolynomial (Fin 3) R)) =
+      {p | ∃ n : ℕ, (MvPolynomial.C f) ^ n * p ∈
+        centreReesRatioGraphIdeal s f} := by
+  ext p
+  exact centreReesRatioRelations_saturation s f p
 
 /-- The three centre generators in the translated surface ring. -/
 noncomputable def localSurfaceCentreScalars
@@ -387,6 +499,24 @@ noncomputable def localSurfaceCentreCoordinateRelations
     Ideal.Quotient.mk (Ideal.span {localSurfaceEquation W x y})
   centreReesRatioRelations (localSurfaceCentreScalars W x y)
     (q (MvPolynomial.X i))
+
+/-- On both `Xt` and `Yt`, the quotient relations are precisely
+the saturation of the three finite graph equations by powers of
+the corresponding coordinate. -/
+theorem localSurfaceCentreCoordinateRelations_saturation
+    (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2]) (i : Fin 2)
+    (p : MvPolynomial (Fin 3) (localSurfaceCoordinateRing W x y)) :
+    let q : MvPolynomial (Fin 2) ℤ_[2] →+*
+        localSurfaceCoordinateRing W x y :=
+      Ideal.Quotient.mk (Ideal.span {localSurfaceEquation W x y})
+    p ∈ localSurfaceCentreCoordinateRelations W x y i ↔
+      ∃ n : ℕ, (MvPolynomial.C (q (MvPolynomial.X i))) ^ n * p ∈
+        centreReesRatioGraphIdeal (localSurfaceCentreScalars W x y)
+          (q (MvPolynomial.X i)) := by
+  exact centreReesRatioRelations_saturation
+    (localSurfaceCentreScalars W x y)
+    ((Ideal.Quotient.mk (Ideal.span {localSurfaceEquation W x y}))
+      (MvPolynomial.X i)) p
 
 /-- Polynomial-quotient presentations of `D₊(Xt)` and `D₊(Yt)`.
 The relation ideal is computed in the original surface localization
@@ -542,6 +672,10 @@ theorem localSurfaceCentreCoordinateBasicSchemeIso_surface
 #print axioms centreReesRatioQuotientEquiv_mk
 #print axioms centreReesRatioQuotientEquiv_scalar
 #print axioms centreReesRatioRelations_graph
+#print axioms centreReesRatioGraph_normalForm
+#print axioms centreReesRatioRelations_saturation
+#print axioms centreReesRatioRelations_eq_saturatedGraph
+#print axioms localSurfaceCentreCoordinateRelations_saturation
 #print axioms localSurfaceCentreCoordinateQuotientEquiv
 #print axioms localSurfaceCentreCoordinateQuotientEquiv_surface
 #print axioms localSurfaceCentreCoordinateBasicSchemeIso
