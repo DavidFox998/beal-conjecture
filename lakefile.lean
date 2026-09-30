@@ -81,6 +81,7 @@ lean_lib BealGeneral where
     .one `Beal.«Beal.General».TateEvenSpecialFibre,
     .one `Beal.«Beal.General».TateEvenTwoAdicTransport,
     .one `Beal.«Beal.General».TateEvenOverlapCompat,
+    .one `Beal.«Beal.General».TateEvenPolynomialOverlapTransport,
     .one `Beal.«Beal.General».TateReduction,
     .one `Beal.«Beal.General».Conductor,
     .one `Beal.«Beal.General».TwoPower,
