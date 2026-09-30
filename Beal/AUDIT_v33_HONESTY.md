@@ -1,4 +1,4 @@
-# v33 About and pre-mint honesty audit — v5 scoped build attempt
+# v33 About and release honesty audit — v6 release outcome
 
 Scope: branch `beal-10e6-inhabited-43735b3`; checked against the current
  root `README.md` About section, `Beal/Beal.General/README.md`,
@@ -52,34 +52,38 @@ File:line references below point to the current working tree.
   and disclaims a general Beal theorem. `lake build BealGeneral` is
   **unverified**; initial direct checks required `lake exe cache get`
   after Lake discarded compiled Mathlib objects. Seven checks then passed.
-- `git diff --check` passes. Nothing is staged; no secrets, tokens,
-  `.env`, `.lake/` objects or build artifacts are staged. `.gitignore`
-  now names `.lake/`, `build/`, `/.agents/`, `/.local/`, and `.env*`.
+- `git diff --check` passed for the release snapshot. Its listed paths
+  were already committed; the requested release-message commit is an
+  empty marker. `Beal/Even/README.md` does not exist and was not added.
+  No secrets, `.env`, `.lake/` or build objects were staged. `.gitignore`
+  names `.lake/`, `build/`, `/.agents/`, `/.local/`, and `.env*`.
    Already-tracked `.agents/` memory files remain tracked; ignore rules
    do not retroactively untrack them. No tracked files were removed.
-- No root `VERSION` file or Lake version field exists; no local or
-  queried remote `v33` tag exists. `origin` is confirmed as
-  `DavidFox998/beal-conjecture`, the user's designated whole-project
-  main audit/release source (this checkout tracks 1,047 project files).
-  `level26` now points to `DavidFox998/beal-level-26-foundations`, the
-  designated later work-repository mirror; the existing
-  `origin-foundations` alias is untouched. Remote trees were not compared.
+- No root `VERSION` file or Lake version field exists. The annotated
+  `v33` tag and audit branch on `origin` now point to release marker
+  `207c2bfa` in `DavidFox998/beal-conjecture`. Mirror `level26`
+  (`DavidFox998/beal-level-26-foundations`) fast-forwarded its `main`
+  to that commit and received the same tag; no force-push was used.
+  The audit repo's default `main` was not updated.
 - The root About and both Beal READMEs now route **v33** to the main
   repo, with mirror sync after mint. The CI badge targets the main repo.
   Historical v25/v30 tag citations now link to their existing version
   DOIs: those tags exist on the mirror but not on `origin`, so redirecting
   their GitHub tag URLs to the main repo would break them. Existing DOI
   badges still cite historical foundations records, not a new v33 DOI.
-- `Beal/ZENODO_DEPOSIT_v33.md` records the intended deposit source as
+- `Beal/ZENODO_DEPOSIT_v33.md` records the deposit source as
   the `beal-conjecture` GitHub `v33` release, not the mirror. Root
   `.zenodo.json` and `CITATION.cff` now identify v33 and the main repo;
   neither assigns a DOI or release date. The older v25 foundations
   concept DOI is retained as **historical**, not assigned to v33.
-- An authenticated GitHub webhooks API request for
-  `DavidFox998/beal-conjecture` returned HTTP 200: **one active Zenodo
-  webhook listening for `release` events**, with no further pages.
-  This verifies GitHub-side linkage, not future webhook delivery,
-  deposit acceptance or a published DOI. No Zenodo record was created.
+- One active Zenodo webhook listens for `release` events on the audit
+  repo. The GitHub `v33` release was published on 2026-09-30; the
+  release URL is `https://github.com/DavidFox998/beal-conjecture/releases/tag/v33`.
+  webhook's deliveries returned 500, 409, then **202 Accepted**.
+  The authenticated Zenodo deposits API still listed no v33 record
+  after repeated checks (62 deposits returned); a DOI is **pending**,
+  not verified. The webhook URL exposed a credential during inspection;
+  reconnect/rotate that credential without printing it again.
 - A separate v33 manuscript at `papers/main.tex` compiles to
   `papers/main.pdf` (two pages); the historical level-26
   `paper/mcom-draft.tex` is untouched. The PDF states the quotient
@@ -96,7 +100,7 @@ File:line references below point to the current working tree.
   that module. The earlier standalone large special-fibre timeout
   remains separate; no full `lake build BealGeneral` was attempted.
 
-## Recommendation: GO for v33 mint approval; no action authorized yet
+## Recommendation: GO released; Zenodo DOI pending verification
 
 This release proves three-open gluing **of the quotient Rees `Proj`**
 plus the **actual blow-up's generic-fibre comparison**. Product overlaps
@@ -107,9 +111,8 @@ appropriately narrower than the unproved global special-fibre and
 nonzero-generator claims. **Seven** direct v33 Lean checks pass with
 only the three stated axioms; the existing **2,249-line** branch file
 also passes. The two `NEEDS FIX` assertions are **not advertised**.
-The user has settled which repo should own v33; the root
-Zenodo/citation metadata and GitHub-side Zenodo webhook are now checked.
-GO means these pre-mint conditions are met, **not** that Zenodo has
-created or will necessarily create a DOI. Await explicit release
-instructions; then verify the resulting Zenodo record and archive.
-No staging, pushing, tagging, mirroring, or minting was performed.
+The authorized commit, annotated tag, pushes, and GitHub Release are
+complete on the designated audit source; the mirror has the same tag.
+This is **not yet a verified Zenodo mint**. Do not fill in `CITATION.cff`
+or create `ZENODO_DOI_v33.txt` until a v33 deposit, archive and DOI are
+confirmed on Zenodo; then commit and push the real DOI on both branches.
