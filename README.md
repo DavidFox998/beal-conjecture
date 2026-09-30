@@ -24,8 +24,10 @@ For `y² + xy = x³ + 8`, the reduced `2t` equation is
 `D₊(overline{2t})`. See
 [`Beal/RELEASE_NOTES_v33.md`](Beal/RELEASE_NOTES_v33.md) for the
 checked file ledger and limits. The existing generic-fibre
-comparison lives in `TateEvenGenericFibre.lean`; compact v33
-packaging of that lift is pending. This working version has not
+comparison lives in `TateEvenGenericFibre.lean`;
+`TateEvenBranchGenericFibre.lean` (59 lines) now packages the
+actual blow-up's generic-fibre isomorphism over `D(2)`, without
+changing the existing `TateEvenBranch.lean`. This working version has not
 been tagged or minted.
 
 ## End-of-proof interface and v25 forward retrofit

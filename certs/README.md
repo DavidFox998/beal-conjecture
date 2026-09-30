@@ -1,3 +1,5 @@
+> **Root v33 (separate from this folder):** `Beal/Beal.General/` checks `CompatChart2t` (191 lines), `CompatChartXt`/`CompatChartYt` (105 each), six polynomial-to-abstract restrictions, and `SpecialFibreGluing` (167 lines); product overlaps are abstract. See `Beal/RELEASE_NOTES_v33.md`.
+
 # certs/ — Size tables for Beal (4,13,13)
 
 These files are **decide tables**, not a Beal `∀` proof.

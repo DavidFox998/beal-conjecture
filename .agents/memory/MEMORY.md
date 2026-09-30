@@ -22,3 +22,4 @@
 - [Scheme overlap transports](scheme-overlap-transports.md) — construct named-open intersection isomorphisms directly; substituting open equalities can leave unusable dependent transports.
 - [Lean scheme comparison elaboration](lean-scheme-elaboration.md) — stage pullback and chart comparisons abstractly; expanded dependent diagrams can stall before proof checking.
 - [Polynomial chart gluing](polynomial-chart-gluing-boundary.md) — copy the Proj open cover along chart isos to get literal polynomial-spectrum glue objects without presenting product overlaps.
+- [Even-branch generic packaging](even-branch-generic-packaging.md) — package the existing generic-fibre proof in a short companion; do not split the established branch module just for a line limit.

@@ -78,6 +78,7 @@ lean_lib BealGeneral where
     .one `Beal.«Beal.General».TateEvenBranch,
     .one `Beal.«Beal.General».TateEvenCoordinateCharts,
     .one `Beal.«Beal.General».TateEvenGenericFibre,
+    .one `Beal.«Beal.General».TateEvenBranchGenericFibre,
     .one `Beal.«Beal.General».TateEvenSpecialFibre,
     .one `Beal.«Beal.General».TateEvenTwoAdicTransport,
     .one `Beal.«Beal.General».TateEvenOverlapCompat,

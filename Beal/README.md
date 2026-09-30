@@ -16,7 +16,11 @@ For `y²+xy=x³+8`, the reduced `2t` chart is `V²+UV=0`, and its
 origin belongs only to `D₊(overline{2t})`.
 These declarations are sorry-free; the printed gluing axiom
 report is `[propext, Classical.choice, Quot.sound]`.
-Verify with `lake env lean Beal/Beal.General/SpecialFibreGluing.lean`
+`TateEvenBranchGenericFibre.lean` (59 lines) packages the already-proved
+isomorphism of the actual blow-up's generic fibre with the localized
+surface over `D(2)`; the existing `TateEvenBranch.lean` is untouched.
+Verify with `lake env lean Beal/Beal.General/SpecialFibreGluing.lean`,
+`lake env lean Beal/Beal.General/TateEvenBranchGenericFibre.lean`,
 and `git diff --check`. A full `lake build BealGeneral` has not
 been verified for v33. See [`RELEASE_NOTES_v33.md`](RELEASE_NOTES_v33.md).
 

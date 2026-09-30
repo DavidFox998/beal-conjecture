@@ -1,3 +1,5 @@
+> **Root v33 (separate from these notes):** `Beal/Beal.General/` checks `CompatChart2t` (191 lines), `CompatChartXt`/`CompatChartYt` (105 each), six polynomial-to-abstract restrictions, and `SpecialFibreGluing` (167 lines); product overlaps are abstract. See `Beal/RELEASE_NOTES_v33.md`.
+
 # docs/Beal/
 
 Notes for the Matveev–Beal Lean modules in this repository.

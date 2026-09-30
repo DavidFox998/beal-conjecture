@@ -1,3 +1,5 @@
+> **Root v33 (separate from this library):** `Beal/Beal.General/` checks `CompatChart2t` (191 lines), `CompatChartXt`/`CompatChartYt` (105 each), six polynomial-to-abstract restrictions, and `SpecialFibreGluing` (167 lines); product overlaps are abstract. See `Beal/RELEASE_NOTES_v33.md`.
+
 # Tate curve library at 29
 
 This directory develops the Tate-at-`29` route in the only valid forward

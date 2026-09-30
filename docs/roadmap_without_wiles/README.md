@@ -1,3 +1,5 @@
+> **Root v33 (separate from these notes):** `Beal/Beal.General/` checks `CompatChart2t` (191 lines), `CompatChartXt`/`CompatChartYt` (105 each), six polynomial-to-abstract restrictions, and `SpecialFibreGluing` (167 lines); product overlaps are abstract. See `Beal/RELEASE_NOTES_v33.md`.
+
 # Beal without Wiles — Darmon–Merel `r = 13` (`b340a97` base)
 
 Previously the close was “formalize Wiles”. The remaining work

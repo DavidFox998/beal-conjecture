@@ -1,3 +1,5 @@
+> **Root v33 (separate from these notes):** `Beal/Beal.General/` checks `CompatChart2t` (191 lines), `CompatChartXt`/`CompatChartYt` (105 each), six polynomial-to-abstract restrictions, and `SpecialFibreGluing` (167 lines); product overlaps are abstract. See `Beal/RELEASE_NOTES_v33.md`.
+
 # `kolyvagin-fintype` — `Fintype` rank 0, not Subsingleton
 
 Working branch of **beal-level-26-foundations**, cut from

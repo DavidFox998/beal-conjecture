@@ -1,3 +1,5 @@
+> **Root v33 (separate from this folder):** `Beal/Beal.General/` checks `CompatChart2t` (191 lines), `CompatChartXt`/`CompatChartYt` (105 each), six polynomial-to-abstract restrictions, and `SpecialFibreGluing` (167 lines); product overlaps are abstract. See `Beal/RELEASE_NOTES_v33.md`.
+
 # Conditional level-32 newform bridge
 
 `Bridge.lean` is the integration point for the proved Frey numerics and three

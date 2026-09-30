@@ -1,1 +1,1 @@
-Working v33 — three-open gluing; compact generic-fibre lift packaging pending.
+Working v33 — checked three-open gluing and actual blow-up generic-fibre comparison over D(2).

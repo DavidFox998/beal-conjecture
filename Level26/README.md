@@ -1,3 +1,5 @@
+> **Root v33 (separate from this nested dependency):** `Beal/Beal.General/` checks `CompatChart2t` (191 lines), `CompatChartXt`/`CompatChartYt` (105 each), six polynomial-to-abstract restrictions, and `SpecialFibreGluing` (167 lines); product overlaps are abstract. See `Beal/RELEASE_NOTES_v33.md`.
+
 # Local Lake vendor
 
 `BealLevel26Foundations/` is the Lake package formerly required

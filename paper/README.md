@@ -1,3 +1,5 @@
+> **Root v33 (separate from this draft):** `Beal/Beal.General/` checks `CompatChart2t` (191 lines), `CompatChartXt`/`CompatChartYt` (105 each), six polynomial-to-abstract restrictions, and `SpecialFibreGluing` (167 lines); product overlaps are abstract. See `Beal/RELEASE_NOTES_v33.md`.
+
 MCOM draft — build with latexmk -pdf mcom-draft.tex
 
 `v10.0.0-paper-B14-Baker-1e6-DOI` archives the math and paper Zenodo DOIs for the v9.4.0 census (62500 / 25 chunks), Baker-conditional `∀ B`, and Tate bound `2^5*rad*13`.

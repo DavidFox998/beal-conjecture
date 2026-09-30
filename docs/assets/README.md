@@ -1,3 +1,5 @@
+> **Root v33 (separate from these assets):** `Beal/Beal.General/` checks `CompatChart2t` (191 lines), `CompatChartXt`/`CompatChartYt` (105 each), six polynomial-to-abstract restrictions, and `SpecialFibreGluing` (167 lines); product overlaps are abstract. See `Beal/RELEASE_NOTES_v33.md`.
+
 # docs/assets/
 
 Release assets for historical About / Opera Numerorum catch-up

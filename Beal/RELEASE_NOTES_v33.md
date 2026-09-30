@@ -45,15 +45,18 @@ This is an illustrative specialization, not a separately named Lean theorem.
 
 ## Generic-fibre boundary
 
-`TateEvenGenericFibre.lean` already proves that the centre becomes the
-unit ideal upon inverting `2`, identifies the generic base open with
-the scalar basic open contained in `D₊(2t)`, and constructs a
-scheme-level isomorphism of the actual blow-up's base change over
-`D(2)` with the localized translated surface. Its proof of
-compatibility with the base morphisms is separate. This existing
-949-line module is not a new under-250-line `TateEvenBranch.lean`
-deliverable: that filename already names a 2,250-line module.
-Do not claim that packaging or a *full* `BealGeneral` build is verified.
+`TateEvenGenericFibre.lean` (949 lines) proves that the centre becomes
+the unit ideal upon inverting `2`, identifies the generic base open
+with the scalar basic open contained in `D₊(2t)`, and constructs a
+scheme-level isomorphism of the **actual** blow-up's base change over
+`D(2)` with the localized translated surface, compatible with the
+base morphisms. The new
+`TateEvenBranchGenericFibre.lean` (59 lines) packages these existing
+proofs as `evenBranchCentre_generic_eq_top`,
+`evenBranchBlowupGenericFibreIso`, and
+`evenBranchBlowupGenericFibreIso_overBase`. It does not replace or
+refactor the existing 2,250-line `TateEvenBranch.lean`. Neither
+this packaging nor the special-fibre gluing proves minimal regularity.
 
 ## Verification and limits
 
@@ -66,13 +69,16 @@ lake env lean Beal/Beal.General/CompatChartYt.lean
 lake env lean Beal/Beal.General/CompatPolynomialRestrictions.lean
 lake env lean Beal/Beal.General/SpecialFibrePolynomialCover.lean
 lake env lean Beal/Beal.General/SpecialFibreGluing.lean
+lake env lean Beal/Beal.General/TateEvenBranchGenericFibre.lean
 git diff --check
 ```
 
 All six `lake env lean` commands above passed after rehydrating the
 pinned Mathlib cache with `lake exe cache get`; all their printed
 axiom reports contain exactly `propext`, `Classical.choice`, and
-`Quot.sound`. The listed v33 files contain no `sorry`.
+`Quot.sound`. The 59-line generic-fibre companion also passed its
+exact `lake env lean` command with the same axiom report. The listed
+v33 files and the new companion contain no `sorry`.
 A full `lake build BealGeneral` has not been verified in this
 release preparation. None of these results proves a general Beal
 theorem, minimal regularity, or a new product-overlap presentation.

@@ -1,5 +1,10 @@
 # Beal/Matveev/
 
+> **Root-tree v33 (separate from these stubs):** `Beal/Beal.General/` checks
+> `CompatChart2t` (191 lines), `CompatChartXt` and `CompatChartYt` (105 each),
+> six polynomial-to-abstract restrictions, and `SpecialFibreGluing` (167 lines).
+> Product overlaps remain abstract pullbacks. See `Beal/RELEASE_NOTES_v33.md`.
+
 LEAN_PATH stubs. Lake puts the relocated kernel's `Beal/` prefix
 first, so sibling `import Beal.Matveev.*` does not resolve to this
 tree. Theorems live in the matching **root** modules:

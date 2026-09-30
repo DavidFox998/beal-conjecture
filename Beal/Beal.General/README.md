@@ -32,9 +32,12 @@ gluing axiom report is `[propext, Classical.choice, Quot.sound]`.
 Check `lake env lean Beal/Beal.General/SpecialFibreGluing.lean`
 and `git diff --check` (or compile each module listed in
 [`../RELEASE_NOTES_v33.md`](../RELEASE_NOTES_v33.md)).
-`TateEvenGenericFibre.lean` already proves a generic-fibre
-comparison, but no new short `TateEvenBranch.lean` has been checked
-for v33, and the full `lake build BealGeneral` remains unverified.
+`TateEvenBranchGenericFibre.lean` (59 lines) now packages the existing
+actual-blow-up generic-fibre comparison from `TateEvenGenericFibre.lean`:
+`Bl_I[1/2] ≅ Spec(R_Z[1/2])`, compatible with the map to `D(2)`.
+Its exact `lake env lean` check passes with the same axiom report.
+The 2,250-line `TateEvenBranch.lean` is unchanged; a full
+`lake build BealGeneral` remains unverified.
 
 ## Projective proof structure
 
