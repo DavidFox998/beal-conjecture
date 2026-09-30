@@ -108,6 +108,15 @@ lean_lib BealEven where
 lean_lib BealOdd where
   globs := #[.one `Beal.«Beal.Odd».FullReduction]
 
+/-- v36 starter for the modular lift. Not a Beal proof.
+    Directory `Beal/Beal.Modular/Axioms.lean` is the module
+    `Beal.«Beal.Modular».Axioms`, not `Beal.Beal.Modular.Axioms`.
+    `globs` entries are `Glob` values. `roots` selects that module,
+    and the default glob is `.one` of the root. -/
+lean_lib BealModular where
+  roots := #[`Beal.«Beal.Modular».Axioms]
+  globs := #[.one `Beal.«Beal.Modular».Axioms]
+
 @[default_target]
 lean_lib «BealMatveevBeal» where
   globs := #[.submodules `Beal.Matveev, .one `MatveevThm14Proof, .one `MatveevLLL,
