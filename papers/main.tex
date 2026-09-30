@@ -1,0 +1,128 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath,amssymb}
+\usepackage[hidelinks]{hyperref}
+\usepackage[margin=1in]{geometry}
+
+% Exact deposit title:
+% 2-adic even blow-up Tate normal form y^2+xy=x^3+a2x^2+a4x+a6 — three-open gluing v33
+\title{2-adic even blow-up Tate normal form\\
+\texttt{y\textasciicircum2+xy=x\textasciicircum3+a2x\textasciicircum2+a4x+a6}
+--- three-open gluing v33}
+\author{David Fox}
+\date{Working v33 manuscript --- DOI pending}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This working v33 manuscript records a three-open \texttt{OpenCover} of the
+\emph{quotient} Rees scheme $\operatorname{Proj}(\mathrm{ReesMod2})$ by
+$D_+(\overline{2t})$, $D_+(\overline{Xt})$, and $D_+(\overline{Yt})$,
+with affine restriction squares for every ordered pair over abstract
+product-open pullbacks. \texttt{CompatChart2t} (191 lines) identifies the
+principal divided-chart kernel $(F)$ and proves
+\texttt{chart\_eq\_quotient\_2t};
+\texttt{CompatChartXt} and \texttt{CompatChartYt} (105 lines each)
+prove $J_X=(G_X:X^\infty)$ and $J_Y=(G_Y:Y^\infty)$ and their
+quotient-induced chart identifications. Six directed polynomial-to-abstract
+restrictions satisfy $\mathrm{res}_{\mathrm{poly}}
+=\mathrm{res}_{\mathrm{actual}}\circ\psi_\bullet$.
+\texttt{SpecialFibreGluing} (167 lines) checks six composed
+$\operatorname{Spec.map}$ compatibilities and the abstract triple
+cocycle, giving
+\[
+\operatorname{Proj}(\mathrm{ReesMod2})\cong
+\operatorname{Glue}(S_{2t}/(2),S_{Xt}/(2),S_{Yt}/(2)).
+\]
+Product overlaps are abstract pullbacks, not polynomial presentations.
+For $y^2+xy=x^3+8$, the reduced $2t$ chart is $V^2+UV=0$;
+the point $U=V=0$ lies only in $D_+(\overline{2t})$ (an
+illustration, not a separately named Lean theorem).
+\texttt{TateEvenBranchGenericFibre} (59 lines) packages the
+\emph{actual} blow-up comparison
+$\operatorname{Bl}_I[1/2]\cong\operatorname{Spec}(R_Z[1/2])$
+with $I[1/2]=\top$; the existing 2,249-line chart file is untouched.
+The seven targeted \texttt{lake env lean} direct checks previously passed
+with printed axioms only \texttt{propext}, \texttt{Classical.choice},
+and \texttt{Quot.sound}; the scoped \texttt{sorry} scan and
+\texttt{git diff --check} are clean. A standalone direct check of the
+large special-fibre file timed out without a diagnostic and a full
+\texttt{lake build BealGeneral} remains unverified. We do \emph{not}
+claim a global isomorphism from the actual special-fibre pullback to
+the quotient Rees $\operatorname{Proj}$, or a degree-one quotient
+formula or nonvanishing theorem for $\overline{2t}$. This is not a
+general Beal proof. The intended release and Zenodo source is
+\texttt{beal-conjecture}, not its level-26 work mirror; its active
+GitHub-side Zenodo \texttt{release} webhook does not yet establish
+delivery, a deposit, or a DOI. A DOI may be minted only after an
+authorized GitHub Release v33 and subsequent Zenodo verification.
+\end{abstract}
+
+\section{Scope and charts}
+Write $R_Z=\mathbb Z_2[X,Y]/(f)$ for the translated even-branch
+surface under the stated nodal and coefficient-divisibility
+hypotheses, $I=(2,X,Y)$, and
+$\mathrm{ReesMod2}=\mathrm{Rees}(I)/(2)$, where $(2)$ is generated
+by the degree-zero base scalar, \emph{not} by $2t$.
+The integral divided chart has $f(2U,2V)=4F$;
+its principal relation is $(F)$.
+The $Xt$ and $Yt$ charts use saturated graph ideals
+$(G_X:X^\infty)$ and $(G_Y:Y^\infty)$ rather than the
+unsaturated graph equations. Quotient-induced chart maps connect
+these integral calculations to the three reduced chart spectra.
+These assertions concern the charts under their hypotheses,
+not an unconditional formula for every Weierstrass model.
+
+\section{The checked gluing boundary}
+The three reduced generator opens cover
+$\operatorname{Proj}(\mathrm{ReesMod2})$.
+Ordered affine restriction squares live over product opens; the
+six distinct directed pairs obey the polynomial-to-abstract
+restriction identities. The polynomial spectra are literal cover
+objects, but their \emph{overlaps} are abstract product pullbacks.
+Six $\operatorname{Spec.map}$ squares and a triple cocycle yield the
+global isomorphism displayed in the abstract. No polynomial ring
+presentation of a product overlap is supplied or inferred.
+
+The illustrative $y^2+xy=x^3+8$ specialization has
+$f(2U,2V)=4(V^2+UV-2U^3-2)$, so its reduced divided-chart
+equation is $V^2+UV=0$. The point $(U,V)=(0,0)$ gives direction
+$[2t:Xt:Yt]=[1:0:0]$ and belongs to the $2t$ open alone;
+this is an example, not a global classification theorem.
+
+\section{Generic fibre and unresolved special-fibre comparison}
+After inverting $2$, the centre $I$ becomes the unit ideal.
+The packaged generic-fibre isomorphism concerns the \emph{actual}
+blow-up and the localized translated surface over $D(2)$;
+it does not identify an integral chart with its generic fibre.
+In contrast, the checked special-fibre gluing concerns the
+\emph{quotient Rees Proj}. Chartwise base-change comparisons do not
+yet give an isomorphism of that Proj with the actual
+scheme-theoretic special-fibre pullback. Nor is
+$(\mathrm{ReesMod2})_1\cong(I/2I)t$ or
+$\overline{2t}\ne0$ certified here. These missing steps are
+not used as premises of the quotient-Proj gluing.
+
+\section{Verification and deposit route}
+The seven direct Lean checks and their axiom reports are recorded in
+\texttt{Beal/RELEASE\_NOTES\_v33.md} and
+\texttt{Beal/AUDIT\_v33\_HONESTY.md}. They are not a verified
+full-target build: the standalone large special-fibre source check
+timed out, although the passing modules imported its compiled
+declarations. The existing \texttt{TateEvenBranch.lean} (2,249
+lines) passed its separate direct check and was not refactored.
+
+\href{https://github.com/DavidFox998/beal-conjecture}
+{\texttt{beal-conjecture}} is the whole-project main audit and
+intended GitHub-release source. The
+\href{https://github.com/DavidFox998/beal-level-26-foundations}
+{\texttt{beal-level-26-foundations}} work repository is the later
+mirror for the level-26 scaffold; keep that scaffold separate rather
+than present it as an inhabited global Beal result.
+An authenticated GitHub-side check found one active Zenodo hook
+subscribed to \texttt{release} events for the main repository.
+Neither a tag nor a release nor a v33 DOI exists yet. Only after
+explicit release approval should the resulting Zenodo record,
+archive, metadata, and DOI be checked; no mirror push is authorized
+by this manuscript.
+\end{document}

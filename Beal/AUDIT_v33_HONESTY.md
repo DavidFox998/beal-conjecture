@@ -1,8 +1,9 @@
-# v33 About and pre-mint honesty audit — metadata and routing update
+# v33 About and pre-mint honesty audit — v4 paper verification
 
 Scope: branch `beal-10e6-inhabited-43735b3`; checked against the current
-root `README.md` About section, `Beal/Beal.General/README.md`,
-`.github/about.txt`, release notes, and Lean declarations. `ℤ_[2]` in
+ root `README.md` About section, `Beal/Beal.General/README.md`,
+ `.github/about.txt`, release notes, `papers/main.tex` and its PDF,
+ and Lean declarations. `ℤ_[2]` in
 this code means **2-adic integers**, not the localization `ℤ_(2)`.
 File:line references below point to the current working tree.
 
@@ -54,8 +55,8 @@ File:line references below point to the current working tree.
 - `git diff --check` passes. Nothing is staged; no secrets, tokens,
   `.env`, `.lake/` objects or build artifacts are staged. `.gitignore`
   now names `.lake/`, `build/`, `/.agents/`, `/.local/`, and `.env*`.
-  Already-tracked `.agents/` memory files remain tracked; ignore rules
-  do not retroactively untrack them. No files were untracked or removed.
+   Already-tracked `.agents/` memory files remain tracked; ignore rules
+   do not retroactively untrack them. No tracked files were removed.
 - No root `VERSION` file or Lake version field exists; no local or
   queried remote `v33` tag exists. `origin` is confirmed as
   `DavidFox998/beal-conjecture`, the user's designated whole-project
@@ -79,6 +80,13 @@ File:line references below point to the current working tree.
   webhook listening for `release` events**, with no further pages.
   This verifies GitHub-side linkage, not future webhook delivery,
   deposit acceptance or a published DOI. No Zenodo record was created.
+- A separate v33 manuscript at `papers/main.tex` compiles to
+  `papers/main.pdf` (two pages); the historical level-26
+  `paper/mcom-draft.tex` is untouched. The PDF states the quotient
+  Rees `Proj` gluing and actual generic-fibre comparison, keeps
+  overlaps abstract, and explicitly disclaims both `NEEDS FIX`
+  assertions. It records the direct-check limits and pending DOI;
+  no Lean source was changed for this paper.
 
 ## Recommendation: GO for v33 mint approval; no action authorized yet
 
