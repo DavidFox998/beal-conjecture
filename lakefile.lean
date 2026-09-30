@@ -79,6 +79,12 @@ lean_lib BealGeneral where
     .one `Beal.«Beal.General».TateEvenCoordinateCharts,
     .one `Beal.«Beal.General».TateEvenGenericFibre,
     .one `Beal.«Beal.General».TateEvenBranchGenericFibre,
+    .one `Beal.«Beal.General».CompatChart2t,
+    .one `Beal.«Beal.General».CompatChartXt,
+    .one `Beal.«Beal.General».CompatChartYt,
+    .one `Beal.«Beal.General».CompatPolynomialRestrictions,
+    .one `Beal.«Beal.General».SpecialFibrePolynomialCover,
+    .one `Beal.«Beal.General».SpecialFibreGluing,
     .one `Beal.«Beal.General».TateEvenSpecialFibre,
     .one `Beal.«Beal.General».TateEvenTwoAdicTransport,
     .one `Beal.«Beal.General».TateEvenOverlapCompat,
@@ -89,6 +95,12 @@ lean_lib BealGeneral where
     .one `Beal.«Beal.General».Conductor,
     .one `Beal.«Beal.General».TwoPower,
     .one `Beal.«Beal.General».Modularity]
+
+/-- v34 packaging of the even-branch blow-up. Not a Beal proof.
+    The Lake module name is `Beal.«Beal.Even».FullReduction`
+    (directory `Beal/Beal.Even/`), not `Beal.Beal.Even.FullReduction`. -/
+lean_lib BealEven where
+  globs := #[.one `Beal.«Beal.Even».FullReduction]
 
 @[default_target]
 lean_lib «BealMatveevBeal» where
