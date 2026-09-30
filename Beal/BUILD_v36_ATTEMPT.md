@@ -78,3 +78,15 @@ globs := #[.one `Beal.«Beal.Modular».Axioms]
 ```
 
 The directory is `Beal/Beal.Modular/`. A bare name is not a `Glob`.
+
+## v38 outline
+
+`docs/v38.md` lists the chain that is still open. No Lean file was added, and no Lean `axiom` was declared.
+
+Rebuilt on `6f2fcb66` before that note:
+
+- `lake build BealEven`: exit 0
+- `lake build BealOdd`: exit 0
+- `lake build BealModular`: exit 0
+
+The outline, in order: a degree-one nonzero `overline{2t}` (excluded; this is the missing input for `2 ∣ X, Y` and for `2 ∤ X, Y`); `UniversallyClosed` for `Bl_I` proved from the three-open cover, the 105-line saturations `J_X = (G_X : X^∞)` and `J_Y = (G_Y : Y^∞)`, the 59-line generic fibre, and the 167-line special-fibre glue, because Mathlib v4.12.0 has no Rees `Proj` properness theorem; Frey semistability from those 2-adic inputs; modularity and Ribet as uninhabited `Prop`s; and a theorem `dim S₂(Γ₀(2)) = 0`, which the rational numeral `1 + 3/12 - 1/4 - 2/2 = 0` is not. `E ≅ ℙ¹` stays false for the node.
