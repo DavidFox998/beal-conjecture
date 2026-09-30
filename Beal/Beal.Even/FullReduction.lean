@@ -50,6 +50,9 @@ Not checked, and not given inhabitants here:
   `D(2)` is dense in `Spec(ℤ_[2])`);
 * `V(overline{2t})` inside `Proj(ReesMod2)`, and any isomorphism
   of that locus with `ℙ¹_{𝔽₂}`;
+* a degree-one nonzero class of `overline{2t}` on the actual
+  special-fibre pullback (`overline_2t_section` is uninhabited;
+  the integral generators are degree one on the quotient `Proj`);
 * the claim that `(0,0)` lies only in `D₊(overline{2t})`;
 * any implication from an even solution of `x^p + y^q = z^r`
   to `2 ∣ x` and `2 ∣ y`, or to a point of the blow-up.
@@ -419,6 +422,36 @@ both absent here. The degree-one / nonzero claim for `overline{2t}`
 remains excluded. -/
 def even_solution_implies_two_divides : Prop :=
   even_solution_chart
+
+/-! ## Attempted degree-one `overline{2t}` in `ReesMod2`
+
+`localSurfaceCentreReesGenerator_mem_degree_one` puts the integral
+generators `2t`, `Xt`, and `Yt` in degree one. `three_open_cover`
+is `D₊(2t) ∪ D₊(Xt) ∪ D₊(Yt) = ⊤` on the quotient `Proj`.
+`Xt_chart_saturation` and `Yt_chart_saturation` are
+`J_X = (G_X : X^∞)` and `J_Y = (G_Y : Y^∞)`.
+Those are the data one would try to descend modulo `2`.
+They do not produce a section of the actual special-fibre pullback.
+
+-- open: need actual special-fibre pullback vs quotient Proj which v34 excludes, Mathlib lacks Rees Proj properness
+-/
+
+abbrev integral_generators_degree_one :=
+  localSurfaceCentreReesGenerator_mem_degree_one
+
+-- open: need actual special-fibre pullback vs quotient Proj which v34 excludes, Mathlib lacks Rees Proj properness
+/-- Uninhabited. The first four conjuncts name the checked integral
+degree-one generators, the quotient-`Proj` cover
+`D₊(2t)`, `D₊(Xt)`, `D₊(Yt)`, and the saturations
+`J_X = (G_X : X^∞)`, `J_Y = (G_Y : Y^∞)`.
+The last conjunct is the even chart map. Their conjunction is not
+a degree-one nonzero class of `overline{2t}` in `ReesMod2`. -/
+def overline_2t_section : Prop :=
+  integral_generators_degree_one = localSurfaceCentreReesGenerator_mem_degree_one ∧
+  three_open_cover = localSurfaceCentreReesGenerator_cover ∧
+  Xt_chart_saturation = XtRelations_saturation ∧
+  Yt_chart_saturation = YtRelations_saturation ∧
+  even_solution_implies_two_divides
 
 end Beal.Even
 
