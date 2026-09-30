@@ -22,18 +22,14 @@ No generator was found that kills `2t`. The degree-zero scalar `2` does not, and
 
 `localSurfaceCentreGeneratorQuotientProjChartIso_eq` says each of the three named generator charts is that general comparison.
 
+## Global identification
+
+`twoAdicCoverChartIso_toProduct_right` is the right-hand product projection, transported from the left-hand square by `mul_comm`. `twoAdicCoverOverlap_fst` and `twoAdicCoverOverlap_snd` are the two projections of the product overlap. `surfaceCentreSpecialFibreSchemeIso` passes the three generator charts to `OpenCover.glueMorphisms`. In `FullReduction.lean` that isomorphism is `localSurfaceCentreSpecialFibreScheme_iso_ReesSpecialProj`, and `actualSpecialFibrePullback_eq_quotientProj` is the proved statement that the actual `V(2)` pullback is `Proj(Rees / (2))`. v34 exclusion 1 is removed. The parent commit is `7299e4d5`.
+
 ## What does not follow
-
-The chartwise isomorphism and its product-open square are not
-
-```
-localSurfaceCentreSpecialFibreScheme ≅ localSurfaceCentreReesSpecialProj
-```
-
-The remaining paste is `OpenCover.glueMorphisms` on `localSurfaceCentreSpecialFibreOpenCover` and `localSurfaceCentreReesSpecialProjOpenCover`. That still needs the two projections of `pulledBackOpenEqInfIso` for each ordered pair of the three generators, including the right-hand factor via `mul_comm`. The product-open inclusion on the quotient `Proj` now elaborates; it is `twoAdicCoverChartIso_toProduct`. This is not a relation that puts `2t` in `(2)`.
 
 `D₊(overline{2t})` nonempty on the global special fibre needs every positive power of the class to stay nonzero. Non-membership of `2t` and of `(2t)^2` does not give the higher powers. Membership of `2t` in `J_X` or `J_Y` was not decided.
 
-There is still no map from a coprime even solution in `ℕ` to a point of `Bl_I`. `even_solution_implies_two_divides` and `overline_2t_section` stay uninhabited. The three `𝔽₂` points of the node are not a specialization of a Beal solution. v34 exclusion 1 is not removed.
+There is still no map from a coprime even solution in `ℕ` to a point of `Bl_I`. `even_solution_implies_two_divides` and `overline_2t_section` stay uninhabited. The three `𝔽₂` points of the node are not a specialization of a Beal solution.
 
 `UniversallyClosed` is untouched. Mathlib v4.12.0 still has no Rees `Proj` properness theorem, and the finite-cover proof is not started.

@@ -51,17 +51,19 @@ Not checked, and not given inhabitants here:
   `D(2)` is dense in `Spec(ℤ_[2])`);
 * `V(overline{2t})` inside `Proj(ReesMod2)`, and any isomorphism
   of that locus with `ℙ¹_{𝔽₂}`;
-* a degree-one nonzero class of `overline{2t}` on the actual
-  special-fibre pullback (`overline_2t_section` is uninhabited;
-  the integral generators are degree one on the quotient `Proj`);
+* a map `ℕ → Bl_I` from a coprime even solution, and therefore
+  `overline_2t_section` and `even_solution_implies_two_divides`
+  (both stay uninhabited; `2t ∈ J_X` and `2t ∈ J_Y` are not
+  decided);
 * the claim that `(0,0)` lies only in `D₊(overline{2t})`;
 * any implication from an even solution of `x^p + y^q = z^r`
   to `2 ∣ x` and `2 ∣ y`, or to a point of the blow-up.
 
-The two v33 exclusions stay excluded: the actual special-fibre
-pullback is not identified with the quotient `Proj`, and
-`overline{2t}` is not shown to be degree one or nonzero on that
-pullback. Overlaps stay abstract.
+The actual special-fibre pullback is identified with the quotient
+`Proj` by `localSurfaceCentreSpecialFibreScheme_iso_ReesSpecialProj`.
+The class `overlineTwoT` is degree one and nonzero in that quotient.
+That identification is not a section of the structure sheaf and not
+a point of `Bl_I` coming from a solution in `ℕ`.
 -/
 
 namespace Beal.Even
@@ -568,15 +570,34 @@ the centre. No generator of the scalar ideal `(2)` kills `2t`.
 `basic_special_chart_iso` is that comparison on one Rees basic open:
 the actual pullback of `D₊(f)` along `ℤ_[2] → ℤ/2ℤ` is the basic
 open `D₊(f mod 2)` of `Proj(Rees / (2))`.
-`twoAdicCoverChartIso_toProduct` restricts it to a product open.
-The three charts are not yet passed to `glueMorphisms`, so
-`localSurfaceCentreSpecialFibreScheme ≅ localSurfaceCentreReesSpecialProj`
-is still not a theorem. `even_solution_implies_two_divides` stays
-uninhabited: a nonzero homogeneous class is not a map from a
-coprime solution in `ℕ` to a point of `Bl_I`.
+`twoAdicCoverChartIso_toProduct` and
+`twoAdicCoverChartIso_toProduct_right` are the two projections of a
+product overlap; the right-hand factor is the left-hand square after
+`mul_comm`. `glueMorphisms` on `{D₊(2t), D₊(Xt), D₊(Yt)}` is
+`localSurfaceCentreSpecialFibreScheme_iso_ReesSpecialProj`.
+`even_solution_implies_two_divides` stays uninhabited: a scheme
+isomorphism is not a map from a coprime solution in `ℕ` to a point
+of `Bl_I`.
 -/
 
 noncomputable abbrev basic_special_chart_iso := surfaceCentreBasicSpecialChartIso
+
+/-- The actual special fibre, the pullback of the surface-centre Rees
+`Proj` along `ℤ_[2] → ℤ/2ℤ`, is the `Proj` of the Rees algebra
+modulo the degree-zero scalar `(2)`. -/
+noncomputable def localSurfaceCentreSpecialFibreScheme_iso_ReesSpecialProj
+    (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2]) :
+    localSurfaceCentreSpecialFibreScheme W x y ≅
+      localSurfaceCentreReesSpecialProj W x y :=
+  surfaceCentreSpecialFibreSchemeIso W x y
+
+/-- Proved. The actual `V(2)` pullback equals `Proj(Rees / (2))`.
+This is not an uninhabited `Prop`. -/
+theorem actualSpecialFibrePullback_eq_quotientProj
+    (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2]) :
+    Nonempty (localSurfaceCentreSpecialFibreScheme W x y ≅
+      localSurfaceCentreReesSpecialProj W x y) :=
+  ⟨localSurfaceCentreSpecialFibreScheme_iso_ReesSpecialProj W x y⟩
 
 abbrev integral_generators_degree_one :=
   localSurfaceCentreReesGenerator_mem_degree_one
@@ -634,3 +655,5 @@ end Beal.Even
 #print axioms Beal.Even.overlineTwoT_mem_degree_one
 #print axioms Beal.Even.overlineTwoT_ne_zero
 #print axioms Beal.Even.overlineTwoT_sq_ne_zero
+#print axioms Beal.Even.localSurfaceCentreSpecialFibreScheme_iso_ReesSpecialProj
+#print axioms Beal.Even.actualSpecialFibrePullback_eq_quotientProj
