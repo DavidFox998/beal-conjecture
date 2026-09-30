@@ -1,10 +1,10 @@
 # General local arithmetic and the projective Weierstrass model
 
 This folder formalizes the local arithmetic and geometry used in the general
-Beal argument. The Lean files are checked against the repository's pinned Lean
-and Mathlib versions through `lake build BealGeneral`; `lakefile.lean` lists the
-modules included in that target. Earlier arithmetic and Tate-analysis modules
-feed the projective model and its chart calculations.
+Beal argument. `lakefile.lean` lists modules in the non-default
+`BealGeneral` target; the v33 direct file checks are recorded below,
+but a full `lake build BealGeneral` is not verified. Earlier arithmetic
+and Tate-analysis modules feed the projective model and its chart calculations.
 
 ## Working v33 three-open gluing
 
@@ -36,7 +36,7 @@ and `git diff --check` (or compile each module listed in
 actual-blow-up generic-fibre comparison from `TateEvenGenericFibre.lean`:
 `Bl_I[1/2] ≅ Spec(R_Z[1/2])`, compatible with the map to `D(2)`.
 Its exact `lake env lean` check passes with the same axiom report.
-The 2,250-line `TateEvenBranch.lean` is unchanged; a full
+The 2,249-line `TateEvenBranch.lean` is unchanged; a full
 `lake build BealGeneral` remains unverified.
 
 ## Projective proof structure

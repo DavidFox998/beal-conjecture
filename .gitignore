@@ -1,4 +1,10 @@
 .lake/
+build/
+/.agents/
+/.local/
+.env
+.env.*
+!.env.example
 .cache/
 *.olean
 *.ilean

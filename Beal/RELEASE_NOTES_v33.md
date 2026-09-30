@@ -27,8 +27,8 @@ The v33 working tree adds these checked modules (physical line counts):
 `TateEvenSpecialFibre.lean` (1,951 lines) supplies the three-open cover
 `D₊(overline{2t}), D₊(overline{Xt}), D₊(overline{Yt})` of the quotient
 `Proj`, affine restriction squares for ordered pairs over product opens,
-and the two-adic base-change comparison of the special fibre with
-`Proj(Rees/(2))`. The global isomorphism in `SpecialFibreGluing.lean`
+and chartwise two-adic base-change comparisons between the actual
+special fibre and `Proj(Rees/(2))`. The global isomorphism in `SpecialFibreGluing.lean`
 identifies this reduced Rees `Proj` with the gluing of
 `S_2t/(2), S_Xt/(2), S_Yt/(2)` as polynomial-spectrum chart objects.
 The product overlaps remain **abstract pullbacks** throughout: no
@@ -55,7 +55,7 @@ base morphisms. The new
 proofs as `evenBranchCentre_generic_eq_top`,
 `evenBranchBlowupGenericFibreIso`, and
 `evenBranchBlowupGenericFibreIso_overBase`. It does not replace or
-refactor the existing 2,250-line `TateEvenBranch.lean`. Neither
+refactor the existing 2,249-line `TateEvenBranch.lean`. Neither
 this packaging nor the special-fibre gluing proves minimal regularity.
 
 ## Verification and limits
@@ -73,12 +73,12 @@ lake env lean Beal/Beal.General/TateEvenBranchGenericFibre.lean
 git diff --check
 ```
 
-All six `lake env lean` commands above passed after rehydrating the
+All seven `lake env lean` commands above passed after rehydrating the
 pinned Mathlib cache with `lake exe cache get`; all their printed
 axiom reports contain exactly `propext`, `Classical.choice`, and
-`Quot.sound`. The 59-line generic-fibre companion also passed its
-exact `lake env lean` command with the same axiom report. The listed
+`Quot.sound`. The listed
 v33 files and the new companion contain no `sorry`.
+`TateEvenBranch.lean` also passed a direct file check and was not refactored.
 A full `lake build BealGeneral` has not been verified in this
 release preparation. None of these results proves a general Beal
 theorem, minimal regularity, or a new product-overlap presentation.
