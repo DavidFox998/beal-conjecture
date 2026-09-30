@@ -15,6 +15,12 @@ An accepted GitHub release webhook does not guarantee that a public Zenodo versi
 
 **How to apply:** Confirm the current latest record, inspect for an existing draft or newly published version, validate the draft's version, concept DOI, related identifier, and uploaded archive checksum, then publish once and verify the public record.
 
+An archive for an annotated GitHub tag may use the tag object's short hash in its top-level ZIP directory, rather than the peeled commit's short hash. The directory name alone is not evidence that the wrong commit was archived.
+
+**Why:** A ZIP directory suffix differed from the release commit, but the suffix identified the annotated tag object; every tracked file in the archive matched the peeled tag byte-for-byte.
+
+**How to apply:** Check the ZIP checksum and compare its root-level file set and contents with the peeled tag before diagnosing a source mismatch. Avoid suffix-only checks, which can also match unrelated nested files.
+
 The concept's newest record by publication date is not necessarily its highest semantic version or the appropriate name for the next release. A retrospective bounded release can be published after a numerically higher release; an absent intermediate tag is not permission to create one.
 
 **Why:** A later-published bounded retrofit carried an earlier version number than an existing higher-numbered release. Treating Zenodo's chronological latest pointer as the version sequence would misname a future deposit.
