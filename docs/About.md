@@ -1,5 +1,9 @@
 # About — Beal Level 26 Foundations
 
+The even-branch working tree on `beal-v34-even-reduction` is recorded in
+[`docs/v34.md`](v34.md). That note is the v34 scope: an affine node, not
+`ℙ¹`, with no new Zenodo DOI. The Level 26 text below is unchanged.
+
 ## Foundations complement (current HEAD)
 
 `matveev_gap3_lower` is now the **B≤10^6 integer-gap** theorem
