@@ -68,4 +68,27 @@ No `sorry`, no `sorryAx`, no `True := trivial`, no new axioms. Printed axioms on
 
 ## Not done
 
-No tag, no push, no Zenodo mint. `lake build BealGeneral` as a whole was not the target; its modules were built only as the import closure of `BealEven`.
+No tag, no Zenodo mint. `lake build BealGeneral` as a whole was not the target; its modules were built only as the import closure of `BealEven`.
+
+## Extension on the same branch — 2026-09-30 UTC
+
+`lake build BealEven` on the 130-line file: exit 0 (replay).
+
+`FullReduction.lean` is now 280 lines. `lake build BealEven`: exit 0. `Built Beal.«Beal.Even».FullReduction`. `Build completed successfully.`
+
+Added, and built:
+
+- `three_open_cover`, `Xt_chart_saturation`, `Yt_chart_saturation`: the Rees cover by `D₊(2t)`, `D₊(Xt)`, `D₊(Yt)`, and the saturations `J_X = (G_X : X^∞)`, `J_Y = (G_Y : Y^∞)`.
+- `base_D2_compl_eq_zeroLocus`: the complement of `D(2)` in `Spec(ℤ_[2])` is `V(2)`.
+- `basicOpen_dense_of_ne_zero`, `padic_two_ne_zero`, `base_D2_dense`, `base_D2_ne_bot`: `D(2)` is a nonempty dense open of `Spec(ℤ_[2])`.
+- `reduced_equation_factors`: `V² + UV = V(V + U)` over any commutative ring.
+- `component_intersection_eq_origin`: the two factors vanish together only at `(U,V) = (0,0)`.
+- `reduced_zero_iff_component` and `reduced_zero_iff_component_domain`.
+- `example_twoChart_divisible_by_four`, `example_mod_two_drops_two`.
+- `example_origin_is_the_node`, `example_point_10_on_first_line_only`, `example_point_11_on_second_line_only`, `example_components_cover_the_three_points`.
+
+Printed axioms are `propext`, `Classical.choice`, and `Quot.sound`, except `reduced_equation_factors` and `component_intersection_eq_origin` (`propext`) and the two integer `ring` facts (`propext`, `Quot.sound`). No `sorryAx`.
+
+Still not declared: `Bl_I_proper : IsProperMap`, `Bl_I_birational`, `E_eq_P1_F2`, and `even_solution_implies_two_divides`. Mathlib v4.12.0 has topological `IsProperMap` and scheme `UniversallyClosed`, and no properness theorem for Rees `Proj`. The `𝔽₂` equation is two lines through a node, with three points, so it is not an isomorphism with `ℙ¹`. `even_Beal` stays an uninhabited `def`. The v33 exclusions stay excluded. `TateEvenBranch.lean` was not edited.
+
+This extension is pushed on `beal-v34-even-reduction` only. It is not merged to `main`, not tagged, and not minted.
