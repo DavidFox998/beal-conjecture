@@ -1,4 +1,4 @@
-# v33 About and pre-mint honesty audit
+# v33 About and pre-mint honesty audit — repository-routing update
 
 Scope: branch `beal-10e6-inhabited-43735b3`; checked against the current
 root `README.md` About section, `Beal/Beal.General/README.md`,
@@ -42,9 +42,10 @@ File:line references below point to the current working tree.
   `TateEvenSpecialFibre.lean` timed out after five minutes with no
   diagnostic; do not call that a fresh direct pass or a proof failure.
   The seven passing v33 files imported its compiled declarations.
-- The literal scoped `find Beal ...` check saw **3 directories, 0 missing
-  READMEs**. The earlier broader audit covered **80 project-owned tracked
-  source directories**; caches and agent storage were excluded.
+- The requested literal scoped `find Beal ...` check saw **3 directories,
+  0 missing READMEs**, not 80 Beal directories. A separate check of
+  **36 tracked Lean source directories** also found 0 missing READMEs.
+  The earlier broader 80-directory project audit used a different scope.
 - `Beal/RELEASE_NOTES_v33.md` is **83 lines**, calls v32 an untagged
   working milestone, confines global gluing to the quotient `Proj`,
   and disclaims a general Beal theorem. `lake build BealGeneral` is
@@ -55,20 +56,37 @@ File:line references below point to the current working tree.
   now names `.lake/`, `build/`, `/.agents/`, `/.local/`, and `.env*`.
   Already-tracked `.agents/` memory files remain tracked; ignore rules
   do not retroactively untrack them. No files were untracked or removed.
-- No root `VERSION` file or Lake version field exists. Neither local
-  tags nor remote tag queries returned `v33` for `origin` or the README's
-  referenced repository. **Publishing target mismatch:** `origin` is
-  `DavidFox998/beal-conjecture`, while the root README links releases
-  under `DavidFox998/beal-level-26-foundations`. Confirm the intended
-  repository and Zenodo deposit *before* any tag or DOI action.
+- No root `VERSION` file or Lake version field exists; no local or
+  queried remote `v33` tag exists. `origin` is confirmed as
+  `DavidFox998/beal-conjecture`, the user's designated whole-project
+  main audit/release source (this checkout tracks 1,047 project files).
+  `level26` now points to `DavidFox998/beal-level-26-foundations`, the
+  designated later work-repository mirror; the existing
+  `origin-foundations` alias is untouched. Remote trees were not compared.
+- The root About and both Beal READMEs now route **v33** to the main
+  repo, with mirror sync after mint. The CI badge targets the main repo.
+  Historical v25/v30 tag citations now link to their existing version
+  DOIs: those tags exist on the mirror but not on `origin`, so redirecting
+  their GitHub tag URLs to the main repo would break them. Existing DOI
+  badges still cite historical foundations records, not a new v33 DOI.
+- `Beal/ZENODO_DEPOSIT_v33.md` records the **intended** Zenodo source as
+  a `beal-conjecture` GitHub `v33` release, not the mirror. The root
+  `.zenodo.json` still describes v25 on foundations, and `CITATION.cff`
+  still cites the foundations concept. Live GitHub–Zenodo linkage for
+  the main repo has **not** been verified. These are outstanding
+  pre-mint metadata/linkage checks, not a reason to invent a v33 DOI.
 
-## Recommendation: NO-GO pending repository/deposit confirmation
+## Recommendation: routing fixed; NO-GO for mint until metadata is settled
 
 This release proves three-open gluing **of the quotient Rees `Proj`**
 plus the **actual blow-up's generic-fibre comparison**. Product overlaps
 remain abstract; a full Beal reduction is not claimed, and a full
 `lake build BealGeneral` is unverified. The present About wording is
 appropriately narrower than the unproved global special-fibre and
-nonzero-generator claims. Do not mint until the target repository/deposit
-is confirmed; do not add the two `NEEDS FIX` assertions without checked
-proofs. No staging, pushing, tagging, or minting was performed.
+nonzero-generator claims. **Seven** direct v33 Lean checks pass with
+only the three stated axioms; the existing **2,249-line** branch file
+also passes. The two `NEEDS FIX` assertions are **not advertised**.
+The user has settled which repo should own v33; resolve the stale root
+Zenodo/citation metadata and verify the main repo's deposit linkage
+before changing this recommendation to GO. No staging, pushing,
+tagging, mirroring, or minting was performed.

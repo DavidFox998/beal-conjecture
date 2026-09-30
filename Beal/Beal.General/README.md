@@ -39,6 +39,14 @@ Its exact `lake env lean` check passes with the same axiom report.
 The 2,249-line `TateEvenBranch.lean` is unchanged; a full
 `lake build BealGeneral` remains unverified.
 
+For v33 [`beal-conjecture`](https://github.com/DavidFox998/beal-conjecture)
+is the whole-project audit/release repository and intended Zenodo source;
+[`beal-level-26-foundations`](https://github.com/DavidFox998/beal-level-26-foundations)
+is the work-repository mirror. The global theorem identifies the quotient
+Rees `Proj` with its polynomial-spectrum gluing, **not** with the actual
+special-fibre pullback. A degree-one quotient formula and
+`overline{2t} ≠ 0` have not been verified as Lean theorems.
+
 ## Projective proof structure
 
 - `TateI1MinimalRegularModel.lean` defines the homogeneous cubic, its actual

@@ -76,9 +76,9 @@ git diff --check
 All seven `lake env lean` commands above passed after rehydrating the
 pinned Mathlib cache with `lake exe cache get`; all their printed
 axiom reports contain exactly `propext`, `Classical.choice`, and
-`Quot.sound`. The listed
-v33 files and the new companion contain no `sorry`.
+`Quot.sound`. The seven listed modules contain no `sorry`.
 `TateEvenBranch.lean` also passed a direct file check and was not refactored.
-A full `lake build BealGeneral` has not been verified in this
-release preparation. None of these results proves a general Beal
-theorem, minimal regularity, or a new product-overlap presentation.
+A full `lake build BealGeneral` is unverified; no general Beal theorem,
+minimal regularity, or polynomial product-overlap presentation follows.
+Planned release: `beal-conjecture` tag `v33`; `level-26-foundations` is
+the later mirror. Zenodo must ingest the main repo's release, not the mirror.

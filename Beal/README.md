@@ -24,6 +24,15 @@ Verify with `lake env lean Beal/Beal.General/SpecialFibreGluing.lean`,
 and `git diff --check`. A full `lake build BealGeneral` has not
 been verified for v33. See [`RELEASE_NOTES_v33.md`](RELEASE_NOTES_v33.md).
 
+For v33 the main whole-project audit/release source is
+[`beal-conjecture`](https://github.com/DavidFox998/beal-conjecture);
+[`beal-level-26-foundations`](https://github.com/DavidFox998/beal-level-26-foundations)
+is the work-repository mirror, to be synced after minting. Zenodo should
+ingest the `beal-conjecture` GitHub release, not the mirror. The proved
+gluing concerns `Proj(ReesMod2)`, not an identified global isomorphism
+with the actual special-fibre pullback; the degree-one formula and
+nonvanishing of `overline{2t}` are not checked claims.
+
 Lake library sources for the Matveev–Beal complement
 (`BealMatveevBeal`). The default target globs
 `Beal.Matveev` plus root modules `MatveevThm14Proof`,
