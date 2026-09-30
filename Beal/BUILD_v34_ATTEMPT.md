@@ -92,3 +92,23 @@ Printed axioms are `propext`, `Classical.choice`, and `Quot.sound`, except `redu
 Still not declared: `Bl_I_proper : IsProperMap`, `Bl_I_birational`, `E_eq_P1_F2`, and `even_solution_implies_two_divides`. Mathlib v4.12.0 has topological `IsProperMap` and scheme `UniversallyClosed`, and no properness theorem for Rees `Proj`. The `𝔽₂` equation is two lines through a node, with three points, so it is not an isomorphism with `ℙ¹`. `even_Beal` stays an uninhabited `def`. The v33 exclusions stay excluded. `TateEvenBranch.lean` was not edited.
 
 This extension is pushed on `beal-v34-even-reduction` only. It is not merged to `main`, not tagged, and not minted.
+
+## Nodal close on the same branch — 2026-09-30 UTC
+
+`FullReduction.lean` is 461 lines. `lake build BealEven`: exit 0. `Built Beal.«Beal.Even».FullReduction`. `Build completed successfully.` No `sorry` and no `sorryAx` in the axiom report.
+
+Added, and built:
+
+- `E_nodal`, `lineV`, `lineVU`: the affine zero set of `V² + UV` and the two lines. `line_union_subset_E_nodal` over any commutative ring. `E_nodal_eq_union` over a domain: the zero set equals `V(V) ∪ V(V + U)`. `E_meets_only_at_origin`: the lines meet only at `(0,0)`.
+- `E_F2_points`: the `𝔽₂` points are `(0,0)`, `(1,0)`, and `(1,1)`. `E_F2_origin_on_both_lines`, `E_F2_point_10_one_component`, `E_F2_point_11_one_component`: the last two points lie on exactly one line. This is not `E ≅ ℙ¹`.
+- `twoChart_finiteType`: the divided `2`-chart ring is `Algebra.FiniteType` over `ℤ_[2]`, by the quotient of a polynomial ring in two variables. Finite type is not `UniversallyClosed`. No `IsProperMap` and no `UniversallyClosed` instance for the Rees `Proj` is declared. Mathlib v4.12.0 still has no properness theorem for that `Proj`.
+- `generic_open_dense`: `D(2) ⊆ Spec(ℤ_[2])` has complement `V(2)`, is dense, and is nonempty. This is not an open immersion `Bl_I → Spec(R_Z)`.
+
+Left uninhabited:
+
+- `even_Beal`
+- `even_solution_chart`: an even coprime solution would have even bases. No chart map into `D₊(2t)` is constructed.
+- `even_solution_specializes_to_node`: those bases would reduce to `(0,0)` in `𝔽₂`. No specialization into `E_nodal` is constructed.
+- `even_solution_implies_two_divides`, defined as `even_solution_chart`. A Tate model `(X,Y)` and a nonzero valuation of `overline{2t}` are not available. The degree-one / nonzero exclusion stays in force.
+
+`TateEvenBranch.lean` was not edited. The actual special-fibre pullback is still not identified with the quotient `Proj`. Not merged to `main`, not tagged, not minted.
