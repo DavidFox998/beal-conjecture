@@ -24,7 +24,14 @@
   The checked global isomorphism is
   `Proj(ReesMod2) ≅ Glue(S_2t/(2), S_Xt/(2), S_Yt/(2))`
   with abstract product-pullback overlaps.
-- **Metadata hold:** the root `.zenodo.json` still describes an older
-  v25 foundations deposit and `CITATION.cff` still points to the
-  foundations concept DOI. Review/update intended v33 metadata and
-  verify Zenodo's GitHub repository linkage before any mint.
+- **Metadata:** root `.zenodo.json` and `CITATION.cff` now describe
+  v33 on `beal-conjecture`, without an invented DOI or release date.
+  The v25 foundations concept DOI is identified as historical in
+  `CITATION.cff`, not assigned to v33.
+- **Linkage checked:** the authenticated GitHub webhooks API for
+  `DavidFox998/beal-conjecture` returned one active Zenodo webhook
+  listening for `release` events (HTTP 200). This confirms the
+  GitHub-side hook, not delivery of a future release, Zenodo deposit,
+  or DOI. After an authorized release, check Zenodo for duplicates,
+  metadata, concept relation, archive and the minted DOI before
+  calling the deposit complete.

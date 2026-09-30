@@ -1,4 +1,4 @@
-# v33 About and pre-mint honesty audit — repository-routing update
+# v33 About and pre-mint honesty audit — metadata and routing update
 
 Scope: branch `beal-10e6-inhabited-43735b3`; checked against the current
 root `README.md` About section, `Beal/Beal.General/README.md`,
@@ -69,14 +69,18 @@ File:line references below point to the current working tree.
   DOIs: those tags exist on the mirror but not on `origin`, so redirecting
   their GitHub tag URLs to the main repo would break them. Existing DOI
   badges still cite historical foundations records, not a new v33 DOI.
-- `Beal/ZENODO_DEPOSIT_v33.md` records the **intended** Zenodo source as
-  a `beal-conjecture` GitHub `v33` release, not the mirror. The root
-  `.zenodo.json` still describes v25 on foundations, and `CITATION.cff`
-  still cites the foundations concept. Live GitHub–Zenodo linkage for
-  the main repo has **not** been verified. These are outstanding
-  pre-mint metadata/linkage checks, not a reason to invent a v33 DOI.
+- `Beal/ZENODO_DEPOSIT_v33.md` records the intended deposit source as
+  the `beal-conjecture` GitHub `v33` release, not the mirror. Root
+  `.zenodo.json` and `CITATION.cff` now identify v33 and the main repo;
+  neither assigns a DOI or release date. The older v25 foundations
+  concept DOI is retained as **historical**, not assigned to v33.
+- An authenticated GitHub webhooks API request for
+  `DavidFox998/beal-conjecture` returned HTTP 200: **one active Zenodo
+  webhook listening for `release` events**, with no further pages.
+  This verifies GitHub-side linkage, not future webhook delivery,
+  deposit acceptance or a published DOI. No Zenodo record was created.
 
-## Recommendation: routing fixed; NO-GO for mint until metadata is settled
+## Recommendation: GO for v33 mint approval; no action authorized yet
 
 This release proves three-open gluing **of the quotient Rees `Proj`**
 plus the **actual blow-up's generic-fibre comparison**. Product overlaps
@@ -86,7 +90,9 @@ appropriately narrower than the unproved global special-fibre and
 nonzero-generator claims. **Seven** direct v33 Lean checks pass with
 only the three stated axioms; the existing **2,249-line** branch file
 also passes. The two `NEEDS FIX` assertions are **not advertised**.
-The user has settled which repo should own v33; resolve the stale root
-Zenodo/citation metadata and verify the main repo's deposit linkage
-before changing this recommendation to GO. No staging, pushing,
-tagging, mirroring, or minting was performed.
+The user has settled which repo should own v33; the root
+Zenodo/citation metadata and GitHub-side Zenodo webhook are now checked.
+GO means these pre-mint conditions are met, **not** that Zenodo has
+created or will necessarily create a DOI. Await explicit release
+instructions; then verify the resulting Zenodo record and archive.
+No staging, pushing, tagging, mirroring, or minting was performed.
