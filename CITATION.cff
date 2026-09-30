@@ -1,11 +1,12 @@
 cff-version: 1.2.0
 message: >-
-  Cite v33 from the beal-conjecture repository. A v33 DOI has not
-  been minted; no DOI or release date is assigned in this citation.
-  The earlier foundations v25 concept DOI 10.5281/zenodo.22379293
-  is historical and must not be used as the v33 DOI.
+  Cite v33 using DOI 10.5281/zenodo.23054568 from the
+  beal-conjecture repository. The earlier foundations v25 concept
+  DOI 10.5281/zenodo.22379293 is historical, not the v33 DOI.
 title: "2-adic even blow-up Tate normal form y^2+xy=x^3+a2x^2+a4x+a6 — three-open gluing v33"
 type: software
+doi: 10.5281/zenodo.23054568
+date-released: '2026-09-30'
 authors:
   - family-names: Fox
     given-names: David

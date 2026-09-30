@@ -1,4 +1,4 @@
-# v33 About and release honesty audit — v6 release outcome
+# v33 About and release honesty audit — v6 verified Zenodo mint
 
 Scope: branch `beal-10e6-inhabited-43735b3`; checked against the current
  root `README.md` About section, `Beal/Beal.General/README.md`,
@@ -72,18 +72,22 @@ File:line references below point to the current working tree.
   their GitHub tag URLs to the main repo would break them. Existing DOI
   badges still cite historical foundations records, not a new v33 DOI.
 - `Beal/ZENODO_DEPOSIT_v33.md` records the deposit source as
-  the `beal-conjecture` GitHub `v33` release, not the mirror. Root
-  `.zenodo.json` and `CITATION.cff` now identify v33 and the main repo;
-  neither assigns a DOI or release date. The older v25 foundations
-  concept DOI is retained as **historical**, not assigned to v33.
+  the `beal-conjecture` GitHub `v33` release, not the mirror. The tagged
+  `.zenodo.json` is pre-mint metadata; current `CITATION.cff` assigns
+  the real DOI and release date. The older v25 foundations concept DOI
+  remains **historical**, not assigned to v33.
 - One active Zenodo webhook listens for `release` events on the audit
   repo. The GitHub `v33` release was published on 2026-09-30; the
   release URL is `https://github.com/DavidFox998/beal-conjecture/releases/tag/v33`.
-  webhook's deliveries returned 500, 409, then **202 Accepted**.
-  The authenticated Zenodo deposits API still listed no v33 record
-  after repeated checks (62 deposits returned); a DOI is **pending**,
-  not verified. The webhook URL exposed a credential during inspection;
-  reconnect/rotate that credential without printing it again.
+  The webhook's deliveries returned 500, 409, then **202 Accepted**.
+  Zenodo later published record `23054568`, DOI
+  `10.5281/zenodo.23054568`, on main-repo concept DOI
+  `10.5281/zenodo.22041831`. Its v33 ZIP is 25,455,759 bytes, MD5
+  `b2096c976f8239941b99ebee28e07f2a`: all 1,052 archived files
+  match the tagged Git tree byte-for-byte. The published description
+  was corrected to replace a stale pre-mint DOI notice, without a
+  new DOI or archive change. A webhook credential was exposed during
+  inspection; reconnect/rotate it without printing it again.
 - A separate v33 manuscript at `papers/main.tex` compiles to
   `papers/main.pdf` (two pages); the historical level-26
   `paper/mcom-draft.tex` is untouched. The PDF states the quotient
@@ -100,7 +104,7 @@ File:line references below point to the current working tree.
   that module. The earlier standalone large special-fibre timeout
   remains separate; no full `lake build BealGeneral` was attempted.
 
-## Recommendation: GO released; Zenodo DOI pending verification
+## Recommendation: GO MINTED — verified v33 DOI
 
 This release proves three-open gluing **of the quotient Rees `Proj`**
 plus the **actual blow-up's generic-fibre comparison**. Product overlaps
@@ -113,6 +117,7 @@ only the three stated axioms; the existing **2,249-line** branch file
 also passes. The two `NEEDS FIX` assertions are **not advertised**.
 The authorized commit, annotated tag, pushes, and GitHub Release are
 complete on the designated audit source; the mirror has the same tag.
-This is **not yet a verified Zenodo mint**. Do not fill in `CITATION.cff`
-or create `ZENODO_DOI_v33.txt` until a v33 deposit, archive and DOI are
-confirmed on Zenodo; then commit and push the real DOI on both branches.
+The Zenodo version DOI is **10.5281/zenodo.23054568**; the public
+record, main-repo source relation and complete archive match were
+verified. `CITATION.cff` and `ZENODO_DOI_v33.txt` now carry this DOI.
+This does not upgrade the seven direct checks to a full Lake build.

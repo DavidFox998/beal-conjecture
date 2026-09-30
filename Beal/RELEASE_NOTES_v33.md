@@ -1,7 +1,9 @@
-# v33 working release notes — three-open special-fibre gluing
+# v33 release notes — three-open special-fibre gluing
 
-This is a proposed release description, not a tag, GitHub release, or DOI.
-There is no `v32` or `v33` Git tag or root `VERSION` file in this checkout.
+Published from the `beal-conjecture` `v33` tag with Zenodo DOI
+`10.5281/zenodo.23054568`. The tagged archive retains the pre-mint
+wording of these notes; this branch copy and the GitHub Release are current.
+There is no `v32` Git tag or root `VERSION` file in this checkout.
 The v32 baseline below is the preceding working milestone as described for
 this release, not an independently tagged artifact.
 
@@ -80,5 +82,5 @@ axiom reports contain exactly `propext`, `Classical.choice`, and
 `TateEvenBranch.lean` also passed a direct file check and was not refactored.
 A full `lake build BealGeneral` is unverified; no general Beal theorem,
 minimal regularity, or polynomial product-overlap presentation follows.
-Planned release: `beal-conjecture` tag `v33`; `level-26-foundations` is
-the later mirror. Zenodo must ingest the main repo's release, not the mirror.
+Published release: `beal-conjecture` tag `v33`; `level-26-foundations` is
+the mirror. Zenodo archived the main repo's tagged release, not the mirror.
