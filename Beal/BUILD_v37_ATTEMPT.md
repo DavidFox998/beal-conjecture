@@ -24,7 +24,7 @@ No generator was found that kills `2t`. The degree-zero scalar `2` does not, and
 
 ## Global identification
 
-`twoAdicCoverChartIso_toProduct_right` is the right-hand product projection, transported from the left-hand square by `mul_comm`. `twoAdicCoverOverlap_fst` and `twoAdicCoverOverlap_snd` are the two projections of the product overlap. `surfaceCentreSpecialFibreSchemeIso` passes the three generator charts to `OpenCover.glueMorphisms`. In `FullReduction.lean` that isomorphism is `localSurfaceCentreSpecialFibreScheme_iso_ReesSpecialProj`, and `actualSpecialFibrePullback_eq_quotientProj` is the proved statement that the actual `V(2)` pullback is `Proj(Rees / (2))`. v34 exclusion 1 is removed. The parent commit is `7299e4d5`.
+`twoAdicCoverChartIso_toProduct_right` is the right-hand product projection, transported from the left-hand square by `mul_comm`. `twoAdicCoverOverlap_fst` and `twoAdicCoverOverlap_snd` are the two projections of the product overlap. `surfaceCentreSpecialFibreSchemeIso` passes the three generator charts to `OpenCover.glueMorphisms`. In `FullReduction.lean` that isomorphism is `localSurfaceCentreSpecialFibreScheme_iso_ReesSpecialProj`, and `actualSpecialFibrePullback_eq_quotientProj` is the proved statement that the actual `V(2)` pullback is `Proj(Rees / (2))`. v34 exclusion 1 is removed. The proof commit is `7d48c25d` (`7299e4d5` → `7d48c25d`).
 
 ## What does not follow
 
