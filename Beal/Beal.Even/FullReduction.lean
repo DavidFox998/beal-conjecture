@@ -433,13 +433,13 @@ is `D₊(2t) ∪ D₊(Xt) ∪ D₊(Yt) = ⊤` on the quotient `Proj`.
 Those are the data one would try to descend modulo `2`.
 They do not produce a section of the actual special-fibre pullback.
 
--- open: need actual special-fibre pullback vs quotient Proj which v34 excludes, Mathlib lacks Rees Proj properness
+-- OPEN: need identification of actual special-fibre pullback V(2) in Bl_I with quotient Proj(ReesMod2), excluded in v34, plus Rees Proj properness theorem not in Mathlib v4.12.0
 -/
 
 abbrev integral_generators_degree_one :=
   localSurfaceCentreReesGenerator_mem_degree_one
 
--- open: need actual special-fibre pullback vs quotient Proj which v34 excludes, Mathlib lacks Rees Proj properness
+-- OPEN: need identification of actual special-fibre pullback V(2) in Bl_I with quotient Proj(ReesMod2), excluded in v34, plus Rees Proj properness theorem not in Mathlib v4.12.0
 /-- Uninhabited. The first four conjuncts name the checked integral
 degree-one generators, the quotient-`Proj` cover
 `D₊(2t)`, `D₊(Xt)`, `D₊(Yt)`, and the saturations
