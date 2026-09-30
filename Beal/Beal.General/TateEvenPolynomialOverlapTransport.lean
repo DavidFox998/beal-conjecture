@@ -37,6 +37,25 @@ theorem polynomialToAbstractProduct_compat
   have hp := congrArg (fun φ => φ (ψS.symm (ψP p))) h
   simpa [polynomialToAbstractProduct] using hp.symm
 
+/-- Paste an already-checked abstract restriction square with a
+single-chart polynomial comparison, keeping the polynomial quotient
+out of the abstract restriction theorem's statement. -/
+theorem polynomialSourceSquare_paste
+    {P S T A B : Type} [CommRing P] [CommRing S]
+    [CommRing T] [CommRing A] [CommRing B]
+    {ψP : P →+* A} {ψS : S →+* A} {ψT : T →+* B}
+    {rS : S →+* T} {rA : A →+* B} {bridge : P →+* S}
+    (h : rA.comp ψS = ψT.comp rS)
+    (hb : ψS.comp bridge = ψP) :
+    ψT.comp (rS.comp bridge) = rA.comp ψP := by
+  apply RingHom.ext
+  intro p
+  have h1 := congrArg (fun φ => φ (bridge p)) h
+  have h2 := congrArg (fun φ => φ p) hb
+  simp only [RingHom.comp_apply] at h1 h2 ⊢
+  exact h1.symm.trans (congrArg rA h2)
+
 #print axioms polynomialToAbstractProduct_compat
+#print axioms polynomialSourceSquare_paste
 
 end Beal.General
