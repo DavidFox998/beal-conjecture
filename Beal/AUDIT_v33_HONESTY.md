@@ -1,4 +1,4 @@
-# v33 About and pre-mint honesty audit — v4 paper verification
+# v33 About and pre-mint honesty audit — v5 scoped build attempt
 
 Scope: branch `beal-10e6-inhabited-43735b3`; checked against the current
  root `README.md` About section, `Beal/Beal.General/README.md`,
@@ -87,13 +87,22 @@ File:line references below point to the current working tree.
   overlaps abstract, and explicitly disclaims both `NEEDS FIX`
   assertions. It records the direct-check limits and pending DOI;
   no Lean source was changed for this paper.
+- `Beal/BUILD_ATTEMPT_v33.md` records this turn's bounded Lake attempts.
+  Both literal requested module paths returned **unknown target**;
+  the corrected gluing path returned **unknown module** because it
+  is absent from the library globs. The corrected generic-fibre
+  module timed out after 300 seconds while rebuilding Mathlib
+  dependencies from the incomplete local cache, before reaching
+  that module. The earlier standalone large special-fibre timeout
+  remains separate; no full `lake build BealGeneral` was attempted.
 
 ## Recommendation: GO for v33 mint approval; no action authorized yet
 
 This release proves three-open gluing **of the quotient Rees `Proj`**
 plus the **actual blow-up's generic-fibre comparison**. Product overlaps
 remain abstract; a full Beal reduction is not claimed, and a full
-`lake build BealGeneral` is unverified. The present About wording is
+`lake build BealGeneral` is unverified; the scoped build attempt above
+does not change that boundary. The present About wording is
 appropriately narrower than the unproved global special-fibre and
 nonzero-generator claims. **Seven** direct v33 Lean checks pass with
 only the three stated axioms; the existing **2,249-line** branch file
