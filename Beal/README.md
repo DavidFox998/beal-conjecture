@@ -1,5 +1,25 @@
 # Beal/
 
+## Working v33: even-valuation special fibre
+
+`Beal.General` now checks the quotient-induced `2t`, `Xt`, and `Yt`
+polynomial charts (`CompatChart2t.lean`, 191 lines;
+`CompatChartXt.lean` and `CompatChartYt.lean`, 105 lines each),
+the six directed restrictions (`CompatPolynomialRestrictions.lean`,
+155 lines), and the three-open polynomial-spectrum cover
+(`SpecialFibrePolynomialCover.lean`, 124 lines).
+`SpecialFibreGluing.lean` (167 lines) checks their six `Spec.map`
+compatibilities, abstract triple cocycle, and global gluing
+isomorphism of the quotient Rees `Proj`. Product overlaps remain
+abstract pullbacks, with **no** polynomial product presentation.
+For `y²+xy=x³+8`, the reduced `2t` chart is `V²+UV=0`, and its
+origin belongs only to `D₊(overline{2t})`.
+These declarations are sorry-free; the printed gluing axiom
+report is `[propext, Classical.choice, Quot.sound]`.
+Verify with `lake env lean Beal/Beal.General/SpecialFibreGluing.lean`
+and `git diff --check`. A full `lake build BealGeneral` has not
+been verified for v33. See [`RELEASE_NOTES_v33.md`](RELEASE_NOTES_v33.md).
+
 Lake library sources for the Matveev–Beal complement
 (`BealMatveevBeal`). The default target globs
 `Beal.Matveev` plus root modules `MatveevThm14Proof`,

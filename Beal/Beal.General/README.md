@@ -6,6 +6,36 @@ and Mathlib versions through `lake build BealGeneral`; `lakefile.lean` lists the
 modules included in that target. Earlier arithmetic and Tate-analysis modules
 feed the projective model and its chart calculations.
 
+## Working v33 three-open gluing
+
+`CompatChart2t.lean` (191 lines) proves `chart_eq_quotient_2t`
+for the principal divided equation `(F)`. `CompatChartXt.lean`
+and `CompatChartYt.lean` (105 lines each) prove the `Xt` and `Yt`
+graph-ideal saturations `(G_X : X^∞)` and `(G_Y : Y^∞)` and the
+quotient-induced chart equivalences.
+`CompatPolynomialRestrictions.lean` (155 lines) checks six directed
+polynomial-to-abstract restrictions, induced by the integral quotient
+maps. `SpecialFibrePolynomialCover.lean` (124 lines) makes the three
+polynomial spectra the literal objects of an open cover of the
+quotient Rees `Proj`. `SpecialFibreGluing.lean` (167 lines) checks six
+composed `Spec.map` squares, the triple cocycle, and a global
+isomorphism to that gluing. `TateEvenSpecialFibre.lean` (1,951 lines)
+supplies the three-open cover, ordered-pair product restriction
+squares, and two-adic quotient-`Proj` comparison. All product
+overlaps remain **abstract pullbacks**, deliberately without
+polynomial presentations.
+
+For `y² + xy = x³ + 8`, the reduced `2t` equation is
+`V² + UV = 0`; `(U,V)=(0,0)` lies only in
+`D₊(overline{2t})`. No `sorry` occurs in these v33 modules; the
+gluing axiom report is `[propext, Classical.choice, Quot.sound]`.
+Check `lake env lean Beal/Beal.General/SpecialFibreGluing.lean`
+and `git diff --check` (or compile each module listed in
+[`../RELEASE_NOTES_v33.md`](../RELEASE_NOTES_v33.md)).
+`TateEvenGenericFibre.lean` already proves a generic-fibre
+comparison, but no new short `TateEvenBranch.lean` has been checked
+for v33, and the full `lake build BealGeneral` remains unverified.
+
 ## Projective proof structure
 
 - `TateI1MinimalRegularModel.lean` defines the homogeneous cubic, its actual
