@@ -102,6 +102,12 @@ lean_lib BealGeneral where
 lean_lib BealEven where
   globs := #[.one `Beal.«Beal.Even».FullReduction]
 
+/-- v35 starter for odd exponents. Not a Beal proof.
+    The Lake module name is `Beal.«Beal.Odd».FullReduction`
+    (directory `Beal/Beal.Odd/`), not `Beal.Beal.Odd.FullReduction`. -/
+lean_lib BealOdd where
+  globs := #[.one `Beal.«Beal.Odd».FullReduction]
+
 @[default_target]
 lean_lib «BealMatveevBeal» where
   globs := #[.submodules `Beal.Matveev, .one `MatveevThm14Proof, .one `MatveevLLL,
