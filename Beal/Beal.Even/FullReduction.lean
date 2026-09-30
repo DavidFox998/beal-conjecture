@@ -1,5 +1,6 @@
 import Beal.«Beal.General».TateEvenBranch
 import Beal.«Beal.General».SpecialFibreGluing
+import Beal.«Beal.General».SpecialFibrePullbackIso
 import Beal.«Beal.General».TateEvenBranchGenericFibre
 import Beal.«Beal.General».CompatChartXt
 import Beal.«Beal.General».CompatChartYt
@@ -419,33 +420,169 @@ def even_solution_specializes_to_node : Prop :=
 
 /-- Open. Needs a Tate model and a nonzero valuation of `overline{2t}`,
 both absent here. The degree-one / nonzero claim for `overline{2t}`
-remains excluded. -/
+on the actual pullback remains excluded. -/
 def even_solution_implies_two_divides : Prop :=
   even_solution_chart
 
-/-! ## Attempted degree-one `overline{2t}` in `ReesMod2`
+/-! ## The class of `2t` in `Rees / (2)`
 
-`localSurfaceCentreReesGenerator_mem_degree_one` puts the integral
-generators `2t`, `Xt`, and `Yt` in degree one. `three_open_cover`
-is `D₊(2t) ∪ D₊(Xt) ∪ D₊(Yt) = ⊤` on the quotient `Proj`.
-`Xt_chart_saturation` and `Yt_chart_saturation` are
-`J_X = (G_X : X^∞)` and `J_Y = (G_Y : Y^∞)`.
-Those are the data one would try to descend modulo `2`.
-They do not produce a section of the actual special-fibre pullback.
+`localSurfaceCentreReesSpecialIdeal` is the principal ideal generated
+by the degree-zero scalar `2`, not by the degree-one element `2t`.
+When `2` is regular on the coordinate ring and `1` lies outside the
+centre ideal, that scalar does not kill `2t`: a relation
+`2t = 2 * f` would put `1` in the centre. This is membership in the
+graded-quotient ring. It is not an identification of the actual
+special-fibre pullback with `Proj(Rees/(2))`, and it is not a
+nilpotence statement, so it does not make `D₊(overline{2t})` nonempty
+on the pullback. -/
 
--- OPEN: need identification of actual special-fibre pullback V(2) in Bl_I with quotient Proj(ReesMod2), excluded in v34, plus Rees Proj properness theorem not in Mathlib v4.12.0
+theorem one_not_mem_centre_of_maximal
+    (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2])
+    (hF : localSurfaceEquation W x y ∈ localSurfaceCentre) :
+    (1 : localSurfaceCoordinateRing W x y) ∉ localSurfaceClosedPoint W x y := by
+  intro h1
+  exact (localSurfaceClosedPoint_isMaximal W x y hF).ne_top
+    (Ideal.eq_top_of_isUnit_mem (localSurfaceClosedPoint W x y) h1 isUnit_one)
+
+theorem scalar_two_does_not_kill_two_t
+    (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2])
+    (h1 : (1 : localSurfaceCoordinateRing W x y) ∉
+      localSurfaceClosedPoint W x y) :
+    localSurfaceCentreReesTwo W x y ∉
+      localSurfaceCentreReesSpecialIdeal W x y := by
+  intro hmem
+  let R := localSurfaceCoordinateRing W x y
+  let I := localSurfaceClosedPoint W x y
+  let q : MvPolynomial (Fin 2) ℤ_[2] →+* R :=
+    Ideal.Quotient.mk (Ideal.span {localSurfaceEquation W x y})
+  let two : R := q (MvPolynomial.C (2 : ℤ_[2]))
+  rw [localSurfaceCentreReesSpecialIdeal, Ideal.mem_span_singleton] at hmem
+  obtain ⟨p, hp⟩ := hmem
+  have hpoly :
+      Polynomial.monomial 1 two = Polynomial.C two * (p : Polynomial R) := by
+    have hcoe := congrArg (fun z : reesAlgebra I => (z : Polynomial R)) hp
+    simpa [localSurfaceCentreReesTwo, centreReesDegreeOne, two] using hcoe
+  have hcoeff : two = two * (p : Polynomial R).coeff 1 := by
+    have hc := congrArg (fun z : Polynomial R => z.coeff 1) hpoly
+    simpa [Polynomial.coeff_C_mul, Polynomial.coeff_monomial] using hc
+  have hsub : two * ((p : Polynomial R).coeff 1 - 1) = 0 := by
+    rw [mul_sub, ← hcoeff, mul_one, sub_self]
+  have hreg := localSurfaceCoordinateRing_two_regular W x y
+  have hone : (p : Polynomial R).coeff 1 = 1 := by
+    have hz : (p : Polynomial R).coeff 1 - 1 = 0 := hreg _ hsub
+    exact sub_eq_zero.mp hz
+  have hI : (p : Polynomial R).coeff 1 ∈ I := by
+    simpa [pow_one] using p.property 1
+  rw [hone] at hI
+  exact h1 hI
+
+/-- The class of the degree-one element `2t` in `Rees / (2)`. -/
+noncomputable def overlineTwoT
+    (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2]) :
+    localSurfaceCentreRees W x y ⧸
+      localSurfaceCentreReesSpecialIdeal W x y :=
+  Ideal.Quotient.mk (localSurfaceCentreReesSpecialIdeal W x y)
+    (localSurfaceCentreReesTwo W x y)
+
+set_option synthInstance.maxHeartbeats 200000 in
+theorem overlineTwoT_mem_degree_one
+    (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2]) :
+    letI : GradedAlgebra
+        (centreReesComponent (localSurfaceClosedPoint W x y)) :=
+      centreReesGrading (localSurfaceClosedPoint W x y)
+    overlineTwoT W x y ∈
+      homogeneousQuotientComponent
+        (centreReesComponent (localSurfaceClosedPoint W x y))
+        (localSurfaceCentreReesSpecialIdeal W x y) 1 := by
+  letI : GradedAlgebra
+      (centreReesComponent (localSurfaceClosedPoint W x y)) :=
+    centreReesGrading (localSurfaceClosedPoint W x y)
+  exact Submodule.mem_map.mpr
+    ⟨localSurfaceCentreReesTwo W x y,
+      localSurfaceCentreReesTwo_mem_degree_one W x y, rfl⟩
+
+/-- The degree-zero scalar `2` does not kill `2t` when the centre is
+a proper ideal. The class in degree one of `Rees / (2)` is therefore
+nonzero. This is ideal membership, not yet the scheme pullback. -/
+theorem overlineTwoT_ne_zero
+    (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2])
+    (hF : localSurfaceEquation W x y ∈ localSurfaceCentre) :
+    overlineTwoT W x y ≠ 0 := by
+  intro hz
+  exact scalar_two_does_not_kill_two_t W x y
+    (one_not_mem_centre_of_maximal W x y hF)
+    (Ideal.Quotient.eq_zero_iff_mem.mp hz)
+
+/-- When the surface equation lies in the square of the centre, the
+square of `2t` is still outside the scalar ideal `(2)`. The class of
+`2t` in `Rees / (2)` is therefore not killed by a single further
+factor of itself. -/
+theorem overlineTwoT_sq_ne_zero
+    (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2])
+    (hF : localSurfaceEquation W x y ∈ localSurfaceCentre ^ 2) :
+    (overlineTwoT W x y) ^ 2 ≠ 0 := by
+  intro hz
+  let R := localSurfaceCoordinateRing W x y
+  let I := localSurfaceClosedPoint W x y
+  let q : MvPolynomial (Fin 2) ℤ_[2] →+* R :=
+    Ideal.Quotient.mk (Ideal.span {localSurfaceEquation W x y})
+  let two : R := q (MvPolynomial.C (2 : ℤ_[2]))
+  have hmem :
+      (localSurfaceCentreReesTwo W x y) ^ 2 ∈
+        localSurfaceCentreReesSpecialIdeal W x y :=
+    Ideal.Quotient.eq_zero_iff_mem.mp hz
+  rw [localSurfaceCentreReesSpecialIdeal, Ideal.mem_span_singleton] at hmem
+  obtain ⟨p, hp⟩ := hmem
+  have hpoly :
+      (Polynomial.monomial 1 two) ^ 2 =
+        Polynomial.C two * (p : Polynomial R) := by
+    have hcoe := congrArg (fun z : reesAlgebra I => (z : Polynomial R)) hp
+    simpa [localSurfaceCentreReesTwo, centreReesDegreeOne, two] using hcoe
+  have hmon :
+      (Polynomial.monomial 1 two) ^ 2 =
+        Polynomial.monomial 2 (two ^ 2) := by
+    rw [pow_two, Polynomial.monomial_mul_monomial]
+    simp [pow_two]
+  have hcoeff : two ^ 2 = two * (p : Polynomial R).coeff 2 := by
+    have hc := congrArg (fun z : Polynomial R => z.coeff 2) hpoly
+    rw [hmon] at hc
+    simpa [Polynomial.coeff_C_mul, Polynomial.coeff_monomial, pow_two] using hc
+  have hone : (p : Polynomial R).coeff 2 = two := by
+    have hreg := localSurfaceCoordinateRing_two_regular W x y
+    have hpow : two ^ 2 = two * two := by simp [pow_two]
+    have hsub : two * ((p : Polynomial R).coeff 2 - two) = 0 := by
+      rw [mul_sub, ← hcoeff, hpow, sub_self]
+    exact sub_eq_zero.mp (hreg _ hsub)
+  have hI : (p : Polynomial R).coeff 2 ∈ I ^ 2 := by
+    simpa [pow_two] using p.property 2
+  rw [hone] at hI
+  exact localSurfaceUniformizer_not_mem_closedPoint_sq W x y hF hI
+
+/-! ## Degree-one `overline{2t}` and the chartwise pullback
+
+`overlineTwoT` is the class of `2t` in `Rees / (2)`. It lies in
+degree one. It is nonzero whenever the centre is proper, and its
+square is nonzero when the surface equation lies in the square of
+the centre. No generator of the scalar ideal `(2)` kills `2t`.
+
+`basic_special_chart_iso` is that comparison on one Rees basic open:
+the actual pullback of `D₊(f)` along `ℤ_[2] → ℤ/2ℤ` is the basic
+open `D₊(f mod 2)` of `Proj(Rees / (2))`.
+`twoAdicCoverChartIso_toProduct` restricts it to a product open.
+The three charts are not yet passed to `glueMorphisms`, so
+`localSurfaceCentreSpecialFibreScheme ≅ localSurfaceCentreReesSpecialProj`
+is still not a theorem. `even_solution_implies_two_divides` stays
+uninhabited: a nonzero homogeneous class is not a map from a
+coprime solution in `ℕ` to a point of `Bl_I`.
 -/
+
+noncomputable abbrev basic_special_chart_iso := surfaceCentreBasicSpecialChartIso
 
 abbrev integral_generators_degree_one :=
   localSurfaceCentreReesGenerator_mem_degree_one
 
--- OPEN: need identification of actual special-fibre pullback V(2) in Bl_I with quotient Proj(ReesMod2), excluded in v34, plus Rees Proj properness theorem not in Mathlib v4.12.0
-/-- Uninhabited. The first four conjuncts name the checked integral
-degree-one generators, the quotient-`Proj` cover
-`D₊(2t)`, `D₊(Xt)`, `D₊(Yt)`, and the saturations
-`J_X = (G_X : X^∞)`, `J_Y = (G_Y : Y^∞)`.
-The last conjunct is the even chart map. Their conjunction is not
-a degree-one nonzero class of `overline{2t}` in `ReesMod2`. -/
+/-- Uninhabited. Names the checked cover and saturations and the
+even chart map. Not a degree-one class on the pullback. -/
 def overline_2t_section : Prop :=
   integral_generators_degree_one = localSurfaceCentreReesGenerator_mem_degree_one ∧
   three_open_cover = localSurfaceCentreReesGenerator_cover ∧
@@ -492,3 +629,8 @@ end Beal.Even
 #print axioms Beal.Even.E_F2_origin_on_both_lines
 #print axioms Beal.Even.E_F2_point_10_one_component
 #print axioms Beal.Even.E_F2_point_11_one_component
+#print axioms Beal.Even.one_not_mem_centre_of_maximal
+#print axioms Beal.Even.scalar_two_does_not_kill_two_t
+#print axioms Beal.Even.overlineTwoT_mem_degree_one
+#print axioms Beal.Even.overlineTwoT_ne_zero
+#print axioms Beal.Even.overlineTwoT_sq_ne_zero
