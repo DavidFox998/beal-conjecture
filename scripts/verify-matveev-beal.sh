@@ -4931,7 +4931,9 @@ if "beal-conjecture stays beal-conjecture" not in readme:
     sys.exit(1)
 
 cff = pathlib.Path("CITATION.cff").read_text(encoding="utf-8")
-needles = [
+# Old Level26 citation, or the Beal v33 main-audit citation after
+# main became 6ee63920. Either set is valid. A file with neither fails.
+level26_needles = [
     'title: "Formal Verification of the Level 26 Foundations for Signature (4,4,13): Certified Mordell-Weil Rank Zero for X0(26), Descent, Torsion, and Conductor Data"',
     "Matveev-Beal Level 26: Rank-3 B0/C cutoff nogo",
     'version: "v24-v24x-final-rank3-b0-div-c-nogo"',
@@ -4942,10 +4944,25 @@ needles = [
     "10.5281/zenodo.22732209",
     "v25.0.0-Beal-44-13-Level-26-Baker-B0-Unconditional-foundations is not",
 ]
-for n in needles:
-    if n not in cff:
-        print("CITATION.cff missing:", n, file=sys.stderr)
-        sys.exit(1)
+has_level26 = all(n in cff for n in level26_needles)
+has_title = "\ntitle:" in "\n" + cff or cff.startswith("title:")
+has_v33 = (
+    has_title
+    and "doi:" in cff
+    and "10.5281/zenodo.23054568" in cff
+    and "three-open gluing" in cff
+    and "Beal" in cff
+)
+if not has_level26 and not has_v33:
+    print(
+        "CITATION.cff missing expected title or DOI "
+        "10.5281/zenodo.23054568",
+        file=sys.stderr,
+    )
+    for n in level26_needles:
+        if n not in cff:
+            print("CITATION.cff missing:", n, file=sys.stderr)
+    sys.exit(1)
 if 'version: "v25.0.0-Beal-44-13-Level-26-Baker-B0-Unconditional-foundations"' in cff:
     print("CITATION.cff must not mint v25.0.0 as the current version", file=sys.stderr)
     sys.exit(1)
