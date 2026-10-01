@@ -46,9 +46,13 @@ Not checked, and not given inhabitants here:
 
 * `UniversallyClosed` or topological `IsProperMap` for
   `Bl_I → Spec(ℤ_[2])` or `Bl_I → Spec(R_Z)`. The predicate is
-  local on the target. The charts `D₊(2t)`, `D₊(Xt)`, and
-  `D₊(Yt)` do not prove it, and this Mathlib has no valuative
-  criterion and no Rees `Proj` properness theorem;
+  local on the target, and only for an open cover of the target.
+  The closed point of `Spec(ℤ_[2])` lies in no proper open
+  (`base_closedPoint_mem_open_iff_top`), and `V(2)` is not open
+  (`base_V2_not_open`), so `{D(2), V(2)}` is not such a cover.
+  Over `D(2)` the pullback is `Spec(R_Z[1/2])`, not the base.
+  This Mathlib has no valuative criterion and no Rees `Proj`
+  properness theorem;
 * an open immersion of `Bl_I` onto a dense open of `Spec(R_Z)`
   (the checked isomorphism is the generic fibre over `D(2)`, and
   `D(2)` is dense in `Spec(ℤ_[2])`);
@@ -93,8 +97,13 @@ abbrev Bl_I_regular_at_even_branch := evenNodeTwoChart_two_regular
 
 /-! ## Three-open cover and chart saturations
 
-These are the checked inputs named in a properness argument.
-They do not produce `IsProperMap` of `Bl_I → Spec(R_Z)`. -/
+`localSurfaceCentreReesGenerator_cover` is joint surjectivity of
+the source: `D₊(2t) ∪ D₊(Xt) ∪ D₊(Yt) = Proj`. Each basic open of
+`Proj` is affine, by `projIsoSpecTopComponent`, homeomorphic to
+the spectrum of the degree-zero localization. The divided `2`-chart
+below is finite type over `ℤ_[2]`. A cover of the source is not an
+open cover of `Spec(ℤ_[2])`, and it does not produce `IsProperMap`
+of `Bl_I → Spec(R_Z)`. -/
 
 abbrev three_open_cover := localSurfaceCentreReesGenerator_cover
 
@@ -117,6 +126,19 @@ theorem twoChart_finiteType
     (Algebra.FiniteType.mvPolynomial (R := ℤ_[2]) (Fin 2))
     (Ideal.Quotient.mkₐ ℤ_[2]
       (Ideal.span {evenNodeTwoChartPolynomial W x a b c}))
+    (Ideal.Quotient.mkₐ_surjective _ _)
+
+/-- The translated surface ring is a finite-type `ℤ_[2]`-algebra.
+Over `D(2)` the blow-up is the spectrum of a localization of this
+ring, not of `ℤ_[2]` itself. Finite type is not
+`UniversallyClosed`. -/
+theorem surfaceCoordinate_finiteType
+    (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2]) :
+    Algebra.FiniteType ℤ_[2] (localSurfaceCoordinateRing W x y) := by
+  exact Algebra.FiniteType.of_surjective
+    (Algebra.FiniteType.mvPolynomial (R := ℤ_[2]) (Fin 2))
+    (Ideal.Quotient.mkₐ ℤ_[2]
+      (Ideal.span {localSurfaceEquation W x y}))
     (Ideal.Quotient.mkₐ_surjective _ _)
 
 /-! ## Generic fibre over `D(2)`
@@ -183,6 +205,67 @@ theorem base_D2_ne_bot : PrimeSpectrum.basicOpen (2 : ℤ_[2]) ≠ ⊥ := by
   intro h
   rw [PrimeSpectrum.basicOpen_eq_bot_iff] at h
   exact padic_two_ne_zero (IsNilpotent.eq_zero h)
+
+/-- The closed point of `Spec(ℤ_[2])` is the maximal ideal `(2)`. -/
+theorem base_closedPoint_asIdeal :
+    (LocalRing.closedPoint ℤ_[2]).asIdeal = Ideal.span {(2 : ℤ_[2])} := by
+  simp [LocalRing.closedPoint, PadicInt.maximalIdeal_eq_span_p]
+
+/-- `D(2)` does not contain the closed point. -/
+theorem base_closedPoint_not_mem_D2 :
+    LocalRing.closedPoint ℤ_[2] ∉
+      (PrimeSpectrum.basicOpen (2 : ℤ_[2]) : Set (PrimeSpectrum ℤ_[2])) := by
+  intro h
+  rw [SetLike.mem_coe, PrimeSpectrum.mem_basicOpen, base_closedPoint_asIdeal] at h
+  exact h (Ideal.mem_span_singleton.mpr ⟨1, by simp⟩)
+
+/-- An open contains the closed point if and only if it is the whole
+spectrum. Target-local `UniversallyClosed` can be checked on a proper
+open only when that open misses the closed point. -/
+theorem base_closedPoint_mem_open_iff_top
+    (U : TopologicalSpace.Opens (PrimeSpectrum ℤ_[2])) :
+    LocalRing.closedPoint ℤ_[2] ∈ U ↔ U = ⊤ :=
+  LocalRing.closedPoint_mem_iff U
+
+/-- The generic point lies outside `V(2)`, so `V(2)` is not the whole
+spectrum. -/
+theorem base_V2_ne_univ :
+    PrimeSpectrum.zeroLocus {(2 : ℤ_[2])} ≠
+      (Set.univ : Set (PrimeSpectrum ℤ_[2])) := by
+  intro h
+  have hpt : (⟨⊥, Ideal.bot_prime⟩ : PrimeSpectrum ℤ_[2]) ∈
+      PrimeSpectrum.zeroLocus {(2 : ℤ_[2])} := by
+    rw [h]
+    trivial
+  rw [PrimeSpectrum.mem_zeroLocus] at hpt
+  have h2 : (2 : ℤ_[2]) ∈ (⊥ : Ideal ℤ_[2]) := hpt (Set.mem_singleton _)
+  simp only [Ideal.mem_bot] at h2
+  exact padic_two_ne_zero h2
+
+/-- `V(2)` is not an open of `Spec(ℤ_[2])`. Together with
+`base_closedPoint_not_mem_D2`, this says `{D(2), V(2)}` is not an
+open cover, so `universallyClosed_isLocalAtTarget` does not split
+the structure map into a generic check and a special check. -/
+theorem base_V2_not_open :
+    ¬ IsOpen (PrimeSpectrum.zeroLocus {(2 : ℤ_[2])} :
+        Set (PrimeSpectrum ℤ_[2])) := by
+  intro hopen
+  let U : TopologicalSpace.Opens (PrimeSpectrum ℤ_[2]) := ⟨_, hopen⟩
+  have hmem : LocalRing.closedPoint ℤ_[2] ∈ U := by
+    refine (SetLike.mem_coe).mp ?_
+    change LocalRing.closedPoint ℤ_[2] ∈
+      PrimeSpectrum.zeroLocus {(2 : ℤ_[2])}
+    rw [PrimeSpectrum.mem_zeroLocus]
+    intro z hz
+    simp only [Set.mem_singleton_iff] at hz
+    subst hz
+    rw [base_closedPoint_asIdeal]
+    exact Ideal.mem_span_singleton.mpr ⟨1, by simp⟩
+  have htop : U = ⊤ := (base_closedPoint_mem_open_iff_top U).mp hmem
+  have hset : (U : Set (PrimeSpectrum ℤ_[2])) =
+      PrimeSpectrum.zeroLocus {(2 : ℤ_[2])} := rfl
+  rw [htop, TopologicalSpace.Opens.coe_top] at hset
+  exact base_V2_ne_univ hset.symm
 
 /-- The generic open of the 2-adic base: its complement is `V(2)`,
 it is dense, and it is nonempty. This packages `D(2) ⊆ Spec(ℤ_[2])`.
@@ -774,20 +857,43 @@ theorem overlineTwoT_pow_nonzero
         _ = (2 : ℤ_[2]) ^ (n - 1) * (2 * u) := by rw [mul_assoc]
     exact hunit_false (isUnit_of_mul_eq_one _ _ hcancel.symm)
 
-/-! ## `UniversallyClosed` is not the three-chart cover
+/-! ## `UniversallyClosed` does not split along `D(2)` and `V(2)`
 
 `UniversallyClosed` is `universally (topologically IsClosedMap)`.
 In Mathlib v4.12.0 it is local on the target
-(`universallyClosed_isLocalAtTarget`), not on a cover of the
-source. There is no valuative criterion in this algebraic
-geometry library. `twoChart_finiteType` is finite type of one
-affine chart; an affine line is finite type and not proper, so
-the charts `D₊(2t)`, `D₊(Xt)`, and `D₊(Yt)` do not give
-`UniversallyClosed` for `localSurfaceCentreReesToBase`.
-`localSurfaceCentreSpecialFibreScheme_iso_ReesSpecialProj`
-identifies the special fibre with `Proj(Rees / (2))`. It is not
-properness of that structural morphism, and Rees `Proj` still
-has no properness theorem here. No instance is declared. -/
+(`universallyClosed_isLocalAtTarget`): if an open cover of the
+target pulls the morphism back to universally closed maps, the
+morphism is universally closed. There is no valuative criterion.
+
+The source is already covered. `three_open_cover` is
+`D₊(2t) ∪ D₊(Xt) ∪ D₊(Yt) = Proj`. That is not an open cover of
+`Spec(ℤ_[2])`. Finite type of a chart (`twoChart_finiteType`) or
+of the surface ring (`surfaceCoordinate_finiteType`) is not
+`UniversallyClosed`.
+
+The target-local split `D(2)` plus `V(2)` is not an open cover.
+`base_closedPoint_not_mem_D2` says the closed point misses `D(2)`.
+`base_closedPoint_mem_open_iff_top` says every open that contains
+the closed point is the whole spectrum. `base_V2_not_open` says
+the complement is not open. Checking the pullback on `D(2)` and
+the fibre over `V(2)` is not an application of
+`IsLocalAtTarget.iff_of_iSup_eq_top`.
+
+Over `D(2)`, `generic_fibre_iso` identifies the pullback with
+`Spec(R_Z[1/2])` as a scheme over `D(2)`, and
+`generic_centre_eq_top` says the centre becomes the unit ideal.
+The target of that isomorphism is the localized surface, not
+`D(2)`. An isomorphism to the base would be universally closed.
+This one is the structure map of a finite-type affine surface.
+
+Over `V(2)`, `localSurfaceCentreSpecialFibreScheme_iso_ReesSpecialProj`
+identifies the fibre with `Proj(Rees / (2))`. Mathlib v4.12.0 has
+no properness theorem for `Proj` of a finitely generated graded
+algebra, and none for Rees `Proj`. `overlineTwoT_pow_nonzero` says
+that on a point of the curve no power of the class of `2t` vanishes
+in `Rees / (2)`. That is nilpotence in one graded ring. It does not
+say a specialization into the special fibre exists, and it does not
+make the structure map a closed map. No instance is declared. -/
 
 /-! ## The ratio `2t / (Xᵢ t)` is outside the saturated chart ideals
 
@@ -1472,8 +1578,14 @@ end Beal.Even
 #print axioms Beal.Even.padic_two_ne_zero
 #print axioms Beal.Even.base_D2_dense
 #print axioms Beal.Even.base_D2_ne_bot
+#print axioms Beal.Even.base_closedPoint_asIdeal
+#print axioms Beal.Even.base_closedPoint_not_mem_D2
+#print axioms Beal.Even.base_closedPoint_mem_open_iff_top
+#print axioms Beal.Even.base_V2_ne_univ
+#print axioms Beal.Even.base_V2_not_open
 #print axioms Beal.Even.generic_open_dense
 #print axioms Beal.Even.twoChart_finiteType
+#print axioms Beal.Even.surfaceCoordinate_finiteType
 #print axioms Beal.Even.special_fibre_glue_iso
 #print axioms Beal.Even.special_fibre_cocycle
 #print axioms Beal.Even.example_twoChart_fourFactor
