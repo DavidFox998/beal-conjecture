@@ -1858,10 +1858,13 @@ relations `Y = X · (Yt/Xt)` and `X · (2t/Xt) = 0` are proved
 there, so the quotient by `⟨X, 2t/Xt, Yt/Xt⟩` kills `Y`. On
 `Y² = X³ + 2` at `(0, 0)`, `Y² = X³` holds in that chart. A
 polynomial model of those relations, further quotiented by
-`⟨X, U, V⟩`, is `𝔽₂`. The chart is not shown isomorphic to the
-model, so its quotient is not shown to be `𝔽₂`. The prime is
-not shown to have residue field `𝔽₂`, and it is not a point of
-`Proj`. -/
+`⟨X, U, V⟩`, is `𝔽₂`. On that node the class of `2t` squares to
+zero and is not itself zero. The chart receives a ring hom from
+`𝔽₂[a,b][X,Y,U,V] / (X·U, Y − X·V, Y² − X³)`. That hom is not
+shown to be bijective, and the parameter-free model has no copy
+of `a, b`, so the chart quotient is not shown to be `𝔽₂`. The
+prime is not shown to have residue field `𝔽₂`, and it is not a
+point of `Proj`. -/
 def overline_2t_global_section_open : Prop :=
   ∀ (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2]),
     localWeierstrassEquation W x y = 0 →
