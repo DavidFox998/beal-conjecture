@@ -45,7 +45,10 @@ Checked, and re-exported or proved below:
 Not checked, and not given inhabitants here:
 
 * `UniversallyClosed` or topological `IsProperMap` for
-  `Bl_I → Spec(ℤ_[2])` or `Bl_I → Spec(R_Z)`;
+  `Bl_I → Spec(ℤ_[2])` or `Bl_I → Spec(R_Z)`. The predicate is
+  local on the target. The charts `D₊(2t)`, `D₊(Xt)`, and
+  `D₊(Yt)` do not prove it, and this Mathlib has no valuative
+  criterion and no Rees `Proj` properness theorem;
 * an open immersion of `Bl_I` onto a dense open of `Spec(R_Z)`
   (the checked isomorphism is the generic fibre over `D(2)`, and
   `D(2)` is dense in `Spec(ℤ_[2])`);
@@ -55,11 +58,16 @@ Not checked, and not given inhabitants here:
   `overlineTwoT` on `D₊(2t)` (`overline_2t_global_section_open`),
   and a map `ℕ → Bl_I` from a coprime even solution
   (`even_solution_implies_two_divides`). Both stay uninhabited.
-  The chart variable `T₀` for the ratio `2t / (Xᵢ t)` lies
-  outside `J_X` and outside `J_Y`
-  (`two_t_ratio_not_mem_JX`, `two_t_ratio_not_mem_JY`). That
-  non-membership is not the section. The Rees element `2t` is
-  not a polynomial in those chart rings;
+  Mathlib v4.12.0 has no Serre twisting sheaf: `Proj.structureSheaf`
+  on `D₊(f)` has degree-zero sections only, and `overlineTwoT`
+  has degree one, so it is not a structure section. The chart
+  variable `T₀` for the ratio `2t / (Xᵢ t)` lies outside `J_X`
+  and outside `J_Y` (`two_t_ratio_not_mem_JX`,
+  `two_t_ratio_not_mem_JY`). That non-membership is not a
+  cocycle. On a point of the curve, every power of the class is
+  nonzero (`overlineTwoT_pow_nonzero`); that graded calculation
+  is not the section. The Rees element `2t` is not a polynomial
+  in those chart rings;
 * the claim that `(0,0)` lies only in `D₊(overline{2t})`;
 * any implication from an even solution of `x^p + y^q = z^r`
   to `2 ∣ x` and `2 ∣ y`, or to a point of the blow-up.
@@ -564,6 +572,222 @@ theorem overlineTwoT_sq_ne_zero
     simpa [pow_two] using p.property 2
   rw [hone] at hI
   exact localSurfaceUniformizer_not_mem_closedPoint_sq W x y hF hI
+
+/-- `(monomial 1 r) ^ n` is the degree-`n` monomial on `r ^ n`. -/
+private lemma monomial_one_pow {R : Type} [CommRing R] (r : R) (n : ℕ) :
+    (Polynomial.monomial 1 r) ^ n = Polynomial.monomial n (r ^ n) := by
+  induction n with
+  | zero => simp
+  | succ n ih =>
+      rw [pow_succ, ih, Polynomial.monomial_mul_monomial, pow_succ, mul_comm]
+
+/-- `2` is not a unit of `ℤ_[2]`. -/
+private lemma padic_two_not_unit : ¬ IsUnit (2 : ℤ_[2]) := by
+  intro h
+  have hnorm : ‖(2 : ℤ_[2])‖ = (2 : ℝ)⁻¹ := PadicInt.norm_p
+  rw [PadicInt.isUnit_iff, hnorm] at h
+  exact absurd h (by norm_num)
+
+/-- On a point of the curve, no power of the class of `2t` in
+`Rees / (2)` is zero. This is a calculation in the graded Rees
+algebra: a relation `(2t) ^ n = 2 * f` puts `2 ^ (n - 1)` in the
+`n`-th power of the centre, and evaluation at the centre then makes
+`2` a unit of `ℤ_[2]`. It does not use a twisting sheaf. -/
+theorem overlineTwoT_pow_nonzero
+    (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2])
+    (hon : localWeierstrassEquation W x y = 0)
+    (n : ℕ) :
+    (overlineTwoT W x y) ^ n ≠ 0 := by
+  intro hz
+  let S := MvPolynomial (Fin 2) ℤ_[2]
+  let R := localSurfaceCoordinateRing W x y
+  let I := localSurfaceClosedPoint W x y
+  let q : S →+* R :=
+    Ideal.Quotient.mk (Ideal.span {localSurfaceEquation W x y})
+  let two : R := q (MvPolynomial.C (2 : ℤ_[2]))
+  let εa : MvPolynomial (Fin 2) ℤ_[2] →ₐ[ℤ_[2]] ℤ_[2] :=
+    MvPolynomial.aeval (fun _ : Fin 2 => (0 : ℤ_[2]))
+  let ε : S →+* ℤ_[2] := εa.toRingHom
+  have hεF : εa (localSurfaceEquation W x y) = 0 := by
+    rw [localSurfaceEquation, localWeierstrassEquation]
+    simp only [εa, WeierstrassCurve.map, map_sub, map_add, map_mul, map_pow,
+      MvPolynomial.aeval_C, MvPolynomial.aeval_X]
+    simp only [Algebra.id.map_eq_self, add_zero]
+    exact hon
+  let φ : R →+* ℤ_[2] :=
+    Ideal.Quotient.lift (Ideal.span {localSurfaceEquation W x y}) ε
+      (by
+        intro a ha
+        obtain ⟨d, hd⟩ := Ideal.mem_span_singleton.mp ha
+        have hε : ε (localSurfaceEquation W x y) = 0 := by
+          simpa [ε] using hεF
+        rw [hd, map_mul, hε, zero_mul])
+  have hφtwo : φ two = 2 := by
+    simp only [φ, two]
+    rw [Ideal.Quotient.lift_mk]
+    change εa (MvPolynomial.C (2 : ℤ_[2])) = 2
+    rw [MvPolynomial.aeval_C]
+    rfl
+  have hunit_false (hunit : IsUnit (2 : ℤ_[2])) : False :=
+    padic_two_not_unit hunit
+  by_cases hn : n = 0
+  · subst hn
+    rw [pow_zero] at hz
+    have hmem : (1 : localSurfaceCentreRees W x y) ∈
+        localSurfaceCentreReesSpecialIdeal W x y :=
+      Ideal.Quotient.eq_zero_iff_mem.mp hz
+    rw [localSurfaceCentreReesSpecialIdeal, Ideal.mem_span_singleton] at hmem
+    obtain ⟨p, hp⟩ := hmem
+    have hpoly :
+        (1 : Polynomial R) = Polynomial.C two * (p : Polynomial R) := by
+      have hcoe := congrArg (fun z : reesAlgebra I => (z : Polynomial R)) hp
+      simpa [two] using hcoe
+    have hcoeff : (1 : R) = two * (p : Polynomial R).coeff 0 := by
+      have hc := congrArg (fun z : Polynomial R => z.coeff 0) hpoly
+      simpa [Polynomial.coeff_C_mul] using hc
+    have hunit : IsUnit two :=
+      isUnit_of_mul_eq_one _ _ hcoeff.symm
+    have hunit2 : IsUnit (φ two) := hunit.map φ
+    rw [hφtwo] at hunit2
+    exact hunit_false hunit2
+  · have hz' :
+        Ideal.Quotient.mk (localSurfaceCentreReesSpecialIdeal W x y)
+          ((localSurfaceCentreReesTwo W x y) ^ n) = 0 := by
+      simp only [overlineTwoT] at hz
+      rw [← map_pow] at hz
+      exact hz
+    have hmem :
+        (localSurfaceCentreReesTwo W x y) ^ n ∈
+          localSurfaceCentreReesSpecialIdeal W x y :=
+      Ideal.Quotient.eq_zero_iff_mem.mp hz'
+    rw [localSurfaceCentreReesSpecialIdeal, Ideal.mem_span_singleton] at hmem
+    obtain ⟨p, hp⟩ := hmem
+    have hpoly :
+        (Polynomial.monomial 1 two) ^ n =
+          Polynomial.C two * (p : Polynomial R) := by
+      have hcoe := congrArg (fun z : reesAlgebra I => (z : Polynomial R)) hp
+      simpa [localSurfaceCentreReesTwo, centreReesDegreeOne, two] using hcoe
+    have hmon :
+        (Polynomial.monomial 1 two) ^ n =
+          Polynomial.monomial n (two ^ n) :=
+      monomial_one_pow two n
+    have hn1 : 0 < n := by omega
+    have hcoeff : two ^ n = two * (p : Polynomial R).coeff n := by
+      have hc := congrArg (fun z : Polynomial R => z.coeff n) hpoly
+      rw [hmon] at hc
+      simpa [Polynomial.coeff_C_mul, Polynomial.coeff_monomial] using hc
+    have hreg := localSurfaceCoordinateRing_two_regular W x y
+    have hexp : two ^ n = two * two ^ (n - 1) := by
+      calc
+        two ^ n = two ^ (n - 1 + 1) := by congr 1; omega
+        _ = two ^ (n - 1) * two := by rw [pow_succ]
+        _ = two * two ^ (n - 1) := mul_comm _ _
+    have hone : (p : Polynomial R).coeff n = two ^ (n - 1) := by
+      have hsub : two * ((p : Polynomial R).coeff n - two ^ (n - 1)) = 0 := by
+        rw [mul_sub, ← hcoeff, hexp, sub_self]
+      exact sub_eq_zero.mp (hreg _ hsub)
+    have hI : (p : Polynomial R).coeff n ∈ I ^ n := p.property n
+    rw [hone] at hI
+    have hpowq : two ^ (n - 1) =
+        q (MvPolynomial.C ((2 : ℤ_[2]) ^ (n - 1))) := by
+      simp [two, map_pow]
+    rw [hpowq] at hI
+    have hmap : I ^ n = Ideal.map q (localSurfaceCentre ^ n) := by
+      simp [I, localSurfaceClosedPoint, Ideal.map_pow]
+    rw [hmap] at hI
+    have hker : Ideal.comap q ⊥ =
+        Ideal.span {localSurfaceEquation W x y} := by
+      ext a
+      simp only [Ideal.mem_comap, Ideal.mem_bot, q]
+      exact Ideal.Quotient.eq_zero_iff_mem
+    have hback : MvPolynomial.C ((2 : ℤ_[2]) ^ (n - 1)) ∈
+        localSurfaceCentre ^ n ⊔
+          Ideal.span {localSurfaceEquation W x y} := by
+      have hcomap :=
+        (Ideal.mem_comap (f := q)).2 hI
+      rwa [Ideal.comap_map_of_surjective q Ideal.Quotient.mk_surjective,
+        hker] at hcomap
+    obtain ⟨g, hg, d, hd, hsum⟩ := Submodule.mem_sup.mp hback
+    obtain ⟨c, hc⟩ := Ideal.mem_span_singleton.mp hd
+    have heq : MvPolynomial.C ((2 : ℤ_[2]) ^ (n - 1)) - g =
+        localSurfaceEquation W x y * c := by
+      rw [← hc, ← hsum, add_sub_cancel_left]
+    have hεg : ε g ∈ Ideal.span {((2 : ℤ_[2]) ^ n)} := by
+      have hcent : Ideal.map ε localSurfaceCentre =
+          Ideal.span {(2 : ℤ_[2])} := by
+        simp only [localSurfaceCentre, Ideal.map_span, Set.image_insert_eq,
+          Set.image_singleton]
+        have hC : ε (MvPolynomial.C (2 : ℤ_[2])) = 2 := by
+          change εa (MvPolynomial.C (2 : ℤ_[2])) = 2
+          simp [MvPolynomial.aeval_C]
+        have h0 : ε (MvPolynomial.X (0 : Fin 2)) = 0 := by
+          change εa (MvPolynomial.X (0 : Fin 2)) = 0
+          rw [MvPolynomial.aeval_X]
+        have h1 : ε (MvPolynomial.X (1 : Fin 2)) = 0 := by
+          change εa (MvPolynomial.X (1 : Fin 2)) = 0
+          rw [MvPolynomial.aeval_X]
+        rw [hC, h0, h1]
+        refine le_antisymm ?_ (Ideal.span_mono ?_)
+        · rw [Ideal.span_le]
+          intro z hz
+          simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hz
+          rcases hz with rfl | rfl | rfl
+          · exact Ideal.mem_span_singleton.mpr ⟨1, by simp⟩
+          · exact Ideal.zero_mem _
+          · exact Ideal.zero_mem _
+        · intro z hz
+          simp only [Set.mem_singleton_iff] at hz
+          subst hz
+          simp
+      have hpow : Ideal.map ε (localSurfaceCentre ^ n) =
+          Ideal.span {((2 : ℤ_[2]) ^ n)} := by
+        rw [Ideal.map_pow, hcent, Ideal.span_singleton_pow]
+      have hgmap : ε g ∈ Ideal.map ε (localSurfaceCentre ^ n) :=
+        Ideal.mem_map_of_mem ε hg
+      rwa [hpow] at hgmap
+    have hval : (2 : ℤ_[2]) ^ (n - 1) = ε g := by
+      have hdiff := congrArg ε heq
+      have hε0 : ε (localSurfaceEquation W x y) = 0 := by
+        simpa [ε] using hεF
+      rw [map_sub, map_mul, hε0, zero_mul, sub_eq_zero] at hdiff
+      have hCpow : ε (MvPolynomial.C ((2 : ℤ_[2]) ^ (n - 1))) =
+          (2 : ℤ_[2]) ^ (n - 1) := by
+        change εa (MvPolynomial.C ((2 : ℤ_[2]) ^ (n - 1))) =
+          (2 : ℤ_[2]) ^ (n - 1)
+        simp [MvPolynomial.aeval_C]
+      rw [hCpow] at hdiff
+      exact hdiff
+    rw [← hval] at hεg
+    obtain ⟨u, hu⟩ := Ideal.mem_span_singleton.mp hεg
+    have hcancel : (1 : ℤ_[2]) = 2 * u := by
+      have hne : (2 : ℤ_[2]) ^ (n - 1) ≠ 0 :=
+        pow_ne_zero _ padic_two_ne_zero
+      apply mul_left_cancel₀ hne
+      calc
+        (2 : ℤ_[2]) ^ (n - 1) * 1 = (2 : ℤ_[2]) ^ (n - 1) := by rw [mul_one]
+        _ = (2 : ℤ_[2]) ^ n * u := hu
+        _ = (2 : ℤ_[2]) ^ (n - 1 + 1) * u := by
+            congr 1
+            congr 1
+            omega
+        _ = (2 : ℤ_[2]) ^ (n - 1) * 2 * u := by rw [pow_succ]
+        _ = (2 : ℤ_[2]) ^ (n - 1) * (2 * u) := by rw [mul_assoc]
+    exact hunit_false (isUnit_of_mul_eq_one _ _ hcancel.symm)
+
+/-! ## `UniversallyClosed` is not the three-chart cover
+
+`UniversallyClosed` is `universally (topologically IsClosedMap)`.
+In Mathlib v4.12.0 it is local on the target
+(`universallyClosed_isLocalAtTarget`), not on a cover of the
+source. There is no valuative criterion in this algebraic
+geometry library. `twoChart_finiteType` is finite type of one
+affine chart; an affine line is finite type and not proper, so
+the charts `D₊(2t)`, `D₊(Xt)`, and `D₊(Yt)` do not give
+`UniversallyClosed` for `localSurfaceCentreReesToBase`.
+`localSurfaceCentreSpecialFibreScheme_iso_ReesSpecialProj`
+identifies the special fibre with `Proj(Rees / (2))`. It is not
+properness of that structural morphism, and Rees `Proj` still
+has no properness theorem here. No instance is declared. -/
 
 /-! ## The ratio `2t / (Xᵢ t)` is outside the saturated chart ideals
 
@@ -1199,23 +1423,40 @@ has degree one. `two_t_ratio_not_mem_JX` and
 for `2t / (Xᵢ t)` lies outside `J_X` and `J_Y`. A nonzero ratio
 is not a cocycle, and it does not produce the section.
 
-What can be typed, and what stays unproved, is that every power
-of `overlineTwoT` is nonzero. A nonzero section of `O(1)`
-trivialized on `D₊(2t)` would require at least that, and the
-cover squares do not prove it. This `Prop` does not include
-`even_solution_implies_two_divides`. -/
+`overlineTwoT_pow_nonzero` is the graded calculation that does
+not need `O(1)`: on a point of the curve, no power of the class
+vanishes. The hypothesis is `localWeierstrassEquation W x y = 0`.
+The unconditional formula `∀ n, overlineTwoT ^ n ≠ 0` is not
+that theorem. Off the curve the centre can be the unit ideal,
+and the class need not stay nonzero. The coefficients `Y² = 1`
+and `X³ = -1` are what make `2` regular. They are not a twisting
+sheaf. The power theorem does not inhabit the section.
+
+The finite affine cover does not prove `UniversallyClosed`
+either. That failure is recorded above and is not this `Prop`.
+This `Prop` does not include `even_solution_implies_two_divides`. -/
 
 /-- OPEN. Intended claim: a global section `s` of `O(1)` on
 `Bl_I` with `s | D₊(2t) = overlineTwoT` and `s ≠ 0`.
 
-That equation is not a term. Need a `glueMorphisms` extension
-from `D₊(2t)`, using both product projections (`mul_comm` on
-the right factor). `T₀ ∉ J_X` and `T₀ ∉ J_Y` are not that
-extension. The typed residual is that no power of `overlineTwoT`
-vanishes. No inhabitant. -/
+Mathlib v4.12.0 has no `O(1)`. Sections of `Proj.structureSheaf`
+on `D₊(f)` are degree zero, and `overlineTwoT` is degree one, so
+that equation is not a term. `glueMorphisms` on
+`{D₊(2t), D₊(Xt), D₊(Yt)}`, both product projections, and
+`mul_comm` on the right factor identify special-fibre schemes.
+They do not extend a section. `T₀ ∉ J_X` and `T₀ ∉ J_Y` are not
+a cocycle.
+
+No power formula is the body. On-curve powers are the separate
+theorem `overlineTwoT_pow_nonzero`. The unconditional formula
+`∀ n, overlineTwoT ^ n ≠ 0` is not a theorem. The body is not
+`UniversallyClosed` and not `even_solution_implies_two_divides`.
+An inhabitant of the body would not be a section of `O(1)`.
+No inhabitant is given. -/
 def overline_2t_global_section_open : Prop :=
   ∀ (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2]),
-    ∀ n : ℕ, (overlineTwoT W x y) ^ n ≠ 0
+    localWeierstrassEquation W x y = 0 →
+    even_solution_specializes_to_node
 
 end Beal.Even
 
@@ -1261,6 +1502,7 @@ end Beal.Even
 #print axioms Beal.Even.overlineTwoT_mem_degree_one
 #print axioms Beal.Even.overlineTwoT_ne_zero
 #print axioms Beal.Even.overlineTwoT_sq_ne_zero
+#print axioms Beal.Even.overlineTwoT_pow_nonzero
 #print axioms Beal.Even.localSurfaceEquation_coeff_Y_sq
 #print axioms Beal.Even.localSurfaceEquation_coeff_X_cube
 #print axioms Beal.Even.localSurfaceCoordinate_not_nilpotent
