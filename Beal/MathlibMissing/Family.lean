@@ -39,13 +39,19 @@ equation has 2-adic valuation exactly one: for
 `valuationOneCurve` (`Y² = X³ + 2`) at `(0, 0)`, the residue vanishes
 and `(2t)² = 0` in `Rees/(2)`, so the chart ring has one element.
 `familySpecialFibrePoint_Dplus_2t` is that false universal claim.
+`basicOpen_pow` and `basicOpen_zero` turn `(2t)² = 0` into
+`D₊(2t) = ⊥` as an open of `Proj(Rees(I)/(2))` on this curve.
 On the same curve no power of `X t` vanishes in `Rees/(2)`, because
 `X` remains `1` under the residue map at `(1, 1)`.
 `chart_Dplus_Xt_ring` is the degree-zero localization at that class,
 with ratios `2t / Xt` and `Yt / Xt`. The ring is nontrivial, so it
-has a prime ideal. That prime is not shown to kill both ratios, its
-residue field is not shown to be `𝔽₂`, and it is not a point of
-`Proj`. `familySpecialFibrePoint` stays uninhabited. No `sorry` is used.
+has a prime ideal of the degree-zero chart. That prime is not shown
+to kill both ratios, its residue field is not shown to be `𝔽₂`, and
+`FromSpec.toFun` is not applied, so it is not a point of `Proj`.
+`chart_Dplus_Xt_basicOpen_nonempty_valuationOne`,
+`ideal_UV_maximal`, and `familySpecialFibrePoint_Dplus_Xt` stay
+uninhabited. `familySpecialFibrePoint` stays uninhabited. No `sorry`
+is used.
 -/
 
 namespace Beal.MathlibMissing
@@ -594,6 +600,44 @@ theorem chart_Dplus_2t_subsingleton_valuationOne :
     (homogeneousQuotientComponent (centreReesComponent I) J)
     (Submonoid.powers f) h0
 
+/-- A positive power equal to zero forces the basic open in `Proj` to be
+empty: `D₊(f^n) = D₊(f)` and `D₊(0) = ⊥`. -/
+theorem proj_basicOpen_bot_of_pow_eq_zero
+    {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
+    (𝒜 : ℕ → Submodule R A) [GradedAlgebra 𝒜]
+    (f : A) {n : ℕ} (hn : 0 < n) (hfn : f ^ n = 0) :
+    ProjectiveSpectrum.basicOpen 𝒜 f = ⊥ := by
+  rw [← ProjectiveSpectrum.basicOpen_pow 𝒜 f n hn, hfn, ProjectiveSpectrum.basicOpen_zero]
+
+set_option maxHeartbeats 2000000
+
+/-- On `Y² = X³ + 2` at `(0, 0)`, `(2t)² = 0` in `Rees/(2)`, so every
+point of `Proj(Rees(I)/(2))` contains the class of `2t`. That is
+`D₊(2t) = ∅`. `proj_basicOpen_bot_of_pow_eq_zero` is the same fact
+written with `basicOpen_pow` and `basicOpen_zero`. -/
+noncomputable def chart_Dplus_2t_empty_pack : Σ' p : Prop, p := by
+  let I := numeralCentreIdeal valuationOneCurve 0 0
+  letI : GradedAlgebra (centreReesComponent I) := centreReesGrading I
+  let J := numeralReesSpecialIdeal valuationOneCurve 0 0
+  have hJ : J.IsHomogeneous (centreReesComponent I) :=
+    numeralReesSpecialIdeal_isHomogeneous valuationOneCurve 0 0
+  let ℬ := homogeneousQuotientComponent (centreReesComponent I) J
+  letI : GradedAlgebra ℬ := homogeneousQuotientGrading (centreReesComponent I) J hJ
+  let f := (Ideal.Quotient.mk J) (numeralReesTwo valuationOneCurve 0 0)
+  refine ⟨∀ x : @ProjectiveSpectrum (surfaceRing valuationOneCurve) (reesAlgebra I ⧸ J)
+      _ _ _ ℬ _, f ∈ x.asHomogeneousIdeal.toIdeal, ?_⟩
+  intro x
+  have hpow : f ^ 2 ∈ x.asHomogeneousIdeal.toIdeal := by
+    rw [valuationOne_specialTwo_sq_zero]
+    exact Submodule.zero_mem _
+  exact x.isPrime.mem_of_pow_mem 2 hpow
+
+/-- `D₊(2t) = ⊥` on this curve. -/
+def chart_Dplus_2t_empty : Prop := chart_Dplus_2t_empty_pack.1
+
+theorem chart_Dplus_2t_empty_holds : chart_Dplus_2t_empty :=
+  chart_Dplus_2t_empty_pack.2
+
 theorem chart_Dplus_2t_not_equiv_F2 :
     ¬ Nonempty (chart_Dplus_2t_ring valuationOneCurve 0 0 ≃ ZMod 2) := by
   intro ⟨e⟩
@@ -806,6 +850,47 @@ theorem chart_Dplus_Xt_prime_valuationOne :
   haveI := chart_Dplus_Xt_nontrivial_valuationOne
   infer_instance
 
+/-- OPEN. The basic open `D₊(Xt)` of `Proj(Rees(I)/(2))` is nonempty
+on this curve. Mathlib's `FromSpec.toFun` would send a prime of the
+degree-zero chart to a homogeneous prime not containing `Xt`. That
+application is not a finished proof. The chart prime from
+`chart_Dplus_Xt_prime_valuationOne` is not shown to contain
+`(2t/Xt, Yt/Xt)`. -/
+def chart_Dplus_Xt_basicOpen_nonempty_valuationOne : Prop := by
+  let I := numeralCentreIdeal valuationOneCurve 0 0
+  letI : GradedAlgebra (centreReesComponent I) := centreReesGrading I
+  let J := numeralReesSpecialIdeal valuationOneCurve 0 0
+  have hJ : J.IsHomogeneous (centreReesComponent I) :=
+    numeralReesSpecialIdeal_isHomogeneous valuationOneCurve 0 0
+  let ℬ : ℕ → Submodule (surfaceRing valuationOneCurve) (reesAlgebra I ⧸ J) :=
+    homogeneousQuotientComponent (centreReesComponent I) J
+  letI : GradedAlgebra ℬ := homogeneousQuotientGrading (centreReesComponent I) J hJ
+  exact Nonempty (↥(@ProjectiveSpectrum.basicOpen (surfaceRing valuationOneCurve)
+    (reesAlgebra I ⧸ J) _ _ _ ℬ _
+    ((Ideal.Quotient.mk J) (numeralReesXT valuationOneCurve 0 0))))
+
+/-- OPEN. `(2t / Xt, Yt / Xt)` is a maximal ideal of the chart
+`D₊(Xt)`, with quotient `𝔽₂`, whenever the reduced equation vanishes.
+The chart has some prime on `Y² = X³ + 2`. That prime is not shown to
+contain both ratios, and no evaluation `chart → 𝔽₂` is constructed.
+On this curve `2 ∈ I²`, so the `2`-direction on the exceptional
+divisor is nilpotent. -/
+def ideal_UV_maximal : Prop :=
+  ∀ (W : WeierstrassCurve ℤ_[2]) (ap bq : ℕ),
+    surfaceResidueVanishes W ap bq →
+    (ideal_two_Y_over_X W ap bq).IsMaximal ∧
+    Nonempty ((chart_Dplus_Xt_ring W ap bq ⧸ ideal_two_Y_over_X W ap bq) ≃+* ZMod 2)
+
+/-- OPEN. The ideal `(2t / Xt, Yt / Xt)` is prime with residue field
+`𝔽₂`, so `FromSpec.toFun` would carry it into `D₊(Xt)`. No such prime
+is constructed. -/
+def familySpecialFibrePoint_Dplus_Xt : Prop :=
+  ∀ (W : WeierstrassCurve ℤ_[2]) (ap bq : ℕ),
+    surfaceResidueVanishes W ap bq →
+    ∃ q : PrimeSpectrum (chart_Dplus_Xt_ring W ap bq),
+      ideal_two_Y_over_X W ap bq ≤ q.asIdeal ∧
+      Nonempty ((chart_Dplus_Xt_ring W ap bq ⧸ q.asIdeal) ≃+* ZMod 2)
+
 /-- OPEN. A coprime Beal tuple `(a, b, p, q)` should determine a point of
 `Bl_{I_{a,b}}` on the special fibre over `𝔽₂`, a direction on the
 exceptional divisor, not a prime containing the centre. The scheme
@@ -844,4 +929,11 @@ end Beal.MathlibMissing
 #print axioms Beal.MathlibMissing.valuationOne_specialXT_pow_ne_zero
 #print axioms Beal.MathlibMissing.chart_Dplus_Xt_nontrivial_valuationOne
 #print axioms Beal.MathlibMissing.chart_Dplus_Xt_prime_valuationOne
+#print axioms Beal.MathlibMissing.proj_basicOpen_bot_of_pow_eq_zero
+#print axioms Beal.MathlibMissing.chart_Dplus_2t_empty_pack
+#print axioms Beal.MathlibMissing.chart_Dplus_2t_empty
+#print axioms Beal.MathlibMissing.chart_Dplus_2t_empty_holds
+#print axioms Beal.MathlibMissing.chart_Dplus_Xt_basicOpen_nonempty_valuationOne
+#print axioms Beal.MathlibMissing.ideal_UV_maximal
+#print axioms Beal.MathlibMissing.familySpecialFibrePoint_Dplus_Xt
 #print axioms Beal.MathlibMissing.coprimeBealSolution_to_family_point
