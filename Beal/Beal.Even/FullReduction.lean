@@ -1831,15 +1831,18 @@ blow-up is `Bl_I → Spec(R)`
 No inhabitant is given.
 
 `Beal/MathlibMissing/TwistingSheaf.lean` defines the sheaf `O1` of
-degree-shift-one fractions on `Proj(Rees / (2))`, the equivalence of
-homogeneous localizations on `D₊(2t)` by multiplication by
-`overlineTwoT` (not an isomorphism of the restricted sheaves), and
-the chart section `overlineTwoT / 1`. That file is not imported here.
-Those constructions are not a global section of `O(1)` on the
-integral blow-up `Bl_I`, so they do not inhabit this `Prop`.
-`Beal/MathlibMissing/Family.lean` defines `Bl_{I_{a,b}}`. The point
-map from a coprime solution stays uninhabited there and is not
-imported here. -/
+degree-shift-one fractions on `Proj(Rees / (2))`.
+`O1_restricted_iso_O` is the equivalence, by multiplication by
+`overlineTwoT`, between sections of the Type-valued structure sheaf
+and sections of `O1` on `D₊(overlineTwoT)`. `sectionsIso_natural`
+says the same map commutes with restriction to smaller opens. That
+file is not imported here. The equivalence is on one chart of the
+special fibre. It is not a global section of `O(1)` on the integral
+blow-up `Bl_I`, so it does not inhabit this `Prop`.
+`Beal/MathlibMissing/Family.lean` defines `Bl_{I_{a,b}}`. There is
+no ring hom from that surface ring to `ℤ_[2]` killing the centre,
+because the centre contains `2`. The point map from a coprime
+solution stays uninhabited there and is not imported here. -/
 def overline_2t_global_section_open : Prop :=
   ∀ (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2]),
     localWeierstrassEquation W x y = 0 →
