@@ -60,8 +60,12 @@ Not checked, and not given inhabitants here:
   a theorem (`localSurfaceCentreReesToBase_universallyClosed_false`
   stays uninhabited). The correct properness target is
   `Bl_I → Spec(R)` (`localSurfaceCentreReesToSurfaceProper`),
-  also uninhabited. This Mathlib has no valuative criterion and
-  no Rees `Proj` properness theorem;
+  also uninhabited. The general statement is
+  `proj_proper_of_fg_graded`: `Proj` of a finite-type graded
+  algebra over a Noetherian ring is universally closed over
+  `Spec` of that ring. It is uninhabited. This Mathlib has no
+  valuative criterion, no scheme `ℙⁿ`, and no `Proj` morphism
+  from a graded surjection;
 * an open immersion of `Bl_I` onto a dense open of `Spec(R_Z)`
   (the checked isomorphism is the generic fibre over `D(2)`, and
   `D(2)` is dense in `Spec(ℤ_[2])`);
@@ -1104,19 +1108,49 @@ theorem reesDegreeZeroChart_finiteType
         (localSurfaceCentreScalars W x y i)))
     (Ideal.Quotient.mkₐ_surjective _ _)
 
+/-- The structure map `Proj(A) → Spec(R)` given by degree-zero scalar
+sections. This is the construction used for
+`localSurfaceCentreReesToSurface`. The definition is not a proof
+of `UniversallyClosed`. -/
+noncomputable def gradedProjToBase
+    {R A : Type} [CommRing R] [CommRing A] [Algebra R A]
+    (𝒜 : ℕ → Submodule R A) [GradedAlgebra 𝒜] :
+    AlgebraicGeometry.«Proj» 𝒜 ⟶
+      AlgebraicGeometry.Spec (CommRingCat.of R) :=
+  (AlgebraicGeometry.ΓSpec.adjunction.homEquiv
+      (AlgebraicGeometry.«Proj» 𝒜)
+      (Opposite.op (CommRingCat.of R)))
+    (CommRingCat.ofHom (projectiveScalarToGamma 𝒜)).op
+
+/-- OPEN. `Proj` of a finite-type graded algebra over a Noetherian
+ring is universally closed over `Spec` of that ring.
+
+The body is `Algebra.FiniteType` of the underlying algebra. The
+degree-one generation used to land in `ℙⁿ` is not a separate
+hypothesis: Mathlib v4.12.0 has no scheme `ℙⁿ`. The usual proof
+needs a graded surjection `R[T₀,T₁,T₂] → A`, the closed immersion
+of `Proj` into `ℙ²_R`, and properness of `ℙ²_R`. There is no
+morphism of `Proj` induced by a graded surjection.
+`IsClosedImmersion` is not shown to be stable under pullback and
+is not shown to be `UniversallyClosed`. There is no valuative
+criterion. `gradedProjToBase` only names the scalar structure map.
+No inhabitant is given. -/
+def proj_proper_of_fg_graded : Prop :=
+  ∀ (R A : Type) [CommRing R] [IsNoetherianRing R] [CommRing A] [Algebra R A]
+    (𝒜 : ℕ → Submodule R A) [GradedAlgebra 𝒜],
+    Algebra.FiniteType R A →
+    AlgebraicGeometry.UniversallyClosed (gradedProjToBase 𝒜)
+
 /-- OPEN. Properness of the blow-up of the centre in the translated
 surface is `UniversallyClosed` of `Bl_I → Spec(R)`, the morphism
-`localSurfaceCentreReesToSurface`. The finite affine cover
-`D₊(2t) ∪ D₊(Xt) ∪ D₊(Yt)` covers the source, and
+`localSurfaceCentreReesToSurface`. That morphism is the scalar
+structure map `gradedProjToBase` of the Rees grading. The finite
+affine cover `D₊(2t) ∪ D₊(Xt) ∪ D₊(Yt)` covers the source, and
 `reesDegreeZeroChart_finiteType` makes each degree-zero chart a
 finite-type `R`-algebra. `UniversallyClosed` is local on the
 target, and an affine finite-type chart map is not a closed map,
-so the cover does not prove the predicate. Mathlib v4.12.0 has no
-properness theorem for `Proj` of a finitely generated graded
-algebra over `R`. A graded surjection `R[T₀,T₁,T₂] → Rees` does
-not induce a `Proj` morphism, and a closed immersion into `ℙ²_R`
-is not a term. `IsClosedImmersion` is not shown to be
-`UniversallyClosed`. No inhabitant is given. -/
+so the cover does not prove the predicate. The missing general
+lemma is `proj_proper_of_fg_graded`. No inhabitant is given. -/
 def localSurfaceCentreReesToSurfaceProper : Prop :=
   ∀ (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2]),
     AlgebraicGeometry.UniversallyClosed
@@ -1830,6 +1864,8 @@ end Beal.Even
 #print axioms Beal.Even.awayTwoInclusion_not_universallyClosed
 #print axioms Beal.Even.localSurfaceCentreReesToBase_universallyClosed_false
 #print axioms Beal.Even.reesDegreeZeroChart_finiteType
+#print axioms Beal.Even.gradedProjToBase
+#print axioms Beal.Even.proj_proper_of_fg_graded
 #print axioms Beal.Even.localSurfaceCentreReesToSurfaceProper
 #print axioms Beal.Even.special_fibre_glue_iso
 #print axioms Beal.Even.special_fibre_cocycle
