@@ -51,12 +51,15 @@ Not checked, and not given inhabitants here:
   `D(2)` is dense in `Spec(ℤ_[2])`);
 * `V(overline{2t})` inside `Proj(ReesMod2)`, and any isomorphism
   of that locus with `ℙ¹_{𝔽₂}`;
-* a map `ℕ → Bl_I` from a coprime even solution, and therefore
-  `overline_2t_section` and `even_solution_implies_two_divides`
-  (both stay uninhabited). The chart variable `T₀` for the ratio
-  `2t / (Xᵢ t)` lies outside `J_X` and outside `J_Y`
-  (`two_t_ratio_not_mem_JX`, `two_t_ratio_not_mem_JY`). The Rees
-  element `2t` is not a polynomial in those chart rings;
+* a global section of `O(1)` on `Bl_I` restricting to
+  `overlineTwoT` on `D₊(2t)` (`overline_2t_global_section_open`),
+  and a map `ℕ → Bl_I` from a coprime even solution
+  (`even_solution_implies_two_divides`). Both stay uninhabited.
+  The chart variable `T₀` for the ratio `2t / (Xᵢ t)` lies
+  outside `J_X` and outside `J_Y`
+  (`two_t_ratio_not_mem_JX`, `two_t_ratio_not_mem_JY`). That
+  non-membership is not the section. The Rees element `2t` is
+  not a polynomial in those chart rings;
 * the claim that `(0,0)` lies only in `D₊(overline{2t})`;
 * any implication from an even solution of `x^p + y^q = z^r`
   to `2 ∣ x` and `2 ∣ y`, or to a point of the blow-up.
@@ -384,12 +387,9 @@ does not prove it.
 `even_solution_chart` and `even_solution_specializes_to_node` are
 arithmetic shadows: even bases, and reduction to the origin in
 `𝔽₂`. They are not a map into `D₊(2t)` and not a specialization
-of a blow-up point onto `E_nodal`. No Tate model `(X, Y, a₂, a₄, a₆)`
-of a general even solution is defined in this module, so
-`even_solution_implies_two_divides` cannot yet speak about those
-coordinates. The missing step is a valuation of `overline{2t}`.
-That element is not shown to be degree one or nonzero; that is a
-v33 exclusion, and it stays excluded. -/
+of a blow-up point onto `E_nodal`. `overlineTwoT` is degree one
+and nonzero in `Rees / (2)` for a proper centre. That class is
+not a point of `Bl_I` attached to a solution in `ℕ`. -/
 
 def even_Beal : Prop :=
   ∀ x y z p q r : ℕ,
@@ -422,9 +422,12 @@ def even_solution_specializes_to_node : Prop :=
     x ^ p + y ^ q = z ^ r →
     ((x : ZMod 2), (y : ZMod 2)) = (0, 0)
 
-/-- Open. Needs a Tate model and a nonzero valuation of `overline{2t}`,
-both absent here. The degree-one / nonzero claim for `overline{2t}`
-on the actual pullback remains excluded. -/
+/-- OPEN. Needs a varying family `Bl_{I_{a,b}}` parametrized by
+`a^p` and `b^q`, not the fixed ring
+`R = ℤ_[2][X, Y] / (surface)`. A tuple in `ℕ` gives no ring
+homomorphism `R →+* ℤ_[2]`, so the Rees universal property
+(`centreReesMap`) does not apply.
+`coprimeBealSolution_to_BlI_point` is not defined. -/
 def even_solution_implies_two_divides : Prop :=
   even_solution_chart
 
@@ -1140,9 +1143,9 @@ open `D₊(f mod 2)` of `Proj(Rees / (2))`.
 product overlap; the right-hand factor is the left-hand square after
 `mul_comm`. `glueMorphisms` on `{D₊(2t), D₊(Xt), D₊(Yt)}` is
 `localSurfaceCentreSpecialFibreScheme_iso_ReesSpecialProj`.
-`even_solution_implies_two_divides` stays uninhabited: a scheme
-isomorphism is not a map from a coprime solution in `ℕ` to a point
-of `Bl_I`.
+That isomorphism is a map of special-fibre schemes. It is not a
+global section of `O(1)` on `Bl_I`, and it is not a map from a
+coprime solution in `ℕ`.
 -/
 
 noncomputable abbrev basic_special_chart_iso := surfaceCentreBasicSpecialChartIso
@@ -1167,14 +1170,52 @@ theorem actualSpecialFibrePullback_eq_quotientProj
 abbrev integral_generators_degree_one :=
   localSurfaceCentreReesGenerator_mem_degree_one
 
-/-- Uninhabited. Names the checked cover and saturations and the
-even chart map. Not a degree-one class on the pullback. -/
-def overline_2t_section : Prop :=
-  integral_generators_degree_one = localSurfaceCentreReesGenerator_mem_degree_one ∧
-  three_open_cover = localSurfaceCentreReesGenerator_cover ∧
-  Xt_chart_saturation = XtRelations_saturation ∧
-  Yt_chart_saturation = YtRelations_saturation ∧
-  even_solution_implies_two_divides
+/-! ## Global extension attempt
+
+`actualSpecialFibrePullback_eq_quotientProj` places `overlineTwoT`
+on the special fibre `Proj(Rees / (2))`. The preimage in the Rees
+algebra is `localSurfaceCentreReesTwo`. On the blow-up chart
+`D₊(2t)` the coordinate ring is `localSurfaceCentreTwoAway`, the
+degree-zero localization at `2t`, so the tautological ratio
+`2t / 2t` is the unit of that chart.
+
+The next step would carry that trivialization to `D₊(Xt)` and
+`D₊(Yt)` along `twoAdicCoverChartIso_toProduct` and
+`twoAdicCoverChartIso_toProduct_right`. The right-hand factor is
+the left-hand square after `mul_comm`. `glueMorphisms` already
+used those two projections to identify the special-fibre schemes.
+
+Obstruction. Those squares are isomorphisms of schemes. They do
+not extend a section. Mathlib v4.12.0 builds `Proj.structureSheaf`
+from same-degree fractions (`HomogeneousLocalization`). It has no
+Serre twisting sheaf `O(1)`. The intended equation
+
+`s | D₊(2t) = overlineTwoT`,
+
+for a global section `s` of `O(1)` on `Bl_I`, is therefore not a
+term: the left-hand side would have degree zero and `overlineTwoT`
+has degree one. `two_t_ratio_not_mem_JX` and
+`two_t_ratio_not_mem_JY` say only that the chart variable `T₀`
+for `2t / (Xᵢ t)` lies outside `J_X` and `J_Y`. A nonzero ratio
+is not a cocycle, and it does not produce the section.
+
+What can be typed, and what stays unproved, is that every power
+of `overlineTwoT` is nonzero. A nonzero section of `O(1)`
+trivialized on `D₊(2t)` would require at least that, and the
+cover squares do not prove it. This `Prop` does not include
+`even_solution_implies_two_divides`. -/
+
+/-- OPEN. Intended claim: a global section `s` of `O(1)` on
+`Bl_I` with `s | D₊(2t) = overlineTwoT` and `s ≠ 0`.
+
+That equation is not a term. Need a `glueMorphisms` extension
+from `D₊(2t)`, using both product projections (`mul_comm` on
+the right factor). `T₀ ∉ J_X` and `T₀ ∉ J_Y` are not that
+extension. The typed residual is that no power of `overlineTwoT`
+vanishes. No inhabitant. -/
+def overline_2t_global_section_open : Prop :=
+  ∀ (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2]),
+    ∀ n : ℕ, (overlineTwoT W x y) ^ n ≠ 0
 
 end Beal.Even
 
@@ -1228,3 +1269,5 @@ end Beal.Even
 #print axioms Beal.Even.two_t_ratio_not_mem_JY
 #print axioms Beal.Even.localSurfaceCentreSpecialFibreScheme_iso_ReesSpecialProj
 #print axioms Beal.Even.actualSpecialFibrePullback_eq_quotientProj
+#print axioms Beal.Even.overline_2t_global_section_open
+#print axioms Beal.Even.even_solution_implies_two_divides
