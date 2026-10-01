@@ -1828,7 +1828,18 @@ A solution in `ℕ` needs a family `Bl_{I_{a,b}}`, not this fixed
 surface, and the correct universal-closedness target for the
 blow-up is `Bl_I → Spec(R)`
 (`localSurfaceCentreReesToSurfaceProper`), not `Spec(ℤ_[2])`.
-No inhabitant is given. -/
+No inhabitant is given.
+
+`Beal/MathlibMissing/TwistingSheaf.lean` defines the sheaf `O1` of
+degree-shift-one fractions on `Proj(Rees / (2))`, the equivalence of
+homogeneous localizations on `D₊(2t)` by multiplication by
+`overlineTwoT` (not an isomorphism of the restricted sheaves), and
+the chart section `overlineTwoT / 1`. That file is not imported here.
+Those constructions are not a global section of `O(1)` on the
+integral blow-up `Bl_I`, so they do not inhabit this `Prop`.
+`Beal/MathlibMissing/Family.lean` defines `Bl_{I_{a,b}}`. The point
+map from a coprime solution stays uninhabited there and is not
+imported here. -/
 def overline_2t_global_section_open : Prop :=
   ∀ (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2]),
     localWeierstrassEquation W x y = 0 →

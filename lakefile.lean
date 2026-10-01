@@ -103,10 +103,12 @@ lean_lib BealGeneral where
 lean_lib BealEven where
   globs := #[.one `Beal.«Beal.Even».FullReduction]
 
-/-- Graded surjection `R[T₀,T₁,T₂] → Rees(I)` and the uninhabited
-    `Proj` properness gap. Not imported by `BealEven`. -/
+/-- Graded surjection `R[T₀,T₁,T₂] → Rees(I)`, the `O(1)` twisting
+    sheaf, and the family `Bl_{I_{a,b}}`. Not imported by `BealEven`. -/
 lean_lib BealMathlibMissing where
-  globs := #[.one `Beal.MathlibMissing.ProjProper]
+  globs := #[.one `Beal.MathlibMissing.ProjProper,
+    .one `Beal.MathlibMissing.TwistingSheaf,
+    .one `Beal.MathlibMissing.Family]
 
 /-- v35 starter for odd exponents. Not a Beal proof.
     The Lake module name is `Beal.«Beal.Odd».FullReduction`
