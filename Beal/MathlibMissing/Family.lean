@@ -4,6 +4,9 @@ import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Scheme
 import Mathlib.Data.ZMod.Basic
 import Mathlib.NumberTheory.Padics.RingHoms
 import Mathlib.RingTheory.GradedAlgebra.HomogeneousLocalization
+import Mathlib.Algebra.Polynomial.Div
+import Mathlib.RingTheory.Ideal.QuotientOperations
+import Mathlib.RingTheory.MvPolynomial.Ideal
 import Mathlib.RingTheory.PrimeSpectrum
 
 /-!
@@ -47,18 +50,31 @@ On the same curve no power of `X t` vanishes in `Rees/(2)`, because
 It contains the ratios `2t / Xt` and `Yt / Xt`, and also the
 degree-zero classes `chart_X` and `chart_Y` of `X - ap` and
 `Y - bq`. On every numeral centre, `chart_Y = chart_X * (Yt / Xt)`
-and `chart_X * (2t / Xt) = 0` in `Rees/(2)`, so `Y` is redundant
-in `⟨X, Y, 2t/Xt, Yt/Xt⟩`. The candidate ideal of the reduced
-node is that ideal, not the ideal of ratios alone. `chart_X` is
-not shown to be nonzero. The ring is nontrivial, so it has some
-prime. `(Xt)^n ≠ 0` is necessary for `D₊(Xt)` to be nonempty
+and `chart_X * (2t / Xt) = 0` in `Rees/(2)`, so `Y` lies in
+`⟨X, 2t/Xt, Yt/Xt⟩`. The quotient of the chart by that span
+kills `Y` (`quotient_span_XUV_kills_Y`). The relation
+`X · (2t/Xt) = 0` becomes `0 = 0` there and does not add a
+nilpotent. On `Y² = X³ + 2` at `(0, 0)`, `chart_Y ^ 2 = chart_X ^ 3`
+in the chart, because `Y² - X³ = -2` on the surface and the
+scalar `2` is zero in `Rees/(2)`. The polynomial model is
+`𝔽₂[X,Y,U,V] / (X·U, Y - X·V, Y² - X³)`. Its further quotient
+by `⟨X, U, V⟩` is `𝔽₂` (`modelXtChartModXUV_equiv_F2`):
+`Y = X·V` puts `Y` in the ideal, so `Y² - X³` becomes `0 = 0`.
+The quotient that drops `Y - X·V`, namely
+`𝔽₂[X,Y,U,V] / (Y² - X³, X, U, V)`, still has a nonzero nilpotent
+class of `Y` (`modelForgetY_class_Y_ne_zero`). The chart is not
+shown isomorphic to the model. The surface is an algebra over
+`ℤ_[2][a,b]`, and those parameters are not generators of the
+ideal. The ring is nontrivial, so it has some prime.
+`(Xt)^n ≠ 0` is necessary for `D₊(Xt)` to be nonempty
 (`pow_ne_zero_of_basicOpen_ne_bot`) and is not sufficient.
-The quotient by `⟨X, Y, 2t/Xt, Yt/Xt⟩` is not shown to be `𝔽₂`,
-so that ideal is not shown to be maximal. `FromSpec.toFun` is not
-applied, so the chart prime is not a point of `Proj`.
+The quotient of the chart by `⟨X, Y, 2t/Xt, Yt/Xt⟩` is not shown
+to be `𝔽₂`, so that ideal is not shown to be maximal.
+`FromSpec.toFun` is not applied, so the chart prime is not a
+point of `Proj`.
 `chart_Dplus_Xt_basicOpen_nonempty_valuationOne`,
-`ideal_UV_maximal`, `ideal_XYUV_quotient_F2`,
-`familySpecialFibrePoint_Dplus_Xt`, and
+`chart_Dplus_Xt_presentation`, `ideal_UV_maximal`,
+`ideal_XYUV_quotient_F2`, `familySpecialFibrePoint_Dplus_Xt`, and
 `familySpecialFibrePoint_XYUV` stay uninhabited.
 `familySpecialFibrePoint` stays uninhabited. No `sorry` is used.
 -/
@@ -1096,6 +1112,433 @@ theorem ideal_XYUV_eq_span_X_UV
     · exact Ideal.subset_span (by simp)
     · exact Ideal.subset_span (by simp)
 
+
+/-- `Y` lies in `⟨X, 2t/Xt, Yt/Xt⟩`, because `Y = X · (Yt / Xt)`. -/
+theorem chart_Y_mem_span_X_UV
+    (W : WeierstrassCurve ℤ_[2]) (ap bq : ℕ) :
+    chart_Y W ap bq ∈ Ideal.span {chart_X W ap bq, chart_two_over_X W ap bq,
+      chart_Y_over_X W ap bq} := by
+  rw [chart_Y_eq_chart_X_mul_Y_over_X]
+  exact Ideal.mul_mem_left _ _ (Ideal.subset_span (by simp))
+
+/-- Quotienting the chart by `⟨X, 2t/Xt, Yt/Xt⟩` kills `Y`.
+The class of `Y` is not a leftover nilpotent. -/
+theorem quotient_span_XUV_kills_Y
+    (W : WeierstrassCurve ℤ_[2]) (ap bq : ℕ) :
+    Ideal.Quotient.mk (Ideal.span {chart_X W ap bq, chart_two_over_X W ap bq,
+        chart_Y_over_X W ap bq}) (chart_Y W ap bq) = 0 := by
+  rw [Ideal.Quotient.eq_zero_iff_mem]
+  exact chart_Y_mem_span_X_UV W ap bq
+
+/-!
+### Polynomial model of the chart
+
+`𝔽₂[X,Y,U,V] / (X·U, Y − X·V, Y² − X³)`, then the further quotient by
+`⟨X, U, V⟩`. This is not an isomorphism with `chart_Dplus_Xt_ring`.
+-/
+
+/-- `X` in the model `𝔽₂[X, Y, U, V]`. -/
+noncomputable def modelX : MvPolynomial (Fin 4) (ZMod 2) := MvPolynomial.X 0
+
+/-- `Y` in the model `𝔽₂[X, Y, U, V]`. -/
+noncomputable def modelY : MvPolynomial (Fin 4) (ZMod 2) := MvPolynomial.X 1
+
+/-- `U`, standing for `2t / Xt`. -/
+noncomputable def modelU : MvPolynomial (Fin 4) (ZMod 2) := MvPolynomial.X 2
+
+/-- `V`, standing for `Yt / Xt`. -/
+noncomputable def modelV : MvPolynomial (Fin 4) (ZMod 2) := MvPolynomial.X 3
+
+/-- The relations `X·U = 0`, `Y = X·V`, and `Y² = X³`. -/
+noncomputable def modelRelationIdeal : Ideal (MvPolynomial (Fin 4) (ZMod 2)) :=
+  Ideal.span {modelX * modelU, modelY - modelX * modelV, modelY ^ 2 - modelX ^ 3}
+
+/-- `⟨X, U, V⟩` in the polynomial model. -/
+noncomputable def modelXUVIdeal : Ideal (MvPolynomial (Fin 4) (ZMod 2)) :=
+  Ideal.span {modelX, modelU, modelV}
+
+/-- `𝔽₂[X,Y,U,V] / (X·U, Y − X·V, Y² − X³)`. -/
+abbrev modelXtChart : Type :=
+  MvPolynomial (Fin 4) (ZMod 2) ⧸ modelRelationIdeal
+
+/-- The model chart modulo `⟨X, U, V⟩`. -/
+abbrev modelXtChartModXUV : Type :=
+  modelXtChart ⧸ modelXUVIdeal.map (Ideal.Quotient.mk modelRelationIdeal)
+
+/-- `⟨Y² − X³, X, U, V⟩`, the model that drops `Y = X·V`. -/
+noncomputable def modelForgetYIdeal : Ideal (MvPolynomial (Fin 4) (ZMod 2)) :=
+  Ideal.span {modelY ^ 2 - modelX ^ 3, modelX, modelU, modelV}
+
+private lemma modelRelation_sup_XUV_eq_named_span :
+    modelRelationIdeal ⊔ modelXUVIdeal =
+      Ideal.span ({modelX, modelY, modelU, modelV} :
+        Set (MvPolynomial (Fin 4) (ZMod 2))) := by
+  apply le_antisymm
+  · refine sup_le ?_ ?_
+    · rw [modelRelationIdeal, Ideal.span_le]
+      intro z hz
+      simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hz
+      rcases hz with rfl | rfl | rfl
+      · exact Ideal.mul_mem_right _ _ (Ideal.subset_span (by simp))
+      · exact Ideal.sub_mem _ (Ideal.subset_span (by simp))
+          (Ideal.mul_mem_left _ _ (Ideal.subset_span (by simp)))
+      · exact Ideal.sub_mem _
+          (Ideal.pow_mem_of_mem _ (Ideal.subset_span (by simp)) 2 (by decide))
+          (Ideal.pow_mem_of_mem _ (Ideal.subset_span (by simp)) 3 (by decide))
+    · rw [modelXUVIdeal, Ideal.span_le]
+      intro z hz
+      simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hz
+      rcases hz with rfl | rfl | rfl
+      · exact Ideal.subset_span (by simp)
+      · exact Ideal.subset_span (by simp)
+      · exact Ideal.subset_span (by simp)
+  · rw [Ideal.span_le]
+    intro z hz
+    simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hz
+    rcases hz with rfl | rfl | rfl | rfl
+    · exact Submodule.mem_sup_right (by
+        rw [modelXUVIdeal]; exact Ideal.subset_span (by simp))
+    · rw [← sub_add_cancel modelY (modelX * modelV)]
+      refine Ideal.add_mem _ ?_ ?_
+      · exact Submodule.mem_sup_left (by
+          rw [modelRelationIdeal]; exact Ideal.subset_span (by simp))
+      · exact Submodule.mem_sup_right (by
+          rw [modelXUVIdeal]
+          exact Ideal.mul_mem_right _ _ (Ideal.subset_span (by simp)))
+    · exact Submodule.mem_sup_right (by
+        rw [modelXUVIdeal]; exact Ideal.subset_span (by simp))
+    · exact Submodule.mem_sup_right (by
+        rw [modelXUVIdeal]; exact Ideal.subset_span (by simp))
+
+private lemma model_named_span_eq_X_image :
+    Ideal.span ({modelX, modelY, modelU, modelV} :
+        Set (MvPolynomial (Fin 4) (ZMod 2))) =
+      Ideal.span (MvPolynomial.X '' (Set.univ : Set (Fin 4))) := by
+  apply congrArg Ideal.span
+  ext z
+  simp only [Set.mem_insert_iff, Set.mem_singleton_iff, Set.mem_image,
+    Set.mem_univ, true_and]
+  constructor
+  · rintro (rfl | rfl | rfl | rfl)
+    · exact ⟨0, rfl⟩
+    · exact ⟨1, rfl⟩
+    · exact ⟨2, rfl⟩
+    · exact ⟨3, rfl⟩
+  · rintro ⟨i, rfl⟩
+    have hcov : ∀ j : Fin 4, j = 0 ∨ j = 1 ∨ j = 2 ∨ j = 3 := by decide
+    rcases hcov i with rfl | rfl | rfl | rfl
+    · simp [modelX, modelY, modelU, modelV]
+    · simp [modelX, modelY, modelU, modelV]
+    · simp [modelX, modelY, modelU, modelV]
+    · simp [modelX, modelY, modelU, modelV]
+
+/-- `⟨X·U, Y − X·V, Y² − X³⟩` together with `⟨X, U, V⟩` is the ideal of
+all four variables. `Y` enters through `Y = (Y − X·V) + X·V`. -/
+theorem modelRelation_sup_XUV_eq_X_span :
+    modelRelationIdeal ⊔ modelXUVIdeal =
+      Ideal.span (MvPolynomial.X '' (Set.univ : Set (Fin 4))) :=
+  modelRelation_sup_XUV_eq_named_span.trans model_named_span_eq_X_image
+
+/-- Evaluation at the origin of `𝔽₂⁴`. -/
+noncomputable def modelEvalZero :
+    MvPolynomial (Fin 4) (ZMod 2) →+* ZMod 2 :=
+  MvPolynomial.eval (fun _ => (0 : ZMod 2))
+
+theorem modelEvalZero_surjective : Function.Surjective modelEvalZero := by
+  intro a
+  exact ⟨MvPolynomial.C a, by simp [modelEvalZero]⟩
+
+private lemma modelEvalZero_eq_coeff_zero
+    (p : MvPolynomial (Fin 4) (ZMod 2)) :
+    modelEvalZero p = p.coeff 0 := by
+  classical
+  rw [modelEvalZero, MvPolynomial.eval_eq]
+  have hterm : ∀ d : Fin 4 →₀ ℕ, d ≠ 0 →
+      p.coeff d * ∏ i ∈ d.support, (0 : ZMod 2) ^ d i = 0 := by
+    intro d hd
+    have hsup : d.support.Nonempty := by
+      rw [Finset.nonempty_iff_ne_empty]
+      intro hempty
+      apply hd
+      exact (Finsupp.support_eq_empty.mp hempty)
+    obtain ⟨i, hi⟩ := hsup
+    rw [Finset.prod_eq_zero hi (zero_pow (Finsupp.mem_support_iff.mp hi)), mul_zero]
+  by_cases h0 : (0 : Fin 4 →₀ ℕ) ∈ p.support
+  · rw [Finset.sum_eq_single (0 : Fin 4 →₀ ℕ)]
+    · simp [Finsupp.support_zero]
+    · intro d _hd hd0
+      exact hterm d hd0
+    · intro h
+      exact (h h0).elim
+  · rw [MvPolynomial.not_mem_support_iff.mp h0]
+    apply Finset.sum_eq_zero
+    intro d hd
+    apply hterm d
+    intro hd0
+    apply h0
+    simpa [hd0] using hd
+
+theorem modelEvalZero_ker :
+    RingHom.ker modelEvalZero =
+      Ideal.span (MvPolynomial.X '' (Set.univ : Set (Fin 4))) := by
+  ext p
+  rw [RingHom.mem_ker, modelEvalZero_eq_coeff_zero,
+    MvPolynomial.mem_ideal_span_X_image]
+  constructor
+  · intro hcoeff m hm
+    have hm0 : m ≠ 0 := by
+      intro hm0
+      subst hm0
+      rw [MvPolynomial.mem_support_iff] at hm
+      exact hm hcoeff
+    have hex : ∃ i, m i ≠ 0 := by
+      by_contra h
+      push_neg at h
+      apply hm0
+      ext i
+      exact h i
+    obtain ⟨i, hi⟩ := hex
+    exact ⟨i, Set.mem_univ _, hi⟩
+  · intro h
+    by_contra hnz
+    have hmem : (0 : Fin 4 →₀ ℕ) ∈ p.support :=
+      MvPolynomial.mem_support_iff.mpr hnz
+    obtain ⟨i, -, hi⟩ := h 0 hmem
+    exact hi rfl
+
+/-- The model chart modulo `⟨X, U, V⟩` is `𝔽₂`. `Y` is zero because
+`Y = X·V`, and `Y² − X³` becomes `0 = 0`. -/
+noncomputable def modelXtChartModXUV_equiv_F2 :
+    modelXtChartModXUV ≃+* ZMod 2 :=
+  (DoubleQuot.quotQuotEquivQuotSup modelRelationIdeal modelXUVIdeal).trans <|
+    (Ideal.quotEquivOfEq modelRelation_sup_XUV_eq_X_span).trans <|
+      (Ideal.quotEquivOfEq modelEvalZero_ker.symm).trans <|
+        RingHom.quotientKerEquivOfSurjective modelEvalZero_surjective
+
+/-- In the quotient that drops `Y = X·V`, the class of `Y` squares to
+zero, because `Y² = X³` and `X = 0`. -/
+theorem modelForgetY_class_Y_sq_zero :
+    (Ideal.Quotient.mk modelForgetYIdeal modelY) ^ 2 = 0 := by
+  rw [← map_pow, Ideal.Quotient.eq_zero_iff_mem,
+    ← sub_add_cancel (modelY ^ 2) (modelX ^ 3)]
+  refine Ideal.add_mem _ ?_ ?_
+  · rw [modelForgetYIdeal]
+    exact Ideal.subset_span (by simp)
+  · exact Ideal.pow_mem_of_mem _ (by
+      rw [modelForgetYIdeal]
+      exact Ideal.subset_span (by simp)) 3 (by decide)
+
+/-- `X` is not divisible by `X²` in `𝔽₂[T]`. -/
+theorem polynomial_X_not_mem_span_X_sq :
+    (Polynomial.X : Polynomial (ZMod 2)) ∉
+      Ideal.span ({(Polynomial.X : Polynomial (ZMod 2)) ^ 2} :
+        Set (Polynomial (ZMod 2))) := by
+  intro h
+  rw [Ideal.mem_span_singleton, Polynomial.X_pow_dvd_iff] at h
+  have h1 := h 1 (by decide)
+  rw [Polynomial.coeff_X] at h1
+  simp at h1
+
+/-- `𝔽₂[T] / (T²)`. -/
+abbrev modelNilpRing : Type :=
+  Polynomial (ZMod 2) ⧸
+    Ideal.span ({(Polynomial.X : Polynomial (ZMod 2)) ^ 2} :
+      Set (Polynomial (ZMod 2)))
+
+/-- Send `Y` to the class of `T` and `X`, `U`, `V` to `0`. -/
+noncomputable def modelForgetYToNilp :
+    MvPolynomial (Fin 4) (ZMod 2) →+* modelNilpRing :=
+  MvPolynomial.eval₂Hom
+    ((Ideal.Quotient.mk (Ideal.span
+      ({(Polynomial.X : Polynomial (ZMod 2)) ^ 2} : Set (Polynomial (ZMod 2))))).comp
+      Polynomial.C)
+    (fun i : Fin 4 =>
+      if i = 1 then
+        Ideal.Quotient.mk (Ideal.span
+          ({(Polynomial.X : Polynomial (ZMod 2)) ^ 2} :
+            Set (Polynomial (ZMod 2)))) Polynomial.X
+      else 0)
+
+private lemma modelForgetYToNilp_X : modelForgetYToNilp modelX = 0 := by
+  unfold modelForgetYToNilp modelX
+  rw [MvPolynomial.eval₂Hom_X']
+  simp
+
+private lemma modelForgetYToNilp_U : modelForgetYToNilp modelU = 0 := by
+  unfold modelForgetYToNilp modelU
+  rw [MvPolynomial.eval₂Hom_X']
+  simp
+
+private lemma modelForgetYToNilp_V : modelForgetYToNilp modelV = 0 := by
+  unfold modelForgetYToNilp modelV
+  rw [MvPolynomial.eval₂Hom_X']
+  simp
+
+private lemma modelForgetYToNilp_Ysq_sub :
+    modelForgetYToNilp (modelY ^ 2 - modelX ^ 3) = 0 := by
+  rw [map_sub, map_pow, map_pow]
+  unfold modelForgetYToNilp modelY modelX
+  rw [MvPolynomial.eval₂Hom_X', MvPolynomial.eval₂Hom_X']
+  simp
+  rw [← map_pow, Ideal.Quotient.eq_zero_iff_mem]
+  exact Ideal.mem_span_singleton_self _
+
+private lemma modelForgetYIdeal_le_ker :
+    modelForgetYIdeal ≤ RingHom.ker modelForgetYToNilp := by
+  rw [modelForgetYIdeal, Ideal.span_le]
+  intro z hz
+  rw [SetLike.mem_coe, RingHom.mem_ker]
+  simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hz
+  rcases hz with rfl | rfl | rfl | rfl
+  · exact modelForgetYToNilp_Ysq_sub
+  · exact modelForgetYToNilp_X
+  · exact modelForgetYToNilp_U
+  · exact modelForgetYToNilp_V
+
+private lemma modelForgetYToNilp_Y :
+    modelForgetYToNilp modelY =
+      Ideal.Quotient.mk (Ideal.span
+        ({(Polynomial.X : Polynomial (ZMod 2)) ^ 2} :
+          Set (Polynomial (ZMod 2)))) Polynomial.X := by
+  unfold modelForgetYToNilp modelY
+  rw [MvPolynomial.eval₂Hom_X']
+  simp
+
+/-- The class of `Y` is nonzero in
+`𝔽₂[X,Y,U,V] / (Y² − X³, X, U, V)`. Together with
+`modelForgetY_class_Y_sq_zero`, it is a nonzero nilpotent, so
+`⟨X, U, V⟩` does not kill `Y` unless the relation `Y = X·V` is used. -/
+theorem modelForgetY_class_Y_ne_zero :
+    Ideal.Quotient.mk modelForgetYIdeal modelY ≠ 0 := by
+  intro h
+  have hker : modelForgetYToNilp modelY = 0 := by
+    rw [RingHom.mem_ker.mp (modelForgetYIdeal_le_ker
+      ((Ideal.Quotient.eq_zero_iff_mem).mp h))]
+  rw [modelForgetYToNilp_Y] at hker
+  rw [Ideal.Quotient.eq_zero_iff_mem] at hker
+  exact polynomial_X_not_mem_span_X_sq hker
+
+/-- `𝔽₂[X,Y,U,V] / (Y² − X³, X, U, V)` is not a field. -/
+theorem modelForgetYIdeal_not_maximal : ¬ modelForgetYIdeal.IsMaximal := by
+  intro hmax
+  rw [Ideal.Quotient.maximal_ideal_iff_isField_quotient] at hmax
+  have hy := modelForgetY_class_Y_ne_zero
+  have hsq := modelForgetY_class_Y_sq_zero
+  rcases hmax.mul_inv_cancel hy with ⟨b, hb⟩
+  apply hy
+  calc
+    Ideal.Quotient.mk modelForgetYIdeal modelY
+        = Ideal.Quotient.mk modelForgetYIdeal modelY * 1 := by rw [mul_one]
+    _ = Ideal.Quotient.mk modelForgetYIdeal modelY *
+          (Ideal.Quotient.mk modelForgetYIdeal modelY * b) := by rw [hb]
+    _ = (Ideal.Quotient.mk modelForgetYIdeal modelY *
+          Ideal.Quotient.mk modelForgetYIdeal modelY) * b := by rw [mul_assoc]
+    _ = 0 * b := by rw [← pow_two, hsq]
+    _ = 0 := zero_mul _
+
+private lemma numeralReesConst_pow
+    (W : WeierstrassCurve ℤ_[2]) (ap bq : ℕ) (r : surfaceRing W) (n : ℕ) :
+    numeralReesConst W ap bq r ^ n = numeralReesConst W ap bq (r ^ n) := by
+  apply Subtype.ext
+  unfold numeralReesConst centreReesMonomial
+  rw [Subalgebra.coe_pow]
+  dsimp
+  exact (Polynomial.C_pow).symm
+
+private lemma numeralReesConst_sub
+    (W : WeierstrassCurve ℤ_[2]) (ap bq : ℕ) (r s : surfaceRing W) :
+    numeralReesConst W ap bq r - numeralReesConst W ap bq s =
+      numeralReesConst W ap bq (r - s) := by
+  unfold numeralReesConst
+  rw [← map_sub (centreReesMonomial (numeralCentreIdeal W ap bq) 0)]
+  congr 1
+
+private lemma numeralReesConst_eq_algebraMap
+    (W : WeierstrassCurve ℤ_[2]) (ap bq : ℕ) (r : surfaceRing W) :
+    numeralReesConst W ap bq r =
+      algebraMap (surfaceRing W) (reesAlgebra (numeralCentreIdeal W ap bq)) r := by
+  apply Subtype.ext
+  unfold numeralReesConst centreReesMonomial
+  rw [Subalgebra.coe_algebraMap]
+  dsimp
+
+/-- On `Y² = X³ + 2` at `(0, 0)`, `Y² − X³ = −2` in the surface ring. -/
+theorem valuationOne_node_Ysq_sub_Xcu :
+    surfaceNumeralY valuationOneCurve 0 ^ 2 -
+      surfaceNumeralX valuationOneCurve 0 ^ 3 =
+      -(2 : surfaceRing valuationOneCurve) := by
+  have hX : surfaceNumeralX valuationOneCurve 0 =
+      Ideal.Quotient.mk (Ideal.span {surfacePolynomial valuationOneCurve})
+        (MvPolynomial.X (0 : Fin 2)) := by
+    simp [surfaceNumeralX, map_zero, sub_zero]
+  have hY : surfaceNumeralY valuationOneCurve 0 =
+      Ideal.Quotient.mk (Ideal.span {surfacePolynomial valuationOneCurve})
+        (MvPolynomial.X (1 : Fin 2)) := by
+    simp [surfaceNumeralY, map_zero, sub_zero]
+  let φ := Ideal.Quotient.mk (Ideal.span {surfacePolynomial valuationOneCurve})
+  rw [hX, hY, ← map_pow φ, ← map_pow φ, ← map_sub φ, valuationOne_two_eq,
+    ← map_neg φ]
+  apply congrArg
+  ring
+
+private lemma valuationOne_const_Ysq_sub_Xcu_mem_special :
+    numeralReesConst valuationOneCurve 0 0 (surfaceNumeralY valuationOneCurve 0) ^ 2 -
+      numeralReesConst valuationOneCurve 0 0 (surfaceNumeralX valuationOneCurve 0) ^ 3 ∈
+      numeralReesSpecialIdeal valuationOneCurve 0 0 := by
+  let ψ := algebraMap (surfaceRing valuationOneCurve)
+    (reesAlgebra (numeralCentreIdeal valuationOneCurve 0 0))
+  rw [numeralReesConst_pow, numeralReesConst_pow, numeralReesConst_sub,
+    valuationOne_node_Ysq_sub_Xcu, numeralReesConst_eq_algebraMap, map_neg ψ]
+  exact Submodule.neg_mem _ (Ideal.mem_span_singleton_self _)
+
+/-- In `Rees/(2)` on this node, `C(Y)² = C(X)³`. -/
+theorem valuationOne_special_const_Ysq_eq_Xcu :
+    (Ideal.Quotient.mk (numeralReesSpecialIdeal valuationOneCurve 0 0)
+      (numeralReesConst valuationOneCurve 0 0 (surfaceNumeralY valuationOneCurve 0))) ^ 2 =
+    (Ideal.Quotient.mk (numeralReesSpecialIdeal valuationOneCurve 0 0)
+      (numeralReesConst valuationOneCurve 0 0 (surfaceNumeralX valuationOneCurve 0))) ^ 3 := by
+  let ψ := Ideal.Quotient.mk (numeralReesSpecialIdeal valuationOneCurve 0 0)
+  rw [← map_pow ψ, ← map_pow ψ, Ideal.Quotient.eq]
+  exact valuationOne_const_Ysq_sub_Xcu_mem_special
+
+/-- On the chart `D₊(Xt)` of `Y² = X³ + 2` at `(0, 0)`, `Y² = X³`. -/
+theorem chart_Y_sq_eq_chart_X_cu_valuationOne :
+    chart_Y valuationOneCurve 0 0 ^ 2 = chart_X valuationOneCurve 0 0 ^ 3 := by
+  let I := numeralCentreIdeal valuationOneCurve 0 0
+  letI : GradedAlgebra (centreReesComponent I) := centreReesGrading I
+  let J := numeralReesSpecialIdeal valuationOneCurve 0 0
+  have hJ : J.IsHomogeneous (centreReesComponent I) :=
+    numeralReesSpecialIdeal_isHomogeneous valuationOneCurve 0 0
+  let ℬ := homogeneousQuotientComponent (centreReesComponent I) J
+  letI : GradedAlgebra ℬ := homogeneousQuotientGrading (centreReesComponent I) J hJ
+  let f := Ideal.Quotient.mk J (numeralReesXT valuationOneCurve 0 0)
+  apply HomogeneousLocalization.val_injective (Submonoid.powers f)
+  erw [HomogeneousLocalization.val_pow, HomogeneousLocalization.val_pow]
+  simp only [chart_Y, chart_X, HomogeneousLocalization.val_mk]
+  rw [Localization.mk_pow, Localization.mk_pow, Localization.mk_eq_mk_iff]
+  refine Localization.r_iff_exists.mpr ⟨1, ?_⟩
+  dsimp
+  change (1 : reesAlgebra I ⧸ J) *
+      ((1 : reesAlgebra I ⧸ J) ^ 3 *
+        (Ideal.Quotient.mk J
+          (numeralReesConst valuationOneCurve 0 0
+            (surfaceNumeralY valuationOneCurve 0))) ^ 2) =
+    (1 : reesAlgebra I ⧸ J) *
+      ((1 : reesAlgebra I ⧸ J) ^ 2 *
+        (Ideal.Quotient.mk J
+          (numeralReesConst valuationOneCurve 0 0
+            (surfaceNumeralX valuationOneCurve 0))) ^ 3)
+  have h3 : (1 : reesAlgebra I ⧸ J) ^ 3 = 1 := one_pow _
+  have h2 : (1 : reesAlgebra I ⧸ J) ^ 2 = 1 := one_pow _
+  rw [h3, h2]
+  set y := (Ideal.Quotient.mk J
+      (numeralReesConst valuationOneCurve 0 0 (surfaceNumeralY valuationOneCurve 0))) ^ 2
+  set x := (Ideal.Quotient.mk J
+      (numeralReesConst valuationOneCurve 0 0 (surfaceNumeralX valuationOneCurve 0))) ^ 3
+  rw [one_mul (1 * y), one_mul y, one_mul (1 * x), one_mul x]
+  exact valuationOne_special_const_Ysq_eq_Xcu
+
+
 /-- A quotient isomorphic to `𝔽₂` is a field, so the ideal is maximal. -/
 theorem isMaximal_of_quotient_equiv_zmod_two
     {R : Type*} [CommRing R] (I : Ideal R) (e : R ⧸ I ≃+* ZMod 2) :
@@ -1164,12 +1607,24 @@ def ideal_UV_maximal : Prop :=
     (ideal_two_Y_over_X W ap bq).IsMaximal ∧
     Nonempty ((chart_Dplus_Xt_ring W ap bq ⧸ ideal_two_Y_over_X W ap bq) ≃+* ZMod 2)
 
+/-- OPEN. The chart `D₊(Xt)` on `Y² = X³ + 2` at `(0, 0)` is isomorphic
+to `𝔽₂[X,Y,U,V] / (X·U, Y − X·V, Y² − X³)`. `modelXtChartModXUV_equiv_F2`
+is that model's further quotient by `⟨X, U, V⟩`, and it is `𝔽₂`.
+`chart_Dplus_Xt_presentation` is this missing isomorphism. The chart
+is an algebra over `ℤ_[2][a,b]`. -/
+def chart_Dplus_Xt_presentation : Prop :=
+  Nonempty (chart_Dplus_Xt_ring valuationOneCurve 0 0 ≃+* modelXtChart)
+
 /-- OPEN. On `Y² = X³ + 2` at `(0, 0)`, the quotient of the chart
-`D₊(Xt)` by `⟨X, Y, 2t/Xt, Yt/Xt⟩` is `𝔽₂`. `chart_Y = chart_X * (Yt/Xt)`
-and `chart_X * (2t/Xt) = 0` are proved, and `isMaximal_of_quotient_equiv_zmod_two`
-would make the ideal maximal once this quotient exists. No ring hom
-from the chart onto `𝔽₂` is constructed: the chart is not presented
-as an `𝔽₂`-algebra on these four generators. -/
+`D₊(Xt)` by `⟨X, Y, 2t/Xt, Yt/Xt⟩` is `𝔽₂`. `quotient_span_XUV_kills_Y`
+puts `Y` in `⟨X, 2t/Xt, Yt/Xt⟩`, so the quotient does not keep a
+nilpotent class of `Y`. `chart_Y_sq_eq_chart_X_cu_valuationOne` is
+`Y² = X³` in the chart. `modelXtChartModXUV_equiv_F2` is the same
+quotient for the polynomial model, and it is `𝔽₂`. The chart is not
+shown isomorphic to that model (`chart_Dplus_Xt_presentation`), and
+`ℤ_[2][a,b]` is not among the generators, so this quotient is not
+constructed. `isMaximal_of_quotient_equiv_zmod_two` would make the
+ideal maximal once it exists. `FromSpec.toFun` is not applied. -/
 def ideal_XYUV_quotient_F2 : Prop :=
   Nonempty ((chart_Dplus_Xt_ring valuationOneCurve 0 0 ⧸
     ideal_XYUV valuationOneCurve 0 0) ≃+* ZMod 2)
@@ -1257,6 +1712,18 @@ end Beal.MathlibMissing
 #print axioms Beal.MathlibMissing.chart_Y_eq_chart_X_mul_Y_over_X
 #print axioms Beal.MathlibMissing.chart_Y_mul_two_over_X_eq_zero
 #print axioms Beal.MathlibMissing.ideal_XYUV_eq_span_X_UV
+#print axioms Beal.MathlibMissing.chart_Y_mem_span_X_UV
+#print axioms Beal.MathlibMissing.quotient_span_XUV_kills_Y
+#print axioms Beal.MathlibMissing.modelRelation_sup_XUV_eq_X_span
+#print axioms Beal.MathlibMissing.modelEvalZero_ker
+#print axioms Beal.MathlibMissing.modelXtChartModXUV_equiv_F2
+#print axioms Beal.MathlibMissing.modelForgetY_class_Y_sq_zero
+#print axioms Beal.MathlibMissing.modelForgetY_class_Y_ne_zero
+#print axioms Beal.MathlibMissing.modelForgetYIdeal_not_maximal
+#print axioms Beal.MathlibMissing.valuationOne_node_Ysq_sub_Xcu
+#print axioms Beal.MathlibMissing.valuationOne_special_const_Ysq_eq_Xcu
+#print axioms Beal.MathlibMissing.chart_Y_sq_eq_chart_X_cu_valuationOne
+#print axioms Beal.MathlibMissing.chart_Dplus_Xt_presentation
 #print axioms Beal.MathlibMissing.isMaximal_of_quotient_equiv_zmod_two
 #print axioms Beal.MathlibMissing.ideal_UV_maximal
 #print axioms Beal.MathlibMissing.ideal_XYUV_quotient_F2

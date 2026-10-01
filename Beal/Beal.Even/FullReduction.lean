@@ -1855,9 +1855,13 @@ and the degree-zero chart `D₊(Xt)` is a nontrivial ring, so it has
 a prime. That chart also contains the degree-zero classes of `X`
 and `Y`. The candidate ideal is `⟨X, Y, 2t/Xt, Yt/Xt⟩`. The
 relations `Y = X · (Yt/Xt)` and `X · (2t/Xt) = 0` are proved
-there. The quotient by that ideal is not shown to be `𝔽₂`, the
-prime is not shown to have residue field `𝔽₂`, and it is not a
-point of `Proj`. -/
+there, so the quotient by `⟨X, 2t/Xt, Yt/Xt⟩` kills `Y`. On
+`Y² = X³ + 2` at `(0, 0)`, `Y² = X³` holds in that chart. A
+polynomial model of those relations, further quotiented by
+`⟨X, U, V⟩`, is `𝔽₂`. The chart is not shown isomorphic to the
+model, so its quotient is not shown to be `𝔽₂`. The prime is
+not shown to have residue field `𝔽₂`, and it is not a point of
+`Proj`. -/
 def overline_2t_global_section_open : Prop :=
   ∀ (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2]),
     localWeierstrassEquation W x y = 0 →
