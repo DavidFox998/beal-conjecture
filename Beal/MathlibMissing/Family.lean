@@ -45,9 +45,12 @@ On the same curve no power of `X t` vanishes in `Rees/(2)`, because
 `X` remains `1` under the residue map at `(1, 1)`.
 `chart_Dplus_Xt_ring` is the degree-zero localization at that class,
 with ratios `2t / Xt` and `Yt / Xt`. The ring is nontrivial, so it
-has a prime ideal of the degree-zero chart. That prime is not shown
-to kill both ratios, its residue field is not shown to be `𝔽₂`, and
-`FromSpec.toFun` is not applied, so it is not a point of `Proj`.
+has a prime ideal of the degree-zero chart. `(Xt)^n ≠ 0` is
+necessary for `D₊(Xt)` to be nonempty
+(`pow_ne_zero_of_basicOpen_ne_bot`) and is not sufficient.
+That prime is not shown to kill both ratios, its residue field is
+not shown to be `𝔽₂`, and `FromSpec.toFun` is not applied, so it
+is not a point of `Proj`.
 `chart_Dplus_Xt_basicOpen_nonempty_valuationOne`,
 `ideal_UV_maximal`, and `familySpecialFibrePoint_Dplus_Xt` stay
 uninhabited. `familySpecialFibrePoint` stays uninhabited. No `sorry`
@@ -850,20 +853,33 @@ theorem chart_Dplus_Xt_prime_valuationOne :
   haveI := chart_Dplus_Xt_nontrivial_valuationOne
   infer_instance
 
-/-- OPEN. The basic open `D₊(Xt)` of `Proj(Rees(I)/(2))` is nonempty
-on this curve. Mathlib's `FromSpec.toFun` would send a prime of the
-degree-zero chart to a homogeneous prime not containing `Xt`. That
-application is not a finished proof. The chart prime from
-`chart_Dplus_Xt_prime_valuationOne` is not shown to contain
-`(2t/Xt, Yt/Xt)`. -/
+/-- `(Xt)^n ≠ 0` is necessary for `D₊(Xt)` to be nonempty. It is the
+contrapositive of `proj_basicOpen_bot_of_pow_eq_zero`. It is not
+sufficient: `basicOpen_pow` identifies `D₊(f^n)` with `D₊(f)`, and
+`basicOpen_zero` kills `D₊(0)`, so a nilpotent element has empty
+basic open. A non-nilpotent element need not lie outside some
+homogeneous prime. -/
+theorem pow_ne_zero_of_basicOpen_ne_bot
+    {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
+    (𝒜 : ℕ → Submodule R A) [GradedAlgebra 𝒜]
+    {f : A} {n : ℕ} (hn : 0 < n)
+    (hopen : ProjectiveSpectrum.basicOpen 𝒜 f ≠ ⊥) : f ^ n ≠ 0 := by
+  intro hfn
+  exact hopen (proj_basicOpen_bot_of_pow_eq_zero 𝒜 f hn hfn)
+
+/-- OPEN. The basic open `D₊(Xt)` is nonempty on this curve.
+`valuationOne_specialXT_pow_ne_zero` gives `(Xt)^n ≠ 0`.
+`pow_ne_zero_of_basicOpen_ne_bot` says that is necessary for
+nonemptiness, not sufficient. `FromSpec.toFun` expects a point of
+the carrier of `Spec`, which `Spec.topObj_forget` identifies with
+`PrimeSpectrum`. The chart prime was not passed to that function. -/
 def chart_Dplus_Xt_basicOpen_nonempty_valuationOne : Prop := by
   let I := numeralCentreIdeal valuationOneCurve 0 0
   letI : GradedAlgebra (centreReesComponent I) := centreReesGrading I
   let J := numeralReesSpecialIdeal valuationOneCurve 0 0
   have hJ : J.IsHomogeneous (centreReesComponent I) :=
     numeralReesSpecialIdeal_isHomogeneous valuationOneCurve 0 0
-  let ℬ : ℕ → Submodule (surfaceRing valuationOneCurve) (reesAlgebra I ⧸ J) :=
-    homogeneousQuotientComponent (centreReesComponent I) J
+  let ℬ := homogeneousQuotientComponent (centreReesComponent I) J
   letI : GradedAlgebra ℬ := homogeneousQuotientGrading (centreReesComponent I) J hJ
   exact Nonempty (↥(@ProjectiveSpectrum.basicOpen (surfaceRing valuationOneCurve)
     (reesAlgebra I ⧸ J) _ _ _ ℬ _
@@ -873,8 +889,11 @@ def chart_Dplus_Xt_basicOpen_nonempty_valuationOne : Prop := by
 `D₊(Xt)`, with quotient `𝔽₂`, whenever the reduced equation vanishes.
 The chart has some prime on `Y² = X³ + 2`. That prime is not shown to
 contain both ratios, and no evaluation `chart → 𝔽₂` is constructed.
-On this curve `2 ∈ I²`, so the `2`-direction on the exceptional
-divisor is nilpotent. -/
+Quotienting by the ratios does not set the degree-zero class of `X`
+to zero: `2t / Xt` is not the element `X`. On this curve `2 ∈ I²`,
+so the `2`-direction on the exceptional divisor is nilpotent, and the
+proposed identification of the quotient with
+`𝔽₂[X, Y] / (Y² - X³, X, Y)` is not a proved presentation. -/
 def ideal_UV_maximal : Prop :=
   ∀ (W : WeierstrassCurve ℤ_[2]) (ap bq : ℕ),
     surfaceResidueVanishes W ap bq →
@@ -933,6 +952,7 @@ end Beal.MathlibMissing
 #print axioms Beal.MathlibMissing.chart_Dplus_2t_empty_pack
 #print axioms Beal.MathlibMissing.chart_Dplus_2t_empty
 #print axioms Beal.MathlibMissing.chart_Dplus_2t_empty_holds
+#print axioms Beal.MathlibMissing.pow_ne_zero_of_basicOpen_ne_bot
 #print axioms Beal.MathlibMissing.chart_Dplus_Xt_basicOpen_nonempty_valuationOne
 #print axioms Beal.MathlibMissing.ideal_UV_maximal
 #print axioms Beal.MathlibMissing.familySpecialFibrePoint_Dplus_Xt
