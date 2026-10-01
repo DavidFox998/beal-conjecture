@@ -4,6 +4,7 @@ import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Scheme
 import Mathlib.Data.ZMod.Basic
 import Mathlib.NumberTheory.Padics.RingHoms
 import Mathlib.RingTheory.GradedAlgebra.HomogeneousLocalization
+import Mathlib.RingTheory.PrimeSpectrum
 
 /-!
 # Isolated gap: the family `Bl_{I_{a,b}}`
@@ -38,7 +39,13 @@ equation has 2-adic valuation exactly one: for
 `valuationOneCurve` (`Y² = X³ + 2`) at `(0, 0)`, the residue vanishes
 and `(2t)² = 0` in `Rees/(2)`, so the chart ring has one element.
 `familySpecialFibrePoint_Dplus_2t` is that false universal claim.
-`familySpecialFibrePoint` stays uninhabited. No `sorry` is used.
+On the same curve no power of `X t` vanishes in `Rees/(2)`, because
+`X` remains `1` under the residue map at `(1, 1)`.
+`chart_Dplus_Xt_ring` is the degree-zero localization at that class,
+with ratios `2t / Xt` and `Yt / Xt`. The ring is nontrivial, so it
+has a prime ideal. That prime is not shown to kill both ratios, its
+residue field is not shown to be `𝔽₂`, and it is not a point of
+`Proj`. `familySpecialFibrePoint` stays uninhabited. No `sorry` is used.
 -/
 
 namespace Beal.MathlibMissing
@@ -609,6 +616,196 @@ theorem not_familySpecialFibrePoint_Dplus_2t :
   exact h valuationOneCurve 0 0 surfaceResidueVanishes_valuationOne
     chart_Dplus_2t_subsingleton_valuationOne
 
+/-- The degree-zero chart ring `(Rees(I)/(2))_((X - ap) t)`. -/
+noncomputable def chart_Dplus_Xt_ring
+    (W : WeierstrassCurve ℤ_[2]) (ap bq : ℕ) : Type :=
+  let I := numeralCentreIdeal W ap bq
+  let J := numeralReesSpecialIdeal W ap bq
+  let _ : Algebra (surfaceRing W) (reesAlgebra I) := inferInstance
+  let _ : Algebra (surfaceRing W) (reesAlgebra I ⧸ J) := inferInstance
+  HomogeneousLocalization.Away
+    (homogeneousQuotientComponent (centreReesComponent I) J)
+    (Ideal.Quotient.mk J (numeralReesXT W ap bq))
+
+/-- `2t / (X - ap) t` on the chart `D₊(Xt)`. -/
+noncomputable def chart_two_over_X (W : WeierstrassCurve ℤ_[2]) (ap bq : ℕ) :
+    chart_Dplus_Xt_ring W ap bq := by
+  let I := numeralCentreIdeal W ap bq
+  letI : GradedAlgebra (centreReesComponent I) := centreReesGrading I
+  let J := numeralReesSpecialIdeal W ap bq
+  let ℬ := homogeneousQuotientComponent (centreReesComponent I) J
+  letI : GradedAlgebra ℬ :=
+    homogeneousQuotientGrading (centreReesComponent I) J
+      (numeralReesSpecialIdeal_isHomogeneous W ap bq)
+  let f := Ideal.Quotient.mk J (numeralReesXT W ap bq)
+  let num := Ideal.Quotient.mk J (numeralReesTwo W ap bq)
+  exact HomogeneousLocalization.mk
+    ⟨1,
+      ⟨num, by
+        simpa [num, numeralReesTwo] using
+          specialClass_mem_degree_one W ap bq (2 : surfaceRing W)
+            (two_mem_numeralCentreIdeal W ap bq)⟩,
+      ⟨f, by
+        simpa [f, numeralReesXT] using
+          specialClass_mem_degree_one W ap bq
+            (Ideal.Quotient.mk (Ideal.span {surfacePolynomial W})
+              (MvPolynomial.X (0 : Fin 2) -
+                MvPolynomial.C (MvPolynomial.C (ap : ℤ_[2]))))
+            (numeral_X_mem_centre W ap bq)⟩,
+      ⟨1, pow_one _⟩⟩
+
+/-- `(Y - bq) t / (X - ap) t` on the chart `D₊(Xt)`. -/
+noncomputable def chart_Y_over_X (W : WeierstrassCurve ℤ_[2]) (ap bq : ℕ) :
+    chart_Dplus_Xt_ring W ap bq := by
+  let I := numeralCentreIdeal W ap bq
+  letI : GradedAlgebra (centreReesComponent I) := centreReesGrading I
+  let J := numeralReesSpecialIdeal W ap bq
+  let ℬ := homogeneousQuotientComponent (centreReesComponent I) J
+  letI : GradedAlgebra ℬ :=
+    homogeneousQuotientGrading (centreReesComponent I) J
+      (numeralReesSpecialIdeal_isHomogeneous W ap bq)
+  let f := Ideal.Quotient.mk J (numeralReesXT W ap bq)
+  let num := Ideal.Quotient.mk J (numeralReesYT W ap bq)
+  exact HomogeneousLocalization.mk
+    ⟨1,
+      ⟨num, by
+        simpa [num, numeralReesYT] using
+          specialClass_mem_degree_one W ap bq
+            (Ideal.Quotient.mk (Ideal.span {surfacePolynomial W})
+              (MvPolynomial.X (1 : Fin 2) -
+                MvPolynomial.C (MvPolynomial.C (bq : ℤ_[2]))))
+            (numeral_Y_mem_centre W ap bq)⟩,
+      ⟨f, by
+        simpa [f, numeralReesXT] using
+          specialClass_mem_degree_one W ap bq
+            (Ideal.Quotient.mk (Ideal.span {surfacePolynomial W})
+              (MvPolynomial.X (0 : Fin 2) -
+                MvPolynomial.C (MvPolynomial.C (ap : ℤ_[2]))))
+            (numeral_X_mem_centre W ap bq)⟩,
+      ⟨1, pow_one _⟩⟩
+
+noncomputable instance chartXtCommRing
+    (W : WeierstrassCurve ℤ_[2]) (ap bq : ℕ) :
+    CommRing (chart_Dplus_Xt_ring W ap bq) := by
+  let I := numeralCentreIdeal W ap bq
+  letI : GradedAlgebra (centreReesComponent I) := centreReesGrading I
+  let J := numeralReesSpecialIdeal W ap bq
+  have hJ : J.IsHomogeneous (centreReesComponent I) :=
+    numeralReesSpecialIdeal_isHomogeneous W ap bq
+  let ℬ := homogeneousQuotientComponent (centreReesComponent I) J
+  letI : GradedAlgebra ℬ := homogeneousQuotientGrading (centreReesComponent I) J hJ
+  unfold chart_Dplus_Xt_ring
+  infer_instance
+
+/-- The ideal of ratios `(2t / Xt, Yt / Xt)` in the chart `D₊(Xt)`. -/
+noncomputable def ideal_two_Y_over_X (W : WeierstrassCurve ℤ_[2]) (ap bq : ℕ) :
+    Ideal (chart_Dplus_Xt_ring W ap bq) :=
+  Ideal.span {chart_two_over_X W ap bq, chart_Y_over_X W ap bq}
+
+/-- Evaluate `S[X, Y]` in `𝔽₂` at a chosen residue point. -/
+noncomputable def residuePointEval (x y : ZMod 2) : MvPolynomial (Fin 2) S →+* ZMod 2 :=
+  MvPolynomial.eval₂Hom coeffToResidue (fun i : Fin 2 => if i = 0 then x else y)
+
+theorem residuePointEval_valuationOne :
+    residuePointEval 1 1 (surfacePolynomial valuationOneCurve) = 0 := by
+  rw [residuePointEval, valuationOne_surfacePolynomial, map_add, map_sub, map_pow, map_pow,
+    MvPolynomial.eval₂Hom_X', MvPolynomial.eval₂Hom_X', MvPolynomial.eval₂Hom_C,
+    if_pos rfl, if_neg (by decide : (1 : Fin 2) ≠ 0), coeffToResidue,
+    MvPolynomial.eval₂Hom_C, residue_kills_two]
+  simp
+
+/-- The surface ring of `Y² = X³ + 2` maps to `𝔽₂` with `X ↦ 1` and `Y ↦ 1`. -/
+noncomputable def valuationOne_X_residue : surfaceRing valuationOneCurve →+* ZMod 2 :=
+  Ideal.Quotient.lift (Ideal.span {surfacePolynomial valuationOneCurve})
+    (residuePointEval 1 1) (by
+      intro a ha
+      obtain ⟨d, rfl⟩ := Ideal.mem_span_singleton.mp ha
+      rw [map_mul, residuePointEval_valuationOne, zero_mul])
+
+theorem valuationOne_X_residue_X :
+    valuationOne_X_residue
+      (Ideal.Quotient.mk (Ideal.span {surfacePolynomial valuationOneCurve})
+        (MvPolynomial.X (0 : Fin 2))) = 1 := by
+  rw [valuationOne_X_residue, Ideal.Quotient.lift_mk, residuePointEval,
+    MvPolynomial.eval₂Hom_X', if_pos rfl]
+
+theorem valuationOne_X_residue_two :
+    valuationOne_X_residue (2 : surfaceRing valuationOneCurve) = 0 := by
+  rw [map_ofNat]
+  decide
+
+/-- No power of the class of `X t` vanishes in `Rees/(2)`. A relation
+`(X t)^n = 2 · p` would force `X^n` to be divisible by `2`, but `X`
+survives as `1` in the residue field. -/
+theorem valuationOne_specialXT_pow_ne_zero (n : ℕ) :
+    (Ideal.Quotient.mk (numeralReesSpecialIdeal valuationOneCurve 0 0)
+      (numeralReesXT valuationOneCurve 0 0)) ^ n ≠ 0 := by
+  intro hzero
+  let I := numeralCentreIdeal valuationOneCurve 0 0
+  let R := surfaceRing valuationOneCurve
+  have hmem : (numeralReesXT valuationOneCurve 0 0) ^ n ∈
+      numeralReesSpecialIdeal valuationOneCurve 0 0 := by
+    rw [← Ideal.Quotient.eq_zero_iff_mem, map_pow]
+    exact hzero
+  obtain ⟨p, hp⟩ := Ideal.mem_span_singleton'.mp hmem
+  let x : R := Ideal.Quotient.mk (Ideal.span {surfacePolynomial valuationOneCurve})
+    (MvPolynomial.X (0 : Fin 2))
+  have hmono : ((numeralReesXT valuationOneCurve 0 0 : reesAlgebra I) : Polynomial R) =
+      Polynomial.monomial 1 x := by
+    simp [numeralReesXT, centreReesMonomial, x]
+  have hpoly := congrArg (fun z : reesAlgebra I => (z : Polynomial R)) hp
+  dsimp at hpoly
+  rw [hmono, Polynomial.monomial_pow] at hpoly
+  simp only [one_mul] at hpoly
+  rw [mul_comm] at hpoly
+  have hcoeff := congrArg (fun q : Polynomial R => q.coeff n) hpoly
+  dsimp at hcoeff
+  rw [Polynomial.coeff_C_mul, Polynomial.coeff_monomial, if_pos rfl] at hcoeff
+  have hdiv : x ^ n = (2 : R) * (p : Polynomial R).coeff n := hcoeff.symm
+  have hφ := congrArg valuationOne_X_residue hdiv
+  rw [map_pow, valuationOne_X_residue_X, map_mul, valuationOne_X_residue_two,
+    zero_mul, one_pow] at hφ
+  exact one_ne_zero hφ
+
+set_option maxHeartbeats 2000000
+
+/-- The chart `D₊(Xt)` does not collapse: no power of the denominator
+is zero, so `0` and `1` stay distinct in the degree-zero localization. -/
+theorem chart_Dplus_Xt_nontrivial_valuationOne :
+    Nontrivial (chart_Dplus_Xt_ring valuationOneCurve 0 0) := by
+  let I := numeralCentreIdeal valuationOneCurve 0 0
+  let J := numeralReesSpecialIdeal valuationOneCurve 0 0
+  letI : GradedAlgebra (centreReesComponent I) := centreReesGrading I
+  have hJ : J.IsHomogeneous (centreReesComponent I) :=
+    numeralReesSpecialIdeal_isHomogeneous valuationOneCurve 0 0
+  letI : GradedAlgebra (homogeneousQuotientComponent (centreReesComponent I) J) :=
+    homogeneousQuotientGrading (centreReesComponent I) J hJ
+  let f := Ideal.Quotient.mk J (numeralReesXT valuationOneCurve 0 0)
+  have hf : ∀ n, f ^ n ≠ 0 := valuationOne_specialXT_pow_ne_zero
+  unfold chart_Dplus_Xt_ring
+  refine ⟨0, 1, ?_⟩
+  intro h
+  have hval := congrArg HomogeneousLocalization.val h
+  rw [HomogeneousLocalization.val_zero, HomogeneousLocalization.val_one] at hval
+  rw [← Localization.mk_zero (1 : Submonoid.powers f), ← Localization.mk_one] at hval
+  rw [Localization.mk_eq_mk_iff] at hval
+  obtain ⟨c, hc⟩ := Localization.r_iff_exists.mp hval
+  have hc0 : (c : reesAlgebra I ⧸ J) = 0 := by
+    dsimp at hc
+    rw [one_mul (0 : reesAlgebra I ⧸ J), one_mul (1 : reesAlgebra I ⧸ J),
+      mul_zero (c : reesAlgebra I ⧸ J), mul_one (c : reesAlgebra I ⧸ J)] at hc
+    exact hc.symm
+  obtain ⟨n, hn⟩ := (Submonoid.mem_powers_iff (c : reesAlgebra I ⧸ J) f).mp c.property
+  exact hf n (hn.trans hc0)
+
+/-- `D₊(Xt)` has a prime on this curve. The prime is a maximal ideal of
+the chart ring. It is not shown to be the ideal of ratios
+`(2t / Xt, Yt / Xt)`, and the residue field is not shown to be `𝔽₂`. -/
+theorem chart_Dplus_Xt_prime_valuationOne :
+    Nonempty (PrimeSpectrum (chart_Dplus_Xt_ring valuationOneCurve 0 0)) := by
+  haveI := chart_Dplus_Xt_nontrivial_valuationOne
+  infer_instance
+
 /-- OPEN. A coprime Beal tuple `(a, b, p, q)` should determine a point of
 `Bl_{I_{a,b}}` on the special fibre over `𝔽₂`, a direction on the
 exceptional divisor, not a prime containing the centre. The scheme
@@ -644,4 +841,7 @@ end Beal.MathlibMissing
 #print axioms Beal.MathlibMissing.valuationOne_specialTwo_sq_zero
 #print axioms Beal.MathlibMissing.chart_Dplus_2t_subsingleton_valuationOne
 #print axioms Beal.MathlibMissing.not_familySpecialFibrePoint_Dplus_2t
+#print axioms Beal.MathlibMissing.valuationOne_specialXT_pow_ne_zero
+#print axioms Beal.MathlibMissing.chart_Dplus_Xt_nontrivial_valuationOne
+#print axioms Beal.MathlibMissing.chart_Dplus_Xt_prime_valuationOne
 #print axioms Beal.MathlibMissing.coprimeBealSolution_to_family_point

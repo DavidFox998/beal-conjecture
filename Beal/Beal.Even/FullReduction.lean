@@ -1848,7 +1848,11 @@ stays uninhabited there and is not imported here. The chart
 `D₊(2t)` of that special fibre is the degree-zero localization at
 `2t`. Residue vanishing does not put an `𝔽₂` point in it: on
 `Y² = X³ + 2` at `(0, 0)` the class of `(2t)²` is zero, so the
-chart ring has one element. -/
+chart ring has one element. On that same curve no power of the
+class of `Xt` vanishes in `Rees/(2)`, and the degree-zero chart
+`D₊(Xt)` is a nontrivial ring, so it has a prime. That prime is
+not shown to have residue field `𝔽₂`, and it is not a point of
+`Proj`. -/
 def overline_2t_global_section_open : Prop :=
   ∀ (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2]),
     localWeierstrassEquation W x y = 0 →
