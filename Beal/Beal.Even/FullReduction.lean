@@ -4,6 +4,7 @@ import Beal.«Beal.General».SpecialFibrePullbackIso
 import Beal.«Beal.General».TateEvenBranchGenericFibre
 import Beal.«Beal.General».CompatChartXt
 import Beal.«Beal.General».CompatChartYt
+import Beal.«Beal.General».TateEvenCoordinateCharts
 import Mathlib.Algebra.Group.Even
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
 import Mathlib.Data.ZMod.Basic
@@ -952,8 +953,27 @@ open, which is dense and not the whole spectrum.
 The blow-up morphism whose universal closedness is the properness
 of the centre in the surface is `localSurfaceCentreReesToSurface`,
 the map `Bl_I → Spec(R)`. `localSurfaceCentreReesToSurfaceProper`
-is that predicate. Mathlib v4.12.0 still has no `Proj` properness
-theorem over `R`, and no graded-surjection morphism into `ℙ²_R`. -/
+is that predicate.
+
+The source cover does not prove it. `UniversallyClosed` is local
+on the target. `D₊(2t) ∪ D₊(Xt) ∪ D₊(Yt)` covers `Proj`, not
+`Spec(R)`, so `universallyClosed_isLocalAtTarget` does not apply.
+A finite open cover of the source would make the total map a
+closed map only if each restriction were a closed map. On
+`D₊(f)` the restriction is the affine map from the degree-zero
+localization. `reesDegreeZeroChart_finiteType` says that ring is
+a quotient of `R[T₀,T₁,T₂]`, hence finite type over `R`. Finite
+type is not a closed map. `overlineTwoT_pow_nonzero` does not
+produce a specialization. The contraction statement, that the
+image of `V₊(J)` is `V(J ∩ R)`, is not a lemma in this Mathlib.
+
+The missing lemma is properness of `Proj` of a finitely generated
+graded algebra over the Noetherian ring `R`. The usual proof
+needs a graded surjection `R[T₀,T₁,T₂] → Rees` and the closed
+immersion of that `Proj` into `ℙ²_R`. Mathlib v4.12.0 has no
+scheme `ℙⁿ` and no morphism of `Proj` induced by a graded
+surjection. `IsClosedImmersion` is not shown to be
+`UniversallyClosed`. -/
 
 /-- If the Rees structure map were universally closed, its base
 change along `D(2) ↪ Spec(ℤ_[2])` would be universally closed.
@@ -1061,15 +1081,42 @@ def localSurfaceCentreReesToBase_universallyClosed_false : Prop :=
   ∀ (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2]),
     ¬ AlgebraicGeometry.UniversallyClosed (localSurfaceCentreReesToBase W x y)
 
+/-- Each degree-zero Rees chart, presented as a quotient of
+`R[T₀,T₁,T₂]` by the ratio relations at one centre generator, is
+finite type over the translated surface ring `R`. For `i = 1, 2`
+this quotient is the coordinate ring of `D₊(Xᵢ t)`
+(`localSurfaceCentreCoordinateBasicSchemeIso`). For `i = 0` the
+denominator is the image of `2`, and `centreReesRatioQuotientEquiv`
+identifies the quotient with the degree-zero localization at `2t`.
+Finite type of these affine charts is not `UniversallyClosed` of
+`Bl_I → Spec(R)`. -/
+theorem reesDegreeZeroChart_finiteType
+    (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2]) (i : Fin 3) :
+    Algebra.FiniteType (localSurfaceCoordinateRing W x y)
+      (MvPolynomial (Fin 3) (localSurfaceCoordinateRing W x y) ⧸
+        centreReesRatioRelations (localSurfaceCentreScalars W x y)
+          (localSurfaceCentreScalars W x y i)) := by
+  exact Algebra.FiniteType.of_surjective
+    (Algebra.FiniteType.mvPolynomial
+      (R := localSurfaceCoordinateRing W x y) (Fin 3))
+    (Ideal.Quotient.mkₐ (localSurfaceCoordinateRing W x y)
+      (centreReesRatioRelations (localSurfaceCentreScalars W x y)
+        (localSurfaceCentreScalars W x y i)))
+    (Ideal.Quotient.mkₐ_surjective _ _)
+
 /-- OPEN. Properness of the blow-up of the centre in the translated
 surface is `UniversallyClosed` of `Bl_I → Spec(R)`, the morphism
 `localSurfaceCentreReesToSurface`. The finite affine cover
-`D₊(2t) ∪ D₊(Xt) ∪ D₊(Yt)` is a cover of the source. Mathlib
-v4.12.0 has no properness theorem for `Proj` of a finitely
-generated graded algebra over `R`, and no morphism of `Proj`
-induced by a graded surjection into `ℙ²` over `R`.
-`IsClosedImmersion` is not shown to be `UniversallyClosed`.
-No inhabitant is given. -/
+`D₊(2t) ∪ D₊(Xt) ∪ D₊(Yt)` covers the source, and
+`reesDegreeZeroChart_finiteType` makes each degree-zero chart a
+finite-type `R`-algebra. `UniversallyClosed` is local on the
+target, and an affine finite-type chart map is not a closed map,
+so the cover does not prove the predicate. Mathlib v4.12.0 has no
+properness theorem for `Proj` of a finitely generated graded
+algebra over `R`. A graded surjection `R[T₀,T₁,T₂] → Rees` does
+not induce a `Proj` morphism, and a closed immersion into `ℙ²_R`
+is not a term. `IsClosedImmersion` is not shown to be
+`UniversallyClosed`. No inhabitant is given. -/
 def localSurfaceCentreReesToSurfaceProper : Prop :=
   ∀ (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2]),
     AlgebraicGeometry.UniversallyClosed
@@ -1782,6 +1829,7 @@ end Beal.Even
 #print axioms Beal.Even.awayTwoInclusion_not_isClosedMap
 #print axioms Beal.Even.awayTwoInclusion_not_universallyClosed
 #print axioms Beal.Even.localSurfaceCentreReesToBase_universallyClosed_false
+#print axioms Beal.Even.reesDegreeZeroChart_finiteType
 #print axioms Beal.Even.localSurfaceCentreReesToSurfaceProper
 #print axioms Beal.Even.special_fibre_glue_iso
 #print axioms Beal.Even.special_fibre_cocycle
