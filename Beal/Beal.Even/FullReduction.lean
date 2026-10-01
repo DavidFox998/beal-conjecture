@@ -53,8 +53,10 @@ Not checked, and not given inhabitants here:
   of that locus with `ℙ¹_{𝔽₂}`;
 * a map `ℕ → Bl_I` from a coprime even solution, and therefore
   `overline_2t_section` and `even_solution_implies_two_divides`
-  (both stay uninhabited; `2t ∈ J_X` and `2t ∈ J_Y` are not
-  decided);
+  (both stay uninhabited). The chart variable `T₀` for the ratio
+  `2t / (Xᵢ t)` lies outside `J_X` and outside `J_Y`
+  (`two_t_ratio_not_mem_JX`, `two_t_ratio_not_mem_JY`). The Rees
+  element `2t` is not a polynomial in those chart rings;
 * the claim that `(0,0)` lies only in `D₊(overline{2t})`;
 * any implication from an even solution of `x^p + y^q = z^r`
   to `2 ∣ x` and `2 ∣ y`, or to a point of the blow-up.
@@ -560,6 +562,569 @@ theorem overlineTwoT_sq_ne_zero
   rw [hone] at hI
   exact localSurfaceUniformizer_not_mem_closedPoint_sq W x y hF hI
 
+/-! ## The ratio `2t / (Xᵢ t)` is outside the saturated chart ideals
+
+`J_X` and `J_Y` are ideals of the polynomial ring
+`R[T₀,T₁,T₂]`, not of the Rees algebra. The element `2t` itself is
+not a term of that polynomial ring. On the chart `D₊(Xᵢ t)` the
+degree-zero ratio `2t / (Xᵢ t)` is the class of the chart variable
+`T₀`. That variable lies outside `J_{Xᵢ} = (G : Xᵢ^∞)`. -/
+
+lemma coeff_single_eq_zero_of_degreeOf_lt
+    {R : Type} [CommRing R] {i : Fin 2} {k : ℕ}
+    {p : MvPolynomial (Fin 2) R}
+    (hk : 0 < k) (h : MvPolynomial.degreeOf i p < k) :
+    p.coeff (Finsupp.single i k) = 0 := by
+  classical
+  by_contra hn
+  have hmem : Finsupp.single i k ∈ p.support :=
+    (MvPolynomial.mem_support_iff).2 hn
+  rw [MvPolynomial.degreeOf_lt_iff hk] at h
+  have hlt := h _ hmem
+  simp [Finsupp.single_eq_same] at hlt
+
+lemma polynomial_mul_eq_X_pow_false
+    {R : Type} [CommRing R] [IsDomain R]
+    {f g : Polynomial R} {n : ℕ}
+    (h : f * g = Polynomial.X ^ n)
+    (h0 : Polynomial.eval (0 : R) f ≠ 0)
+    (hdeg : 0 < f.natDegree) : False := by
+  induction n generalizing g with
+  | zero =>
+      have hu : IsUnit f := isUnit_of_mul_eq_one f g (by simpa [pow_zero] using h)
+      have hd : f.natDegree = 0 := Polynomial.natDegree_eq_zero_of_isUnit hu
+      omega
+  | succ n ih =>
+      have he : Polynomial.eval (0 : R) f * Polynomial.eval 0 g = 0 := by
+        have := congrArg (Polynomial.eval (0 : R)) h
+        simpa [Polynomial.eval_mul, Polynomial.eval_pow, Polynomial.eval_X] using this
+      have hg0 : Polynomial.eval 0 g = 0 :=
+        (mul_eq_zero.mp he).resolve_left h0
+      have hdiv : Polynomial.X ∣ g :=
+        Polynomial.X_dvd_iff.mpr (by
+          simpa [Polynomial.coeff_zero_eq_eval_zero] using hg0)
+      obtain ⟨g1, rfl⟩ := hdiv
+      have hcancel : f * g1 = Polynomial.X ^ n := by
+        have hmul : Polynomial.X * (f * g1) = Polynomial.X * Polynomial.X ^ n := by
+          calc
+            Polynomial.X * (f * g1) = f * (Polynomial.X * g1) := by ring
+            _ = Polynomial.X ^ (n + 1) := h
+            _ = Polynomial.X * Polynomial.X ^ n := by rw [pow_succ']
+        exact mul_left_cancel₀ Polynomial.X_ne_zero hmul
+      exact ih hcancel
+
+theorem localSurfaceEquation_coeff_Y_sq
+    (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2]) :
+    (localSurfaceEquation W x y).coeff (Finsupp.single 1 2) = 1 := by
+  classical
+  let u : MvPolynomial (Fin 2) ℤ_[2] :=
+    MvPolynomial.C x + MvPolynomial.X 0
+  let v : MvPolynomial (Fin 2) ℤ_[2] :=
+    MvPolynomial.C y + MvPolynomial.X 1
+  let c : ℤ_[2] →+* MvPolynomial (Fin 2) ℤ_[2] := MvPolynomial.C
+  let Wc := W.map c
+  let m := Finsupp.single (1 : Fin 2) 2
+  have heq : localSurfaceEquation W x y =
+      v ^ 2 + Wc.a₁ * u * v + Wc.a₃ * v -
+        (u ^ 3 + Wc.a₂ * u ^ 2 + Wc.a₄ * u + c W.a₆) := by
+    simp [localSurfaceEquation, localWeierstrassEquation, u, v, Wc, c,
+      WeierstrassCurve.map]
+  have hzero {p : MvPolynomial (Fin 2) ℤ_[2]}
+      (h : MvPolynomial.degreeOf 1 p < 2) : p.coeff m = 0 :=
+    coeff_single_eq_zero_of_degreeOf_lt (by decide) h
+  have hm : (0 : Fin 2 →₀ ℕ) ≠ m := by
+    intro h
+    have := congrArg (fun t : Fin 2 →₀ ℕ => t 1) h
+    simp [m, Finsupp.single_eq_same] at this
+  have hdeg_u : MvPolynomial.degreeOf 1 u ≤ 0 := by
+    refine (MvPolynomial.degreeOf_add_le 1 _ _).trans ?_
+    simp [u, MvPolynomial.degreeOf_C, MvPolynomial.degreeOf_X]
+  have hdeg_v : MvPolynomial.degreeOf 1 v ≤ 1 := by
+    refine (MvPolynomial.degreeOf_add_le 1 _ _).trans ?_
+    simp [v, MvPolynomial.degreeOf_C, MvPolynomial.degreeOf_X]
+  have hdeg_u_pow : ∀ k : ℕ, MvPolynomial.degreeOf 1 (u ^ k) ≤ 0 := by
+    intro k
+    induction k with
+    | zero =>
+        rw [pow_zero, ← MvPolynomial.C_1]
+        exact (MvPolynomial.degreeOf_C (1 : ℤ_[2]) (1 : Fin 2)).le
+    | succ k ih =>
+        rw [pow_succ]
+        refine (MvPolynomial.degreeOf_mul_le 1 (u ^ k) u).trans ?_
+        omega
+  have hdeg_uv : MvPolynomial.degreeOf 1 (u * v) ≤ 1 := by
+    refine (MvPolynomial.degreeOf_mul_le 1 u v).trans ?_
+    omega
+  have hv2 : (v ^ 2).coeff m = 1 := by
+    have hexp : v ^ 2 =
+        (MvPolynomial.C y * MvPolynomial.X (1 : Fin 2)) * 2 +
+          (MvPolynomial.C y) ^ 2 + MvPolynomial.X (1 : Fin 2) ^ 2 := by
+      simp only [v, pow_two]
+      ring_nf
+    rw [hexp, MvPolynomial.coeff_add, MvPolynomial.coeff_add]
+    have hlin : ((MvPolynomial.C y * MvPolynomial.X (1 : Fin 2)) * 2).coeff m = 0 := by
+      apply hzero
+      rw [mul_two]
+      have hbase : MvPolynomial.degreeOf (1 : Fin 2)
+          (MvPolynomial.C y * MvPolynomial.X (1 : Fin 2)) ≤ 1 := by
+        refine (MvPolynomial.degreeOf_mul_le (1 : Fin 2)
+          (MvPolynomial.C y) (MvPolynomial.X (1 : Fin 2))).trans ?_
+        simp [MvPolynomial.degreeOf_C, MvPolynomial.degreeOf_X]
+      have hle : MvPolynomial.degreeOf (1 : Fin 2)
+          (MvPolynomial.C y * MvPolynomial.X (1 : Fin 2) +
+            MvPolynomial.C y * MvPolynomial.X (1 : Fin 2)) ≤ 1 := by
+        refine (MvPolynomial.degreeOf_add_le (1 : Fin 2)
+          (MvPolynomial.C y * MvPolynomial.X (1 : Fin 2))
+          (MvPolynomial.C y * MvPolynomial.X (1 : Fin 2))).trans ?_
+        exact max_le hbase hbase
+      omega
+    have hC : ((MvPolynomial.C y) ^ 2).coeff m = 0 := by
+      apply hzero
+      rw [pow_two]
+      have hle : MvPolynomial.degreeOf (1 : Fin 2)
+          (MvPolynomial.C y * MvPolynomial.C y) ≤ 0 := by
+        refine (MvPolynomial.degreeOf_mul_le (1 : Fin 2)
+          (MvPolynomial.C y) (MvPolynomial.C y)).trans ?_
+        simp [MvPolynomial.degreeOf_C]
+      omega
+    rw [hlin, hC]
+    simp only [zero_add, add_zero]
+    rw [MvPolynomial.coeff_X_pow, if_pos rfl]
+  have hcross : (Wc.a₁ * u * v).coeff m = 0 := by
+    have he : Wc.a₁ * u * v = MvPolynomial.C W.a₁ * (u * v) := by
+      simp [Wc, c, WeierstrassCurve.map, mul_assoc]
+    rw [he]
+    exact hzero (by
+      have hle := (MvPolynomial.degreeOf_C_mul_le (u * v) 1 W.a₁).trans hdeg_uv
+      omega)
+  have hlinY : (Wc.a₃ * v).coeff m = 0 := by
+    have he : Wc.a₃ * v = MvPolynomial.C W.a₃ * v := by
+      simp [Wc, c, WeierstrassCurve.map]
+    rw [he]
+    exact hzero (by
+      have hle := (MvPolynomial.degreeOf_C_mul_le v 1 W.a₃).trans hdeg_v
+      omega)
+  have hrest : (u ^ 3 + Wc.a₂ * u ^ 2 + Wc.a₄ * u + c W.a₆).coeff m = 0 := by
+    rw [MvPolynomial.coeff_add, MvPolynomial.coeff_add, MvPolynomial.coeff_add]
+    have h3 : (u ^ 3).coeff m = 0 := by
+      apply hzero
+      have hu := hdeg_u_pow 3
+      omega
+    have h2 : (Wc.a₂ * u ^ 2).coeff m = 0 := by
+      have he : Wc.a₂ * u ^ 2 = MvPolynomial.C W.a₂ * u ^ 2 := by
+        simp [Wc, c, WeierstrassCurve.map]
+      rw [he]
+      exact hzero (by
+        have hle :=
+          (MvPolynomial.degreeOf_C_mul_le (u ^ 2) 1 W.a₂).trans (hdeg_u_pow 2)
+        omega)
+    have h1 : (Wc.a₄ * u).coeff m = 0 := by
+      have he : Wc.a₄ * u = MvPolynomial.C W.a₄ * u := by
+        simp [Wc, c, WeierstrassCurve.map]
+      rw [he]
+      exact hzero (by
+        have hle := (MvPolynomial.degreeOf_C_mul_le u 1 W.a₄).trans hdeg_u
+        omega)
+    have h0 : (c W.a₆).coeff m = 0 := by
+      rw [MvPolynomial.coeff_C, if_neg hm]
+    simp only [h3, h2, h1, h0, zero_add, add_zero]
+  rw [heq, MvPolynomial.coeff_sub, MvPolynomial.coeff_add, MvPolynomial.coeff_add]
+  simp only [hv2, hcross, hlinY, hrest, add_zero, sub_zero]
+
+theorem localSurfaceEquation_coeff_X_cube
+    (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2]) :
+    (localSurfaceEquation W x y).coeff (Finsupp.single 0 3) = -1 := by
+  classical
+  let u : MvPolynomial (Fin 2) ℤ_[2] :=
+    MvPolynomial.C x + MvPolynomial.X 0
+  let v : MvPolynomial (Fin 2) ℤ_[2] :=
+    MvPolynomial.C y + MvPolynomial.X 1
+  let c : ℤ_[2] →+* MvPolynomial (Fin 2) ℤ_[2] := MvPolynomial.C
+  let Wc := W.map c
+  let m := Finsupp.single (0 : Fin 2) 3
+  have heq : localSurfaceEquation W x y =
+      v ^ 2 + Wc.a₁ * u * v + Wc.a₃ * v -
+        (u ^ 3 + Wc.a₂ * u ^ 2 + Wc.a₄ * u + c W.a₆) := by
+    simp [localSurfaceEquation, localWeierstrassEquation, u, v, Wc, c,
+      WeierstrassCurve.map]
+  have hzero {p : MvPolynomial (Fin 2) ℤ_[2]}
+      (h : MvPolynomial.degreeOf 0 p < 3) : p.coeff m = 0 :=
+    coeff_single_eq_zero_of_degreeOf_lt (by decide) h
+  have hdeg_u : MvPolynomial.degreeOf 0 u ≤ 1 := by
+    refine (MvPolynomial.degreeOf_add_le 0 _ _).trans ?_
+    simp [u, MvPolynomial.degreeOf_C, MvPolynomial.degreeOf_X]
+  have hdeg_v : MvPolynomial.degreeOf 0 v ≤ 0 := by
+    refine (MvPolynomial.degreeOf_add_le 0 _ _).trans ?_
+    simp [v, MvPolynomial.degreeOf_C, MvPolynomial.degreeOf_X]
+  have hdeg_v_pow : ∀ k : ℕ, MvPolynomial.degreeOf 0 (v ^ k) ≤ 0 := by
+    intro k
+    induction k with
+    | zero =>
+        rw [pow_zero, ← MvPolynomial.C_1]
+        exact (MvPolynomial.degreeOf_C (1 : ℤ_[2]) (0 : Fin 2)).le
+    | succ k ih =>
+        rw [pow_succ]
+        refine (MvPolynomial.degreeOf_mul_le 0 (v ^ k) v).trans ?_
+        omega
+  have hdeg_u2 : MvPolynomial.degreeOf 0 (u ^ 2) ≤ 2 := by
+    rw [pow_two]
+    refine (MvPolynomial.degreeOf_mul_le 0 u u).trans ?_
+    omega
+  have hdeg_uv : MvPolynomial.degreeOf 0 (u * v) ≤ 1 := by
+    refine (MvPolynomial.degreeOf_mul_le 0 u v).trans ?_
+    omega
+  have hu3 : (u ^ 3).coeff m = 1 := by
+    have hexp : u ^ 3 =
+        (MvPolynomial.C x * MvPolynomial.X (0 : Fin 2) ^ 2) * 3 +
+          (MvPolynomial.C x ^ 2 * MvPolynomial.X (0 : Fin 2)) * 3 +
+          MvPolynomial.C x ^ 3 + MvPolynomial.X (0 : Fin 2) ^ 3 := by
+      simp only [u, pow_succ, pow_two, pow_one]
+      ring_nf
+    rw [hexp, MvPolynomial.coeff_add, MvPolynomial.coeff_add, MvPolynomial.coeff_add]
+    have hmul3 (p : MvPolynomial (Fin 2) ℤ_[2]) : p * 3 = p + p + p := by ring
+    have h1 : ((MvPolynomial.C x * MvPolynomial.X (0 : Fin 2) ^ 2) * 3).coeff m = 0 := by
+      apply hzero
+      rw [hmul3]
+      set p : MvPolynomial (Fin 2) ℤ_[2] :=
+        MvPolynomial.C x * MvPolynomial.X (0 : Fin 2) ^ 2
+      have hp : MvPolynomial.degreeOf (0 : Fin 2) p ≤ 2 := by
+        refine (MvPolynomial.degreeOf_mul_le (0 : Fin 2)
+          (MvPolynomial.C x) (MvPolynomial.X (0 : Fin 2) ^ 2)).trans ?_
+        have hX : MvPolynomial.degreeOf (0 : Fin 2)
+            ((MvPolynomial.X (0 : Fin 2) : MvPolynomial (Fin 2) ℤ_[2]) ^ 2) ≤ 2 := by
+          rw [pow_two]
+          have hdegX : MvPolynomial.degreeOf (0 : Fin 2)
+              (MvPolynomial.X (0 : Fin 2) : MvPolynomial (Fin 2) ℤ_[2]) = 1 := by
+            rw [MvPolynomial.degreeOf_X, if_pos rfl]
+          have hmul := MvPolynomial.degreeOf_mul_le (0 : Fin 2)
+            (MvPolynomial.X (0 : Fin 2) : MvPolynomial (Fin 2) ℤ_[2])
+            (MvPolynomial.X (0 : Fin 2))
+          rw [hdegX] at hmul
+          exact hmul.trans (by decide : (1 + 1 : ℕ) ≤ 2)
+        have hC : MvPolynomial.degreeOf (0 : Fin 2) (MvPolynomial.C x) ≤ 0 := by
+          simp [MvPolynomial.degreeOf_C]
+        omega
+      have hle : MvPolynomial.degreeOf (0 : Fin 2) (p + p + p) ≤ 2 := by
+        refine (MvPolynomial.degreeOf_add_le (0 : Fin 2) (p + p) p).trans ?_
+        refine max_le ?_ hp
+        refine (MvPolynomial.degreeOf_add_le (0 : Fin 2) p p).trans ?_
+        exact max_le hp hp
+      omega
+    have h2 : ((MvPolynomial.C x ^ 2 * MvPolynomial.X (0 : Fin 2)) * 3).coeff m = 0 := by
+      apply hzero
+      rw [hmul3]
+      set p : MvPolynomial (Fin 2) ℤ_[2] :=
+        MvPolynomial.C x ^ 2 * MvPolynomial.X (0 : Fin 2)
+      have hp : MvPolynomial.degreeOf (0 : Fin 2) p ≤ 1 := by
+        refine (MvPolynomial.degreeOf_mul_le (0 : Fin 2)
+          (MvPolynomial.C x ^ 2) (MvPolynomial.X (0 : Fin 2))).trans ?_
+        have hC : MvPolynomial.degreeOf (0 : Fin 2) (MvPolynomial.C x ^ 2) ≤ 0 := by
+          rw [pow_two]
+          refine (MvPolynomial.degreeOf_mul_le (0 : Fin 2)
+            (MvPolynomial.C x) (MvPolynomial.C x)).trans ?_
+          simp [MvPolynomial.degreeOf_C]
+        have hX : MvPolynomial.degreeOf (0 : Fin 2)
+            (MvPolynomial.X (0 : Fin 2) : MvPolynomial (Fin 2) ℤ_[2]) ≤ 1 := by
+          rw [MvPolynomial.degreeOf_X, if_pos rfl]
+        omega
+      have hle : MvPolynomial.degreeOf (0 : Fin 2) (p + p + p) ≤ 1 := by
+        refine (MvPolynomial.degreeOf_add_le (0 : Fin 2) (p + p) p).trans ?_
+        refine max_le ?_ hp
+        refine (MvPolynomial.degreeOf_add_le (0 : Fin 2) p p).trans ?_
+        exact max_le hp hp
+      omega
+    have hC : (MvPolynomial.C x ^ 3).coeff m = 0 := by
+      apply hzero
+      rw [pow_succ, pow_two]
+      have hle : MvPolynomial.degreeOf (0 : Fin 2)
+          (MvPolynomial.C x * MvPolynomial.C x * MvPolynomial.C x) ≤ 0 := by
+        refine (MvPolynomial.degreeOf_mul_le (0 : Fin 2)
+          (MvPolynomial.C x * MvPolynomial.C x) (MvPolynomial.C x)).trans ?_
+        have h2 : MvPolynomial.degreeOf (0 : Fin 2)
+            (MvPolynomial.C x * MvPolynomial.C x) ≤ 0 := by
+          refine (MvPolynomial.degreeOf_mul_le (0 : Fin 2)
+            (MvPolynomial.C x) (MvPolynomial.C x)).trans ?_
+          simp [MvPolynomial.degreeOf_C]
+        have h1 : MvPolynomial.degreeOf (0 : Fin 2) (MvPolynomial.C x) ≤ 0 := by
+          simp [MvPolynomial.degreeOf_C]
+        omega
+      omega
+    rw [h1, h2, hC]
+    simp only [zero_add, add_zero]
+    rw [MvPolynomial.coeff_X_pow, if_pos rfl]
+  have hv2 : (v ^ 2).coeff m = 0 := by
+    apply hzero
+    have hv := hdeg_v_pow 2
+    omega
+  have hcross : (Wc.a₁ * u * v).coeff m = 0 := by
+    have he : Wc.a₁ * u * v = MvPolynomial.C W.a₁ * (u * v) := by
+      simp [Wc, c, WeierstrassCurve.map, mul_assoc]
+    rw [he]
+    exact hzero (by
+      have hle := (MvPolynomial.degreeOf_C_mul_le (u * v) 0 W.a₁).trans hdeg_uv
+      omega)
+  have hlin : (Wc.a₃ * v).coeff m = 0 := by
+    have he : Wc.a₃ * v = MvPolynomial.C W.a₃ * v := by
+      simp [Wc, c, WeierstrassCurve.map]
+    rw [he]
+    exact hzero (by
+      have hle := (MvPolynomial.degreeOf_C_mul_le v 0 W.a₃).trans hdeg_v
+      omega)
+  have hsum : (u ^ 3 + Wc.a₂ * u ^ 2 + Wc.a₄ * u + c W.a₆).coeff m = 1 := by
+    rw [MvPolynomial.coeff_add, MvPolynomial.coeff_add, MvPolynomial.coeff_add, hu3]
+    have h2 : (Wc.a₂ * u ^ 2).coeff m = 0 := by
+      have he : Wc.a₂ * u ^ 2 = MvPolynomial.C W.a₂ * u ^ 2 := by
+        simp [Wc, c, WeierstrassCurve.map]
+      rw [he]
+      exact hzero (by
+        have hle := (MvPolynomial.degreeOf_C_mul_le (u ^ 2) 0 W.a₂).trans hdeg_u2
+        omega)
+    have h4 : (Wc.a₄ * u).coeff m = 0 := by
+      have he : Wc.a₄ * u = MvPolynomial.C W.a₄ * u := by
+        simp [Wc, c, WeierstrassCurve.map]
+      rw [he]
+      exact hzero (by
+        have hle := (MvPolynomial.degreeOf_C_mul_le u 0 W.a₄).trans hdeg_u
+        omega)
+    have hm : (0 : Fin 2 →₀ ℕ) ≠ m := by
+      intro h
+      have := congrArg (fun t : Fin 2 →₀ ℕ => t 0) h
+      simp [m, Finsupp.single_eq_same] at this
+    have h6 : (c W.a₆).coeff m = 0 := by
+      rw [MvPolynomial.coeff_C, if_neg hm]
+    simp only [h2, h4, h6, add_zero]
+  rw [heq, MvPolynomial.coeff_sub, MvPolynomial.coeff_add, MvPolynomial.coeff_add]
+  simp only [hv2, hcross, hlin, hsum, add_zero]
+  ring
+
+private lemma cons_zero_single (k : ℕ) :
+    Finsupp.cons (0 : ℕ) (Finsupp.single (0 : Fin 1) k) =
+      Finsupp.single (1 : Fin 2) k := by
+  ext a
+  have hlt : a.val < 2 := a.isLt
+  have ha : a.val = 0 ∨ a.val = 1 := by omega
+  rcases ha with h0 | h1
+  · have : a = 0 := Fin.ext h0
+    subst this
+    simp [Finsupp.cons_zero, Finsupp.single_eq_of_ne]
+  · have : a = 1 := Fin.ext h1
+    subst this
+    have hs : (1 : Fin 2) = Fin.succ (0 : Fin 1) := rfl
+    rw [hs, Finsupp.cons_succ, Finsupp.single_eq_same, ← hs,
+      Finsupp.single_eq_same]
+
+private lemma cons_nat_zero (k : ℕ) :
+    Finsupp.cons k (0 : Fin 1 →₀ ℕ) = Finsupp.single (0 : Fin 2) k := by
+  ext a
+  have hlt : a.val < 2 := a.isLt
+  have ha : a.val = 0 ∨ a.val = 1 := by omega
+  rcases ha with h0 | h1
+  · have : a = 0 := Fin.ext h0
+    subst this
+    simp [Finsupp.cons_zero, Finsupp.single_eq_same]
+  · have : a = 1 := Fin.ext h1
+    subst this
+    have hs : (1 : Fin 2) = Fin.succ (0 : Fin 1) := rfl
+    rw [hs, Finsupp.cons_succ, Finsupp.zero_apply, ← hs,
+      Finsupp.single_eq_of_ne (by decide : (0 : Fin 2) ≠ 1)]
+
+/-- Neither translated coordinate is nilpotent on the surface. The
+`Y²` term keeps `X` from dividing every power of itself, and the
+`X³` term does the same for `Y`. -/
+theorem localSurfaceCoordinate_not_nilpotent
+    (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2]) (i : Fin 2) (n : ℕ) :
+    (Ideal.Quotient.mk (Ideal.span {localSurfaceEquation W x y})
+      (MvPolynomial.X i)) ^ n ≠ 0 := by
+  intro hz
+  let S := MvPolynomial (Fin 2) ℤ_[2]
+  let F : S := localSurfaceEquation W x y
+  have hmem : (MvPolynomial.X i) ^ n ∈ Ideal.span {F} :=
+    Ideal.Quotient.eq_zero_iff_mem.mp (by simpa [map_pow, F] using hz)
+  obtain ⟨g, hg⟩ := Ideal.mem_span_singleton.mp hmem
+  let T := MvPolynomial (Fin 2) (ZMod 2)
+  let φ : S →+* T := MvPolynomial.map PadicInt.toZMod
+  have him : φ ((MvPolynomial.X i) ^ n) = φ F * φ g := by
+    rw [hg, map_mul]
+  let ψ : T →+* Polynomial (MvPolynomial (Fin 1) (ZMod 2)) :=
+    MvPolynomial.finSuccEquiv (ZMod 2) 1
+  let q : T := φ F
+  have hY : q.coeff (Finsupp.single 1 2) = 1 := by
+    rw [MvPolynomial.coeff_map, localSurfaceEquation_coeff_Y_sq]
+    simp [q, φ]
+  have hX : q.coeff (Finsupp.single 0 3) ≠ 0 := by
+    rw [MvPolynomial.coeff_map, localSurfaceEquation_coeff_X_cube]
+    simp [q, φ]
+  have hψ0 : ψ (MvPolynomial.X 0) = Polynomial.X := by
+    simpa only [ψ] using
+      (MvPolynomial.finSuccEquiv_X_zero (R := ZMod 2) (n := 1))
+  fin_cases i
+  · have hmul : ψ (φ ((MvPolynomial.X 0) ^ n)) = ψ q * ψ (φ g) := by
+      simpa [q, map_mul] using congrArg ψ him
+    have hpow : ψ (φ ((MvPolynomial.X 0) ^ n)) = Polynomial.X ^ n := by
+      rw [map_pow]
+      have hX0 : φ (MvPolynomial.X 0) = MvPolynomial.X 0 :=
+        MvPolynomial.map_X _ _
+      rw [hX0, map_pow, hψ0]
+    rw [hpow] at hmul
+    let p : Polynomial (MvPolynomial (Fin 1) (ZMod 2)) := ψ q
+    have hcoe : MvPolynomial.finSuccEquiv (ZMod 2) 1 q = ψ q := by
+      simp only [ψ]
+      rfl
+    have h0 : Polynomial.eval (0 : MvPolynomial (Fin 1) (ZMod 2)) p ≠ 0 := by
+      intro hz0
+      have hcoeff := MvPolynomial.finSuccEquiv_coeff_coeff
+        (Finsupp.single (0 : Fin 1) 2) q 0
+      have hcons : Finsupp.cons (0 : ℕ) (Finsupp.single (0 : Fin 1) 2) =
+          Finsupp.single (1 : Fin 2) 2 :=
+        cons_zero_single 2
+      rw [hcons, hcoe] at hcoeff
+      have hp : (p.coeff 0).coeff (Finsupp.single (0 : Fin 1) 2) =
+          q.coeff (Finsupp.single (1 : Fin 2) 2) := by
+        simpa only [p] using hcoeff
+      rw [hY] at hp
+      have hz0' : p.coeff 0 = 0 := by
+        simpa only [Polynomial.coeff_zero_eq_eval_zero] using hz0
+      simp only [hz0', MvPolynomial.coeff_zero] at hp
+      exact zero_ne_one hp
+    have hdeg : 0 < p.natDegree := by
+      have hcoeff := MvPolynomial.finSuccEquiv_coeff_coeff
+        (0 : Fin 1 →₀ ℕ) q 3
+      have hcons : Finsupp.cons (3 : ℕ) (0 : Fin 1 →₀ ℕ) =
+          Finsupp.single (0 : Fin 2) 3 :=
+        cons_nat_zero 3
+      rw [hcons, hcoe] at hcoeff
+      have hc : p.coeff 3 ≠ 0 := by
+        intro hz3
+        have : q.coeff (Finsupp.single 0 3) = 0 := by
+          simpa only [p, hz3, MvPolynomial.coeff_zero] using hcoeff.symm
+        exact hX this
+      have hle : 3 ≤ p.natDegree := Polynomial.le_natDegree_of_ne_zero hc
+      omega
+    exact polynomial_mul_eq_X_pow_false (by simpa only [p] using hmul.symm) h0 hdeg
+  · let e : Fin 2 ≃ Fin 2 := Equiv.swap 0 1
+    let ρ : T →+* T := (MvPolynomial.rename e).toRingHom
+    let xi : MvPolynomial (Fin 2) ℤ_[2] := MvPolynomial.X (Fin.succ (0 : Fin 1))
+    have hmul : ψ (ρ (φ (xi ^ n))) = ψ (ρ q) * ψ (ρ (φ g)) := by
+      have hρ := congrArg ρ him
+      simpa [xi, q, map_mul] using congrArg ψ hρ
+    have hpow : ψ (ρ (φ (xi ^ n))) = Polynomial.X ^ n := by
+      rw [map_pow]
+      have hXi : φ xi = MvPolynomial.X (Fin.succ (0 : Fin 1)) := by
+        simp only [xi, φ]
+        exact MvPolynomial.map_X _ _
+      rw [hXi, map_pow]
+      have hren : ρ (MvPolynomial.X (Fin.succ (0 : Fin 1))) = MvPolynomial.X 0 := by
+        simp only [ρ]
+        change (MvPolynomial.rename e) (MvPolynomial.X (Fin.succ (0 : Fin 1))) =
+          MvPolynomial.X 0
+        rw [MvPolynomial.rename_X]
+        simp [e, Equiv.swap_apply_right]
+      rw [hren, map_pow, hψ0]
+    rw [hpow] at hmul
+    let p : Polynomial (MvPolynomial (Fin 1) (ZMod 2)) := ψ (ρ q)
+    have hcoe : MvPolynomial.finSuccEquiv (ZMod 2) 1 (ρ q) = ψ (ρ q) := by
+      simp only [ψ]
+      rfl
+    have h0 : Polynomial.eval (0 : MvPolynomial (Fin 1) (ZMod 2)) p ≠ 0 := by
+      intro hz0
+      have hcoeff := MvPolynomial.finSuccEquiv_coeff_coeff
+        (Finsupp.single (0 : Fin 1) 3) (ρ q) 0
+      have hcons : Finsupp.cons (0 : ℕ) (Finsupp.single (0 : Fin 1) 3) =
+          Finsupp.single (1 : Fin 2) 3 :=
+        cons_zero_single 3
+      rw [hcons, hcoe] at hcoeff
+      have hdom : (Finsupp.single (0 : Fin 2) 3).mapDomain e =
+          Finsupp.single (1 : Fin 2) 3 := by
+        rw [Finsupp.mapDomain_single]
+        simp [e, Equiv.swap_apply_left]
+      have hqc : (ρ q).coeff (Finsupp.single 1 3) =
+          q.coeff (Finsupp.single 0 3) := by
+        simpa only [ρ, hdom] using
+          (MvPolynomial.coeff_rename_mapDomain e e.injective q
+            (Finsupp.single 0 3))
+      have hp : (p.coeff 0).coeff (Finsupp.single (0 : Fin 1) 3) =
+          q.coeff (Finsupp.single 0 3) := by
+        simpa only [p, hqc] using hcoeff
+      have hz0' : p.coeff 0 = 0 := by
+        simpa only [Polynomial.coeff_zero_eq_eval_zero] using hz0
+      have hnz : (p.coeff 0).coeff (Finsupp.single (0 : Fin 1) 3) ≠ 0 := by
+        rw [hp]
+        exact hX
+      simp only [hz0', MvPolynomial.coeff_zero] at hnz
+      exact hnz rfl
+    have hdeg : 0 < p.natDegree := by
+      have hcoeff := MvPolynomial.finSuccEquiv_coeff_coeff
+        (0 : Fin 1 →₀ ℕ) (ρ q) 2
+      have hcons : Finsupp.cons (2 : ℕ) (0 : Fin 1 →₀ ℕ) =
+          Finsupp.single (0 : Fin 2) 2 :=
+        cons_nat_zero 2
+      rw [hcons, hcoe] at hcoeff
+      have hdom : (Finsupp.single (1 : Fin 2) 2).mapDomain e =
+          Finsupp.single (0 : Fin 2) 2 := by
+        rw [Finsupp.mapDomain_single]
+        simp [e, Equiv.swap_apply_right]
+      have hqc : (ρ q).coeff (Finsupp.single 0 2) =
+          q.coeff (Finsupp.single 1 2) := by
+        simpa only [ρ, hdom] using
+          (MvPolynomial.coeff_rename_mapDomain e e.injective q
+            (Finsupp.single 1 2))
+      have hc : p.coeff 2 ≠ 0 := by
+        intro hz2
+        have : q.coeff (Finsupp.single 1 2) = 0 := by
+          simpa only [p, hqc, hz2, MvPolynomial.coeff_zero] using hcoeff.symm
+        simp [hY] at this
+      have hle : 2 ≤ p.natDegree := Polynomial.le_natDegree_of_ne_zero hc
+      omega
+    exact polynomial_mul_eq_X_pow_false (by simpa only [p] using hmul.symm) h0 hdeg
+
+
+/-- On either coordinate chart, the class of `2t / (Xᵢ t)` is the
+chart variable `T₀`, and that variable is not in the saturated
+relation ideal `J_{Xᵢ} = (G : Xᵢ^∞)`. -/
+theorem two_t_ratio_not_mem_coordinateRelations
+    (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2]) (i : Fin 2) :
+    MvPolynomial.X (0 : Fin 3) ∉
+      localSurfaceCentreCoordinateRelations W x y i := by
+  intro hmem
+  let R := localSurfaceCoordinateRing W x y
+  let q : MvPolynomial (Fin 2) ℤ_[2] →+* R :=
+    Ideal.Quotient.mk (Ideal.span {localSurfaceEquation W x y})
+  let s := localSurfaceCentreScalars W x y
+  let f := q (MvPolynomial.X i)
+  have hker :
+      MvPolynomial.eval₂Hom (algebraMap R (Localization.Away f))
+        (fun j => Localization.mk (s j) ⟨f, Submonoid.mem_powers f⟩)
+        (MvPolynomial.X 0) = 0 := by
+    simpa [localSurfaceCentreCoordinateRelations, centreReesRatioRelations,
+      s, f] using hmem
+  rw [MvPolynomial.eval₂Hom_X'] at hker
+  have hs0 : s 0 = q (MvPolynomial.C (2 : ℤ_[2])) := by
+    simp [s, localSurfaceCentreScalars, q]
+  rw [Localization.mk_eq_mk', IsLocalization.mk'_eq_zero_iff] at hker
+  obtain ⟨t, ht⟩ := hker
+  obtain ⟨k, hk⟩ := (Submonoid.mem_powers_iff t.1 f).mp t.2
+  have hkill : f ^ k * s 0 = 0 := by
+    simpa only [hk] using ht
+  rw [hs0] at hkill
+  have hzero : f ^ k = 0 :=
+    localSurfaceCoordinateRing_two_regular W x y (f ^ k)
+      (by simpa [mul_comm] using hkill)
+  exact localSurfaceCoordinate_not_nilpotent W x y i k hzero
+
+/-- `2t / (Xt)` is outside `J_X`. -/
+theorem two_t_ratio_not_mem_JX
+    (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2]) :
+    MvPolynomial.X (0 : Fin 3) ∉
+      localSurfaceCentreCoordinateRelations W x y 0 :=
+  two_t_ratio_not_mem_coordinateRelations W x y 0
+
+/-- `2t / (Yt)` is outside `J_Y`. -/
+theorem two_t_ratio_not_mem_JY
+    (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2]) :
+    MvPolynomial.X (0 : Fin 3) ∉
+      localSurfaceCentreCoordinateRelations W x y 1 :=
+  two_t_ratio_not_mem_coordinateRelations W x y 1
+
 /-! ## Degree-one `overline{2t}` and the chartwise pullback
 
 `overlineTwoT` is the class of `2t` in `Rees / (2)`. It lies in
@@ -655,5 +1220,11 @@ end Beal.Even
 #print axioms Beal.Even.overlineTwoT_mem_degree_one
 #print axioms Beal.Even.overlineTwoT_ne_zero
 #print axioms Beal.Even.overlineTwoT_sq_ne_zero
+#print axioms Beal.Even.localSurfaceEquation_coeff_Y_sq
+#print axioms Beal.Even.localSurfaceEquation_coeff_X_cube
+#print axioms Beal.Even.localSurfaceCoordinate_not_nilpotent
+#print axioms Beal.Even.two_t_ratio_not_mem_coordinateRelations
+#print axioms Beal.Even.two_t_ratio_not_mem_JX
+#print axioms Beal.Even.two_t_ratio_not_mem_JY
 #print axioms Beal.Even.localSurfaceCentreSpecialFibreScheme_iso_ReesSpecialProj
 #print axioms Beal.Even.actualSpecialFibrePullback_eq_quotientProj

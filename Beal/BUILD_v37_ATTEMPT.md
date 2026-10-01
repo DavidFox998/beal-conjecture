@@ -28,8 +28,10 @@ No generator was found that kills `2t`. The degree-zero scalar `2` does not, and
 
 ## What does not follow
 
-`D₊(overline{2t})` nonempty on the global special fibre needs every positive power of the class to stay nonzero. Non-membership of `2t` and of `(2t)^2` does not give the higher powers. Membership of `2t` in `J_X` or `J_Y` was not decided.
+`D₊(overline{2t})` nonempty on the global special fibre needs every positive power of the class to stay nonzero. Non-membership of `2t` and of `(2t)^2` does not give the higher powers.
 
-There is still no map from a coprime even solution in `ℕ` to a point of `Bl_I`. `even_solution_implies_two_divides` and `overline_2t_section` stay uninhabited. The three `𝔽₂` points of the node are not a specialization of a Beal solution.
+`J_X` and `J_Y` live in `R[T₀,T₁,T₂]`. The Rees element `2t` is not a polynomial there. The chart variable `T₀`, which represents `2t / (Xᵢ t)`, is outside both saturations: `two_t_ratio_not_mem_JX` and `two_t_ratio_not_mem_JY`. Neither translated coordinate is nilpotent (`localSurfaceCoordinate_not_nilpotent`), because the `Y²` coefficient is `1` and the `X³` coefficient is `-1`.
+
+There is still no map from a coprime even solution in `ℕ` to a point of `Bl_I`. A ring homomorphism out of the fixed surface coordinate ring is not determined by a tuple in `ℕ`, so `coprimeBealSolution_to_BlI_point` is not defined. `even_solution_implies_two_divides` and `overline_2t_section` stay uninhabited. The three `𝔽₂` points of the node are not a specialization of a Beal solution.
 
 `UniversallyClosed` is untouched. Mathlib v4.12.0 still has no Rees `Proj` properness theorem, and the finite-cover proof is not started.
