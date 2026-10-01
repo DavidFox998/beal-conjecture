@@ -52,8 +52,15 @@ Not checked, and not given inhabitants here:
   (`base_closedPoint_mem_open_iff_top`), and `V(2)` is not open
   (`base_V2_not_open`), so `{D(2), V(2)}` is not such a cover.
   Over `D(2)` the pullback is `Spec(R_Z[1/2])`, not the base.
-  This Mathlib has no valuative criterion and no Rees `Proj`
-  properness theorem;
+  The open immersion `D(2) ↪ Spec(ℤ_[2])` is not a closed map
+  (`awayTwoInclusion_not_universallyClosed`). That immersion is
+  not `localSurfaceCentreReesToBase`, and the negation of
+  `UniversallyClosed` for the blow-up over `Spec(ℤ_[2])` is not
+  a theorem (`localSurfaceCentreReesToBase_universallyClosed_false`
+  stays uninhabited). The correct properness target is
+  `Bl_I → Spec(R)` (`localSurfaceCentreReesToSurfaceProper`),
+  also uninhabited. This Mathlib has no valuative criterion and
+  no Rees `Proj` properness theorem;
 * an open immersion of `Bl_I` onto a dense open of `Spec(R_Z)`
   (the checked isomorphism is the generic fibre over `D(2)`, and
   `D(2)` is dense in `Spec(ℤ_[2])`);
@@ -534,7 +541,10 @@ def even_solution_specializes_to_node : Prop :=
 `R = ℤ_[2][X, Y] / (surface)`. A tuple in `ℕ` gives no ring
 homomorphism `R →+* ℤ_[2]`, so the Rees universal property
 (`centreReesMap`) does not apply.
-`coprimeBealSolution_to_BlI_point` is not defined. -/
+`coprimeBealSolution_to_BlI_point` is not defined.
+The correct universal-closedness target for the blow-up is
+`Bl_I → Spec(R)` (`localSurfaceCentreReesToSurfaceProper`), not
+`Bl_I → Spec(ℤ_[2])`. -/
 def even_solution_implies_two_divides : Prop :=
   even_solution_chart
 
@@ -920,7 +930,30 @@ constraint. `UniversallyClosed` of `localSurfaceCentreReesToBase`
 would force `UniversallyClosed` of the pullback to `D(2)`. That
 pullback is the affine map to `D(2)` from `Spec(R_Z[1/2])`.
 Properness of the special fibre would not remove that constraint,
-and the target does not split into `D(2)` and `V(2)`. -/
+and the target does not split into `D(2)` and `V(2)`.
+
+The identity base change of `Spec(R_Z[1/2]) → D(2)` lands in a
+one-point space, so that map is a closed map. Affine finite type
+does not imply failure of `UniversallyClosed` in this Mathlib:
+there is no theorem that an affine universally closed morphism is
+integral. A further base change, the hyperbola `V(xT - 1)` over
+`𝔸¹`, is the standard reason the surface is not proper, and it is
+not formalized. `localSurfaceCentreReesToBase_universallyClosed_false`
+records the negation and is not inhabited.
+
+What is proved is the open immersion `D(2) ↪ Spec(ℤ_[2])`.
+`localizationAway_not_isClosedMap` says that for a domain element
+which is neither zero nor a unit, `Spec` of the localization away
+from that element is not a closed map: its image is the basic
+open, which is dense and not the whole spectrum.
+`awayTwoInclusion_not_universallyClosed` is that fact for `2` on
+`ℤ_[2]`. It is not a statement about `localSurfaceCentreReesToBase`.
+
+The blow-up morphism whose universal closedness is the properness
+of the centre in the surface is `localSurfaceCentreReesToSurface`,
+the map `Bl_I → Spec(R)`. `localSurfaceCentreReesToSurfaceProper`
+is that predicate. Mathlib v4.12.0 still has no `Proj` properness
+theorem over `R`, and no graded-surjection morphism into `ℙ²_R`. -/
 
 /-- If the Rees structure map were universally closed, its base
 change along `D(2) ↪ Spec(ℤ_[2])` would be universally closed.
@@ -937,6 +970,110 @@ theorem genericPullback_universallyClosed_of_total
           (X := AlgebraicGeometry.Spec (CommRingCat.of ℤ_[2]))
           (PrimeSpectrum.basicOpen (2 : ℤ_[2])))) :=
   inferInstance
+
+/-- In any ring, `D(f)` is not the whole spectrum when `f` is not a
+unit: a maximal ideal containing `(f)` is a point of the complement. -/
+theorem basicOpen_ne_univ_of_not_isUnit {R : Type*} [CommRing R] {f : R}
+    (hnu : ¬ IsUnit f) :
+    (PrimeSpectrum.basicOpen f : Set (PrimeSpectrum R)) ≠ Set.univ := by
+  intro heq
+  have hspan : Ideal.span ({f} : Set R) ≠ ⊤ :=
+    mt Ideal.span_singleton_eq_top.mp hnu
+  obtain ⟨m, hm, hle⟩ := Ideal.exists_le_maximal (Ideal.span {f}) hspan
+  have hmem : (⟨m, hm.isPrime⟩ : PrimeSpectrum R) ∈
+      (PrimeSpectrum.basicOpen f : Set (PrimeSpectrum R)) := by
+    rw [heq]
+    exact Set.mem_univ _
+  rw [SetLike.mem_coe, PrimeSpectrum.mem_basicOpen] at hmem
+  exact hmem (hle (Ideal.mem_span_singleton.mpr ⟨1, by simp⟩))
+
+/-- For a domain, localizing away from an element that is neither zero
+nor a unit is not a closed map on prime spectra. The image is `D(f)`,
+which is dense and not the whole space, so it is not closed. -/
+theorem localizationAway_not_isClosedMap
+    {R S : Type*} [CommRing R] [IsDomain R] [CommRing S] [Algebra R S]
+    (f : R) [IsLocalization.Away f S] (hf0 : f ≠ 0) (hnu : ¬ IsUnit f) :
+    ¬ IsClosedMap (PrimeSpectrum.comap (algebraMap R S)) := by
+  intro hmap
+  have himage :
+      Set.range (PrimeSpectrum.comap (algebraMap R S)) =
+        (PrimeSpectrum.basicOpen f : Set (PrimeSpectrum R)) :=
+    PrimeSpectrum.localization_away_comap_range S f
+  have hclosed_range :
+      IsClosed (Set.range (PrimeSpectrum.comap (algebraMap R S))) := by
+    rw [← Set.image_univ]
+    exact hmap _ isClosed_univ
+  have hdense : Dense (Set.range (PrimeSpectrum.comap (algebraMap R S))) := by
+    rw [himage]
+    exact basicOpen_dense_of_ne_zero hf0
+  have huniv : Set.range (PrimeSpectrum.comap (algebraMap R S)) = Set.univ := by
+    rw [← hclosed_range.closure_eq]
+    exact hdense.closure_eq
+  exact basicOpen_ne_univ_of_not_isUnit hnu (himage.symm.trans huniv)
+
+/-- The open immersion `D(2) ↪ Spec(ℤ_[2])`, as `Spec` of
+`ℤ_[2] → ℤ_[2][1/2]`. This is not `localSurfaceCentreReesToBase`. -/
+noncomputable def awayTwoInclusion :
+    AlgebraicGeometry.Spec (CommRingCat.of (Localization.Away (2 : ℤ_[2]))) ⟶
+      AlgebraicGeometry.Spec (CommRingCat.of ℤ_[2]) :=
+  AlgebraicGeometry.Spec.map
+    (CommRingCat.ofHom (algebraMap ℤ_[2] (Localization.Away (2 : ℤ_[2]))))
+
+/-- `D(2) ↪ Spec(ℤ_[2])` is not a closed map. The scheme morphism is
+`Spec` of `algebraMap`, so its underlying map is
+`PrimeSpectrum.comap` of that homomorphism. -/
+theorem awayTwoInclusion_not_isClosedMap :
+    ¬ IsClosedMap awayTwoInclusion.1.base := by
+  intro hclosed
+  apply localizationAway_not_isClosedMap (R := ℤ_[2])
+    (S := Localization.Away (2 : ℤ_[2])) (2 : ℤ_[2])
+    padic_two_ne_zero padic_two_not_unit
+  change IsClosedMap (PrimeSpectrum.comap
+    (algebraMap ℤ_[2] (Localization.Away (2 : ℤ_[2])))) at hclosed
+  exact hclosed
+
+/-- `D(2) ↪ Spec(ℤ_[2])` is not universally closed: the identity base
+change is the map itself, and that map is not closed. -/
+theorem awayTwoInclusion_not_universallyClosed :
+    ¬ AlgebraicGeometry.UniversallyClosed awayTwoInclusion := by
+  intro hUC
+  apply awayTwoInclusion_not_isClosedMap
+  exact (AlgebraicGeometry.universallyClosed_iff awayTwoInclusion).mp hUC
+    (CategoryTheory.CategoryStruct.id _)
+    (CategoryTheory.CategoryStruct.id _)
+    awayTwoInclusion
+    (CategoryTheory.IsPullback.id_vert awayTwoInclusion)
+
+/-- The claim that `localSurfaceCentreReesToBase` fails to be
+universally closed over `Spec(ℤ_[2])`.
+
+`genericPullback_universallyClosed_of_total` and
+`generic_fibre_iso` reduce an inhabitant of
+`UniversallyClosed (localSurfaceCentreReesToBase)` to
+`UniversallyClosed` of `Spec(R[1/2]) → D(2)`, and
+`generic_centre_eq_top` says `I[1/2] = ⊤`. The target of that map
+is a one-point space, so the identity base change is a closed map.
+Affine finite type is not a proof that the map fails to be
+universally closed. The missing step is a further base change
+whose image is not closed. `awayTwoInclusion_not_universallyClosed`
+is a different morphism. No inhabitant is given. -/
+def localSurfaceCentreReesToBase_universallyClosed_false : Prop :=
+  ∀ (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2]),
+    ¬ AlgebraicGeometry.UniversallyClosed (localSurfaceCentreReesToBase W x y)
+
+/-- OPEN. Properness of the blow-up of the centre in the translated
+surface is `UniversallyClosed` of `Bl_I → Spec(R)`, the morphism
+`localSurfaceCentreReesToSurface`. The finite affine cover
+`D₊(2t) ∪ D₊(Xt) ∪ D₊(Yt)` is a cover of the source. Mathlib
+v4.12.0 has no properness theorem for `Proj` of a finitely
+generated graded algebra over `R`, and no morphism of `Proj`
+induced by a graded surjection into `ℙ²` over `R`.
+`IsClosedImmersion` is not shown to be `UniversallyClosed`.
+No inhabitant is given. -/
+def localSurfaceCentreReesToSurfaceProper : Prop :=
+  ∀ (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2]),
+    AlgebraicGeometry.UniversallyClosed
+      (localSurfaceCentreReesToSurface W x y)
 
 /-! ## The ratio `2t / (Xᵢ t)` is outside the saturated chart ideals
 
@@ -1583,6 +1720,11 @@ sheaf. The power theorem does not inhabit the section.
 
 The finite affine cover does not prove `UniversallyClosed`
 either. That failure is recorded above and is not this `Prop`.
+The correct universal-closedness target is
+`localSurfaceCentreReesToSurfaceProper`, the map `Bl_I → Spec(R)`,
+not `Bl_I → Spec(ℤ_[2])`. Producing the section still needs a
+family `Bl_{I_{a,b}}` only insofar as a solution in `ℕ` has to
+land on some fibre; this `Prop` itself is about one fixed surface.
 This `Prop` does not include `even_solution_implies_two_divides`. -/
 
 /-- OPEN. Intended claim: a global section `s` of `O(1)` on
@@ -1601,6 +1743,10 @@ theorem `overlineTwoT_pow_nonzero`. The unconditional formula
 `∀ n, overlineTwoT ^ n ≠ 0` is not a theorem. The body is not
 `UniversallyClosed` and not `even_solution_implies_two_divides`.
 An inhabitant of the body would not be a section of `O(1)`.
+A solution in `ℕ` needs a family `Bl_{I_{a,b}}`, not this fixed
+surface, and the correct universal-closedness target for the
+blow-up is `Bl_I → Spec(R)`
+(`localSurfaceCentreReesToSurfaceProper`), not `Spec(ℤ_[2])`.
 No inhabitant is given. -/
 def overline_2t_global_section_open : Prop :=
   ∀ (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2]),
@@ -1631,6 +1777,12 @@ end Beal.Even
 #print axioms Beal.Even.surfaceCoordinate_finiteType
 #print axioms Beal.Even.twoChartMod2_finiteType
 #print axioms Beal.Even.genericPullback_universallyClosed_of_total
+#print axioms Beal.Even.basicOpen_ne_univ_of_not_isUnit
+#print axioms Beal.Even.localizationAway_not_isClosedMap
+#print axioms Beal.Even.awayTwoInclusion_not_isClosedMap
+#print axioms Beal.Even.awayTwoInclusion_not_universallyClosed
+#print axioms Beal.Even.localSurfaceCentreReesToBase_universallyClosed_false
+#print axioms Beal.Even.localSurfaceCentreReesToSurfaceProper
 #print axioms Beal.Even.special_fibre_glue_iso
 #print axioms Beal.Even.special_fibre_cocycle
 #print axioms Beal.Even.example_twoChart_fourFactor
