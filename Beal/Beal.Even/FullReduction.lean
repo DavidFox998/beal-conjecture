@@ -7,6 +7,7 @@ import Beal.«Beal.General».CompatChartYt
 import Mathlib.Algebra.Group.Even
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
 import Mathlib.Data.ZMod.Basic
+import Mathlib.AlgebraicGeometry.Morphisms.UniversallyClosed
 import Mathlib.RingTheory.FiniteType
 import Mathlib.Topology.Basic
 
@@ -139,6 +140,21 @@ theorem surfaceCoordinate_finiteType
     (Algebra.FiniteType.mvPolynomial (R := ℤ_[2]) (Fin 2))
     (Ideal.Quotient.mkₐ ℤ_[2]
       (Ideal.span {localSurfaceEquation W x y}))
+    (Ideal.Quotient.mkₐ_surjective _ _)
+
+/-- The special-fibre `2t` chart, the divided ring modulo the scalar
+`2`, is still a finite-type `ℤ_[2]`-algebra. Finite type of this
+affine chart is not properness of `Proj(Rees / (2))` over `𝔽₂`. -/
+theorem twoChartMod2_finiteType
+    (W : WeierstrassCurve ℤ_[2]) (x a b c : ℤ_[2]) :
+    Algebra.FiniteType ℤ_[2] (evenNodeTwoChartMod2Ring W x a b c) := by
+  let P := evenNodeTwoChartRing W x a b c
+  let p : MvPolynomial (Fin 2) ℤ_[2] →+* P :=
+    Ideal.Quotient.mk (Ideal.span {evenNodeTwoChartPolynomial W x a b c})
+  exact Algebra.FiniteType.of_surjective
+    (twoChart_finiteType W x a b c)
+    (Ideal.Quotient.mkₐ ℤ_[2]
+      (Ideal.span {p (MvPolynomial.C (2 : ℤ_[2]))}))
     (Ideal.Quotient.mkₐ_surjective _ _)
 
 /-! ## Generic fibre over `D(2)`
@@ -887,13 +903,40 @@ The target of that isomorphism is the localized surface, not
 This one is the structure map of a finite-type affine surface.
 
 Over `V(2)`, `localSurfaceCentreSpecialFibreScheme_iso_ReesSpecialProj`
-identifies the fibre with `Proj(Rees / (2))`. Mathlib v4.12.0 has
-no properness theorem for `Proj` of a finitely generated graded
-algebra, and none for Rees `Proj`. `overlineTwoT_pow_nonzero` says
-that on a point of the curve no power of the class of `2t` vanishes
-in `Rees / (2)`. That is nilpotence in one graded ring. It does not
-say a specialization into the special fibre exists, and it does not
-make the structure map a closed map. No instance is declared. -/
+identifies the fibre with `Proj(Rees / (2))`. A closed immersion of
+that `Proj` into `ℙ²` over `𝔽₂` is not a term in Mathlib v4.12.0.
+There is no scheme `ℙⁿ`, and no morphism of `Proj` induced by a
+graded surjection. `IsClosedImmersion` is not shown to be stable
+under pullback, and it is not shown to be `UniversallyClosed`.
+Three degree-one generators would present a closed subscheme of
+`ℙ²` over the degree-zero ring `R/(2)`, not over `𝔽₂`.
+`twoChartMod2_finiteType` is finite type of one affine chart of
+that fibre. `overlineTwoT_pow_nonzero` is nilpotence on a point of
+the curve. It is not a valuative criterion, and this library has
+none. No instance is declared.
+
+`genericPullback_universallyClosed_of_total` is the base-change
+constraint. `UniversallyClosed` of `localSurfaceCentreReesToBase`
+would force `UniversallyClosed` of the pullback to `D(2)`. That
+pullback is the affine map to `D(2)` from `Spec(R_Z[1/2])`.
+Properness of the special fibre would not remove that constraint,
+and the target does not split into `D(2)` and `V(2)`. -/
+
+/-- If the Rees structure map were universally closed, its base
+change along `D(2) ↪ Spec(ℤ_[2])` would be universally closed.
+`generic_fibre_iso` identifies that base change with the affine
+map `Spec(R_Z[1/2]) → D(2)`. The hypothesis is not supplied. -/
+theorem genericPullback_universallyClosed_of_total
+    (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2])
+    [AlgebraicGeometry.UniversallyClosed
+      (localSurfaceCentreReesToBase W x y)] :
+    AlgebraicGeometry.UniversallyClosed
+      (CategoryTheory.Limits.pullback.snd
+        (localSurfaceCentreReesToBase W x y)
+        (AlgebraicGeometry.Scheme.Opens.ι
+          (X := AlgebraicGeometry.Spec (CommRingCat.of ℤ_[2]))
+          (PrimeSpectrum.basicOpen (2 : ℤ_[2])))) :=
+  inferInstance
 
 /-! ## The ratio `2t / (Xᵢ t)` is outside the saturated chart ideals
 
@@ -1586,6 +1629,8 @@ end Beal.Even
 #print axioms Beal.Even.generic_open_dense
 #print axioms Beal.Even.twoChart_finiteType
 #print axioms Beal.Even.surfaceCoordinate_finiteType
+#print axioms Beal.Even.twoChartMod2_finiteType
+#print axioms Beal.Even.genericPullback_universallyClosed_of_total
 #print axioms Beal.Even.special_fibre_glue_iso
 #print axioms Beal.Even.special_fibre_cocycle
 #print axioms Beal.Even.example_twoChart_fourFactor
