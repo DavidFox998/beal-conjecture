@@ -1844,7 +1844,11 @@ no ring hom from that surface ring to `ℤ_[2]` killing the centre,
 because the centre contains `2`. A blow-up point is a direction on
 the exceptional divisor of `Proj(Rees(I)/(2))` over `ZMod 2`, not a
 prime that kills the centre in `ℤ_[2]`. `familySpecialFibrePoint`
-stays uninhabited there and is not imported here. -/
+stays uninhabited there and is not imported here. The chart
+`D₊(2t)` of that special fibre is the degree-zero localization at
+`2t`. Residue vanishing does not put an `𝔽₂` point in it: on
+`Y² = X³ + 2` at `(0, 0)` the class of `(2t)²` is zero, so the
+chart ring has one element. -/
 def overline_2t_global_section_open : Prop :=
   ∀ (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2]),
     localWeierstrassEquation W x y = 0 →
