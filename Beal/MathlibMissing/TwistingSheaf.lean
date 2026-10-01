@@ -22,6 +22,7 @@ away from `overlineTwoT`, multiplication by that degree-one element.
 contained in `D₊(f)`, and it is natural for restriction.
 `O1_restricted_iso_O` is that equivalence on `D₊(overlineTwoT)` itself:
 sections of the Type-valued structure sheaf and sections of `O1`.
+It is not an isomorphism in the category of sheaves.
 Neither side is identified with a single copy of `(Rees_f)_0`.
 Mathlib's `awayToSection` is not shown to be bijective here.
 
@@ -757,9 +758,9 @@ noncomputable def overlineTwoT_as_degree_zero_section
 /-- Sections of `O` and of `O1` on `D₊(overlineTwoT)` are equivalent by
 multiplication by `overlineTwoT`. For every smaller open the same map is
 `sectionsIso`, and `sectionsIso_natural` says it commutes with restriction.
-This is the isomorphism of the two sheaves on opens contained in
-`D₊(overlineTwoT)`. It does not identify either sheaf with the single
-ring `HomogeneousLocalization.Away`. -/
+The equivalence is natural for restriction of sections. It is not an
+isomorphism in the category of sheaves, and it does not identify either
+sheaf with `HomogeneousLocalization.Away`. -/
 noncomputable def O1_restricted_iso_O
     (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2]) :=
   ((by

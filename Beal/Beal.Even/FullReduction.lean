@@ -1841,8 +1841,10 @@ special fibre. It is not a global section of `O(1)` on the integral
 blow-up `Bl_I`, so it does not inhabit this `Prop`.
 `Beal/MathlibMissing/Family.lean` defines `Bl_{I_{a,b}}`. There is
 no ring hom from that surface ring to `ℤ_[2]` killing the centre,
-because the centre contains `2`. The point map from a coprime
-solution stays uninhabited there and is not imported here. -/
+because the centre contains `2`. A blow-up point is a direction on
+the exceptional divisor of `Proj(Rees(I)/(2))` over `ZMod 2`, not a
+prime that kills the centre in `ℤ_[2]`. `familySpecialFibrePoint`
+stays uninhabited there and is not imported here. -/
 def overline_2t_global_section_open : Prop :=
   ∀ (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2]),
     localWeierstrassEquation W x y = 0 →
