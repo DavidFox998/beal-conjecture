@@ -1859,10 +1859,14 @@ there, so the quotient by `⟨X, 2t/Xt, Yt/Xt⟩` kills `Y`. On
 `Y² = X³ + 2` at `(0, 0)`, `Y² = X³` holds in that chart. A
 polynomial model of those relations, further quotiented by
 `⟨X, U, V⟩`, is `𝔽₂`. On that node the class of `2t` squares to
-zero and is not itself zero. The chart receives a ring hom from
-`𝔽₂[a,b][X,Y,U,V] / (X·U, Y − X·V, Y² − X³)`. That hom is not
-shown to be bijective, and the parameter-free model has no copy
-of `a, b`, so the chart quotient is not shown to be `𝔽₂`. The
+zero and is not itself zero, and `(2t / Xt)² = 0` in the chart.
+The chart receives a ring hom from
+`𝔽₂[a,b][X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U²)`. That hom is not
+shown to be bijective. The same polynomial model modulo
+`⟨X, U, V⟩` is `𝔽₂[a,b]`, and modulo `⟨a, b, X, U, V⟩` is `𝔽₂`.
+Those are quotients of the model. The parameter-free model has
+no copy of `a, b`, and `⟨X, 2t/Xt, Yt/Xt⟩` does not kill `a, b`
+in the chart, so the chart quotient is not shown to be `𝔽₂`. The
 prime is not shown to have residue field `𝔽₂`, and it is not a
 point of `Proj`. -/
 def overline_2t_global_section_open : Prop :=

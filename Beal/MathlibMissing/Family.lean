@@ -62,22 +62,29 @@ kills `Y` (`quotient_span_XUV_kills_Y`). The relation
 `X · (2t/Xt) = 0` becomes `0 = 0` there and does not add a
 nilpotent. On `Y² = X³ + 2` at `(0, 0)`, `chart_Y ^ 2 = chart_X ^ 3`
 in the chart, because `Y² - X³ = -2` on the surface and the
-scalar `2` is zero in `Rees/(2)`. The polynomial model is
+scalar `2` is zero in `Rees/(2)`. The polynomial model without coefficients is
 `𝔽₂[X,Y,U,V] / (X·U, Y - X·V, Y² - X³)`. Its further quotient
 by `⟨X, U, V⟩` is `𝔽₂` (`modelXtChartModXUV_equiv_F2`):
 `Y = X·V` puts `Y` in the ideal, so `Y² - X³` becomes `0 = 0`.
 The quotient that drops `Y - X·V`, namely
 `𝔽₂[X,Y,U,V] / (Y² - X³, X, U, V)`, still has a nonzero nilpotent
-class of `Y` (`modelForgetY_class_Y_ne_zero`). The chart is not
-shown isomorphic to the model. The surface is an algebra over
-`ℤ_[2][a,b]`. `coeffModTwoEquiv` identifies `S / (2)` with
-`𝔽₂[a,b]`, and `chartFromF2Polynomial` is a ring hom from that
-polynomial ring into the chart `D₊(Xt)`. `chartOfModelBase` is
-the induced hom from
-`𝔽₂[a,b][X,Y,U,V] / (X·U, Y − X·V, Y² − X³)` into the same chart.
-Neither hom is shown to be bijective, and the parameters `a, b`
-are not generators of `⟨X, 2t/Xt, Yt/Xt⟩`. The ring is
-nontrivial, so it has some prime.
+class of `Y` (`modelForgetY_class_Y_ne_zero`). On this node
+`chart_two_over_X_sq_zero` says `(2t / Xt)² = 0` in the chart,
+because `(2t)² = 0` in `Rees/(2)`. The coefficient model is
+`𝔽₂[a,b][X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U²)`.
+`chartOfModelBase` is a ring hom from that quotient into the chart.
+It is not shown to be bijective. Quotienting that model by
+`⟨X, U, V⟩` leaves `𝔽₂[a,b]`
+(`modelBaseModXUV_equiv_F2Polynomial`), because `Y = X·V`.
+The further quotient by `⟨a, b⟩` is `𝔽₂`
+(`modelF2PolynomialModAB_equiv_F2`). Together,
+`modelBaseAtNode_equiv_F2` is the model modulo `⟨a, b, X, U, V⟩`,
+and that ring is `𝔽₂`. These are quotients of the polynomial model.
+The parameters `a, b` are not generators of
+`⟨X, 2t/Xt, Yt/Xt⟩` in the chart, so the same calculation does
+not present the chart quotient as `𝔽₂`. `ap` and `bq` are numeral
+centre coordinates. The chart is not shown isomorphic to either
+model. The ring is nontrivial, so it has some prime.
 `(Xt)^n ≠ 0` is necessary for `D₊(Xt)` to be nonempty
 (`pow_ne_zero_of_basicOpen_ne_bot`) and is not sufficient.
 The quotient of the chart by `⟨X, Y, 2t/Xt, Yt/Xt⟩` is not shown
@@ -1717,6 +1724,29 @@ theorem chart_Y_sq_eq_chart_X_cu_valuationOne :
   rw [one_mul (1 * y), one_mul y, one_mul (1 * x), one_mul x]
   exact valuationOne_special_const_Ysq_eq_Xcu
 
+/-- On `Y² = X³ + 2` at `(0, 0)`, `(2t / Xt)² = 0` in the chart `D₊(Xt)`.
+The numerator is the class of `2t`, and that class squares to zero in
+`Rees/(2)`. This does not set the ratio itself to zero. -/
+theorem chart_two_over_X_sq_zero :
+    chart_two_over_X valuationOneCurve 0 0 ^ 2 = 0 := by
+  let I := numeralCentreIdeal valuationOneCurve 0 0
+  letI : GradedAlgebra (centreReesComponent I) := centreReesGrading I
+  let J := numeralReesSpecialIdeal valuationOneCurve 0 0
+  have hJ : J.IsHomogeneous (centreReesComponent I) :=
+    numeralReesSpecialIdeal_isHomogeneous valuationOneCurve 0 0
+  let ℬ := homogeneousQuotientComponent (centreReesComponent I) J
+  letI : GradedAlgebra ℬ := homogeneousQuotientGrading (centreReesComponent I) J hJ
+  let f := Ideal.Quotient.mk J (numeralReesXT valuationOneCurve 0 0)
+  apply HomogeneousLocalization.val_injective (Submonoid.powers f)
+  erw [HomogeneousLocalization.val_pow, HomogeneousLocalization.val_zero]
+  simp only [chart_two_over_X, HomogeneousLocalization.val_mk]
+  rw [Localization.mk_pow]
+  have hsq :
+      (Ideal.Quotient.mk J (numeralReesTwo valuationOneCurve 0 0)) ^ 2 = 0 :=
+    valuationOne_specialTwo_sq_zero
+  rw [hsq, Localization.mk]
+  simp
+
 
 /-- A quotient isomorphic to `𝔽₂` is a field, so the ideal is maximal. -/
 theorem isMaximal_of_quotient_equiv_zmod_two
@@ -2016,14 +2046,16 @@ noncomputable def chartFromF2Polynomial (W : WeierstrassCurve ℤ_[2]) (ap bq : 
     MvPolynomial (Fin 2) (ZMod 2) →+* chart_Dplus_Xt_ring W ap bq :=
   (chartScalarModTwo W ap bq).comp coeffModTwoEquiv.symm.toRingHom
 
-/-- `𝔽₂[a,b][X,Y,U,V] / (X·U, Y − X·V, Y² − X³)`. The coefficient ring
-is `𝔽₂[a,b]`, not `𝔽₂`. -/
+/-- `𝔽₂[a,b][X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U²)`. The coefficient
+ring is `𝔽₂[a,b]`, not `𝔽₂`. The generator `U²` is the chart relation
+`(2t / Xt)² = 0` on `Y² = X³ + 2` at `(0, 0)`. -/
 noncomputable def modelBaseRelationIdeal :
     Ideal (MvPolynomial (Fin 4) (MvPolynomial (Fin 2) (ZMod 2))) :=
   Ideal.span {
     MvPolynomial.X 0 * MvPolynomial.X 2,
     MvPolynomial.X 1 - MvPolynomial.X 0 * MvPolynomial.X 3,
-    MvPolynomial.X 1 ^ 2 - MvPolynomial.X 0 ^ 3 }
+    MvPolynomial.X 1 ^ 2 - MvPolynomial.X 0 ^ 3,
+    MvPolynomial.X 2 ^ 2 }
 
 /-- Send `X, Y, U, V` to `chart_X`, `chart_Y`, `2t/Xt`, `Yt/Xt`. -/
 noncomputable def chartModelEval :
@@ -2057,31 +2089,334 @@ theorem chartModelEval_relation :
   rw [modelBaseRelationIdeal, Ideal.span_le]
   intro z hz
   simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hz
-  rcases hz with rfl | rfl | rfl
+  rcases hz with rfl | rfl | rfl | rfl
   · rw [SetLike.mem_coe, RingHom.mem_ker, map_mul, chartModelEval_X0, chartModelEval_X2,
       chart_X_mul_two_over_X_eq_zero]
   · rw [SetLike.mem_coe, RingHom.mem_ker, map_sub, map_mul, chartModelEval_X1,
       chartModelEval_X0, chartModelEval_X3, chart_Y_eq_chart_X_mul_Y_over_X, sub_self]
   · rw [SetLike.mem_coe, RingHom.mem_ker, map_sub, map_pow, map_pow, chartModelEval_X1,
       chartModelEval_X0, chart_Y_sq_eq_chart_X_cu_valuationOne, sub_self]
+  · rw [SetLike.mem_coe, RingHom.mem_ker, map_pow, chartModelEval_X2, chart_two_over_X_sq_zero]
 
 /-- A ring hom from the `𝔽₂[a,b]`-algebra presentation into the chart
-`D₊(Xt)` on `Y² = X³ + 2` at `(0, 0)`. This is not shown to be
-bijective. `chart_Dplus_Xt_presentation` still asks for an isomorphism
-with the parameter-free model `modelXtChart`. -/
+`D₊(Xt)` on `Y² = X³ + 2` at `(0, 0)`. The source includes `U² = 0`.
+This hom is not shown to be bijective. `chart_Dplus_Xt_presentation`
+still asks for an isomorphism with the parameter-free model
+`modelXtChart`, which has neither `a, b` nor `U²`. -/
 noncomputable def chartOfModelBase :
     MvPolynomial (Fin 4) (MvPolynomial (Fin 2) (ZMod 2)) ⧸ modelBaseRelationIdeal →+*
       chart_Dplus_Xt_ring valuationOneCurve 0 0 :=
   Ideal.Quotient.lift modelBaseRelationIdeal chartModelEval chartModelEval_relation
 
+/-!
+### Quotients of the coefficient model
+
+These are quotients of `𝔽₂[a,b][X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U²)`.
+They are not quotients of `chart_Dplus_Xt_ring`. `chartOfModelBase` is
+a ring hom into the chart and is not shown to be bijective, so these
+isomorphisms do not transfer.
+-/
+
+/-- `⟨X, U, V⟩` in `𝔽₂[a,b][X,Y,U,V]`. -/
+noncomputable def modelBaseXUVIdeal :
+    Ideal (MvPolynomial (Fin 4) (MvPolynomial (Fin 2) (ZMod 2))) :=
+  Ideal.span {MvPolynomial.X 0, MvPolynomial.X 2, MvPolynomial.X 3}
+
+/-- `⟨a, b, X, U, V⟩` in `𝔽₂[a,b][X,Y,U,V]`. The coefficient indeterminates
+are `C(a)` and `C(b)`. `Y` is not a generator: `Y = X·V` supplies it
+once the relation ideal is added. -/
+noncomputable def modelBaseNodeIdeal :
+    Ideal (MvPolynomial (Fin 4) (MvPolynomial (Fin 2) (ZMod 2))) :=
+  Ideal.span {
+    MvPolynomial.C (MvPolynomial.X (0 : Fin 2)),
+    MvPolynomial.C (MvPolynomial.X (1 : Fin 2)),
+    MvPolynomial.X 0, MvPolynomial.X 2, MvPolynomial.X 3 }
+
+private lemma mem_span_X_univ_iff_coeff_zero
+    {σ R : Type*} [CommRing R] [DecidableEq σ] (p : MvPolynomial σ R) :
+    p ∈ Ideal.span (MvPolynomial.X '' (Set.univ : Set σ)) ↔ p.coeff 0 = 0 := by
+  rw [MvPolynomial.mem_ideal_span_X_image]
+  constructor
+  · intro h
+    by_contra hnz
+    have hmem : (0 : σ →₀ ℕ) ∈ p.support :=
+      MvPolynomial.mem_support_iff.mpr hnz
+    obtain ⟨i, -, hi⟩ := h 0 hmem
+    exact hi rfl
+  · intro hcoeff m hm
+    have hm0 : m ≠ 0 := by
+      intro hm0
+      subst hm0
+      rw [MvPolynomial.mem_support_iff] at hm
+      exact hm hcoeff
+    have hex : ∃ i, m i ≠ 0 := by
+      by_contra h
+      push_neg at h
+      apply hm0
+      ext i
+      exact h i
+    obtain ⟨i, hi⟩ := hex
+    exact ⟨i, Set.mem_univ _, hi⟩
+
+private lemma modelBaseRelation_sup_XUV_eq_named_span :
+    modelBaseRelationIdeal ⊔ modelBaseXUVIdeal =
+      Ideal.span ({MvPolynomial.X 0, MvPolynomial.X 1, MvPolynomial.X 2,
+        MvPolynomial.X 3} :
+          Set (MvPolynomial (Fin 4) (MvPolynomial (Fin 2) (ZMod 2)))) := by
+  apply le_antisymm
+  · refine sup_le ?_ ?_
+    · rw [modelBaseRelationIdeal, Ideal.span_le]
+      intro z hz
+      simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hz
+      rcases hz with rfl | rfl | rfl | rfl
+      · exact Ideal.mul_mem_right _ _ (Ideal.subset_span (by simp))
+      · exact Ideal.sub_mem _ (Ideal.subset_span (by simp))
+          (Ideal.mul_mem_left _ _ (Ideal.subset_span (by simp)))
+      · exact Ideal.sub_mem _
+          (Ideal.pow_mem_of_mem _ (Ideal.subset_span (by simp)) 2 (by decide))
+          (Ideal.pow_mem_of_mem _ (Ideal.subset_span (by simp)) 3 (by decide))
+      · exact Ideal.pow_mem_of_mem _ (Ideal.subset_span (by simp)) 2 (by decide)
+    · rw [modelBaseXUVIdeal, Ideal.span_le]
+      intro z hz
+      simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hz
+      rcases hz with rfl | rfl | rfl
+      · exact Ideal.subset_span (by simp)
+      · exact Ideal.subset_span (by simp)
+      · exact Ideal.subset_span (by simp)
+  · rw [Ideal.span_le]
+    intro z hz
+    simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hz
+    rcases hz with rfl | rfl | rfl | rfl
+    · exact Submodule.mem_sup_right (by
+        rw [modelBaseXUVIdeal]; exact Ideal.subset_span (by simp))
+    · rw [← sub_add_cancel (MvPolynomial.X 1)
+        (MvPolynomial.X 0 * MvPolynomial.X 3)]
+      refine Ideal.add_mem _ ?_ ?_
+      · exact Submodule.mem_sup_left (by
+          rw [modelBaseRelationIdeal]; exact Ideal.subset_span (by simp))
+      · exact Submodule.mem_sup_right (by
+          rw [modelBaseXUVIdeal]
+          exact Ideal.mul_mem_right _ _ (Ideal.subset_span (by simp)))
+    · exact Submodule.mem_sup_right (by
+        rw [modelBaseXUVIdeal]; exact Ideal.subset_span (by simp))
+    · exact Submodule.mem_sup_right (by
+        rw [modelBaseXUVIdeal]; exact Ideal.subset_span (by simp))
+
+private lemma modelBase_named_span_eq_X_image :
+    Ideal.span ({MvPolynomial.X 0, MvPolynomial.X 1, MvPolynomial.X 2,
+        MvPolynomial.X 3} :
+          Set (MvPolynomial (Fin 4) (MvPolynomial (Fin 2) (ZMod 2)))) =
+      Ideal.span (MvPolynomial.X '' (Set.univ : Set (Fin 4))) := by
+  apply congrArg Ideal.span
+  ext z
+  simp only [Set.mem_insert_iff, Set.mem_singleton_iff, Set.mem_image,
+    Set.mem_univ, true_and]
+  constructor
+  · rintro (rfl | rfl | rfl | rfl)
+    · exact ⟨0, rfl⟩
+    · exact ⟨1, rfl⟩
+    · exact ⟨2, rfl⟩
+    · exact ⟨3, rfl⟩
+  · rintro ⟨i, rfl⟩
+    have hcov : ∀ j : Fin 4, j = 0 ∨ j = 1 ∨ j = 2 ∨ j = 3 := by decide
+    rcases hcov i with rfl | rfl | rfl | rfl
+    · simp
+    · simp
+    · simp
+    · simp
+
+/-- `(X·U, Y − X·V, Y² − X³, U²)` together with `⟨X, U, V⟩` is the ideal
+of all four variables. `Y` enters through `Y = (Y − X·V) + X·V`, and
+`U²` is already a power of `U`. -/
+theorem modelBaseRelation_sup_XUV_eq_X_span :
+    modelBaseRelationIdeal ⊔ modelBaseXUVIdeal =
+      Ideal.span (MvPolynomial.X '' (Set.univ : Set (Fin 4))) :=
+  modelBaseRelation_sup_XUV_eq_named_span.trans modelBase_named_span_eq_X_image
+
+/-- Kill `X, Y, U, V` and keep the coefficient ring `𝔽₂[a,b]`. -/
+noncomputable def modelBaseEvalXUV :
+    MvPolynomial (Fin 4) (MvPolynomial (Fin 2) (ZMod 2)) →+*
+      MvPolynomial (Fin 2) (ZMod 2) :=
+  MvPolynomial.eval₂Hom (RingHom.id _) (fun _ => 0)
+
+theorem modelBaseEvalXUV_surjective : Function.Surjective modelBaseEvalXUV := by
+  intro a
+  exact ⟨MvPolynomial.C a, by simp [modelBaseEvalXUV]⟩
+
+theorem modelBaseEvalXUV_ker :
+    RingHom.ker modelBaseEvalXUV =
+      Ideal.span (MvPolynomial.X '' (Set.univ : Set (Fin 4))) := by
+  rw [modelBaseEvalXUV, MvPolynomial.eval₂Hom_zero', RingHom.id_comp]
+  ext p
+  rw [RingHom.mem_ker, MvPolynomial.constantCoeff_eq, mem_span_X_univ_iff_coeff_zero]
+
+/-- The coefficient model modulo `⟨X, U, V⟩` is `𝔽₂[a,b]`. `Y` is zero
+because `Y = X·V`. This is not a quotient of the chart. -/
+noncomputable def modelBaseModXUV_equiv_F2Polynomial :
+    MvPolynomial (Fin 4) (MvPolynomial (Fin 2) (ZMod 2)) ⧸
+      (modelBaseRelationIdeal ⊔ modelBaseXUVIdeal) ≃+*
+      MvPolynomial (Fin 2) (ZMod 2) :=
+  (Ideal.quotEquivOfEq modelBaseRelation_sup_XUV_eq_X_span).trans <|
+    (Ideal.quotEquivOfEq modelBaseEvalXUV_ker.symm).trans <|
+      RingHom.quotientKerEquivOfSurjective modelBaseEvalXUV_surjective
+
+/-- Evaluate `𝔽₂[a,b]` at `(a, b) = (0, 0)`. -/
+noncomputable def modelF2PolynomialEvalZero :
+    MvPolynomial (Fin 2) (ZMod 2) →+* ZMod 2 :=
+  MvPolynomial.eval (fun _ => (0 : ZMod 2))
+
+theorem modelF2PolynomialEvalZero_surjective :
+    Function.Surjective modelF2PolynomialEvalZero := by
+  intro a
+  exact ⟨MvPolynomial.C a, by simp [modelF2PolynomialEvalZero]⟩
+
+theorem modelF2PolynomialEvalZero_ker :
+    RingHom.ker modelF2PolynomialEvalZero =
+      Ideal.span (MvPolynomial.X '' (Set.univ : Set (Fin 2))) := by
+  rw [modelF2PolynomialEvalZero, MvPolynomial.eval_zero']
+  ext p
+  rw [RingHom.mem_ker, MvPolynomial.constantCoeff_eq, mem_span_X_univ_iff_coeff_zero]
+
+private lemma modelF2Polynomial_ab_span_eq_X_image :
+    Ideal.span ({MvPolynomial.X (0 : Fin 2), MvPolynomial.X 1} :
+        Set (MvPolynomial (Fin 2) (ZMod 2))) =
+      Ideal.span (MvPolynomial.X '' (Set.univ : Set (Fin 2))) := by
+  apply congrArg Ideal.span
+  ext z
+  simp only [Set.mem_insert_iff, Set.mem_singleton_iff, Set.mem_image,
+    Set.mem_univ, true_and]
+  constructor
+  · rintro (rfl | rfl)
+    · exact ⟨0, rfl⟩
+    · exact ⟨1, rfl⟩
+  · rintro ⟨i, rfl⟩
+    fin_cases i
+    · simp
+    · simp
+
+/-- `𝔽₂[a,b] / (a, b) ≃ 𝔽₂`. This evaluates the coefficient ring. It is
+not a prime of the chart. -/
+noncomputable def modelF2PolynomialModAB_equiv_F2 :
+    MvPolynomial (Fin 2) (ZMod 2) ⧸
+      Ideal.span ({MvPolynomial.X (0 : Fin 2), MvPolynomial.X 1} :
+        Set (MvPolynomial (Fin 2) (ZMod 2))) ≃+* ZMod 2 :=
+  (Ideal.quotEquivOfEq modelF2Polynomial_ab_span_eq_X_image).trans <|
+    (Ideal.quotEquivOfEq modelF2PolynomialEvalZero_ker.symm).trans <|
+      RingHom.quotientKerEquivOfSurjective modelF2PolynomialEvalZero_surjective
+
+/-- Kill `X, Y, U, V` and then evaluate `(a, b)` at `(0, 0)`. -/
+noncomputable def modelBaseEvalNode :
+    MvPolynomial (Fin 4) (MvPolynomial (Fin 2) (ZMod 2)) →+* ZMod 2 :=
+  modelF2PolynomialEvalZero.comp modelBaseEvalXUV
+
+theorem modelBaseEvalNode_surjective : Function.Surjective modelBaseEvalNode := by
+  rw [modelBaseEvalNode]
+  exact modelF2PolynomialEvalZero_surjective.comp modelBaseEvalXUV_surjective
+
+private lemma modelBase_comap_ab :
+    Ideal.comap modelBaseEvalXUV
+        (Ideal.span {MvPolynomial.X (0 : Fin 2), MvPolynomial.X 1}) =
+      RingHom.ker modelBaseEvalXUV ⊔
+        Ideal.span {MvPolynomial.C (MvPolynomial.X (0 : Fin 2)),
+          MvPolynomial.C (MvPolynomial.X (1 : Fin 2))} := by
+  apply le_antisymm
+  · intro p hp
+    rw [Ideal.mem_comap, Ideal.mem_span_pair] at hp
+    obtain ⟨c, d, hcd⟩ := hp
+    obtain ⟨c', hc'⟩ := modelBaseEvalXUV_surjective c
+    obtain ⟨d', hd'⟩ := modelBaseEvalXUV_surjective d
+    have hlift : modelBaseEvalXUV
+        (p - (c' * MvPolynomial.C (MvPolynomial.X (0 : Fin 2)) +
+          d' * MvPolynomial.C (MvPolynomial.X (1 : Fin 2)))) = 0 := by
+      rw [map_sub, map_add, map_mul, map_mul, hc', hd']
+      have ha : modelBaseEvalXUV (MvPolynomial.C (MvPolynomial.X (0 : Fin 2))) =
+          MvPolynomial.X 0 := by
+        simp [modelBaseEvalXUV]
+      have hb : modelBaseEvalXUV (MvPolynomial.C (MvPolynomial.X (1 : Fin 2))) =
+          MvPolynomial.X 1 := by
+        simp [modelBaseEvalXUV]
+      rw [ha, hb, hcd, sub_self]
+    rw [← RingHom.mem_ker] at hlift
+    rw [← sub_add_cancel p (c' * MvPolynomial.C (MvPolynomial.X (0 : Fin 2)) +
+      d' * MvPolynomial.C (MvPolynomial.X (1 : Fin 2)))]
+    refine Ideal.add_mem _ ?_ ?_
+    · exact Submodule.mem_sup_left hlift
+    · exact Submodule.mem_sup_right (by
+        rw [Ideal.mem_span_pair]
+        exact ⟨c', d', rfl⟩)
+  · refine sup_le ?_ ?_
+    · intro p hp
+      rw [Ideal.mem_comap, RingHom.mem_ker.mp hp]
+      exact Ideal.zero_mem _
+    · rw [Ideal.span_le]
+      intro z hz
+      simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hz
+      rcases hz with rfl | rfl
+      · rw [SetLike.mem_coe, Ideal.mem_comap]
+        simp [modelBaseEvalXUV]
+        exact Ideal.subset_span (by simp)
+      · rw [SetLike.mem_coe, Ideal.mem_comap]
+        simp [modelBaseEvalXUV]
+        exact Ideal.subset_span (by simp)
+
+theorem modelBaseEvalNode_ker :
+    RingHom.ker modelBaseEvalNode =
+      Ideal.span (MvPolynomial.X '' (Set.univ : Set (Fin 4))) ⊔
+        Ideal.span {MvPolynomial.C (MvPolynomial.X (0 : Fin 2)),
+          MvPolynomial.C (MvPolynomial.X (1 : Fin 2))} := by
+  rw [modelBaseEvalNode, ← RingHom.comap_ker, modelF2PolynomialEvalZero_ker,
+    ← modelF2Polynomial_ab_span_eq_X_image, modelBase_comap_ab, modelBaseEvalXUV_ker]
+
+private lemma modelBaseNodeIdeal_eq_sup :
+    modelBaseNodeIdeal =
+      Ideal.span {MvPolynomial.C (MvPolynomial.X (0 : Fin 2)),
+          MvPolynomial.C (MvPolynomial.X (1 : Fin 2))} ⊔
+        modelBaseXUVIdeal := by
+  rw [modelBaseNodeIdeal, modelBaseXUVIdeal, ← Ideal.span_union]
+  apply congrArg Ideal.span
+  ext z
+  simp only [Set.mem_union, Set.mem_insert_iff, Set.mem_singleton_iff]
+  constructor
+  · rintro (rfl | rfl | rfl | rfl | rfl)
+    · exact Or.inl (Or.inl rfl)
+    · exact Or.inl (Or.inr rfl)
+    · exact Or.inr (Or.inl rfl)
+    · exact Or.inr (Or.inr (Or.inl rfl))
+    · exact Or.inr (Or.inr (Or.inr rfl))
+  · rintro (h | h)
+    · rcases h with rfl | rfl
+      · exact Or.inl rfl
+      · exact Or.inr (Or.inl rfl)
+    · rcases h with rfl | rfl | rfl
+      · exact Or.inr (Or.inr (Or.inl rfl))
+      · exact Or.inr (Or.inr (Or.inr (Or.inl rfl)))
+      · exact Or.inr (Or.inr (Or.inr (Or.inr rfl)))
+
+private lemma modelBaseRelation_sup_node_eq_ker :
+    modelBaseRelationIdeal ⊔ modelBaseNodeIdeal = RingHom.ker modelBaseEvalNode := by
+  rw [modelBaseNodeIdeal_eq_sup, sup_left_comm, modelBaseRelation_sup_XUV_eq_X_span,
+    sup_comm]
+  exact modelBaseEvalNode_ker.symm
+
+/-- The coefficient model modulo `⟨a, b, X, U, V⟩` is `𝔽₂`. `Y` is zero
+because `Y = X·V`, and `(a, b)` is evaluated at `(0, 0)`. This is a
+quotient of the polynomial model, not a prime of the chart, and
+`FromSpec.toFun` is not applied. -/
+noncomputable def modelBaseAtNode_equiv_F2 :
+    MvPolynomial (Fin 4) (MvPolynomial (Fin 2) (ZMod 2)) ⧸
+      (modelBaseRelationIdeal ⊔ modelBaseNodeIdeal) ≃+* ZMod 2 :=
+  (Ideal.quotEquivOfEq modelBaseRelation_sup_node_eq_ker).trans
+    (RingHom.quotientKerEquivOfSurjective modelBaseEvalNode_surjective)
+
 /-- OPEN. The chart `D₊(Xt)` on `Y² = X³ + 2` at `(0, 0)` is isomorphic
 to the parameter-free ring `𝔽₂[X,Y,U,V] / (X·U, Y − X·V, Y² − X³)`.
-`modelXtChartModXUV_equiv_F2` is that model's further quotient by
-`⟨X, U, V⟩`, and it is `𝔽₂`. `chartOfModelBase` is a ring hom into the
-chart from the same quotient with coefficients `𝔽₂[a,b]` instead of
-`𝔽₂`. That hom is not shown to be bijective, and `modelXtChart` has no
-copy of `a, b`. `ap` and `bq` are numeral centre coordinates, not
-evaluations of the indeterminates `a, b`. -/
+That target has no copy of `a, b` and does not impose `U² = 0`.
+`chart_two_over_X_sq_zero` is `(2t / Xt)² = 0` in the chart.
+`chartOfModelBase` is a ring hom into the chart from
+`𝔽₂[a,b][X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U²)`. That hom is not
+shown to be bijective, so it is not a presentation of the chart.
+`ap` and `bq` are numeral centre coordinates, not evaluations of
+the indeterminates `a, b`. -/
 def chart_Dplus_Xt_presentation : Prop :=
   Nonempty (chart_Dplus_Xt_ring valuationOneCurve 0 0 ≃+* modelXtChart)
 
@@ -2089,11 +2424,18 @@ def chart_Dplus_Xt_presentation : Prop :=
 `D₊(Xt)` by `⟨X, Y, 2t/Xt, Yt/Xt⟩` is `𝔽₂`. `quotient_span_XUV_kills_Y`
 puts `Y` in `⟨X, 2t/Xt, Yt/Xt⟩`, so the quotient does not keep a
 nilpotent class of `Y`. `chart_Y_sq_eq_chart_X_cu_valuationOne` is
-`Y² = X³` in the chart. `modelXtChartModXUV_equiv_F2` is the same
+`Y² = X³` in the chart, and `chart_two_over_X_sq_zero` is
+`(2t / Xt)² = 0`. `modelXtChartModXUV_equiv_F2` is the same
 quotient for the parameter-free polynomial model, and it is `𝔽₂`.
-`chartFromF2Polynomial` lands in the chart before that quotient, so
-`𝔽₂[a,b]` is still present. The chart is not shown isomorphic to the
-parameter-free model (`chart_Dplus_Xt_presentation`).
+`modelBaseModXUV_equiv_F2Polynomial` is the quotient of the
+`𝔽₂[a,b]` model by `⟨X, U, V⟩`, and that ring is `𝔽₂[a,b]`, not
+`𝔽₂`: `Y = X·V` kills `Y`, and `a, b` remain. `modelBaseAtNode_equiv_F2`
+kills `a, b` as well and is `𝔽₂`, as a quotient of the polynomial
+model. `ideal_XYUV` does not contain the images of `a` and `b`, so
+that model calculation is not a quotient of the chart.
+`chartFromF2Polynomial` lands in the chart before the chart quotient.
+The chart is not shown isomorphic to either model
+(`chart_Dplus_Xt_presentation`).
 `isMaximal_of_quotient_equiv_zmod_two` would make the ideal maximal
 once the quotient isomorphism exists. `FromSpec.toFun` is not applied. -/
 def ideal_XYUV_quotient_F2 : Prop :=
@@ -2202,8 +2544,12 @@ end Beal.MathlibMissing
 #print axioms Beal.MathlibMissing.chartScalar_C_two
 #print axioms Beal.MathlibMissing.chart_two_eq_zero
 #print axioms Beal.MathlibMissing.chartFromF2Polynomial
+#print axioms Beal.MathlibMissing.chart_two_over_X_sq_zero
 #print axioms Beal.MathlibMissing.chartModelEval_relation
 #print axioms Beal.MathlibMissing.chartOfModelBase
+#print axioms Beal.MathlibMissing.modelBaseModXUV_equiv_F2Polynomial
+#print axioms Beal.MathlibMissing.modelF2PolynomialModAB_equiv_F2
+#print axioms Beal.MathlibMissing.modelBaseAtNode_equiv_F2
 #print axioms Beal.MathlibMissing.chart_Dplus_Xt_presentation
 #print axioms Beal.MathlibMissing.isMaximal_of_quotient_equiv_zmod_two
 #print axioms Beal.MathlibMissing.ideal_UV_maximal
