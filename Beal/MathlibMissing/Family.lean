@@ -43,18 +43,24 @@ and `(2t)² = 0` in `Rees/(2)`, so the chart ring has one element.
 `D₊(2t) = ⊥` as an open of `Proj(Rees(I)/(2))` on this curve.
 On the same curve no power of `X t` vanishes in `Rees/(2)`, because
 `X` remains `1` under the residue map at `(1, 1)`.
-`chart_Dplus_Xt_ring` is the degree-zero localization at that class,
-with ratios `2t / Xt` and `Yt / Xt`. The ring is nontrivial, so it
-has a prime ideal of the degree-zero chart. `(Xt)^n ≠ 0` is
-necessary for `D₊(Xt)` to be nonempty
+`chart_Dplus_Xt_ring` is the degree-zero localization at that class.
+It contains the ratios `2t / Xt` and `Yt / Xt`, and also the
+degree-zero classes `chart_X` and `chart_Y` of `X - ap` and
+`Y - bq`. On every numeral centre, `chart_Y = chart_X * (Yt / Xt)`
+and `chart_X * (2t / Xt) = 0` in `Rees/(2)`, so `Y` is redundant
+in `⟨X, Y, 2t/Xt, Yt/Xt⟩`. The candidate ideal of the reduced
+node is that ideal, not the ideal of ratios alone. `chart_X` is
+not shown to be nonzero. The ring is nontrivial, so it has some
+prime. `(Xt)^n ≠ 0` is necessary for `D₊(Xt)` to be nonempty
 (`pow_ne_zero_of_basicOpen_ne_bot`) and is not sufficient.
-That prime is not shown to kill both ratios, its residue field is
-not shown to be `𝔽₂`, and `FromSpec.toFun` is not applied, so it
-is not a point of `Proj`.
+The quotient by `⟨X, Y, 2t/Xt, Yt/Xt⟩` is not shown to be `𝔽₂`,
+so that ideal is not shown to be maximal. `FromSpec.toFun` is not
+applied, so the chart prime is not a point of `Proj`.
 `chart_Dplus_Xt_basicOpen_nonempty_valuationOne`,
-`ideal_UV_maximal`, and `familySpecialFibrePoint_Dplus_Xt` stay
-uninhabited. `familySpecialFibrePoint` stays uninhabited. No `sorry`
-is used.
+`ideal_UV_maximal`, `ideal_XYUV_quotient_F2`,
+`familySpecialFibrePoint_Dplus_Xt`, and
+`familySpecialFibrePoint_XYUV` stay uninhabited.
+`familySpecialFibrePoint` stays uninhabited. No `sorry` is used.
 -/
 
 namespace Beal.MathlibMissing
@@ -339,6 +345,32 @@ noncomputable def numeralReesYT (W : WeierstrassCurve ℤ_[2]) (ap bq : ℕ) :
         rw [pow_one]
         exact numeral_Y_mem_centre W ap bq⟩
 
+/-- The class of `X - ap` in the surface ring. -/
+noncomputable def surfaceNumeralX (W : WeierstrassCurve ℤ_[2]) (ap : ℕ) :
+    surfaceRing W :=
+  Ideal.Quotient.mk (Ideal.span {surfacePolynomial W})
+    (MvPolynomial.X (0 : Fin 2) -
+      MvPolynomial.C (MvPolynomial.C (ap : ℤ_[2])))
+
+/-- The class of `Y - bq` in the surface ring. -/
+noncomputable def surfaceNumeralY (W : WeierstrassCurve ℤ_[2]) (bq : ℕ) :
+    surfaceRing W :=
+  Ideal.Quotient.mk (Ideal.span {surfacePolynomial W})
+    (MvPolynomial.X (1 : Fin 2) -
+      MvPolynomial.C (MvPolynomial.C (bq : ℤ_[2])))
+
+private lemma mem_centre_pow_zero
+    (W : WeierstrassCurve ℤ_[2]) (ap bq : ℕ) (r : surfaceRing W) :
+    r ∈ numeralCentreIdeal W ap bq ^ 0 := by
+  simp only [pow_zero, Ideal.one_eq_top, Submodule.mem_top]
+
+/-- The degree-zero Rees monomial `C r`. Every surface element lies in
+`I^0 = ⊤`. -/
+noncomputable def numeralReesConst (W : WeierstrassCurve ℤ_[2]) (ap bq : ℕ)
+    (r : surfaceRing W) : reesAlgebra (numeralCentreIdeal W ap bq) :=
+  centreReesMonomial (numeralCentreIdeal W ap bq) 0
+    ⟨r, mem_centre_pow_zero W ap bq r⟩
+
 /-- `Proj(Rees(I)/(2))`, the special fibre of the numeral blow-up. -/
 noncomputable def familySpecialFibre (W : WeierstrassCurve ℤ_[2]) (ap bq : ℕ) :
     AlgebraicGeometry.Scheme := by
@@ -406,6 +438,40 @@ private lemma specialClass_mem_degree_one
   change _ ∈ Submodule.map
     (Ideal.Quotient.mkₐ (surfaceRing W) J).toLinearMap (centreReesComponent I 1)
   exact Submodule.mem_map_of_mem hy
+
+private lemma specialClass_mem_degree_zero
+    (W : WeierstrassCurve ℤ_[2]) (ap bq : ℕ) (r : surfaceRing W) :
+    (Ideal.Quotient.mk (numeralReesSpecialIdeal W ap bq))
+        (numeralReesConst W ap bq r) ∈
+      homogeneousQuotientComponent
+        (centreReesComponent (numeralCentreIdeal W ap bq))
+        (numeralReesSpecialIdeal W ap bq) 0 := by
+  let I := numeralCentreIdeal W ap bq
+  let J := numeralReesSpecialIdeal W ap bq
+  have hy := centreReesComponent_monomial I 0 r (mem_centre_pow_zero W ap bq r)
+  change _ ∈ Submodule.map
+    (Ideal.Quotient.mkₐ (surfaceRing W) J).toLinearMap (centreReesComponent I 0)
+  exact Submodule.mem_map_of_mem hy
+
+private lemma quotient_one_mem_degree_zero
+    (W : WeierstrassCurve ℤ_[2]) (ap bq : ℕ) :
+    (1 : reesAlgebra (numeralCentreIdeal W ap bq) ⧸
+        numeralReesSpecialIdeal W ap bq) ∈
+      homogeneousQuotientComponent
+        (centreReesComponent (numeralCentreIdeal W ap bq))
+        (numeralReesSpecialIdeal W ap bq) 0 := by
+  let I := numeralCentreIdeal W ap bq
+  letI : GradedAlgebra (centreReesComponent I) := centreReesGrading I
+  let J := numeralReesSpecialIdeal W ap bq
+  have hy : (1 : reesAlgebra I) ∈ centreReesComponent I 0 := by
+    change ∃ r : ↥(I ^ 0), centreReesMonomial I 0 r = 1
+    refine ⟨⟨1, by simp⟩, ?_⟩
+    apply Subtype.ext
+    simp [centreReesMonomial]
+  have hmem : (Ideal.Quotient.mk J) (1 : reesAlgebra I) ∈
+      homogeneousQuotientComponent (centreReesComponent I) J 0 :=
+    Submodule.mem_map_of_mem hy
+  rwa [map_one (Ideal.Quotient.mk J)] at hmem
 
 /-- `U = (X - ap) t / 2t` on the chart `D₊(2t)`. -/
 noncomputable def chartU (W : WeierstrassCurve ℤ_[2]) (ap bq : ℕ) :
@@ -731,6 +797,48 @@ noncomputable def chart_Y_over_X (W : WeierstrassCurve ℤ_[2]) (ap bq : ℕ) :
             (numeral_X_mem_centre W ap bq)⟩,
       ⟨1, pow_one _⟩⟩
 
+/-- The degree-zero class of `X - ap` on the chart `D₊(Xt)`.
+This is the fraction `C(X - ap) / 1`. It is not the ratio `2t / Xt`. -/
+noncomputable def chart_X (W : WeierstrassCurve ℤ_[2]) (ap bq : ℕ) :
+    chart_Dplus_Xt_ring W ap bq := by
+  let I := numeralCentreIdeal W ap bq
+  letI : GradedAlgebra (centreReesComponent I) := centreReesGrading I
+  let J := numeralReesSpecialIdeal W ap bq
+  let ℬ := homogeneousQuotientComponent (centreReesComponent I) J
+  letI : GradedAlgebra ℬ :=
+    homogeneousQuotientGrading (centreReesComponent I) J
+      (numeralReesSpecialIdeal_isHomogeneous W ap bq)
+  let f := Ideal.Quotient.mk J (numeralReesXT W ap bq)
+  let num := Ideal.Quotient.mk J (numeralReesConst W ap bq (surfaceNumeralX W ap))
+  exact HomogeneousLocalization.mk
+    ⟨0,
+      ⟨num, by
+        simpa [num] using
+          specialClass_mem_degree_zero W ap bq (surfaceNumeralX W ap)⟩,
+      ⟨(1 : reesAlgebra I ⧸ J), quotient_one_mem_degree_zero W ap bq⟩,
+      ⟨0, pow_zero f⟩⟩
+
+/-- The degree-zero class of `Y - bq` on the chart `D₊(Xt)`.
+This is the fraction `C(Y - bq) / 1`. It is not the ratio `Yt / Xt`. -/
+noncomputable def chart_Y (W : WeierstrassCurve ℤ_[2]) (ap bq : ℕ) :
+    chart_Dplus_Xt_ring W ap bq := by
+  let I := numeralCentreIdeal W ap bq
+  letI : GradedAlgebra (centreReesComponent I) := centreReesGrading I
+  let J := numeralReesSpecialIdeal W ap bq
+  let ℬ := homogeneousQuotientComponent (centreReesComponent I) J
+  letI : GradedAlgebra ℬ :=
+    homogeneousQuotientGrading (centreReesComponent I) J
+      (numeralReesSpecialIdeal_isHomogeneous W ap bq)
+  let f := Ideal.Quotient.mk J (numeralReesXT W ap bq)
+  let num := Ideal.Quotient.mk J (numeralReesConst W ap bq (surfaceNumeralY W bq))
+  exact HomogeneousLocalization.mk
+    ⟨0,
+      ⟨num, by
+        simpa [num] using
+          specialClass_mem_degree_zero W ap bq (surfaceNumeralY W bq)⟩,
+      ⟨(1 : reesAlgebra I ⧸ J), quotient_one_mem_degree_zero W ap bq⟩,
+      ⟨0, pow_zero f⟩⟩
+
 noncomputable instance chartXtCommRing
     (W : WeierstrassCurve ℤ_[2]) (ap bq : ℕ) :
     CommRing (chart_Dplus_Xt_ring W ap bq) := by
@@ -744,10 +852,19 @@ noncomputable instance chartXtCommRing
   unfold chart_Dplus_Xt_ring
   infer_instance
 
-/-- The ideal of ratios `(2t / Xt, Yt / Xt)` in the chart `D₊(Xt)`. -/
+/-- The ideal of ratios `(2t / Xt, Yt / Xt)` in the chart `D₊(Xt)`.
+Its generators do not include the degree-zero classes of `X` and `Y`. -/
 noncomputable def ideal_two_Y_over_X (W : WeierstrassCurve ℤ_[2]) (ap bq : ℕ) :
     Ideal (chart_Dplus_Xt_ring W ap bq) :=
   Ideal.span {chart_two_over_X W ap bq, chart_Y_over_X W ap bq}
+
+/-- The ideal `⟨X, Y, 2t/Xt, Yt/Xt⟩` in the chart `D₊(Xt)`.
+`X` and `Y` are the degree-zero classes, not the ratios. -/
+noncomputable def ideal_XYUV (W : WeierstrassCurve ℤ_[2]) (ap bq : ℕ) :
+    Ideal (chart_Dplus_Xt_ring W ap bq) :=
+  Ideal.span
+    {chart_X W ap bq, chart_Y W ap bq,
+      chart_two_over_X W ap bq, chart_Y_over_X W ap bq}
 
 /-- Evaluate `S[X, Y]` in `𝔽₂` at a chosen residue point. -/
 noncomputable def residuePointEval (x y : ZMod 2) : MvPolynomial (Fin 2) S →+* ZMod 2 :=
@@ -853,6 +970,154 @@ theorem chart_Dplus_Xt_prime_valuationOne :
   haveI := chart_Dplus_Xt_nontrivial_valuationOne
   infer_instance
 
+private lemma const_X_mul_two_eq_scalar_two_mul_xt
+    (W : WeierstrassCurve ℤ_[2]) (ap bq : ℕ) :
+    numeralReesConst W ap bq (surfaceNumeralX W ap) * numeralReesTwo W ap bq =
+      algebraMap (surfaceRing W) (reesAlgebra (numeralCentreIdeal W ap bq))
+          (2 : surfaceRing W) *
+        numeralReesXT W ap bq := by
+  apply Subtype.ext
+  unfold numeralReesConst numeralReesTwo numeralReesXT centreReesMonomial surfaceNumeralX
+  rw [Subalgebra.coe_mul, Subalgebra.coe_mul, Subalgebra.coe_algebraMap]
+  dsimp
+  rw [Polynomial.C_mul_monomial]
+  have hcoef := mul_comm
+    ((Ideal.Quotient.mk (Ideal.span {surfacePolynomial W}))
+      (MvPolynomial.X (0 : Fin 2) - MvPolynomial.C (MvPolynomial.C (ap : ℤ_[2]))))
+    (2 : surfaceRing W)
+  rw [hcoef, ← Polynomial.C_mul_monomial]
+
+private lemma xt_mul_const_Y_eq_const_X_mul_yt
+    (W : WeierstrassCurve ℤ_[2]) (ap bq : ℕ) :
+    numeralReesXT W ap bq * numeralReesConst W ap bq (surfaceNumeralY W bq) =
+      numeralReesConst W ap bq (surfaceNumeralX W ap) * numeralReesYT W ap bq := by
+  apply Subtype.ext
+  unfold numeralReesXT numeralReesYT numeralReesConst centreReesMonomial
+    surfaceNumeralX surfaceNumeralY
+  rw [Subalgebra.coe_mul, Subalgebra.coe_mul]
+  dsimp
+  rw [Polynomial.monomial_mul_C, Polynomial.C_mul_monomial]
+
+/-- In `Rees/(2)`, the degree-zero class of `X - ap` kills `2t / Xt`. -/
+theorem chart_X_mul_two_over_X_eq_zero
+    (W : WeierstrassCurve ℤ_[2]) (ap bq : ℕ) :
+    chart_X W ap bq * chart_two_over_X W ap bq = 0 := by
+  let I := numeralCentreIdeal W ap bq
+  letI : GradedAlgebra (centreReesComponent I) := centreReesGrading I
+  let J := numeralReesSpecialIdeal W ap bq
+  have hJ : J.IsHomogeneous (centreReesComponent I) :=
+    numeralReesSpecialIdeal_isHomogeneous W ap bq
+  let ℬ := homogeneousQuotientComponent (centreReesComponent I) J
+  letI : GradedAlgebra ℬ := homogeneousQuotientGrading (centreReesComponent I) J hJ
+  let f := Ideal.Quotient.mk J (numeralReesXT W ap bq)
+  apply HomogeneousLocalization.val_injective (Submonoid.powers f)
+  erw [HomogeneousLocalization.val_mul, HomogeneousLocalization.val_zero]
+  simp only [chart_X, chart_two_over_X, HomogeneousLocalization.val_mk]
+  rw [Localization.mk_mul]
+  have hnum :
+      Ideal.Quotient.mk J (numeralReesConst W ap bq (surfaceNumeralX W ap)) *
+        Ideal.Quotient.mk J (numeralReesTwo W ap bq) = 0 := by
+    rw [← map_mul, const_X_mul_two_eq_scalar_two_mul_xt, map_mul]
+    have h2 : Ideal.Quotient.mk J
+        (algebraMap (surfaceRing W) (reesAlgebra I) (2 : surfaceRing W)) = 0 := by
+      rw [Ideal.Quotient.eq_zero_iff_mem]
+      exact Ideal.mem_span_singleton_self _
+    rw [h2]
+    exact zero_mul ((Ideal.Quotient.mk J) (numeralReesXT W ap bq))
+  rw [hnum]
+  rw [← Localization.mk_zero (1 : Submonoid.powers f)]
+  rw [Localization.mk_eq_mk_iff]
+  refine Localization.r_iff_exists.mpr ⟨1, ?_⟩
+  dsimp
+  rw [mul_zero ((1 : reesAlgebra I ⧸ J) *
+    (Ideal.Quotient.mk J) (numeralReesXT W ap bq))]
+  rw [mul_zero (1 : reesAlgebra I ⧸ J)]
+  rw [mul_zero (1 : reesAlgebra I ⧸ J)]
+
+/-- `C(Y - bq) / 1 = C(X - ap) / 1 · (Yt / Xt)` on the chart `D₊(Xt)`. -/
+theorem chart_Y_eq_chart_X_mul_Y_over_X
+    (W : WeierstrassCurve ℤ_[2]) (ap bq : ℕ) :
+    chart_Y W ap bq = chart_X W ap bq * chart_Y_over_X W ap bq := by
+  let I := numeralCentreIdeal W ap bq
+  letI : GradedAlgebra (centreReesComponent I) := centreReesGrading I
+  let J := numeralReesSpecialIdeal W ap bq
+  have hJ : J.IsHomogeneous (centreReesComponent I) :=
+    numeralReesSpecialIdeal_isHomogeneous W ap bq
+  let ℬ := homogeneousQuotientComponent (centreReesComponent I) J
+  letI : GradedAlgebra ℬ := homogeneousQuotientGrading (centreReesComponent I) J hJ
+  let f := Ideal.Quotient.mk J (numeralReesXT W ap bq)
+  apply HomogeneousLocalization.val_injective (Submonoid.powers f)
+  erw [HomogeneousLocalization.val_mul]
+  simp only [chart_Y, chart_X, chart_Y_over_X, HomogeneousLocalization.val_mk]
+  rw [Localization.mk_mul, Localization.mk_eq_mk_iff]
+  refine Localization.r_iff_exists.mpr ⟨1, ?_⟩
+  have hcomm := congrArg (Ideal.Quotient.mk J)
+    (xt_mul_const_Y_eq_const_X_mul_yt W ap bq)
+  rw [map_mul, map_mul] at hcomm
+  dsimp
+  rw [one_mul (((1 : reesAlgebra I ⧸ J) * (Ideal.Quotient.mk J) (numeralReesXT W ap bq)) *
+    (Ideal.Quotient.mk J) (numeralReesConst W ap bq (surfaceNumeralY W bq)))]
+  rw [one_mul ((1 : reesAlgebra I ⧸ J) *
+    ((Ideal.Quotient.mk J) (numeralReesConst W ap bq (surfaceNumeralX W ap)) *
+      (Ideal.Quotient.mk J) (numeralReesYT W ap bq)))]
+  rw [one_mul ((Ideal.Quotient.mk J) (numeralReesXT W ap bq))]
+  rw [one_mul ((Ideal.Quotient.mk J) (numeralReesConst W ap bq (surfaceNumeralX W ap)) *
+    (Ideal.Quotient.mk J) (numeralReesYT W ap bq))]
+  exact hcomm
+
+/-- `Y` kills `2t / Xt` as well, because `Y = X · (Yt / Xt)`. -/
+theorem chart_Y_mul_two_over_X_eq_zero
+    (W : WeierstrassCurve ℤ_[2]) (ap bq : ℕ) :
+    chart_Y W ap bq * chart_two_over_X W ap bq = 0 := by
+  rw [chart_Y_eq_chart_X_mul_Y_over_X, mul_right_comm,
+    chart_X_mul_two_over_X_eq_zero, zero_mul]
+
+/-- `Y` is redundant in `⟨X, Y, 2t/Xt, Yt/Xt⟩`: it equals `X · (Yt / Xt)`. -/
+theorem ideal_XYUV_eq_span_X_UV
+    (W : WeierstrassCurve ℤ_[2]) (ap bq : ℕ) :
+    ideal_XYUV W ap bq =
+      Ideal.span {chart_X W ap bq, chart_two_over_X W ap bq,
+        chart_Y_over_X W ap bq} := by
+  apply le_antisymm
+  · rw [ideal_XYUV, Ideal.span_le]
+    intro z hz
+    simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hz
+    rcases hz with rfl | rfl | rfl | rfl
+    · exact Ideal.subset_span (by simp)
+    · rw [chart_Y_eq_chart_X_mul_Y_over_X]
+      exact Ideal.mul_mem_left _ _ (Ideal.subset_span (by simp))
+    · exact Ideal.subset_span (by simp)
+    · exact Ideal.subset_span (by simp)
+  · rw [ideal_XYUV, Ideal.span_le]
+    intro z hz
+    simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hz
+    rcases hz with rfl | rfl | rfl
+    · exact Ideal.subset_span (by simp)
+    · exact Ideal.subset_span (by simp)
+    · exact Ideal.subset_span (by simp)
+
+/-- A quotient isomorphic to `𝔽₂` is a field, so the ideal is maximal. -/
+theorem isMaximal_of_quotient_equiv_zmod_two
+    {R : Type*} [CommRing R] (I : Ideal R) (e : R ⧸ I ≃+* ZMod 2) :
+    I.IsMaximal := by
+  refine Ideal.Quotient.maximal_of_isField I ?_
+  have hcases : ∀ x : ZMod 2, x ≠ 0 → x = 1 := by decide
+  refine ⟨⟨e.symm 0, e.symm 1, ?_⟩, mul_comm, ?_⟩
+  · intro h
+    have h01 : (0 : ZMod 2) = 1 := by
+      have := congrArg e h
+      rwa [e.apply_symm_apply, e.apply_symm_apply] at this
+    exact zero_ne_one h01
+  · intro a ha
+    have ha' : e a ≠ 0 := by
+      intro hz
+      apply ha
+      exact e.injective (hz.trans (map_zero e).symm)
+    have hone : e a = 1 := hcases (e a) ha'
+    refine ⟨e.symm (1 : ZMod 2), ?_⟩
+    apply e.injective
+    rw [map_mul e, e.apply_symm_apply, hone, map_one e, one_mul]
+
 /-- `(Xt)^n ≠ 0` is necessary for `D₊(Xt)` to be nonempty. It is the
 contrapositive of `proj_basicOpen_bot_of_pow_eq_zero`. It is not
 sufficient: `basicOpen_pow` identifies `D₊(f^n)` with `D₊(f)`, and
@@ -889,16 +1154,36 @@ def chart_Dplus_Xt_basicOpen_nonempty_valuationOne : Prop := by
 `D₊(Xt)`, with quotient `𝔽₂`, whenever the reduced equation vanishes.
 The chart has some prime on `Y² = X³ + 2`. That prime is not shown to
 contain both ratios, and no evaluation `chart → 𝔽₂` is constructed.
-Quotienting by the ratios does not set the degree-zero class of `X`
-to zero: `2t / Xt` is not the element `X`. On this curve `2 ∈ I²`,
-so the `2`-direction on the exceptional divisor is nilpotent, and the
-proposed identification of the quotient with
-`𝔽₂[X, Y] / (Y² - X³, X, Y)` is not a proved presentation. -/
+The generators of this ideal are ratios. They are not `chart_X` or
+`chart_Y`. Quotienting by the ratios is not shown to kill the
+degree-zero class of `X`, and the chart is not presented as
+`𝔽₂[X, Y] / (Y² - X³, X, Y)`. -/
 def ideal_UV_maximal : Prop :=
   ∀ (W : WeierstrassCurve ℤ_[2]) (ap bq : ℕ),
     surfaceResidueVanishes W ap bq →
     (ideal_two_Y_over_X W ap bq).IsMaximal ∧
     Nonempty ((chart_Dplus_Xt_ring W ap bq ⧸ ideal_two_Y_over_X W ap bq) ≃+* ZMod 2)
+
+/-- OPEN. On `Y² = X³ + 2` at `(0, 0)`, the quotient of the chart
+`D₊(Xt)` by `⟨X, Y, 2t/Xt, Yt/Xt⟩` is `𝔽₂`. `chart_Y = chart_X * (Yt/Xt)`
+and `chart_X * (2t/Xt) = 0` are proved, and `isMaximal_of_quotient_equiv_zmod_two`
+would make the ideal maximal once this quotient exists. No ring hom
+from the chart onto `𝔽₂` is constructed: the chart is not presented
+as an `𝔽₂`-algebra on these four generators. -/
+def ideal_XYUV_quotient_F2 : Prop :=
+  Nonempty ((chart_Dplus_Xt_ring valuationOneCurve 0 0 ⧸
+    ideal_XYUV valuationOneCurve 0 0) ≃+* ZMod 2)
+
+/-- The quotient isomorphism would make `⟨X, Y, 2t/Xt, Yt/Xt⟩` prime
+on this node. It would be a prime of the degree-zero chart, not yet
+a point of `Proj`. -/
+theorem chart_prime_of_ideal_XYUV_quotient_F2
+    (h : ideal_XYUV_quotient_F2) :
+    ∃ q : PrimeSpectrum (chart_Dplus_Xt_ring valuationOneCurve 0 0),
+      q.asIdeal = ideal_XYUV valuationOneCurve 0 0 := by
+  obtain ⟨e⟩ := h
+  refine ⟨⟨ideal_XYUV valuationOneCurve 0 0,
+    (isMaximal_of_quotient_equiv_zmod_two _ e).isPrime⟩, rfl⟩
 
 /-- OPEN. The ideal `(2t / Xt, Yt / Xt)` is prime with residue field
 `𝔽₂`, so `FromSpec.toFun` would carry it into `D₊(Xt)`. No such prime
@@ -909,6 +1194,17 @@ def familySpecialFibrePoint_Dplus_Xt : Prop :=
     ∃ q : PrimeSpectrum (chart_Dplus_Xt_ring W ap bq),
       ideal_two_Y_over_X W ap bq ≤ q.asIdeal ∧
       Nonempty ((chart_Dplus_Xt_ring W ap bq ⧸ q.asIdeal) ≃+* ZMod 2)
+
+/-- OPEN. A prime of the chart `D₊(Xt)` containing
+`⟨X, Y, 2t/Xt, Yt/Xt⟩`, with residue field `𝔽₂`, on the node
+`Y² = X³ + 2` at `(0, 0)`. `chart_prime_of_ideal_XYUV_quotient_F2`
+produces that prime from the missing quotient isomorphism.
+`FromSpec.toFun` is not applied, so the prime is not a point of
+`D₊(Xt) ⊂ Proj(Rees(I)/(2))`. -/
+def familySpecialFibrePoint_XYUV : Prop :=
+  ∃ q : PrimeSpectrum (chart_Dplus_Xt_ring valuationOneCurve 0 0),
+    ideal_XYUV valuationOneCurve 0 0 ≤ q.asIdeal ∧
+    Nonempty ((chart_Dplus_Xt_ring valuationOneCurve 0 0 ⧸ q.asIdeal) ≃+* ZMod 2)
 
 /-- OPEN. A coprime Beal tuple `(a, b, p, q)` should determine a point of
 `Bl_{I_{a,b}}` on the special fibre over `𝔽₂`, a direction on the
@@ -954,6 +1250,17 @@ end Beal.MathlibMissing
 #print axioms Beal.MathlibMissing.chart_Dplus_2t_empty_holds
 #print axioms Beal.MathlibMissing.pow_ne_zero_of_basicOpen_ne_bot
 #print axioms Beal.MathlibMissing.chart_Dplus_Xt_basicOpen_nonempty_valuationOne
+#print axioms Beal.MathlibMissing.chart_X
+#print axioms Beal.MathlibMissing.chart_Y
+#print axioms Beal.MathlibMissing.ideal_XYUV
+#print axioms Beal.MathlibMissing.chart_X_mul_two_over_X_eq_zero
+#print axioms Beal.MathlibMissing.chart_Y_eq_chart_X_mul_Y_over_X
+#print axioms Beal.MathlibMissing.chart_Y_mul_two_over_X_eq_zero
+#print axioms Beal.MathlibMissing.ideal_XYUV_eq_span_X_UV
+#print axioms Beal.MathlibMissing.isMaximal_of_quotient_equiv_zmod_two
 #print axioms Beal.MathlibMissing.ideal_UV_maximal
+#print axioms Beal.MathlibMissing.ideal_XYUV_quotient_F2
+#print axioms Beal.MathlibMissing.chart_prime_of_ideal_XYUV_quotient_F2
 #print axioms Beal.MathlibMissing.familySpecialFibrePoint_Dplus_Xt
+#print axioms Beal.MathlibMissing.familySpecialFibrePoint_XYUV
 #print axioms Beal.MathlibMissing.coprimeBealSolution_to_family_point

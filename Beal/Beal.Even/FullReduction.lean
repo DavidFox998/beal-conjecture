@@ -1852,8 +1852,12 @@ chart ring has one element, and every point of `Proj(Rees(I)/(2))`
 contains that class: the basic open `D₊(2t)` is empty. On that
 same curve no power of the class of `Xt` vanishes in `Rees/(2)`,
 and the degree-zero chart `D₊(Xt)` is a nontrivial ring, so it has
-a prime. That prime is not shown to have residue field `𝔽₂`, and
-it is not a point of `Proj`. -/
+a prime. That chart also contains the degree-zero classes of `X`
+and `Y`. The candidate ideal is `⟨X, Y, 2t/Xt, Yt/Xt⟩`. The
+relations `Y = X · (Yt/Xt)` and `X · (2t/Xt) = 0` are proved
+there. The quotient by that ideal is not shown to be `𝔽₂`, the
+prime is not shown to have residue field `𝔽₂`, and it is not a
+point of `Proj`. -/
 def overline_2t_global_section_open : Prop :=
   ∀ (W : WeierstrassCurve ℤ_[2]) (x y : ℤ_[2]),
     localWeierstrassEquation W x y = 0 →
