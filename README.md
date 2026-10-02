@@ -4,6 +4,50 @@
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22922473.svg)](https://doi.org/10.5281/zenodo.22922473)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22912430.svg)](https://doi.org/10.5281/zenodo.22912430)
 
+## v37-degree-one `19a820c3` — exceptional fibre point closed
+
+`main` stays `3dd7728f` with DOI `10.5281/zenodo.23054568`. This branch
+is not merged, not tagged, and has no new DOI.
+
+* `BealEven`: `V(2) = Proj(Rees/(2))` at `7d48c25d`. `D₊(2t) = ⊥`
+  because `(2t)² = 0` at `567adc81`.
+* In `Rees/(2)`, `2t` is a nonzero nilpotent, `(2t)² = 0`, at
+  `42819197`: `2` is regular, `1 ∉ I`, and `2 ∈ I²`.
+* On the chart `D₊(Xt)`, `U = 2t/Xt` is a nonzero nilpotent, `U² = 0`,
+  at `02e45751`, from `Xⁿ ∉ Iⁿ⁺¹` by the cusp `X ↦ t²`, `Y ↦ t³`.
+  The chart relations are `X·U = 0`, `Y = X·V`, `Y² = X³`, and `U² = 0`.
+  `chartOfModelBase` is a ring hom from
+  `𝔽₂[a,b][X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U²)` into the chart,
+  and it factors through `U²`.
+  Model quotients: modulo `⟨X, U, V⟩` the ring is `𝔽₂[a,b]`, modulo
+  `⟨a, b⟩` the coefficient ring is `𝔽₂`, and modulo `⟨a, b, X, U, V⟩`
+  the model is `𝔽₂`.
+
+`19a820c3` adds the chart evaluation:
+
+* `chartNodeHom : (Rees(I)/(2))_{(Xt)}₀ →+* 𝔽₂` by the cusp leading
+  coefficient `X ↦ t²`, `Y ↦ t³`, `a, b ↦ 0`. `Xt ↦ 1`, so the map
+  extends along `HomogeneousLocalization.val`.
+* `ideal_ABXYUV = ⟨a, b, X, Y, U, V⟩`. `Y` is redundant, and
+  `ideal_XYUV ≤ ideal_ABXYUV`.
+* Closed: `ideal_ABXYUV ≤ ker chartNodeHom`, the kernel is maximal,
+  the quotient by the kernel is `𝔽₂`, and `chartNodePrime` is that
+  prime. `familySpecialFibreProjPoint` is `FromSpec.toFun` of
+  `chartNodePrime`, a point of `D₊(Xt)` in `Proj(Rees(I)/(2))`.
+  `familySpecialFibrePoint_XYUV_holds` is the same prime in the chart.
+* Open: `ker_eq_ideal_ABXYUV`, the reverse inclusion. It is the
+  hypothesis of `ideal_ABXYUV_quotient_F2_of_ker_eq`, which would
+  make `chart / ideal_ABXYUV ≃ 𝔽₂`. The quotient proposition
+  `ideal_ABXYUV_quotient_F2` stays uninhabited.
+* Open: `chartOfModelBase` bijective, and
+  `chart_Dplus_Xt_presentation`. The parameter-free model
+  `𝔽₂[X,Y,U,V] / (X·U, Y − X·V, Y² − X³)` has neither `a, b` nor `U²`.
+
+`BealEven` does not import `Beal/MathlibMissing/Family.lean`.
+Printed axioms of the new declarations are `propext`, `Classical.choice`,
+and `Quot.sound`. `lake build BealEven` and `lake build BealMathlibMissing`
+both exit 0.
+
 ## About: working v33 even-valuation blow-up
 
 The local 2-adic even branch starts from the Tate normal form

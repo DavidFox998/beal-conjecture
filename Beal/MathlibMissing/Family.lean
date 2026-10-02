@@ -3102,6 +3102,55 @@ theorem ideal_ABXYUV_le_chartNodeKer :
   · rw [SetLike.mem_coe, RingHom.mem_ker, chartNodeHom_U]
   · rw [SetLike.mem_coe, RingHom.mem_ker, chartNodeHom_V]
 
+/-!
+### Explicit exceptional fibre point on `Y² = X³ + 2` at `(0, 0)`
+
+`D₊(2t) = ⊥` because `(2t)² = 0` (`chart_Dplus_2t_empty_holds`).
+`U = 2t/Xt` is a nonzero nilpotent (`chart_two_over_X_ne_zero`,
+`chart_two_over_X_sq_zero`), from `Xⁿ ∉ Iⁿ⁺¹` by the cusp
+`X ↦ t²`, `Y ↦ t³`.
+
+`chartNodeHom` reads that leading coefficient on
+`(Rees(I)/(2))_{(Xt)}₀`. `Xt ↦ 1`, so the map of `Rees(I)/(2)`
+extends through the localization at powers of `Xt` and restricts
+along `HomogeneousLocalization.val`. `ideal_ABXYUV` is
+`⟨a, b, X, Y, U, V⟩`. `Y` is redundant because `Y = X · V`, and
+`ideal_XYUV ≤ ideal_ABXYUV`.
+
+Closed:
+* `ideal_ABXYUV ≤ ker chartNodeHom` (`ker_contains_ABXYUV`)
+* `chartNodeHom` is surjective (`chartNodeHom_surjective`)
+* the quotient by the kernel is `𝔽₂` (`chart_node_quotient_equiv`)
+* the kernel is maximal (`chartNodeKer_isMaximal`)
+* `chartNodePrime` is that prime
+* `familySpecialFibrePoint_XYUV_holds` is this prime in the chart
+* `familySpecialFibreProjPoint` is `FromSpec.toFun` of that prime,
+  a point of `D₊(Xt)` in `Proj(Rees(I)/(2))`
+
+Open:
+* `ker_eq_ideal_ABXYUV`, the reverse inclusion. It asks for
+  `chartOfModelBase` surjective, so an element of the kernel lifts
+  to a polynomial in `𝔽₂[a,b][X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U²)`
+  with node evaluation zero, and that polynomial lies in
+  `⟨a, b, X, U, V⟩` together with `Y = X·V`.
+* `ideal_ABXYUV_quotient_F2`, the quotient of the chart by the
+  ideal. `ideal_ABXYUV_quotient_F2_of_ker_eq` produces it from the
+  equality.
+* `chartOfModelBase` bijective.
+* `chart_Dplus_Xt_presentation`, an isomorphism with the
+  parameter-free model `𝔽₂[X,Y,U,V] / (X·U, Y − X·V, Y² − X³)`.
+  That model has neither `a, b` nor `U²`.
+-/
+
+theorem ker_contains_ABXYUV :
+    ideal_ABXYUV valuationOneCurve 0 0 ≤ RingHom.ker chartNodeHom :=
+  ideal_ABXYUV_le_chartNodeKer
+
+/-- OPEN. Equality of `ker chartNodeHom` with `⟨a, b, X, Y, U, V⟩`.
+`ker_contains_ABXYUV` is the proved inclusion. -/
+def ker_eq_ideal_ABXYUV : Prop :=
+  RingHom.ker chartNodeHom = ideal_ABXYUV valuationOneCurve 0 0
+
 /-- `𝔽₂[a,b][X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U²)`. The coefficient
 ring is `𝔽₂[a,b]`, not `𝔽₂`. The generator `U²` is the chart relation
 `(2t / Xt)² = 0` on `Y² = X³ + 2` at `(0, 0)`. -/
@@ -3526,6 +3575,12 @@ def ideal_ABXYUV_quotient_F2 : Prop :=
   Nonempty ((chart_Dplus_Xt_ring valuationOneCurve 0 0 ⧸
     ideal_ABXYUV valuationOneCurve 0 0) ≃+* ZMod 2)
 
+/-- The open equality `ker = ideal_ABXYUV` transports the proved
+quotient by the kernel to the quotient by the ideal. -/
+theorem ideal_ABXYUV_quotient_F2_of_ker_eq
+    (h : ker_eq_ideal_ABXYUV) : ideal_ABXYUV_quotient_F2 :=
+  ⟨(Ideal.quotEquivOfEq h.symm).trans chart_node_quotient_equiv⟩
+
 /-- That quotient isomorphism would make `⟨a, b, X, Y, 2t/Xt, Yt/Xt⟩`
 a prime of the degree-zero chart. It would not yet be a point of
 `Proj`. -/
@@ -3684,6 +3739,9 @@ end Beal.MathlibMissing
 #print axioms Beal.MathlibMissing.chartNodeKer_isMaximal
 #print axioms Beal.MathlibMissing.chartNodePrime
 #print axioms Beal.MathlibMissing.ideal_ABXYUV_le_chartNodeKer
+#print axioms Beal.MathlibMissing.ker_contains_ABXYUV
+#print axioms Beal.MathlibMissing.ker_eq_ideal_ABXYUV
+#print axioms Beal.MathlibMissing.ideal_ABXYUV_quotient_F2_of_ker_eq
 #print axioms Beal.MathlibMissing.familySpecialFibrePoint_XYUV_holds
 #print axioms Beal.MathlibMissing.familySpecialFibreProjPoint
 #print axioms Beal.MathlibMissing.coprimeBealSolution_to_family_point
