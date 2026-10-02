@@ -64,8 +64,10 @@ Open:
 
 * `chartOfModelTrue_injective` and `chart_Dplus_Xt_true_presentation`.
   A normal form `A(V) + X·B(V) + X²·C(V)` is not shown to vanish in
-  `D₊(Xt)` only when it is zero. `X⁴ − X ∉ I²` is the obstruction for
-  the single class `X² + X·V²`. The bijection
+  `D₊(Xt)` only when it is zero. `X⁴ − X ∉ I²` blocks only
+  `X² + X·V²`. The class `X + V²` has Rees numerator `2·(X³ − 1)`;
+  the missing step is the 2-adic coefficient bound for membership in
+  `I^k`. The bijection
   `𝔽₂[a,b][X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U + X² + X·V²) ≃ D₊(Xt)`
   is not proved.
 * `chart_Dplus_Xt_presentation`, an isomorphism with the parameter-free

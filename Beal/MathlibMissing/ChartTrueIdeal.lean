@@ -438,12 +438,18 @@ theorem valuationOne_X_fourth_sub_X_not_mem_centre_sq :
     exact hxeq ▸ hxI2)
 
 /-- Injectivity of the true chart map. Equivalent to
-`ker chartModelEval = chartTrueIdeal`. Open. The source is the normal-form
-ring `𝔽₂[a,b][X,V] / (X²·(X + V²))` by `chartTrueIdeal_quotient_equiv_normal`.
-A class `A(V) + X·B(V) + X²·C(V)` is not yet shown to vanish in `D₊(Xt)`
-only when it is zero. `valuationOne_X_fourth_sub_X_not_mem_centre_sq` is the
-obstruction for the single class `X² + X·V²`: its numerator is `2·(X⁴ − X)`
-and `X⁴ − X ∉ I²`. -/
+`ker chartModelEval = chartTrueIdeal`. Open.
+
+`chartTrueIdeal_quotient_equiv_normal` identifies the source with
+`𝔽₂[a,b][X,V] / (X²·(X + V²))`, whose classes are represented by
+`A(V) + X·B(V) + X²·C(V)`. Vanishing in `D₊(Xt)` means that for some `m`
+the cleared Rees numerator lies in `2 · I^{d+m}`.
+`valuationOne_X_fourth_sub_X_not_mem_centre_sq` blocks only the class
+`X² + X·V²`. A general coefficient needs a stronger bound: if
+`α + Y·β ∈ I^k`, the 2-adic valuations of the coefficients of `α` and `β`
+are at least `⌈(k − i) / 2⌉` and `⌊(k − i) / 2⌋`. The class `X + V²` has
+degree-2 numerator `2·(X³ − 1)` on `Y² = X³ − 2`, and
+`X^m · (X³ − 1) ∉ I^{m+2}` is not the lemma `X⁴ − X ∉ I²`. -/
 def chartOfModelTrue_injective : Prop :=
   Function.Injective chartOfModelTrue
 

@@ -3194,7 +3194,9 @@ Closed in `ChartTrueIdeal.lean`:
 Open:
 * `chartOfModelTrue_injective`. Whether a normal form
   `A(V) + X·B(V) + X²·C(V)` vanishes in `D₊(Xt)` only when it is
-  zero is open. `X⁴ − X ∉ I²` blocks the single class `X² + X·V²`.
+  zero is open. `X⁴ − X ∉ I²` blocks only `X² + X·V²`. The missing
+  step is the coefficient bound for `α + Y·β ∈ I^k`. The class
+  `X + V²` has numerator `2·(X³ − 1)`, not `2·(X⁴ − X)`.
   `chart_Dplus_Xt_true_presentation` is the
   bijection with
   `𝔽₂[a,b][X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U + X² + X·V²)`.
