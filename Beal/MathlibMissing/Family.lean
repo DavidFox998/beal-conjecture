@@ -90,21 +90,26 @@ and that ring is `𝔽₂`. These are quotients of the polynomial model.
 The parameters `a, b` are not generators of
 `⟨X, 2t/Xt, Yt/Xt⟩` in the chart. `ideal_ABXYUV` is the larger
 ideal `⟨a, b, X, Y, 2t/Xt, Yt/Xt⟩`, and `Y` is redundant in it.
-The quotient of the chart by that ideal is not shown to be `𝔽₂`.
-`ap` and `bq` are numeral
-centre coordinates. The chart is not shown isomorphic to either
-model. The ring is nontrivial, so it has some prime.
-`(Xt)^n ≠ 0` is necessary for `D₊(Xt)` to be nonempty
-(`pow_ne_zero_of_basicOpen_ne_bot`) and is not sufficient.
-The quotient of the chart by `⟨X, Y, 2t/Xt, Yt/Xt⟩` is not shown
-to be `𝔽₂`, so that ideal is not shown to be maximal.
-`FromSpec.toFun` is not applied, so the chart prime is not a
-point of `Proj`.
+`reesNodeHom` sums the cusp leading coefficients of a Rees
+polynomial, with `a, b ↦ 0`. It sends `Xt` to `1`, `2t` and `Yt`
+to `0`, and kills the scalar ideal `(2)`. `chartNodeHom` is the
+induced map `chart_Dplus_Xt_ring →+* 𝔽₂`. It kills `a`, `b`,
+`X`, `Y`, `2t/Xt`, and `Yt/Xt`, so `ideal_ABXYUV` sits in the
+kernel. The map is surjective, the quotient by the kernel is
+`𝔽₂`, and the kernel is maximal. `chartNodePrime` is that prime.
+`familySpecialFibrePoint_XYUV` holds: the prime contains
+`⟨X, Y, 2t/Xt, Yt/Xt⟩` and the residue ring is `𝔽₂`.
+`familySpecialFibreProjPoint` is the image of that prime under
+`FromSpec.toFun`, a point of `D₊(Xt)` inside `Proj(Rees(I)/(2))`.
+The quotient of the chart by `ideal_ABXYUV` itself is not shown
+to be `𝔽₂`, because the kernel is not shown to equal that ideal.
+`chartOfModelBase` is not shown to be bijective. `ap` and `bq`
+are numeral centre coordinates. The chart is not shown
+isomorphic to either polynomial model.
 `chart_Dplus_Xt_basicOpen_nonempty_valuationOne`,
 `chart_Dplus_Xt_presentation`, `ideal_UV_maximal`,
-`ideal_XYUV_quotient_F2`, `ideal_ABXYUV_quotient_F2`,
-`familySpecialFibrePoint_Dplus_Xt`, and
-`familySpecialFibrePoint_XYUV` stay uninhabited.
+`ideal_XYUV_quotient_F2`, `ideal_ABXYUV_quotient_F2`, and
+`familySpecialFibrePoint_Dplus_Xt` stay uninhabited.
 `familySpecialFibrePoint` stays uninhabited. No `sorry` is used.
 -/
 
@@ -1143,7 +1148,7 @@ theorem valuationOne_specialXT_pow_ne_zero (n : ℕ) :
     zero_mul, one_pow] at hφ
   exact one_ne_zero hφ
 
-set_option maxHeartbeats 2000000
+set_option maxHeartbeats 8000000
 
 /-!
 ### The ratio `2t / Xt` is a nonzero nilpotent
@@ -1385,6 +1390,427 @@ theorem valuationOne_xt_pow_mul_two_not_special (n : ℕ) :
     (mem_reesAlgebra_iff I (p : Polynomial R)).mp p.property (n + 1)
   rw [hx] at hpow
   exact valuationOne_X_pow_not_mem_centre_succ n hpow
+
+/-!
+## Node evaluation of `Rees(I)` on `Y² = X³ + 2`
+
+`HomogeneousLocalization.Away` inverts powers of `Xt`. A ring hom out of
+that localization has to send `Xt` to a unit. The assignment
+`a, b, X, Y, 2t/Xt, Yt/Xt ↦ 0` does not extend to a graded map that
+kills `X` and inverts `Xt`, because the naive substitution `X ↦ 0`
+kills the denominator.
+
+The hom below is not that substitution. On a Rees polynomial
+`∑ rₙ tⁿ`, with `rₙ ∈ Iⁿ`, read the coefficient of `t^{2n}` in the
+cusp parametrization `X ↦ t²`, `Y ↦ t³` of `rₙ` modulo `2`, then send
+`a` and `b` to `0`. Call that scalar `vₙ(rₙ)`. The sum `∑ vₙ(rₙ)` is a
+ring hom `Rees(I) → 𝔽₂`. It sends `Xt ↦ 1`, `2t ↦ 0`, `Yt ↦ 0`, and a
+degree-zero element through the closed point `(a,b,X,Y) = (0,0,0,0)`.
+The scalar ideal `(2)` is killed, so the hom descends to `Rees(I)/(2)`.
+Since `Xt` maps to `1`, it extends through the localization at powers
+of `Xt` and restricts to the degree-zero chart.
+-/
+
+/-- Evaluate the surface at the node `(a, b, X, Y) = (0, 0, 0, 0)`. -/
+noncomputable def valuationOne_nodeEval :
+    surfaceRing valuationOneCurve →+* ZMod 2 :=
+  Ideal.Quotient.lift (Ideal.span {surfacePolynomial valuationOneCurve})
+    (numeralEval 0 0) (by
+      intro a ha
+      obtain ⟨c, rfl⟩ := Ideal.mem_span_singleton'.mp ha
+      rw [map_mul, surfaceResidueVanishes_valuationOne, mul_zero])
+
+/-- The cusp parametrization on the surface ring, modulo `2`. -/
+noncomputable def surfaceToCusp :
+    surfaceRing valuationOneCurve →+*
+      Polynomial (MvPolynomial (Fin 2) (ZMod 2)) :=
+  Ideal.Quotient.lift (Ideal.span {surfacePolynomial valuationOneCurve})
+    (cuspParam.comp surfacePolyModTwo) (by
+      intro a ha
+      obtain ⟨c, rfl⟩ := Ideal.mem_span_singleton'.mp ha
+      rw [map_mul]
+      simp only [RingHom.comp_apply]
+      rw [surfacePolyModTwo_surface, cuspParam_rel, mul_zero])
+
+private lemma surfaceToCusp_mk
+    (g : MvPolynomial (Fin 2) S) :
+    surfaceToCusp
+        (Ideal.Quotient.mk (Ideal.span {surfacePolynomial valuationOneCurve}) g) =
+      cuspParam (surfacePolyModTwo g) :=
+  Ideal.Quotient.lift_mk _ _ _
+
+private lemma surfaceToCusp_mem_pow (n : ℕ) {r : surfaceRing valuationOneCurve}
+    (hr : r ∈ numeralCentreIdeal valuationOneCurve 0 0 ^ n) :
+    surfaceToCusp r ∈
+      Ideal.span {(Polynomial.X : Polynomial (MvPolynomial (Fin 2) (ZMod 2))) ^ (2 * n)} := by
+  let ψ := Ideal.Quotient.mk (Ideal.span {surfacePolynomial valuationOneCurve})
+  have hsurj : Function.Surjective ψ := Ideal.Quotient.mk_surjective
+  rw [numeralCentreIdeal, valuationOne_centreSpan_zero, ← Ideal.map_pow] at hr
+  obtain ⟨g, hg, hgeq⟩ := (Ideal.mem_map_iff_of_surjective (f := ψ) hsurj).mp hr
+  rw [← hgeq, surfaceToCusp_mk]
+  have hgimg : surfacePolyModTwo g ∈
+      Ideal.span {MvPolynomial.X (0 : Fin 2), MvPolynomial.X 1} ^ n := by
+    have hmap := Ideal.mem_map_of_mem surfacePolyModTwo hg
+    rwa [Ideal.map_pow, surfacePolyModTwo_centreSpan] at hmap
+  rw [← cuspParam_pow_span_XY]
+  exact Ideal.mem_map_of_mem _ hgimg
+
+private lemma surfaceToCusp_coeff_lt {n k : ℕ} (hk : k < 2 * n)
+    {r : surfaceRing valuationOneCurve}
+    (hr : r ∈ numeralCentreIdeal valuationOneCurve 0 0 ^ n) :
+    (surfaceToCusp r).coeff k = 0 := by
+  have hmem := surfaceToCusp_mem_pow n hr
+  rw [Ideal.mem_span_singleton] at hmem
+  exact (Polynomial.X_pow_dvd_iff.mp hmem) k hk
+
+/-- Coefficient of `t^{2n}` after the cusp parametrization, with `a, b ↦ 0`. -/
+noncomputable def reesLeading (n : ℕ) (r : surfaceRing valuationOneCurve) : ZMod 2 :=
+  MvPolynomial.eval (fun _ : Fin 2 => (0 : ZMod 2)) ((surfaceToCusp r).coeff (2 * n))
+
+private lemma reesLeading_zero (n : ℕ) :
+    reesLeading n (0 : surfaceRing valuationOneCurve) = 0 := by
+  simp [reesLeading]
+
+private lemma reesLeading_add (n : ℕ) (x y : surfaceRing valuationOneCurve) :
+    reesLeading n (x + y) = reesLeading n x + reesLeading n y := by
+  simp [reesLeading, map_add, Polynomial.coeff_add]
+
+private noncomputable def reesLeadingAdd (n : ℕ) :
+    surfaceRing valuationOneCurve →+ ZMod 2 where
+  toFun := reesLeading n
+  map_zero' := reesLeading_zero n
+  map_add' := reesLeading_add n
+
+private lemma cusp_constantCoeff_eq_eval
+    (q : MvPolynomial (Fin 2) (MvPolynomial (Fin 2) (ZMod 2))) :
+    Polynomial.constantCoeff (cuspParam q) =
+      MvPolynomial.eval (fun _ : Fin 2 => (0 : MvPolynomial (Fin 2) (ZMod 2))) q := by
+  have hhom : Polynomial.constantCoeff.comp cuspParam =
+      MvPolynomial.eval (fun _ : Fin 2 => (0 : MvPolynomial (Fin 2) (ZMod 2))) := by
+    apply MvPolynomial.ringHom_ext
+    · intro a
+      simp [cuspParam, Polynomial.constantCoeff_apply, Polynomial.coeff_C]
+    · intro i
+      have hi : i = 0 ∨ i = 1 := by
+        fin_cases i
+        · exact Or.inl (Fin.ext rfl)
+        · exact Or.inr (Fin.ext rfl)
+      rcases hi with rfl | rfl
+      · rw [RingHom.comp_apply, cuspParam_X]
+        simp [Polynomial.constantCoeff_apply, Polynomial.coeff_X_pow, MvPolynomial.eval_X]
+      · rw [RingHom.comp_apply, cuspParam_Y]
+        simp [Polynomial.constantCoeff_apply, Polynomial.coeff_X_pow, MvPolynomial.eval_X]
+  simpa using DFunLike.congr_fun hhom q
+
+private lemma coeffMap_eval_eq_coeffToResidue :
+    (MvPolynomial.eval (fun _ : Fin 2 => (0 : ZMod 2))).comp
+        (MvPolynomial.map (PadicInt.toZMod : ℤ_[2] →+* ZMod 2)) =
+      coeffToResidue := by
+  apply MvPolynomial.ringHom_ext
+  · intro z
+    simp [coeffToResidue, MvPolynomial.eval_C]
+  · intro i
+    simp [coeffToResidue]
+
+private lemma reesLeading_zero_eq (r : surfaceRing valuationOneCurve) :
+    reesLeading 0 r = valuationOne_nodeEval r := by
+  obtain ⟨g, rfl⟩ := Ideal.Quotient.mk_surjective r
+  rw [valuationOne_nodeEval, Ideal.Quotient.lift_mk, reesLeading, Nat.mul_zero,
+    surfaceToCusp_mk]
+  have hcoeff :
+      (cuspParam (surfacePolyModTwo g)).coeff 0 =
+        Polynomial.constantCoeff (cuspParam (surfacePolyModTwo g)) :=
+    (Polynomial.constantCoeff_apply _).symm
+  rw [hcoeff, cusp_constantCoeff_eq_eval, surfacePolyModTwo, MvPolynomial.eval_map,
+    MvPolynomial.eval_eval₂]
+  have hvar :
+      (fun s : Fin 2 =>
+          MvPolynomial.eval (fun _ : Fin 2 => (0 : ZMod 2))
+            ((fun _ : Fin 2 => (0 : MvPolynomial (Fin 2) (ZMod 2))) s)) =
+        fun _ : Fin 2 => (0 : ZMod 2) := by
+    funext
+    simp
+  rw [hvar, coeffMap_eval_eq_coeffToResidue, numeralEval]
+  have hnodeFun :
+      (fun i : Fin 2 => if i = 0 then ((0 : ℕ) : ZMod 2) else ((0 : ℕ) : ZMod 2)) =
+        fun _ : Fin 2 => (0 : ZMod 2) := by
+    funext i
+    split_ifs <;> rfl
+  rw [hnodeFun, ← MvPolynomial.coe_eval₂Hom]
+
+private lemma reesLeading_mul {i j : ℕ} {a b : surfaceRing valuationOneCurve}
+    (ha : a ∈ numeralCentreIdeal valuationOneCurve 0 0 ^ i)
+    (hb : b ∈ numeralCentreIdeal valuationOneCurve 0 0 ^ j) :
+    reesLeading (i + j) (a * b) = reesLeading i a * reesLeading j b := by
+  have hdeg : 2 * (i + j) = 2 * i + 2 * j := by ring
+  rw [reesLeading, reesLeading, reesLeading, map_mul, hdeg]
+  have hcoeff :
+      (surfaceToCusp a * surfaceToCusp b).coeff (2 * i + 2 * j) =
+        (surfaceToCusp a).coeff (2 * i) * (surfaceToCusp b).coeff (2 * j) := by
+    rw [Polynomial.coeff_mul]
+    refine Finset.sum_eq_single (2 * i, 2 * j) ?_ ?_
+    · intro x hx hxne
+      have hxsum : x.1 + x.2 = 2 * i + 2 * j := Finset.mem_antidiagonal.mp hx
+      by_cases hlt : x.1 < 2 * i
+      · rw [surfaceToCusp_coeff_lt hlt ha, zero_mul]
+      · have hne : x.1 ≠ 2 * i := by
+          intro heq
+          apply hxne
+          have hsum : 2 * i + x.2 = 2 * i + 2 * j := by simpa [heq] using hxsum
+          have h2 : x.2 = 2 * j := Nat.add_left_cancel hsum
+          exact Prod.ext heq h2
+        have hgt : 2 * i < x.1 :=
+          Nat.lt_of_le_of_ne (Nat.not_lt.mp hlt) (Ne.symm hne)
+        have h2lt : x.2 < 2 * j :=
+          Nat.lt_of_add_lt_add_left <|
+            calc
+              2 * i + x.2 < x.1 + x.2 := Nat.add_lt_add_right hgt x.2
+              _ = 2 * i + 2 * j := by rw [← hxsum]
+        rw [surfaceToCusp_coeff_lt h2lt hb, mul_zero]
+    · intro hnot
+      exact (hnot (Finset.mem_antidiagonal.mpr rfl)).elim
+  rw [hcoeff, map_mul]
+
+private lemma reesLeading_X0 :
+    reesLeading 1 (surfaceNumeralX valuationOneCurve 0) = 1 := by
+  have hX : surfaceNumeralX valuationOneCurve 0 =
+      Ideal.Quotient.mk (Ideal.span {surfacePolynomial valuationOneCurve})
+        (MvPolynomial.X 0) := by
+    simp [surfaceNumeralX, Nat.cast_zero, map_zero, sub_zero]
+  rw [reesLeading, hX, surfaceToCusp_mk, surfacePolyModTwo, MvPolynomial.map_X, cuspParam_X]
+  simp [Polynomial.coeff_X_pow]
+
+private lemma reesLeading_two :
+    reesLeading 1 (2 : surfaceRing valuationOneCurve) = 0 := by
+  rw [reesLeading, two_eq_quotient_mk, surfaceToCusp_mk]
+  have h2 : surfacePolyModTwo (MvPolynomial.C (MvPolynomial.C (2 : ℤ_[2]))) = 0 := by
+    simp [surfacePolyModTwo, residue_kills_two, MvPolynomial.C_0]
+  simp [h2]
+
+private lemma reesLeading_Y0 :
+    reesLeading 1 (surfaceNumeralY valuationOneCurve 0) = 0 := by
+  have hY : surfaceNumeralY valuationOneCurve 0 =
+      Ideal.Quotient.mk (Ideal.span {surfacePolynomial valuationOneCurve})
+        (MvPolynomial.X 1) := by
+    simp [surfaceNumeralY, Nat.cast_zero, map_zero, sub_zero]
+  rw [reesLeading, hY, surfaceToCusp_mk, surfacePolyModTwo, MvPolynomial.map_X, cuspParam_Y]
+  simp [Polynomial.coeff_X_pow, show (2 : ℕ) ≠ 3 by decide]
+
+/-- Sum of the cusp leading coefficients of a Rees polynomial. -/
+noncomputable def reesNodeFun
+    (p : reesAlgebra (numeralCentreIdeal valuationOneCurve 0 0)) : ZMod 2 :=
+  (p : Polynomial (surfaceRing valuationOneCurve)).sum fun n r => reesLeading n r
+
+private noncomputable def leadPoly
+    (p : reesAlgebra (numeralCentreIdeal valuationOneCurve 0 0)) :
+    Polynomial (ZMod 2) :=
+  (p : Polynomial (surfaceRing valuationOneCurve)).sum fun n r =>
+    Polynomial.C (reesLeading n r) * Polynomial.X ^ n
+
+private lemma leadPoly_coeff
+    (p : reesAlgebra (numeralCentreIdeal valuationOneCurve 0 0)) (k : ℕ) :
+    (leadPoly p).coeff k =
+      reesLeading k ((p : Polynomial (surfaceRing valuationOneCurve)).coeff k) := by
+  classical
+  rw [leadPoly, Polynomial.coeff_sum]
+  simp_rw [Polynomial.coeff_C_mul_X_pow]
+  by_cases hk : k ∈ (p : Polynomial (surfaceRing valuationOneCurve)).support
+  · rw [Polynomial.sum, Finset.sum_eq_single k]
+    · rw [if_pos rfl]
+    · intro b _hb hbk
+      rw [if_neg (Ne.symm hbk)]
+    · intro h
+      exact (h hk).elim
+  · rw [Polynomial.not_mem_support_iff.mp hk, reesLeading_zero]
+    rw [Polynomial.sum]
+    apply Finset.sum_eq_zero
+    intro b hb
+    have hbk : k ≠ b := by
+      intro h
+      apply hk
+      simpa [h] using hb
+    rw [if_neg hbk]
+
+private lemma leadPoly_mul
+    (p q : reesAlgebra (numeralCentreIdeal valuationOneCurve 0 0)) :
+    leadPoly (p * q) = leadPoly p * leadPoly q := by
+  classical
+  ext k
+  rw [leadPoly_coeff, Subalgebra.coe_mul, Polynomial.coeff_mul]
+  rw [show reesLeading k = ⇑(reesLeadingAdd k) from rfl, map_sum (reesLeadingAdd k)]
+  rw [Polynomial.coeff_mul]
+  refine Finset.sum_congr rfl ?_
+  intro ij hij
+  have hpair : ij.1 + ij.2 = k := Finset.mem_antidiagonal.mp hij
+  have ha :
+      (p : Polynomial (surfaceRing valuationOneCurve)).coeff ij.1 ∈
+        numeralCentreIdeal valuationOneCurve 0 0 ^ ij.1 :=
+    (mem_reesAlgebra_iff _ _).mp p.property ij.1
+  have hb :
+      (q : Polynomial (surfaceRing valuationOneCurve)).coeff ij.2 ∈
+        numeralCentreIdeal valuationOneCurve 0 0 ^ ij.2 :=
+    (mem_reesAlgebra_iff _ _).mp q.property ij.2
+  rw [← hpair, leadPoly_coeff, leadPoly_coeff]
+  exact reesLeading_mul ha hb
+
+private lemma reesNodeFun_eq_eval
+    (p : reesAlgebra (numeralCentreIdeal valuationOneCurve 0 0)) :
+    reesNodeFun p = Polynomial.eval (1 : ZMod 2) (leadPoly p) := by
+  simp only [reesNodeFun, leadPoly, Polynomial.sum]
+  rw [Polynomial.eval_finset_sum]
+  refine Finset.sum_congr rfl ?_
+  intro n _hn
+  simp [Polynomial.eval_mul, Polynomial.eval_C, Polynomial.eval_X, Polynomial.eval_pow, one_pow]
+
+private lemma reesNodeFun_mul
+    (p q : reesAlgebra (numeralCentreIdeal valuationOneCurve 0 0)) :
+    reesNodeFun (p * q) = reesNodeFun p * reesNodeFun q := by
+  rw [reesNodeFun_eq_eval, reesNodeFun_eq_eval, reesNodeFun_eq_eval, leadPoly_mul,
+    Polynomial.eval_mul]
+
+private lemma leadPoly_add
+    (p q : reesAlgebra (numeralCentreIdeal valuationOneCurve 0 0)) :
+    leadPoly (p + q) = leadPoly p + leadPoly q := by
+  ext k
+  rw [leadPoly_coeff, Subalgebra.coe_add, Polynomial.coeff_add, reesLeading_add,
+    Polynomial.coeff_add, leadPoly_coeff, leadPoly_coeff]
+
+private lemma reesNodeFun_add
+    (p q : reesAlgebra (numeralCentreIdeal valuationOneCurve 0 0)) :
+    reesNodeFun (p + q) = reesNodeFun p + reesNodeFun q := by
+  rw [reesNodeFun_eq_eval, reesNodeFun_eq_eval, reesNodeFun_eq_eval, leadPoly_add,
+    Polynomial.eval_add]
+
+private lemma reesNodeFun_one :
+    reesNodeFun (1 : reesAlgebra (numeralCentreIdeal valuationOneCurve 0 0)) = 1 := by
+  rw [reesNodeFun, Subalgebra.coe_one, ← Polynomial.C_1,
+    Polynomial.sum_C_index (reesLeading_zero 0), reesLeading_zero_eq, map_one]
+
+/-- `Rees(I) → 𝔽₂` at the node. `Xt` goes to `1`. -/
+noncomputable def reesNodeHom :
+    reesAlgebra (numeralCentreIdeal valuationOneCurve 0 0) →+* ZMod 2 where
+  toFun := reesNodeFun
+  map_one' := reesNodeFun_one
+  map_mul' := reesNodeFun_mul
+  map_zero' := by simp [reesNodeFun]
+  map_add' := reesNodeFun_add
+
+private lemma reesNodeHom_algebraMap (r : surfaceRing valuationOneCurve) :
+    reesNodeHom
+        (algebraMap (surfaceRing valuationOneCurve)
+          (reesAlgebra (numeralCentreIdeal valuationOneCurve 0 0)) r) =
+      valuationOne_nodeEval r := by
+  have hcoe :
+      ((algebraMap (surfaceRing valuationOneCurve)
+            (reesAlgebra (numeralCentreIdeal valuationOneCurve 0 0)) r :
+          reesAlgebra (numeralCentreIdeal valuationOneCurve 0 0)) :
+          Polynomial (surfaceRing valuationOneCurve)) =
+        Polynomial.C r := by
+    rw [Subalgebra.coe_algebraMap, Polynomial.algebraMap_eq]
+  rw [show reesNodeHom (algebraMap _ _ r) = reesNodeFun (algebraMap _ _ r) from rfl,
+    reesNodeFun, hcoe, Polynomial.sum_C_index (reesLeading_zero 0), reesLeading_zero_eq]
+
+private lemma reesNodeHom_const (r : surfaceRing valuationOneCurve) :
+    reesNodeHom (numeralReesConst valuationOneCurve 0 0 r) =
+      valuationOne_nodeEval r := by
+  have hcoe :
+      ((numeralReesConst valuationOneCurve 0 0 r :
+          reesAlgebra (numeralCentreIdeal valuationOneCurve 0 0)) :
+          Polynomial (surfaceRing valuationOneCurve)) =
+        Polynomial.monomial 0 r := by
+    simp [numeralReesConst, centreReesMonomial]
+  rw [show reesNodeHom (numeralReesConst valuationOneCurve 0 0 r) =
+      reesNodeFun (numeralReesConst valuationOneCurve 0 0 r) from rfl, reesNodeFun, hcoe,
+    Polynomial.sum_monomial_index _ _ (reesLeading_zero 0), reesLeading_zero_eq]
+
+private lemma reesNodeHom_XT :
+    reesNodeHom (numeralReesXT valuationOneCurve 0 0) = 1 := by
+  have hcoe :
+      ((numeralReesXT valuationOneCurve 0 0 :
+          reesAlgebra (numeralCentreIdeal valuationOneCurve 0 0)) :
+          Polynomial (surfaceRing valuationOneCurve)) =
+        Polynomial.monomial 1 (surfaceNumeralX valuationOneCurve 0) := by
+    simp [numeralReesXT, centreReesMonomial, surfaceNumeralX, Nat.cast_zero, map_zero, sub_zero]
+  rw [show reesNodeHom (numeralReesXT valuationOneCurve 0 0) =
+      reesNodeFun (numeralReesXT valuationOneCurve 0 0) from rfl, reesNodeFun, hcoe,
+    Polynomial.sum_monomial_index _ _ (reesLeading_zero 1), reesLeading_X0]
+
+private lemma reesNodeHom_two :
+    reesNodeHom (numeralReesTwo valuationOneCurve 0 0) = 0 := by
+  have hcoe :
+      ((numeralReesTwo valuationOneCurve 0 0 :
+          reesAlgebra (numeralCentreIdeal valuationOneCurve 0 0)) :
+          Polynomial (surfaceRing valuationOneCurve)) =
+        Polynomial.monomial 1 (2 : surfaceRing valuationOneCurve) := by
+    simp [numeralReesTwo, centreReesMonomial]
+  rw [show reesNodeHom (numeralReesTwo valuationOneCurve 0 0) =
+      reesNodeFun (numeralReesTwo valuationOneCurve 0 0) from rfl, reesNodeFun, hcoe,
+    Polynomial.sum_monomial_index _ _ (reesLeading_zero 1), reesLeading_two]
+
+private lemma reesNodeHom_YT :
+    reesNodeHom (numeralReesYT valuationOneCurve 0 0) = 0 := by
+  have hcoe :
+      ((numeralReesYT valuationOneCurve 0 0 :
+          reesAlgebra (numeralCentreIdeal valuationOneCurve 0 0)) :
+          Polynomial (surfaceRing valuationOneCurve)) =
+        Polynomial.monomial 1 (surfaceNumeralY valuationOneCurve 0) := by
+    simp [numeralReesYT, centreReesMonomial, surfaceNumeralY, Nat.cast_zero, map_zero, sub_zero]
+  rw [show reesNodeHom (numeralReesYT valuationOneCurve 0 0) =
+      reesNodeFun (numeralReesYT valuationOneCurve 0 0) from rfl, reesNodeFun, hcoe,
+    Polynomial.sum_monomial_index _ _ (reesLeading_zero 1), reesLeading_Y0]
+
+private lemma reesNodeHom_mem_special
+    {a : reesAlgebra (numeralCentreIdeal valuationOneCurve 0 0)}
+    (ha : a ∈ numeralReesSpecialIdeal valuationOneCurve 0 0) :
+    reesNodeHom a = 0 := by
+  obtain ⟨c, rfl⟩ := Ideal.mem_span_singleton'.mp ha
+  rw [map_mul, reesNodeHom_algebraMap, valuationOne_nodeEval, two_eq_quotient_mk,
+    Ideal.Quotient.lift_mk, numeralEval_two, mul_zero]
+
+/-- The node hom descends to `Rees(I)/(2)`. -/
+noncomputable def reesSpecialNodeHom :
+    reesAlgebra (numeralCentreIdeal valuationOneCurve 0 0) ⧸
+        numeralReesSpecialIdeal valuationOneCurve 0 0 →+* ZMod 2 :=
+  Ideal.Quotient.lift (numeralReesSpecialIdeal valuationOneCurve 0 0) reesNodeHom
+    (fun _a ha => reesNodeHom_mem_special ha)
+
+private lemma reesSpecialNodeHom_XT :
+    reesSpecialNodeHom
+        (Ideal.Quotient.mk (numeralReesSpecialIdeal valuationOneCurve 0 0)
+          (numeralReesXT valuationOneCurve 0 0)) = 1 := by
+  rw [reesSpecialNodeHom, Ideal.Quotient.lift_mk, reesNodeHom_XT]
+
+private lemma reesSpecialNodeHom_two :
+    reesSpecialNodeHom
+        (Ideal.Quotient.mk (numeralReesSpecialIdeal valuationOneCurve 0 0)
+          (numeralReesTwo valuationOneCurve 0 0)) = 0 := by
+  rw [reesSpecialNodeHom, Ideal.Quotient.lift_mk, reesNodeHom_two]
+
+private lemma reesSpecialNodeHom_YT :
+    reesSpecialNodeHom
+        (Ideal.Quotient.mk (numeralReesSpecialIdeal valuationOneCurve 0 0)
+          (numeralReesYT valuationOneCurve 0 0)) = 0 := by
+  rw [reesSpecialNodeHom, Ideal.Quotient.lift_mk, reesNodeHom_YT]
+
+private lemma reesSpecialNodeHom_const (r : surfaceRing valuationOneCurve) :
+    reesSpecialNodeHom
+        (Ideal.Quotient.mk (numeralReesSpecialIdeal valuationOneCurve 0 0)
+          (numeralReesConst valuationOneCurve 0 0 r)) =
+      valuationOne_nodeEval r := by
+  rw [reesSpecialNodeHom, Ideal.Quotient.lift_mk, reesNodeHom_const]
+
+private lemma chartNodeDenomUnit :
+    ∀ y : Submonoid.powers
+        (Ideal.Quotient.mk (numeralReesSpecialIdeal valuationOneCurve 0 0)
+          (numeralReesXT valuationOneCurve 0 0)),
+      IsUnit (reesSpecialNodeHom y) := by
+  intro y
+  obtain ⟨k, hk⟩ :=
+    (Submonoid.mem_powers_iff (↑y)
+      (Ideal.Quotient.mk (numeralReesSpecialIdeal valuationOneCurve 0 0)
+        (numeralReesXT valuationOneCurve 0 0))).mp y.property
+  rw [← hk, map_pow, reesSpecialNodeHom_XT, one_pow]
+  exact isUnit_one
 
 /-- The chart `D₊(Xt)` does not collapse: no power of the denominator
 is zero, so `0` and `1` stay distinct in the degree-zero localization. -/
@@ -2074,9 +2500,10 @@ theorem pow_ne_zero_of_basicOpen_ne_bot
 /-- OPEN. The basic open `D₊(Xt)` is nonempty on this curve.
 `valuationOne_specialXT_pow_ne_zero` gives `(Xt)^n ≠ 0`.
 `pow_ne_zero_of_basicOpen_ne_bot` says that is necessary for
-nonemptiness, not sufficient. `FromSpec.toFun` expects a point of
-the carrier of `Spec`, which `Spec.topObj_forget` identifies with
-`PrimeSpectrum`. The chart prime was not passed to that function. -/
+nonemptiness, not sufficient. `familySpecialFibreProjPoint` is one
+point of the restricted space `Proj | D₊(Xt)`. This `Prop` asks for
+an element of `ProjectiveSpectrum.basicOpen` itself, and that
+carrier is not identified here. -/
 def chart_Dplus_Xt_basicOpen_nonempty_valuationOne : Prop := by
   let I := numeralCentreIdeal valuationOneCurve 0 0
   letI : GradedAlgebra (centreReesComponent I) := centreReesGrading I
@@ -2391,6 +2818,289 @@ theorem ideal_XYUV_le_ideal_ABXYUV
   · exact Ideal.subset_span (by simp)
   · exact Ideal.subset_span (by simp)
   · exact Ideal.subset_span (by simp)
+
+private lemma coeffModTwoEquiv_mk (s : S) :
+    coeffModTwoEquiv (Ideal.Quotient.mk (Ideal.span {MvPolynomial.C (2 : ℤ_[2])}) s) =
+      MvPolynomial.map (PadicInt.toZMod : ℤ_[2] →+* ZMod 2) s := by
+  rw [coeffModTwoEquiv, RingEquiv.trans_apply, Ideal.quotEquivOfEq_mk,
+    RingHom.quotientKerEquivOfSurjective, RingHom.quotientKerEquivOfRightInverse.apply,
+    RingHom.kerLift_mk]
+
+/-- Powers of `Xt` in `Rees(I)/(2)` satisfy the Ore condition because the
+quotient is commutative. Instance search does not find this by itself. -/
+private noncomputable instance chartNodeOreSet :
+    OreLocalization.OreSet (Submonoid.powers
+      (Ideal.Quotient.mk (numeralReesSpecialIdeal valuationOneCurve 0 0)
+        (numeralReesXT valuationOneCurve 0 0))) :=
+  OreLocalization.oreSetComm
+    (R := reesAlgebra (numeralCentreIdeal valuationOneCurve 0 0) ⧸
+      numeralReesSpecialIdeal valuationOneCurve 0 0) _
+
+/-- The localization of `Rees(I)/(2)` at powers of `Xt` is a commutative ring. -/
+private noncomputable instance chartNodeLocCommRing :
+    CommRing (Localization (Submonoid.powers
+      (Ideal.Quotient.mk (numeralReesSpecialIdeal valuationOneCurve 0 0)
+        (numeralReesXT valuationOneCurve 0 0)))) :=
+  OreLocalization.instCommRing
+    (R := reesAlgebra (numeralCentreIdeal valuationOneCurve 0 0) ⧸
+      numeralReesSpecialIdeal valuationOneCurve 0 0)
+    (S := Submonoid.powers
+      (Ideal.Quotient.mk (numeralReesSpecialIdeal valuationOneCurve 0 0)
+        (numeralReesXT valuationOneCurve 0 0)))
+
+/-- `Rees(I)/(2)` is an algebra over the localization at powers of `Xt`. -/
+private noncomputable instance chartNodeLocAlgebra :
+    Algebra
+      (reesAlgebra (numeralCentreIdeal valuationOneCurve 0 0) ⧸
+        numeralReesSpecialIdeal valuationOneCurve 0 0)
+      (Localization (Submonoid.powers
+        (Ideal.Quotient.mk (numeralReesSpecialIdeal valuationOneCurve 0 0)
+          (numeralReesXT valuationOneCurve 0 0)))) :=
+  OreLocalization.instAlgebra
+    (R₀ := reesAlgebra (numeralCentreIdeal valuationOneCurve 0 0) ⧸
+      numeralReesSpecialIdeal valuationOneCurve 0 0)
+    (R := reesAlgebra (numeralCentreIdeal valuationOneCurve 0 0) ⧸
+      numeralReesSpecialIdeal valuationOneCurve 0 0)
+    (S := Submonoid.powers
+      (Ideal.Quotient.mk (numeralReesSpecialIdeal valuationOneCurve 0 0)
+        (numeralReesXT valuationOneCurve 0 0)))
+
+/-- `Xt` maps to `1` in `𝔽₂`, so the node hom of `Rees(I)/(2)` extends to
+the localization at powers of `Xt`. -/
+private noncomputable def chartNodeLiftHom :
+    Localization (Submonoid.powers
+      (Ideal.Quotient.mk (numeralReesSpecialIdeal valuationOneCurve 0 0)
+        (numeralReesXT valuationOneCurve 0 0))) →+* ZMod 2 :=
+  IsLocalization.lift
+    (M := Submonoid.powers
+      (Ideal.Quotient.mk (numeralReesSpecialIdeal valuationOneCurve 0 0)
+        (numeralReesXT valuationOneCurve 0 0)))
+    (S := Localization (Submonoid.powers
+      (Ideal.Quotient.mk (numeralReesSpecialIdeal valuationOneCurve 0 0)
+        (numeralReesXT valuationOneCurve 0 0))))
+    chartNodeDenomUnit
+
+/-- Evaluate a degree-zero fraction on `D₊(Xt)` by the node hom of its
+numerator and denominator in the localization away from `Xt`. -/
+private noncomputable def chartNodeToFun
+    (z : chart_Dplus_Xt_ring valuationOneCurve 0 0) : ZMod 2 :=
+  chartNodeLiftHom (HomogeneousLocalization.val z)
+
+private lemma chartNodeToFun_val (z : chart_Dplus_Xt_ring valuationOneCurve 0 0) :
+    chartNodeToFun z = chartNodeLiftHom (HomogeneousLocalization.val z) := rfl
+
+private lemma chartNodeToFun_one : chartNodeToFun 1 = 1 := by
+  let I := numeralCentreIdeal valuationOneCurve 0 0
+  letI : GradedAlgebra (centreReesComponent I) := centreReesGrading I
+  let J := numeralReesSpecialIdeal valuationOneCurve 0 0
+  have hJ : J.IsHomogeneous (centreReesComponent I) :=
+    numeralReesSpecialIdeal_isHomogeneous valuationOneCurve 0 0
+  letI : GradedAlgebra (homogeneousQuotientComponent (centreReesComponent I) J) :=
+    homogeneousQuotientGrading (centreReesComponent I) J hJ
+  rw [chartNodeToFun_val]
+  unfold chart_Dplus_Xt_ring
+  rw [HomogeneousLocalization.val_one]
+  exact map_one chartNodeLiftHom
+
+private lemma chartNodeToFun_mul (z w : chart_Dplus_Xt_ring valuationOneCurve 0 0) :
+    chartNodeToFun (z * w) = chartNodeToFun z * chartNodeToFun w := by
+  let I := numeralCentreIdeal valuationOneCurve 0 0
+  letI : GradedAlgebra (centreReesComponent I) := centreReesGrading I
+  let J := numeralReesSpecialIdeal valuationOneCurve 0 0
+  have hJ : J.IsHomogeneous (centreReesComponent I) :=
+    numeralReesSpecialIdeal_isHomogeneous valuationOneCurve 0 0
+  letI : GradedAlgebra (homogeneousQuotientComponent (centreReesComponent I) J) :=
+    homogeneousQuotientGrading (centreReesComponent I) J hJ
+  rw [chartNodeToFun_val, chartNodeToFun_val, chartNodeToFun_val]
+  unfold chart_Dplus_Xt_ring
+  rw [HomogeneousLocalization.val_mul]
+  exact map_mul chartNodeLiftHom _ _
+
+private lemma chartNodeToFun_add (z w : chart_Dplus_Xt_ring valuationOneCurve 0 0) :
+    chartNodeToFun (z + w) = chartNodeToFun z + chartNodeToFun w := by
+  let I := numeralCentreIdeal valuationOneCurve 0 0
+  letI : GradedAlgebra (centreReesComponent I) := centreReesGrading I
+  let J := numeralReesSpecialIdeal valuationOneCurve 0 0
+  have hJ : J.IsHomogeneous (centreReesComponent I) :=
+    numeralReesSpecialIdeal_isHomogeneous valuationOneCurve 0 0
+  letI : GradedAlgebra (homogeneousQuotientComponent (centreReesComponent I) J) :=
+    homogeneousQuotientGrading (centreReesComponent I) J hJ
+  rw [chartNodeToFun_val, chartNodeToFun_val, chartNodeToFun_val]
+  unfold chart_Dplus_Xt_ring
+  rw [HomogeneousLocalization.val_add]
+  exact map_add chartNodeLiftHom _ _
+
+private noncomputable def chartNodeMonoidHom :
+    chart_Dplus_Xt_ring valuationOneCurve 0 0 →* ZMod 2 where
+  toFun := chartNodeToFun
+  map_one' := chartNodeToFun_one
+  map_mul' := chartNodeToFun_mul
+
+/-- `Xt` maps to `1` in `𝔽₂`, so the node hom of `Rees(I)/(2)` extends to
+the localization at powers of `Xt` and restricts to the degree-zero chart
+`D₊(Xt)`. -/
+noncomputable def chartNodeHom :
+    chart_Dplus_Xt_ring valuationOneCurve 0 0 →+* ZMod 2 :=
+  RingHom.mk' chartNodeMonoidHom chartNodeToFun_add
+
+private lemma chartNodeHom_apply (z : chart_Dplus_Xt_ring valuationOneCurve 0 0) :
+    chartNodeHom z = chartNodeToFun z := rfl
+
+private lemma chartNodeHom_const (r : surfaceRing valuationOneCurve) :
+    chartNodeHom (chartConst valuationOneCurve 0 0 r) = valuationOne_nodeEval r := by
+  rw [chartNodeHom_apply, chartNodeToFun_val, chartConst_val]
+  unfold chartNodeLiftHom
+  rw (config := { transparency := .default }) [IsLocalization.lift_eq]
+  exact reesSpecialNodeHom_const r
+
+private lemma nodeEval_surfaceX :
+    valuationOne_nodeEval (surfaceNumeralX valuationOneCurve 0) = 0 := by
+  rw [valuationOne_nodeEval, surfaceNumeralX, Ideal.Quotient.lift_mk]
+  simp [Nat.cast_zero, map_zero, sub_zero, numeralEval, MvPolynomial.eval₂Hom_X']
+
+private lemma nodeEval_surfaceY :
+    valuationOne_nodeEval (surfaceNumeralY valuationOneCurve 0) = 0 := by
+  rw [valuationOne_nodeEval, surfaceNumeralY, Ideal.Quotient.lift_mk]
+  simp [Nat.cast_zero, map_zero, sub_zero, numeralEval, MvPolynomial.eval₂Hom_X']
+
+private lemma chartNodeHom_X :
+    chartNodeHom (chart_X valuationOneCurve 0 0) = 0 := by
+  have hX : chart_X valuationOneCurve 0 0 =
+      chartConst valuationOneCurve 0 0 (surfaceNumeralX valuationOneCurve 0) := by
+    let I := numeralCentreIdeal valuationOneCurve 0 0
+    letI : GradedAlgebra (centreReesComponent I) := centreReesGrading I
+    let J := numeralReesSpecialIdeal valuationOneCurve 0 0
+    have hJ : J.IsHomogeneous (centreReesComponent I) :=
+      numeralReesSpecialIdeal_isHomogeneous valuationOneCurve 0 0
+    letI : GradedAlgebra (homogeneousQuotientComponent (centreReesComponent I) J) :=
+      homogeneousQuotientGrading (centreReesComponent I) J hJ
+    let f := Ideal.Quotient.mk J (numeralReesXT valuationOneCurve 0 0)
+    apply HomogeneousLocalization.val_injective (Submonoid.powers f)
+    rw [chartConst_val]
+    simp [chart_X, HomogeneousLocalization.val_mk, Localization.mk_eq_mk']
+    congr
+  rw [hX, chartNodeHom_const, nodeEval_surfaceX]
+
+private lemma chartNodeHom_Y :
+    chartNodeHom (chart_Y valuationOneCurve 0 0) = 0 := by
+  have hY : chart_Y valuationOneCurve 0 0 =
+      chartConst valuationOneCurve 0 0 (surfaceNumeralY valuationOneCurve 0) := by
+    let I := numeralCentreIdeal valuationOneCurve 0 0
+    letI : GradedAlgebra (centreReesComponent I) := centreReesGrading I
+    let J := numeralReesSpecialIdeal valuationOneCurve 0 0
+    have hJ : J.IsHomogeneous (centreReesComponent I) :=
+      numeralReesSpecialIdeal_isHomogeneous valuationOneCurve 0 0
+    letI : GradedAlgebra (homogeneousQuotientComponent (centreReesComponent I) J) :=
+      homogeneousQuotientGrading (centreReesComponent I) J hJ
+    let f := Ideal.Quotient.mk J (numeralReesXT valuationOneCurve 0 0)
+    apply HomogeneousLocalization.val_injective (Submonoid.powers f)
+    rw [chartConst_val]
+    simp [chart_Y, HomogeneousLocalization.val_mk, Localization.mk_eq_mk']
+    congr
+  rw [hY, chartNodeHom_const, nodeEval_surfaceY]
+
+private lemma chartNodeHom_U :
+    chartNodeHom (chart_two_over_X valuationOneCurve 0 0) = 0 := by
+  rw [chartNodeHom_apply, chartNodeToFun_val]
+  unfold chartNodeLiftHom chart_two_over_X
+  rw [HomogeneousLocalization.val_mk]
+  let M := Submonoid.powers
+    (Ideal.Quotient.mk (numeralReesSpecialIdeal valuationOneCurve 0 0)
+      (numeralReesXT valuationOneCurve 0 0))
+  let x := Ideal.Quotient.mk (numeralReesSpecialIdeal valuationOneCurve 0 0)
+    (numeralReesTwo valuationOneCurve 0 0)
+  let y : M := ⟨Ideal.Quotient.mk (numeralReesSpecialIdeal valuationOneCurve 0 0)
+    (numeralReesXT valuationOneCurve 0 0), ⟨1, pow_one _⟩⟩
+  refine (congrArg (IsLocalization.lift (M := M) (S := Localization M) chartNodeDenomUnit)
+      (Localization.mk_eq_mk'_apply x y)).trans ?_
+  refine (IsLocalization.lift_mk' (M := M) (S := Localization M) chartNodeDenomUnit x y).trans ?_
+  rw [reesSpecialNodeHom_two, zero_mul]
+
+private lemma chartNodeHom_V :
+    chartNodeHom (chart_Y_over_X valuationOneCurve 0 0) = 0 := by
+  rw [chartNodeHom_apply, chartNodeToFun_val]
+  unfold chartNodeLiftHom chart_Y_over_X
+  rw [HomogeneousLocalization.val_mk]
+  let M := Submonoid.powers
+    (Ideal.Quotient.mk (numeralReesSpecialIdeal valuationOneCurve 0 0)
+      (numeralReesXT valuationOneCurve 0 0))
+  let x := Ideal.Quotient.mk (numeralReesSpecialIdeal valuationOneCurve 0 0)
+    (numeralReesYT valuationOneCurve 0 0)
+  let y : M := ⟨Ideal.Quotient.mk (numeralReesSpecialIdeal valuationOneCurve 0 0)
+    (numeralReesXT valuationOneCurve 0 0), ⟨1, pow_one _⟩⟩
+  refine (congrArg (IsLocalization.lift (M := M) (S := Localization M) chartNodeDenomUnit)
+      (Localization.mk_eq_mk'_apply x y)).trans ?_
+  refine (IsLocalization.lift_mk' (M := M) (S := Localization M) chartNodeDenomUnit x y).trans ?_
+  rw [reesSpecialNodeHom_YT, zero_mul]
+
+private lemma chartNodeHom_param (i : Fin 2) :
+    chartNodeHom (chartFromF2Polynomial valuationOneCurve 0 0 (MvPolynomial.X i)) = 0 := by
+  let z := coeffModTwoEquiv.symm (MvPolynomial.X i)
+  obtain ⟨s, hs⟩ := Ideal.Quotient.mk_surjective z
+  have hmap : MvPolynomial.map (PadicInt.toZMod : ℤ_[2] →+* ZMod 2) s = MvPolynomial.X i := by
+    have hfwd := coeffModTwoEquiv_mk s
+    rw [hs] at hfwd
+    have hback : coeffModTwoEquiv z = MvPolynomial.X i := by
+      simpa [z] using coeffModTwoEquiv.apply_symm_apply (MvPolynomial.X i)
+    exact hfwd.symm.trans hback
+  have heq : chartFromF2Polynomial valuationOneCurve 0 0 (MvPolynomial.X i) =
+      chartConst valuationOneCurve 0 0 (algebraMap S (surfaceRing valuationOneCurve) s) := by
+    rw [chartFromF2Polynomial, RingHom.comp_apply]
+    change chartScalarModTwo valuationOneCurve 0 0 z = _
+    rw [← hs, chartScalarModTwo, Ideal.Quotient.lift_mk, chartScalar, RingHom.comp_apply]
+    rfl
+  rw [heq, chartNodeHom_const]
+  have hconst : algebraMap S (surfaceRing valuationOneCurve) s =
+      Ideal.Quotient.mk (Ideal.span {surfacePolynomial valuationOneCurve})
+        (MvPolynomial.C s) := by
+    rw [IsScalarTower.algebraMap_apply S (MvPolynomial (Fin 2) S)
+        (surfaceRing valuationOneCurve),
+      MvPolynomial.algebraMap_eq, Ideal.Quotient.algebraMap_eq]
+  rw [valuationOne_nodeEval, hconst, Ideal.Quotient.lift_mk, numeralEval,
+    MvPolynomial.eval₂Hom_C]
+  have hcoeff : coeffToResidue s =
+      MvPolynomial.eval (fun _ : Fin 2 => (0 : ZMod 2))
+        (MvPolynomial.map (PadicInt.toZMod : ℤ_[2] →+* ZMod 2) s) := by
+    rw [← coeffMap_eval_eq_coeffToResidue]
+    simp
+  rw [hcoeff, hmap]
+  simp
+
+theorem chartNodeHom_surjective : Function.Surjective chartNodeHom := by
+  intro y
+  fin_cases y
+  · exact ⟨0, map_zero _⟩
+  · exact ⟨1, map_one _⟩
+
+/-- The chart modulo the kernel of the node evaluation is `𝔽₂`. -/
+noncomputable def chart_node_quotient_equiv :
+    chart_Dplus_Xt_ring valuationOneCurve 0 0 ⧸ RingHom.ker chartNodeHom ≃+* ZMod 2 :=
+  RingHom.quotientKerEquivOfSurjective chartNodeHom_surjective
+
+theorem chartNodeKer_isMaximal : (RingHom.ker chartNodeHom).IsMaximal :=
+  isMaximal_of_quotient_equiv_zmod_two _ chart_node_quotient_equiv
+
+/-- The kernel of `chart → 𝔽₂` is a prime of the chart `D₊(Xt)`. -/
+noncomputable def chartNodePrime :
+    PrimeSpectrum (chart_Dplus_Xt_ring valuationOneCurve 0 0) :=
+  ⟨RingHom.ker chartNodeHom, chartNodeKer_isMaximal.isPrime⟩
+
+/-- `⟨a, b, X, Y, 2t/Xt, Yt/Xt⟩` is contained in that kernel.
+Equality with the kernel is the statement that these elements generate
+every function vanishing at the node. `chartOfModelBase` is not shown
+to be surjective, so that equality stays open. -/
+theorem ideal_ABXYUV_le_chartNodeKer :
+    ideal_ABXYUV valuationOneCurve 0 0 ≤ RingHom.ker chartNodeHom := by
+  rw [ideal_ABXYUV, Ideal.span_le]
+  intro z hz
+  simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hz
+  rcases hz with rfl | rfl | rfl | rfl | rfl | rfl
+  · rw [SetLike.mem_coe, RingHom.mem_ker, chartNodeHom_param]
+  · rw [SetLike.mem_coe, RingHom.mem_ker, chartNodeHom_param]
+  · rw [SetLike.mem_coe, RingHom.mem_ker, chartNodeHom_X]
+  · rw [SetLike.mem_coe, RingHom.mem_ker, chartNodeHom_Y]
+  · rw [SetLike.mem_coe, RingHom.mem_ker, chartNodeHom_U]
+  · rw [SetLike.mem_coe, RingHom.mem_ker, chartNodeHom_V]
 
 /-- `𝔽₂[a,b][X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U²)`. The coefficient
 ring is `𝔽₂[a,b]`, not `𝔽₂`. The generator `U²` is the chart relation
@@ -2782,13 +3492,15 @@ quotient for the parameter-free polynomial model, and it is `𝔽₂`.
 kills `a, b` as well and is `𝔽₂`, as a quotient of the polynomial
 model. `ideal_XYUV` does not contain the images of `a` and `b`.
 `ideal_ABXYUV` does. The quotient of the chart by `ideal_ABXYUV`
-is `ideal_ABXYUV_quotient_F2`, and that isomorphism is not proved,
-so the model calculation is not a quotient of the chart.
-`chartFromF2Polynomial` lands in the chart before the chart quotient.
-The chart is not shown isomorphic to either model
+is `ideal_ABXYUV_quotient_F2`, and that isomorphism is not proved.
+`chart_node_quotient_equiv` is the quotient by the kernel of
+`chartNodeHom`, which contains the ideal and is not shown to equal
+it. `chartFromF2Polynomial` lands in the chart before the chart
+quotient. The chart is not shown isomorphic to either model
 (`chart_Dplus_Xt_presentation`).
-`isMaximal_of_quotient_equiv_zmod_two` would make the ideal maximal
-once the quotient isomorphism exists. `FromSpec.toFun` is not applied. -/
+`isMaximal_of_quotient_equiv_zmod_two` makes the kernel maximal.
+`familySpecialFibreProjPoint` applies `FromSpec.toFun` to that
+prime. -/
 def ideal_XYUV_quotient_F2 : Prop :=
   Nonempty ((chart_Dplus_Xt_ring valuationOneCurve 0 0 ⧸
     ideal_XYUV valuationOneCurve 0 0) ≃+* ZMod 2)
@@ -2805,12 +3517,11 @@ theorem chart_prime_of_ideal_XYUV_quotient_F2
     (isMaximal_of_quotient_equiv_zmod_two _ e).isPrime⟩, rfl⟩
 
 /-- OPEN. The quotient of the chart `D₊(Xt)` by
-`⟨a, b, X, Y, 2t/Xt, Yt/Xt⟩` is `𝔽₂` on this node. An `𝔽₂` point has
-to kill the images of the indeterminates `a` and `b` as well as
-`X`, `2t/Xt`, and `Yt/Xt`. `ideal_XYUV` does not contain those images.
-`modelBaseAtNode_equiv_F2` is the same quotient of the polynomial
-model, after `chartOfModelBase` has not been shown to be surjective.
-`FromSpec.toFun` is not applied. -/
+`⟨a, b, X, Y, 2t/Xt, Yt/Xt⟩` is `𝔽₂` on this node. `chartNodeHom`
+kills that ideal and the quotient by its kernel is `𝔽₂`
+(`chart_node_quotient_equiv`). Equality of the ideal with the
+kernel is not proved, so this quotient is not that one.
+`chartOfModelBase` is not shown to be surjective. -/
 def ideal_ABXYUV_quotient_F2 : Prop :=
   Nonempty ((chart_Dplus_Xt_ring valuationOneCurve 0 0 ⧸
     ideal_ABXYUV valuationOneCurve 0 0) ≃+* ZMod 2)
@@ -2836,16 +3547,41 @@ def familySpecialFibrePoint_Dplus_Xt : Prop :=
       ideal_two_Y_over_X W ap bq ≤ q.asIdeal ∧
       Nonempty ((chart_Dplus_Xt_ring W ap bq ⧸ q.asIdeal) ≃+* ZMod 2)
 
-/-- OPEN. A prime of the chart `D₊(Xt)` containing
-`⟨X, Y, 2t/Xt, Yt/Xt⟩`, with residue field `𝔽₂`, on the node
-`Y² = X³ + 2` at `(0, 0)`. `chart_prime_of_ideal_XYUV_quotient_F2`
-produces that prime from the missing quotient isomorphism.
-`FromSpec.toFun` is not applied, so the prime is not a point of
-`D₊(Xt) ⊂ Proj(Rees(I)/(2))`. -/
+/-- A prime of the chart `D₊(Xt)` containing
+`⟨X, Y, 2t/Xt, Yt/Xt⟩`, with residue ring `𝔽₂`, on the node
+`Y² = X³ + 2` at `(0, 0)`. `familySpecialFibrePoint_XYUV_holds`
+is `chartNodePrime`. `familySpecialFibreProjPoint` is that prime
+under `FromSpec.toFun`. -/
 def familySpecialFibrePoint_XYUV : Prop :=
   ∃ q : PrimeSpectrum (chart_Dplus_Xt_ring valuationOneCurve 0 0),
     ideal_XYUV valuationOneCurve 0 0 ≤ q.asIdeal ∧
     Nonempty ((chart_Dplus_Xt_ring valuationOneCurve 0 0 ⧸ q.asIdeal) ≃+* ZMod 2)
+
+/-- The node evaluation is a prime of the chart containing
+`⟨X, Y, 2t/Xt, Yt/Xt⟩`, with residue field `𝔽₂`. -/
+theorem familySpecialFibrePoint_XYUV_holds : familySpecialFibrePoint_XYUV := by
+  refine ⟨chartNodePrime, ?_, ⟨chart_node_quotient_equiv⟩⟩
+  exact (ideal_XYUV_le_ideal_ABXYUV valuationOneCurve 0 0).trans ideal_ABXYUV_le_chartNodeKer
+
+/-- The same prime, viewed in `D₊(Xt) ⊂ Proj(Rees(I)/(2))`. -/
+noncomputable def familySpecialFibreProjPoint := by
+  let I := numeralCentreIdeal valuationOneCurve 0 0
+  letI : GradedAlgebra (centreReesComponent I) := centreReesGrading I
+  let J := numeralReesSpecialIdeal valuationOneCurve 0 0
+  have hJ : J.IsHomogeneous (centreReesComponent I) :=
+    numeralReesSpecialIdeal_isHomogeneous valuationOneCurve 0 0
+  let ℬ := homogeneousQuotientComponent (centreReesComponent I) J
+  letI : GradedAlgebra ℬ := homogeneousQuotientGrading (centreReesComponent I) J hJ
+  let f := Ideal.Quotient.mk J (numeralReesXT valuationOneCurve 0 0)
+  have hf : f ∈ ℬ 1 := by
+    simpa [f, numeralReesXT] using
+      specialClass_mem_degree_one valuationOneCurve 0 0
+        (Ideal.Quotient.mk (Ideal.span {surfacePolynomial valuationOneCurve})
+          (MvPolynomial.X (0 : Fin 2) -
+            MvPolynomial.C (MvPolynomial.C ((0 : ℕ) : ℤ_[2]))))
+        (numeral_X_mem_centre valuationOneCurve 0 0)
+  exact AlgebraicGeometry.ProjIsoSpecTopComponent.FromSpec.toFun
+    hf (by decide : 0 < 1) chartNodePrime
 
 /-- OPEN. A coprime Beal tuple `(a, b, p, q)` should determine a point of
 `Bl_{I_{a,b}}` on the special fibre over `𝔽₂`, a direction on the
@@ -2939,4 +3675,15 @@ end Beal.MathlibMissing
 #print axioms Beal.MathlibMissing.chart_prime_of_ideal_ABXYUV_quotient_F2
 #print axioms Beal.MathlibMissing.familySpecialFibrePoint_Dplus_Xt
 #print axioms Beal.MathlibMissing.familySpecialFibrePoint_XYUV
+#print axioms Beal.MathlibMissing.valuationOne_nodeEval
+#print axioms Beal.MathlibMissing.reesNodeHom
+#print axioms Beal.MathlibMissing.reesSpecialNodeHom
+#print axioms Beal.MathlibMissing.chartNodeHom
+#print axioms Beal.MathlibMissing.chartNodeHom_surjective
+#print axioms Beal.MathlibMissing.chart_node_quotient_equiv
+#print axioms Beal.MathlibMissing.chartNodeKer_isMaximal
+#print axioms Beal.MathlibMissing.chartNodePrime
+#print axioms Beal.MathlibMissing.ideal_ABXYUV_le_chartNodeKer
+#print axioms Beal.MathlibMissing.familySpecialFibrePoint_XYUV_holds
+#print axioms Beal.MathlibMissing.familySpecialFibreProjPoint
 #print axioms Beal.MathlibMissing.coprimeBealSolution_to_family_point
