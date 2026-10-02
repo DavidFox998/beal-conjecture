@@ -133,9 +133,18 @@ onto `D₊(Xt)`. `chartTrueIdeal_quotient_equiv_normal` identifies the
 polynomial quotient with `𝔽₂[a,b][X,V] / (X²·(X + V²))`.
 `valuationOne_X_fourth_sub_X_not_mem_centre_sq` shows `X⁴ − X ∉ I²`,
 so the single class `X² + X·V²` does not die for degree reasons.
+`centreIdeal_power_coeff_bound` in `CentrePower.lean` is the
+coefficient bound: if `α + Y·β ∈ I^k` on `Y² = X³ − 2` at `(0, 0)`,
+the coefficient of `X^i` in `α` has 2-adic norm at most
+`2^{−⌈(k−i)/2⌉}` and the coefficient of `X^i` in `β` has norm at most
+`2^{−⌊(k−i)/2⌋}`. A nonzero coefficient then has `v₂` at least that
+integer. `centre_X_pow_mul_X_cube_sub_one_not_mem` gives
+`X^m · (X³ − 1) ∉ I^{m+1}`, hence also `∉ I^{m+2}`.
 `chartOfModelTrue_injective` stays open: a normal form
 `A(V) + X·B(V) + X²·C(V)` is not yet shown to vanish in `D₊(Xt)`
-only when it is zero. `chart_Dplus_Xt_true_presentation` stays open.
+only when its Rees numerator lies in `2 · I^{d+m}`, so the bound is
+not yet applied to the chart. `chart_Dplus_Xt_true_presentation`
+stays open.
 `chart_Dplus_Xt_presentation` stays open and names a different
 ring: the parameter-free quotient
 `𝔽₂[X,Y,U,V] / (X·U, Y − X·V, Y² − X³)` drops `a`, `b`, and `U²`.
@@ -3191,14 +3200,23 @@ Closed in `ChartTrueIdeal.lean`:
   `𝔽₂[a,b][X,Y,U,V] / chartTrueIdeal ≃ 𝔽₂[a,b][X,V] / (X²·(X + V²))`.
 * `valuationOne_X_fourth_sub_X_not_mem_centre_sq`: `X⁴ − X ∉ I²`.
 
+Closed in `CentrePower.lean`:
+* `centreIdeal_power_coeff_bound`. If `α(X) + Y·β(X)` lies in `I^k`
+  at `(0, 0)`, the coefficient of `X^i` in `α` has 2-adic norm at most
+  `2^{−⌈(k−i)/2⌉}` and the coefficient of `X^i` in `β` has norm at most
+  `2^{−⌊(k−i)/2⌋}`. `PadicInt.valuation 0 = 0`, so the statement is the
+  norm bound; a nonzero coefficient has `v₂` at least that integer.
+* `centre_X_pow_mul_X_cube_sub_one_not_mem`:
+  `X^m · (X³ − 1) ∉ I^{m+1}`, and therefore `∉ I^{m+2}`. The coefficient
+  of `X^m` is `-1` and `⌈1/2⌉ = 1`. This is the obstruction for the class
+  `X + V²`, whose numerator is `2·(X³ − 1)`.
+
 Open:
-* `chartOfModelTrue_injective`. Whether a normal form
-  `A(V) + X·B(V) + X²·C(V)` vanishes in `D₊(Xt)` only when it is
-  zero is open. `X⁴ − X ∉ I²` blocks only `X² + X·V²`. The missing
-  step is the coefficient bound for `α + Y·β ∈ I^k`. The class
-  `X + V²` has numerator `2·(X³ − 1)`, not `2·(X⁴ − X)`.
-  `chart_Dplus_Xt_true_presentation` is the
-  bijection with
+* `chartOfModelTrue_injective`. A normal form
+  `A(V) + X·B(V) + X²·C(V)` is not yet shown to vanish in `D₊(Xt)`
+  only when it is zero. The coefficient bound applies once that
+  vanishing is a Rees numerator in `2 · I^{d+m}`; that translation is
+  open. `chart_Dplus_Xt_true_presentation` is the bijection with
   `𝔽₂[a,b][X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U + X² + X·V²)`.
 * `chart_Dplus_Xt_presentation`, an isomorphism with
   `𝔽₂[X,Y,U,V] / (X·U, Y − X·V, Y² − X³)`. That ring drops `a`, `b`,

@@ -445,11 +445,13 @@ theorem valuationOne_X_fourth_sub_X_not_mem_centre_sq :
 `A(V) + X·B(V) + X²·C(V)`. Vanishing in `D₊(Xt)` means that for some `m`
 the cleared Rees numerator lies in `2 · I^{d+m}`.
 `valuationOne_X_fourth_sub_X_not_mem_centre_sq` blocks only the class
-`X² + X·V²`. A general coefficient needs a stronger bound: if
-`α + Y·β ∈ I^k`, the 2-adic valuations of the coefficients of `α` and `β`
-are at least `⌈(k − i) / 2⌉` and `⌊(k − i) / 2⌋`. The class `X + V²` has
-degree-2 numerator `2·(X³ − 1)` on `Y² = X³ − 2`, and
-`X^m · (X³ − 1) ∉ I^{m+2}` is not the lemma `X⁴ − X ∉ I²`. -/
+`X² + X·V²`. `centreIdeal_power_coeff_bound` is the coefficient bound:
+if `α + Y·β ∈ I^k`, the coefficient of `X^i` in `α` has 2-adic norm at
+most `2^{−⌈(k−i)/2⌉}` and the coefficient of `X^i` in `β` has norm at
+most `2^{−⌊(k−i)/2⌋}`. `centre_X_pow_mul_X_cube_sub_one_not_mem` gives
+`X^m · (X³ − 1) ∉ I^{m+1}`. The class `X + V²` has degree-2 numerator
+`2·(X³ − 1)` on `Y² = X³ − 2`. What remains open is the identification
+of chart vanishing with a Rees numerator in `2 · I^{d+m}`. -/
 def chartOfModelTrue_injective : Prop :=
   Function.Injective chartOfModelTrue
 

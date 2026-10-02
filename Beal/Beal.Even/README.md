@@ -60,14 +60,24 @@ Closed in `Beal/MathlibMissing/ChartTrueIdeal.lean`:
   at `(0, 0)`. The numerator `2·(X⁴ − X)` of `X² + X·V²` is not in
   the scalar ideal `(2)` of the Rees algebra.
 
+Closed in `Beal/MathlibMissing/CentrePower.lean`:
+
+* `centreIdeal_power_coeff_bound`. If `α(X) + Y·β(X)` lies in `I^k`
+  on `Y² = X³ − 2` at `(0, 0)`, the coefficient of `X^i` in `α` has
+  2-adic norm at most `2^{−⌈(k−i)/2⌉}` and the coefficient of `X^i`
+  in `β` has norm at most `2^{−⌊(k−i)/2⌋}`. A nonzero coefficient has
+  `v₂` at least that integer.
+* `centre_X_pow_mul_X_cube_sub_one_not_mem`:
+  `X^m · (X³ − 1) ∉ I^{m+1}`, hence `∉ I^{m+2}`. This is the obstruction
+  for the class `X + V²`, whose numerator is `2·(X³ − 1)`.
+
 Open:
 
 * `chartOfModelTrue_injective` and `chart_Dplus_Xt_true_presentation`.
   A normal form `A(V) + X·B(V) + X²·C(V)` is not shown to vanish in
-  `D₊(Xt)` only when it is zero. `X⁴ − X ∉ I²` blocks only
-  `X² + X·V²`. The class `X + V²` has Rees numerator `2·(X³ − 1)`;
-  the missing step is the 2-adic coefficient bound for membership in
-  `I^k`. The bijection
+  `D₊(Xt)` only when it is zero. The coefficient bound applies after
+  that vanishing is written as a Rees numerator in `2 · I^{d+m}`; that
+  translation is open. The bijection
   `𝔽₂[a,b][X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U + X² + X·V²) ≃ D₊(Xt)`
   is not proved.
 * `chart_Dplus_Xt_presentation`, an isomorphism with the parameter-free
