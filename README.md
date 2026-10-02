@@ -58,13 +58,22 @@ False:
   is properly contained in `ker chartModelEval`. `Xⁿ ∉ Iⁿ⁺¹` does
   not kill this class.
 
+Closed in `Beal/MathlibMissing/ChartTrueIdeal.lean`:
+
+* `chartTrueIdeal = (X·U, Y − X·V, Y² − X³, U + X² + X·V²)`.
+  `chartTrueIdeal_contains_U2` puts `U²` in this ideal, from
+  `U² = U·(U + X² + X·V²) + (X + V²)·(X·U)`.
+* `chartOfModelTrue_surjective` is the induced surjection onto `D₊(Xt)`.
+
 Open:
 
+* `chartOfModelTrue_injective` and `chart_Dplus_Xt_true_presentation`.
+  The bijection
+  `𝔽₂[a,b][X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U + X² + X·V²) ≃ D₊(Xt)`
+  is not proved.
 * `chart_Dplus_Xt_presentation`, an isomorphism with the parameter-free
   ring `𝔽₂[X,Y,U,V] / (X·U, Y − X·V, Y² − X³)`. That ring drops `a`,
-  `b`, and `U²`. It is not the chart. The four-relation quotient in
-  `𝔽₂[a,b][X,Y,U,V]` surjects onto `D₊(Xt)` and is not isomorphic
-  to it.
+  `b`, and `U²`. It is not the chart.
 
 `BealEven` does not import `Beal/MathlibMissing/Family.lean`.
 Printed axioms of the new declarations are `propext`, `Classical.choice`,

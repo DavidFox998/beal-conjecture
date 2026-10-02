@@ -126,6 +126,11 @@ the degree-2 Rees numerator is `C(2) · (X⁴ t²)` and `X⁴ ∈ I²`, so
 the numerator lies in the scalar ideal `(2)`. `Xⁿ ∉ Iⁿ⁺¹` does not
 remove this class. The four-relation ideal is properly contained in
 `ker chartModelEval`.
+`chartTrueIdeal` is `(X·U, Y − X·V, Y² − X³, U + X² + X·V²)`.
+`chartTrueIdeal_contains_U2` puts `U²` in that ideal, using
+`X·U = 0`. `chartOfModelTrue_surjective` is the induced surjection
+onto `D₊(Xt)`. `chartOfModelTrue_injective` and
+`chart_Dplus_Xt_true_presentation` stay open.
 `chart_Dplus_Xt_presentation` stays open and names a different
 ring: the parameter-free quotient
 `𝔽₂[X,Y,U,V] / (X·U, Y − X·V, Y² − X³)` drops `a`, `b`, and `U²`.
@@ -3173,7 +3178,15 @@ False:
   `(X·U, Y − X·V, Y² − X³, U²)`. That ideal is properly contained
   in `ker chartModelEval`. `Xⁿ ∉ Iⁿ⁺¹` does not kill this class.
 
+Closed in `ChartTrueIdeal.lean`:
+* `chartTrueIdeal = (X·U, Y − X·V, Y² − X³, U + X² + X·V²)`.
+  `chartTrueIdeal_contains_U2` puts `U²` in this ideal.
+* `chartOfModelTrue_surjective` covers `D₊(Xt)`.
+
 Open:
+* `chartOfModelTrue_injective` and `chart_Dplus_Xt_true_presentation`,
+  the bijection with
+  `𝔽₂[a,b][X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U + X² + X·V²)`.
 * `chart_Dplus_Xt_presentation`, an isomorphism with
   `𝔽₂[X,Y,U,V] / (X·U, Y − X·V, Y² − X³)`. That ring drops `a`, `b`,
   and `U²`. It is not the chart.
