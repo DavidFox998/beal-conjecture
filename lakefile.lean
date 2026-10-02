@@ -108,7 +108,8 @@ lean_lib BealEven where
 lean_lib BealMathlibMissing where
   globs := #[.one `Beal.MathlibMissing.ProjProper,
     .one `Beal.MathlibMissing.TwistingSheaf,
-    .one `Beal.MathlibMissing.Family]
+    .one `Beal.MathlibMissing.Family,
+    .one `Beal.MathlibMissing.ChartSurjection]
 
 /-- v35 starter for odd exponents. Not a Beal proof.
     The Lake module name is `Beal.«Beal.Odd».FullReduction`

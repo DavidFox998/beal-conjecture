@@ -22,9 +22,10 @@ In `Family.lean`, commit `19a820c3`:
   the kernel is `𝔽₂`, and `chartNodePrime` is that prime.
   `familySpecialFibreProjPoint` is `FromSpec.toFun` of the prime, a
   point of `D₊(Xt)` in `Proj(Rees(I)/(2))`.
-* Open: `ker_eq_ideal_ABXYUV`. The reverse inclusion is the missing
-  input to `ideal_ABXYUV_quotient_F2`. `chartOfModelBase` is not
-  shown to be bijective, and `chart_Dplus_Xt_presentation` stays
-  open.
+* Closed: `chartOfModelBase_surjective` and
+  `ker_eq_ideal_ABXYUV_holds`. The quotient by `ideal_ABXYUV` is
+  `𝔽₂` (`ideal_ABXYUV_quotient_F2_holds`).
+* Open: `chartOfModelBase` injective, and
+  `chart_Dplus_Xt_presentation`.
 
 Printed axioms are `propext`, `Classical.choice`, and `Quot.sound`.
