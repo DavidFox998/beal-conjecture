@@ -70,10 +70,17 @@ The quotient that drops `Y - X·V`, namely
 `𝔽₂[X,Y,U,V] / (Y² - X³, X, U, V)`, still has a nonzero nilpotent
 class of `Y` (`modelForgetY_class_Y_ne_zero`). On this node
 `chart_two_over_X_sq_zero` says `(2t / Xt)² = 0` in the chart,
-because `(2t)² = 0` in `Rees/(2)`. The coefficient model is
+because `(2t)² = 0` in `Rees/(2)`.
+`chart_two_over_X_ne_zero` says the ratio itself is not zero.
+A relation `(Xt)^n · (2t) = 0` in `Rees/(2)` would put `X^n` in
+`I^{n+1}`. `valuationOne_X_pow_not_mem_centre_succ` says that
+fails: reducing modulo `2` lands on the cusp `Y² = X³` over
+`𝔽₂[a,b]`, and `X ↦ t²`, `Y ↦ t³` sends `X^k` to `t^{2k}` while
+`(X, Y)^{k+1}` lands in `(t^{2k+2})`. The coefficient model is
 `𝔽₂[a,b][X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U²)`.
 `chartOfModelBase` is a ring hom from that quotient into the chart.
-It is not shown to be bijective. Quotienting that model by
+It is not shown to be bijective, and its kernel is not shown to be
+exactly those four relations. Quotienting that model by
 `⟨X, U, V⟩` leaves `𝔽₂[a,b]`
 (`modelBaseModXUV_equiv_F2Polynomial`), because `Y = X·V`.
 The further quotient by `⟨a, b⟩` is `𝔽₂`
@@ -81,8 +88,10 @@ The further quotient by `⟨a, b⟩` is `𝔽₂`
 `modelBaseAtNode_equiv_F2` is the model modulo `⟨a, b, X, U, V⟩`,
 and that ring is `𝔽₂`. These are quotients of the polynomial model.
 The parameters `a, b` are not generators of
-`⟨X, 2t/Xt, Yt/Xt⟩` in the chart, so the same calculation does
-not present the chart quotient as `𝔽₂`. `ap` and `bq` are numeral
+`⟨X, 2t/Xt, Yt/Xt⟩` in the chart. `ideal_ABXYUV` is the larger
+ideal `⟨a, b, X, Y, 2t/Xt, Yt/Xt⟩`, and `Y` is redundant in it.
+The quotient of the chart by that ideal is not shown to be `𝔽₂`.
+`ap` and `bq` are numeral
 centre coordinates. The chart is not shown isomorphic to either
 model. The ring is nontrivial, so it has some prime.
 `(Xt)^n ≠ 0` is necessary for `D₊(Xt)` to be nonempty
@@ -93,7 +102,8 @@ to be `𝔽₂`, so that ideal is not shown to be maximal.
 point of `Proj`.
 `chart_Dplus_Xt_basicOpen_nonempty_valuationOne`,
 `chart_Dplus_Xt_presentation`, `ideal_UV_maximal`,
-`ideal_XYUV_quotient_F2`, `familySpecialFibrePoint_Dplus_Xt`, and
+`ideal_XYUV_quotient_F2`, `ideal_ABXYUV_quotient_F2`,
+`familySpecialFibrePoint_Dplus_Xt`, and
 `familySpecialFibrePoint_XYUV` stay uninhabited.
 `familySpecialFibrePoint` stays uninhabited. No `sorry` is used.
 -/
@@ -1135,6 +1145,247 @@ theorem valuationOne_specialXT_pow_ne_zero (n : ℕ) :
 
 set_option maxHeartbeats 2000000
 
+/-!
+### The ratio `2t / Xt` is a nonzero nilpotent
+
+`(Xt)^n * (2t) = 0` in `Rees/(2)` would put `X^n` in `I^{n+1}`.
+Reducing modulo `2` lands in the cusp `Y² = X³` over `𝔽₂[a,b]`.
+The parametrization `X ↦ t²`, `Y ↦ t³` sends `X^k` to `t^{2k}` and
+sends `(X, Y)^{k+1}` into `(t^{2k+2})`.
+-/
+
+/-- `X ↦ t²`, `Y ↦ t³` on `𝔽₂[a,b][X,Y]`. -/
+noncomputable def cuspParam :
+    MvPolynomial (Fin 2) (MvPolynomial (Fin 2) (ZMod 2)) →+*
+      Polynomial (MvPolynomial (Fin 2) (ZMod 2)) :=
+  MvPolynomial.eval₂Hom Polynomial.C
+    (fun i : Fin 2 => if i = 0 then Polynomial.X ^ 2 else Polynomial.X ^ 3)
+
+private lemma cuspParam_X : cuspParam (MvPolynomial.X 0) = Polynomial.X ^ 2 := by
+  simp [cuspParam]
+
+private lemma cuspParam_Y : cuspParam (MvPolynomial.X 1) = Polynomial.X ^ 3 := by
+  simp [cuspParam, show (1 : Fin 2) ≠ 0 by decide]
+
+private lemma cuspParam_X_pow (k : ℕ) :
+    cuspParam ((MvPolynomial.X (0 : Fin 2)) ^ k) = Polynomial.X ^ (2 * k) := by
+  rw [map_pow, cuspParam_X, ← pow_mul]
+
+private lemma cuspParam_rel :
+    cuspParam ((MvPolynomial.X (1 : Fin 2)) ^ 2 - (MvPolynomial.X (0 : Fin 2)) ^ 3) = 0 := by
+  rw [map_sub, map_pow, map_pow, cuspParam_Y, cuspParam_X, ← pow_mul, ← pow_mul]
+  ring
+
+private lemma cuspParam_span_XY :
+    Ideal.map cuspParam (Ideal.span {MvPolynomial.X (0 : Fin 2), MvPolynomial.X 1}) =
+      Ideal.span {Polynomial.X ^ 2} := by
+  rw [Ideal.map_span]
+  apply le_antisymm
+  · rw [Ideal.span_le]
+    intro z hz
+    simp only [Set.mem_image, Set.mem_insert_iff, Set.mem_singleton_iff] at hz
+    obtain ⟨w, hw, rfl⟩ := hz
+    rcases hw with rfl | rfl
+    · rw [cuspParam_X]
+      exact Ideal.subset_span (by simp)
+    · rw [cuspParam_Y, show Polynomial.X ^ 3 = Polynomial.X * Polynomial.X ^ 2 by ring]
+      exact Ideal.mul_mem_left _ _ (Ideal.subset_span (by simp))
+  · rw [Ideal.span_le]
+    intro z hz
+    simp only [Set.mem_singleton_iff] at hz
+    subst hz
+    rw [← cuspParam_X]
+    refine Ideal.subset_span ?_
+    refine Set.mem_image_of_mem cuspParam ?_
+    simp [Set.mem_insert_iff, Set.mem_singleton_iff]
+
+private lemma cuspParam_pow_span_XY (k : ℕ) :
+    Ideal.map cuspParam
+        (Ideal.span {MvPolynomial.X (0 : Fin 2), MvPolynomial.X 1} ^ k) =
+      Ideal.span {Polynomial.X ^ (2 * k)} := by
+  rw [Ideal.map_pow, cuspParam_span_XY, Ideal.span_singleton_pow]
+  have hpow :
+      ((Polynomial.X : Polynomial (MvPolynomial (Fin 2) (ZMod 2))) ^ 2) ^ k =
+        Polynomial.X ^ (2 * k) :=
+    (pow_mul _ 2 k).symm
+  rw [hpow]
+
+private lemma cuspParam_kills_low_coeff (k : ℕ)
+    (g : MvPolynomial (Fin 2) (MvPolynomial (Fin 2) (ZMod 2)))
+    (hg : g ∈ Ideal.span {MvPolynomial.X (0 : Fin 2), MvPolynomial.X 1} ^ (k + 1)) :
+    (cuspParam g).coeff (2 * k) = 0 := by
+  have hmem : cuspParam g ∈ Ideal.span {Polynomial.X ^ (2 * (k + 1))} := by
+    rw [← cuspParam_pow_span_XY]
+    exact Ideal.mem_map_of_mem _ hg
+  rw [Ideal.mem_span_singleton] at hmem
+  have hlt : 2 * k < 2 * (k + 1) := by
+    rw [Nat.mul_succ]
+    exact Nat.lt_add_of_pos_right (by decide : 0 < 2)
+  exact (Polynomial.X_pow_dvd_iff.mp hmem) (2 * k) hlt
+
+/-- On the cusp `Y² = X³` over `𝔽₂[a,b]`, `X^k` does not lie in
+`(Y² − X³) + (X, Y)^{k+1}`. -/
+theorem monomial_X_pow_not_mem_cusp (k : ℕ) :
+    (MvPolynomial.X (0 : Fin 2) :
+        MvPolynomial (Fin 2) (MvPolynomial (Fin 2) (ZMod 2))) ^ k ∉
+      Ideal.span
+          ({(MvPolynomial.X (1 : Fin 2)) ^ 2 - (MvPolynomial.X (0 : Fin 2)) ^ 3} :
+            Set (MvPolynomial (Fin 2) (MvPolynomial (Fin 2) (ZMod 2)))) ⊔
+        Ideal.span
+          ({MvPolynomial.X (0 : Fin 2), MvPolynomial.X (1 : Fin 2)} :
+            Set (MvPolynomial (Fin 2) (MvPolynomial (Fin 2) (ZMod 2)))) ^ (k + 1) := by
+  intro h
+  obtain ⟨a, ha, b, hb, hab⟩ := Submodule.mem_sup.mp h
+  have ha0 : cuspParam a = 0 := by
+    obtain ⟨c, rfl⟩ := Ideal.mem_span_singleton'.mp ha
+    rw [map_mul, cuspParam_rel, mul_zero]
+  have hcoeff := congrArg (fun p => (cuspParam p).coeff (2 * k)) hab
+  dsimp at hcoeff
+  rw [map_add, ha0, zero_add, cuspParam_kills_low_coeff k b hb, map_pow, cuspParam_X,
+    ← pow_mul, Polynomial.coeff_X_pow, if_pos rfl] at hcoeff
+  exact zero_ne_one hcoeff
+
+/-- Reduce coefficients of `S[X,Y]` modulo `2`. -/
+noncomputable def surfacePolyModTwo :
+    MvPolynomial (Fin 2) S →+*
+      MvPolynomial (Fin 2) (MvPolynomial (Fin 2) (ZMod 2)) :=
+  MvPolynomial.map (MvPolynomial.map (PadicInt.toZMod : ℤ_[2] →+* ZMod 2))
+
+private lemma surfacePolyModTwo_surface :
+    surfacePolyModTwo (surfacePolynomial valuationOneCurve) =
+      (MvPolynomial.X (1 : Fin 2)) ^ 2 - (MvPolynomial.X (0 : Fin 2)) ^ 3 := by
+  rw [valuationOne_surfacePolynomial]
+  simp [surfacePolyModTwo, residue_kills_two, MvPolynomial.C_0]
+
+private lemma surfacePolyModTwo_centreSpan :
+    Ideal.map surfacePolyModTwo (Ideal.span {
+      MvPolynomial.C (MvPolynomial.C (2 : ℤ_[2])),
+      MvPolynomial.X (0 : Fin 2),
+      MvPolynomial.X (1 : Fin 2) }) =
+      Ideal.span {MvPolynomial.X (0 : Fin 2), MvPolynomial.X 1} := by
+  rw [Ideal.map_span]
+  apply le_antisymm
+  · rw [Ideal.span_le]
+    intro z hz
+    simp only [Set.mem_image, Set.mem_insert_iff, Set.mem_singleton_iff] at hz
+    obtain ⟨w, hw, rfl⟩ := hz
+    rcases hw with rfl | rfl | rfl
+    · simp [surfacePolyModTwo, residue_kills_two, MvPolynomial.C_0]
+    · rw [surfacePolyModTwo, MvPolynomial.map_X]
+      exact Ideal.subset_span (by simp [Set.mem_insert_iff, Set.mem_singleton_iff])
+    · rw [surfacePolyModTwo, MvPolynomial.map_X]
+      exact Ideal.subset_span (by simp [Set.mem_insert_iff, Set.mem_singleton_iff])
+  · rw [Ideal.span_le]
+    intro z hz
+    simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hz
+    rcases hz with rfl | rfl
+    · rw [show (MvPolynomial.X (0 : Fin 2)) =
+          surfacePolyModTwo (MvPolynomial.X (0 : Fin 2)) by
+        rw [surfacePolyModTwo, MvPolynomial.map_X]]
+      exact Ideal.subset_span (Set.mem_image_of_mem _
+        (by simp [Set.mem_insert_iff, Set.mem_singleton_iff]))
+    · rw [show (MvPolynomial.X (1 : Fin 2)) =
+          surfacePolyModTwo (MvPolynomial.X (1 : Fin 2)) by
+        rw [surfacePolyModTwo, MvPolynomial.map_X]]
+      exact Ideal.subset_span (Set.mem_image_of_mem _
+        (by simp [Set.mem_insert_iff, Set.mem_singleton_iff]))
+
+private lemma valuationOne_centreSpan_zero :
+    Ideal.span ({
+      MvPolynomial.C (MvPolynomial.C (2 : ℤ_[2])),
+      MvPolynomial.X (0 : Fin 2) -
+        MvPolynomial.C (MvPolynomial.C ((0 : ℕ) : ℤ_[2])),
+      MvPolynomial.X (1 : Fin 2) -
+        MvPolynomial.C (MvPolynomial.C ((0 : ℕ) : ℤ_[2])) } :
+        Set (MvPolynomial (Fin 2) S)) =
+      Ideal.span ({
+        MvPolynomial.C (MvPolynomial.C (2 : ℤ_[2])),
+        MvPolynomial.X (0 : Fin 2),
+        MvPolynomial.X (1 : Fin 2) } : Set (MvPolynomial (Fin 2) S)) := by
+  simp [Nat.cast_zero, MvPolynomial.C_0, sub_zero]
+
+/-- `X^k` is not in `I^{k+1}` at `(0, 0)` on `Y² = X³ + 2`. -/
+theorem valuationOne_X_pow_not_mem_centre_succ (k : ℕ) :
+    (Ideal.Quotient.mk (Ideal.span {surfacePolynomial valuationOneCurve})
+        (MvPolynomial.X (0 : Fin 2))) ^ k ∉
+      numeralCentreIdeal valuationOneCurve 0 0 ^ (k + 1) := by
+  intro hmem
+  let ψ := Ideal.Quotient.mk (Ideal.span {surfacePolynomial valuationOneCurve})
+  have hsurj : Function.Surjective ψ := Ideal.Quotient.mk_surjective
+  rw [numeralCentreIdeal, valuationOne_centreSpan_zero, ← Ideal.map_pow] at hmem
+  rw [Ideal.mem_map_iff_of_surjective (f := ψ) hsurj] at hmem
+  obtain ⟨g, hg, hgeq⟩ := hmem
+  have hdiff : ψ ((MvPolynomial.X (0 : Fin 2)) ^ k - g) = 0 := by
+    rw [map_sub, map_pow, hgeq, sub_self]
+  rw [Ideal.Quotient.eq_zero_iff_mem] at hdiff
+  obtain ⟨f, hf⟩ := Ideal.mem_span_singleton'.mp hdiff
+  have hpoly : (MvPolynomial.X (0 : Fin 2)) ^ k =
+      f * surfacePolynomial valuationOneCurve + g := by
+    rw [hf, sub_add_cancel]
+  have himg := congrArg surfacePolyModTwo hpoly
+  have hx : surfacePolyModTwo (MvPolynomial.X (0 : Fin 2)) =
+      MvPolynomial.X (0 : Fin 2) := by
+    rw [surfacePolyModTwo, MvPolynomial.map_X]
+  rw [map_add, map_mul, surfacePolyModTwo_surface, map_pow, hx] at himg
+  have hgimg : surfacePolyModTwo g ∈
+      Ideal.span {MvPolynomial.X (0 : Fin 2), MvPolynomial.X 1} ^ (k + 1) := by
+    have hmap := Ideal.mem_map_of_mem surfacePolyModTwo hg
+    rwa [Ideal.map_pow, surfacePolyModTwo_centreSpan] at hmap
+  have hsup : (MvPolynomial.X (0 : Fin 2) :
+        MvPolynomial (Fin 2) (MvPolynomial (Fin 2) (ZMod 2))) ^ k ∈
+      Ideal.span
+          ({(MvPolynomial.X (1 : Fin 2)) ^ 2 - (MvPolynomial.X (0 : Fin 2)) ^ 3} :
+            Set (MvPolynomial (Fin 2) (MvPolynomial (Fin 2) (ZMod 2)))) ⊔
+        Ideal.span
+          ({MvPolynomial.X (0 : Fin 2), MvPolynomial.X (1 : Fin 2)} :
+            Set (MvPolynomial (Fin 2) (MvPolynomial (Fin 2) (ZMod 2)))) ^ (k + 1) := by
+    rw [himg]
+    refine Submodule.mem_sup.mpr ⟨
+      surfacePolyModTwo f *
+        ((MvPolynomial.X (1 : Fin 2)) ^ 2 - (MvPolynomial.X (0 : Fin 2)) ^ 3), ?_,
+      surfacePolyModTwo g, hgimg, rfl⟩
+    exact Ideal.mul_mem_left _ _ (Ideal.subset_span (by simp))
+  exact monomial_X_pow_not_mem_cusp k hsup
+
+/-- `(Xt)^n * (2t)` is not in the scalar ideal `(2)`. -/
+theorem valuationOne_xt_pow_mul_two_not_special (n : ℕ) :
+    (numeralReesXT valuationOneCurve 0 0) ^ n * numeralReesTwo valuationOneCurve 0 0 ∉
+      numeralReesSpecialIdeal valuationOneCurve 0 0 := by
+  intro hmem
+  let I := numeralCentreIdeal valuationOneCurve 0 0
+  let R := surfaceRing valuationOneCurve
+  obtain ⟨p, hp⟩ := Ideal.mem_span_singleton'.mp hmem
+  let x : R := Ideal.Quotient.mk (Ideal.span {surfacePolynomial valuationOneCurve})
+    (MvPolynomial.X (0 : Fin 2))
+  have hxt : ((numeralReesXT valuationOneCurve 0 0 : reesAlgebra I) : Polynomial R) =
+      Polynomial.monomial 1 x := by
+    simp [numeralReesXT, centreReesMonomial, x, Nat.cast_zero, map_zero, sub_zero]
+  have htwo : ((numeralReesTwo valuationOneCurve 0 0 : reesAlgebra I) : Polynomial R) =
+      Polynomial.monomial 1 (2 : R) := by
+    simp [numeralReesTwo, centreReesMonomial]
+  have hpoly := congrArg (fun z : reesAlgebra I => (z : Polynomial R)) hp
+  dsimp at hpoly
+  rw [hxt, htwo, Polynomial.monomial_pow] at hpoly
+  simp only [one_mul] at hpoly
+  rw [Polynomial.monomial_mul_monomial, mul_comm] at hpoly
+  have hcoeff := congrArg (fun q : Polynomial R => q.coeff (n + 1)) hpoly
+  dsimp at hcoeff
+  rw [Polynomial.coeff_C_mul, Polynomial.coeff_monomial, if_pos rfl,
+    mul_comm (x ^ n) (2 : R)] at hcoeff
+  have hsub : (2 : R) * ((p : Polynomial R).coeff (n + 1) - x ^ n) = 0 := by
+    calc
+      (2 : R) * ((p : Polynomial R).coeff (n + 1) - x ^ n)
+          = (2 : R) * (p : Polynomial R).coeff (n + 1) - (2 : R) * x ^ n := by ring
+        _ = (2 : R) * x ^ n - (2 : R) * x ^ n := by rw [hcoeff]
+        _ = 0 := sub_self _
+  have hx : (p : Polynomial R).coeff (n + 1) = x ^ n := by
+    have := valuationOne_two_regular _ hsub
+    rwa [sub_eq_zero] at this
+  have hpow : (p : Polynomial R).coeff (n + 1) ∈ I ^ (n + 1) :=
+    (mem_reesAlgebra_iff I (p : Polynomial R)).mp p.property (n + 1)
+  rw [hx] at hpow
+  exact valuationOne_X_pow_not_mem_centre_succ n hpow
+
 /-- The chart `D₊(Xt)` does not collapse: no power of the denominator
 is zero, so `0` and `1` stay distinct in the degree-zero localization. -/
 theorem chart_Dplus_Xt_nontrivial_valuationOne :
@@ -1726,7 +1977,7 @@ theorem chart_Y_sq_eq_chart_X_cu_valuationOne :
 
 /-- On `Y² = X³ + 2` at `(0, 0)`, `(2t / Xt)² = 0` in the chart `D₊(Xt)`.
 The numerator is the class of `2t`, and that class squares to zero in
-`Rees/(2)`. This does not set the ratio itself to zero. -/
+`Rees/(2)`. `chart_two_over_X_ne_zero` says the ratio itself is not zero. -/
 theorem chart_two_over_X_sq_zero :
     chart_two_over_X valuationOneCurve 0 0 ^ 2 = 0 := by
   let I := numeralCentreIdeal valuationOneCurve 0 0
@@ -1747,6 +1998,42 @@ theorem chart_two_over_X_sq_zero :
   rw [hsq, Localization.mk]
   simp
 
+/-- On `Y² = X³ + 2` at `(0, 0)`, `2t / Xt` is not zero in the chart
+`D₊(Xt)`. The square of the ratio is zero, so the chart is non-reduced.
+`(Xt)^n · (2t) = 0` in `Rees/(2)` would put `X^n` in `I^{n+1}`. -/
+theorem chart_two_over_X_ne_zero :
+    chart_two_over_X valuationOneCurve 0 0 ≠ 0 := by
+  intro hzero
+  let I := numeralCentreIdeal valuationOneCurve 0 0
+  letI : GradedAlgebra (centreReesComponent I) := centreReesGrading I
+  let J := numeralReesSpecialIdeal valuationOneCurve 0 0
+  have hJ : J.IsHomogeneous (centreReesComponent I) :=
+    numeralReesSpecialIdeal_isHomogeneous valuationOneCurve 0 0
+  let ℬ := homogeneousQuotientComponent (centreReesComponent I) J
+  letI : GradedAlgebra ℬ := homogeneousQuotientGrading (centreReesComponent I) J hJ
+  let f := Ideal.Quotient.mk J (numeralReesXT valuationOneCurve 0 0)
+  have hval := congrArg HomogeneousLocalization.val hzero
+  rw [HomogeneousLocalization.val_zero] at hval
+  simp only [chart_two_over_X, HomogeneousLocalization.val_mk] at hval
+  rw [← Localization.mk_zero (1 : Submonoid.powers f)] at hval
+  rw [Localization.mk_eq_mk_iff] at hval
+  obtain ⟨c, hc⟩ := Localization.r_iff_exists.mp hval
+  have hc0 : (c : reesAlgebra I ⧸ J) *
+      Ideal.Quotient.mk J (numeralReesTwo valuationOneCurve 0 0) = 0 := by
+    dsimp at hc
+    rw [one_mul (Ideal.Quotient.mk J (numeralReesTwo valuationOneCurve 0 0))] at hc
+    rw [mul_zero (f : reesAlgebra I ⧸ J)] at hc
+    rw [mul_zero (c : reesAlgebra I ⧸ J)] at hc
+    exact hc
+  obtain ⟨n, hn⟩ := (Submonoid.mem_powers_iff (c : reesAlgebra I ⧸ J) f).mp c.property
+  have hkill : f ^ n *
+      Ideal.Quotient.mk J (numeralReesTwo valuationOneCurve 0 0) = 0 := by
+    rw [hn, hc0]
+  have hmem : (numeralReesXT valuationOneCurve 0 0) ^ n *
+      numeralReesTwo valuationOneCurve 0 0 ∈ J := by
+    rw [← Ideal.Quotient.eq_zero_iff_mem, map_mul, map_pow]
+    exact hkill
+  exact valuationOne_xt_pow_mul_two_not_special n hmem
 
 /-- A quotient isomorphic to `𝔽₂` is a field, so the ideal is maximal. -/
 theorem isMaximal_of_quotient_equiv_zmod_two
@@ -2045,6 +2332,65 @@ noncomputable def chartScalarModTwo (W : WeierstrassCurve ℤ_[2]) (ap bq : ℕ)
 noncomputable def chartFromF2Polynomial (W : WeierstrassCurve ℤ_[2]) (ap bq : ℕ) :
     MvPolynomial (Fin 2) (ZMod 2) →+* chart_Dplus_Xt_ring W ap bq :=
   (chartScalarModTwo W ap bq).comp coeffModTwoEquiv.symm.toRingHom
+
+/-- The ideal `⟨a, b, X, Y, 2t/Xt, Yt/Xt⟩` in the chart `D₊(Xt)`.
+`a` and `b` are the images of the indeterminates of `𝔽₂[a,b]`.
+`ideal_XYUV` does not contain those images. `Y` is redundant:
+`Y = X · (Yt / Xt)`. -/
+noncomputable def ideal_ABXYUV (W : WeierstrassCurve ℤ_[2]) (ap bq : ℕ) :
+    Ideal (chart_Dplus_Xt_ring W ap bq) :=
+  Ideal.span {
+    chartFromF2Polynomial W ap bq (MvPolynomial.X 0),
+    chartFromF2Polynomial W ap bq (MvPolynomial.X 1),
+    chart_X W ap bq,
+    chart_Y W ap bq,
+    chart_two_over_X W ap bq,
+    chart_Y_over_X W ap bq }
+
+/-- `Y` is redundant in `⟨a, b, X, Y, 2t/Xt, Yt/Xt⟩`. -/
+theorem ideal_ABXYUV_eq_span_AB_X_UV
+    (W : WeierstrassCurve ℤ_[2]) (ap bq : ℕ) :
+    ideal_ABXYUV W ap bq =
+      Ideal.span {
+        chartFromF2Polynomial W ap bq (MvPolynomial.X 0),
+        chartFromF2Polynomial W ap bq (MvPolynomial.X 1),
+        chart_X W ap bq,
+        chart_two_over_X W ap bq,
+        chart_Y_over_X W ap bq } := by
+  apply le_antisymm
+  · rw [ideal_ABXYUV, Ideal.span_le]
+    intro z hz
+    simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hz
+    rcases hz with rfl | rfl | rfl | rfl | rfl | rfl
+    · exact Ideal.subset_span (by simp)
+    · exact Ideal.subset_span (by simp)
+    · exact Ideal.subset_span (by simp)
+    · rw [chart_Y_eq_chart_X_mul_Y_over_X]
+      exact Ideal.mul_mem_left _ _ (Ideal.subset_span (by simp))
+    · exact Ideal.subset_span (by simp)
+    · exact Ideal.subset_span (by simp)
+  · rw [ideal_ABXYUV, Ideal.span_le]
+    intro z hz
+    simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hz
+    rcases hz with rfl | rfl | rfl | rfl | rfl
+    · exact Ideal.subset_span (by simp)
+    · exact Ideal.subset_span (by simp)
+    · exact Ideal.subset_span (by simp)
+    · exact Ideal.subset_span (by simp)
+    · exact Ideal.subset_span (by simp)
+
+/-- `⟨X, Y, 2t/Xt, Yt/Xt⟩` is contained in `⟨a, b, X, Y, 2t/Xt, Yt/Xt⟩`. -/
+theorem ideal_XYUV_le_ideal_ABXYUV
+    (W : WeierstrassCurve ℤ_[2]) (ap bq : ℕ) :
+    ideal_XYUV W ap bq ≤ ideal_ABXYUV W ap bq := by
+  rw [ideal_XYUV, ideal_ABXYUV, Ideal.span_le]
+  intro z hz
+  simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hz
+  rcases hz with rfl | rfl | rfl | rfl
+  · exact Ideal.subset_span (by simp)
+  · exact Ideal.subset_span (by simp)
+  · exact Ideal.subset_span (by simp)
+  · exact Ideal.subset_span (by simp)
 
 /-- `𝔽₂[a,b][X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U²)`. The coefficient
 ring is `𝔽₂[a,b]`, not `𝔽₂`. The generator `U²` is the chart relation
@@ -2411,10 +2757,12 @@ noncomputable def modelBaseAtNode_equiv_F2 :
 /-- OPEN. The chart `D₊(Xt)` on `Y² = X³ + 2` at `(0, 0)` is isomorphic
 to the parameter-free ring `𝔽₂[X,Y,U,V] / (X·U, Y − X·V, Y² − X³)`.
 That target has no copy of `a, b` and does not impose `U² = 0`.
-`chart_two_over_X_sq_zero` is `(2t / Xt)² = 0` in the chart.
+`chart_two_over_X_sq_zero` is `(2t / Xt)² = 0` in the chart, and
+`chart_two_over_X_ne_zero` says the ratio is not zero.
 `chartOfModelBase` is a ring hom into the chart from
 `𝔽₂[a,b][X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U²)`. That hom is not
-shown to be bijective, so it is not a presentation of the chart.
+shown to be bijective, and its kernel is not shown to be exactly
+those relations, so it is not a presentation of the chart.
 `ap` and `bq` are numeral centre coordinates, not evaluations of
 the indeterminates `a, b`. -/
 def chart_Dplus_Xt_presentation : Prop :=
@@ -2424,15 +2772,18 @@ def chart_Dplus_Xt_presentation : Prop :=
 `D₊(Xt)` by `⟨X, Y, 2t/Xt, Yt/Xt⟩` is `𝔽₂`. `quotient_span_XUV_kills_Y`
 puts `Y` in `⟨X, 2t/Xt, Yt/Xt⟩`, so the quotient does not keep a
 nilpotent class of `Y`. `chart_Y_sq_eq_chart_X_cu_valuationOne` is
-`Y² = X³` in the chart, and `chart_two_over_X_sq_zero` is
-`(2t / Xt)² = 0`. `modelXtChartModXUV_equiv_F2` is the same
+`Y² = X³` in the chart, `chart_two_over_X_sq_zero` is
+`(2t / Xt)² = 0`, and `chart_two_over_X_ne_zero` says the ratio
+is not zero. `modelXtChartModXUV_equiv_F2` is the same
 quotient for the parameter-free polynomial model, and it is `𝔽₂`.
 `modelBaseModXUV_equiv_F2Polynomial` is the quotient of the
 `𝔽₂[a,b]` model by `⟨X, U, V⟩`, and that ring is `𝔽₂[a,b]`, not
 `𝔽₂`: `Y = X·V` kills `Y`, and `a, b` remain. `modelBaseAtNode_equiv_F2`
 kills `a, b` as well and is `𝔽₂`, as a quotient of the polynomial
-model. `ideal_XYUV` does not contain the images of `a` and `b`, so
-that model calculation is not a quotient of the chart.
+model. `ideal_XYUV` does not contain the images of `a` and `b`.
+`ideal_ABXYUV` does. The quotient of the chart by `ideal_ABXYUV`
+is `ideal_ABXYUV_quotient_F2`, and that isomorphism is not proved,
+so the model calculation is not a quotient of the chart.
 `chartFromF2Polynomial` lands in the chart before the chart quotient.
 The chart is not shown isomorphic to either model
 (`chart_Dplus_Xt_presentation`).
@@ -2451,6 +2802,28 @@ theorem chart_prime_of_ideal_XYUV_quotient_F2
       q.asIdeal = ideal_XYUV valuationOneCurve 0 0 := by
   obtain ⟨e⟩ := h
   refine ⟨⟨ideal_XYUV valuationOneCurve 0 0,
+    (isMaximal_of_quotient_equiv_zmod_two _ e).isPrime⟩, rfl⟩
+
+/-- OPEN. The quotient of the chart `D₊(Xt)` by
+`⟨a, b, X, Y, 2t/Xt, Yt/Xt⟩` is `𝔽₂` on this node. An `𝔽₂` point has
+to kill the images of the indeterminates `a` and `b` as well as
+`X`, `2t/Xt`, and `Yt/Xt`. `ideal_XYUV` does not contain those images.
+`modelBaseAtNode_equiv_F2` is the same quotient of the polynomial
+model, after `chartOfModelBase` has not been shown to be surjective.
+`FromSpec.toFun` is not applied. -/
+def ideal_ABXYUV_quotient_F2 : Prop :=
+  Nonempty ((chart_Dplus_Xt_ring valuationOneCurve 0 0 ⧸
+    ideal_ABXYUV valuationOneCurve 0 0) ≃+* ZMod 2)
+
+/-- That quotient isomorphism would make `⟨a, b, X, Y, 2t/Xt, Yt/Xt⟩`
+a prime of the degree-zero chart. It would not yet be a point of
+`Proj`. -/
+theorem chart_prime_of_ideal_ABXYUV_quotient_F2
+    (h : ideal_ABXYUV_quotient_F2) :
+    ∃ q : PrimeSpectrum (chart_Dplus_Xt_ring valuationOneCurve 0 0),
+      q.asIdeal = ideal_ABXYUV valuationOneCurve 0 0 := by
+  obtain ⟨e⟩ := h
+  refine ⟨⟨ideal_ABXYUV valuationOneCurve 0 0,
     (isMaximal_of_quotient_equiv_zmod_two _ e).isPrime⟩, rfl⟩
 
 /-- OPEN. The ideal `(2t / Xt, Yt / Xt)` is prime with residue field
@@ -2545,6 +2918,13 @@ end Beal.MathlibMissing
 #print axioms Beal.MathlibMissing.chart_two_eq_zero
 #print axioms Beal.MathlibMissing.chartFromF2Polynomial
 #print axioms Beal.MathlibMissing.chart_two_over_X_sq_zero
+#print axioms Beal.MathlibMissing.chart_two_over_X_ne_zero
+#print axioms Beal.MathlibMissing.monomial_X_pow_not_mem_cusp
+#print axioms Beal.MathlibMissing.valuationOne_X_pow_not_mem_centre_succ
+#print axioms Beal.MathlibMissing.valuationOne_xt_pow_mul_two_not_special
+#print axioms Beal.MathlibMissing.ideal_ABXYUV
+#print axioms Beal.MathlibMissing.ideal_ABXYUV_eq_span_AB_X_UV
+#print axioms Beal.MathlibMissing.ideal_XYUV_le_ideal_ABXYUV
 #print axioms Beal.MathlibMissing.chartModelEval_relation
 #print axioms Beal.MathlibMissing.chartOfModelBase
 #print axioms Beal.MathlibMissing.modelBaseModXUV_equiv_F2Polynomial
@@ -2555,6 +2935,8 @@ end Beal.MathlibMissing
 #print axioms Beal.MathlibMissing.ideal_UV_maximal
 #print axioms Beal.MathlibMissing.ideal_XYUV_quotient_F2
 #print axioms Beal.MathlibMissing.chart_prime_of_ideal_XYUV_quotient_F2
+#print axioms Beal.MathlibMissing.ideal_ABXYUV_quotient_F2
+#print axioms Beal.MathlibMissing.chart_prime_of_ideal_ABXYUV_quotient_F2
 #print axioms Beal.MathlibMissing.familySpecialFibrePoint_Dplus_Xt
 #print axioms Beal.MathlibMissing.familySpecialFibrePoint_XYUV
 #print axioms Beal.MathlibMissing.coprimeBealSolution_to_family_point
