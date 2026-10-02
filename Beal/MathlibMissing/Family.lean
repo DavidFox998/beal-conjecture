@@ -118,14 +118,18 @@ with `⟨a, b, X, Y, U, V⟩`, and `Y = X·V` makes `Y` redundant.
 quotient by that ideal is `𝔽₂`. `chartNodePrime` and
 `familySpecialFibreProjPoint` are `FromSpec.toFun` of that prime,
 a point of `D₊(Xt)` in `Proj(Rees(I)/(2))`.
-`chartOfModelBase_injective` stays open. A polynomial sent to zero
-would give, after clearing a power of `Xt`, an element of the
-scalar ideal `(2)` plus the Rees graph relations, and
-`Xⁿ ∉ Iⁿ⁺¹` is the non-membership already proved for `U ≠ 0`.
+`not_chartOfModelBase_injective` shows `chartOfModelBase` is not
+injective. `chartKernelWitness` is `U + X² + X·V²`. It lies outside
+`(X·U, Y − X·V, Y² − X³, U²)` (`chartKernelWitness_not_mem`), and
+`chartModelEval` sends it to zero (`chartModelEval_kernelWitness`):
+the degree-2 Rees numerator is `C(2) · (X⁴ t²)` and `X⁴ ∈ I²`, so
+the numerator lies in the scalar ideal `(2)`. `Xⁿ ∉ Iⁿ⁺¹` does not
+remove this class. The four-relation ideal is properly contained in
+`ker chartModelEval`.
 `chart_Dplus_Xt_presentation` stays open and names a different
 ring: the parameter-free quotient
 `𝔽₂[X,Y,U,V] / (X·U, Y − X·V, Y² − X³)` drops `a`, `b`, and `U²`.
-The presentation that matches this chart keeps all three.
+That ring is not the chart.
 `ap` and `bq` are numeral centre coordinates.
 `chart_Dplus_Xt_basicOpen_nonempty_valuationOne`,
 `chart_Dplus_Xt_presentation`, `ideal_UV_maximal`,
@@ -3160,14 +3164,19 @@ Closed:
   `𝔽₂`, transported from `chart_node_quotient_equiv` by
   `Ideal.quotEquivOfEq`
 
+False:
+* `chartOfModelBase_injective`. `not_chartOfModelBase_injective`
+  proves the map is not injective. `chartKernelWitness` is
+  `U + X² + X·V²`. `chartModelEval_kernelWitness` sends it to `0`
+  because the degree-2 Rees numerator is `2 · X⁴` and `X⁴ ∈ I²`.
+  `chartKernelWitness_not_mem` shows it lies outside
+  `(X·U, Y − X·V, Y² − X³, U²)`. That ideal is properly contained
+  in `ker chartModelEval`. `Xⁿ ∉ Iⁿ⁺¹` does not kill this class.
+
 Open:
-* `chartOfModelBase_injective`. Vanishing in the chart should mean
-  that a power of `Xt` times the Rees substitution of the polynomial
-  lies in the scalar ideal `(2)` plus the graph relations.
-  `valuationOne_X_pow_not_mem_centre_succ` is `Xⁿ ∉ Iⁿ⁺¹`.
 * `chart_Dplus_Xt_presentation`, an isomorphism with
   `𝔽₂[X,Y,U,V] / (X·U, Y − X·V, Y² − X³)`. That ring drops `a`, `b`,
-  and `U²`. It is not the model above.
+  and `U²`. It is not the chart.
 -/
 
 theorem ker_contains_ABXYUV :

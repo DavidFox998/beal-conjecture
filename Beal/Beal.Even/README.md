@@ -36,15 +36,23 @@ Closed in `8f783ade`, in `Beal/MathlibMissing/Family.lean`:
   are a point of `D₊(Xt)` inside `Proj(Rees(I)/(2)) = V(2)`
   (`7d48c25d`).
 
+False, in `Beal/MathlibMissing/ChartSurjection.lean`:
+
+* `chartOfModelBase_injective`. `not_chartOfModelBase_injective`
+  proves the map is not injective. The witness is `U + X² + X·V²`.
+  `chartModelEval_kernelWitness` sends it to `0`: the degree-2 Rees
+  numerator is `2 · X⁴` and `X⁴ ∈ I²`, so the numerator lies in the
+  scalar ideal `(2)`. `chartKernelWitness_not_mem` shows the same
+  polynomial lies outside `(X·U, Y − X·V, Y² − X³, U²)`. That ideal
+  is properly contained in `ker chartModelEval`. `Xⁿ ∉ Iⁿ⁺¹` does
+  not kill this class.
+
 Open:
 
-* `chartOfModelBase_injective`. Vanishing in the chart should mean
-  that a power of `Xt` times the Rees substitution of the polynomial
-  lies in the scalar ideal `(2)` plus the graph relations.
-  `valuationOne_X_pow_not_mem_centre_succ` is `Xⁿ ∉ Iⁿ⁺¹`.
 * `chart_Dplus_Xt_presentation`, an isomorphism with the parameter-free
   ring `𝔽₂[X,Y,U,V] / (X·U, Y − X·V, Y² − X³)`. That ring drops `a`,
-  `b`, and `U²`. The model that matches this chart is
-  `𝔽₂[a,b][X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U²)`.
+  `b`, and `U²`. It is not the chart. The four-relation quotient in
+  `𝔽₂[a,b][X,Y,U,V]` surjects onto `D₊(Xt)` and is not isomorphic
+  to it.
 
 Printed axioms are `propext`, `Classical.choice`, and `Quot.sound`.

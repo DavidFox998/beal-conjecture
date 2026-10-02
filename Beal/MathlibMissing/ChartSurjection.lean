@@ -1,6 +1,7 @@
 import Beal.MathlibMissing.Family
 import Beal.«Beal.General».TateEvenCoordinateCharts
 import Beal.«Beal.General».ProjectiveQuotientChart
+import Mathlib.Algebra.DualNumber
 
 /-!
 Generation of the chart `D₊(Xt)` by `a, b, X, Y, U, V`.
@@ -419,14 +420,11 @@ theorem chartOfModelBase_surjective : Function.Surjective chartOfModelBase := by
   exact ⟨Ideal.Quotient.mk modelBaseRelationIdeal p, by
     simpa [chartOfModelBase] using hp⟩
 
-/-- OPEN. Injectivity of
+/-- Injectivity of
 `𝔽₂[a,b][X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U²) → D₊(Xt)`.
-Together with `chartOfModelBase_surjective` this is a presentation.
-The parameter-free ring `𝔽₂[X,Y,U,V] / (X·U, Y − X·V, Y² − X³)`
-drops `a`, `b`, and `U²`, so it is not this statement.
-A polynomial sent to zero should satisfy: some power of `Xt`
-times its Rees substitution lies in the scalar ideal `(2)` plus
-the graph relations. `Xⁿ ∉ Iⁿ⁺¹` is already proved. -/
+`not_chartOfModelBase_injective` shows this proposition is false.
+The witness is `U + X² + X·V²`: it dies in the chart, and it does not
+lie in `(X·U, Y − X·V, Y² − X³, U²)`. -/
 def chartOfModelBase_injective : Prop :=
   Function.Injective chartOfModelBase
 
@@ -488,11 +486,276 @@ theorem ker_eq_ideal_ABXYUV_holds : ker_eq_ideal_ABXYUV := by
 theorem ideal_ABXYUV_quotient_F2_holds : ideal_ABXYUV_quotient_F2 :=
   ideal_ABXYUV_quotient_F2_of_ker_eq ker_eq_ideal_ABXYUV_holds
 
+/-- `U + X² + X·V²` in `𝔽₂[a,b][X,Y,U,V]`. -/
+noncomputable def chartKernelWitness :
+    MvPolynomial (Fin 4) (MvPolynomial (Fin 2) (ZMod 2)) :=
+  MvPolynomial.X 2 + (MvPolynomial.X 0) ^ 2 +
+    (MvPolynomial.X 0) * (MvPolynomial.X 3) ^ 2
+
+private lemma valuationOne_witness_coeff :
+    let x := surfaceNumeralX valuationOneCurve 0
+    let y := surfaceNumeralY valuationOneCurve 0
+    x ^ 4 + x * y ^ 2 + (2 : surfaceRing valuationOneCurve) * x =
+      (2 : surfaceRing valuationOneCurve) * x ^ 4 := by
+  intro x y
+  have hy : y ^ 2 - x ^ 3 = - (2 : surfaceRing valuationOneCurve) :=
+    valuationOne_node_Ysq_sub_Xcu
+  have hy' : y ^ 2 = x ^ 3 - 2 := by
+    have h := sub_eq_iff_eq_add.mp hy
+    rw [add_comm] at h
+    simpa [sub_eq_add_neg] using h
+  rw [hy']
+  ring
+
+private lemma valuationOne_X_fourth_mem_centre_sq :
+    (surfaceNumeralX valuationOneCurve 0) ^ 4 ∈
+      numeralCentreIdeal valuationOneCurve 0 0 ^ 2 := by
+  let I := numeralCentreIdeal valuationOneCurve 0 0
+  let x := surfaceNumeralX valuationOneCurve 0
+  have hx : x ∈ I := numeral_X_mem_centre valuationOneCurve 0 0
+  have hx2 : x ^ 2 ∈ I ^ 2 := Ideal.pow_mem_pow hx 2
+  have hx4 : x ^ 4 ∈ (I ^ 2) * (I ^ 2) := by
+    rw [show x ^ 4 = x ^ 2 * x ^ 2 by ring]
+    exact Ideal.mul_mem_mul hx2 hx2
+  exact Ideal.mul_le_right hx4
+
+/-- The degree-2 Rees numerator of `U + X² + X·V²` is `C(2) · (X⁴ t²)`. -/
+private lemma valuationOne_witness_rees_mem_special :
+    numeralReesConst valuationOneCurve 0 0
+        ((surfaceNumeralX valuationOneCurve 0) ^ 2) *
+      (numeralReesXT valuationOneCurve 0 0) ^ 2 +
+    numeralReesConst valuationOneCurve 0 0 (surfaceNumeralX valuationOneCurve 0) *
+      (numeralReesYT valuationOneCurve 0 0) ^ 2 +
+    numeralReesTwo valuationOneCurve 0 0 * numeralReesXT valuationOneCurve 0 0 ∈
+      numeralReesSpecialIdeal valuationOneCurve 0 0 := by
+  let I := numeralCentreIdeal valuationOneCurve 0 0
+  let R := surfaceRing valuationOneCurve
+  let x := surfaceNumeralX valuationOneCurve 0
+  let y := surfaceNumeralY valuationOneCurve 0
+  let mon : reesAlgebra I :=
+    centreReesMonomial I 2 ⟨x ^ 4, valuationOne_X_fourth_mem_centre_sq⟩
+  have heq :
+      numeralReesConst valuationOneCurve 0 0 (x ^ 2) *
+        (numeralReesXT valuationOneCurve 0 0) ^ 2 +
+      numeralReesConst valuationOneCurve 0 0 x *
+        (numeralReesYT valuationOneCurve 0 0) ^ 2 +
+      numeralReesTwo valuationOneCurve 0 0 * numeralReesXT valuationOneCurve 0 0 =
+        algebraMap R (reesAlgebra I) (2 : R) * mon := by
+    apply Subtype.ext
+    have hmon {n : ℕ} (r : R) (hr : r ∈ I ^ n) :
+        ((centreReesMonomial I n ⟨r, hr⟩ : reesAlgebra I) : Polynomial R) =
+          Polynomial.monomial n r := rfl
+    rw [pow_two (numeralReesXT valuationOneCurve 0 0),
+      pow_two (numeralReesYT valuationOneCurve 0 0)]
+    rw [Subalgebra.coe_add, Subalgebra.coe_add, Subalgebra.coe_mul, Subalgebra.coe_mul,
+      Subalgebra.coe_mul, Subalgebra.coe_mul, Subalgebra.coe_mul, Subalgebra.coe_mul,
+      Subalgebra.coe_algebraMap]
+    simp only [numeralReesConst, numeralReesXT, numeralReesYT, numeralReesTwo, mon]
+    repeat rw [hmon]
+    rw [Polynomial.monomial_mul_monomial, Polynomial.monomial_mul_monomial,
+      Polynomial.monomial_mul_monomial, Polynomial.monomial_mul_monomial,
+      Polynomial.monomial_mul_monomial]
+    have hxmk :
+        (Ideal.Quotient.mk (Ideal.span {surfacePolynomial valuationOneCurve})
+          (MvPolynomial.X (0 : Fin 2) -
+            MvPolynomial.C (MvPolynomial.C ((0 : ℕ) : ℤ_[2])))) = x := rfl
+    have hymk :
+        (Ideal.Quotient.mk (Ideal.span {surfacePolynomial valuationOneCurve})
+          (MvPolynomial.X (1 : Fin 2) -
+            MvPolynomial.C (MvPolynomial.C ((0 : ℕ) : ℤ_[2])))) = y := rfl
+    rw [hxmk, hymk, ← Polynomial.C_eq_algebraMap, Polynomial.C_mul_monomial]
+    simp only [zero_add]
+    norm_num
+    rw [← Polynomial.monomial_add, ← Polynomial.monomial_add]
+    congr 1
+    calc
+      x ^ 2 * (x * x) + x * (y * y) + (2 : R) * x
+          = x ^ 4 + x * y ^ 2 + (2 : R) * x := by ring
+      _ = (2 : R) * x ^ 4 := valuationOne_witness_coeff
+  rw [heq]
+  exact Ideal.mul_mem_right _ _
+    (Ideal.subset_span (Set.mem_singleton _))
+
+/-- `chart_X² + chart_X · (Yt / Xt)² + 2t / Xt = 0` on `D₊(Xt)`. -/
+private lemma chart_X_sq_add_X_V_sq_add_U_eq_zero :
+    (chart_X valuationOneCurve 0 0) ^ 2 +
+      chart_X valuationOneCurve 0 0 *
+        (chart_Y_over_X valuationOneCurve 0 0) ^ 2 +
+      chart_two_over_X valuationOneCurve 0 0 = 0 := by
+  let I := numeralCentreIdeal valuationOneCurve 0 0
+  letI : GradedAlgebra (centreReesComponent I) := centreReesGrading I
+  let J := numeralReesSpecialIdeal valuationOneCurve 0 0
+  have hJ : J.IsHomogeneous (centreReesComponent I) :=
+    numeralReesSpecialIdeal_isHomogeneous valuationOneCurve 0 0
+  let ℬ := homogeneousQuotientComponent (centreReesComponent I) J
+  letI : GradedAlgebra ℬ := homogeneousQuotientGrading (centreReesComponent I) J hJ
+  let Q := (reesAlgebra I) ⧸ J
+  let f : Q := Ideal.Quotient.mk J (numeralReesXT valuationOneCurve 0 0)
+  let nX : Q := Ideal.Quotient.mk J
+    (numeralReesConst valuationOneCurve 0 0 (surfaceNumeralX valuationOneCurve 0))
+  let nY : Q := Ideal.Quotient.mk J (numeralReesYT valuationOneCurve 0 0)
+  let n2 : Q := Ideal.Quotient.mk J (numeralReesTwo valuationOneCurve 0 0)
+  apply HomogeneousLocalization.val_injective (Submonoid.powers f)
+  erw [HomogeneousLocalization.val_add, HomogeneousLocalization.val_add,
+    HomogeneousLocalization.val_mul, HomogeneousLocalization.val_pow,
+    HomogeneousLocalization.val_pow, HomogeneousLocalization.val_zero]
+  simp only [chart_X, chart_Y_over_X, chart_two_over_X, HomogeneousLocalization.val_mk]
+  rw [Localization.mk_pow, Localization.mk_pow, Localization.mk_mul]
+  let d1 : Submonoid.powers f := ⟨(1 : Q), ⟨0, pow_zero f⟩⟩
+  let df : Submonoid.powers f := ⟨f, ⟨1, pow_one f⟩⟩
+  let d : Submonoid.powers f := ⟨f * f, ⟨2, pow_two f⟩⟩
+  have hd1 : d1 ^ 2 = d1 := by
+    apply Subtype.ext
+    simp [d1, pow_two]
+    ring
+  have hdf : df ^ 2 = d := by
+    apply Subtype.ext
+    simp [df, d, pow_two]
+  have hd1d : d1 * d = d := by
+    apply Subtype.ext
+    simp [d1, d]
+    ring
+  have hdenX :
+      (⟨(1 : Q), ⟨0, pow_zero f⟩⟩ : Submonoid.powers f) = d1 := rfl
+  have hdenF :
+      (⟨f, ⟨1, pow_one f⟩⟩ : Submonoid.powers f) = df := rfl
+  rw [hdenX, hdenF, hd1, hdf, hd1d]
+  have hX : Localization.mk (nX ^ 2) d1 =
+      Localization.mk (nX ^ 2 * (f * f)) d := by
+    rw [Localization.mk_eq_mk_iff]
+    refine Localization.r_iff_exists.mpr ⟨1, ?_⟩
+    simp [d, d1]
+    ring
+  have hU : Localization.mk n2 df = Localization.mk (n2 * f) d := by
+    rw [Localization.mk_eq_mk_iff]
+    refine Localization.r_iff_exists.mpr ⟨1, ?_⟩
+    simp [d, df]
+    ring
+  rw [hX, hU]
+  have hnum : nX ^ 2 * (f * f) + nX * nY ^ 2 + n2 * f = 0 := by
+    rw [pow_two, pow_two]
+    have hconst : numeralReesConst valuationOneCurve 0 0 (surfaceNumeralX valuationOneCurve 0) *
+        numeralReesConst valuationOneCurve 0 0 (surfaceNumeralX valuationOneCurve 0) =
+        numeralReesConst valuationOneCurve 0 0
+          ((surfaceNumeralX valuationOneCurve 0) ^ 2) := by
+      apply Subtype.ext
+      simp [numeralReesConst, centreReesMonomial, pow_two, Polynomial.monomial_mul_monomial]
+    have hyt : numeralReesYT valuationOneCurve 0 0 * numeralReesYT valuationOneCurve 0 0 =
+        numeralReesYT valuationOneCurve 0 0 ^ 2 := by
+      rw [pow_two]
+    have hxt : numeralReesXT valuationOneCurve 0 0 * numeralReesXT valuationOneCurve 0 0 =
+        numeralReesXT valuationOneCurve 0 0 ^ 2 := by
+      rw [pow_two]
+    have hsum : (nX * nX) * (f * f) + nX * (nY * nY) + n2 * f =
+        Ideal.Quotient.mk J
+          (numeralReesConst valuationOneCurve 0 0
+              ((surfaceNumeralX valuationOneCurve 0) ^ 2) *
+            (numeralReesXT valuationOneCurve 0 0) ^ 2 +
+          numeralReesConst valuationOneCurve 0 0 (surfaceNumeralX valuationOneCurve 0) *
+            (numeralReesYT valuationOneCurve 0 0) ^ 2 +
+          numeralReesTwo valuationOneCurve 0 0 * numeralReesXT valuationOneCurve 0 0) := by
+      simp only [nX, nY, n2, f, ← map_mul, ← map_add, hconst, hxt, hyt, mul_assoc]
+    rw [hsum]
+    exact Ideal.Quotient.eq_zero_iff_mem.mpr valuationOne_witness_rees_mem_special
+  change (nX ^ 2 * (f * f)) /ₒ d + (nX * nY ^ 2) /ₒ d + (n2 * f) /ₒ d = 0
+  rw [OreLocalization.add_oreDiv, OreLocalization.add_oreDiv, hnum]
+  exact OreLocalization.zero_oreDiv' d
+
+/-- `chartModelEval (U + X² + X·V²) = 0`. -/
+theorem chartModelEval_kernelWitness :
+    chartModelEval chartKernelWitness = 0 := by
+  rw [chartKernelWitness]
+  simp only [map_add, map_mul, map_pow, chartModelEval, MvPolynomial.eval₂Hom_X',
+    if_neg (by decide : (2 : Fin 4) ≠ 0),
+    if_neg (by decide : (2 : Fin 4) ≠ 1),
+    if_pos (rfl : (2 : Fin 4) = 2),
+    if_pos (rfl : (0 : Fin 4) = 0),
+    if_neg (by decide : (3 : Fin 4) ≠ 0),
+    if_neg (by decide : (3 : Fin 4) ≠ 1),
+    if_neg (by decide : (3 : Fin 4) ≠ 2), if_true]
+  rw [add_assoc, add_comm]
+  exact chart_X_sq_add_X_V_sq_add_U_eq_zero
+
+/-- Send `U` to `ε` and `a, b, X, Y, V` to `0` in `𝔽₂[ε]`. -/
+noncomputable def chartKernelWitnessDual :
+    MvPolynomial (Fin 4) (MvPolynomial (Fin 2) (ZMod 2)) →+*
+      DualNumber (ZMod 2) :=
+  MvPolynomial.eval₂Hom
+    ((algebraMap (ZMod 2) (DualNumber (ZMod 2))).comp
+      (MvPolynomial.eval₂Hom (RingHom.id (ZMod 2)) fun _ : Fin 2 => (0 : ZMod 2)))
+    fun i : Fin 4 => if i = 2 then (DualNumber.eps : DualNumber (ZMod 2)) else 0
+
+private lemma chartKernelWitnessDual_X (i : Fin 4) :
+    chartKernelWitnessDual (MvPolynomial.X i) =
+      if i = 2 then (DualNumber.eps : DualNumber (ZMod 2)) else 0 := by
+  simp [chartKernelWitnessDual]
+
+private lemma chartKernelWitnessDual_eps_ne_zero :
+    (DualNumber.eps : DualNumber (ZMod 2)) ≠ 0 := by
+  intro h
+  have hsnd := congrArg TrivSqZeroExt.snd h
+  simp at hsnd
+
+private lemma chartKernelWitnessDual_apply :
+    chartKernelWitnessDual chartKernelWitness = DualNumber.eps := by
+  simp [chartKernelWitness, map_add, map_mul, map_pow, chartKernelWitnessDual_X,
+    if_neg (by decide : (0 : Fin 4) ≠ 2),
+    if_neg (by decide : (3 : Fin 4) ≠ 2),
+    if_pos (rfl : (2 : Fin 4) = 2)]
+
+/-- `U + X² + X·V²` is outside `(X·U, Y − X·V, Y² − X³, U²)`. -/
+theorem chartKernelWitness_not_mem :
+    chartKernelWitness ∉ modelBaseRelationIdeal := by
+  intro hmem
+  have hker : modelBaseRelationIdeal ≤ RingHom.ker chartKernelWitnessDual := by
+    rw [modelBaseRelationIdeal, Ideal.span_le]
+    intro z hz
+    simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hz
+    rcases hz with rfl | rfl | rfl | rfl
+    · rw [SetLike.mem_coe, RingHom.mem_ker, map_mul, chartKernelWitnessDual_X,
+        chartKernelWitnessDual_X,
+        if_neg (by decide : (0 : Fin 4) ≠ 2),
+        if_pos (rfl : (2 : Fin 4) = 2)]
+      simp
+    · rw [SetLike.mem_coe, RingHom.mem_ker, map_sub, map_mul, chartKernelWitnessDual_X,
+        chartKernelWitnessDual_X, chartKernelWitnessDual_X,
+        if_neg (by decide : (1 : Fin 4) ≠ 2),
+        if_neg (by decide : (0 : Fin 4) ≠ 2),
+        if_neg (by decide : (3 : Fin 4) ≠ 2)]
+      simp
+    · simp [RingHom.mem_ker, map_sub, map_pow, chartKernelWitnessDual_X,
+        if_neg (by decide : (1 : Fin 4) ≠ 2),
+        if_neg (by decide : (0 : Fin 4) ≠ 2)]
+    · simp [RingHom.mem_ker, map_pow, chartKernelWitnessDual_X, pow_two,
+        DualNumber.eps_mul_eps,
+        if_pos (rfl : (2 : Fin 4) = 2)]
+  have hzero : chartKernelWitnessDual chartKernelWitness = 0 := by
+    exact RingHom.mem_ker.mp (hker hmem)
+  rw [chartKernelWitnessDual_apply] at hzero
+  exact chartKernelWitnessDual_eps_ne_zero hzero
+
+/-- `𝔽₂[a,b][X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U²) → D₊(Xt)` is not injective.
+`U + X² + X·V²` is a nonzero class sent to zero. -/
+theorem not_chartOfModelBase_injective : ¬ chartOfModelBase_injective := by
+  intro hinj
+  have hzero : chartOfModelBase
+      (Ideal.Quotient.mk modelBaseRelationIdeal chartKernelWitness) =
+      chartOfModelBase 0 := by
+    rw [map_zero]
+    simpa [chartOfModelBase] using chartModelEval_kernelWitness
+  have heq := hinj hzero
+  have hmem : chartKernelWitness ∈ modelBaseRelationIdeal :=
+    Ideal.Quotient.eq_zero_iff_mem.mp heq
+  exact chartKernelWitness_not_mem hmem
+
 #print axioms Beal.MathlibMissing.chartOfModelBase_surjective
 #print axioms Beal.MathlibMissing.ker_eq_ideal_ABXYUV
 #print axioms Beal.MathlibMissing.ker_eq_ideal_ABXYUV_holds
 #print axioms Beal.MathlibMissing.ideal_ABXYUV_quotient_F2_holds
 #print axioms Beal.MathlibMissing.chartOfModelBase_injective
 #print axioms Beal.MathlibMissing.chartOfModelBase_bijective_of_injective
+#print axioms Beal.MathlibMissing.chartModelEval_kernelWitness
+#print axioms Beal.MathlibMissing.chartKernelWitness_not_mem
+#print axioms Beal.MathlibMissing.not_chartOfModelBase_injective
 
 end Beal.MathlibMissing

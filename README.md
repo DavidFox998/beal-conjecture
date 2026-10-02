@@ -4,7 +4,7 @@
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22922473.svg)](https://doi.org/10.5281/zenodo.22922473)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22912430.svg)](https://doi.org/10.5281/zenodo.22912430)
 
-## v37-degree-one `8f783ade` — chart generation closed, injectivity open
+## v37-degree-one — chart generation closed, `chartOfModelBase` not injective
 
 `main` stays `3dd7728f` with DOI `10.5281/zenodo.23054568`. This branch
 is not merged, not tagged, and has no new DOI.
@@ -47,16 +47,24 @@ Closed in `8f783ade`:
   are a point of `D₊(Xt)` inside `Proj(Rees(I)/(2)) = V(2)`
   (`7d48c25d`).
 
+False:
+
+* `chartOfModelBase_injective`. `not_chartOfModelBase_injective`
+  proves the map is not injective. The witness is `U + X² + X·V²`.
+  `chartModelEval_kernelWitness` sends it to `0`: the degree-2 Rees
+  numerator is `2 · X⁴` and `X⁴ ∈ I²`, so the numerator lies in the
+  scalar ideal `(2)`. `chartKernelWitness_not_mem` shows the same
+  polynomial lies outside `(X·U, Y − X·V, Y² − X³, U²)`. That ideal
+  is properly contained in `ker chartModelEval`. `Xⁿ ∉ Iⁿ⁺¹` does
+  not kill this class.
+
 Open:
 
-* `chartOfModelBase_injective`. Vanishing in the chart should mean
-  that a power of `Xt` times the Rees substitution of the polynomial
-  lies in the scalar ideal `(2)` plus the graph relations.
-  `valuationOne_X_pow_not_mem_centre_succ` is `Xⁿ ∉ Iⁿ⁺¹`.
 * `chart_Dplus_Xt_presentation`, an isomorphism with the parameter-free
   ring `𝔽₂[X,Y,U,V] / (X·U, Y − X·V, Y² − X³)`. That ring drops `a`,
-  `b`, and `U²`. The model that matches this chart is
-  `𝔽₂[a,b][X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U²)`.
+  `b`, and `U²`. It is not the chart. The four-relation quotient in
+  `𝔽₂[a,b][X,Y,U,V]` surjects onto `D₊(Xt)` and is not isomorphic
+  to it.
 
 `BealEven` does not import `Beal/MathlibMissing/Family.lean`.
 Printed axioms of the new declarations are `propext`, `Classical.choice`,
