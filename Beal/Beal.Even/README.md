@@ -53,11 +53,19 @@ Closed in `Beal/MathlibMissing/ChartTrueIdeal.lean`:
   `chartTrueIdeal_contains_U2` puts `U²` in this ideal, from
   `U² = U·(U + X² + X·V²) + (X + V²)·(X·U)`.
 * `chartOfModelTrue_surjective` is the induced surjection onto `D₊(Xt)`.
+* `chartTrueIdeal_quotient_equiv_normal`:
+  `𝔽₂[a,b][X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U + X² + X·V²) ≃
+  𝔽₂[a,b][X,V] / (X²·(X + V²))`.
+* `valuationOne_X_fourth_sub_X_not_mem_centre_sq`: `X⁴ − X ∉ I²`
+  at `(0, 0)`. The numerator `2·(X⁴ − X)` of `X² + X·V²` is not in
+  the scalar ideal `(2)` of the Rees algebra.
 
 Open:
 
 * `chartOfModelTrue_injective` and `chart_Dplus_Xt_true_presentation`.
-  The bijection
+  A normal form `A(V) + X·B(V) + X²·C(V)` is not shown to vanish in
+  `D₊(Xt)` only when it is zero. `X⁴ − X ∉ I²` is the obstruction for
+  the single class `X² + X·V²`. The bijection
   `𝔽₂[a,b][X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U + X² + X·V²) ≃ D₊(Xt)`
   is not proved.
 * `chart_Dplus_Xt_presentation`, an isomorphism with the parameter-free

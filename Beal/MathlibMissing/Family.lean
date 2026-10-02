@@ -129,8 +129,13 @@ remove this class. The four-relation ideal is properly contained in
 `chartTrueIdeal` is `(X·U, Y − X·V, Y² − X³, U + X² + X·V²)`.
 `chartTrueIdeal_contains_U2` puts `U²` in that ideal, using
 `X·U = 0`. `chartOfModelTrue_surjective` is the induced surjection
-onto `D₊(Xt)`. `chartOfModelTrue_injective` and
-`chart_Dplus_Xt_true_presentation` stay open.
+onto `D₊(Xt)`. `chartTrueIdeal_quotient_equiv_normal` identifies the
+polynomial quotient with `𝔽₂[a,b][X,V] / (X²·(X + V²))`.
+`valuationOne_X_fourth_sub_X_not_mem_centre_sq` shows `X⁴ − X ∉ I²`,
+so the single class `X² + X·V²` does not die for degree reasons.
+`chartOfModelTrue_injective` stays open: a normal form
+`A(V) + X·B(V) + X²·C(V)` is not yet shown to vanish in `D₊(Xt)`
+only when it is zero. `chart_Dplus_Xt_true_presentation` stays open.
 `chart_Dplus_Xt_presentation` stays open and names a different
 ring: the parameter-free quotient
 `𝔽₂[X,Y,U,V] / (X·U, Y − X·V, Y² − X³)` drops `a`, `b`, and `U²`.
@@ -3182,10 +3187,16 @@ Closed in `ChartTrueIdeal.lean`:
 * `chartTrueIdeal = (X·U, Y − X·V, Y² − X³, U + X² + X·V²)`.
   `chartTrueIdeal_contains_U2` puts `U²` in this ideal.
 * `chartOfModelTrue_surjective` covers `D₊(Xt)`.
+* `chartTrueIdeal_quotient_equiv_normal`:
+  `𝔽₂[a,b][X,Y,U,V] / chartTrueIdeal ≃ 𝔽₂[a,b][X,V] / (X²·(X + V²))`.
+* `valuationOne_X_fourth_sub_X_not_mem_centre_sq`: `X⁴ − X ∉ I²`.
 
 Open:
-* `chartOfModelTrue_injective` and `chart_Dplus_Xt_true_presentation`,
-  the bijection with
+* `chartOfModelTrue_injective`. Whether a normal form
+  `A(V) + X·B(V) + X²·C(V)` vanishes in `D₊(Xt)` only when it is
+  zero is open. `X⁴ − X ∉ I²` blocks the single class `X² + X·V²`.
+  `chart_Dplus_Xt_true_presentation` is the
+  bijection with
   `𝔽₂[a,b][X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U + X² + X·V²)`.
 * `chart_Dplus_Xt_presentation`, an isomorphism with
   `𝔽₂[X,Y,U,V] / (X·U, Y − X·V, Y² − X³)`. That ring drops `a`, `b`,
