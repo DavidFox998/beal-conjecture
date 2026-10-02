@@ -6,8 +6,9 @@ import Mathlib.RingTheory.MvPolynomial.Basic
 The chart ideal with the fifth generator `U + X² + X·V²`.
 `U²` follows from `X·U = 0`. The induced map onto `D₊(Xt)` is
 surjective. The polynomial quotient is `𝔽₂[a,b][X,V] / (X²·(X + V²))`.
-`X⁴ − X ∉ I²`. Injectivity is not proved: a normal form
-`A(V) + X·B(V) + X²·C(V)` is not shown to vanish only when it is zero.
+`X⁴ − X ∉ I²`. The class `X + V²` is nonzero in `D₊(Xt)`
+(`chart_X_add_V_sq_ne_zero`). Injectivity is not proved: a general normal
+form `A(V) + X·B(V) + X²·C(V)` is not shown to vanish only when it is zero.
 -/
 
 namespace Beal.MathlibMissing
@@ -449,9 +450,11 @@ the cleared Rees numerator lies in `2 · I^{d+m}`.
 if `α + Y·β ∈ I^k`, the coefficient of `X^i` in `α` has 2-adic norm at
 most `2^{−⌈(k−i)/2⌉}` and the coefficient of `X^i` in `β` has norm at
 most `2^{−⌊(k−i)/2⌋}`. `centre_X_pow_mul_X_cube_sub_one_not_mem` gives
-`X^m · (X³ − 1) ∉ I^{m+1}`. The class `X + V²` has degree-2 numerator
-`2·(X³ − 1)` on `Y² = X³ − 2`. What remains open is the identification
-of chart vanishing with a Rees numerator in `2 · I^{d+m}`. -/
+`X^m · (X³ − 1) ∉ I^{m+1}`. `chart_X_add_V_sq_ne_zero` applies that
+obstruction: the class `X + V²` has degree-2 numerator `2·(X³ − 1)` on
+`Y² = X³ − 2`, and `(Xt)^k` times that numerator lies in the scalar ideal
+`(2)` only if `X^k · (X³ − 1) ∈ I^{k+2}`. What remains open is the same
+identification for a general normal form `A(V) + X·B(V) + X²·C(V)`. -/
 def chartOfModelTrue_injective : Prop :=
   Function.Injective chartOfModelTrue
 

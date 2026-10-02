@@ -68,16 +68,23 @@ Closed in `Beal/MathlibMissing/CentrePower.lean`:
   in `β` has norm at most `2^{−⌊(k−i)/2⌋}`. A nonzero coefficient has
   `v₂` at least that integer.
 * `centre_X_pow_mul_X_cube_sub_one_not_mem`:
-  `X^m · (X³ − 1) ∉ I^{m+1}`, hence `∉ I^{m+2}`. This is the obstruction
-  for the class `X + V²`, whose numerator is `2·(X³ − 1)`.
+  `X^m · (X³ − 1) ∉ I^{m+1}`, hence `∉ I^{m+2}`.
+
+Closed in `Beal/MathlibMissing/ChartInjective.lean`:
+
+* `chart_X_add_V_sq_ne_zero`. The class `X + V²` is nonzero in `D₊(Xt)`.
+  Its numerator is `2·(X³ − 1) t²`, and the coefficient bound keeps
+  `X^k · (X³ − 1)` out of `I^{k+2}`.
+* `chartOfModelTrue_normal_X_add_Vsq_ne_zero`: that normal-form class does
+  not map to zero.
 
 Open:
 
 * `chartOfModelTrue_injective` and `chart_Dplus_Xt_true_presentation`.
-  A normal form `A(V) + X·B(V) + X²·C(V)` is not shown to vanish in
-  `D₊(Xt)` only when it is zero. The coefficient bound applies after
-  that vanishing is written as a Rees numerator in `2 · I^{d+m}`; that
-  translation is open. The bijection
+  A general normal form `A(V) + X·B(V) + X²·C(V)` is not shown to vanish
+  in `D₊(Xt)` only when it is zero. The coefficient bound is applied to
+  the single class `X + V²`. The translation of an arbitrary normal form
+  into a Rees numerator in `2 · I^{d+m}` is open. The bijection
   `𝔽₂[a,b][X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U + X² + X·V²) ≃ D₊(Xt)`
   is not proved.
 * `chart_Dplus_Xt_presentation`, an isomorphism with the parameter-free

@@ -19,8 +19,11 @@ so the inequality is the norm bound, which holds for the zero coefficient.
 A nonzero coefficient then has `v₂` at least that integer.
 
 The bound yields `X^m · (X³ − 1) ∉ I^{m+1}`, and therefore `∉ I^{m+2}`.
-`chartOfModelTrue_injective` stays open: vanishing of a general normal form
-in `D₊(Xt)` is not yet reduced to a Rees numerator in `2 · I^{d+m}`.
+`ChartInjective.lean` applies that obstruction to the chart class `X + V²`:
+its degree-2 Rees numerator is `2·(X³ − 1) t²`, so the class is nonzero in
+`D₊(Xt)`. `chartOfModelTrue_injective` stays open: vanishing of a general
+normal form `A(V) + X·B(V) + X²·C(V)` is not yet reduced to a Rees numerator
+in `2 · I^{d+m}`.
 -/
 
 namespace Beal.MathlibMissing
