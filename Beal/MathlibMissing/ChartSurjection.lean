@@ -419,6 +419,22 @@ theorem chartOfModelBase_surjective : Function.Surjective chartOfModelBase := by
   exact ⟨Ideal.Quotient.mk modelBaseRelationIdeal p, by
     simpa [chartOfModelBase] using hp⟩
 
+/-- OPEN. Injectivity of
+`𝔽₂[a,b][X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U²) → D₊(Xt)`.
+Together with `chartOfModelBase_surjective` this is a presentation.
+The parameter-free ring `𝔽₂[X,Y,U,V] / (X·U, Y − X·V, Y² − X³)`
+drops `a`, `b`, and `U²`, so it is not this statement.
+A polynomial sent to zero should satisfy: some power of `Xt`
+times its Rees substitution lies in the scalar ideal `(2)` plus
+the graph relations. `Xⁿ ∉ Iⁿ⁺¹` is already proved. -/
+def chartOfModelBase_injective : Prop :=
+  Function.Injective chartOfModelBase
+
+/-- Injectivity promotes the proved surjection to a bijection. -/
+theorem chartOfModelBase_bijective_of_injective
+    (h : chartOfModelBase_injective) : Function.Bijective chartOfModelBase :=
+  ⟨h, chartOfModelBase_surjective⟩
+
 end NodeChart
 
 private lemma chartModelEval_nodeKer_le :
@@ -476,5 +492,7 @@ theorem ideal_ABXYUV_quotient_F2_holds : ideal_ABXYUV_quotient_F2 :=
 #print axioms Beal.MathlibMissing.ker_eq_ideal_ABXYUV
 #print axioms Beal.MathlibMissing.ker_eq_ideal_ABXYUV_holds
 #print axioms Beal.MathlibMissing.ideal_ABXYUV_quotient_F2_holds
+#print axioms Beal.MathlibMissing.chartOfModelBase_injective
+#print axioms Beal.MathlibMissing.chartOfModelBase_bijective_of_injective
 
 end Beal.MathlibMissing
