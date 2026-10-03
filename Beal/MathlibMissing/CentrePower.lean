@@ -24,9 +24,11 @@ its degree-2 Rees numerator is `2·(X³ − 1) t²`, so the class is nonzero in
 `D₊(Xt)`. Every class in `𝔽₂[a,b][X,V] / (X²·(X + V²))` has a unique
 representative `A(V) + X·B(V) + X²·C(V)`. For a `0`-`1` pattern,
 `bitReduced_signed_bound` finds an index whose coefficient is
-`(-1)^s · 2^q` and whose centre bound is `q`. `chartOfModelTrue_injective`
-stays open: chart vanishing is not yet `α = 2·αₛ` and `β = 2·βₛ` with
-`αₛ + Y·βₛ ∈ I^D`.
+`(-1)^s · 2^q` and whose centre bound is `q`.
+`twice_centre_blocks_signed` rules out `X^m·α = 2·αₛ` and
+`X^m·β = 2·βₛ` with `αₛ + Y·βₛ ∈ I^{D+m}`.
+`chartOfModelTrue_injective` stays open: chart vanishing is not yet
+that Rees equation.
 -/
 
 namespace Beal.MathlibMissing

@@ -146,9 +146,11 @@ in `D₊(Xt)`. Every class has a unique representative
 `A(V) + X·B(V) + X²·C(V)`, and `chartOfModelTrue_injective` is the
 statement that this representative dies in `D₊(Xt)` only when it is zero.
 `bitReduced_signed_bound` is the coefficient step for a `0`-`1` pattern:
-some index carries `(-1)^s · 2^q` against centre bound `q`. The kernel
-condition stays open because chart vanishing is not yet the identity
-`α = 2·αₛ`, `β = 2·βₛ` with `αₛ + Y·βₛ ∈ I^D`.
+some index carries `(-1)^s · 2^q` against centre bound `q`.
+`twice_centre_blocks_signed` says that series cannot satisfy
+`X^m·α = 2·αₛ` and `X^m·β = 2·βₛ` with `αₛ + Y·βₛ ∈ I^{D+m}`.
+The kernel condition stays open because chart vanishing is not yet
+that Rees equation.
 `chart_Dplus_Xt_true_presentation` stays open.
 `chart_Dplus_Xt_presentation` stays open and names a different
 ring: the parameter-free quotient
@@ -3236,12 +3238,16 @@ Closed in `ChartInjective.lean`, continued:
   centre bound is `q`. The index is the lowest power of `X`, except when
   only `X²·C(V)` meets that power: the leading coefficient of `(X³ − 2)^q`
   is then `1`, and both centre bounds there are `0`.
+* `chartSeriesAlpha_monomial` and `twice_centre_blocks_signed`. On each
+  monomial of `𝔽₂[a,b]`, the `S`-series has the same coefficients as that
+  integer series, and those coefficients cannot be `X^m·α = 2·αₛ`,
+  `X^m·β = 2·βₛ` with `αₛ + Y·βₛ ∈ I^{D+m}`.
 
 Open:
-* `chartOfModelTrue_injective`. The coefficient step does not yet meet
-  the chart. Vanishing in `D₊(Xt)` is not identified with `α = 2·αₛ`,
-  `β = 2·βₛ` and `αₛ + Y·βₛ ∈ I^D`, so `A`, `B`, and `C` are not forced
-  to vanish. `chart_Dplus_Xt_true_presentation` is the bijection with
+* `chartOfModelTrue_injective`. Vanishing in `D₊(Xt)` is not yet
+  identified with `X^m·α = 2·αₛ`, `X^m·β = 2·βₛ` and
+  `αₛ + Y·βₛ ∈ I^{D+m}`, so `A`, `B`, and `C` are not forced to vanish.
+  `chart_Dplus_Xt_true_presentation` is the bijection with
   `𝔽₂[a,b][X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U + X² + X·V²)`.
 * `chart_Dplus_Xt_presentation`, an isomorphism with
   `𝔽₂[X,Y,U,V] / (X·U, Y − X·V, Y² − X³)`. That ring drops `a`, `b`,

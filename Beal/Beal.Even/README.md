@@ -85,12 +85,16 @@ Closed in `Beal/MathlibMissing/ChartInjective.lean`:
   centre bound is `q`. That index is the lowest power of `X`, except
   when only `C` meets it: the leading coefficient of `(X³ − 2)^q` is
   then `1` and both bounds are `0`.
+* `twice_centre_blocks_signed`. The `S`-series matches that integer
+  series on each monomial of `𝔽₂[a,b]`, and it cannot be
+  `X^m·α = 2·αₛ`, `X^m·β = 2·βₛ` with `αₛ + Y·βₛ ∈ I^{D+m}`.
 
 Open:
 
 * `chartOfModelTrue_injective` and `chart_Dplus_Xt_true_presentation`.
-  Chart vanishing of a general normal form is not yet `α = 2·αₛ`,
-  `β = 2·βₛ` with `αₛ + Y·βₛ ∈ I^D`. The bijection
+  Chart vanishing of a general normal form is not yet
+  `X^m·α = 2·αₛ`, `X^m·β = 2·βₛ` with `αₛ + Y·βₛ ∈ I^{D+m}`.
+  The bijection
   `𝔽₂[a,b][X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U + X² + X·V²) ≃ D₊(Xt)`
   is not proved.
 * `chart_Dplus_Xt_presentation`, an isomorphism with the parameter-free

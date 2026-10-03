@@ -96,17 +96,21 @@ Closed in `Beal/MathlibMissing/ChartInjective.lean`:
   because `B = 1`. `chartOfModelTrue_injective_iff_normalForm` identifies
   injectivity with the kernel condition on that representative.
 
-Open:
-
 * `bitReduced_signed_bound`. A nonzero `0`-`1` form
   `A(V) + X·B(V) + X²·C(V)`, reduced by `Y² = X³ − 2`, has a coefficient
   `(-1)^s · 2^q` at an index whose centre bound is `q`. The index is the
   lowest power of `X`, except when only the `C` series meets that power:
   the leading coefficient of `(X³ − 2)^q` is then `1` and both bounds
   are `0`.
+* `twice_centre_blocks_signed`. The `S`-series of a normal form matches
+  that integer series on each monomial of `𝔽₂[a,b]`, and it cannot be
+  `X^m·α = 2·αₛ`, `X^m·β = 2·βₛ` with `αₛ + Y·βₛ ∈ I^{D+m}`.
+
+Open:
+
 * `chartOfModelTrue_injective` and `chart_Dplus_Xt_true_presentation`.
-  Chart vanishing of a general normal form is not yet the identity
-  `α = 2·αₛ`, `β = 2·βₛ` with `αₛ + Y·βₛ ∈ I^D`. The bijection
+  Chart vanishing of a general normal form is not yet the Rees equation
+  `X^m·α = 2·αₛ`, `X^m·β = 2·βₛ` with `αₛ + Y·βₛ ∈ I^{D+m}`. The bijection
   `𝔽₂[a,b][X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U + X² + X·V²) ≃ D₊(Xt)`
   is not proved.
 * `chart_Dplus_Xt_presentation`, an isomorphism with the parameter-free

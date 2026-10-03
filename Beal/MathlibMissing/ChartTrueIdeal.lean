@@ -460,9 +460,11 @@ representative `A(V) + X·B(V) + X²·C(V)`.
 that representative. `bitReduced_signed_bound` is the coefficient step
 for a `0`-`1` pattern: the lowest power of `X`, or the leading term of
 `(X³ − 2)^q` when only `C` meets that power, has coefficient
-`(-1)^s · 2^q` at an index whose centre bound is `q`. What remains open
-is the identification of chart vanishing with `α = 2·αₛ`, `β = 2·βₛ`
-and `αₛ + Y·βₛ ∈ I^D`. -/
+`(-1)^s · 2^q` at an index whose centre bound is `q`.
+`twice_centre_blocks_signed` says that series cannot be
+`X^m·α = 2·αₛ` and `X^m·β = 2·βₛ` with `αₛ + Y·βₛ ∈ I^{D+m}`.
+What remains open is the identification of chart vanishing with that
+Rees equation. -/
 def chartOfModelTrue_injective : Prop :=
   Function.Injective chartOfModelTrue
 

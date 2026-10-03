@@ -1,5 +1,6 @@
 import Beal.MathlibMissing.CentrePower
 import Beal.MathlibMissing.ChartTrueIdeal
+import Mathlib.Algebra.GeomSum
 
 /-!
 The class `X + V²` on `D₊(Xt)`.
@@ -14,16 +15,21 @@ This is one normal form. Every class in `𝔽₂[a,b][X,V] / (X²·(X + V²))`
 has a unique representative `A(V) + X·B(V) + X²·C(V)` of `X`-degree less
 than 3, and `chartOfModelTrue_injective` is that kernel condition.
 
-`chartReesLowerCoeff_obstruction` is the coefficient step for a general
+`bitReduced_signed_bound` is the coefficient step for a general
 representative. On each monomial of `𝔽₂[a,b]` the `0`-`1` pattern, after
 `Y² = X³ − 2`, has a coefficient `(-1)^s · 2^q` whose centre bound is
-`q`. It cannot be twice an element of `I^D`. The index is the lowest
-power of `X`, except when only the `X²·C(V)` series meets that power:
-that lowest coefficient meets the bound, and the leading coefficient of
-`(X³ − 2)^q` is `1`, where both centre bounds are `0`.
+`q`. The index is the lowest power of `X`, except when only the
+`X²·C(V)` series meets that power: that lowest coefficient meets the
+bound, and the leading coefficient of `(X³ − 2)^q` is `1`, where both
+centre bounds are `0`.
 
-`chartOfModelTrue_injective` stays open. Chart vanishing is not yet
-identified with `α = 2·αₛ`, `β = 2·βₛ` and `αₛ + Y·βₛ ∈ I^D`.
+`chartSeriesAlpha_monomial` and `chartSeriesBeta_monomial` identify the
+`S`-series of a normal form, on each monomial of `𝔽₂[a,b]`, with that
+integer series. `twice_centre_blocks_signed` says the series cannot be
+`X^m·α = 2·αₛ` and `X^m·β = 2·βₛ` with `αₛ + Y·βₛ ∈ I^{D+m}`.
+
+`chartOfModelTrue_injective` stays open. Chart vanishing in `D₊(Xt)` is
+not yet identified with that Rees equation.
 -/
 
 namespace Beal.MathlibMissing
@@ -462,7 +468,7 @@ lemma ringHom_injective_iff_map_eq_zero {R S : Type*} [Ring R] [Ring S] (f : R �
     rw [map_sub, hxy, sub_self]
 
 theorem chartOfModelTrue_injective_iff_normalForm :
-    chartOfModelTrue_injective ↔
+    Function.Injective chartOfModelTrue ↔
       ∀ A B Cv : chartVPoly,
         chartOfModelTrue (Ideal.Quotient.mk chartTrueIdeal
           (normalPolyToModel (chartNormalForm A B Cv))) = 0 →
@@ -485,7 +491,6 @@ theorem chartOfModelTrue_injective_iff_normalForm :
         (Ideal.Quotient.mk chartNormalIdeal (chartNormalForm A B Cv)) hsym0
     exact (chartNormalForm_eq_zero_iff A B Cv).mp hnorm
   · intro hker
-    unfold chartOfModelTrue_injective
     rw [ringHom_injective_iff_map_eq_zero chartOfModelTrue]
     intro z hz
     have hzback : z = chartTrueIdeal_quotient_equiv_normal.symm
@@ -1543,6 +1548,421 @@ theorem bitReduced_signed_bound (D : ℕ) (A B Cv : Polynomial ℤ)
             exact absurd (lt_trans hltA hAflt) ((Nat.not_lt).mpr hleBC)
       exact signed_at_C_minimum D A B Cv hA hB hCv hDA hDB hDC hpC hltA hltB
 
+/-!
+## Rees bridge
+
+A normal form is sent to `D₊(Xt)` by reading `V` as `Yt/Xt`. Clearing the
+denominator `(Xt)^D` produces one Rees numerator. On `Y² = X³ − 2` that
+numerator is the `0`-`1` series `α + Y·β`. Vanishing in the chart means a
+power of `Xt` puts this numerator in the scalar ideal `(2)`, so
+`X^m·α = 2·αₛ` and `X^m·β = 2·βₛ` with `αₛ + Y·βₛ ∈ I^{D+m}`.
+`bitReduced_signed_bound` supplies a coefficient `(-1)^s·2^q` at an index
+whose centre bound is `q`, and that coefficient cannot be divisible by `2`
+once more.
+-/
+
+noncomputable abbrev vI : Ideal (surfaceRing valuationOneCurve) :=
+  numeralCentreIdeal valuationOneCurve 0 0
+
+noncomputable abbrev vX : surfaceRing valuationOneCurve :=
+  surfaceNumeralX valuationOneCurve 0
+
+noncomputable abbrev vY : surfaceRing valuationOneCurve :=
+  surfaceNumeralY valuationOneCurve 0
+
+noncomputable def bitLiftMv (c : MvPolynomial (Fin 2) (ZMod 2)) : S :=
+  ∑ m ∈ c.support, MvPolynomial.monomial m (1 : ℤ_[2])
+
+lemma bitLiftMv_coeff (c : MvPolynomial (Fin 2) (ZMod 2)) (m : Fin 2 →₀ ℕ) :
+    MvPolynomial.coeff m (bitLiftMv c) =
+      if MvPolynomial.coeff m c = (0 : ZMod 2) then (0 : ℤ_[2]) else 1 := by
+  classical
+  rw [bitLiftMv, MvPolynomial.coeff_sum]
+  by_cases hm : m ∈ c.support
+  · rw [Finset.sum_eq_single m]
+    · rw [MvPolynomial.coeff_monomial, if_pos rfl]
+      have hne : MvPolynomial.coeff m c ≠ 0 := (MvPolynomial.mem_support_iff).mp hm
+      simp [hne]
+    · intro b _hb hne
+      rw [MvPolynomial.coeff_monomial, if_neg hne]
+    · intro hnot
+      exact absurd hm hnot
+  · have h0 : MvPolynomial.coeff m c = 0 := by
+      simpa [MvPolynomial.mem_support_iff] using hm
+    rw [if_pos h0]
+    refine Finset.sum_eq_zero ?_
+    intro b hb
+    have hne : b ≠ m := by
+      intro heq
+      apply hm
+      simpa [heq] using hb
+    rw [MvPolynomial.coeff_monomial, if_neg hne]
+
+lemma zmod2_dichotomy (a : ZMod 2) : a = 0 ∨ a = 1 := by
+  fin_cases a <;> simp
+
+lemma map_toZMod_bitLift (c : MvPolynomial (Fin 2) (ZMod 2)) :
+    MvPolynomial.map (PadicInt.toZMod : ℤ_[2] →+* ZMod 2) (bitLiftMv c) = c := by
+  classical
+  ext m
+  rw [MvPolynomial.coeff_map, bitLiftMv_coeff]
+  rcases zmod2_dichotomy (MvPolynomial.coeff m c) with h0 | h1
+  · simp [h0]
+  · simp [h1, map_one]
+
+lemma coeffModTwoEquiv_mk_apply (s : S) :
+    coeffModTwoEquiv
+        (Ideal.Quotient.mk (Ideal.span {MvPolynomial.C (2 : ℤ_[2])}) s) =
+      MvPolynomial.map (PadicInt.toZMod : ℤ_[2] →+* ZMod 2) s := by
+  rw [coeffModTwoEquiv, RingEquiv.trans_apply, Ideal.quotEquivOfEq_mk,
+    RingHom.quotientKerEquivOfSurjective, RingHom.quotientKerEquivOfRightInverse.apply,
+    RingHom.kerLift_mk]
+
+lemma chartScalarModTwo_mk (s : S) :
+    chartScalarModTwo valuationOneCurve 0 0
+        (Ideal.Quotient.mk (Ideal.span {MvPolynomial.C (2 : ℤ_[2])}) s) =
+      chartScalar valuationOneCurve 0 0 s := by
+  rw [chartScalarModTwo, Ideal.Quotient.lift_mk]
+
+lemma chartFromF2_bitLift (c : MvPolynomial (Fin 2) (ZMod 2)) :
+    chartFromF2Polynomial valuationOneCurve 0 0 c =
+      chartScalar valuationOneCurve 0 0 (bitLiftMv c) := by
+  rw [chartFromF2Polynomial, RingHom.comp_apply]
+  have hsym : coeffModTwoEquiv.symm.toRingHom c =
+      Ideal.Quotient.mk (Ideal.span {MvPolynomial.C (2 : ℤ_[2])}) (bitLiftMv c) := by
+    apply coeffModTwoEquiv.injective
+    have hcoe : coeffModTwoEquiv.symm.toRingHom c = coeffModTwoEquiv.symm c :=
+      congrArg (fun f : _ → _ => f c)
+        (RingEquiv.coe_toRingHom coeffModTwoEquiv.symm)
+    rw [hcoe, RingEquiv.apply_symm_apply, coeffModTwoEquiv_mk_apply, map_toZMod_bitLift]
+  rw [hsym, chartScalarModTwo_mk]
+
+noncomputable def vCoeff (p : chartVPoly) (i : ℕ) :
+    MvPolynomial (Fin 2) (ZMod 2) :=
+  MvPolynomial.coeff (Finsupp.single (0 : Fin 1) i) p
+
+lemma fin1_eq_single (m : Fin 1 →₀ ℕ) : m = Finsupp.single 0 (m 0) := by
+  refine Finsupp.ext ?_
+  intro j
+  fin_cases j
+  simp [Finsupp.single_eq_same]
+
+lemma vCoeff_of_degree_lt {p : chartVPoly} {i : ℕ}
+    (hi : MvPolynomial.degreeOf 0 p < i) : vCoeff p i = 0 := by
+  classical
+  by_contra hne
+  have hmem : Finsupp.single (0 : Fin 1) i ∈ p.support :=
+    MvPolynomial.mem_support_iff.mpr (by
+      rw [vCoeff] at hne
+      exact hne)
+  have hle : (Finsupp.single (0 : Fin 1) i) 0 ≤ MvPolynomial.degreeOf 0 p := by
+    rw [MvPolynomial.degreeOf_eq_sup]
+    exact Finset.le_sup (f := fun t : Fin 1 →₀ ℕ => t 0) hmem
+  rw [Finsupp.single_eq_same] at hle
+  exact not_lt_of_ge hle hi
+
+noncomputable def bitOf (m : Fin 2 →₀ ℕ)
+    (c : MvPolynomial (Fin 2) (ZMod 2)) : ℤ :=
+  if MvPolynomial.coeff m c = 0 then 0 else 1
+
+lemma bitOf_zero (m : Fin 2 →₀ ℕ) : bitOf m 0 = 0 := by
+  simp [bitOf]
+
+lemma bitLift_coeff_bitOf (m : Fin 2 →₀ ℕ) (c : MvPolynomial (Fin 2) (ZMod 2)) :
+    MvPolynomial.coeff m (bitLiftMv c) = (bitOf m c : ℤ_[2]) := by
+  rw [bitLiftMv_coeff, bitOf]
+  by_cases h : MvPolynomial.coeff m c = 0
+  · simp [h]
+  · simp [h]
+
+noncomputable def bitPolyOf (m : Fin 2 →₀ ℕ) (p : chartVPoly) : Polynomial ℤ :=
+  ∑ i ∈ Finset.range (MvPolynomial.degreeOf 0 p + 1),
+    Polynomial.monomial i (bitOf m (vCoeff p i))
+
+lemma bitPoly_coeff (m : Fin 2 →₀ ℕ) (p : chartVPoly) (n : ℕ) :
+    (bitPolyOf m p).coeff n = bitOf m (vCoeff p n) := by
+  classical
+  rw [bitPolyOf, finset_sum_coeff]
+  by_cases hn : n ∈ Finset.range (MvPolynomial.degreeOf 0 p + 1)
+  · rw [Finset.sum_eq_single n]
+    · rw [coeff_monomial, if_pos rfl]
+    · intro b _hb hne
+      rw [coeff_monomial, if_neg hne]
+    · intro hnot
+      exact absurd hn hnot
+  · have hgt : MvPolynomial.degreeOf 0 p < n := by
+      have hle : MvPolynomial.degreeOf 0 p + 1 ≤ n :=
+        Nat.le_of_not_gt fun hlt => hn (Finset.mem_range.mpr hlt)
+      exact Nat.lt_of_succ_le hle
+    rw [vCoeff_of_degree_lt hgt, bitOf_zero]
+    refine Finset.sum_eq_zero ?_
+    intro i hi
+    have hiD : i ≤ MvPolynomial.degreeOf 0 p :=
+      Nat.lt_succ_iff.mp (Finset.mem_range.mp hi)
+    have hine : i ≠ n := ne_of_lt (lt_of_le_of_lt hiD hgt)
+    rw [coeff_monomial, if_neg hine]
+
+lemma bitPoly_isBit (m : Fin 2 →₀ ℕ) (p : chartVPoly) : IsBitCoeff (bitPolyOf m p) := by
+  intro n
+  rw [bitPoly_coeff, bitOf]
+  by_cases h : MvPolynomial.coeff m (vCoeff p n) = 0
+  · exact Or.inl (by simp [h])
+  · exact Or.inr (by simp [h])
+
+lemma bitPoly_natDegree_le (m : Fin 2 →₀ ℕ) (p : chartVPoly) {D : ℕ}
+    (hD : MvPolynomial.degreeOf 0 p ≤ D) : (bitPolyOf m p).natDegree ≤ D := by
+  rw [natDegree_le_iff_coeff_eq_zero]
+  intro N hN
+  rw [bitPoly_coeff]
+  have hgt : MvPolynomial.degreeOf 0 p < N := lt_of_le_of_lt hD hN
+  rw [vCoeff_of_degree_lt hgt, bitOf_zero]
+
+noncomputable def chartVDegree (A B Cv : chartVPoly) : ℕ :=
+  max (MvPolynomial.degreeOf 0 A)
+    (max (MvPolynomial.degreeOf 0 B) (MvPolynomial.degreeOf 0 Cv))
+
+lemma chartVDegree_A (A B Cv : chartVPoly) :
+    MvPolynomial.degreeOf 0 A ≤ chartVDegree A B Cv :=
+  le_max_left _ _
+
+lemma chartVDegree_B (A B Cv : chartVPoly) :
+    MvPolynomial.degreeOf 0 B ≤ chartVDegree A B Cv :=
+  le_trans (le_max_left _ _) (le_max_right _ _)
+
+lemma chartVDegree_C (A B Cv : chartVPoly) :
+    MvPolynomial.degreeOf 0 Cv ≤ chartVDegree A B Cv :=
+  le_trans (le_max_right _ _) (le_max_right _ _)
+
+lemma bitPoly_of_vCoeff {p : chartVPoly} {i : ℕ} {μ : Fin 2 →₀ ℕ}
+    (h : MvPolynomial.coeff μ (vCoeff p i) ≠ 0) : bitPolyOf μ p ≠ 0 := by
+  intro hp
+  have hcoeff : (bitPolyOf μ p).coeff i = 0 := by
+    rw [hp, coeff_zero]
+  rw [bitPoly_coeff, bitOf, if_neg h] at hcoeff
+  exact one_ne_zero hcoeff
+
+lemma exists_vCoeff_monomial {p : chartVPoly} (hp : p ≠ 0) :
+    ∃ i : ℕ, ∃ μ : Fin 2 →₀ ℕ, MvPolynomial.coeff μ (vCoeff p i) ≠ 0 := by
+  classical
+  have hsup : p.support ≠ ∅ := by
+    rw [Ne, MvPolynomial.support_eq_empty]
+    exact hp
+  obtain ⟨t, ht⟩ := Finset.nonempty_of_ne_empty hsup
+  have htcoeff : MvPolynomial.coeff (Finsupp.single (0 : Fin 1) (t 0)) p ≠ 0 := by
+    rw [← fin1_eq_single t]
+    exact (MvPolynomial.mem_support_iff).mp ht
+  have hnz : vCoeff p (t 0) ≠ 0 := by
+    rw [vCoeff]
+    exact htcoeff
+  have hsupC : (vCoeff p (t 0)).support ≠ ∅ := by
+    rw [Ne, MvPolynomial.support_eq_empty]
+    exact hnz
+  obtain ⟨μ, hμ⟩ := Finset.nonempty_of_ne_empty hsupC
+  exact ⟨t 0, μ, (MvPolynomial.mem_support_iff).mp hμ⟩
+
+lemma exists_bitPoly_ne (A B Cv : chartVPoly)
+    (hne : A ≠ 0 ∨ B ≠ 0 ∨ Cv ≠ 0) :
+    ∃ m : Fin 2 →₀ ℕ,
+      bitPolyOf m A ≠ 0 ∨ bitPolyOf m B ≠ 0 ∨ bitPolyOf m Cv ≠ 0 := by
+  rcases hne with hA | hB | hC
+  · obtain ⟨i, μ, hμ⟩ := exists_vCoeff_monomial hA
+    exact ⟨μ, Or.inl (bitPoly_of_vCoeff hμ)⟩
+  · obtain ⟨i, μ, hμ⟩ := exists_vCoeff_monomial hB
+    exact ⟨μ, Or.inr (Or.inl (bitPoly_of_vCoeff hμ))⟩
+  · obtain ⟨i, μ, hμ⟩ := exists_vCoeff_monomial hC
+    exact ⟨μ, Or.inr (Or.inr (bitPoly_of_vCoeff hμ))⟩
+
+noncomputable def intToS : ℤ →+* S :=
+  (MvPolynomial.C : ℤ_[2] →+* S).comp (Int.castRingHom ℤ_[2])
+
+noncomputable def cuspPolyS : Polynomial S := cuspPoly.map intToS
+
+lemma cuspPolyS_eq : cuspPolyS = X ^ 3 - C (2 : S) := by
+  rw [cuspPolyS, cuspPoly_eq, Polynomial.map_add, Polynomial.map_pow, Polynomial.map_X,
+    Polynomial.map_C, sub_eq_add_neg, ← C_neg]
+  congr 1
+  rw [intToS, RingHom.comp_apply]
+  congr 1
+  rw [map_neg (Int.castRingHom ℤ_[2])]
+  have h2 : (Int.castRingHom ℤ_[2]) (2 : ℤ) = (2 : ℤ_[2]) := rfl
+  rw [h2, map_neg]
+  rfl
+
+lemma norm_two_pow_z (q : ℕ) : ‖(2 : ℤ_[2]) ^ q‖ = (2 : ℝ) ^ (-(q : ℤ)) := by
+  induction q with
+  | zero => simp
+  | succ q ih =>
+      rw [pow_succ, PadicInt.norm_mul, ih]
+      have hcast : (2 : ℤ_[2]) = ((2 : ℕ) : ℤ_[2]) := Nat.cast_two.symm
+      rw [hcast, PadicInt.norm_p, mul_comm]
+      exact two_zpow_succ q
+
+lemma norm_neg_one_zpow (s : ℕ) : ‖(-1 : ℤ_[2]) ^ s‖ = (1 : ℝ) := by
+  induction s with
+  | zero => simp
+  | succ s ih =>
+      rw [pow_succ, PadicInt.norm_mul, ih, one_mul, norm_neg, norm_one]
+
+lemma cast_signed (s q : ℕ) :
+    (((-1 : ℤ) ^ s * (2 : ℤ) ^ q : ℤ) : ℤ_[2]) =
+      (-1 : ℤ_[2]) ^ s * (2 : ℤ_[2]) ^ q := by
+  norm_cast
+
+lemma norm_signed_gt (q : ℕ) :
+    ¬ (2 : ℝ) ^ (-(q : ℤ)) ≤ (2 : ℝ) ^ (-((q + 1 : ℕ) : ℤ)) := by
+  intro hle
+  rw [← two_zpow_succ q, mul_comm] at hle
+  have hpos : (0 : ℝ) < (2 : ℝ) ^ (-(q : ℤ)) := by positivity
+  have hmul : (2 : ℝ) ^ (-(q : ℤ)) * (1 : ℝ) ≤
+      (2 : ℝ) ^ (-(q : ℤ)) * (2 : ℝ)⁻¹ := by
+    simpa [mul_one] using hle
+  have : (1 : ℝ) ≤ (2 : ℝ)⁻¹ := le_of_mul_le_mul_left hmul hpos
+  norm_num at this
+
+lemma not_twoAdicNormBound_signed_coeff (c : S) (μ : Fin 2 →₀ ℕ) (q s : ℕ)
+    (hc : MvPolynomial.coeff μ c =
+      (((-1 : ℤ) ^ s * (2 : ℤ) ^ q : ℤ) : ℤ_[2])) :
+    ¬ twoAdicNormBound (q + 1) c := by
+  intro hb
+  have hμ := hb μ
+  rw [hc, cast_signed, PadicInt.norm_mul, norm_neg_one_zpow, one_mul,
+    norm_two_pow_z] at hμ
+  exact norm_signed_gt q hμ
+
+lemma nat_add_sub_add_right (a b c : ℕ) : a + c - (b + c) = a - b := by
+  induction c with
+  | zero => simp
+  | succ c ih =>
+      rw [Nat.add_succ, Nat.add_succ, Nat.succ_sub_succ, ih]
+
+lemma centreAlphaBound_shift (D m j : ℕ) :
+    centreAlphaBound (D + m) (j + m) = centreAlphaBound D j := by
+  unfold centreAlphaBound
+  rw [nat_add_sub_add_right]
+
+lemma centreBetaBound_shift (D m j : ℕ) :
+    centreBetaBound (D + m) (j + m) = centreBetaBound D j := by
+  unfold centreBetaBound
+  rw [nat_add_sub_add_right]
+
+noncomputable def cuspPowTerm (s : S) (e q : ℕ) : Polynomial S :=
+  C s * X ^ e * cuspPolyS ^ q
+
+noncomputable def seriesUpToS (N D shift residue : ℕ) (p : chartVPoly) : Polynomial S :=
+  ∑ i ∈ Finset.range (N + 1),
+    if i % 2 = residue then
+      cuspPowTerm (bitLiftMv (vCoeff p i)) (D - i + shift) (i / 2)
+    else 0
+
+lemma cuspPowTerm_coeff_int (c : ℤ) (e q j : ℕ) :
+    (cuspPowTerm (intToS c) e q).coeff j =
+      intToS ((C c * X ^ e * cuspPoly ^ q).coeff j) := by
+  have hmap : ((C c * X ^ e * cuspPoly ^ q).map intToS) =
+      cuspPowTerm (intToS c) e q := by
+    rw [cuspPowTerm, Polynomial.map_mul, Polynomial.map_mul, Polynomial.map_pow,
+      Polynomial.map_pow, Polynomial.map_C, Polynomial.map_X, cuspPolyS]
+  rw [← hmap, Polynomial.coeff_map]
+
+lemma intToS_apply (n : ℤ) : intToS n = MvPolynomial.C (n : ℤ_[2]) := by
+  rw [intToS, RingHom.comp_apply]
+  rfl
+
+lemma coeff_bitLift_mul_int (μ : Fin 2 →₀ ℕ) (c : MvPolynomial (Fin 2) (ZMod 2)) (n : ℤ) :
+    MvPolynomial.coeff μ (bitLiftMv c * intToS n) =
+      (bitOf μ c : ℤ_[2]) * (n : ℤ_[2]) := by
+  rw [intToS_apply, mul_comm, MvPolynomial.coeff_C_mul, bitLift_coeff_bitOf, mul_comm]
+
+lemma cuspPow_coeff_map (e q j : ℕ) :
+    (X ^ e * cuspPolyS ^ q).coeff j = intToS ((X ^ e * cuspPoly ^ q).coeff j) := by
+  have h := cuspPowTerm_coeff_int 1 e q j
+  rw [cuspPowTerm, map_one, C_1, one_mul, map_one, mul_assoc, one_mul] at h
+  exact h
+
+lemma seriesTerm_monomial (μ : Fin 2 →₀ ℕ) (c : MvPolynomial (Fin 2) (ZMod 2))
+    (e q j : ℕ) :
+    MvPolynomial.coeff μ ((cuspPowTerm (bitLiftMv c) e q).coeff j) =
+      (bitOf μ c : ℤ_[2]) * (((X ^ e * cuspPoly ^ q).coeff j : ℤ) : ℤ_[2]) := by
+  rw [cuspPowTerm, mul_assoc, coeff_C_mul, cuspPow_coeff_map, coeff_bitLift_mul_int]
+
+lemma seriesUpToS_coeff_monomial (N D shift residue : ℕ) (p : chartVPoly)
+    (μ : Fin 2 →₀ ℕ) (j : ℕ) :
+    MvPolynomial.coeff μ ((seriesUpToS N D shift residue p).coeff j) =
+      (((seriesUpTo N D shift residue (bitPolyOf μ p)).coeff j : ℤ) : ℤ_[2]) := by
+  classical
+  rw [seriesUpToS, finset_sum_coeff, MvPolynomial.coeff_sum, seriesUpTo, finset_sum_coeff,
+    Int.cast_sum]
+  refine Finset.sum_congr rfl ?_
+  intro i _hi
+  by_cases hres : i % 2 = residue
+  · rw [if_pos hres, if_pos hres, bitPoly_coeff, seriesTerm_monomial, mul_assoc, coeff_C_mul,
+      ← Int.cast_mul]
+  · rw [if_neg hres, if_neg hres]
+    simp [coeff_zero, MvPolynomial.coeff_zero]
+
+noncomputable def chartSeriesAlpha (A B Cv : chartVPoly) : Polynomial S :=
+  let D := chartVDegree A B Cv
+  seriesUpToS D D 0 0 A + seriesUpToS D D 1 0 B + seriesUpToS D D 2 0 Cv
+
+noncomputable def chartSeriesBeta (A B Cv : chartVPoly) : Polynomial S :=
+  let D := chartVDegree A B Cv
+  seriesUpToS D D 0 1 A + seriesUpToS D D 1 1 B + seriesUpToS D D 2 1 Cv
+
+lemma chartSeriesAlpha_monomial (A B Cv : chartVPoly) (μ : Fin 2 →₀ ℕ) (j : ℕ) :
+    MvPolynomial.coeff μ ((chartSeriesAlpha A B Cv).coeff j) =
+      (((reducedAlpha (chartVDegree A B Cv) (bitPolyOf μ A) (bitPolyOf μ B)
+          (bitPolyOf μ Cv)).coeff j : ℤ) : ℤ_[2]) := by
+  rw [chartSeriesAlpha, coeff_add, coeff_add, MvPolynomial.coeff_add, MvPolynomial.coeff_add,
+    seriesUpToS_coeff_monomial, seriesUpToS_coeff_monomial, seriesUpToS_coeff_monomial,
+    coeff_reducedAlpha, Int.cast_add, Int.cast_add]
+
+lemma chartSeriesBeta_monomial (A B Cv : chartVPoly) (μ : Fin 2 →₀ ℕ) (j : ℕ) :
+    MvPolynomial.coeff μ ((chartSeriesBeta A B Cv).coeff j) =
+      (((reducedBeta (chartVDegree A B Cv) (bitPolyOf μ A) (bitPolyOf μ B)
+          (bitPolyOf μ Cv)).coeff j : ℤ) : ℤ_[2]) := by
+  rw [chartSeriesBeta, coeff_add, coeff_add, MvPolynomial.coeff_add, MvPolynomial.coeff_add,
+    seriesUpToS_coeff_monomial, seriesUpToS_coeff_monomial, seriesUpToS_coeff_monomial,
+    coeff_reducedBeta, Int.cast_add, Int.cast_add]
+
+/-- A coefficient `(-1)^s·2^q` at a centre bound `q` cannot be twice an element of `I^{D+m}`. -/
+lemma twice_centre_blocks_signed (D m : ℕ) (α β αs βs : Polynomial S)
+    (hα : X ^ m * α = (2 : Polynomial S) * αs)
+    (hβ : X ^ m * β = (2 : Polynomial S) * βs)
+    (hI : Ideal.Quotient.mk (Ideal.span {surfacePolynomial valuationOneCurve})
+        (centreNormalPoly αs βs) ∈ vI ^ (D + m))
+    (μ : Fin 2 →₀ ℕ) (Aμ Bμ Cμ : Polynomial ℤ)
+    (hA : IsBitCoeff Aμ) (hB : IsBitCoeff Bμ) (hC : IsBitCoeff Cμ)
+    (hDA : Aμ.natDegree ≤ D) (hDB : Bμ.natDegree ≤ D) (hDC : Cμ.natDegree ≤ D)
+    (hne : Aμ ≠ 0 ∨ Bμ ≠ 0 ∨ Cμ ≠ 0)
+    (hαμ : ∀ j, MvPolynomial.coeff μ (α.coeff j) =
+      (((reducedAlpha D Aμ Bμ Cμ).coeff j : ℤ) : ℤ_[2]))
+    (hβμ : ∀ j, MvPolynomial.coeff μ (β.coeff j) =
+      (((reducedBeta D Aμ Bμ Cμ).coeff j : ℤ) : ℤ_[2])) : False := by
+  have htwo : (2 : Polynomial S) = C (2 : S) := (map_ofNat C 2).symm
+  rcases bitReduced_signed_bound D Aμ Bμ Cμ hA hB hC hDA hDB hDC hne with
+      ⟨j, q, s, hc, hb⟩ | ⟨j, q, s, hc, hb⟩
+  · have hbound := (centreIdeal_power_coeff_bound hI (j + m)).1
+    rw [centreAlphaBound_shift, hb] at hbound
+    have heq : α.coeff j = (2 : S) * αs.coeff (j + m) := by
+      calc
+        α.coeff j = (X ^ m * α).coeff (j + m) := (coeff_X_pow_mul α m j).symm
+        _ = ((2 : Polynomial S) * αs).coeff (j + m) := by rw [hα]
+        _ = (2 : S) * αs.coeff (j + m) := by rw [htwo, coeff_C_mul]
+    have hnorm : twoAdicNormBound (q + 1) (α.coeff j) := by
+      rw [heq]
+      exact twoAdicNormBound_two_mul hbound
+    exact not_twoAdicNormBound_signed_coeff (α.coeff j) μ q s (by rw [hαμ, hc]) hnorm
+  · have hbound := (centreIdeal_power_coeff_bound hI (j + m)).2
+    rw [centreBetaBound_shift, hb] at hbound
+    have heq : β.coeff j = (2 : S) * βs.coeff (j + m) := by
+      calc
+        β.coeff j = (X ^ m * β).coeff (j + m) := (coeff_X_pow_mul β m j).symm
+        _ = ((2 : Polynomial S) * βs).coeff (j + m) := by rw [hβ]
+        _ = (2 : S) * βs.coeff (j + m) := by rw [htwo, coeff_C_mul]
+    have hnorm : twoAdicNormBound (q + 1) (β.coeff j) := by
+      rw [heq]
+      exact twoAdicNormBound_two_mul hbound
+    exact not_twoAdicNormBound_signed_coeff (β.coeff j) μ q s (by rw [hβμ, hc]) hnorm
+
 #print axioms Beal.MathlibMissing.chart_X_add_V_sq_ne_zero
 #print axioms Beal.MathlibMissing.chartOfModelTrue_normal_X_add_Vsq_ne_zero
 #print axioms Beal.MathlibMissing.centreIdeal_power_coeff_bound
@@ -1551,5 +1971,9 @@ theorem bitReduced_signed_bound (D : ℕ) (A B Cv : Polynomial ℤ)
 #print axioms Beal.MathlibMissing.chartOfModelTrue_injective_iff_normalForm
 #print axioms Beal.MathlibMissing.chartOfModelTrue_injective
 #print axioms Beal.MathlibMissing.bitReduced_signed_bound
+#print axioms Beal.MathlibMissing.chartSeriesAlpha_monomial
+#print axioms Beal.MathlibMissing.chartSeriesBeta_monomial
+#print axioms Beal.MathlibMissing.not_twoAdicNormBound_signed_coeff
+#print axioms Beal.MathlibMissing.twice_centre_blocks_signed
 
 end Beal.MathlibMissing
