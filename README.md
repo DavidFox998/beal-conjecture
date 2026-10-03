@@ -9,8 +9,9 @@
 `modelXtChart` is
 `𝔽₂[a,b][X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U + X² + X·V²)`.
 `modelXtChart_equiv_DplusXt` is `chart_Dplus_Xt_true_presentation`.
-Tag `v37-true-chart` is merge `84c03d5b`. The previous `main` record
-is `3dd7728f`, DOI `10.5281/zenodo.23054568`.
+Tag `v37-true-chart` is merge `84c03d5b`. DataCite reports
+`10.5281/zenodo.23120540` findable for version `v37-true-chart`.
+The previous `main` record is `3dd7728f`, DOI `10.5281/zenodo.23054568`.
 
 * `BealEven`: `V(2) = Proj(Rees/(2))` at `7d48c25d`. `D₊(2t) = ⊥`
   because `(2t)² = 0` at `567adc81`.

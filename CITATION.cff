@@ -1,16 +1,17 @@
 cff-version: 1.2.0
 message: >-
-  Cite v33 using DOI 10.5281/zenodo.23054568 from the
-  beal-conjecture repository. The earlier foundations v25 concept
-  DOI 10.5281/zenodo.22379293 is historical, not the v33 DOI.
-title: "2-adic even blow-up Tate normal form y^2+xy=x^3+a2x^2+a4x+a6 — three-open gluing v33"
+  Cite v37-true-chart using DOI 10.5281/zenodo.23120540 from the
+  beal-conjecture repository. The previous main record is
+  10.5281/zenodo.23054568. The earlier foundations concept
+  DOI 10.5281/zenodo.22379293 is historical.
+title: "modelXtChart equivalent to D_+(Xt) via the true chart presentation — v37-true-chart"
 type: software
-doi: 10.5281/zenodo.23054568
-date-released: '2026-09-30'
+doi: 10.5281/zenodo.23120540
+date-released: '2026-10-03'
 authors:
   - family-names: Fox
     given-names: David
-version: "v33"
+version: "v37-true-chart"
 repository-code: "https://github.com/DavidFox998/beal-conjecture"
 license: MIT
 keywords:
@@ -22,24 +23,15 @@ keywords:
   - special-fibre
   - projective-gluing
 abstract: >-
-  Working v33 checks the three-open polynomial-spectrum gluing of
-  Proj(ReesMod2), with abstract pullback overlaps and no polynomial
-  product-overlap presentation. CompatChart2t (191 lines) proves the
-  quotient-induced divided chart; CompatChartXt and CompatChartYt
-  (105 lines each) prove graph-ideal saturations. CompatPolynomialRestrictions
-  proves six directed polynomial-to-abstract restrictions;
-  SpecialFibrePolynomialCover makes the three spectra literal cover
-  objects; SpecialFibreGluing (167 lines) checks six Spec.map squares,
-  a triple cocycle, and Proj(ReesMod2) ≅ Glue(S_2t/(2), S_Xt/(2),
-  S_Yt/(2)). TateEvenBranchGenericFibre (59 lines) packages the actual
-  blow-up generic-fibre isomorphism over D(2). The existing 2,249-line
-  TateEvenBranch chart file was not refactored. All seven targeted files
-  passed direct lake env lean checks with only propext, Classical.choice,
-  and Quot.sound in their axiom reports; the scoped sorry scan is empty.
-  A full lake build BealGeneral is unverified; the large standalone
-  special-fibre source check timed out without diagnostic. Neither
-  a global identification of the actual special-fibre pullback with
-  the quotient Proj nor a degree-one/nonzero-overline(2t) certificate
-  is advertised. This is not a general Beal proof. The scoped v33
-  README check covered three Beal directories; the prior 80-directory
-  project-wide audit used a different scope.
+  modelXtChart is F2[a,b][X,Y,U,V] / (X·U, Y - X·V, Y^2 - X^3,
+  U + X^2 + X·V^2). modelXtChart_equiv_DplusXt is
+  chart_Dplus_Xt_true_presentation, a ring equivalence with D_+(Xt).
+  The axiom report is propext, Classical.choice, and Quot.sound.
+  The three-relation quotient without U + X^2 + X·V^2 remains
+  modelRelationIdeal and is not the chart.
+  chart_Dplus_Xt_presentation is D_+(Xt)/(a,b), not the full chart.
+  lake build BealMathlibMissing and lake build BealEven exit 0.
+  BealEven does not import the chart files. This is not a general
+  Beal proof. Code tag v37-true-chart is merge 84c03d5b. DataCite
+  reports 10.5281/zenodo.23120540 findable. An earlier ingest of
+  that code tag, 10.5281/zenodo.23120520, copied the previous v33 title.

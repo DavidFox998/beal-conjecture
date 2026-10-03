@@ -4953,10 +4953,18 @@ has_v33 = (
     and "three-open gluing" in cff
     and "Beal" in cff
 )
-if not has_level26 and not has_v33:
+has_v37 = (
+    has_title
+    and "doi:" in cff
+    and "10.5281/zenodo.23120540" in cff
+    and "modelXtChart" in cff
+    and "v37-true-chart" in cff
+    and "Beal" in cff
+)
+if not has_level26 and not has_v33 and not has_v37:
     print(
         "CITATION.cff missing expected title or DOI "
-        "10.5281/zenodo.23054568",
+        "10.5281/zenodo.23054568 or 10.5281/zenodo.23120540",
         file=sys.stderr,
     )
     for n in level26_needles:
