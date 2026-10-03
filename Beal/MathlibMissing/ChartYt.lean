@@ -23,7 +23,9 @@ the chart satisfies `T + Y + Y²·S³ = 0`, and that polynomial lies outside
 In characteristic 2, `Y·T` and `T²` follow from those three generators.
 Eliminating `X = Y·S` and `T = Y + Y²·S³` gives
 `𝔽₂[a,b][Y,S] / (Y²·(1 − Y·S³))`. The induced map onto `D₊(Yt)` is
-surjective. Injectivity of that map is open, so there is no
+surjective. The relation `Y² = Y³·S³` does not produce a representative
+of `Y`-degree at most `2`: `Y³` is not congruent to any
+`A(S) + Y·B(S) + Y²·C(S)`. Injectivity remains open, so there is no
 `chart_Dplus_Yt_true_presentation`.
 
 `D₊(2t)` is already the zero ring (`chart_Dplus_2t_subsingleton_valuationOne`).
@@ -1838,6 +1840,192 @@ theorem chartOfModelTrueY_fixed_surjective :
   rw [chartOfModelTrueY_fixed, Ideal.Quotient.lift_mk]
   exact hp
 
+/-!
+`Y² = Y³·S³` rewrites a factor `Y³·S³` as `Y²`. It does not rewrite `Y³`.
+The quotient therefore has no representative of `Y`-degree at most `2`,
+and a normal form `A(S) + Y·B(S) + Y²·C(S)` does not cover it.
+-/
+
+section YtRemainder
+
+open MvPolynomial
+open Polynomial hiding X C map_X support_map_subset
+
+private noncomputable def cuspForgetCoeff :
+    chartYtCuspPoly →+* MvPolynomial (Fin 2) (ZMod 2) :=
+  map (MvPolynomial.eval (fun _ : Fin 2 => (0 : ZMod 2)))
+
+private lemma cuspForgetCoeff_X (i : Fin 2) : cuspForgetCoeff (X i) = X i := by
+  simp [cuspForgetCoeff, MvPolynomial.map_X]
+
+private lemma degreeOf_cuspForget_le (p : chartYtCuspPoly) :
+    degreeOf (0 : Fin 2) (cuspForgetCoeff p) ≤ degreeOf (0 : Fin 2) p := by
+  rw [degreeOf_le_iff]
+  intro m hm
+  have hm' : m ∈ p.support :=
+    MvPolynomial.support_map_subset
+      (MvPolynomial.eval (fun _ : Fin 2 => (0 : ZMod 2))) p hm
+  exact (degreeOf_le_iff.mp (le_refl _)) m hm'
+
+private lemma cuspForget_rel :
+    cuspForgetCoeff chartYtCuspRel = (X 0) ^ 2 * (1 - X 0 * (X 1) ^ 3) := by
+  simp [cuspForgetCoeff, chartYtCuspRel, map_mul, map_pow, map_sub, map_one, MvPolynomial.map_X]
+
+private lemma fsCusp_Y_cube_not_reduced
+    (r : MvPolynomial (Fin 2) (ZMod 2))
+    (hr : degreeOf (0 : Fin 2) r ≤ 2) :
+    (X (0 : Fin 2)) ^ 3 + r ∉
+      Ideal.span {(X 0) ^ 2 * (1 + X 0 * (X 1) ^ 3)} := by
+  intro hmem
+  rw [Ideal.mem_span_singleton] at hmem
+  obtain ⟨f, hf⟩ := hmem
+  let ψ := finSuccEquiv (ZMod 2) 1
+  let s : MvPolynomial (Fin 1) (ZMod 2) := (X 0) ^ 3
+  have hY : ψ (X 0) = Polynomial.X := finSuccEquiv_X_zero
+  have hS : ψ (X 1) = Polynomial.C (X (0 : Fin 1)) :=
+    finSuccEquiv_X_succ (j := (0 : Fin 1))
+  have hleft : ψ ((X 0) ^ 3 + r) = Polynomial.X ^ 3 + ψ r := by
+    rw [map_add, map_pow, hY]
+  have hrel : ψ ((X 0) ^ 2 * (1 + X 0 * (X 1) ^ 3)) =
+      Polynomial.X ^ 2 + Polynomial.X ^ 3 * (Polynomial.C (X (0 : Fin 1))) ^ 3 := by
+    rw [map_mul, map_pow, hY, map_add, map_one, map_mul, map_pow, hY, hS, mul_add,
+      mul_one, ← mul_assoc, ← pow_succ]
+  have hrel_s : ψ ((X 0) ^ 2 * (1 + X 0 * (X 1) ^ 3)) =
+      Polynomial.X ^ 2 + Polynomial.X ^ 3 * Polynomial.C s := by
+    rw [hrel, map_pow Polynomial.C (X (0 : Fin 1)) 3]
+  have hrdeg : (ψ r).natDegree ≤ 2 := by
+    rw [natDegree_finSuccEquiv]
+    exact hr
+  have hdegX3 :
+      ((Polynomial.X : Polynomial (MvPolynomial (Fin 1) (ZMod 2))) ^ 3).natDegree = 3 :=
+    Polynomial.natDegree_X_pow 3
+  have hdegX2 :
+      ((Polynomial.X : Polynomial (MvPolynomial (Fin 1) (ZMod 2))) ^ 2).natDegree = 2 :=
+    Polynomial.natDegree_X_pow 2
+  have hneX3 :
+      (Polynomial.X : Polynomial (MvPolynomial (Fin 1) (ZMod 2))) ^ 3 ≠ 0 :=
+    pow_ne_zero 3 Polynomial.X_ne_zero
+  have hneX2 :
+      (Polynomial.X : Polynomial (MvPolynomial (Fin 1) (ZMod 2))) ^ 2 ≠ 0 :=
+    pow_ne_zero 2 Polynomial.X_ne_zero
+  have hlt : (ψ r).natDegree <
+      ((Polynomial.X : Polynomial (MvPolynomial (Fin 1) (ZMod 2))) ^ 3).natDegree := by
+    rw [hdegX3]
+    exact Nat.lt_of_le_of_lt hrdeg (by decide)
+  have hdegL : (Polynomial.X ^ 3 + ψ r).natDegree = 3 := by
+    rw [natDegree_add_eq_left_of_natDegree_lt hlt, hdegX3]
+  have hleadL : (Polynomial.X ^ 3 + ψ r).leadingCoeff = 1 := by
+    by_cases hz : ψ r = 0
+    · simp [hz, leadingCoeff_X_pow]
+    · have hdeg : Polynomial.degree (ψ r) <
+          Polynomial.degree ((Polynomial.X : Polynomial (MvPolynomial (Fin 1) (ZMod 2))) ^ 3) := by
+        rw [degree_eq_natDegree hz, degree_eq_natDegree hneX3]
+        exact_mod_cast hlt
+      rw [leadingCoeff_add_of_degree_lt' hdeg, leadingCoeff_X_pow]
+  have hprod : ψ (((X 0) ^ 2 * (1 + X 0 * (X 1) ^ 3)) * f) =
+      (Polynomial.X ^ 2 + Polynomial.X ^ 3 * Polynomial.C s) * ψ f := by
+    rw [map_mul, hrel_s]
+  have heq : (Polynomial.X ^ 2 + Polynomial.X ^ 3 * Polynomial.C s) * ψ f = Polynomial.X ^ 3 + ψ r := by
+    rw [← hprod, ← hf, hleft]
+  have hs_ne : s ≠ 0 := by
+    simp [s, pow_ne_zero]
+  have hC_ne : (Polynomial.C s : Polynomial (MvPolynomial (Fin 1) (ZMod 2))) ≠ 0 :=
+    C_ne_zero.mpr hs_ne
+  have hhigh : (Polynomial.X ^ 3 * Polynomial.C s).natDegree = 3 := by
+    rw [natDegree_mul hneX3 hC_ne, hdegX3, natDegree_C]
+  have hleadH : (Polynomial.X ^ 3 * Polynomial.C s).leadingCoeff = s := by
+    rw [leadingCoeff_mul, leadingCoeff_X_pow, leadingCoeff_C, one_mul]
+  have hlow :
+      ((Polynomial.X : Polynomial (MvPolynomial (Fin 1) (ZMod 2))) ^ 2).natDegree <
+        (Polynomial.X ^ 3 * Polynomial.C s).natDegree := by
+    rw [hhigh, hdegX2]
+    decide
+  have hdegG : (Polynomial.X ^ 2 + Polynomial.X ^ 3 * Polynomial.C s).natDegree = 3 := by
+    rw [add_comm, natDegree_add_eq_left_of_natDegree_lt hlow, hhigh]
+  have hleadG : (Polynomial.X ^ 2 + Polynomial.X ^ 3 * Polynomial.C s).leadingCoeff = s := by
+    have hdeg : Polynomial.degree ((Polynomial.X : Polynomial (MvPolynomial (Fin 1) (ZMod 2))) ^ 2) <
+        Polynomial.degree (Polynomial.X ^ 3 * Polynomial.C s) := by
+      rw [degree_eq_natDegree hneX2, degree_eq_natDegree (mul_ne_zero hneX3 hC_ne)]
+      exact_mod_cast hlow
+    rw [add_comm, leadingCoeff_add_of_degree_lt' hdeg, hleadH]
+  have hg_ne : Polynomial.X ^ 2 + Polynomial.X ^ 3 * Polynomial.C s ≠ 0 := by
+    intro hz
+    have := hdegG
+    rw [hz, natDegree_zero] at this
+    exact absurd this (by decide)
+  have hf_ne : ψ f ≠ 0 := by
+    intro hz
+    have hzero : Polynomial.X ^ 3 + ψ r = 0 := by
+      rw [← heq, hz, mul_zero]
+    have := hdegL
+    rw [hzero, natDegree_zero] at this
+    exact absurd this (by decide)
+  have hdegMul := natDegree_mul hg_ne hf_ne
+  have hdegF : (ψ f).natDegree = 0 := by
+    have hmuldeg :
+        ((Polynomial.X ^ 2 + Polynomial.X ^ 3 * Polynomial.C s) * ψ f).natDegree = 3 := by
+      rw [heq]
+      exact hdegL
+    have hsum :
+        (Polynomial.X ^ 2 + Polynomial.X ^ 3 * Polynomial.C s).natDegree + (ψ f).natDegree = 3 := by
+      rw [← hdegMul, hmuldeg]
+    rw [hdegG] at hsum
+    have hsum0 : 3 + (ψ f).natDegree = 3 + 0 := by
+      rw [hsum, add_zero]
+    exact Nat.add_left_cancel hsum0
+  have hq : ψ f = Polynomial.C ((ψ f).coeff 0) := eq_C_of_natDegree_eq_zero hdegF
+  set q : MvPolynomial (Fin 1) (ZMod 2) := (ψ f).coeff 0
+  have hleadProd : ((Polynomial.X ^ 2 + Polynomial.X ^ 3 * Polynomial.C s) * ψ f).leadingCoeff = s * q := by
+    rw [hq, leadingCoeff_mul, hleadG, leadingCoeff_C]
+  have hsq : s * q = 1 := by
+    have hcoeff := congrArg leadingCoeff heq
+    rwa [hleadProd, hleadL] at hcoeff
+  have hq_ne : q ≠ 0 := by
+    intro hz
+    rw [hz, mul_zero] at hsq
+    exact zero_ne_one hsq
+  let ρ := finSuccEquiv (ZMod 2) 0
+  have hρ : ρ ((X (0 : Fin 1)) ^ 3 * q) = 1 := by
+    rw [hsq, map_one]
+  rw [map_mul, map_pow, finSuccEquiv_X_zero] at hρ
+  have hρq : ρ q ≠ 0 := by
+    intro hz
+    rw [hz, mul_zero] at hρ
+    exact zero_ne_one hρ
+  have hdegρX :
+      ((Polynomial.X : Polynomial (MvPolynomial (Fin 0) (ZMod 2))) ^ 3).natDegree = 3 :=
+    Polynomial.natDegree_X_pow 3
+  have hmulρ := natDegree_mul (pow_ne_zero 3
+    (Polynomial.X_ne_zero (R := MvPolynomial (Fin 0) (ZMod 2)))) hρq
+  rw [hdegρX, hρ, natDegree_one] at hmulρ
+  have hthree : 3 ≤ 0 := by
+    have hle : 3 ≤ 3 + (ρ q).natDegree := Nat.le_add_right 3 (ρ q).natDegree
+    rw [← hmulρ] at hle
+    exact hle
+  exact absurd hthree (by decide)
+
+/-- `Y³` is not congruent modulo `Y²·(1 − Y·S³)` to any polynomial of
+`Y`-degree at most `2`. A class in `𝔽₂[a,b][Y,S] / (Y²·(1 − Y·S³))` need
+not have a representative `A(S) + Y·B(S) + Y²·C(S)`. -/
+theorem chartYtCusp_Y_cube_not_reduced
+    (r : chartYtCuspPoly)
+    (hr : degreeOf (0 : Fin 2) r ≤ 2) :
+    (X 0) ^ 3 - r ∉ chartYtCuspIdeal := by
+  intro hmem
+  rw [chartYtCuspIdeal, Ideal.mem_span_singleton] at hmem
+  obtain ⟨f, hf⟩ := hmem
+  have himg : cuspForgetCoeff chartYtCuspRel * cuspForgetCoeff f =
+      cuspForgetCoeff ((X 0) ^ 3 - r) := by
+    rw [← map_mul, hf]
+  rw [CharTwo.sub_eq_add, map_add, map_pow, cuspForgetCoeff_X, cuspForget_rel,
+    CharTwo.sub_eq_add] at himg
+  have hr' : degreeOf (0 : Fin 2) (cuspForgetCoeff r) ≤ 2 :=
+    le_trans (degreeOf_cuspForget_le r) hr
+  exact fsCusp_Y_cube_not_reduced (cuspForgetCoeff r) hr'
+    (Ideal.mem_span_singleton.mpr ⟨cuspForgetCoeff f, himg.symm⟩)
+
+end YtRemainder
+
 #print axioms Beal.MathlibMissing.valuationOne_specialYT_pow_ne_zero
 #print axioms Beal.MathlibMissing.chartOfModelTrueY_surjective
 #print axioms Beal.MathlibMissing.chartYt_X_eq_Y_mul_X_over_Y
@@ -1856,5 +2044,6 @@ theorem chartOfModelTrueY_fixed_surjective :
 #print axioms Beal.MathlibMissing.modelYtTrueIdeal_elim
 #print axioms Beal.MathlibMissing.chartOfModelTrueY_fixed
 #print axioms Beal.MathlibMissing.chartOfModelTrueY_fixed_surjective
+#print axioms Beal.MathlibMissing.chartYtCusp_Y_cube_not_reduced
 
 end Beal.MathlibMissing
