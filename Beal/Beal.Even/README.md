@@ -6,8 +6,8 @@ This library does not import `Beal/MathlibMissing/Family.lean`.
 ## v37-degree-one
 
 The exceptional-fibre point on `Y² = X³ + 2` at `(0, 0)` lives in
-`Beal.MathlibMissing`, on branch `beal-v37-degree-one`. `main` stays
-`3dd7728f` with DOI `10.5281/zenodo.23054568`.
+`Beal.MathlibMissing`. `main` contains the merge `84c03d5b`. The
+previous main record is `3dd7728f`, DOI `10.5281/zenodo.23054568`.
 
 `BealEven` already has `V(2) = Proj(Rees/(2))` (`7d48c25d`) and
 `D₊(2t) = ⊥` because `(2t)² = 0` (`567adc81`).

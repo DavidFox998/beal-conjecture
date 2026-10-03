@@ -1,7 +1,7 @@
 {
-  "title": "2-adic even blow-up Tate normal form y^2+xy=x^3+a2x^2+a4x+a6 — three-open gluing v33",
-  "version": "v33",
-  "description": "Working v33 on beal-conjecture: CompatChart2t (191 lines) checks chart_eq_quotient_2t for the principal divided 2t equation; CompatChartXt and CompatChartYt (105 lines each) check the graph-ideal saturations J_X=(G_X:X^∞), J_Y=(G_Y:Y^∞) and quotient-induced charts. CompatPolynomialRestrictions checks six directed polynomial-to-abstract restrictions. SpecialFibrePolynomialCover uses the three explicit polynomial spectra as literal cover objects. SpecialFibreGluing (167 lines) checks six Spec.map compatibilities, the abstract triple cocycle, and the global isomorphism Proj(ReesMod2) ≅ Glue(S_2t/(2), S_Xt/(2), S_Yt/(2)); product overlaps remain abstract pullbacks, without polynomial presentations. TateEvenBranchGenericFibre (59 lines) packages the actual blow-up generic-fibre isomorphism Bl_I[1/2] ≅ Spec(R_Z[1/2]). The existing 2,249-line TateEvenBranch chart file was not refactored. Seven targeted files passed direct lake env lean checks; their axiom reports contain only propext, Classical.choice, Quot.sound; the scoped sorry scan is empty. A full lake build BealGeneral was not verified, and a standalone large special-fibre file check timed out without diagnostic. Neither a global identification of the actual special-fibre pullback with the quotient Rees Proj nor a degree-one quotient/nonvanishing-of-overline(2t) theorem is advertised. This is not a general Beal proof. DOI pending: Zenodo is expected to mint a DOI after the v33 GitHub release event from beal-conjecture; no DOI is assigned here.",
+  "title": "modelXtChart equivalent to D_+(Xt) via the true chart presentation — v37-true-chart",
+  "version": "v37-true-chart",
+  "description": "v37-true-chart. modelXtChart is F2[a,b][X,Y,U,V] / (X·U, Y - X·V, Y^2 - X^3, U + X^2 + X·V^2). modelXtChart_equiv_DplusXt is chart_Dplus_Xt_true_presentation, a ring equivalence with D_+(Xt). The axiom report is propext, Classical.choice, and Quot.sound. The three-relation quotient without U + X^2 + X·V^2 remains modelRelationIdeal and is not the chart. chart_Dplus_Xt_presentation is the quotient D_+(Xt)/(a,b), not the full chart. lake build BealMathlibMissing and lake build BealEven exit 0. BealEven does not import Family.lean, ChartSurjection.lean, ChartTrueIdeal.lean, CentrePower.lean, or ChartInjective.lean. This is not a proof of the Beal conjecture. Code merge 84c03d5b. The previous main record is 3dd7728f, DOI 10.5281/zenodo.23054568.",
   "creators": [
     {
       "name": "Fox, David"
@@ -9,21 +9,13 @@
   ],
   "keywords": [
     "beal-conjecture",
-    "kraus",
-    "level-26",
-    "frey-curve",
     "lean4",
-    "baker",
-    "tate",
-    "pari",
-    "matveev",
-    "bugeaud",
-    "lll",
-    "transparent-certs",
-    "X0(26)",
-    "Two-descent",
-    "Mordell-Weil",
-    "level-lowering"
+    "2-adic",
+    "Tate-normal-form",
+    "Rees-algebra",
+    "special-fibre",
+    "chart",
+    "modelXtChart"
   ],
   "license": "MIT"
 }
