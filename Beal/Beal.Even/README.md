@@ -97,6 +97,8 @@ Closed in `Beal/MathlibMissing/ChartInjective.lean`:
 * `chart_Dplus_Xt_presentation`. Erasing `a` and `b` on both sides gives
   `𝔽₂[X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U + X² + X·V²) ≃ D₊(Xt)/(a, b)`.
 
-`modelXtChart` drops `U + X² + X·V²` and is not the chart.
+`modelXtChart` is
+`𝔽₂[a,b][X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U + X² + X·V²) ≃ D₊(Xt)`.
+`modelRelationIdeal` drops `U + X² + X·V²`.
 
 Printed axioms are `propext`, `Classical.choice`, and `Quot.sound`.

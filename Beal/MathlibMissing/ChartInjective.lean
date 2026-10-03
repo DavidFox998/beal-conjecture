@@ -43,7 +43,8 @@ is the induced ring equivalence. The constant `a` is outside
 `chartTrueIdeal`, so `a` and `b` remain in `D₊(Xt)`.
 `chart_Dplus_Xt_presentation` erases them on both sides:
 `𝔽₂[X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U + X² + X·V²) ≃ D₊(Xt) / (a, b)`.
-The ring `modelXtChart`, which drops `U + X² + X·V²`, is not this quotient.
+`modelXtChart` is the source of the true presentation, and
+`modelXtChart_equiv_DplusXt` is that equivalence.
 -/
 
 namespace Beal.MathlibMissing
@@ -3164,6 +3165,15 @@ noncomputable def chart_Dplus_Xt_true_presentation :
   RingEquiv.ofBijective chartOfModelTrue
     ⟨chartOfModelTrue_injective, chartOfModelTrue_surjective⟩
 
+/-- `𝔽₂[a,b][X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U + X² + X·V²)`. -/
+abbrev modelXtChart : Type :=
+  MvPolynomial (Fin 4) (MvPolynomial (Fin 2) (ZMod 2)) ⧸ chartTrueIdeal
+
+/-- The true chart model is `D₊(Xt)`. -/
+noncomputable def modelXtChart_equiv_DplusXt :
+    modelXtChart ≃+* chart_Dplus_Xt_ring valuationOneCurve 0 0 :=
+  chart_Dplus_Xt_true_presentation
+
 /-!
 ## Parameter-free quotient
 
@@ -3494,6 +3504,7 @@ noncomputable def chart_Dplus_Xt_presentation :
 #print axioms Beal.MathlibMissing.chartFraction_sum_rees
 #print axioms Beal.MathlibMissing.chartVanishing_reesEquation
 #print axioms Beal.MathlibMissing.chart_Dplus_Xt_true_presentation
+#print axioms Beal.MathlibMissing.modelXtChart_equiv_DplusXt
 #print axioms Beal.MathlibMissing.chart_Dplus_Xt_presentation
 
 end Beal.MathlibMissing

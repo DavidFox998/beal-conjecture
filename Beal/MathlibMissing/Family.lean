@@ -155,8 +155,11 @@ equation, so `chartOfModelTrue_injective` holds and
 `chart_Dplus_Xt_presentation` quotients both sides by `(a, b)`:
 `𝔽₂[X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U + X² + X·V²) ≃ D₊(Xt)/(a,b)`.
 The constant `a` is outside `chartTrueIdeal`, so this is not an
-isomorphism with the full chart. `modelXtChart` drops `U + X² + X·V²`
-as well and is not that quotient.
+isomorphism with the full chart. `modelXtChart` is the true quotient
+`𝔽₂[a,b][X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U + X² + X·V²)`, and
+`modelXtChart_equiv_DplusXt` identifies it with `D₊(Xt)`.
+`modelRelationIdeal` is the smaller `𝔽₂` ideal that drops
+`U + X² + X·V²`.
 `ap` and `bq` are numeral centre coordinates.
 `chart_Dplus_Xt_basicOpen_nonempty_valuationOne`,
 `ideal_UV_maximal`, `ideal_XYUV_quotient_F2`,
@@ -2049,7 +2052,9 @@ theorem quotient_span_XUV_kills_Y
 ### Polynomial model of the chart
 
 `𝔽₂[X,Y,U,V] / (X·U, Y − X·V, Y² − X³)`, then the further quotient by
-`⟨X, U, V⟩`. This is not an isomorphism with `chart_Dplus_Xt_ring`.
+`⟨X, U, V⟩`. This three-relation ring is `modelRelationIdeal`.
+`modelXtChart` is the true ideal with `U + X² + X·V²`, in
+`ChartInjective.lean`.
 -/
 
 /-- `X` in the model `𝔽₂[X, Y, U, V]`. -/
@@ -2072,13 +2077,13 @@ noncomputable def modelRelationIdeal : Ideal (MvPolynomial (Fin 4) (ZMod 2)) :=
 noncomputable def modelXUVIdeal : Ideal (MvPolynomial (Fin 4) (ZMod 2)) :=
   Ideal.span {modelX, modelU, modelV}
 
-/-- `𝔽₂[X,Y,U,V] / (X·U, Y − X·V, Y² − X³)`. -/
-abbrev modelXtChart : Type :=
-  MvPolynomial (Fin 4) (ZMod 2) ⧸ modelRelationIdeal
-
-/-- The model chart modulo `⟨X, U, V⟩`. -/
+/-- The three-relation model modulo `⟨X, U, V⟩`.
+`modelXtChart` is the true chart
+`𝔽₂[a,b][X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U + X² + X·V²)`,
+defined in `ChartInjective.lean`. -/
 abbrev modelXtChartModXUV : Type :=
-  modelXtChart ⧸ modelXUVIdeal.map (Ideal.Quotient.mk modelRelationIdeal)
+  (MvPolynomial (Fin 4) (ZMod 2) ⧸ modelRelationIdeal) ⧸
+    modelXUVIdeal.map (Ideal.Quotient.mk modelRelationIdeal)
 
 /-- `⟨Y² − X³, X, U, V⟩`, the model that drops `Y = X·V`. -/
 noncomputable def modelForgetYIdeal : Ideal (MvPolynomial (Fin 4) (ZMod 2)) :=
@@ -3256,8 +3261,10 @@ Closed in `ChartInjective.lean`, continued:
   images of `a` and `b` gives
   `𝔽₂[X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U + X² + X·V²) ≃ D₊(Xt)/(a,b)`.
 
-`modelXtChart` is `𝔽₂[X,Y,U,V] / (X·U, Y − X·V, Y² − X³)`. It drops
-`U + X² + X·V²` and is not the chart.
+`modelXtChart` is
+`𝔽₂[a,b][X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U + X² + X·V²)`,
+and `modelXtChart_equiv_DplusXt` is the equivalence with `D₊(Xt)`.
+`modelRelationIdeal` drops `U + X² + X·V²`.
 -/
 
 theorem ker_contains_ABXYUV :
@@ -3324,7 +3331,8 @@ theorem chartModelEval_relation :
 /-- A ring hom from the `𝔽₂[a,b]`-algebra presentation into the chart
 `D₊(Xt)` on `Y² = X³ + 2` at `(0, 0)`. The source includes `U² = 0`.
 `chartOfModelBase_surjective` shows it is surjective. It is not shown
-to be injective. `modelXtChart` has neither `a, b` nor `U + X² + X·V²`.
+to be injective. `modelRelationIdeal` has neither `a, b` nor
+`U + X² + X·V²`. `modelXtChart` is the true ideal, and
 `chart_Dplus_Xt_presentation` is the quotient of the true chart by `(a, b)`. -/
 noncomputable def chartOfModelBase :
     MvPolynomial (Fin 4) (MvPolynomial (Fin 2) (ZMod 2)) ⧸ modelBaseRelationIdeal →+*
@@ -3634,8 +3642,9 @@ noncomputable def modelBaseAtNode_equiv_F2 :
 /-!
 `chart_Dplus_Xt_presentation` is proved in `ChartInjective.lean`.
 It is `𝔽₂[X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U + X² + X·V²) ≃ D₊(Xt)/(a,b)`.
-`modelXtChart` is the smaller quotient that does not impose
-`U + X² + X·V²`. `chart_two_over_X_sq_zero` is `(2t / Xt)² = 0` in the
+`modelXtChart` is the true ideal, equivalent to `D₊(Xt)`.
+`modelRelationIdeal` does not impose `U + X² + X·V²`.
+`chart_two_over_X_sq_zero` is `(2t / Xt)² = 0` in the
 chart, and `chart_two_over_X_ne_zero` says the ratio is not zero.
 `ap` and `bq` are numeral centre coordinates, not evaluations of
 the indeterminates `a, b`.
@@ -3659,8 +3668,9 @@ is `ideal_ABXYUV_quotient_F2`, proved by `ideal_ABXYUV_quotient_F2_holds`.
 `chart_node_quotient_equiv` is the quotient by the kernel of
 `chartNodeHom`, and `ker_eq_ideal_ABXYUV_holds` identifies that kernel
 with the ideal. `chartFromF2Polynomial` lands in the chart before the chart
-quotient. `chart_Dplus_Xt_presentation` is `D₊(Xt)/(a, b)`, not an
-isomorphism of the full chart with `modelXtChart`.
+quotient. `chart_Dplus_Xt_presentation` is `D₊(Xt)/(a, b)`.
+`modelXtChart_equiv_DplusXt` is the equivalence of the full chart
+with `modelXtChart`.
 `isMaximal_of_quotient_equiv_zmod_two` makes the kernel maximal.
 `familySpecialFibreProjPoint` applies `FromSpec.toFun` to that
 prime. -/

@@ -4,10 +4,12 @@
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22922473.svg)](https://doi.org/10.5281/zenodo.22922473)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22912430.svg)](https://doi.org/10.5281/zenodo.22912430)
 
-## v37-degree-one — chart generation closed, `chartOfModelBase` not injective
+## v37-true-chart — `modelXtChart` is the true chart
 
-`main` stays `3dd7728f` with DOI `10.5281/zenodo.23054568`. This branch
-is not merged, not tagged, and has no new DOI.
+`modelXtChart` is
+`𝔽₂[a,b][X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U + X² + X·V²)`.
+`modelXtChart_equiv_DplusXt` is `chart_Dplus_Xt_true_presentation`.
+The previous `main` record is `3dd7728f`, DOI `10.5281/zenodo.23054568`.
 
 * `BealEven`: `V(2) = Proj(Rees/(2))` at `7d48c25d`. `D₊(2t) = ⊥`
   because `(2t)² = 0` at `567adc81`.
@@ -116,7 +118,10 @@ Closed in `Beal/MathlibMissing/ChartInjective.lean`:
   `chartTrueIdeal`, so
   `𝔽₂[X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U + X² + X·V²) ≃ D₊(Xt)/(a, b)`.
 
-`modelXtChart` drops `U + X² + X·V²` and is not the chart.
+`modelXtChart` is
+`𝔽₂[a,b][X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U + X² + X·V²)`,
+equivalent to `D₊(Xt)` by `modelXtChart_equiv_DplusXt`.
+`modelRelationIdeal` drops `U + X² + X·V²`.
 
 `BealEven` does not import `Beal/MathlibMissing/Family.lean`.
 Printed axioms of the new declarations are `propext`, `Classical.choice`,
