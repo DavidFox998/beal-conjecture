@@ -9,9 +9,12 @@ chart is `Y² · (1 - Y · (Xt / Yt)³) = 0`.
 
 That is not the v37 ideal. `modelXtChart ≃+* D₊(Xt)` uses
 `U + X² + X·V²` with `V = Yt / Xt`, and `Xt` is not inverted here.
-`modelYtChart` is the same polynomial quotient as `modelXtChart`;
-the equivalence `modelXtChart_equiv_DplusXt` still lands in `D₊(Xt)`.
-There is no `modelYtChart_equiv_DplusYt`.
+`modelYtTrueIdeal` is `(X - Y·S, Y²·(1 - Y·S³), Y·T, T²)` in
+`𝔽₂[a,b][X,Y,S,T]`. Eliminating `X = Y·S` leaves
+`𝔽₂[a,b][Y,S,T] / (Y²·(1 - Y·S³), Y·T, T²)`.
+`chartOfModelTrueY` sends that quotient into `D₊(Yt)`.
+Surjectivity, the Rees vanishing equation, and injectivity are open.
+There is no `chart_Dplus_Yt_true_presentation`.
 
 `D₊(2t)` is already the zero ring (`chart_Dplus_2t_subsingleton_valuationOne`).
 A scheme gluing `Proj(Rees(I)/(2)) ≃ D₊(Xt) ∪ D₊(Yt)` is not claimed.
@@ -373,14 +376,508 @@ theorem chartYt_two_over_Y_sq_zero :
   rw [hsq, Localization.mk]
   simp
 
-/-- Same quotient as `modelXtChart`. The v37 equivalence identifies it
-with `D₊(Xt)`. -/
-abbrev modelYtChart : Type := modelXtChart
+private lemma yt_numeralReesConst_eq_algebraMap
+    (W : WeierstrassCurve ℤ_[2]) (ap bq : ℕ) (r : surfaceRing W) :
+    numeralReesConst W ap bq r =
+      algebraMap (surfaceRing W) (reesAlgebra (numeralCentreIdeal W ap bq)) r := by
+  apply Subtype.ext
+  unfold numeralReesConst centreReesMonomial
+  rw [Subalgebra.coe_algebraMap]
+  dsimp
+
+/-- Degree-zero class of a surface element on `D₊(Yt)`. -/
+noncomputable def chartYtConst (W : WeierstrassCurve ℤ_[2]) (ap bq : ℕ)
+    (r : surfaceRing W) : chart_Dplus_Yt_ring W ap bq := by
+  let I := numeralCentreIdeal W ap bq
+  letI : GradedAlgebra (centreReesComponent I) := centreReesGrading I
+  let J := numeralReesSpecialIdeal W ap bq
+  let ℬ := homogeneousQuotientComponent (centreReesComponent I) J
+  letI : GradedAlgebra ℬ :=
+    homogeneousQuotientGrading (centreReesComponent I) J
+      (numeralReesSpecialIdeal_isHomogeneous W ap bq)
+  let f := Ideal.Quotient.mk J (numeralReesYT W ap bq)
+  let num := Ideal.Quotient.mk J (numeralReesConst W ap bq r)
+  exact HomogeneousLocalization.mk
+    ⟨0,
+      ⟨num, by
+        simpa [num] using yt_specialClass_mem_degree_zero W ap bq r⟩,
+      ⟨(1 : reesAlgebra I ⧸ J), yt_quotient_one_mem_degree_zero W ap bq⟩,
+      ⟨0, pow_zero f⟩⟩
+
+private lemma chartYtConst_val (W : WeierstrassCurve ℤ_[2]) (ap bq : ℕ)
+    (r : surfaceRing W) :
+    (chartYtConst W ap bq r).val =
+      Localization.mk
+        (Ideal.Quotient.mk (numeralReesSpecialIdeal W ap bq)
+          (numeralReesConst W ap bq r))
+        (1 : Submonoid.powers
+          (Ideal.Quotient.mk (numeralReesSpecialIdeal W ap bq)
+            (numeralReesYT W ap bq))) := by
+  let I := numeralCentreIdeal W ap bq
+  letI : GradedAlgebra (centreReesComponent I) := centreReesGrading I
+  let J := numeralReesSpecialIdeal W ap bq
+  have hJ : J.IsHomogeneous (centreReesComponent I) :=
+    numeralReesSpecialIdeal_isHomogeneous W ap bq
+  let ℬ := homogeneousQuotientComponent (centreReesComponent I) J
+  letI : GradedAlgebra ℬ := homogeneousQuotientGrading (centreReesComponent I) J hJ
+  simp [chartYtConst, HomogeneousLocalization.val_mk]
+  rfl
+
+private lemma chartYtConst_mul (W : WeierstrassCurve ℤ_[2]) (ap bq : ℕ)
+    (r s : surfaceRing W) :
+    chartYtConst W ap bq (r * s) = chartYtConst W ap bq r * chartYtConst W ap bq s := by
+  let I := numeralCentreIdeal W ap bq
+  letI : GradedAlgebra (centreReesComponent I) := centreReesGrading I
+  let J := numeralReesSpecialIdeal W ap bq
+  have hJ : J.IsHomogeneous (centreReesComponent I) :=
+    numeralReesSpecialIdeal_isHomogeneous W ap bq
+  let ℬ := homogeneousQuotientComponent (centreReesComponent I) J
+  letI : GradedAlgebra ℬ := homogeneousQuotientGrading (centreReesComponent I) J hJ
+  let f := Ideal.Quotient.mk J (numeralReesYT W ap bq)
+  apply HomogeneousLocalization.val_injective (Submonoid.powers f)
+  rw [HomogeneousLocalization.val_mul, chartYtConst_val, chartYtConst_val, chartYtConst_val,
+    Localization.mk_mul]
+  have hden : (1 : Submonoid.powers f) * 1 = 1 := mul_one _
+  rw [hden]
+  congr 1
+  rw [← map_mul (Ideal.Quotient.mk J), yt_numeralReesConst_eq_algebraMap,
+    yt_numeralReesConst_eq_algebraMap, yt_numeralReesConst_eq_algebraMap, map_mul]
+
+private lemma chartYtConst_add (W : WeierstrassCurve ℤ_[2]) (ap bq : ℕ)
+    (r s : surfaceRing W) :
+    chartYtConst W ap bq (r + s) = chartYtConst W ap bq r + chartYtConst W ap bq s := by
+  let I := numeralCentreIdeal W ap bq
+  letI : GradedAlgebra (centreReesComponent I) := centreReesGrading I
+  let J := numeralReesSpecialIdeal W ap bq
+  have hJ : J.IsHomogeneous (centreReesComponent I) :=
+    numeralReesSpecialIdeal_isHomogeneous W ap bq
+  let ℬ := homogeneousQuotientComponent (centreReesComponent I) J
+  letI : GradedAlgebra ℬ := homogeneousQuotientGrading (centreReesComponent I) J hJ
+  let f := Ideal.Quotient.mk J (numeralReesYT W ap bq)
+  apply HomogeneousLocalization.val_injective (Submonoid.powers f)
+  rw [HomogeneousLocalization.val_add, chartYtConst_val, chartYtConst_val, chartYtConst_val]
+  rw [Localization.add_mk_self
+      (Ideal.Quotient.mk (numeralReesSpecialIdeal W ap bq) (numeralReesConst W ap bq r))
+      (1 : Submonoid.powers f)
+      (Ideal.Quotient.mk (numeralReesSpecialIdeal W ap bq) (numeralReesConst W ap bq s))]
+  congr 1
+  rw [← map_add (Ideal.Quotient.mk J), yt_numeralReesConst_eq_algebraMap,
+    yt_numeralReesConst_eq_algebraMap, yt_numeralReesConst_eq_algebraMap, map_add]
+
+private lemma chartYtConst_one (W : WeierstrassCurve ℤ_[2]) (ap bq : ℕ) :
+    chartYtConst W ap bq (1 : surfaceRing W) = 1 := by
+  let I := numeralCentreIdeal W ap bq
+  letI : GradedAlgebra (centreReesComponent I) := centreReesGrading I
+  let J := numeralReesSpecialIdeal W ap bq
+  have hJ : J.IsHomogeneous (centreReesComponent I) :=
+    numeralReesSpecialIdeal_isHomogeneous W ap bq
+  let ℬ := homogeneousQuotientComponent (centreReesComponent I) J
+  letI : GradedAlgebra ℬ := homogeneousQuotientGrading (centreReesComponent I) J hJ
+  let f := Ideal.Quotient.mk J (numeralReesYT W ap bq)
+  apply HomogeneousLocalization.val_injective (Submonoid.powers f)
+  rw [chartYtConst_val, HomogeneousLocalization.val_one, yt_numeralReesConst_eq_algebraMap,
+    map_one, map_one, Localization.mk_one]
+
+private lemma chartYtConst_zero (W : WeierstrassCurve ℤ_[2]) (ap bq : ℕ) :
+    chartYtConst W ap bq (0 : surfaceRing W) = 0 := by
+  let I := numeralCentreIdeal W ap bq
+  letI : GradedAlgebra (centreReesComponent I) := centreReesGrading I
+  let J := numeralReesSpecialIdeal W ap bq
+  have hJ : J.IsHomogeneous (centreReesComponent I) :=
+    numeralReesSpecialIdeal_isHomogeneous W ap bq
+  let ℬ := homogeneousQuotientComponent (centreReesComponent I) J
+  letI : GradedAlgebra ℬ := homogeneousQuotientGrading (centreReesComponent I) J hJ
+  let f := Ideal.Quotient.mk J (numeralReesYT W ap bq)
+  apply HomogeneousLocalization.val_injective (Submonoid.powers f)
+  rw [chartYtConst_val, HomogeneousLocalization.val_zero, yt_numeralReesConst_eq_algebraMap,
+    map_zero, map_zero]
+  exact Localization.mk_zero (1 : Submonoid.powers f)
+
+noncomputable def chartYtConstHom (W : WeierstrassCurve ℤ_[2]) (ap bq : ℕ) :
+    surfaceRing W →+* chart_Dplus_Yt_ring W ap bq where
+  toFun := chartYtConst W ap bq
+  map_one' := chartYtConst_one W ap bq
+  map_mul' := chartYtConst_mul W ap bq
+  map_zero' := chartYtConst_zero W ap bq
+  map_add' := chartYtConst_add W ap bq
+
+noncomputable def chartYtScalar (W : WeierstrassCurve ℤ_[2]) (ap bq : ℕ) :
+    S →+* chart_Dplus_Yt_ring W ap bq :=
+  (chartYtConstHom W ap bq).comp (algebraMap S (surfaceRing W))
+
+theorem chartYtScalar_C_two (W : WeierstrassCurve ℤ_[2]) (ap bq : ℕ) :
+    chartYtScalar W ap bq (MvPolynomial.C (2 : ℤ_[2])) = 0 := by
+  let I := numeralCentreIdeal W ap bq
+  letI : GradedAlgebra (centreReesComponent I) := centreReesGrading I
+  let J := numeralReesSpecialIdeal W ap bq
+  have hJ : J.IsHomogeneous (centreReesComponent I) :=
+    numeralReesSpecialIdeal_isHomogeneous W ap bq
+  let ℬ := homogeneousQuotientComponent (centreReesComponent I) J
+  letI : GradedAlgebra ℬ := homogeneousQuotientGrading (centreReesComponent I) J hJ
+  let f := Ideal.Quotient.mk J (numeralReesYT W ap bq)
+  rw [chartYtScalar, RingHom.comp_apply]
+  have htwo : algebraMap S (surfaceRing W) (MvPolynomial.C (2 : ℤ_[2])) =
+      (2 : surfaceRing W) := by
+    rw [two_eq_quotient_mk]
+    rfl
+  rw [htwo]
+  dsimp [chartYtConstHom]
+  apply HomogeneousLocalization.val_injective (Submonoid.powers f)
+  rw [chartYtConst_val, HomogeneousLocalization.val_zero, yt_numeralReesConst_eq_algebraMap]
+  have hJ0 : Ideal.Quotient.mk J
+      (algebraMap (surfaceRing W) (reesAlgebra I) (2 : surfaceRing W)) = 0 :=
+    Ideal.Quotient.eq_zero_iff_mem.mpr (Ideal.mem_span_singleton_self _)
+  rw [hJ0]
+  exact Localization.mk_zero (1 : Submonoid.powers f)
+
+noncomputable def chartYtScalarModTwo (W : WeierstrassCurve ℤ_[2]) (ap bq : ℕ) :
+    S ⧸ Ideal.span {MvPolynomial.C (2 : ℤ_[2])} →+* chart_Dplus_Yt_ring W ap bq :=
+  Ideal.Quotient.lift (Ideal.span {MvPolynomial.C (2 : ℤ_[2])}) (chartYtScalar W ap bq)
+    (by
+      intro a ha
+      obtain ⟨c, rfl⟩ := Ideal.mem_span_singleton'.mp ha
+      rw [map_mul, chartYtScalar_C_two, mul_zero])
+
+/-- `𝔽₂[a,b] → D₊(Yt)`. -/
+noncomputable def chartYtFromF2Polynomial (W : WeierstrassCurve ℤ_[2]) (ap bq : ℕ) :
+    MvPolynomial (Fin 2) (ZMod 2) →+* chart_Dplus_Yt_ring W ap bq :=
+  (chartYtScalarModTwo W ap bq).comp coeffModTwoEquiv.symm.toRingHom
+
+/-- `(X - Y·S, Y²·(1 - Y·S³), Y·T, T²)` in `𝔽₂[a,b][X,Y,S,T]`.
+`0` is `X`, `1` is `Y`, `2` is `S = Xt/Yt`, `3` is `T = 2t/Yt`. -/
+noncomputable def modelYtTrueIdeal :
+    Ideal (MvPolynomial (Fin 4) (MvPolynomial (Fin 2) (ZMod 2))) :=
+  Ideal.span {
+    MvPolynomial.X 0 - MvPolynomial.X 1 * MvPolynomial.X 2,
+    (MvPolynomial.X 1) ^ 2 * (1 - MvPolynomial.X 1 * (MvPolynomial.X 2) ^ 3),
+    MvPolynomial.X 1 * MvPolynomial.X 3,
+    (MvPolynomial.X 3) ^ 2 }
+
+/-- `𝔽₂[a,b][X,Y,S,T] / modelYtTrueIdeal`. -/
+abbrev modelYtChart : Type :=
+  MvPolynomial (Fin 4) (MvPolynomial (Fin 2) (ZMod 2)) ⧸ modelYtTrueIdeal
+
+/-- Send `X, Y, S, T` to `X`, `Y`, `Xt/Yt`, `2t/Yt` in `D₊(Yt)`. -/
+noncomputable def chartYtModelEval :
+    MvPolynomial (Fin 4) (MvPolynomial (Fin 2) (ZMod 2)) →+*
+      chart_Dplus_Yt_ring valuationOneCurve 0 0 :=
+  MvPolynomial.eval₂Hom (chartYtFromF2Polynomial valuationOneCurve 0 0)
+    (fun i : Fin 4 =>
+      if i = 0 then chartYt_X valuationOneCurve 0 0
+      else if i = 1 then chartYt_Y valuationOneCurve 0 0
+      else if i = 2 then chartYt_X_over_Y valuationOneCurve 0 0
+      else chartYt_two_over_Y valuationOneCurve 0 0)
+
+private lemma chartYtModelEval_X (i : Fin 4) :
+    chartYtModelEval (MvPolynomial.X i) =
+      if i = 0 then chartYt_X valuationOneCurve 0 0
+      else if i = 1 then chartYt_Y valuationOneCurve 0 0
+      else if i = 2 then chartYt_X_over_Y valuationOneCurve 0 0
+      else chartYt_two_over_Y valuationOneCurve 0 0 := by
+  simp [chartYtModelEval, MvPolynomial.eval₂Hom_X']
+
+theorem modelYtTrueIdeal_le_ker_chartYtModelEval :
+    modelYtTrueIdeal ≤ RingHom.ker chartYtModelEval := by
+  rw [modelYtTrueIdeal, Ideal.span_le]
+  intro z hz
+  simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hz
+  rcases hz with rfl | rfl | rfl | rfl
+  · rw [SetLike.mem_coe, RingHom.mem_ker, map_sub, map_mul, chartYtModelEval_X,
+      chartYtModelEval_X, chartYtModelEval_X,
+      if_pos (rfl : (0 : Fin 4) = 0),
+      if_neg (by decide : (1 : Fin 4) ≠ 0),
+      if_pos (rfl : (1 : Fin 4) = 1),
+      if_neg (by decide : (2 : Fin 4) ≠ 0),
+      if_neg (by decide : (2 : Fin 4) ≠ 1),
+      if_pos (rfl : (2 : Fin 4) = 2),
+      chartYt_X_eq_Y_mul_X_over_Y, sub_self]
+  · rw [SetLike.mem_coe, RingHom.mem_ker, map_mul, map_pow, map_sub, map_one, map_mul, map_pow,
+      chartYtModelEval_X, chartYtModelEval_X,
+      if_neg (by decide : (1 : Fin 4) ≠ 0),
+      if_pos (rfl : (1 : Fin 4) = 1),
+      if_neg (by decide : (2 : Fin 4) ≠ 0),
+      if_neg (by decide : (2 : Fin 4) ≠ 1),
+      if_pos (rfl : (2 : Fin 4) = 2)]
+    exact chartYt_cusp_relation
+  · rw [SetLike.mem_coe, RingHom.mem_ker, map_mul, chartYtModelEval_X, chartYtModelEval_X,
+      if_neg (by decide : (1 : Fin 4) ≠ 0),
+      if_pos (rfl : (1 : Fin 4) = 1),
+      if_neg (by decide : (3 : Fin 4) ≠ 0),
+      if_neg (by decide : (3 : Fin 4) ≠ 1),
+      if_neg (by decide : (3 : Fin 4) ≠ 2),
+      chartYt_Y_mul_two_over_Y_eq_zero]
+  · rw [SetLike.mem_coe, RingHom.mem_ker, map_pow, chartYtModelEval_X,
+      if_neg (by decide : (3 : Fin 4) ≠ 0),
+      if_neg (by decide : (3 : Fin 4) ≠ 1),
+      if_neg (by decide : (3 : Fin 4) ≠ 2),
+      chartYt_two_over_Y_sq_zero]
+
+/-- `𝔽₂[a,b][X,Y,S,T] / modelYtTrueIdeal → D₊(Yt)`. -/
+noncomputable def chartOfModelTrueY :
+    modelYtChart →+* chart_Dplus_Yt_ring valuationOneCurve 0 0 :=
+  Ideal.Quotient.lift modelYtTrueIdeal chartYtModelEval modelYtTrueIdeal_le_ker_chartYtModelEval
+
+/-!
+Eliminating `X` by `X = Y·S`. The normal ring still has `T`, with
+`Y·T = 0` and `T² = 0`. It is not `𝔽₂[a,b][Y,S]` alone, and it is not
+the `Xt` normal form `A(V) + X·B(V) + X²·C(V)`.
+-/
+
+abbrev chartYtNormalPoly : Type :=
+  MvPolynomial (Fin 3) (MvPolynomial (Fin 2) (ZMod 2))
+
+noncomputable def chartYtNormalRelY :
+    chartYtNormalPoly :=
+  (MvPolynomial.X 0) ^ 2 * (1 - MvPolynomial.X 0 * (MvPolynomial.X 1) ^ 3)
+
+noncomputable def chartYtNormalRelT :
+    chartYtNormalPoly :=
+  MvPolynomial.X 0 * MvPolynomial.X 2
+
+noncomputable def chartYtNormalRelTsq :
+    chartYtNormalPoly :=
+  (MvPolynomial.X 2) ^ 2
+
+noncomputable def chartYtNormalIdeal : Ideal chartYtNormalPoly :=
+  Ideal.span {chartYtNormalRelY, chartYtNormalRelT, chartYtNormalRelTsq}
+
+abbrev chartYtNormalRing : Type := chartYtNormalPoly ⧸ chartYtNormalIdeal
+
+/-- Send `X, Y, S, T` to `Y·S, Y, S, T`. -/
+noncomputable def chartYtToNormalEval :
+    MvPolynomial (Fin 4) (MvPolynomial (Fin 2) (ZMod 2)) →+* chartYtNormalRing :=
+  MvPolynomial.eval₂Hom
+    ((Ideal.Quotient.mk chartYtNormalIdeal).comp MvPolynomial.C)
+    (fun i : Fin 4 =>
+      if i = 0 then
+        Ideal.Quotient.mk chartYtNormalIdeal (MvPolynomial.X 0 * MvPolynomial.X 1)
+      else if i = 1 then Ideal.Quotient.mk chartYtNormalIdeal (MvPolynomial.X 0)
+      else if i = 2 then Ideal.Quotient.mk chartYtNormalIdeal (MvPolynomial.X 1)
+      else Ideal.Quotient.mk chartYtNormalIdeal (MvPolynomial.X 2))
+
+private lemma chartYtToNormalEval_X (i : Fin 4) :
+    chartYtToNormalEval (MvPolynomial.X i) =
+      if i = 0 then
+        Ideal.Quotient.mk chartYtNormalIdeal (MvPolynomial.X 0 * MvPolynomial.X 1)
+      else if i = 1 then Ideal.Quotient.mk chartYtNormalIdeal (MvPolynomial.X 0)
+      else if i = 2 then Ideal.Quotient.mk chartYtNormalIdeal (MvPolynomial.X 1)
+      else Ideal.Quotient.mk chartYtNormalIdeal (MvPolynomial.X 2) := by
+  simp [chartYtToNormalEval, MvPolynomial.eval₂Hom_X']
+
+theorem chartYtToNormalEval_kills :
+    modelYtTrueIdeal ≤ RingHom.ker chartYtToNormalEval := by
+  rw [modelYtTrueIdeal, Ideal.span_le]
+  intro z hz
+  simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hz
+  rcases hz with rfl | rfl | rfl | rfl
+  · rw [CharTwo.sub_eq_add, SetLike.mem_coe, RingHom.mem_ker, map_add, map_mul,
+      chartYtToNormalEval_X, chartYtToNormalEval_X, chartYtToNormalEval_X,
+      if_pos (rfl : (0 : Fin 4) = 0),
+      if_neg (by decide : (1 : Fin 4) ≠ 0),
+      if_pos (rfl : (1 : Fin 4) = 1),
+      if_neg (by decide : (2 : Fin 4) ≠ 0),
+      if_neg (by decide : (2 : Fin 4) ≠ 1),
+      if_pos (rfl : (2 : Fin 4) = 2)]
+    rw [map_mul (Ideal.Quotient.mk chartYtNormalIdeal),
+      ← map_mul (Ideal.Quotient.mk chartYtNormalIdeal),
+      ← map_add (Ideal.Quotient.mk chartYtNormalIdeal),
+      CharTwo.add_self_eq_zero, map_zero]
+  · rw [CharTwo.sub_eq_add, SetLike.mem_coe, RingHom.mem_ker, map_mul, map_pow, map_add,
+      map_one, map_mul, map_pow, chartYtToNormalEval_X, chartYtToNormalEval_X,
+      if_neg (by decide : (1 : Fin 4) ≠ 0),
+      if_pos (rfl : (1 : Fin 4) = 1),
+      if_neg (by decide : (2 : Fin 4) ≠ 0),
+      if_neg (by decide : (2 : Fin 4) ≠ 1),
+      if_pos (rfl : (2 : Fin 4) = 2)]
+    rw [← map_pow (Ideal.Quotient.mk chartYtNormalIdeal),
+      ← map_pow (Ideal.Quotient.mk chartYtNormalIdeal),
+      ← map_mul (Ideal.Quotient.mk chartYtNormalIdeal),
+      ← map_one (Ideal.Quotient.mk chartYtNormalIdeal),
+      ← map_add (Ideal.Quotient.mk chartYtNormalIdeal),
+      ← map_mul (Ideal.Quotient.mk chartYtNormalIdeal),
+      ← CharTwo.sub_eq_add, Ideal.Quotient.eq_zero_iff_mem]
+    rw [chartYtNormalIdeal]
+    exact Ideal.subset_span (Set.mem_insert _ _)
+  · rw [SetLike.mem_coe, RingHom.mem_ker, map_mul, chartYtToNormalEval_X,
+      chartYtToNormalEval_X,
+      if_neg (by decide : (1 : Fin 4) ≠ 0),
+      if_pos (rfl : (1 : Fin 4) = 1),
+      if_neg (by decide : (3 : Fin 4) ≠ 0),
+      if_neg (by decide : (3 : Fin 4) ≠ 1),
+      if_neg (by decide : (3 : Fin 4) ≠ 2)]
+    rw [← map_mul (Ideal.Quotient.mk chartYtNormalIdeal), Ideal.Quotient.eq_zero_iff_mem]
+    rw [chartYtNormalIdeal]
+    exact Ideal.subset_span (Set.mem_insert_of_mem _ (Set.mem_insert _ _))
+  · rw [SetLike.mem_coe, RingHom.mem_ker, map_pow, chartYtToNormalEval_X,
+      if_neg (by decide : (3 : Fin 4) ≠ 0),
+      if_neg (by decide : (3 : Fin 4) ≠ 1),
+      if_neg (by decide : (3 : Fin 4) ≠ 2)]
+    rw [← map_pow (Ideal.Quotient.mk chartYtNormalIdeal), Ideal.Quotient.eq_zero_iff_mem]
+    rw [chartYtNormalIdeal]
+    exact Ideal.subset_span (Set.mem_insert_of_mem _ (Set.mem_insert_of_mem _
+      (Set.mem_singleton _)))
+
+noncomputable def chartYtToNormal :
+    modelYtChart →+* chartYtNormalRing :=
+  Ideal.Quotient.lift modelYtTrueIdeal chartYtToNormalEval chartYtToNormalEval_kills
+
+/-- Include `Y, S, T` as the last three variables. -/
+noncomputable def normalYtToModel :
+    chartYtNormalPoly →+* MvPolynomial (Fin 4) (MvPolynomial (Fin 2) (ZMod 2)) :=
+  MvPolynomial.eval₂Hom MvPolynomial.C
+    (fun i : Fin 3 =>
+      if i = 0 then MvPolynomial.X 1
+      else if i = 1 then MvPolynomial.X 2
+      else MvPolynomial.X 3)
+
+private lemma normalYtToModel_relY :
+    normalYtToModel chartYtNormalRelY =
+      (MvPolynomial.X (1 : Fin 4)) ^ 2 *
+        (1 - MvPolynomial.X 1 * (MvPolynomial.X 2) ^ 3) := by
+  rw [chartYtNormalRelY, CharTwo.sub_eq_add, normalYtToModel, map_mul, map_pow, map_add,
+    map_one, map_mul, map_pow, MvPolynomial.eval₂Hom_X', MvPolynomial.eval₂Hom_X',
+    if_pos (rfl : (0 : Fin 3) = 0),
+    if_neg (by decide : (1 : Fin 3) ≠ 0),
+    if_pos (rfl : (1 : Fin 3) = 1),
+    ← CharTwo.sub_eq_add]
+
+private lemma normalYtToModel_relT :
+    normalYtToModel chartYtNormalRelT =
+      MvPolynomial.X (1 : Fin 4) * MvPolynomial.X 3 := by
+  rw [chartYtNormalRelT, normalYtToModel, map_mul, MvPolynomial.eval₂Hom_X',
+    MvPolynomial.eval₂Hom_X',
+    if_pos (rfl : (0 : Fin 3) = 0),
+    if_neg (by decide : (2 : Fin 3) ≠ 0),
+    if_neg (by decide : (2 : Fin 3) ≠ 1)]
+
+private lemma normalYtToModel_relTsq :
+    normalYtToModel chartYtNormalRelTsq = (MvPolynomial.X (3 : Fin 4)) ^ 2 := by
+  rw [chartYtNormalRelTsq, normalYtToModel, map_pow, MvPolynomial.eval₂Hom_X',
+    if_neg (by decide : (2 : Fin 3) ≠ 0),
+    if_neg (by decide : (2 : Fin 3) ≠ 1)]
+
+theorem normalYtToModel_kills :
+    chartYtNormalIdeal ≤
+      RingHom.ker ((Ideal.Quotient.mk modelYtTrueIdeal).comp normalYtToModel) := by
+  rw [chartYtNormalIdeal, Ideal.span_le]
+  intro z hz
+  simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hz
+  rcases hz with rfl | rfl | rfl
+  · rw [SetLike.mem_coe, RingHom.mem_ker, RingHom.comp_apply, normalYtToModel_relY,
+      Ideal.Quotient.eq_zero_iff_mem, modelYtTrueIdeal]
+    exact Ideal.subset_span (Set.mem_insert_of_mem _ (Set.mem_insert _ _))
+  · rw [SetLike.mem_coe, RingHom.mem_ker, RingHom.comp_apply, normalYtToModel_relT,
+      Ideal.Quotient.eq_zero_iff_mem, modelYtTrueIdeal]
+    exact Ideal.subset_span (Set.mem_insert_of_mem _ (Set.mem_insert_of_mem _
+      (Set.mem_insert _ _)))
+  · rw [SetLike.mem_coe, RingHom.mem_ker, RingHom.comp_apply, normalYtToModel_relTsq,
+      Ideal.Quotient.eq_zero_iff_mem, modelYtTrueIdeal]
+    exact Ideal.subset_span (Set.mem_insert_of_mem _ (Set.mem_insert_of_mem _
+      (Set.mem_insert_of_mem _ (Set.mem_singleton _))))
+
+noncomputable def normalYtToChart :
+    chartYtNormalRing →+* modelYtChart :=
+  Ideal.Quotient.lift chartYtNormalIdeal
+    ((Ideal.Quotient.mk modelYtTrueIdeal).comp normalYtToModel) normalYtToModel_kills
+
+private lemma chartYt_fin4 (i j : Fin 4) (h : i.val = j.val) :
+    Ideal.Quotient.mk modelYtTrueIdeal (MvPolynomial.X i) =
+      Ideal.Quotient.mk modelYtTrueIdeal (MvPolynomial.X j) :=
+  congrArg (fun k : Fin 4 => Ideal.Quotient.mk modelYtTrueIdeal (MvPolynomial.X k))
+    (Fin.ext h)
+
+private lemma chartYt_fin3 (i j : Fin 3) (h : i.val = j.val) :
+    Ideal.Quotient.mk chartYtNormalIdeal (MvPolynomial.X i) =
+      Ideal.Quotient.mk chartYtNormalIdeal (MvPolynomial.X j) :=
+  congrArg (fun k : Fin 3 => Ideal.Quotient.mk chartYtNormalIdeal (MvPolynomial.X k))
+    (Fin.ext h)
+
+private lemma chartYtToNormal_comp_normalYtToChart :
+    chartYtToNormal.comp normalYtToChart = RingHom.id chartYtNormalRing := by
+  apply Ideal.Quotient.ringHom_ext
+  apply MvPolynomial.ringHom_ext
+  · intro r
+    simp only [RingHom.comp_apply, RingHom.id_apply, chartYtToNormal, chartYtToNormalEval,
+      normalYtToChart, normalYtToModel, Ideal.Quotient.lift_mk, MvPolynomial.eval₂Hom_C]
+  · intro i
+    fin_cases i
+    · simp only [RingHom.comp_apply, RingHom.id_apply, chartYtToNormal, normalYtToChart,
+        Ideal.Quotient.lift_mk, chartYtToNormalEval, normalYtToModel, MvPolynomial.eval₂Hom_X']
+      rw [if_pos (by decide), MvPolynomial.eval₂Hom_X',
+        if_neg (by decide : (1 : Fin 4) ≠ 0), if_pos (by decide : (1 : Fin 4) = 1)]
+      exact chartYt_fin3 (0 : Fin 3) ⟨0, by decide⟩ rfl
+    · simp only [RingHom.comp_apply, RingHom.id_apply, chartYtToNormal, normalYtToChart,
+        Ideal.Quotient.lift_mk, chartYtToNormalEval, normalYtToModel, MvPolynomial.eval₂Hom_X']
+      rw [if_neg (by decide), if_pos (by decide),
+        MvPolynomial.eval₂Hom_X',
+        if_neg (by decide : (2 : Fin 4) ≠ 0), if_neg (by decide : (2 : Fin 4) ≠ 1),
+        if_pos (by decide : (2 : Fin 4) = 2)]
+      exact chartYt_fin3 (1 : Fin 3) ⟨1, by decide⟩ rfl
+    · simp only [RingHom.comp_apply, RingHom.id_apply, chartYtToNormal, normalYtToChart,
+        Ideal.Quotient.lift_mk, chartYtToNormalEval, normalYtToModel, MvPolynomial.eval₂Hom_X']
+      rw [if_neg (by decide), if_neg (by decide),
+        MvPolynomial.eval₂Hom_X',
+        if_neg (by decide : (3 : Fin 4) ≠ 0), if_neg (by decide : (3 : Fin 4) ≠ 1),
+        if_neg (by decide : (3 : Fin 4) ≠ 2)]
+      exact chartYt_fin3 (2 : Fin 3) ⟨2, by decide⟩ rfl
+
+private lemma normalYtToChart_comp_chartYtToNormal :
+    normalYtToChart.comp chartYtToNormal = RingHom.id _ := by
+  apply Ideal.Quotient.ringHom_ext
+  apply MvPolynomial.ringHom_ext
+  · intro r
+    simp only [RingHom.comp_apply, RingHom.id_apply, chartYtToNormal, chartYtToNormalEval,
+      normalYtToChart, normalYtToModel, Ideal.Quotient.lift_mk, MvPolynomial.eval₂Hom_C]
+  · intro i
+    fin_cases i
+    · simp only [RingHom.comp_apply, RingHom.id_apply, chartYtToNormal, Ideal.Quotient.lift_mk,
+        chartYtToNormalEval, MvPolynomial.eval₂Hom_X']
+      rw [if_pos (by decide)]
+      simp only [normalYtToChart, Ideal.Quotient.lift_mk, RingHom.comp_apply, normalYtToModel,
+        map_mul, MvPolynomial.eval₂Hom_X']
+      rw [if_true, if_neg (by decide : (1 : Fin 3) ≠ 0), if_true]
+      rw [← map_mul (Ideal.Quotient.mk modelYtTrueIdeal), Ideal.Quotient.eq]
+      have hmem (j : Fin 4) (hj : j = 0) :
+          MvPolynomial.X 1 * MvPolynomial.X 2 - MvPolynomial.X j ∈ modelYtTrueIdeal := by
+        subst hj
+        rw [CharTwo.sub_eq_add, add_comm, ← CharTwo.sub_eq_add, modelYtTrueIdeal]
+        exact Ideal.subset_span (Set.mem_insert _ _)
+      apply hmem
+      exact Fin.ext rfl
+    · simp only [RingHom.comp_apply, RingHom.id_apply, chartYtToNormal, Ideal.Quotient.lift_mk,
+        chartYtToNormalEval, MvPolynomial.eval₂Hom_X']
+      rw [if_neg (by decide), if_pos (by decide)]
+      simp only [normalYtToChart, Ideal.Quotient.lift_mk, RingHom.comp_apply, normalYtToModel,
+        MvPolynomial.eval₂Hom_X']
+      rw [if_true]
+      exact chartYt_fin4 1 ⟨1, by decide⟩ rfl
+    · simp only [RingHom.comp_apply, RingHom.id_apply, chartYtToNormal, Ideal.Quotient.lift_mk,
+        chartYtToNormalEval, MvPolynomial.eval₂Hom_X']
+      rw [if_neg (by decide), if_neg (by decide), if_pos (by decide)]
+      simp only [normalYtToChart, Ideal.Quotient.lift_mk, RingHom.comp_apply, normalYtToModel,
+        MvPolynomial.eval₂Hom_X']
+      rw [if_true]
+      exact chartYt_fin4 2 ⟨2, by decide⟩ rfl
+    · simp only [RingHom.comp_apply, RingHom.id_apply, chartYtToNormal, Ideal.Quotient.lift_mk,
+        chartYtToNormalEval, MvPolynomial.eval₂Hom_X']
+      rw [if_neg (by decide), if_neg (by decide), if_neg (by decide)]
+      simp only [normalYtToChart, Ideal.Quotient.lift_mk, RingHom.comp_apply, normalYtToModel,
+        MvPolynomial.eval₂Hom_X']
+      rw [if_neg (by decide : (2 : Fin 3) ≠ 0), if_neg (by decide : (2 : Fin 3) ≠ 1)]
+      exact chartYt_fin4 3 ⟨3, by decide⟩ rfl
+
+/-- Eliminating `X` by `X = Y·S`. -/
+noncomputable def modelYtChart_quotient_equiv_normal :
+    modelYtChart ≃+* chartYtNormalRing :=
+  RingEquiv.ofRingHom chartYtToNormal normalYtToChart
+    chartYtToNormal_comp_normalYtToChart normalYtToChart_comp_chartYtToNormal
 
 #print axioms Beal.MathlibMissing.chartYt_X_eq_Y_mul_X_over_Y
 #print axioms Beal.MathlibMissing.chartYt_Y_mul_two_over_Y_eq_zero
 #print axioms Beal.MathlibMissing.chartYt_Y_sq_eq_X_cu
 #print axioms Beal.MathlibMissing.chartYt_cusp_relation
 #print axioms Beal.MathlibMissing.chartYt_two_over_Y_sq_zero
+#print axioms Beal.MathlibMissing.chartOfModelTrueY
+#print axioms Beal.MathlibMissing.modelYtChart_quotient_equiv_normal
 
 end Beal.MathlibMissing
