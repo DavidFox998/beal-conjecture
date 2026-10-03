@@ -39,8 +39,11 @@ chart fractions, and `vTerm_rees` is the cleared degree-`D` monomial.
 `chartVanishing_reesEquation` turns vanishing of a normal form in `D₊(Xt)`
 into `X^m·α = 2·αₛ` and `X^m·β = 2·βₛ` with `αₛ + Y·βₛ ∈ I^{D+m}`.
 `chartOfModelTrue_injective` follows, and `chart_Dplus_Xt_true_presentation`
-is the induced ring equivalence. The parameter-free
-`chart_Dplus_Xt_presentation` stays open.
+is the induced ring equivalence. The constant `a` is outside
+`chartTrueIdeal`, so `a` and `b` remain in `D₊(Xt)`.
+`chart_Dplus_Xt_presentation` erases them on both sides:
+`𝔽₂[X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U + X² + X·V²) ≃ D₊(Xt) / (a, b)`.
+The ring `modelXtChart`, which drops `U + X² + X·V²`, is not this quotient.
 -/
 
 namespace Beal.MathlibMissing
@@ -3161,6 +3164,319 @@ noncomputable def chart_Dplus_Xt_true_presentation :
   RingEquiv.ofBijective chartOfModelTrue
     ⟨chartOfModelTrue_injective, chartOfModelTrue_surjective⟩
 
+/-!
+## Parameter-free quotient
+
+`chart_Dplus_Xt_true_presentation` identifies `D₊(Xt)` with
+`𝔽₂[a,b][X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U + X² + X·V²)`.
+The constant polynomial `a` is not in that ideal, so the chart is not
+the same ring with `a` and `b` deleted. Deleting them is the quotient
+by the ideal they generate.
+-/
+
+/-- `(X·U, Y − X·V, Y² − X³, U + X² + X·V²)` in `𝔽₂[X,Y,U,V]`. -/
+noncomputable def chartTrueIdealParamFree : Ideal (MvPolynomial (Fin 4) (ZMod 2)) :=
+  Ideal.span {
+    MvPolynomial.X 0 * MvPolynomial.X 2,
+    MvPolynomial.X 1 - MvPolynomial.X 0 * MvPolynomial.X 3,
+    MvPolynomial.X 1 ^ 2 - MvPolynomial.X 0 ^ 3,
+    MvPolynomial.X 2 + MvPolynomial.X 0 ^ 2 + MvPolynomial.X 0 * MvPolynomial.X 3 ^ 2 }
+
+private noncomputable def coeffInclude :
+    MvPolynomial (Fin 4) (ZMod 2) →+*
+      MvPolynomial (Fin 4) (MvPolynomial (Fin 2) (ZMod 2)) :=
+  MvPolynomial.map (MvPolynomial.C : ZMod 2 →+* MvPolynomial (Fin 2) (ZMod 2))
+
+private noncomputable def coeffErase :
+    MvPolynomial (Fin 4) (MvPolynomial (Fin 2) (ZMod 2)) →+*
+      MvPolynomial (Fin 4) (ZMod 2) :=
+  MvPolynomial.eval₂Hom
+    ((MvPolynomial.C : ZMod 2 →+* MvPolynomial (Fin 4) (ZMod 2)).comp
+      (MvPolynomial.eval (fun _ : Fin 2 => (0 : ZMod 2))))
+    (fun i => MvPolynomial.X i)
+
+private lemma coeffInclude_X (i : Fin 4) : coeffInclude (MvPolynomial.X i) = MvPolynomial.X i := by
+  simp [coeffInclude, MvPolynomial.map_X]
+
+private lemma coeffErase_X (i : Fin 4) : coeffErase (MvPolynomial.X i) = MvPolynomial.X i := by
+  simp [coeffErase, MvPolynomial.eval₂Hom_X']
+
+private lemma coeffErase_include (p : MvPolynomial (Fin 4) (ZMod 2)) :
+    coeffErase (coeffInclude p) = p := by
+  refine MvPolynomial.is_id (coeffErase.comp coeffInclude) ?_ ?_ p
+  · ext r
+    simp [coeffInclude, coeffErase, MvPolynomial.map_C, MvPolynomial.eval₂Hom_C,
+      MvPolynomial.eval_C]
+  · intro i
+    simp [coeffInclude, coeffErase, MvPolynomial.map_X, MvPolynomial.eval₂Hom_X']
+
+private lemma coeffInclude_witness :
+    coeffInclude (MvPolynomial.X 2 + MvPolynomial.X 0 ^ 2 +
+        MvPolynomial.X 0 * MvPolynomial.X 3 ^ 2) = chartKernelWitness := by
+  simp [coeffInclude, chartKernelWitness, map_add, map_mul, map_pow, MvPolynomial.map_X]
+
+private lemma coeffErase_witness :
+    coeffErase chartKernelWitness =
+      MvPolynomial.X 2 + MvPolynomial.X 0 ^ 2 +
+        MvPolynomial.X 0 * MvPolynomial.X 3 ^ 2 := by
+  simp [coeffErase, chartKernelWitness, map_add, map_mul, map_pow, MvPolynomial.eval₂Hom_X']
+
+private lemma coeffErase_param (i : Fin 2) :
+    coeffErase (MvPolynomial.C (MvPolynomial.X i)) = 0 := by
+  simp [coeffErase, MvPolynomial.eval₂Hom_C, MvPolynomial.eval_X]
+
+private lemma X_mem_span_params (n : Fin 2) :
+    (MvPolynomial.X n : MvPolynomial (Fin 2) (ZMod 2)) ∈
+      Ideal.span
+        ({MvPolynomial.X 0, MvPolynomial.X 1} : Set (MvPolynomial (Fin 2) (ZMod 2))) := by
+  match n with
+  | 0 => exact Ideal.subset_span (Set.mem_insert _ _)
+  | 1 => exact Ideal.subset_span (Set.mem_insert_of_mem _ (Set.mem_singleton _))
+
+private lemma sub_eval_mem (c : MvPolynomial (Fin 2) (ZMod 2)) :
+    c - MvPolynomial.C (MvPolynomial.eval (fun _ => (0 : ZMod 2)) c) ∈
+      Ideal.span {MvPolynomial.X (0 : Fin 2), MvPolynomial.X (1 : Fin 2)} := by
+  apply MvPolynomial.induction_on c
+  · intro r
+    simp [MvPolynomial.eval_C, sub_self]
+  · intro p q hp hq
+    have hsub :
+        (p + q) - MvPolynomial.C (MvPolynomial.eval (fun _ => (0 : ZMod 2)) (p + q)) =
+          (p - MvPolynomial.C (MvPolynomial.eval (fun _ => (0 : ZMod 2)) p)) +
+            (q - MvPolynomial.C (MvPolynomial.eval (fun _ => (0 : ZMod 2)) q)) := by
+      rw [map_add, map_add]
+      ring
+    rw [hsub]
+    exact Ideal.add_mem _ hp hq
+  · intro p n _hp
+    rw [MvPolynomial.eval_mul, MvPolynomial.eval_X, mul_zero, map_zero, sub_zero]
+    exact Ideal.mul_mem_left _ _ (X_mem_span_params n)
+
+private noncomputable def paramSpan :
+    Ideal (MvPolynomial (Fin 4) (MvPolynomial (Fin 2) (ZMod 2))) :=
+  Ideal.span {
+    MvPolynomial.C (MvPolynomial.X (0 : Fin 2)),
+    MvPolynomial.C (MvPolynomial.X (1 : Fin 2)) }
+
+private lemma erase_diff (p : MvPolynomial (Fin 4) (MvPolynomial (Fin 2) (ZMod 2))) :
+    p - coeffInclude (coeffErase p) ∈ paramSpan := by
+  apply MvPolynomial.induction_on p
+  · intro c
+    have hmem := sub_eval_mem c
+    obtain ⟨u, v, huv⟩ := Ideal.mem_span_pair.mp hmem
+    have hC :
+        MvPolynomial.C (σ := Fin 4) u * MvPolynomial.C (MvPolynomial.X (0 : Fin 2)) +
+            MvPolynomial.C (σ := Fin 4) v * MvPolynomial.C (MvPolynomial.X (1 : Fin 2)) =
+          MvPolynomial.C (σ := Fin 4) c -
+            MvPolynomial.C (MvPolynomial.C (MvPolynomial.eval (fun _ => (0 : ZMod 2)) c)) := by
+      calc
+        MvPolynomial.C (σ := Fin 4) u * MvPolynomial.C (MvPolynomial.X (0 : Fin 2)) +
+              MvPolynomial.C (σ := Fin 4) v * MvPolynomial.C (MvPolynomial.X (1 : Fin 2))
+            = MvPolynomial.C (σ := Fin 4)
+                (u * MvPolynomial.X 0 + v * MvPolynomial.X 1) := by
+              rw [map_add, map_mul, map_mul]
+        _ = MvPolynomial.C (σ := Fin 4)
+              (c - MvPolynomial.C (MvPolynomial.eval (fun _ => (0 : ZMod 2)) c)) := by
+            rw [huv]
+        _ = MvPolynomial.C (σ := Fin 4) c -
+              MvPolynomial.C (MvPolynomial.C (MvPolynomial.eval (fun _ => (0 : ZMod 2)) c)) := by
+            rw [map_sub]
+    have hinc : coeffInclude (coeffErase (MvPolynomial.C c)) =
+        MvPolynomial.C (MvPolynomial.C (MvPolynomial.eval (fun _ => (0 : ZMod 2)) c)) := by
+      simp [coeffInclude, coeffErase, MvPolynomial.map_C, MvPolynomial.eval₂Hom_C,
+        MvPolynomial.eval_C]
+    rw [hinc]
+    exact Ideal.mem_span_pair.mpr
+      ⟨MvPolynomial.C (σ := Fin 4) u, MvPolynomial.C (σ := Fin 4) v, hC⟩
+  · intro p q hp hq
+    rw [map_add, map_add]
+    have hsub :
+        (p + q) - (coeffInclude (coeffErase p) + coeffInclude (coeffErase q)) =
+          (p - coeffInclude (coeffErase p)) + (q - coeffInclude (coeffErase q)) := by
+      ring
+    rw [hsub]
+    exact Ideal.add_mem _ hp hq
+  · intro p n hp
+    rw [map_mul, coeffErase_X, map_mul, coeffInclude_X]
+    have hsub :
+        p * MvPolynomial.X n - coeffInclude (coeffErase p) * MvPolynomial.X n =
+          (p - coeffInclude (coeffErase p)) * MvPolynomial.X n := by
+      rw [sub_mul]
+    rw [hsub]
+    exact Ideal.mul_mem_right _ _ hp
+
+private noncomputable def paramFreeToSup :
+    MvPolynomial (Fin 4) (ZMod 2) ⧸ chartTrueIdealParamFree →+*
+      MvPolynomial (Fin 4) (MvPolynomial (Fin 2) (ZMod 2)) ⧸ (chartTrueIdeal ⊔ paramSpan) :=
+  Ideal.Quotient.lift chartTrueIdealParamFree
+    ((Ideal.Quotient.mk (chartTrueIdeal ⊔ paramSpan)).comp coeffInclude) <| by
+      intro z hz
+      have hspan : chartTrueIdealParamFree ≤
+          RingHom.ker ((Ideal.Quotient.mk (chartTrueIdeal ⊔ paramSpan)).comp coeffInclude) := by
+        rw [chartTrueIdealParamFree, Ideal.span_le]
+        intro w hw
+        simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hw
+        rcases hw with rfl | rfl | rfl | rfl
+        · rw [SetLike.mem_coe, RingHom.mem_ker, RingHom.comp_apply, map_mul, coeffInclude_X,
+            coeffInclude_X, Ideal.Quotient.eq_zero_iff_mem]
+          exact Ideal.mem_sup_left (by
+            rw [chartTrueIdeal]
+            exact Ideal.subset_span (Set.mem_insert _ _))
+        · rw [SetLike.mem_coe, RingHom.mem_ker, RingHom.comp_apply, map_sub, map_mul,
+            coeffInclude_X, coeffInclude_X, coeffInclude_X, Ideal.Quotient.eq_zero_iff_mem]
+          exact Ideal.mem_sup_left (by
+            rw [chartTrueIdeal]
+            exact Ideal.subset_span (Set.mem_insert_of_mem _ (Set.mem_insert _ _)))
+        · rw [SetLike.mem_coe, RingHom.mem_ker, RingHom.comp_apply, map_sub, map_pow, map_pow,
+            coeffInclude_X, coeffInclude_X, Ideal.Quotient.eq_zero_iff_mem]
+          exact Ideal.mem_sup_left (by
+            rw [chartTrueIdeal]
+            exact Ideal.subset_span (Set.mem_insert_of_mem _ (Set.mem_insert_of_mem _
+              (Set.mem_insert _ _))))
+        · rw [SetLike.mem_coe, RingHom.mem_ker, RingHom.comp_apply, coeffInclude_witness,
+            Ideal.Quotient.eq_zero_iff_mem]
+          exact Ideal.mem_sup_left (by
+            rw [chartTrueIdeal]
+            exact Ideal.subset_span (Set.mem_insert_of_mem _ (Set.mem_insert_of_mem _
+              (Set.mem_insert_of_mem _ (Set.mem_singleton _)))))
+      exact hspan hz
+
+private noncomputable def paramFreeFromSup :
+    MvPolynomial (Fin 4) (MvPolynomial (Fin 2) (ZMod 2)) ⧸ (chartTrueIdeal ⊔ paramSpan) →+*
+      MvPolynomial (Fin 4) (ZMod 2) ⧸ chartTrueIdealParamFree :=
+  Ideal.Quotient.lift (chartTrueIdeal ⊔ paramSpan)
+    ((Ideal.Quotient.mk chartTrueIdealParamFree).comp coeffErase) <| by
+      intro z hz
+      obtain ⟨a, ha, b, hb, rfl⟩ := (Submodule.mem_sup).mp hz
+      rw [RingHom.comp_apply, map_add, Ideal.Quotient.eq_zero_iff_mem]
+      apply Ideal.add_mem
+      · have hle : Ideal.map coeffErase chartTrueIdeal ≤ chartTrueIdealParamFree := by
+          rw [chartTrueIdeal, Ideal.map_span, Ideal.span_le]
+          intro w hw
+          simp only [Set.mem_image, Set.mem_insert_iff, Set.mem_singleton_iff] at hw
+          obtain ⟨g, hg, rfl⟩ := hw
+          rcases hg with rfl | rfl | rfl | rfl
+          · rw [map_mul, coeffErase_X, coeffErase_X, chartTrueIdealParamFree]
+            exact Ideal.subset_span (Set.mem_insert _ _)
+          · rw [map_sub, map_mul, coeffErase_X, coeffErase_X, coeffErase_X,
+              chartTrueIdealParamFree]
+            exact Ideal.subset_span (Set.mem_insert_of_mem _ (Set.mem_insert _ _))
+          · rw [map_sub, map_pow, map_pow, coeffErase_X, coeffErase_X, chartTrueIdealParamFree]
+            exact Ideal.subset_span (Set.mem_insert_of_mem _ (Set.mem_insert_of_mem _
+              (Set.mem_insert _ _)))
+          · rw [coeffErase_witness, chartTrueIdealParamFree]
+            exact Ideal.subset_span (Set.mem_insert_of_mem _ (Set.mem_insert_of_mem _
+              (Set.mem_insert_of_mem _ (Set.mem_singleton _))))
+        exact hle (Ideal.mem_map_of_mem _ ha)
+      · have hle : Ideal.map coeffErase paramSpan ≤ chartTrueIdealParamFree := by
+          rw [paramSpan, Ideal.map_span, Ideal.span_le]
+          intro w hw
+          simp only [Set.mem_image, Set.mem_insert_iff, Set.mem_singleton_iff] at hw
+          obtain ⟨g, hg, rfl⟩ := hw
+          rcases hg with rfl | rfl
+          · rw [coeffErase_param]
+            exact Ideal.zero_mem _
+          · rw [coeffErase_param]
+            exact Ideal.zero_mem _
+        exact hle (Ideal.mem_map_of_mem _ hb)
+
+private lemma toSup_fromSup
+    (p : MvPolynomial (Fin 4) (MvPolynomial (Fin 2) (ZMod 2))) :
+    paramFreeToSup (paramFreeFromSup (Ideal.Quotient.mk (chartTrueIdeal ⊔ paramSpan) p)) =
+      Ideal.Quotient.mk (chartTrueIdeal ⊔ paramSpan) p := by
+  simp only [paramFreeToSup, paramFreeFromSup, Ideal.Quotient.lift_mk, RingHom.comp_apply]
+  rw [Ideal.Quotient.eq, ← neg_sub]
+  exact Submodule.neg_mem _ (Ideal.mem_sup_right (erase_diff p))
+
+private lemma fromSup_toSup (q : MvPolynomial (Fin 4) (ZMod 2)) :
+    paramFreeFromSup (paramFreeToSup (Ideal.Quotient.mk chartTrueIdealParamFree q)) =
+      Ideal.Quotient.mk chartTrueIdealParamFree q := by
+  simp only [paramFreeToSup, paramFreeFromSup, Ideal.Quotient.lift_mk, RingHom.comp_apply]
+  rw [Ideal.Quotient.eq, coeffErase_include, sub_self]
+  exact Ideal.zero_mem _
+
+private noncomputable def paramFreeSupEquiv :
+    MvPolynomial (Fin 4) (ZMod 2) ⧸ chartTrueIdealParamFree ≃+*
+      MvPolynomial (Fin 4) (MvPolynomial (Fin 2) (ZMod 2)) ⧸ (chartTrueIdeal ⊔ paramSpan) :=
+  RingEquiv.ofRingHom paramFreeToSup paramFreeFromSup
+    (RingHom.ext fun x => by
+      obtain ⟨p, rfl⟩ :=
+        Ideal.Quotient.mk_surjective (I := chartTrueIdeal ⊔ paramSpan) x
+      exact toSup_fromSup p)
+    (RingHom.ext fun x => by
+      obtain ⟨q, rfl⟩ :=
+        Ideal.Quotient.mk_surjective (I := chartTrueIdealParamFree) x
+      exact fromSup_toSup q)
+
+private noncomputable def quotParamSpan :
+    Ideal (MvPolynomial (Fin 4) (MvPolynomial (Fin 2) (ZMod 2)) ⧸ chartTrueIdeal) :=
+  Ideal.span {
+    Ideal.Quotient.mk chartTrueIdeal (MvPolynomial.C (MvPolynomial.X (0 : Fin 2))),
+    Ideal.Quotient.mk chartTrueIdeal (MvPolynomial.C (MvPolynomial.X (1 : Fin 2))) }
+
+private lemma paramSpan_map_mk : paramSpan.map (Ideal.Quotient.mk chartTrueIdeal) = quotParamSpan := by
+  rw [paramSpan, quotParamSpan, Ideal.map_span]
+  apply congrArg Ideal.span
+  ext z
+  simp only [Set.mem_image, Set.mem_insert_iff, Set.mem_singleton_iff]
+  constructor
+  · rintro ⟨w, hw, rfl⟩
+    rcases hw with rfl | rfl
+    · exact Or.inl rfl
+    · exact Or.inr rfl
+  · rintro (rfl | rfl)
+    · exact ⟨_, Or.inl rfl, rfl⟩
+    · exact ⟨_, Or.inr rfl, rfl⟩
+
+private noncomputable def supToQuot :
+    MvPolynomial (Fin 4) (MvPolynomial (Fin 2) (ZMod 2)) ⧸ (chartTrueIdeal ⊔ paramSpan) ≃+*
+      (MvPolynomial (Fin 4) (MvPolynomial (Fin 2) (ZMod 2)) ⧸ chartTrueIdeal) ⧸ quotParamSpan :=
+  (DoubleQuot.quotQuotEquivQuotSup chartTrueIdeal paramSpan).symm.trans
+    (Ideal.quotEquivOfEq paramSpan_map_mk)
+
+private lemma true_presentation_param (i : Fin 2) :
+    chart_Dplus_Xt_true_presentation
+        (Ideal.Quotient.mk chartTrueIdeal (MvPolynomial.C (MvPolynomial.X i))) =
+      chartFromF2Polynomial valuationOneCurve 0 0 (MvPolynomial.X i) := by
+  rw [chart_Dplus_Xt_true_presentation, RingEquiv.ofBijective_apply, chartOfModelTrue,
+    Ideal.Quotient.lift_mk, chartModelEval, MvPolynomial.eval₂Hom_C]
+
+private noncomputable def chartParamSpan :
+    Ideal (chart_Dplus_Xt_ring valuationOneCurve 0 0) :=
+  Ideal.span {
+    chartFromF2Polynomial valuationOneCurve 0 0 (MvPolynomial.X 0),
+    chartFromF2Polynomial valuationOneCurve 0 0 (MvPolynomial.X 1) }
+
+private lemma chartParam_eq_map :
+    chartParamSpan = quotParamSpan.map (chart_Dplus_Xt_true_presentation : _ →+* _) := by
+  rw [chartParamSpan, quotParamSpan, Ideal.map_span]
+  apply congrArg Ideal.span
+  ext z
+  simp only [Set.mem_image, Set.mem_insert_iff, Set.mem_singleton_iff]
+  constructor
+  · rintro (rfl | rfl)
+    · refine ⟨Ideal.Quotient.mk chartTrueIdeal (MvPolynomial.C (MvPolynomial.X (0 : Fin 2))),
+        Or.inl rfl, ?_⟩
+      exact true_presentation_param 0
+    · refine ⟨Ideal.Quotient.mk chartTrueIdeal (MvPolynomial.C (MvPolynomial.X (1 : Fin 2))),
+        Or.inr rfl, ?_⟩
+      exact true_presentation_param 1
+  · rintro ⟨w, hw, rfl⟩
+    rcases hw with rfl | rfl
+    · exact Or.inl (true_presentation_param 0)
+    · exact Or.inr (true_presentation_param 1)
+
+/-- `𝔽₂[X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U + X² + X·V²)` is
+`D₊(Xt) / (a, b)`. The parameters are the images of the indeterminates
+of `𝔽₂[a,b]` under `chartFromF2Polynomial`. -/
+noncomputable def chart_Dplus_Xt_presentation :
+    (MvPolynomial (Fin 4) (ZMod 2) ⧸ chartTrueIdealParamFree) ≃+*
+      (chart_Dplus_Xt_ring valuationOneCurve 0 0) ⧸ chartParamSpan :=
+  paramFreeSupEquiv.trans <|
+    supToQuot.trans <|
+      Ideal.quotientEquiv quotParamSpan chartParamSpan chart_Dplus_Xt_true_presentation
+        chartParam_eq_map
+
 #print axioms Beal.MathlibMissing.chart_X_add_V_sq_ne_zero
 #print axioms Beal.MathlibMissing.chartOfModelTrue_normal_X_add_Vsq_ne_zero
 #print axioms Beal.MathlibMissing.centreIdeal_power_coeff_bound
@@ -3178,5 +3494,6 @@ noncomputable def chart_Dplus_Xt_true_presentation :
 #print axioms Beal.MathlibMissing.chartFraction_sum_rees
 #print axioms Beal.MathlibMissing.chartVanishing_reesEquation
 #print axioms Beal.MathlibMissing.chart_Dplus_Xt_true_presentation
+#print axioms Beal.MathlibMissing.chart_Dplus_Xt_presentation
 
 end Beal.MathlibMissing

@@ -152,14 +152,15 @@ some index carries `(-1)^s · 2^q` against centre bound `q`.
 `chartVanishing_reesEquation` identifies chart vanishing with that
 equation, so `chartOfModelTrue_injective` holds and
 `chart_Dplus_Xt_true_presentation` is the induced ring equivalence.
-`chart_Dplus_Xt_presentation` stays open and names a different
-ring: the parameter-free quotient
-`𝔽₂[X,Y,U,V] / (X·U, Y − X·V, Y² − X³)` drops `a`, `b`, and `U²`.
-That ring is not the chart.
+`chart_Dplus_Xt_presentation` quotients both sides by `(a, b)`:
+`𝔽₂[X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U + X² + X·V²) ≃ D₊(Xt)/(a,b)`.
+The constant `a` is outside `chartTrueIdeal`, so this is not an
+isomorphism with the full chart. `modelXtChart` drops `U + X² + X·V²`
+as well and is not that quotient.
 `ap` and `bq` are numeral centre coordinates.
 `chart_Dplus_Xt_basicOpen_nonempty_valuationOne`,
-`chart_Dplus_Xt_presentation`, `ideal_UV_maximal`,
-`ideal_XYUV_quotient_F2`, `chartOfModelBase_injective`, and
+`ideal_UV_maximal`, `ideal_XYUV_quotient_F2`,
+`chartOfModelBase_injective`, and
 `familySpecialFibrePoint_Dplus_Xt` stay uninhabited.
 `familySpecialFibrePoint` stays uninhabited. No `sorry` is used.
 -/
@@ -3251,11 +3252,12 @@ Closed in `ChartInjective.lean`, continued:
 * `chartOfModelTrue_injective` and `chart_Dplus_Xt_true_presentation`.
   The signed bound then forces `A = B = C = 0`, so
   `𝔽₂[a,b][X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U + X² + X·V²) ≃ D₊(Xt)`.
+* `chart_Dplus_Xt_presentation`. Quotienting that equivalence by the
+  images of `a` and `b` gives
+  `𝔽₂[X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U + X² + X·V²) ≃ D₊(Xt)/(a,b)`.
 
-Open:
-* `chart_Dplus_Xt_presentation`, an isomorphism with
-  `𝔽₂[X,Y,U,V] / (X·U, Y − X·V, Y² − X³)`. That ring drops `a`, `b`,
-  and `U²`. It is not the chart.
+`modelXtChart` is `𝔽₂[X,Y,U,V] / (X·U, Y − X·V, Y² − X³)`. It drops
+`U + X² + X·V²` and is not the chart.
 -/
 
 theorem ker_contains_ABXYUV :
@@ -3322,9 +3324,8 @@ theorem chartModelEval_relation :
 /-- A ring hom from the `𝔽₂[a,b]`-algebra presentation into the chart
 `D₊(Xt)` on `Y² = X³ + 2` at `(0, 0)`. The source includes `U² = 0`.
 `chartOfModelBase_surjective` shows it is surjective. It is not shown
-to be injective. `chart_Dplus_Xt_presentation`
-still asks for an isomorphism with the parameter-free model
-`modelXtChart`, which has neither `a, b` nor `U²`. -/
+to be injective. `modelXtChart` has neither `a, b` nor `U + X² + X·V²`.
+`chart_Dplus_Xt_presentation` is the quotient of the true chart by `(a, b)`. -/
 noncomputable def chartOfModelBase :
     MvPolynomial (Fin 4) (MvPolynomial (Fin 2) (ZMod 2)) ⧸ modelBaseRelationIdeal →+*
       chart_Dplus_Xt_ring valuationOneCurve 0 0 :=
@@ -3630,19 +3631,15 @@ noncomputable def modelBaseAtNode_equiv_F2 :
   (Ideal.quotEquivOfEq modelBaseRelation_sup_node_eq_ker).trans
     (RingHom.quotientKerEquivOfSurjective modelBaseEvalNode_surjective)
 
-/-- OPEN. The chart `D₊(Xt)` on `Y² = X³ + 2` at `(0, 0)` is isomorphic
-to the parameter-free ring `𝔽₂[X,Y,U,V] / (X·U, Y − X·V, Y² − X³)`.
-That target has no copy of `a, b` and does not impose `U² = 0`.
-`chart_two_over_X_sq_zero` is `(2t / Xt)² = 0` in the chart, and
-`chart_two_over_X_ne_zero` says the ratio is not zero.
-`chartOfModelBase` is a surjective ring hom into the chart from
-`𝔽₂[a,b][X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U²)`. It is not shown
-to be injective, and its kernel is not shown to be exactly
-those relations, so it is not a presentation of the chart.
+/-!
+`chart_Dplus_Xt_presentation` is proved in `ChartInjective.lean`.
+It is `𝔽₂[X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U + X² + X·V²) ≃ D₊(Xt)/(a,b)`.
+`modelXtChart` is the smaller quotient that does not impose
+`U + X² + X·V²`. `chart_two_over_X_sq_zero` is `(2t / Xt)² = 0` in the
+chart, and `chart_two_over_X_ne_zero` says the ratio is not zero.
 `ap` and `bq` are numeral centre coordinates, not evaluations of
-the indeterminates `a, b`. -/
-def chart_Dplus_Xt_presentation : Prop :=
-  Nonempty (chart_Dplus_Xt_ring valuationOneCurve 0 0 ≃+* modelXtChart)
+the indeterminates `a, b`.
+-/
 
 /-- OPEN. On `Y² = X³ + 2` at `(0, 0)`, the quotient of the chart
 `D₊(Xt)` by `⟨X, Y, 2t/Xt, Yt/Xt⟩` is `𝔽₂`. `quotient_span_XUV_kills_Y`
@@ -3662,8 +3659,8 @@ is `ideal_ABXYUV_quotient_F2`, proved by `ideal_ABXYUV_quotient_F2_holds`.
 `chart_node_quotient_equiv` is the quotient by the kernel of
 `chartNodeHom`, and `ker_eq_ideal_ABXYUV_holds` identifies that kernel
 with the ideal. `chartFromF2Polynomial` lands in the chart before the chart
-quotient. The chart is not shown isomorphic to either model
-(`chart_Dplus_Xt_presentation`).
+quotient. `chart_Dplus_Xt_presentation` is `D₊(Xt)/(a, b)`, not an
+isomorphism of the full chart with `modelXtChart`.
 `isMaximal_of_quotient_equiv_zmod_two` makes the kernel maximal.
 `familySpecialFibreProjPoint` applies `FromSpec.toFun` to that
 prime. -/
@@ -3836,7 +3833,6 @@ end Beal.MathlibMissing
 #print axioms Beal.MathlibMissing.modelBaseModXUV_equiv_F2Polynomial
 #print axioms Beal.MathlibMissing.modelF2PolynomialModAB_equiv_F2
 #print axioms Beal.MathlibMissing.modelBaseAtNode_equiv_F2
-#print axioms Beal.MathlibMissing.chart_Dplus_Xt_presentation
 #print axioms Beal.MathlibMissing.isMaximal_of_quotient_equiv_zmod_two
 #print axioms Beal.MathlibMissing.ideal_UV_maximal
 #print axioms Beal.MathlibMissing.ideal_XYUV_quotient_F2

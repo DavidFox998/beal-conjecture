@@ -466,8 +466,8 @@ for a `0`-`1` pattern: the lowest power of `X`, or the leading term of
 `X^m·α = 2·αₛ` and `X^m·β = 2·βₛ` with `αₛ + Y·βₛ ∈ I^{D+m}`.
 `chartVanishing_reesEquation` identifies chart vanishing with that
 equation, and `chartOfModelTrue_injective` is proved in
-`ChartInjective.lean`. `chart_Dplus_Xt_presentation`, the parameter-free
-quotient, stays open. -/
+`ChartInjective.lean`. `chart_Dplus_Xt_presentation` is the same
+presentation after the quotient by `(a, b)`. -/
 
 #print axioms Beal.MathlibMissing.chartTrueIdeal_contains_U2
 #print axioms Beal.MathlibMissing.modelBaseRelationIdeal_le_chartTrueIdeal
@@ -477,6 +477,5 @@ quotient, stays open. -/
 #print axioms Beal.MathlibMissing.chartModelEval_kernelWitness
 #print axioms Beal.MathlibMissing.chartKernelWitness_not_mem
 #print axioms Beal.MathlibMissing.not_chartOfModelBase_injective
-#print axioms Beal.MathlibMissing.chart_Dplus_Xt_presentation
 
 end Beal.MathlibMissing

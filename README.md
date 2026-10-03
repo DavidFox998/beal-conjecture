@@ -112,11 +112,11 @@ Closed in `Beal/MathlibMissing/ChartInjective.lean`:
   `αₛ + Y·βₛ ∈ I^{D+m}`. The signed bound forces `A = B = C = 0`, so
   `𝔽₂[a,b][X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U + X² + X·V²) ≃ D₊(Xt)`.
 
-Open:
+* `chart_Dplus_Xt_presentation`. The constant `a` is outside
+  `chartTrueIdeal`, so
+  `𝔽₂[X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U + X² + X·V²) ≃ D₊(Xt)/(a, b)`.
 
-* `chart_Dplus_Xt_presentation`, an isomorphism with the parameter-free
-  ring `𝔽₂[X,Y,U,V] / (X·U, Y − X·V, Y² − X³)`. That ring drops `a`,
-  `b`, and `U²`. It is not the chart.
+`modelXtChart` drops `U + X² + X·V²` and is not the chart.
 
 `BealEven` does not import `Beal/MathlibMissing/Family.lean`.
 Printed axioms of the new declarations are `propext`, `Classical.choice`,

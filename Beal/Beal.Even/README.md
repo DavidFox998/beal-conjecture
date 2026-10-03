@@ -94,10 +94,9 @@ Closed in `Beal/MathlibMissing/ChartInjective.lean`:
   `X^m·α = 2·αₛ`, `X^m·β = 2·βₛ` with `αₛ + Y·βₛ ∈ I^{D+m}`, so
   `𝔽₂[a,b][X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U + X² + X·V²) ≃ D₊(Xt)`.
 
-Open:
+* `chart_Dplus_Xt_presentation`. Erasing `a` and `b` on both sides gives
+  `𝔽₂[X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U + X² + X·V²) ≃ D₊(Xt)/(a, b)`.
 
-* `chart_Dplus_Xt_presentation`, an isomorphism with the parameter-free
-  ring `𝔽₂[X,Y,U,V] / (X·U, Y − X·V, Y² − X³)`. That ring drops `a`,
-  `b`, and `U²`. It is not the chart.
+`modelXtChart` drops `U + X² + X·V²` and is not the chart.
 
 Printed axioms are `propext`, `Classical.choice`, and `Quot.sound`.
