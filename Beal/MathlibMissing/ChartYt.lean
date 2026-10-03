@@ -18,7 +18,12 @@ That is not the v37 ideal. `modelXtChart ≃+* D₊(Xt)` uses
 `X = Y·S` is already in `modelYtTrueIdeal`.
 The four-generator ideal does not present `D₊(Yt)`. From `2 = X³ − Y²`,
 the chart satisfies `T + Y + Y²·S³ = 0`, and that polynomial lies outside
-`modelYtTrueIdeal`. `chartOfModelTrueY` is not injective. There is no
+`modelYtTrueIdeal`. `chartOfModelTrueY` is not injective.
+`modelYtTrueIdeal_fixed` is `(X − Y·S, T + Y + Y²·S³, Y²·(1 − Y·S³))`.
+In characteristic 2, `Y·T` and `T²` follow from those three generators.
+Eliminating `X = Y·S` and `T = Y + Y²·S³` gives
+`𝔽₂[a,b][Y,S] / (Y²·(1 − Y·S³))`. The induced map onto `D₊(Yt)` is
+surjective. Injectivity of that map is open, so there is no
 `chart_Dplus_Yt_true_presentation`.
 
 `D₊(2t)` is already the zero ring (`chart_Dplus_2t_subsingleton_valuationOne`).
@@ -1494,6 +1499,345 @@ theorem not_chartOfModelTrueY_injective : ¬ Function.Injective chartOfModelTrue
     Ideal.Quotient.eq_zero_iff_mem.mp heq
   exact chartYtKernelWitness_not_mem hmem
 
+/-!
+The relation `T + Y + Y²·S³ = 0` is the missing generator. With it,
+`Y·T` and `T²` are redundant, and both `X` and `T` eliminate.
+-/
+
+/-- `(X − Y·S, T + Y + Y²·S³, Y²·(1 − Y·S³))` in `𝔽₂[a,b][X,Y,S,T]`. -/
+noncomputable def modelYtTrueIdeal_fixed :
+    Ideal (MvPolynomial (Fin 4) (MvPolynomial (Fin 2) (ZMod 2))) :=
+  Ideal.span {
+    MvPolynomial.X 0 - MvPolynomial.X 1 * MvPolynomial.X 2,
+    MvPolynomial.X 3 + MvPolynomial.X 1 +
+      (MvPolynomial.X 1) ^ 2 * (MvPolynomial.X 2) ^ 3,
+    (MvPolynomial.X 1) ^ 2 * (1 - MvPolynomial.X 1 * (MvPolynomial.X 2) ^ 3) }
+
+/-- `𝔽₂[a,b][X,Y,S,T] / modelYtTrueIdeal_fixed`. -/
+abbrev modelYtChart_fixed : Type :=
+  MvPolynomial (Fin 4) (MvPolynomial (Fin 2) (ZMod 2)) ⧸ modelYtTrueIdeal_fixed
+
+private lemma modelYt_fixed_witness_mem :
+    MvPolynomial.X (3 : Fin 4) + MvPolynomial.X 1 +
+        (MvPolynomial.X 1) ^ 2 * (MvPolynomial.X 2) ^ 3 ∈
+      modelYtTrueIdeal_fixed := by
+  rw [modelYtTrueIdeal_fixed]
+  exact Ideal.subset_span (Set.mem_insert_of_mem _ (Set.mem_insert _ _))
+
+private lemma modelYt_fixed_cusp_mem :
+    (MvPolynomial.X (1 : Fin 4)) ^ 2 *
+        (1 - MvPolynomial.X 1 * (MvPolynomial.X 2) ^ 3) ∈
+      modelYtTrueIdeal_fixed := by
+  rw [modelYtTrueIdeal_fixed]
+  exact Ideal.subset_span
+    (Set.mem_insert_of_mem _ (Set.mem_insert_of_mem _ (Set.mem_singleton _)))
+
+/-- `Y·T` is redundant: `Y·T = Y·(T + Y + Y²·S³) + Y²·(1 − Y·S³)`. -/
+theorem modelYtTrueIdeal_fixed_mem_mul_YT :
+    MvPolynomial.X (1 : Fin 4) * MvPolynomial.X 3 ∈ modelYtTrueIdeal_fixed := by
+  let y : MvPolynomial (Fin 4) (MvPolynomial (Fin 2) (ZMod 2)) := MvPolynomial.X 1
+  let s : MvPolynomial (Fin 4) (MvPolynomial (Fin 2) (ZMod 2)) := MvPolynomial.X 2
+  let t : MvPolynomial (Fin 4) (MvPolynomial (Fin 2) (ZMod 2)) := MvPolynomial.X 3
+  let cusp := y ^ 2 * (1 - y * s ^ 3)
+  let witness := t + y + y ^ 2 * s ^ 3
+  have hpoly :
+      y * t + (y * (t + y + y ^ 2 * s ^ 3) + y ^ 2 * (1 + y * s ^ 3)) =
+        (y * t + y * t) + (y ^ 2 + y ^ 2) + (y ^ 3 * s ^ 3 + y ^ 3 * s ^ 3) := by
+    ring
+  have hyt : y * t = y * witness + cusp := by
+    have hsum : y * t + (y * witness + cusp) = 0 := by
+      simp only [witness, cusp, CharTwo.sub_eq_add, hpoly]
+      rw [CharTwo.add_self_eq_zero (y * t), CharTwo.add_self_eq_zero (y ^ 2),
+        CharTwo.add_self_eq_zero (y ^ 3 * s ^ 3), add_zero, add_zero]
+    have hneg := eq_neg_of_add_eq_zero_left hsum
+    rwa [CharTwo.neg_eq] at hneg
+  rw [hyt]
+  exact Ideal.add_mem _ (Ideal.mul_mem_left _ y modelYt_fixed_witness_mem)
+    modelYt_fixed_cusp_mem
+
+/-- `T²` is redundant. In characteristic 2,
+`(Y + Y²·S³)² = (1 + Y·S³) · Y²·(1 − Y·S³)`. -/
+theorem modelYtTrueIdeal_fixed_mem_Tsq :
+    (MvPolynomial.X (3 : Fin 4)) ^ 2 ∈ modelYtTrueIdeal_fixed := by
+  let y : MvPolynomial (Fin 4) (MvPolynomial (Fin 2) (ZMod 2)) := MvPolynomial.X 1
+  let s : MvPolynomial (Fin 4) (MvPolynomial (Fin 2) (ZMod 2)) := MvPolynomial.X 2
+  let t : MvPolynomial (Fin 4) (MvPolynomial (Fin 2) (ZMod 2)) := MvPolynomial.X 3
+  let cusp := y ^ 2 * (1 - y * s ^ 3)
+  let witness := t + y + y ^ 2 * s ^ 3
+  have hsq : (y + y ^ 2 * s ^ 3) ^ 2 = y ^ 2 * (1 + y * s ^ 3) ^ 2 := by
+    rw [CharTwo.add_sq, CharTwo.add_sq, mul_pow]
+    ring
+  have hsq' : (y + y ^ 2 * s ^ 3) ^ 2 = (1 + y * s ^ 3) * cusp := by
+    rw [hsq]
+    simp only [cusp, CharTwo.sub_eq_add]
+    ring
+  have hwit : witness = t + (y + y ^ 2 * s ^ 3) := by
+    simp only [witness, ← add_assoc]
+  have ht2 : t ^ 2 = witness ^ 2 + (y + y ^ 2 * s ^ 3) ^ 2 := by
+    have h := CharTwo.add_sq t (y + y ^ 2 * s ^ 3)
+    rw [← hwit] at h
+    have hsum : t ^ 2 + (witness ^ 2 + (y + y ^ 2 * s ^ 3) ^ 2) = 0 := by
+      rw [h, add_assoc, CharTwo.add_self_eq_zero ((y + y ^ 2 * s ^ 3) ^ 2), add_zero,
+        CharTwo.add_self_eq_zero (t ^ 2)]
+    have hneg := eq_neg_of_add_eq_zero_left hsum
+    rwa [CharTwo.neg_eq] at hneg
+  rw [ht2, hsq']
+  refine Ideal.add_mem _ ?_ (Ideal.mul_mem_left _ (1 + y * s ^ 3) modelYt_fixed_cusp_mem)
+  rw [pow_two]
+  apply Ideal.mul_mem_left
+  exact modelYt_fixed_witness_mem
+
+/-- `𝔽₂[a,b][Y,S] / (Y²·(1 − Y·S³))`. `0` is `Y`, `1` is `S`. -/
+abbrev chartYtCuspPoly : Type :=
+  MvPolynomial (Fin 2) (MvPolynomial (Fin 2) (ZMod 2))
+
+noncomputable def chartYtCuspRel : chartYtCuspPoly :=
+  (MvPolynomial.X 0) ^ 2 * (1 - MvPolynomial.X 0 * (MvPolynomial.X 1) ^ 3)
+
+noncomputable def chartYtCuspIdeal : Ideal chartYtCuspPoly :=
+  Ideal.span {chartYtCuspRel}
+
+abbrev chartYtCuspRing : Type := chartYtCuspPoly ⧸ chartYtCuspIdeal
+
+/-- Send `X, Y, S, T` to `Y·S, Y, S, Y + Y²·S³`. -/
+noncomputable def closedYtToCuspEval :
+    MvPolynomial (Fin 4) (MvPolynomial (Fin 2) (ZMod 2)) →+* chartYtCuspRing :=
+  MvPolynomial.eval₂Hom
+    ((Ideal.Quotient.mk chartYtCuspIdeal).comp MvPolynomial.C)
+    (fun i : Fin 4 =>
+      if i = 0 then
+        Ideal.Quotient.mk chartYtCuspIdeal (MvPolynomial.X 0 * MvPolynomial.X 1)
+      else if i = 1 then Ideal.Quotient.mk chartYtCuspIdeal (MvPolynomial.X 0)
+      else if i = 2 then Ideal.Quotient.mk chartYtCuspIdeal (MvPolynomial.X 1)
+      else Ideal.Quotient.mk chartYtCuspIdeal
+        (MvPolynomial.X 0 + (MvPolynomial.X 0) ^ 2 * (MvPolynomial.X 1) ^ 3))
+
+private lemma closedYtToCusp_X (i : Fin 4) :
+    closedYtToCuspEval (MvPolynomial.X i) =
+      if i = 0 then
+        Ideal.Quotient.mk chartYtCuspIdeal (MvPolynomial.X 0 * MvPolynomial.X 1)
+      else if i = 1 then Ideal.Quotient.mk chartYtCuspIdeal (MvPolynomial.X 0)
+      else if i = 2 then Ideal.Quotient.mk chartYtCuspIdeal (MvPolynomial.X 1)
+      else Ideal.Quotient.mk chartYtCuspIdeal
+        (MvPolynomial.X 0 + (MvPolynomial.X 0) ^ 2 * (MvPolynomial.X 1) ^ 3) := by
+  simp [closedYtToCuspEval, MvPolynomial.eval₂Hom_X']
+
+theorem closedYtToCuspEval_kills :
+    modelYtTrueIdeal_fixed ≤ RingHom.ker closedYtToCuspEval := by
+  rw [modelYtTrueIdeal_fixed, Ideal.span_le]
+  intro z hz
+  simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hz
+  rcases hz with rfl | rfl | rfl
+  · rw [CharTwo.sub_eq_add, SetLike.mem_coe, RingHom.mem_ker, map_add, map_mul,
+      closedYtToCusp_X, closedYtToCusp_X, closedYtToCusp_X,
+      if_pos (rfl : (0 : Fin 4) = 0),
+      if_neg (by decide : (1 : Fin 4) ≠ 0),
+      if_pos (rfl : (1 : Fin 4) = 1),
+      if_neg (by decide : (2 : Fin 4) ≠ 0),
+      if_neg (by decide : (2 : Fin 4) ≠ 1),
+      if_pos (rfl : (2 : Fin 4) = 2)]
+    rw [map_mul (Ideal.Quotient.mk chartYtCuspIdeal),
+      ← map_mul (Ideal.Quotient.mk chartYtCuspIdeal),
+      ← map_add (Ideal.Quotient.mk chartYtCuspIdeal),
+      CharTwo.add_self_eq_zero, map_zero]
+  · rw [SetLike.mem_coe, RingHom.mem_ker, map_add, map_add, map_mul, map_pow, map_pow,
+      closedYtToCusp_X, closedYtToCusp_X, closedYtToCusp_X,
+      if_neg (by decide : (3 : Fin 4) ≠ 0),
+      if_neg (by decide : (3 : Fin 4) ≠ 1),
+      if_neg (by decide : (3 : Fin 4) ≠ 2),
+      if_neg (by decide : (1 : Fin 4) ≠ 0),
+      if_pos (rfl : (1 : Fin 4) = 1),
+      if_neg (by decide : (2 : Fin 4) ≠ 0),
+      if_neg (by decide : (2 : Fin 4) ≠ 1),
+      if_pos (rfl : (2 : Fin 4) = 2)]
+    rw [map_add (Ideal.Quotient.mk chartYtCuspIdeal),
+      map_mul (Ideal.Quotient.mk chartYtCuspIdeal),
+      map_pow (Ideal.Quotient.mk chartYtCuspIdeal),
+      map_pow (Ideal.Quotient.mk chartYtCuspIdeal),
+      ← map_pow (Ideal.Quotient.mk chartYtCuspIdeal),
+      ← map_pow (Ideal.Quotient.mk chartYtCuspIdeal),
+      ← map_mul (Ideal.Quotient.mk chartYtCuspIdeal),
+      ← map_add (Ideal.Quotient.mk chartYtCuspIdeal),
+      ← map_add (Ideal.Quotient.mk chartYtCuspIdeal),
+      ← map_add (Ideal.Quotient.mk chartYtCuspIdeal),
+      add_assoc, CharTwo.add_self_eq_zero, map_zero]
+  · rw [CharTwo.sub_eq_add, SetLike.mem_coe, RingHom.mem_ker, map_mul, map_pow, map_add,
+      map_one, map_mul, map_pow, closedYtToCusp_X, closedYtToCusp_X,
+      if_neg (by decide : (1 : Fin 4) ≠ 0),
+      if_pos (rfl : (1 : Fin 4) = 1),
+      if_neg (by decide : (2 : Fin 4) ≠ 0),
+      if_neg (by decide : (2 : Fin 4) ≠ 1),
+      if_pos (rfl : (2 : Fin 4) = 2)]
+    rw [← map_pow (Ideal.Quotient.mk chartYtCuspIdeal),
+      ← map_pow (Ideal.Quotient.mk chartYtCuspIdeal),
+      ← map_mul (Ideal.Quotient.mk chartYtCuspIdeal),
+      ← map_one (Ideal.Quotient.mk chartYtCuspIdeal),
+      ← map_add (Ideal.Quotient.mk chartYtCuspIdeal),
+      ← map_mul (Ideal.Quotient.mk chartYtCuspIdeal),
+      ← CharTwo.sub_eq_add, Ideal.Quotient.eq_zero_iff_mem]
+    rw [chartYtCuspIdeal, chartYtCuspRel]
+    exact Ideal.subset_span (Set.mem_singleton _)
+
+noncomputable def closedYtToCusp : modelYtChart_fixed →+* chartYtCuspRing :=
+  Ideal.Quotient.lift modelYtTrueIdeal_fixed closedYtToCuspEval closedYtToCuspEval_kills
+
+/-- Include `Y, S` as variables `1, 2`. -/
+noncomputable def cuspYtToClosedPoly :
+    chartYtCuspPoly →+* MvPolynomial (Fin 4) (MvPolynomial (Fin 2) (ZMod 2)) :=
+  MvPolynomial.eval₂Hom MvPolynomial.C
+    (fun i : Fin 2 => if i = 0 then MvPolynomial.X 1 else MvPolynomial.X 2)
+
+private lemma cuspYtToClosed_rel :
+    cuspYtToClosedPoly chartYtCuspRel =
+      (MvPolynomial.X (1 : Fin 4)) ^ 2 *
+        (1 - MvPolynomial.X 1 * (MvPolynomial.X 2) ^ 3) := by
+  rw [chartYtCuspRel, CharTwo.sub_eq_add, cuspYtToClosedPoly, map_mul, map_pow, map_add,
+    map_one, map_mul, map_pow, MvPolynomial.eval₂Hom_X', MvPolynomial.eval₂Hom_X',
+    if_pos (rfl : (0 : Fin 2) = 0),
+    if_neg (by decide : (1 : Fin 2) ≠ 0),
+    ← CharTwo.sub_eq_add]
+
+theorem cuspYtToClosed_kills :
+    chartYtCuspIdeal ≤
+      RingHom.ker ((Ideal.Quotient.mk modelYtTrueIdeal_fixed).comp cuspYtToClosedPoly) := by
+  rw [chartYtCuspIdeal, Ideal.span_le]
+  intro z hz
+  rw [Set.mem_singleton_iff] at hz
+  subst hz
+  rw [SetLike.mem_coe, RingHom.mem_ker, RingHom.comp_apply, cuspYtToClosed_rel,
+    Ideal.Quotient.eq_zero_iff_mem]
+  exact modelYt_fixed_cusp_mem
+
+noncomputable def cuspYtToClosed : chartYtCuspRing →+* modelYtChart_fixed :=
+  Ideal.Quotient.lift chartYtCuspIdeal
+    ((Ideal.Quotient.mk modelYtTrueIdeal_fixed).comp cuspYtToClosedPoly) cuspYtToClosed_kills
+
+private lemma chartYt_fin4_fixed (i j : Fin 4) (h : i.val = j.val) :
+    Ideal.Quotient.mk modelYtTrueIdeal_fixed (MvPolynomial.X i) =
+      Ideal.Quotient.mk modelYtTrueIdeal_fixed (MvPolynomial.X j) :=
+  congrArg (fun k : Fin 4 => Ideal.Quotient.mk modelYtTrueIdeal_fixed (MvPolynomial.X k))
+    (Fin.ext h)
+
+private lemma chartYt_fin2 (i j : Fin 2) (h : i.val = j.val) :
+    Ideal.Quotient.mk chartYtCuspIdeal (MvPolynomial.X i) =
+      Ideal.Quotient.mk chartYtCuspIdeal (MvPolynomial.X j) :=
+  congrArg (fun k : Fin 2 => Ideal.Quotient.mk chartYtCuspIdeal (MvPolynomial.X k))
+    (Fin.ext h)
+
+private lemma closedYtToCusp_comp_cuspYtToClosed :
+    closedYtToCusp.comp cuspYtToClosed = RingHom.id chartYtCuspRing := by
+  apply Ideal.Quotient.ringHom_ext
+  apply MvPolynomial.ringHom_ext
+  · intro r
+    simp only [RingHom.comp_apply, RingHom.id_apply, closedYtToCusp, closedYtToCuspEval,
+      cuspYtToClosed, cuspYtToClosedPoly, Ideal.Quotient.lift_mk, MvPolynomial.eval₂Hom_C]
+  · intro i
+    fin_cases i
+    · simp only [RingHom.comp_apply, RingHom.id_apply, closedYtToCusp, cuspYtToClosed,
+        Ideal.Quotient.lift_mk, closedYtToCuspEval, cuspYtToClosedPoly,
+        MvPolynomial.eval₂Hom_X']
+      rw [if_pos (by decide), MvPolynomial.eval₂Hom_X',
+        if_neg (by decide : (1 : Fin 4) ≠ 0), if_pos (by decide : (1 : Fin 4) = 1)]
+      exact chartYt_fin2 (0 : Fin 2) ⟨0, by decide⟩ rfl
+    · simp only [RingHom.comp_apply, RingHom.id_apply, closedYtToCusp, cuspYtToClosed,
+        Ideal.Quotient.lift_mk, closedYtToCuspEval, cuspYtToClosedPoly,
+        MvPolynomial.eval₂Hom_X']
+      rw [if_neg (by decide), MvPolynomial.eval₂Hom_X',
+        if_neg (by decide : (2 : Fin 4) ≠ 0), if_neg (by decide : (2 : Fin 4) ≠ 1),
+        if_pos (by decide : (2 : Fin 4) = 2)]
+      exact chartYt_fin2 (1 : Fin 2) ⟨1, by decide⟩ rfl
+
+private lemma cuspYtToClosed_comp_closedYtToCusp :
+    cuspYtToClosed.comp closedYtToCusp = RingHom.id modelYtChart_fixed := by
+  apply Ideal.Quotient.ringHom_ext
+  apply MvPolynomial.ringHom_ext
+  · intro r
+    simp only [RingHom.comp_apply, RingHom.id_apply, closedYtToCusp, closedYtToCuspEval,
+      cuspYtToClosed, cuspYtToClosedPoly, Ideal.Quotient.lift_mk, MvPolynomial.eval₂Hom_C]
+  · intro i
+    fin_cases i
+    · simp only [RingHom.comp_apply, RingHom.id_apply, closedYtToCusp, Ideal.Quotient.lift_mk,
+        closedYtToCuspEval, MvPolynomial.eval₂Hom_X']
+      rw [if_pos (by decide)]
+      simp only [cuspYtToClosed, Ideal.Quotient.lift_mk, RingHom.comp_apply, cuspYtToClosedPoly,
+        map_mul, MvPolynomial.eval₂Hom_X']
+      rw [if_true, if_neg (by decide : (1 : Fin 2) ≠ 0)]
+      rw [← map_mul (Ideal.Quotient.mk modelYtTrueIdeal_fixed), Ideal.Quotient.eq]
+      rw [CharTwo.sub_eq_add, add_comm, ← CharTwo.sub_eq_add, modelYtTrueIdeal_fixed]
+      exact Ideal.subset_span (Set.mem_insert _ _)
+    · simp only [RingHom.comp_apply, RingHom.id_apply, closedYtToCusp, Ideal.Quotient.lift_mk,
+        closedYtToCuspEval, MvPolynomial.eval₂Hom_X']
+      rw [if_neg (by decide), if_pos (by decide)]
+      simp only [cuspYtToClosed, Ideal.Quotient.lift_mk, RingHom.comp_apply, cuspYtToClosedPoly,
+        MvPolynomial.eval₂Hom_X']
+      rw [if_true]
+      exact chartYt_fin4_fixed 1 ⟨1, by decide⟩ rfl
+    · simp only [RingHom.comp_apply, RingHom.id_apply, closedYtToCusp, Ideal.Quotient.lift_mk,
+        closedYtToCuspEval, MvPolynomial.eval₂Hom_X']
+      rw [if_neg (by decide), if_neg (by decide), if_pos (by decide)]
+      simp only [cuspYtToClosed, Ideal.Quotient.lift_mk, RingHom.comp_apply, cuspYtToClosedPoly,
+        MvPolynomial.eval₂Hom_X']
+      rw [if_neg (by decide : (1 : Fin 2) ≠ 0)]
+      exact chartYt_fin4_fixed 2 ⟨2, by decide⟩ rfl
+    · simp only [RingHom.comp_apply, RingHom.id_apply, closedYtToCusp, Ideal.Quotient.lift_mk,
+        closedYtToCuspEval, MvPolynomial.eval₂Hom_X']
+      rw [if_neg (by decide), if_neg (by decide), if_neg (by decide)]
+      simp only [cuspYtToClosed, Ideal.Quotient.lift_mk, RingHom.comp_apply]
+      have hpoly : cuspYtToClosedPoly
+          (MvPolynomial.X 0 + (MvPolynomial.X 0) ^ 2 * (MvPolynomial.X 1) ^ 3) =
+          MvPolynomial.X 1 + (MvPolynomial.X 1) ^ 2 * (MvPolynomial.X 2) ^ 3 := by
+        simp [cuspYtToClosedPoly, map_add, map_mul, map_pow, MvPolynomial.eval₂Hom_X']
+      rw [hpoly, Ideal.Quotient.eq, CharTwo.sub_eq_add, add_comm, ← add_assoc]
+      exact modelYt_fixed_witness_mem
+
+/-- `X = Y·S` and `T = Y + Y²·S³` eliminate.
+`𝔽₂[a,b][X,Y,S,T] / modelYtTrueIdeal_fixed ≃+* 𝔽₂[a,b][Y,S] / (Y²·(1 − Y·S³))`. -/
+noncomputable def modelYtTrueIdeal_elim :
+    modelYtChart_fixed ≃+* chartYtCuspRing :=
+  RingEquiv.ofRingHom closedYtToCusp cuspYtToClosed
+    closedYtToCusp_comp_cuspYtToClosed cuspYtToClosed_comp_closedYtToCusp
+
+theorem modelYtTrueIdeal_fixed_le_ker :
+    modelYtTrueIdeal_fixed ≤ RingHom.ker chartYtModelEval := by
+  rw [modelYtTrueIdeal_fixed, Ideal.span_le]
+  intro z hz
+  simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hz
+  rcases hz with rfl | rfl | rfl
+  · rw [SetLike.mem_coe, RingHom.mem_ker, map_sub, map_mul, chartYtModelEval_X,
+      chartYtModelEval_X, chartYtModelEval_X,
+      if_pos (rfl : (0 : Fin 4) = 0),
+      if_neg (by decide : (1 : Fin 4) ≠ 0),
+      if_pos (rfl : (1 : Fin 4) = 1),
+      if_neg (by decide : (2 : Fin 4) ≠ 0),
+      if_neg (by decide : (2 : Fin 4) ≠ 1),
+      if_pos (rfl : (2 : Fin 4) = 2),
+      chartYt_X_eq_Y_mul_X_over_Y, sub_self]
+  · rw [SetLike.mem_coe, RingHom.mem_ker]
+    simpa [chartYtKernelWitness] using chartYtModelEval_kernelWitness
+  · rw [SetLike.mem_coe, RingHom.mem_ker, map_mul, map_pow, map_sub, map_one, map_mul, map_pow,
+      chartYtModelEval_X, chartYtModelEval_X,
+      if_neg (by decide : (1 : Fin 4) ≠ 0),
+      if_pos (rfl : (1 : Fin 4) = 1),
+      if_neg (by decide : (2 : Fin 4) ≠ 0),
+      if_neg (by decide : (2 : Fin 4) ≠ 1),
+      if_pos (rfl : (2 : Fin 4) = 2)]
+    exact chartYt_cusp_relation
+
+/-- `𝔽₂[a,b][X,Y,S,T] / modelYtTrueIdeal_fixed → D₊(Yt)`.
+`T` is sent to `Y + Y²·S³`, which is `2t/Yt`. -/
+noncomputable def chartOfModelTrueY_fixed :
+    modelYtChart_fixed →+* chart_Dplus_Yt_ring valuationOneCurve 0 0 :=
+  Ideal.Quotient.lift modelYtTrueIdeal_fixed chartYtModelEval modelYtTrueIdeal_fixed_le_ker
+
+/-- `Y` and `S = Xt/Yt` still generate `D₊(Yt)` after imposing `T = Y + Y²·S³`. -/
+theorem chartOfModelTrueY_fixed_surjective :
+    Function.Surjective chartOfModelTrueY_fixed := by
+  intro z
+  obtain ⟨p, hp⟩ := chartYtModelEval_surjective z
+  refine ⟨Ideal.Quotient.mk modelYtTrueIdeal_fixed p, ?_⟩
+  rw [chartOfModelTrueY_fixed, Ideal.Quotient.lift_mk]
+  exact hp
+
 #print axioms Beal.MathlibMissing.valuationOne_specialYT_pow_ne_zero
 #print axioms Beal.MathlibMissing.chartOfModelTrueY_surjective
 #print axioms Beal.MathlibMissing.chartYt_X_eq_Y_mul_X_over_Y
@@ -1507,5 +1851,10 @@ theorem not_chartOfModelTrueY_injective : ¬ Function.Injective chartOfModelTrue
 #print axioms Beal.MathlibMissing.chartYtModelEval_kernelWitness
 #print axioms Beal.MathlibMissing.chartYtKernelWitness_not_mem
 #print axioms Beal.MathlibMissing.not_chartOfModelTrueY_injective
+#print axioms Beal.MathlibMissing.modelYtTrueIdeal_fixed_mem_mul_YT
+#print axioms Beal.MathlibMissing.modelYtTrueIdeal_fixed_mem_Tsq
+#print axioms Beal.MathlibMissing.modelYtTrueIdeal_elim
+#print axioms Beal.MathlibMissing.chartOfModelTrueY_fixed
+#print axioms Beal.MathlibMissing.chartOfModelTrueY_fixed_surjective
 
 end Beal.MathlibMissing
