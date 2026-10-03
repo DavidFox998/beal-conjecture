@@ -6,9 +6,10 @@ This library does not import `Beal/MathlibMissing/Family.lean`.
 ## v37-degree-one
 
 The exceptional-fibre point on `Y² = X³ + 2` at `(0, 0)` lives in
-`Beal.MathlibMissing`. `main` contains the merge `84c03d5b`.
-DataCite reports `10.5281/zenodo.23120540` findable. The previous
-main record is `3dd7728f`, DOI `10.5281/zenodo.23054568`.
+`Beal.MathlibMissing`. Cite
+[10.5281/zenodo.23120540](https://doi.org/10.5281/zenodo.23120540),
+version `v37-true-chart`. Do not cite `10.5281/zenodo.23120520` or
+`10.5281/zenodo.23054568`. Tag `v37-true-chart` is merge `84c03d5b`.
 
 `BealEven` already has `V(2) = Proj(Rees/(2))` (`7d48c25d`) and
 `D₊(2t) = ⊥` because `(2t)² = 0` (`567adc81`).
@@ -98,8 +99,10 @@ Closed in `Beal/MathlibMissing/ChartInjective.lean`:
 * `chart_Dplus_Xt_presentation`. Erasing `a` and `b` on both sides gives
   `𝔽₂[X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U + X² + X·V²) ≃ D₊(Xt)/(a, b)`.
 
-`modelXtChart` is
-`𝔽₂[a,b][X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U + X² + X·V²) ≃ D₊(Xt)`.
+`modelXtChart = 𝔽₂[a,b][X,Y,U,V] / I_true ≃+* D₊(Xt)` via
+`chart_Dplus_Xt_true_presentation`.
+`#print axioms modelXtChart_equiv_DplusXt` is
+`[propext, Classical.choice, Quot.sound]`.
 `modelRelationIdeal` drops `U + X² + X·V²`.
 
 Printed axioms are `propext`, `Classical.choice`, and `Quot.sound`.

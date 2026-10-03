@@ -6,12 +6,17 @@
 
 ## v37-true-chart — `modelXtChart` is the true chart
 
-`modelXtChart` is
-`𝔽₂[a,b][X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U + X² + X·V²)`.
-`modelXtChart_equiv_DplusXt` is `chart_Dplus_Xt_true_presentation`.
-Tag `v37-true-chart` is merge `84c03d5b`. DataCite reports
-`10.5281/zenodo.23120540` findable for version `v37-true-chart`.
-The previous `main` record is `3dd7728f`, DOI `10.5281/zenodo.23054568`.
+Cite [10.5281/zenodo.23120540](https://doi.org/10.5281/zenodo.23120540), version `v37-true-chart`.
+Do not cite `10.5281/zenodo.23120520` (old v33 title) or
+`10.5281/zenodo.23054568` (pre-injective `main` at `3dd7728f`).
+
+`modelXtChart = 𝔽₂[a,b][X,Y,U,V] / I_true ≃+* D₊(Xt)` via
+`chart_Dplus_Xt_true_presentation`, where
+`I_true = (X·U, Y − X·V, Y² − X³, U + X² + X·V²)`.
+`#print axioms modelXtChart_equiv_DplusXt` is
+`[propext, Classical.choice, Quot.sound]`.
+`lake build BealMathlibMissing` and `lake build BealEven` both exit 0.
+Tag `v37-true-chart` is merge `84c03d5b`.
 
 * `BealEven`: `V(2) = Proj(Rees/(2))` at `7d48c25d`. `D₊(2t) = ⊥`
   because `(2t)² = 0` at `567adc81`.
@@ -120,9 +125,8 @@ Closed in `Beal/MathlibMissing/ChartInjective.lean`:
   `chartTrueIdeal`, so
   `𝔽₂[X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U + X² + X·V²) ≃ D₊(Xt)/(a, b)`.
 
-`modelXtChart` is
-`𝔽₂[a,b][X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U + X² + X·V²)`,
-equivalent to `D₊(Xt)` by `modelXtChart_equiv_DplusXt`.
+`modelXtChart = 𝔽₂[a,b][X,Y,U,V] / I_true ≃+* D₊(Xt)` via
+`chart_Dplus_Xt_true_presentation`.
 `modelRelationIdeal` drops `U + X² + X·V²`.
 
 `BealEven` does not import `Beal/MathlibMissing/Family.lean`.
