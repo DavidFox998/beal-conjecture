@@ -27,8 +27,8 @@ representative `A(V) + X·B(V) + X²·C(V)`. For a `0`-`1` pattern,
 `(-1)^s · 2^q` and whose centre bound is `q`.
 `twice_centre_blocks_signed` rules out `X^m·α = 2·αₛ` and
 `X^m·β = 2·βₛ` with `αₛ + Y·βₛ ∈ I^{D+m}`.
-`chartOfModelTrue_injective` stays open: chart vanishing is not yet
-that Rees equation.
+`chartVanishing_reesEquation` identifies chart vanishing with that
+equation, so `chartOfModelTrue_injective` holds.
 -/
 
 namespace Beal.MathlibMissing

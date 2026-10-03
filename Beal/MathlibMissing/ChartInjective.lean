@@ -35,8 +35,12 @@ the scalar ideal `(2)` into `X^m·N = 2·z` with `z ∈ I^{D+m}`, and
 `chartNumerator_twice` splits that factor across the two series.
 `chart_X_val`, `chart_Y_over_X_val`, and `chartScalar_bitLift_val` are the
 chart fractions, and `vTerm_rees` is the cleared degree-`D` monomial.
-`chartOfModelTrue_injective` stays open: chart vanishing in `D₊(Xt)` is not
-yet identified with that Rees equation.
+`chartFraction_sum_rees` sums those monomials over a finite index set.
+`chartVanishing_reesEquation` turns vanishing of a normal form in `D₊(Xt)`
+into `X^m·α = 2·αₛ` and `X^m·β = 2·βₛ` with `αₛ + Y·βₛ ∈ I^{D+m}`.
+`chartOfModelTrue_injective` follows, and `chart_Dplus_Xt_true_presentation`
+is the induced ring equivalence. The parameter-free
+`chart_Dplus_Xt_presentation` stays open.
 -/
 
 namespace Beal.MathlibMissing
@@ -2693,6 +2697,469 @@ lemma rawTerm_mem_D (c : MvPolynomial (Fin 2) (ZMod 2)) (D shift i : ℕ) (hi : 
         vX ^ (D - i + shift) * vY ^ i ∈ vI ^ D :=
   Ideal.pow_le_pow_right (Nat.le_add_right D shift) (rawTerm_mem c D shift i hi)
 
+/-- The cleared Rees numerator is the sum of the closed degree-`D` terms.
+Each summand is `vTerm_rees`; the power of `V` is not re-elaborated in the chart ring. -/
+lemma chartFraction_sum_rees (p : chartVPoly) (D shift : ℕ) :
+    ∑ i ∈ Finset.range (D + 1),
+      (numeralReesConst valuationOneCurve 0 0 (vX ^ shift) *
+          numeralReesConst valuationOneCurve 0 0
+            (algebraMap S (surfaceRing valuationOneCurve) (bitLiftMv (vCoeff p i))) *
+          (numeralReesYT valuationOneCurve 0 0) ^ i *
+          (numeralReesXT valuationOneCurve 0 0) ^ (D - i)) =
+      centreReesMonomial vI D ⟨chartRawSum p D shift, chartRawSum_mem p D shift⟩ := by
+  apply Subtype.ext
+  rw [AddSubmonoidClass.coe_finset_sum]
+  have hterm :
+      ∀ i ∈ Finset.range (D + 1),
+        (↑(numeralReesConst valuationOneCurve 0 0 (vX ^ shift) *
+              numeralReesConst valuationOneCurve 0 0
+                (algebraMap S (surfaceRing valuationOneCurve) (bitLiftMv (vCoeff p i))) *
+              (numeralReesYT valuationOneCurve 0 0) ^ i *
+              (numeralReesXT valuationOneCurve 0 0) ^ (D - i)) :
+            Polynomial (surfaceRing valuationOneCurve)) =
+          Polynomial.monomial D
+            (algebraMap S (surfaceRing valuationOneCurve) (bitLiftMv (vCoeff p i)) *
+              vX ^ (D - i + shift) * vY ^ i) := by
+    intro i hi
+    have hiD : i ≤ D := Nat.lt_succ_iff.mp (Finset.mem_range.mp hi)
+    have hs :
+        algebraMap S (surfaceRing valuationOneCurve) (bitLiftMv (vCoeff p i)) *
+            vX ^ (D - i + shift) * vY ^ i ∈ vI ^ D :=
+      rawTerm_mem_D (vCoeff p i) D shift i hiD
+    have hv :=
+      vTerm_rees
+        (algebraMap S (surfaceRing valuationOneCurve) (bitLiftMv (vCoeff p i)))
+        shift i D hiD hs
+    simpa [centreReesMonomial, LinearMap.coe_mk, AddHom.coe_mk, Subtype.coe_mk,
+      Subalgebra.val_apply] using
+      congrArg (Subalgebra.val (reesAlgebra vI)) hv
+  rw [Finset.sum_congr rfl hterm, ← map_sum (Polynomial.monomial D)]
+  simp [centreReesMonomial, LinearMap.coe_mk, AddHom.coe_mk, Subtype.coe_mk,
+    Subalgebra.val_apply, chartRawSum]
+
+lemma centreRees_add (D : ℕ) (a b : surfaceRing valuationOneCurve)
+    (ha : a ∈ vI ^ D) (hb : b ∈ vI ^ D) :
+    centreReesMonomial vI D ⟨a, ha⟩ + centreReesMonomial vI D ⟨b, hb⟩ =
+      centreReesMonomial vI D ⟨a + b, Ideal.add_mem (vI ^ D) ha hb⟩ := by
+  apply Subtype.ext
+  simp [centreReesMonomial, LinearMap.coe_mk, AddHom.coe_mk, Subtype.coe_mk,
+    Subalgebra.val_apply, map_add]
+
+lemma chartNumerator_rees (A B Cv : chartVPoly) :
+    (∑ i ∈ Finset.range (chartVDegree A B Cv + 1),
+        numeralReesConst valuationOneCurve 0 0 (vX ^ 0) *
+          numeralReesConst valuationOneCurve 0 0
+            (algebraMap S (surfaceRing valuationOneCurve) (bitLiftMv (vCoeff A i))) *
+          (numeralReesYT valuationOneCurve 0 0) ^ i *
+          (numeralReesXT valuationOneCurve 0 0) ^ (chartVDegree A B Cv - i)) +
+      (∑ i ∈ Finset.range (chartVDegree A B Cv + 1),
+        numeralReesConst valuationOneCurve 0 0 (vX ^ 1) *
+          numeralReesConst valuationOneCurve 0 0
+            (algebraMap S (surfaceRing valuationOneCurve) (bitLiftMv (vCoeff B i))) *
+          (numeralReesYT valuationOneCurve 0 0) ^ i *
+          (numeralReesXT valuationOneCurve 0 0) ^ (chartVDegree A B Cv - i)) +
+      (∑ i ∈ Finset.range (chartVDegree A B Cv + 1),
+        numeralReesConst valuationOneCurve 0 0 (vX ^ 2) *
+          numeralReesConst valuationOneCurve 0 0
+            (algebraMap S (surfaceRing valuationOneCurve) (bitLiftMv (vCoeff Cv i))) *
+          (numeralReesYT valuationOneCurve 0 0) ^ i *
+          (numeralReesXT valuationOneCurve 0 0) ^ (chartVDegree A B Cv - i)) =
+      centreReesMonomial vI (chartVDegree A B Cv)
+        ⟨chartNumerator A B Cv, chartNumerator_mem A B Cv⟩ := by
+  rw [chartFraction_sum_rees A (chartVDegree A B Cv) 0,
+    chartFraction_sum_rees B (chartVDegree A B Cv) 1,
+    chartFraction_sum_rees Cv (chartVDegree A B Cv) 2, centreRees_add, centreRees_add]
+  apply Subtype.ext
+  simp [centreReesMonomial, LinearMap.coe_mk, AddHom.coe_mk, Subtype.coe_mk,
+    Subalgebra.val_apply, chartNumerator]
+
+set_option maxHeartbeats 8000000 in
+set_option synthInstance.maxHeartbeats 400000 in
+lemma chart_Y_pow_val (n : ℕ) :
+    ((chart_Y_over_X valuationOneCurve 0 0) ^ n).val =
+      Localization.mk
+        ((Ideal.Quotient.mk (numeralReesSpecialIdeal valuationOneCurve 0 0)
+            (numeralReesYT valuationOneCurve 0 0)) ^ n)
+        ((⟨Ideal.Quotient.mk (numeralReesSpecialIdeal valuationOneCurve 0 0)
+              (numeralReesXT valuationOneCurve 0 0),
+            ⟨1, pow_one _⟩⟩ :
+            Submonoid.powers
+              (Ideal.Quotient.mk (numeralReesSpecialIdeal valuationOneCurve 0 0)
+                (numeralReesXT valuationOneCurve 0 0))) ^ n) := by
+  let I := numeralCentreIdeal valuationOneCurve 0 0
+  letI : GradedAlgebra (centreReesComponent I) := centreReesGrading I
+  let J := numeralReesSpecialIdeal valuationOneCurve 0 0
+  have hJ : J.IsHomogeneous (centreReesComponent I) :=
+    numeralReesSpecialIdeal_isHomogeneous valuationOneCurve 0 0
+  let ℬ := homogeneousQuotientComponent (centreReesComponent I) J
+  letI : GradedAlgebra ℬ := homogeneousQuotientGrading (centreReesComponent I) J hJ
+  induction n with
+  | zero =>
+      simp [pow_zero, HomogeneousLocalization.val_one, Localization.mk_one]
+  | succ n ih =>
+      rw [pow_succ]
+      erw [HomogeneousLocalization.val_mul]
+      rw [ih, chart_Y_over_X_val, Localization.mk_mul, ← pow_succ, ← pow_succ]
+
+set_option maxHeartbeats 8000000 in
+set_option synthInstance.maxHeartbeats 400000 in
+lemma chart_X_pow_val (n : ℕ) :
+    ((chart_X valuationOneCurve 0 0) ^ n).val =
+      Localization.mk
+        ((Ideal.Quotient.mk (numeralReesSpecialIdeal valuationOneCurve 0 0)
+            (numeralReesConst valuationOneCurve 0 0 (surfaceNumeralX valuationOneCurve 0))) ^ n)
+        (1 : Submonoid.powers
+          (Ideal.Quotient.mk (numeralReesSpecialIdeal valuationOneCurve 0 0)
+            (numeralReesXT valuationOneCurve 0 0))) := by
+  let I := numeralCentreIdeal valuationOneCurve 0 0
+  letI : GradedAlgebra (centreReesComponent I) := centreReesGrading I
+  let J := numeralReesSpecialIdeal valuationOneCurve 0 0
+  have hJ : J.IsHomogeneous (centreReesComponent I) :=
+    numeralReesSpecialIdeal_isHomogeneous valuationOneCurve 0 0
+  let ℬ := homogeneousQuotientComponent (centreReesComponent I) J
+  letI : GradedAlgebra ℬ := homogeneousQuotientGrading (centreReesComponent I) J hJ
+  induction n with
+  | zero =>
+      simp [pow_zero, HomogeneousLocalization.val_one, Localization.mk_one]
+  | succ n ih =>
+      rw [pow_succ]
+      erw [HomogeneousLocalization.val_mul]
+      rw [ih, chart_X_val, Localization.mk_mul, ← pow_succ, mul_one]
+
+set_option maxHeartbeats 8000000 in
+set_option synthInstance.maxHeartbeats 400000 in
+lemma chartScalar_Y_pow_val (c : MvPolynomial (Fin 2) (ZMod 2)) (i : ℕ) :
+    (chartScalar valuationOneCurve 0 0 (bitLiftMv c) *
+        (chart_Y_over_X valuationOneCurve 0 0) ^ i).val =
+      Localization.mk
+        (Ideal.Quotient.mk (numeralReesSpecialIdeal valuationOneCurve 0 0)
+          (numeralReesConst valuationOneCurve 0 0
+              (algebraMap S (surfaceRing valuationOneCurve) (bitLiftMv c)) *
+            (numeralReesYT valuationOneCurve 0 0) ^ i))
+        ((⟨Ideal.Quotient.mk (numeralReesSpecialIdeal valuationOneCurve 0 0)
+              (numeralReesXT valuationOneCurve 0 0),
+            ⟨1, pow_one _⟩⟩ :
+            Submonoid.powers
+              (Ideal.Quotient.mk (numeralReesSpecialIdeal valuationOneCurve 0 0)
+                (numeralReesXT valuationOneCurve 0 0))) ^ i) := by
+  let I := numeralCentreIdeal valuationOneCurve 0 0
+  letI : GradedAlgebra (centreReesComponent I) := centreReesGrading I
+  let J := numeralReesSpecialIdeal valuationOneCurve 0 0
+  have hJ : J.IsHomogeneous (centreReesComponent I) :=
+    numeralReesSpecialIdeal_isHomogeneous valuationOneCurve 0 0
+  let ℬ := homogeneousQuotientComponent (centreReesComponent I) J
+  letI : GradedAlgebra ℬ := homogeneousQuotientGrading (centreReesComponent I) J hJ
+  erw [HomogeneousLocalization.val_mul]
+  rw [chartScalar_bitLift_val, chart_Y_pow_val, Localization.mk_mul, one_mul,
+    ← map_pow (Ideal.Quotient.mk J) (numeralReesYT valuationOneCurve 0 0),
+    ← map_mul (Ideal.Quotient.mk J)]
+
+set_option maxHeartbeats 8000000 in
+set_option synthInstance.maxHeartbeats 400000 in
+lemma chartShift_term_val (c : MvPolynomial (Fin 2) (ZMod 2)) (shift i : ℕ) :
+    ((chart_X valuationOneCurve 0 0) ^ shift *
+        (chartScalar valuationOneCurve 0 0 (bitLiftMv c) *
+          (chart_Y_over_X valuationOneCurve 0 0) ^ i)).val =
+      Localization.mk
+        (Ideal.Quotient.mk (numeralReesSpecialIdeal valuationOneCurve 0 0)
+          (numeralReesConst valuationOneCurve 0 0 (vX ^ shift) *
+            numeralReesConst valuationOneCurve 0 0
+              (algebraMap S (surfaceRing valuationOneCurve) (bitLiftMv c)) *
+            (numeralReesYT valuationOneCurve 0 0) ^ i))
+        ((⟨Ideal.Quotient.mk (numeralReesSpecialIdeal valuationOneCurve 0 0)
+              (numeralReesXT valuationOneCurve 0 0),
+            ⟨1, pow_one _⟩⟩ :
+            Submonoid.powers
+              (Ideal.Quotient.mk (numeralReesSpecialIdeal valuationOneCurve 0 0)
+                (numeralReesXT valuationOneCurve 0 0))) ^ i) := by
+  let I := numeralCentreIdeal valuationOneCurve 0 0
+  letI : GradedAlgebra (centreReesComponent I) := centreReesGrading I
+  let J := numeralReesSpecialIdeal valuationOneCurve 0 0
+  have hJ : J.IsHomogeneous (centreReesComponent I) :=
+    numeralReesSpecialIdeal_isHomogeneous valuationOneCurve 0 0
+  let ℬ := homogeneousQuotientComponent (centreReesComponent I) J
+  letI : GradedAlgebra ℬ := homogeneousQuotientGrading (centreReesComponent I) J hJ
+  erw [HomogeneousLocalization.val_mul]
+  rw [chart_X_pow_val, chartScalar_Y_pow_val, Localization.mk_mul, one_mul]
+  have hpow :
+      (Ideal.Quotient.mk J (numeralReesConst valuationOneCurve 0 0 vX)) ^ shift =
+        Ideal.Quotient.mk J (numeralReesConst valuationOneCurve 0 0 (vX ^ shift)) := by
+    rw [← map_pow (Ideal.Quotient.mk J), vConst_pow]
+  rw [hpow, ← map_mul (Ideal.Quotient.mk J), ← mul_assoc]
+
+lemma loc_clear_pow {Q : Type*} [CommRing Q] (f a : Q) (i D : ℕ) (hi : i ≤ D) :
+    Localization.mk a ((⟨f, ⟨1, pow_one f⟩⟩ : Submonoid.powers f) ^ i) =
+      Localization.mk (a * f ^ (D - i))
+        ((⟨f, ⟨1, pow_one f⟩⟩ : Submonoid.powers f) ^ D) := by
+  rw [powers_pow f i, loc_mul_pow f a i (D - i)]
+  have hden :
+      (⟨f ^ (i + (D - i)), ⟨i + (D - i), rfl⟩⟩ : Submonoid.powers f) =
+        (⟨f, ⟨1, pow_one f⟩⟩ : Submonoid.powers f) ^ D := by
+    rw [powers_pow]
+    apply Subtype.ext
+    rw [Nat.add_sub_of_le hi]
+  rw [hden]
+
+set_option maxHeartbeats 8000000 in
+set_option synthInstance.maxHeartbeats 400000 in
+lemma chart_val_sum {s : Finset ℕ}
+    (g : ℕ → chart_Dplus_Xt_ring valuationOneCurve 0 0) :
+    (∑ i ∈ s, g i).val = ∑ i ∈ s, (g i).val := by
+  let I := numeralCentreIdeal valuationOneCurve 0 0
+  letI : GradedAlgebra (centreReesComponent I) := centreReesGrading I
+  let J := numeralReesSpecialIdeal valuationOneCurve 0 0
+  have hJ : J.IsHomogeneous (centreReesComponent I) :=
+    numeralReesSpecialIdeal_isHomogeneous valuationOneCurve 0 0
+  let ℬ := homogeneousQuotientComponent (centreReesComponent I) J
+  letI : GradedAlgebra ℬ := homogeneousQuotientGrading (centreReesComponent I) J hJ
+  induction s using Finset.induction with
+  | empty =>
+      simp [Finset.sum_empty, HomogeneousLocalization.val_zero]
+  | @insert a t ha ih =>
+      rw [Finset.sum_insert ha]
+      erw [HomogeneousLocalization.val_add]
+      rw [Finset.sum_insert ha, ih]
+
+noncomputable def chartXtPow (n : ℕ) :
+    Submonoid.powers
+      (Ideal.Quotient.mk (numeralReesSpecialIdeal valuationOneCurve 0 0)
+        (numeralReesXT valuationOneCurve 0 0)) :=
+  (⟨Ideal.Quotient.mk (numeralReesSpecialIdeal valuationOneCurve 0 0)
+      (numeralReesXT valuationOneCurve 0 0),
+    ⟨1, pow_one _⟩⟩) ^ n
+
+lemma loc_add3 {R : Type*} [CommRing R] {M : Submonoid R} (a b c : R) (d : M) :
+    Localization.mk a d + Localization.mk b d + Localization.mk c d =
+      Localization.mk (a + b + c) d := by
+  rw [Localization.add_mk_self, Localization.add_mk_self]
+
+lemma chart_left_mul_sum (a : chart_Dplus_Xt_ring valuationOneCurve 0 0)
+    (s : Finset ℕ) (g : ℕ → chart_Dplus_Xt_ring valuationOneCurve 0 0) :
+    a * ∑ i ∈ s, g i = ∑ i ∈ s, a * g i := by
+  induction s using Finset.induction with
+  | empty => simp [Finset.sum_empty, mul_zero]
+  | @insert b t hb ih =>
+      rw [Finset.sum_insert hb, Finset.sum_insert hb, mul_add, ih]
+
+set_option maxHeartbeats 8000000 in
+set_option synthInstance.maxHeartbeats 400000 in
+lemma chartRawPoly_val (p : chartVPoly) (D shift : ℕ)
+    (hD : MvPolynomial.degreeOf (0 : Fin 1) p ≤ D) :
+    ((chart_X valuationOneCurve 0 0) ^ shift * chartVEval p).val =
+      Localization.mk
+        (Ideal.Quotient.mk (numeralReesSpecialIdeal valuationOneCurve 0 0)
+          (centreReesMonomial vI D ⟨chartRawSum p D shift, chartRawSum_mem p D shift⟩))
+        (chartXtPow D) := by
+  rw [chartVEval_sum p hD, chart_left_mul_sum, chart_val_sum]
+  let J := numeralReesSpecialIdeal valuationOneCurve 0 0
+  let f : (reesAlgebra vI) ⧸ J := Ideal.Quotient.mk J (numeralReesXT valuationOneCurve 0 0)
+  have hshift :
+      ∀ i, ∀ hi : i ∈ Finset.range (D + 1),
+        ((chart_X valuationOneCurve 0 0) ^ shift *
+            (chartScalar valuationOneCurve 0 0 (bitLiftMv (vCoeff p i)) *
+              (chart_Y_over_X valuationOneCurve 0 0) ^ i)).val =
+          Localization.mk
+            (Ideal.Quotient.mk J
+              (numeralReesConst valuationOneCurve 0 0 (vX ^ shift) *
+                numeralReesConst valuationOneCurve 0 0
+                  (algebraMap S (surfaceRing valuationOneCurve) (bitLiftMv (vCoeff p i))) *
+                (numeralReesYT valuationOneCurve 0 0) ^ i))
+            ((⟨f, ⟨1, pow_one f⟩⟩ : Submonoid.powers f) ^ i) := by
+    intro i _hi
+    simpa [f, J] using chartShift_term_val (vCoeff p i) shift i
+  rw [Finset.sum_congr rfl hshift]
+  have hclear :
+      ∀ i, ∀ hi : i ∈ Finset.range (D + 1),
+        Localization.mk
+            (Ideal.Quotient.mk J
+              (numeralReesConst valuationOneCurve 0 0 (vX ^ shift) *
+                numeralReesConst valuationOneCurve 0 0
+                  (algebraMap S (surfaceRing valuationOneCurve) (bitLiftMv (vCoeff p i))) *
+                (numeralReesYT valuationOneCurve 0 0) ^ i))
+            ((⟨f, ⟨1, pow_one f⟩⟩ : Submonoid.powers f) ^ i) =
+          Localization.mk
+            (Ideal.Quotient.mk J
+                (numeralReesConst valuationOneCurve 0 0 (vX ^ shift) *
+                  numeralReesConst valuationOneCurve 0 0
+                    (algebraMap S (surfaceRing valuationOneCurve) (bitLiftMv (vCoeff p i))) *
+                  (numeralReesYT valuationOneCurve 0 0) ^ i) *
+              f ^ (D - i))
+            ((⟨f, ⟨1, pow_one f⟩⟩ : Submonoid.powers f) ^ D) := by
+    intro i hi
+    exact loc_clear_pow f _ i D (Nat.lt_succ_iff.mp (Finset.mem_range.mp hi))
+  rw [Finset.sum_congr rfl hclear]
+  have hfold :=
+    loc_mk_sum
+      ((⟨f, ⟨1, pow_one f⟩⟩ : Submonoid.powers f) ^ D)
+      (fun i =>
+        Ideal.Quotient.mk J
+            (numeralReesConst valuationOneCurve 0 0 (vX ^ shift) *
+              numeralReesConst valuationOneCurve 0 0
+                (algebraMap S (surfaceRing valuationOneCurve) (bitLiftMv (vCoeff p i))) *
+              (numeralReesYT valuationOneCurve 0 0) ^ i) *
+          f ^ (D - i))
+      (Finset.range (D + 1))
+  rw [hfold]
+  have hnum :
+      ∀ i, ∀ hi : i ∈ Finset.range (D + 1),
+        Ideal.Quotient.mk J
+            (numeralReesConst valuationOneCurve 0 0 (vX ^ shift) *
+              numeralReesConst valuationOneCurve 0 0
+                (algebraMap S (surfaceRing valuationOneCurve) (bitLiftMv (vCoeff p i))) *
+              (numeralReesYT valuationOneCurve 0 0) ^ i) *
+            f ^ (D - i) =
+          Ideal.Quotient.mk J
+            (numeralReesConst valuationOneCurve 0 0 (vX ^ shift) *
+              numeralReesConst valuationOneCurve 0 0
+                (algebraMap S (surfaceRing valuationOneCurve) (bitLiftMv (vCoeff p i))) *
+              (numeralReesYT valuationOneCurve 0 0) ^ i *
+              (numeralReesXT valuationOneCurve 0 0) ^ (D - i)) := by
+    intro i _hi
+    rw [show f = Ideal.Quotient.mk J (numeralReesXT valuationOneCurve 0 0) from rfl]
+    rw [← map_pow (Ideal.Quotient.mk J) (numeralReesXT valuationOneCurve 0 0) (D - i)]
+    rw [← map_mul (Ideal.Quotient.mk J)]
+  have hsum := Finset.sum_congr rfl hnum
+  have hquot :
+      (∑ i ∈ Finset.range (D + 1),
+          Ideal.Quotient.mk J
+            (numeralReesConst valuationOneCurve 0 0 (vX ^ shift) *
+              numeralReesConst valuationOneCurve 0 0
+                (algebraMap S (surfaceRing valuationOneCurve) (bitLiftMv (vCoeff p i))) *
+              (numeralReesYT valuationOneCurve 0 0) ^ i *
+              (numeralReesXT valuationOneCurve 0 0) ^ (D - i))) =
+        Ideal.Quotient.mk J
+          (∑ i ∈ Finset.range (D + 1),
+            numeralReesConst valuationOneCurve 0 0 (vX ^ shift) *
+              numeralReesConst valuationOneCurve 0 0
+                (algebraMap S (surfaceRing valuationOneCurve) (bitLiftMv (vCoeff p i))) *
+              (numeralReesYT valuationOneCurve 0 0) ^ i *
+              (numeralReesXT valuationOneCurve 0 0) ^ (D - i)) := by
+    induction Finset.range (D + 1) using Finset.induction with
+    | empty => simp [Finset.sum_empty, map_zero]
+    | @insert a t ha ih =>
+        rw [Finset.sum_insert ha, Finset.sum_insert ha, map_add (Ideal.Quotient.mk J), ih]
+  rw [hsum, hquot, chartFraction_sum_rees]
+  rw [show ((⟨f, ⟨1, pow_one f⟩⟩ : Submonoid.powers f) ^ D) = chartXtPow D from rfl]
+
+set_option maxHeartbeats 8000000 in
+set_option synthInstance.maxHeartbeats 400000 in
+lemma chartNormal_val (A B Cv : chartVPoly) :
+    (chartVEval A + chart_X valuationOneCurve 0 0 * chartVEval B +
+        (chart_X valuationOneCurve 0 0) ^ 2 * chartVEval Cv).val =
+      Localization.mk
+        (Ideal.Quotient.mk (numeralReesSpecialIdeal valuationOneCurve 0 0)
+          (centreReesMonomial vI (chartVDegree A B Cv)
+            ⟨chartNumerator A B Cv, chartNumerator_mem A B Cv⟩))
+        (chartXtPow (chartVDegree A B Cv)) := by
+  have hA := chartRawPoly_val A (chartVDegree A B Cv) 0 (chartVDegree_A A B Cv)
+  have hB := chartRawPoly_val B (chartVDegree A B Cv) 1 (chartVDegree_B A B Cv)
+  have hC := chartRawPoly_val Cv (chartVDegree A B Cv) 2 (chartVDegree_C A B Cv)
+  conv_lhs at hA => rw [pow_zero, one_mul]
+  conv_lhs at hB => rw [pow_one]
+  let I := numeralCentreIdeal valuationOneCurve 0 0
+  letI : GradedAlgebra (centreReesComponent I) := centreReesGrading I
+  let J := numeralReesSpecialIdeal valuationOneCurve 0 0
+  have hJ : J.IsHomogeneous (centreReesComponent I) :=
+    numeralReesSpecialIdeal_isHomogeneous valuationOneCurve 0 0
+  let ℬ := homogeneousQuotientComponent (centreReesComponent I) J
+  letI : GradedAlgebra ℬ := homogeneousQuotientGrading (centreReesComponent I) J hJ
+  erw [HomogeneousLocalization.val_add, HomogeneousLocalization.val_add]
+  rw [hA, hB, hC]
+  simp only [Localization.mk]
+  rw [OreLocalization.add_oreDiv, OreLocalization.add_oreDiv]
+  have hN := chartNumerator_rees A B Cv
+  rw [chartFraction_sum_rees A (chartVDegree A B Cv) 0,
+    chartFraction_sum_rees B (chartVDegree A B Cv) 1,
+    chartFraction_sum_rees Cv (chartVDegree A B Cv) 2] at hN
+  congr 1
+  rw [← map_add (Ideal.Quotient.mk J), ← map_add (Ideal.Quotient.mk J), hN]
+
+set_option maxHeartbeats 8000000 in
+set_option synthInstance.maxHeartbeats 400000 in
+theorem chartVanishing_reesEquation (A B Cv : chartVPoly)
+    (hVan : chartOfModelTrue (Ideal.Quotient.mk chartTrueIdeal
+        (normalPolyToModel (chartNormalForm A B Cv))) = 0) :
+    ∃ m : ℕ, ∃ αs βs : Polynomial S,
+      X ^ m * chartSeriesAlpha A B Cv = (2 : Polynomial S) * αs ∧
+      X ^ m * chartSeriesBeta A B Cv = (2 : Polynomial S) * βs ∧
+      Ideal.Quotient.mk (Ideal.span {surfacePolynomial valuationOneCurve})
+          (centreNormalPoly αs βs) ∈ vI ^ (chartVDegree A B Cv + m) := by
+  rw [chartOfModelTrue, Ideal.Quotient.lift_mk, chartModelEval_normalForm] at hVan
+  let I := numeralCentreIdeal valuationOneCurve 0 0
+  letI : GradedAlgebra (centreReesComponent I) := centreReesGrading I
+  let J := numeralReesSpecialIdeal valuationOneCurve 0 0
+  have hJ : J.IsHomogeneous (centreReesComponent I) :=
+    numeralReesSpecialIdeal_isHomogeneous valuationOneCurve 0 0
+  let ℬ := homogeneousQuotientComponent (centreReesComponent I) J
+  letI : GradedAlgebra ℬ := homogeneousQuotientGrading (centreReesComponent I) J hJ
+  let Q := (reesAlgebra I) ⧸ J
+  let f : Q := Ideal.Quotient.mk J (numeralReesXT valuationOneCurve 0 0)
+  have hval := congrArg (HomogeneousLocalization.val (x := Submonoid.powers f)) hVan
+  erw [HomogeneousLocalization.val_zero] at hval
+  rw [chartNormal_val] at hval
+  rw [← Localization.mk_zero (1 : Submonoid.powers f), Localization.mk_eq_mk_iff] at hval
+  obtain ⟨c, hc⟩ := Localization.r_iff_exists.mp hval
+  have hc0 : (c : Q) *
+      Ideal.Quotient.mk J
+        (centreReesMonomial vI (chartVDegree A B Cv)
+          ⟨chartNumerator A B Cv, chartNumerator_mem A B Cv⟩) = 0 := by
+    dsimp at hc
+    simp only [one_mul] at hc
+    have hzero :
+        (c : Q) * ((↑(chartXtPow (chartVDegree A B Cv)) : Q) * 0) = 0 := by
+      ring
+    rw [hzero] at hc
+    exact hc
+  obtain ⟨m, hm⟩ := (Submonoid.mem_powers_iff (c : Q) f).mp c.property
+  have hkill : f ^ m *
+      Ideal.Quotient.mk J
+        (centreReesMonomial vI (chartVDegree A B Cv)
+          ⟨chartNumerator A B Cv, chartNumerator_mem A B Cv⟩) = 0 := by
+    rw [hm]
+    exact hc0
+  have hpre :
+      (numeralReesXT valuationOneCurve 0 0) ^ m *
+        centreReesMonomial vI (chartVDegree A B Cv)
+          ⟨chartNumerator A B Cv, chartNumerator_mem A B Cv⟩ ∈ J := by
+    rw [← Ideal.Quotient.eq_zero_iff_mem, map_mul (Ideal.Quotient.mk J),
+      map_pow (Ideal.Quotient.mk J)]
+    exact hkill
+  obtain ⟨z, hz, hzI⟩ := reesProd_two m (chartVDegree A B Cv)
+      (chartNumerator A B Cv) (chartNumerator_mem A B Cv) hpre
+  obtain ⟨αs, βs, hα, hβ, hIk⟩ := chartNumerator_twice A B Cv m z hz hzI
+  exact ⟨m, αs, βs, hα, hβ, hIk⟩
+
+set_option maxHeartbeats 8000000 in
+set_option synthInstance.maxHeartbeats 400000 in
+theorem chartOfModelTrue_injective : Function.Injective chartOfModelTrue := by
+  rw [chartOfModelTrue_injective_iff_normalForm]
+  intro A B Cv hVan
+  by_contra hne
+  have hdisj : A ≠ 0 ∨ B ≠ 0 ∨ Cv ≠ 0 := by
+    rcases not_and_or.mp hne with hA | hBC
+    · exact Or.inl hA
+    · rcases not_and_or.mp hBC with hB | hC
+      · exact Or.inr (Or.inl hB)
+      · exact Or.inr (Or.inr hC)
+  obtain ⟨μ, hμ⟩ := exists_bitPoly_ne A B Cv hdisj
+  obtain ⟨m, αs, βs, hα, hβ, hI⟩ := chartVanishing_reesEquation A B Cv hVan
+  exfalso
+  exact twice_centre_blocks_signed (chartVDegree A B Cv) m
+    (chartSeriesAlpha A B Cv) (chartSeriesBeta A B Cv) αs βs hα hβ hI μ
+    (bitPolyOf μ A) (bitPolyOf μ B) (bitPolyOf μ Cv)
+    (bitPoly_isBit μ A) (bitPoly_isBit μ B) (bitPoly_isBit μ Cv)
+    (bitPoly_natDegree_le μ A (chartVDegree_A A B Cv))
+    (bitPoly_natDegree_le μ B (chartVDegree_B A B Cv))
+    (bitPoly_natDegree_le μ Cv (chartVDegree_C A B Cv))
+    hμ
+    (fun j => chartSeriesAlpha_monomial A B Cv μ j)
+    (fun j => chartSeriesBeta_monomial A B Cv μ j)
+
+noncomputable def chart_Dplus_Xt_true_presentation :
+    (MvPolynomial (Fin 4) (MvPolynomial (Fin 2) (ZMod 2)) ⧸ chartTrueIdeal) ≃+*
+      chart_Dplus_Xt_ring valuationOneCurve 0 0 :=
+  RingEquiv.ofBijective chartOfModelTrue
+    ⟨chartOfModelTrue_injective, chartOfModelTrue_surjective⟩
 
 #print axioms Beal.MathlibMissing.chart_X_add_V_sq_ne_zero
 #print axioms Beal.MathlibMissing.chartOfModelTrue_normal_X_add_Vsq_ne_zero
@@ -2708,5 +3175,8 @@ lemma rawTerm_mem_D (c : MvPolynomial (Fin 2) (ZMod 2)) (D shift i : ℕ) (hi : 
 #print axioms Beal.MathlibMissing.twice_centre_blocks_signed
 #print axioms Beal.MathlibMissing.chartSeries_surface
 #print axioms Beal.MathlibMissing.chartRaw_mem
+#print axioms Beal.MathlibMissing.chartFraction_sum_rees
+#print axioms Beal.MathlibMissing.chartVanishing_reesEquation
+#print axioms Beal.MathlibMissing.chart_Dplus_Xt_true_presentation
 
 end Beal.MathlibMissing

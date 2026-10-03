@@ -149,9 +149,9 @@ statement that this representative dies in `D₊(Xt)` only when it is zero.
 some index carries `(-1)^s · 2^q` against centre bound `q`.
 `twice_centre_blocks_signed` says that series cannot satisfy
 `X^m·α = 2·αₛ` and `X^m·β = 2·βₛ` with `αₛ + Y·βₛ ∈ I^{D+m}`.
-The kernel condition stays open because chart vanishing is not yet
-that Rees equation.
-`chart_Dplus_Xt_true_presentation` stays open.
+`chartVanishing_reesEquation` identifies chart vanishing with that
+equation, so `chartOfModelTrue_injective` holds and
+`chart_Dplus_Xt_true_presentation` is the induced ring equivalence.
 `chart_Dplus_Xt_presentation` stays open and names a different
 ring: the parameter-free quotient
 `𝔽₂[X,Y,U,V] / (X·U, Y − X·V, Y² − X³)` drops `a`, `b`, and `U²`.
@@ -3243,12 +3243,16 @@ Closed in `ChartInjective.lean`, continued:
   integer series, and those coefficients cannot be `X^m·α = 2·αₛ`,
   `X^m·β = 2·βₛ` with `αₛ + Y·βₛ ∈ I^{D+m}`.
 
+Closed in `ChartInjective.lean`, continued:
+* `chartVanishing_reesEquation`. Vanishing of `A(V) + X·B(V) + X²·C(V)`
+  in `D₊(Xt)` gives `X^m·α = 2·αₛ`, `X^m·β = 2·βₛ`, and
+  `αₛ + Y·βₛ ∈ I^{D+m}`. The degree-`D` numerator is a finite sum of the
+  closed monomials `vTerm_rees`.
+* `chartOfModelTrue_injective` and `chart_Dplus_Xt_true_presentation`.
+  The signed bound then forces `A = B = C = 0`, so
+  `𝔽₂[a,b][X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U + X² + X·V²) ≃ D₊(Xt)`.
+
 Open:
-* `chartOfModelTrue_injective`. Vanishing in `D₊(Xt)` is not yet
-  identified with `X^m·α = 2·αₛ`, `X^m·β = 2·βₛ` and
-  `αₛ + Y·βₛ ∈ I^{D+m}`, so `A`, `B`, and `C` are not forced to vanish.
-  `chart_Dplus_Xt_true_presentation` is the bijection with
-  `𝔽₂[a,b][X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U + X² + X·V²)`.
 * `chart_Dplus_Xt_presentation`, an isomorphism with
   `𝔽₂[X,Y,U,V] / (X·U, Y − X·V, Y² − X³)`. That ring drops `a`, `b`,
   and `U²`. It is not the chart.

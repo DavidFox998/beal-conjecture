@@ -106,13 +106,14 @@ Closed in `Beal/MathlibMissing/ChartInjective.lean`:
   that integer series on each monomial of `𝔽₂[a,b]`, and it cannot be
   `X^m·α = 2·αₛ`, `X^m·β = 2·βₛ` with `αₛ + Y·βₛ ∈ I^{D+m}`.
 
+* `chartVanishing_reesEquation`, `chartOfModelTrue_injective`, and
+  `chart_Dplus_Xt_true_presentation`. Vanishing of a normal form in
+  `D₊(Xt)` is `X^m·α = 2·αₛ`, `X^m·β = 2·βₛ` with
+  `αₛ + Y·βₛ ∈ I^{D+m}`. The signed bound forces `A = B = C = 0`, so
+  `𝔽₂[a,b][X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U + X² + X·V²) ≃ D₊(Xt)`.
+
 Open:
 
-* `chartOfModelTrue_injective` and `chart_Dplus_Xt_true_presentation`.
-  Chart vanishing of a general normal form is not yet the Rees equation
-  `X^m·α = 2·αₛ`, `X^m·β = 2·βₛ` with `αₛ + Y·βₛ ∈ I^{D+m}`. The bijection
-  `𝔽₂[a,b][X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U + X² + X·V²) ≃ D₊(Xt)`
-  is not proved.
 * `chart_Dplus_Xt_presentation`, an isomorphism with the parameter-free
   ring `𝔽₂[X,Y,U,V] / (X·U, Y − X·V, Y² − X³)`. That ring drops `a`,
   `b`, and `U²`. It is not the chart.

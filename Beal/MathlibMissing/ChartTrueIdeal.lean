@@ -438,8 +438,9 @@ theorem valuationOne_X_fourth_sub_X_not_mem_centre_sq :
     rw [pow_one]
     exact hxeq ▸ hxI2)
 
-/-- Injectivity of the true chart map. Equivalent to
-`ker chartModelEval = chartTrueIdeal`. Open.
+/-!
+Injectivity of the true chart map. Equivalent to
+`ker chartModelEval = chartTrueIdeal`.
 
 `chartTrueIdeal_quotient_equiv_normal` identifies the source with
 `𝔽₂[a,b][X,V] / (X²·(X + V²))`, whose classes are represented by
@@ -463,40 +464,16 @@ for a `0`-`1` pattern: the lowest power of `X`, or the leading term of
 `(-1)^s · 2^q` at an index whose centre bound is `q`.
 `twice_centre_blocks_signed` says that series cannot be
 `X^m·α = 2·αₛ` and `X^m·β = 2·βₛ` with `αₛ + Y·βₛ ∈ I^{D+m}`.
-What remains open is the identification of chart vanishing with that
-Rees equation. -/
-def chartOfModelTrue_injective : Prop :=
-  Function.Injective chartOfModelTrue
-
-/-- A proved injection would be a bijection. -/
-theorem chartOfModelTrue_bijective_of_injective
-    (h : chartOfModelTrue_injective) : Function.Bijective chartOfModelTrue :=
-  ⟨h, chartOfModelTrue_surjective⟩
-
-/-- OPEN. An isomorphism
-`𝔽₂[a,b][X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U + X² + X·V²) ≃ D₊(Xt)`.
-`chartOfModelTrue_surjective` is the surjection.
-`chartOfModelTrue_injective` is the missing injection.
-This is not `chart_Dplus_Xt_presentation`, which names the parameter-free
-ring `𝔽₂[X,Y,U,V] / (X·U, Y − X·V, Y² − X³)`. -/
-def chart_Dplus_Xt_true_presentation : Prop :=
-  Nonempty
-    ((MvPolynomial (Fin 4) (MvPolynomial (Fin 2) (ZMod 2)) ⧸ chartTrueIdeal) ≃+*
-      chart_Dplus_Xt_ring valuationOneCurve 0 0)
-
-theorem chart_Dplus_Xt_true_presentation_of_injective
-    (h : chartOfModelTrue_injective) : chart_Dplus_Xt_true_presentation := by
-  rw [chart_Dplus_Xt_true_presentation]
-  exact ⟨RingEquiv.ofBijective chartOfModelTrue
-    (chartOfModelTrue_bijective_of_injective h)⟩
+`chartVanishing_reesEquation` identifies chart vanishing with that
+equation, and `chartOfModelTrue_injective` is proved in
+`ChartInjective.lean`. `chart_Dplus_Xt_presentation`, the parameter-free
+quotient, stays open. -/
 
 #print axioms Beal.MathlibMissing.chartTrueIdeal_contains_U2
 #print axioms Beal.MathlibMissing.modelBaseRelationIdeal_le_chartTrueIdeal
 #print axioms Beal.MathlibMissing.chartOfModelTrue_surjective
 #print axioms Beal.MathlibMissing.chartTrueIdeal_quotient_equiv_normal
 #print axioms Beal.MathlibMissing.valuationOne_X_fourth_sub_X_not_mem_centre_sq
-#print axioms Beal.MathlibMissing.chartOfModelTrue_injective
-#print axioms Beal.MathlibMissing.chart_Dplus_Xt_true_presentation
 #print axioms Beal.MathlibMissing.chartModelEval_kernelWitness
 #print axioms Beal.MathlibMissing.chartKernelWitness_not_mem
 #print axioms Beal.MathlibMissing.not_chartOfModelBase_injective
