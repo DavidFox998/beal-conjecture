@@ -28,8 +28,10 @@ centre bounds are `0`.
 integer series. `twice_centre_blocks_signed` says the series cannot be
 `X^m·α = 2·αₛ` and `X^m·β = 2·βₛ` with `αₛ + Y·βₛ ∈ I^{D+m}`.
 
-`chartOfModelTrue_injective` stays open. Chart vanishing in `D₊(Xt)` is
-not yet identified with that Rees equation.
+`chartSeries_surface` writes the surface class of that series as the raw
+sum `∑ bitLift(coeff) · X^{D−i+shift} · Y^i`, and `chartRaw_mem` puts each
+sum in `I^D`. `chartOfModelTrue_injective` stays open. Chart vanishing in
+`D₊(Xt)` is not yet identified with that Rees equation.
 -/
 
 namespace Beal.MathlibMissing
@@ -719,6 +721,13 @@ lemma odd_eq_two_mul_add_one (n : ℕ) (h : n % 2 = 1) : n = 2 * (n / 2) + 1 := 
   have hdiv := Nat.div_add_mod n 2
   rw [h] at hdiv
   exact hdiv.symm
+
+lemma half_odd (q : ℕ) : (2 * q + 1) / 2 = q := by
+  have hmod : (2 * q + 1) % 2 = 1 := by
+    rw [Nat.add_mod, Nat.mul_mod_right, Nat.zero_add]
+  have hdiv := Nat.div_add_mod (2 * q + 1) 2
+  rw [hmod] at hdiv
+  exact Nat.eq_of_mul_eq_mul_left (by decide : 0 < 2) (Nat.add_right_cancel hdiv)
 
 lemma div_two_pos_of_ge_two {d : ℕ} (hd : 2 ≤ d) : 1 ≤ d / 2 := by
   rw [Nat.one_le_iff_ne_zero]
@@ -1963,6 +1972,317 @@ lemma twice_centre_blocks_signed (D m : ℕ) (α β αs βs : Polynomial S)
       exact twoAdicNormBound_two_mul hbound
     exact not_twoAdicNormBound_signed_coeff (β.coeff j) μ q s (by rw [hβμ, hc]) hnorm
 
+/-!
+## Surface numerator
+
+`V` is read as `Y/X`. After clearing `(Xt)^D` and using `Y² = X³ − 2`, the
+numerator is `α(X) + Y·β(X)` for the series `chartSeriesAlpha` and
+`chartSeriesBeta`.
+-/
+
+lemma vY_sq : vY ^ 2 = vX ^ 3 - (2 : surfaceRing valuationOneCurve) := by
+  have h := valuationOne_node_Ysq_sub_Xcu
+  calc
+    vY ^ 2 = vY ^ 2 - vX ^ 3 + vX ^ 3 := by ring
+    _ = -(2 : surfaceRing valuationOneCurve) + vX ^ 3 := by rw [h]
+    _ = vX ^ 3 - 2 := by ring
+
+lemma vY_pow_even (q : ℕ) : vY ^ (2 * q) = (vX ^ 3 - 2) ^ q := by
+  induction q with
+  | zero => simp
+  | succ q ih =>
+      rw [Nat.mul_succ, pow_add, ih, vY_sq]
+      exact (pow_succ (vX ^ 3 - (2 : surfaceRing valuationOneCurve)) q).symm
+
+lemma vY_pow_odd (q : ℕ) : vY ^ (2 * q + 1) = vY * (vX ^ 3 - 2) ^ q := by
+  rw [pow_add, pow_one, vY_pow_even]
+  ring
+
+/-- A polynomial in the surface coordinate `X`. -/
+noncomputable def polyInXHom : Polynomial S →+* MvPolynomial (Fin 2) S :=
+  Polynomial.eval₂RingHom MvPolynomial.C (MvPolynomial.X 0)
+
+/-- Evaluate a polynomial of `S[X]` at the surface class of `X`. -/
+noncomputable def surfaceEvalHom : Polynomial S →+* surfaceRing valuationOneCurve :=
+  Polynomial.eval₂RingHom (algebraMap S (surfaceRing valuationOneCurve)) vX
+
+lemma surfaceToCentre_polyInX (p : Polynomial S) :
+    surfaceToCentrePoly (polyInXHom p) = C p := by
+  have hhom :
+      (surfaceToCentrePoly : MvPolynomial (Fin 2) S →+* Polynomial (Polynomial S)).comp
+          polyInXHom = C := by
+    refine Polynomial.ringHom_ext ?_ ?_
+    · intro s
+      rw [RingHom.comp_apply, polyInXHom, Polynomial.coe_eval₂RingHom, Polynomial.eval₂_C]
+      simpa using surfaceToCentrePoly_C s
+    · rw [RingHom.comp_apply, polyInXHom, Polynomial.coe_eval₂RingHom, Polynomial.eval₂_X]
+      simpa using surfaceToCentrePoly_X
+  simpa [RingHom.comp_apply] using congrArg (fun f => f p) hhom
+
+lemma centreNormal_eq_polyInX (p : Polynomial S) :
+    centreNormalPoly p 0 = polyInXHom p := by
+  apply surfaceToCentrePoly.injective
+  rw [surfaceToCentrePoly_normal, surfaceToCentre_polyInX, centreOfNormal, map_zero, zero_mul,
+    add_zero]
+
+lemma centreNormal_Y_eq (p : Polynomial S) :
+    centreNormalPoly 0 p = polyInXHom p * MvPolynomial.X 1 := by
+  apply surfaceToCentrePoly.injective
+  rw [map_mul, surfaceToCentrePoly_normal, surfaceToCentre_polyInX, surfaceToCentrePoly_Y,
+    centreOfNormal, map_zero, zero_add]
+
+lemma vX_eq_mk : vX =
+    Ideal.Quotient.mk (Ideal.span {surfacePolynomial valuationOneCurve})
+      (MvPolynomial.X (0 : Fin 2)) := by
+  simp [vX, surfaceNumeralX, map_zero, sub_zero]
+
+lemma vY_eq_mk : vY =
+    Ideal.Quotient.mk (Ideal.span {surfacePolynomial valuationOneCurve})
+      (MvPolynomial.X (1 : Fin 2)) := by
+  simp [vY, surfaceNumeralY, map_zero, sub_zero]
+
+lemma surfaceEval_mk (p : Polynomial S) :
+    surfaceEvalHom p =
+      Ideal.Quotient.mk (Ideal.span {surfacePolynomial valuationOneCurve}) (polyInXHom p) := by
+  have hhom : surfaceEvalHom =
+      (Ideal.Quotient.mk (Ideal.span {surfacePolynomial valuationOneCurve})).comp polyInXHom := by
+    refine Polynomial.ringHom_ext ?_ ?_
+    · intro s
+      simp only [RingHom.comp_apply, surfaceEvalHom, polyInXHom, Polynomial.coe_eval₂RingHom,
+        Polynomial.eval₂_C]
+      rfl
+    · simp only [RingHom.comp_apply, surfaceEvalHom, polyInXHom, Polynomial.coe_eval₂RingHom,
+        Polynomial.eval₂_X, vX_eq_mk]
+  simpa [RingHom.comp_apply] using congrArg (fun f => f p) hhom
+
+lemma centre_alpha_eval (p : Polynomial S) :
+    Ideal.Quotient.mk (Ideal.span {surfacePolynomial valuationOneCurve})
+        (centreNormalPoly p 0) = surfaceEvalHom p := by
+  rw [centreNormal_eq_polyInX, surfaceEval_mk]
+
+lemma centre_beta_eval (p : Polynomial S) :
+    Ideal.Quotient.mk (Ideal.span {surfacePolynomial valuationOneCurve})
+        (centreNormalPoly 0 p) = vY * surfaceEvalHom p := by
+  rw [centreNormal_Y_eq, map_mul, vY_eq_mk, surfaceEval_mk, mul_comm]
+
+lemma centre_normal_eval (α β : Polynomial S) :
+    Ideal.Quotient.mk (Ideal.span {surfacePolynomial valuationOneCurve})
+        (centreNormalPoly α β) =
+      surfaceEvalHom α + vY * surfaceEvalHom β := by
+  have hsum : centreNormalPoly α β = centreNormalPoly α 0 + centreNormalPoly 0 β := by
+    apply surfaceToCentrePoly.injective
+    rw [map_add, surfaceToCentrePoly_normal, surfaceToCentrePoly_normal,
+      surfaceToCentrePoly_normal, centreOfNormal, centreOfNormal, centreOfNormal]
+    simp only [map_zero, zero_mul, mul_zero, add_zero, zero_add, add_assoc]
+  rw [hsum, map_add, centre_alpha_eval, centre_beta_eval]
+
+lemma surfaceEval_cuspPow (s : S) (e q : ℕ) :
+    surfaceEvalHom (cuspPowTerm s e q) =
+      algebraMap S (surfaceRing valuationOneCurve) s * vX ^ e *
+        (vX ^ 3 - (2 : surfaceRing valuationOneCurve)) ^ q := by
+  rw [cuspPowTerm, cuspPolyS_eq]
+  simp only [surfaceEvalHom, Polynomial.coe_eval₂RingHom, Polynomial.eval₂_mul, Polynomial.eval₂_pow,
+    Polynomial.eval₂_C, Polynomial.eval₂_X, Polynomial.eval₂_sub,
+    map_ofNat (algebraMap S (surfaceRing valuationOneCurve))]
+
+lemma surfaceEval_series (N D shift residue : ℕ) (p : chartVPoly) :
+    surfaceEvalHom (seriesUpToS N D shift residue p) =
+      ∑ i ∈ Finset.range (N + 1),
+        if i % 2 = residue then
+          algebraMap S (surfaceRing valuationOneCurve) (bitLiftMv (vCoeff p i)) *
+              vX ^ (D - i + shift) *
+              (vX ^ 3 - (2 : surfaceRing valuationOneCurve)) ^ (i / 2)
+        else 0 := by
+  rw [seriesUpToS]
+  simp only [surfaceEvalHom, Polynomial.coe_eval₂RingHom]
+  rw [Polynomial.eval₂_finset_sum]
+  refine Finset.sum_congr rfl ?_
+  intro i _hi
+  by_cases hres : i % 2 = residue
+  · rw [if_pos hres, if_pos hres]
+    simpa [surfaceEvalHom, Polynomial.coe_eval₂RingHom] using
+      surfaceEval_cuspPow (bitLiftMv (vCoeff p i)) (D - i + shift) (i / 2)
+  · rw [if_neg hres, if_neg hres, Polynomial.eval₂_zero]
+
+lemma mul_y_through (y a b c : surfaceRing valuationOneCurve) :
+    y * (a * b * c) = a * b * (y * c) := by
+  ring
+
+lemma series_matches_raw_even (N D shift : ℕ) (p : chartVPoly) (_hD : N ≤ D) :
+    surfaceEvalHom (seriesUpToS N D shift 0 p) =
+      ∑ i ∈ Finset.range (N + 1),
+        if i % 2 = 0 then
+          algebraMap S (surfaceRing valuationOneCurve) (bitLiftMv (vCoeff p i)) *
+            vX ^ (D - i + shift) * vY ^ i
+        else 0 := by
+  classical
+  rw [surfaceEval_series]
+  refine Finset.sum_congr rfl ?_
+  intro i _hi
+  by_cases hp : i % 2 = 0
+  · rw [if_pos hp, if_pos hp, even_eq_two_mul i hp, vY_pow_even (i / 2),
+      Nat.mul_div_cancel_left (i / 2) (by decide : 0 < 2)]
+  · rw [if_neg hp, if_neg hp]
+
+lemma series_matches_raw_odd (N D shift : ℕ) (p : chartVPoly) (_hD : N ≤ D) :
+    vY * surfaceEvalHom (seriesUpToS N D shift 1 p) =
+      ∑ i ∈ Finset.range (N + 1),
+        if i % 2 = 1 then
+          algebraMap S (surfaceRing valuationOneCurve) (bitLiftMv (vCoeff p i)) *
+            vX ^ (D - i + shift) * vY ^ i
+        else 0 := by
+  classical
+  rw [surfaceEval_series, Finset.mul_sum]
+  refine Finset.sum_congr rfl ?_
+  intro i _hi
+  by_cases hp : i % 2 = 1
+  · rw [if_pos hp, if_pos hp]
+    rw [mul_y_through vY
+        (algebraMap S (surfaceRing valuationOneCurve) (bitLiftMv (vCoeff p i)))
+        (vX ^ (D - i + shift))
+        ((vX ^ 3 - (2 : surfaceRing valuationOneCurve)) ^ (i / 2))]
+    rw [odd_eq_two_mul_add_one i hp, vY_pow_odd (i / 2), half_odd (i / 2)]
+  · rw [if_neg hp, if_neg hp]
+    exact mul_zero vY
+
+lemma series_even_odd_sum (N D shift : ℕ) (p : chartVPoly) (hD : N ≤ D) :
+    surfaceEvalHom (seriesUpToS N D shift 0 p) +
+        vY * surfaceEvalHom (seriesUpToS N D shift 1 p) =
+      ∑ i ∈ Finset.range (N + 1),
+        algebraMap S (surfaceRing valuationOneCurve) (bitLiftMv (vCoeff p i)) *
+          vX ^ (D - i + shift) * vY ^ i := by
+  rw [series_matches_raw_even N D shift p hD, series_matches_raw_odd N D shift p hD,
+    ← Finset.sum_add_distrib]
+  refine Finset.sum_congr rfl ?_
+  intro i _hi
+  rcases mod_two_dichotomy i with h0 | h1
+  · have hne : i % 2 ≠ 1 := by rw [h0]; decide
+    rw [if_pos h0, if_neg hne, add_zero]
+  · have hne : i % 2 ≠ 0 := by rw [h1]; decide
+    rw [if_neg hne, if_pos h1, zero_add]
+
+lemma chartSeries_surface (A B Cv : chartVPoly) :
+    let D := chartVDegree A B Cv
+    surfaceEvalHom (chartSeriesAlpha A B Cv) +
+        vY * surfaceEvalHom (chartSeriesBeta A B Cv) =
+      (∑ i ∈ Finset.range (D + 1),
+          algebraMap S (surfaceRing valuationOneCurve) (bitLiftMv (vCoeff A i)) *
+            vX ^ (D - i + 0) * vY ^ i) +
+      (∑ i ∈ Finset.range (D + 1),
+          algebraMap S (surfaceRing valuationOneCurve) (bitLiftMv (vCoeff B i)) *
+            vX ^ (D - i + 1) * vY ^ i) +
+      (∑ i ∈ Finset.range (D + 1),
+          algebraMap S (surfaceRing valuationOneCurve) (bitLiftMv (vCoeff Cv i)) *
+            vX ^ (D - i + 2) * vY ^ i) := by
+  intro D
+  have hA := series_even_odd_sum D D 0 A (le_rfl : D ≤ D)
+  have hB := series_even_odd_sum D D 1 B (le_rfl : D ≤ D)
+  have hC := series_even_odd_sum D D 2 Cv (le_rfl : D ≤ D)
+  simp only [chartSeriesAlpha, chartSeriesBeta, surfaceEvalHom.map_add, mul_add]
+  have hDeq : chartVDegree A B Cv = D := rfl
+  simp only [hDeq]
+  rw [← hA, ← hB, ← hC]
+  ring
+
+lemma chartSeries_centre (A B Cv : chartVPoly) :
+    Ideal.Quotient.mk (Ideal.span {surfacePolynomial valuationOneCurve})
+        (centreNormalPoly (chartSeriesAlpha A B Cv) (chartSeriesBeta A B Cv)) =
+      surfaceEvalHom (chartSeriesAlpha A B Cv) +
+        vY * surfaceEvalHom (chartSeriesBeta A B Cv) :=
+  centre_normal_eval _ _
+
+lemma vX_pow_mem (n : ℕ) : vX ^ n ∈ vI ^ n :=
+  Ideal.pow_mem_pow (numeral_X_mem_centre valuationOneCurve 0 0) n
+
+lemma vY_pow_mem (n : ℕ) : vY ^ n ∈ vI ^ n :=
+  Ideal.pow_mem_pow (numeral_Y_mem_centre valuationOneCurve 0 0) n
+
+lemma rawTerm_mem (c : MvPolynomial (Fin 2) (ZMod 2)) (D shift i : ℕ) (hi : i ≤ D) :
+    algebraMap S (surfaceRing valuationOneCurve) (bitLiftMv c) *
+        vX ^ (D - i + shift) * vY ^ i ∈ vI ^ (D + shift) := by
+  set a : surfaceRing valuationOneCurve :=
+    algebraMap S (surfaceRing valuationOneCurve) (bitLiftMv c)
+  have hx : vX ^ (D - i + shift) ∈ vI ^ (D - i + shift) := vX_pow_mem _
+  have hxl : a * vX ^ (D - i + shift) ∈ vI ^ (D - i + shift) :=
+    Ideal.mul_mem_left _ a hx
+  have hy : vY ^ i ∈ vI ^ i := vY_pow_mem _
+  have hmul : a * vX ^ (D - i + shift) * vY ^ i ∈
+      vI ^ ((D - i + shift) + i) := by
+    rw [pow_add]
+    exact Ideal.mul_mem_mul hxl hy
+  have hidx : (D - i + shift) + i = D + shift := by
+    rw [Nat.add_right_comm (D - i) shift i, Nat.sub_add_cancel hi]
+  rwa [hidx] at hmul
+
+lemma chartRaw_mem (p : chartVPoly) (D shift : ℕ) :
+    (∑ i ∈ Finset.range (D + 1),
+        algebraMap S (surfaceRing valuationOneCurve) (bitLiftMv (vCoeff p i)) *
+          vX ^ (D - i + shift) * vY ^ i) ∈ vI ^ D := by
+  refine Ideal.sum_mem _ ?_
+  intro i hi
+  have hiD : i ≤ D := Nat.lt_succ_iff.mp (Finset.mem_range.mp hi)
+  exact Ideal.pow_le_pow_right (Nat.le_add_right D shift)
+    (rawTerm_mem (vCoeff p i) D shift i hiD)
+
+/-- Include `𝔽₂[a,b][V]` into `𝔽₂[a,b][X,V]` by `V ↦ V`. -/
+noncomputable def chartVInclude : chartVPoly →+* chartNormalPoly :=
+  MvPolynomial.eval₂Hom MvPolynomial.C (fun _ : Fin 1 => MvPolynomial.X 1)
+
+lemma chartToXPoly_include (p : chartVPoly) :
+    chartToXPoly (chartVInclude p) = C p := by
+  have hhom : (chartToXPoly : chartNormalPoly →+* Polynomial chartVPoly).comp chartVInclude = C := by
+    refine MvPolynomial.ringHom_ext ?_ ?_
+    · intro s
+      rw [RingHom.comp_apply, chartVInclude, MvPolynomial.coe_eval₂Hom, MvPolynomial.eval₂_C]
+      simpa using AlgEquiv.commutes chartToXPoly s
+    · intro i
+      fin_cases i
+      rw [RingHom.comp_apply, chartVInclude, MvPolynomial.coe_eval₂Hom, MvPolynomial.eval₂_X]
+      simpa using chartToXPoly_V
+  simpa [RingHom.comp_apply] using congrArg (fun f => f p) hhom
+
+lemma chartNormalForm_parts (A B Cv : chartVPoly) :
+    chartNormalForm A B Cv =
+      chartVInclude A + MvPolynomial.X 0 * chartVInclude B +
+        (MvPolynomial.X 0) ^ 2 * chartVInclude Cv := by
+  apply chartToXPoly.injective
+  rw [chartToXPoly_normalForm, map_add, map_add, map_mul, map_mul, map_pow, chartToXPoly_X,
+    chartToXPoly_include, chartToXPoly_include, chartToXPoly_include]
+  ring
+
+/-- Evaluate a polynomial in `V` on the chart, at `Yt/Xt`. -/
+noncomputable def chartVEval : chartVPoly →+* chart_Dplus_Xt_ring valuationOneCurve 0 0 :=
+  MvPolynomial.eval₂Hom (chartFromF2Polynomial valuationOneCurve 0 0)
+    (fun _ : Fin 1 => chart_Y_over_X valuationOneCurve 0 0)
+
+lemma chartModelEval_include (p : chartVPoly) :
+    chartModelEval (normalPolyToModel (chartVInclude p)) = chartVEval p := by
+  have hhom : chartModelEval.comp (normalPolyToModel.comp chartVInclude) = chartVEval := by
+    refine MvPolynomial.ringHom_ext ?_ ?_
+    · intro s
+      simp only [RingHom.comp_apply, chartVInclude, normalPolyToModel, chartModelEval, chartVEval,
+        MvPolynomial.coe_eval₂Hom, MvPolynomial.eval₂_C]
+    · intro i
+      fin_cases i
+      simp [chartVInclude, normalPolyToModel, chartModelEval, chartVEval,
+        MvPolynomial.eval₂_X]
+  simpa [RingHom.comp_apply] using congrArg (fun f => f p) hhom
+
+lemma chartModelEval_normalForm (A B Cv : chartVPoly) :
+    chartModelEval (normalPolyToModel (chartNormalForm A B Cv)) =
+      chartVEval A + chart_X valuationOneCurve 0 0 * chartVEval B +
+        (chart_X valuationOneCurve 0 0) ^ 2 * chartVEval Cv := by
+  rw [chartNormalForm_parts]
+  rw [map_add (normalPolyToModel), map_add (normalPolyToModel), map_mul (normalPolyToModel),
+    map_mul (normalPolyToModel), map_pow (normalPolyToModel)]
+  rw [map_add (chartModelEval), map_add (chartModelEval), map_mul (chartModelEval),
+    map_mul (chartModelEval), map_pow (chartModelEval)]
+  rw [chartModelEval_include, chartModelEval_include, chartModelEval_include]
+  have hX : chartModelEval (normalPolyToModel (MvPolynomial.X 0)) =
+      chart_X valuationOneCurve 0 0 := by
+    simp [normalPolyToModel, chartModelEval, MvPolynomial.eval₂_X]
+  rw [hX]
+
 #print axioms Beal.MathlibMissing.chart_X_add_V_sq_ne_zero
 #print axioms Beal.MathlibMissing.chartOfModelTrue_normal_X_add_Vsq_ne_zero
 #print axioms Beal.MathlibMissing.centreIdeal_power_coeff_bound
@@ -1975,5 +2295,7 @@ lemma twice_centre_blocks_signed (D m : ℕ) (α β αs βs : Polynomial S)
 #print axioms Beal.MathlibMissing.chartSeriesBeta_monomial
 #print axioms Beal.MathlibMissing.not_twoAdicNormBound_signed_coeff
 #print axioms Beal.MathlibMissing.twice_centre_blocks_signed
+#print axioms Beal.MathlibMissing.chartSeries_surface
+#print axioms Beal.MathlibMissing.chartRaw_mem
 
 end Beal.MathlibMissing
