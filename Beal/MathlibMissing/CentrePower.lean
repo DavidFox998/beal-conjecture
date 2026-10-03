@@ -22,9 +22,11 @@ The bound yields `X^m · (X³ − 1) ∉ I^{m+1}`, and therefore `∉ I^{m+2}`.
 `ChartInjective.lean` applies that obstruction to the chart class `X + V²`:
 its degree-2 Rees numerator is `2·(X³ − 1) t²`, so the class is nonzero in
 `D₊(Xt)`. Every class in `𝔽₂[a,b][X,V] / (X²·(X + V²))` has a unique
-representative `A(V) + X·B(V) + X²·C(V)`, and injectivity is that kernel
-condition. `chartOfModelTrue_injective` stays open: vanishing of a general
-normal form is not yet a Rees numerator in `2 · I^{d+m}`.
+representative `A(V) + X·B(V) + X²·C(V)`. For a `0`-`1` pattern,
+`bitReduced_signed_bound` finds an index whose coefficient is
+`(-1)^s · 2^q` and whose centre bound is `q`. `chartOfModelTrue_injective`
+stays open: chart vanishing is not yet `α = 2·αₛ` and `β = 2·βₛ` with
+`αₛ + Y·βₛ ∈ I^D`.
 -/
 
 namespace Beal.MathlibMissing

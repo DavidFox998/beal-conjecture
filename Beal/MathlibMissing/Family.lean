@@ -145,8 +145,10 @@ class `X + V²` has degree-2 numerator `2·(X³ − 1) t²`, and it is nonzero
 in `D₊(Xt)`. Every class has a unique representative
 `A(V) + X·B(V) + X²·C(V)`, and `chartOfModelTrue_injective` is the
 statement that this representative dies in `D₊(Xt)` only when it is zero.
-That kernel condition stays open: a general normal form is not yet a Rees
-numerator in `2 · I^{d+m}`.
+`bitReduced_signed_bound` is the coefficient step for a `0`-`1` pattern:
+some index carries `(-1)^s · 2^q` against centre bound `q`. The kernel
+condition stays open because chart vanishing is not yet the identity
+`α = 2·αₛ`, `β = 2·βₛ` with `αₛ + Y·βₛ ∈ I^D`.
 `chart_Dplus_Xt_true_presentation` stays open.
 `chart_Dplus_Xt_presentation` stays open and names a different
 ring: the parameter-free quotient
@@ -3228,13 +3230,18 @@ Closed in `ChartInjective.lean`:
 * `chartOfModelTrue_injective_iff_normalForm`. Injectivity is the statement
   that `A(V) + X·B(V) + X²·C(V)` dies in `D₊(Xt)` only when `A = B = C = 0`.
 
+Closed in `ChartInjective.lean`, continued:
+* `bitReduced_signed_bound`. A nonzero `0`-`1` form, reduced by
+  `Y² = X³ − 2`, has a coefficient `(-1)^s · 2^q` at an index whose
+  centre bound is `q`. The index is the lowest power of `X`, except when
+  only `X²·C(V)` meets that power: the leading coefficient of `(X³ − 2)^q`
+  is then `1`, and both centre bounds there are `0`.
+
 Open:
-* `chartOfModelTrue_injective`. The coefficient bound is applied to the
-  single class `X + V²`. The translation of an arbitrary normal form into a
-  Rees numerator in `2 · I^{d+m}` is open. A leading-term cancellation can
-  make the top coefficient divisible by `2` while the bound at that index
-  is `0`, so the bound does not by itself force `A`, `B`, and `C` to vanish.
-  `chart_Dplus_Xt_true_presentation` is the bijection with
+* `chartOfModelTrue_injective`. The coefficient step does not yet meet
+  the chart. Vanishing in `D₊(Xt)` is not identified with `α = 2·αₛ`,
+  `β = 2·βₛ` and `αₛ + Y·βₛ ∈ I^D`, so `A`, `B`, and `C` are not forced
+  to vanish. `chart_Dplus_Xt_true_presentation` is the bijection with
   `𝔽₂[a,b][X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U + X² + X·V²)`.
 * `chart_Dplus_Xt_presentation`, an isomorphism with
   `𝔽₂[X,Y,U,V] / (X·U, Y − X·V, Y² − X³)`. That ring drops `a`, `b`,

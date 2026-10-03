@@ -98,13 +98,15 @@ Closed in `Beal/MathlibMissing/ChartInjective.lean`:
 
 Open:
 
+* `bitReduced_signed_bound`. A nonzero `0`-`1` form
+  `A(V) + X·B(V) + X²·C(V)`, reduced by `Y² = X³ − 2`, has a coefficient
+  `(-1)^s · 2^q` at an index whose centre bound is `q`. The index is the
+  lowest power of `X`, except when only the `C` series meets that power:
+  the leading coefficient of `(X³ − 2)^q` is then `1` and both bounds
+  are `0`.
 * `chartOfModelTrue_injective` and `chart_Dplus_Xt_true_presentation`.
-  A general normal form `A(V) + X·B(V) + X²·C(V)` is not shown to vanish
-  in `D₊(Xt)` only when it is zero. The coefficient bound is applied to
-  the single class `X + V²`. The translation of an arbitrary normal form
-  into a Rees numerator in `2 · I^{d+m}` is open. A leading-term
-  cancellation can make the top coefficient divisible by `2` while the
-  bound at that index is `0`. The bijection
+  Chart vanishing of a general normal form is not yet the identity
+  `α = 2·αₛ`, `β = 2·βₛ` with `αₛ + Y·βₛ ∈ I^D`. The bijection
   `𝔽₂[a,b][X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U + X² + X·V²) ≃ D₊(Xt)`
   is not proved.
 * `chart_Dplus_Xt_presentation`, an isomorphism with the parameter-free

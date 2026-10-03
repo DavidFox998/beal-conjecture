@@ -457,9 +457,12 @@ obstruction: the class `X + V²` has degree-2 numerator `2·(X³ − 1)` on
 `exists_chartNormalForm` and `chartNormalForm_unique` give a unique
 representative `A(V) + X·B(V) + X²·C(V)`.
 `chartOfModelTrue_injective_iff_normalForm` is the kernel condition on
-that representative. What remains open is the Rees numerator of a general
-normal form: a leading-term cancellation can make the top coefficient
-divisible by `2` while the bound at that index is `0`. -/
+that representative. `bitReduced_signed_bound` is the coefficient step
+for a `0`-`1` pattern: the lowest power of `X`, or the leading term of
+`(X³ − 2)^q` when only `C` meets that power, has coefficient
+`(-1)^s · 2^q` at an index whose centre bound is `q`. What remains open
+is the identification of chart vanishing with `α = 2·αₛ`, `β = 2·βₛ`
+and `αₛ + Y·βₛ ∈ I^D`. -/
 def chartOfModelTrue_injective : Prop :=
   Function.Injective chartOfModelTrue
 
