@@ -142,9 +142,11 @@ integer. `centre_X_pow_mul_X_cube_sub_one_not_mem` gives
 `X^m · (X³ − 1) ∉ I^{m+1}`, hence also `∉ I^{m+2}`.
 `chart_X_add_V_sq_ne_zero` applies that obstruction on the chart: the
 class `X + V²` has degree-2 numerator `2·(X³ − 1) t²`, and it is nonzero
-in `D₊(Xt)`. `chartOfModelTrue_injective` stays open: a general normal
-form `A(V) + X·B(V) + X²·C(V)` is not yet shown to vanish in `D₊(Xt)`
-only when its Rees numerator lies in `2 · I^{d+m}`.
+in `D₊(Xt)`. Every class has a unique representative
+`A(V) + X·B(V) + X²·C(V)`, and `chartOfModelTrue_injective` is the
+statement that this representative dies in `D₊(Xt)` only when it is zero.
+That kernel condition stays open: a general normal form is not yet a Rees
+numerator in `2 · I^{d+m}`.
 `chart_Dplus_Xt_true_presentation` stays open.
 `chart_Dplus_Xt_presentation` stays open and names a different
 ring: the parameter-free quotient
@@ -3219,14 +3221,20 @@ Closed in `ChartInjective.lean`:
   `centre_X_pow_mul_X_cube_sub_one_not_mem`, since `I^{k+2} ≤ I^{k+1}`.
 * `chartOfModelTrue_normal_X_add_Vsq_ne_zero`: `chartOfModelTrue` does not
   send the normal-form class of `X + V²` to zero.
+* `exists_chartNormalForm` and `chartNormalForm_eq_zero_iff`. Every class
+  in `𝔽₂[a,b][X,V] / (X²·(X + V²))` is uniquely `A(V) + X·B(V) + X²·C(V)`.
+  `chartNormal_X_add_Vsq_ne_zero` is the class of `X + V²` in that quotient:
+  the representative has `B = 1`.
+* `chartOfModelTrue_injective_iff_normalForm`. Injectivity is the statement
+  that `A(V) + X·B(V) + X²·C(V)` dies in `D₊(Xt)` only when `A = B = C = 0`.
 
 Open:
-* `chartOfModelTrue_injective`. A general normal form
-  `A(V) + X·B(V) + X²·C(V)` is not yet shown to vanish in `D₊(Xt)`
-  only when it is zero. The coefficient bound is applied to the single
-  class `X + V²`. The translation of an arbitrary normal form into a Rees
-  numerator in `2 · I^{d+m}` is open. `chart_Dplus_Xt_true_presentation`
-  is the bijection with
+* `chartOfModelTrue_injective`. The coefficient bound is applied to the
+  single class `X + V²`. The translation of an arbitrary normal form into a
+  Rees numerator in `2 · I^{d+m}` is open. A leading-term cancellation can
+  make the top coefficient divisible by `2` while the bound at that index
+  is `0`, so the bound does not by itself force `A`, `B`, and `C` to vanish.
+  `chart_Dplus_Xt_true_presentation` is the bijection with
   `𝔽₂[a,b][X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U + X² + X·V²)`.
 * `chart_Dplus_Xt_presentation`, an isomorphism with
   `𝔽₂[X,Y,U,V] / (X·U, Y − X·V, Y² − X³)`. That ring drops `a`, `b`,

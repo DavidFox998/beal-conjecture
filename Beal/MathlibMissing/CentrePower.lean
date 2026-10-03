@@ -21,9 +21,10 @@ A nonzero coefficient then has `v₂` at least that integer.
 The bound yields `X^m · (X³ − 1) ∉ I^{m+1}`, and therefore `∉ I^{m+2}`.
 `ChartInjective.lean` applies that obstruction to the chart class `X + V²`:
 its degree-2 Rees numerator is `2·(X³ − 1) t²`, so the class is nonzero in
-`D₊(Xt)`. `chartOfModelTrue_injective` stays open: vanishing of a general
-normal form `A(V) + X·B(V) + X²·C(V)` is not yet reduced to a Rees numerator
-in `2 · I^{d+m}`.
+`D₊(Xt)`. Every class in `𝔽₂[a,b][X,V] / (X²·(X + V²))` has a unique
+representative `A(V) + X·B(V) + X²·C(V)`, and injectivity is that kernel
+condition. `chartOfModelTrue_injective` stays open: vanishing of a general
+normal form is not yet a Rees numerator in `2 · I^{d+m}`.
 -/
 
 namespace Beal.MathlibMissing

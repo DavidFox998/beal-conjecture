@@ -453,8 +453,13 @@ most `2^{−⌊(k−i)/2⌋}`. `centre_X_pow_mul_X_cube_sub_one_not_mem` gives
 `X^m · (X³ − 1) ∉ I^{m+1}`. `chart_X_add_V_sq_ne_zero` applies that
 obstruction: the class `X + V²` has degree-2 numerator `2·(X³ − 1)` on
 `Y² = X³ − 2`, and `(Xt)^k` times that numerator lies in the scalar ideal
-`(2)` only if `X^k · (X³ − 1) ∈ I^{k+2}`. What remains open is the same
-identification for a general normal form `A(V) + X·B(V) + X²·C(V)`. -/
+`(2)` only if `X^k · (X³ − 1) ∈ I^{k+2}`.
+`exists_chartNormalForm` and `chartNormalForm_unique` give a unique
+representative `A(V) + X·B(V) + X²·C(V)`.
+`chartOfModelTrue_injective_iff_normalForm` is the kernel condition on
+that representative. What remains open is the Rees numerator of a general
+normal form: a leading-term cancellation can make the top coefficient
+divisible by `2` while the bound at that index is `0`. -/
 def chartOfModelTrue_injective : Prop :=
   Function.Injective chartOfModelTrue
 

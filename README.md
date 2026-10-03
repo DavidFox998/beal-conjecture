@@ -91,6 +91,10 @@ Closed in `Beal/MathlibMissing/ChartInjective.lean`:
   `X^k · (X³ − 1) ∈ I^{k+2}`, which the coefficient bound forbids.
 * `chartOfModelTrue_normal_X_add_Vsq_ne_zero`: the normal-form class of
   `X + V²` does not map to zero.
+* Unique representatives `A(V) + X·B(V) + X²·C(V)` in
+  `𝔽₂[a,b][X,V] / (X²·(X + V²))`. The class of `X + V²` is nonzero there
+  because `B = 1`. `chartOfModelTrue_injective_iff_normalForm` identifies
+  injectivity with the kernel condition on that representative.
 
 Open:
 
@@ -98,7 +102,9 @@ Open:
   A general normal form `A(V) + X·B(V) + X²·C(V)` is not shown to vanish
   in `D₊(Xt)` only when it is zero. The coefficient bound is applied to
   the single class `X + V²`. The translation of an arbitrary normal form
-  into a Rees numerator in `2 · I^{d+m}` is open. The bijection
+  into a Rees numerator in `2 · I^{d+m}` is open. A leading-term
+  cancellation can make the top coefficient divisible by `2` while the
+  bound at that index is `0`. The bijection
   `𝔽₂[a,b][X,Y,U,V] / (X·U, Y − X·V, Y² − X³, U + X² + X·V²) ≃ D₊(Xt)`
   is not proved.
 * `chart_Dplus_Xt_presentation`, an isomorphism with the parameter-free

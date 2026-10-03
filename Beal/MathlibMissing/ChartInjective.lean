@@ -10,9 +10,14 @@ scalar ideal `(2)` only if `X^k · (X³ − 1) ∈ I^{k+2}`. That membership
 fails: `I^{k+2} ≤ I^{k+1}` and `centre_X_pow_mul_X_cube_sub_one_not_mem`
 says `X^k · (X³ − 1) ∉ I^{k+1}`.
 
-This is one normal form. `chartOfModelTrue_injective` stays open: an
-arbitrary `A(V) + X·B(V) + X²·C(V)` is not yet reduced to a Rees numerator
-in `2 · I^{d+m}`.
+This is one normal form. Every class in `𝔽₂[a,b][X,V] / (X²·(X + V²))`
+has a unique representative `A(V) + X·B(V) + X²·C(V)` of `X`-degree less
+than 3, and `chartOfModelTrue_injective` is that kernel condition.
+`chartOfModelTrue_injective` stays open: vanishing of a general normal
+form is not yet a Rees numerator in `2 · I^{d+m}`. A leading-term
+cancellation can make the top coefficient divisible by `2` while the
+bound at that index is `0`, so the coefficient bound does not by itself
+force `A`, `B`, and `C` to vanish.
 -/
 
 namespace Beal.MathlibMissing
@@ -218,10 +223,289 @@ theorem chartOfModelTrue_normal_X_add_Vsq_ne_zero :
   rw [chartOfModelTrue, Ideal.Quotient.lift_mk, chartModelEval_normal_X_add_Vsq] at h
   exact chart_X_add_V_sq_ne_zero h
 
+/-- `𝔽₂[a,b][V]`. Variable `0` is `V`. -/
+abbrev chartVPoly : Type :=
+  MvPolynomial (Fin 1) (MvPolynomial (Fin 2) (ZMod 2))
+
+/-- Read `𝔽₂[a,b][X,V]` as a polynomial in `X` with coefficients in
+`𝔽₂[a,b][V]`. No variable swap: index `0` is already `X`. -/
+noncomputable def chartToXPoly :
+    chartNormalPoly ≃ₐ[MvPolynomial (Fin 2) (ZMod 2)] Polynomial chartVPoly :=
+  MvPolynomial.finSuccEquiv (MvPolynomial (Fin 2) (ZMod 2)) 1
+
+lemma chartToXPoly_X : chartToXPoly (MvPolynomial.X 0) = X :=
+  MvPolynomial.finSuccEquiv_X_zero
+
+lemma chartToXPoly_V :
+    chartToXPoly (MvPolynomial.X 1) = C (MvPolynomial.X 0) := by
+  rw [show (1 : Fin 2) = Fin.succ (0 : Fin 1) from rfl]
+  exact MvPolynomial.finSuccEquiv_X_succ
+
+/-- `X³ + V²·X²`, the image of `X²·(X + V²)`. -/
+noncomputable def chartXRel : Polynomial chartVPoly :=
+  X ^ 3 + C ((MvPolynomial.X (0 : Fin 1)) ^ 2) * X ^ 2
+
+lemma chartXRel_rest_degree :
+    (C ((MvPolynomial.X (0 : Fin 1)) ^ 2) * X ^ 2 : Polynomial chartVPoly).degree < 3 := by
+  have hle :
+      (C ((MvPolynomial.X (0 : Fin 1)) ^ 2) * X ^ 2 : Polynomial chartVPoly).degree ≤ 2 := by
+    calc
+      (C ((MvPolynomial.X (0 : Fin 1)) ^ 2) * X ^ 2 : Polynomial chartVPoly).degree ≤
+          (C ((MvPolynomial.X (0 : Fin 1)) ^ 2) : Polynomial chartVPoly).degree +
+            (X ^ 2 : Polynomial chartVPoly).degree :=
+        degree_mul_le _ _
+      _ ≤ 0 + (X ^ 2 : Polynomial chartVPoly).degree := add_le_add_right degree_C_le _
+      _ = (X ^ 2 : Polynomial chartVPoly).degree := zero_add _
+      _ = 2 := degree_X_pow 2
+  exact lt_of_le_of_lt hle (by decide)
+
+lemma chartXRel_monic : chartXRel.Monic := by
+  rw [chartXRel]
+  exact monic_X_pow_add chartXRel_rest_degree
+
+lemma chartXRel_degree : chartXRel.degree = 3 := by
+  rw [chartXRel]
+  have hlt : (C ((MvPolynomial.X (0 : Fin 1)) ^ 2) * X ^ 2 : Polynomial chartVPoly).degree <
+      (X ^ 3 : Polynomial chartVPoly).degree := by
+    rw [degree_X_pow]
+    exact chartXRel_rest_degree
+  rw [degree_add_eq_left_of_degree_lt hlt]
+  exact degree_X_pow 3
+
+lemma chartToXPoly_rel : chartToXPoly chartNormalRel = chartXRel := by
+  rw [chartNormalRel, chartXRel, map_mul, map_pow, map_add, map_pow, chartToXPoly_X,
+    chartToXPoly_V]
+  rw [← map_pow (C : chartVPoly →+* Polynomial chartVPoly)]
+  rw [mul_add, ← pow_succ, mul_comm]
+
+/-- A polynomial of `natDegree ≤ 2` is `A + B·X + C·X²`. -/
+lemma polynomial_natDegree_le_two {R : Type*} [CommRing R] (p : Polynomial R)
+    (h : p.natDegree ≤ 2) :
+    p = C (p.coeff 0) + C (p.coeff 1) * X + C (p.coeff 2) * X ^ 2 := by
+  have hlt : p.natDegree < 3 := Nat.lt_succ_of_le h
+  rw [p.as_sum_range' 3 hlt]
+  simp only [Finset.sum_range_succ, Finset.range_zero, Finset.sum_empty, zero_add,
+    ← Polynomial.C_mul_X_pow_eq_monomial]
+  simp [pow_zero, pow_one, mul_one]
+
+/-- The normal form `A(V) + X·B(V) + X²·C(V)`. -/
+noncomputable def chartNormalForm (A B Cv : chartVPoly) : chartNormalPoly :=
+  chartToXPoly.symm (C A + C B * X + C Cv * X ^ 2)
+
+lemma chartToXPoly_normalForm (A B Cv : chartVPoly) :
+    chartToXPoly (chartNormalForm A B Cv) = C A + C B * X + C Cv * X ^ 2 := by
+  rw [chartNormalForm, AlgEquiv.apply_symm_apply]
+
+lemma chartNormalForm_natDegree (A B Cv : chartVPoly) :
+    (C A + C B * X + C Cv * X ^ 2 : Polynomial chartVPoly).natDegree ≤ 2 := by
+  refine (natDegree_add_le _ _).trans (max_le ?_ ?_)
+  · refine (natDegree_add_le _ _).trans (max_le ?_ ?_)
+    · rw [natDegree_C]
+      decide
+    · exact le_trans (by simpa [pow_one] using natDegree_C_mul_X_pow_le B 1) (by decide)
+  · exact natDegree_C_mul_X_pow_le Cv 2
+
+lemma chartDegTwo_coeff_zero (A B Cv : chartVPoly) :
+    (C A + C B * X + C Cv * X ^ 2 : Polynomial chartVPoly).coeff 0 = A := by
+  rw [coeff_add, coeff_add, coeff_C, if_pos rfl, coeff_C_mul, coeff_X_zero,
+    mul_zero, add_zero, coeff_C_mul, coeff_X_pow, if_neg (by decide : (0 : ℕ) ≠ 2),
+    mul_zero, add_zero]
+
+lemma chartDegTwo_coeff_one (A B Cv : chartVPoly) :
+    (C A + C B * X + C Cv * X ^ 2 : Polynomial chartVPoly).coeff 1 = B := by
+  rw [coeff_add, coeff_add, coeff_C, if_neg (by decide : (1 : ℕ) ≠ 0), coeff_C_mul,
+    coeff_X_one, mul_one, zero_add, coeff_C_mul, coeff_X_pow,
+    if_neg (by decide : (1 : ℕ) ≠ 2), mul_zero, add_zero]
+
+lemma chartDegTwo_coeff_two (A B Cv : chartVPoly) :
+    (C A + C B * X + C Cv * X ^ 2 : Polynomial chartVPoly).coeff 2 = Cv := by
+  rw [coeff_add, coeff_add, coeff_C, if_neg (by decide : (2 : ℕ) ≠ 0), coeff_C_mul,
+    coeff_X_of_ne_one (by decide : (2 : ℕ) ≠ 1), mul_zero, zero_add, coeff_C_mul,
+    coeff_X_pow, if_pos rfl, mul_one, zero_add]
+
+lemma chartNormalForm_sub (A B Cv A' B' Cv' : chartVPoly) :
+    chartNormalForm (A - A') (B - B') (Cv - Cv') =
+      chartNormalForm A B Cv - chartNormalForm A' B' Cv' := by
+  apply chartToXPoly.injective
+  rw [map_sub, chartToXPoly_normalForm, chartToXPoly_normalForm, chartToXPoly_normalForm]
+  rw [map_sub, map_sub, map_sub]
+  ring
+
+lemma chartNormalForm_zero : chartNormalForm 0 0 0 = 0 := by
+  apply chartToXPoly.injective
+  rw [chartToXPoly_normalForm, map_zero]
+  simp [map_zero, zero_mul, add_zero, zero_add]
+
+/-- `X²·(X + V²)` is monic of degree 3, so the remainder of degree `< 3` is unique. -/
+lemma chartNormalForm_unique {A B Cv A' B' Cv' : chartVPoly}
+    (h : Ideal.Quotient.mk chartNormalIdeal (chartNormalForm A B Cv) =
+      Ideal.Quotient.mk chartNormalIdeal (chartNormalForm A' B' Cv')) :
+    A = A' ∧ B = B' ∧ Cv = Cv' := by
+  have hmem : chartNormalForm A B Cv - chartNormalForm A' B' Cv' ∈
+      Ideal.span {chartNormalRel} := (Ideal.Quotient.eq).mp h
+  rw [← chartNormalForm_sub] at hmem
+  rw [Ideal.mem_span_singleton] at hmem
+  rcases hmem with ⟨q, hq⟩
+  have hpoly : C (A - A') + C (B - B') * X + C (Cv - Cv') * X ^ 2 =
+      chartXRel * chartToXPoly q := by
+    have himg := congrArg chartToXPoly hq
+    rwa [map_mul, chartToXPoly_rel, chartToXPoly_normalForm] at himg
+  have hdiv : chartXRel ∣ C (A - A') + C (B - B') * X + C (Cv - Cv') * X ^ 2 :=
+    ⟨chartToXPoly q, hpoly⟩
+  have hdeg : (C (A - A') + C (B - B') * X + C (Cv - Cv') * X ^ 2).degree <
+      chartXRel.degree := by
+    rw [chartXRel_degree]
+    exact lt_of_le_of_lt
+      (natDegree_le_iff_degree_le.mp
+        (chartNormalForm_natDegree (A - A') (B - B') (Cv - Cv')))
+      (by decide : (2 : WithBot ℕ) < 3)
+  have h0 : C (A - A') + C (B - B') * X + C (Cv - Cv') * X ^ 2 = 0 :=
+    eq_zero_of_dvd_of_degree_lt hdiv hdeg
+  refine ⟨?_, ?_, ?_⟩
+  · have hA := congrArg (fun t : Polynomial chartVPoly => t.coeff 0) h0
+    dsimp at hA
+    rw [chartDegTwo_coeff_zero] at hA
+    exact sub_eq_zero.mp hA
+  · have hB := congrArg (fun t : Polynomial chartVPoly => t.coeff 1) h0
+    dsimp at hB
+    rw [chartDegTwo_coeff_one] at hB
+    exact sub_eq_zero.mp hB
+  · have hCv := congrArg (fun t : Polynomial chartVPoly => t.coeff 2) h0
+    dsimp at hCv
+    rw [chartDegTwo_coeff_two] at hCv
+    exact sub_eq_zero.mp hCv
+
+lemma chartNormalForm_eq_zero_iff (A B Cv : chartVPoly) :
+    Ideal.Quotient.mk chartNormalIdeal (chartNormalForm A B Cv) = 0 ↔
+      A = 0 ∧ B = 0 ∧ Cv = 0 := by
+  constructor
+  · intro h
+    have heq : Ideal.Quotient.mk chartNormalIdeal (chartNormalForm A B Cv) =
+        Ideal.Quotient.mk chartNormalIdeal (chartNormalForm 0 0 0) := by
+      rw [h, chartNormalForm_zero, map_zero]
+    rcases chartNormalForm_unique heq with ⟨hA, hB, hCv⟩
+    exact ⟨hA, hB, hCv⟩
+  · rintro ⟨rfl, rfl, rfl⟩
+    rw [chartNormalForm_zero, map_zero]
+
+/-- Every class has a representative `A(V) + X·B(V) + X²·C(V)`. -/
+lemma exists_chartNormalForm (p : chartNormalPoly) :
+    ∃ A B Cv : chartVPoly,
+      Ideal.Quotient.mk chartNormalIdeal p =
+        Ideal.Quotient.mk chartNormalIdeal (chartNormalForm A B Cv) := by
+  let q : Polynomial chartVPoly := chartToXPoly p
+  let r : Polynomial chartVPoly := q %ₘ chartXRel
+  have hr : r = q - chartXRel * (q /ₘ chartXRel) :=
+    modByMonic_eq_sub_mul_div q chartXRel_monic
+  have hdeg : r.degree < 3 := by
+    have hlt := degree_modByMonic_lt q chartXRel_monic
+    rwa [chartXRel_degree] at hlt
+  have hnat : r.natDegree ≤ 2 := by
+    by_cases hr0 : r = 0
+    · rw [hr0, natDegree_zero]
+      decide
+    · exact Nat.lt_succ_iff.mp ((natDegree_lt_iff_degree_lt hr0).mpr hdeg)
+  let A : chartVPoly := r.coeff 0
+  let B : chartVPoly := r.coeff 1
+  let Cv : chartVPoly := r.coeff 2
+  have hrform : r = C A + C B * X + C Cv * X ^ 2 :=
+    polynomial_natDegree_le_two r hnat
+  refine ⟨A, B, Cv, (Ideal.Quotient.eq).mpr ?_⟩
+  have hdiff : chartToXPoly (p - chartNormalForm A B Cv) =
+      chartXRel * (q /ₘ chartXRel) := by
+    rw [map_sub, chartToXPoly_normalForm, ← hrform, hr]
+    change q - (q - chartXRel * (q /ₘ chartXRel)) = chartXRel * (q /ₘ chartXRel)
+    exact sub_sub_self q (chartXRel * (q /ₘ chartXRel))
+  have hpre : p - chartNormalForm A B Cv =
+      chartNormalRel * chartToXPoly.symm (q /ₘ chartXRel) := by
+    apply chartToXPoly.injective
+    rw [hdiff, map_mul, chartToXPoly_rel, AlgEquiv.apply_symm_apply]
+  rw [hpre]
+  exact Ideal.mem_span_singleton.mpr ⟨chartToXPoly.symm (q /ₘ chartXRel), rfl⟩
+
+lemma chartNormalForm_X_add_Vsq :
+    chartNormalForm ((MvPolynomial.X (0 : Fin 1)) ^ 2) 1 0 =
+      MvPolynomial.X (0 : Fin 2) + (MvPolynomial.X 1) ^ 2 := by
+  apply chartToXPoly.injective
+  rw [chartToXPoly_normalForm, map_add, chartToXPoly_X]
+  rw [map_pow chartToXPoly (MvPolynomial.X (1 : Fin 2)) 2, chartToXPoly_V]
+  rw [map_one, one_mul, map_zero, zero_mul, add_zero,
+    ← map_pow (C : chartVPoly →+* Polynomial chartVPoly), add_comm]
+
+/-- `X + V²` is nonzero in `𝔽₂[a,b][X,V] / (X²·(X + V²))`.
+The representative has `B = 1`. -/
+theorem chartNormal_X_add_Vsq_ne_zero :
+    Ideal.Quotient.mk chartNormalIdeal
+        (MvPolynomial.X (0 : Fin 2) + (MvPolynomial.X 1) ^ 2) ≠ 0 := by
+  intro h
+  rw [← chartNormalForm_X_add_Vsq] at h
+  exact one_ne_zero ((chartNormalForm_eq_zero_iff _ _ _).mp h).2.1
+
+/-- Injectivity of the true chart is the statement that a normal form
+`A(V) + X·B(V) + X²·C(V)` dies in `D₊(Xt)` only when `A = B = C = 0`.
+The right-hand side is open. -/
+lemma ringHom_injective_iff_map_eq_zero {R S : Type*} [Ring R] [Ring S] (f : R →+* S) :
+    Function.Injective f ↔ ∀ x, f x = 0 → x = 0 := by
+  constructor
+  · intro hinj x hx
+    apply hinj
+    rw [hx, map_zero]
+  · intro h x y hxy
+    apply sub_eq_zero.mp
+    apply h
+    rw [map_sub, hxy, sub_self]
+
+theorem chartOfModelTrue_injective_iff_normalForm :
+    chartOfModelTrue_injective ↔
+      ∀ A B Cv : chartVPoly,
+        chartOfModelTrue (Ideal.Quotient.mk chartTrueIdeal
+          (normalPolyToModel (chartNormalForm A B Cv))) = 0 →
+        A = 0 ∧ B = 0 ∧ Cv = 0 := by
+  constructor
+  · intro hinj A B Cv hzero
+    have hmk : Ideal.Quotient.mk chartTrueIdeal
+        (normalPolyToModel (chartNormalForm A B Cv)) = 0 :=
+      (ringHom_injective_iff_map_eq_zero chartOfModelTrue).mp hinj _ hzero
+    have hsym0 : chartTrueIdeal_quotient_equiv_normal.symm
+        (Ideal.Quotient.mk chartNormalIdeal (chartNormalForm A B Cv)) = 0 := by
+      change normalToChart
+        (Ideal.Quotient.mk chartNormalIdeal (chartNormalForm A B Cv)) = 0
+      rw [normalToChart, Ideal.Quotient.lift_mk]
+      exact hmk
+    have hnorm : Ideal.Quotient.mk chartNormalIdeal (chartNormalForm A B Cv) = 0 :=
+      (ringHom_injective_iff_map_eq_zero
+          chartTrueIdeal_quotient_equiv_normal.symm).mp
+        chartTrueIdeal_quotient_equiv_normal.symm.injective
+        (Ideal.Quotient.mk chartNormalIdeal (chartNormalForm A B Cv)) hsym0
+    exact (chartNormalForm_eq_zero_iff A B Cv).mp hnorm
+  · intro hker
+    unfold chartOfModelTrue_injective
+    rw [ringHom_injective_iff_map_eq_zero chartOfModelTrue]
+    intro z hz
+    have hzback : z = chartTrueIdeal_quotient_equiv_normal.symm
+        (chartTrueIdeal_quotient_equiv_normal z) :=
+      (chartTrueIdeal_quotient_equiv_normal.symm_apply_apply z).symm
+    obtain ⟨p, hp⟩ := Ideal.Quotient.mk_surjective
+      (chartTrueIdeal_quotient_equiv_normal z)
+    obtain ⟨A, B, Cv, hform⟩ := exists_chartNormalForm p
+    have hw : chartTrueIdeal_quotient_equiv_normal z =
+        Ideal.Quotient.mk chartNormalIdeal (chartNormalForm A B Cv) := by
+      rw [← hp, hform]
+    have hz_eq : z = Ideal.Quotient.mk chartTrueIdeal
+        (normalPolyToModel (chartNormalForm A B Cv)) := by
+      rw [hzback, hw]
+      change normalToChart
+        (Ideal.Quotient.mk chartNormalIdeal (chartNormalForm A B Cv)) = _
+      rw [normalToChart, Ideal.Quotient.lift_mk, RingHom.comp_apply]
+    have hABC := hker A B Cv (hz_eq ▸ hz)
+    rw [hzback, hw, (chartNormalForm_eq_zero_iff A B Cv).mpr hABC, map_zero]
+
 #print axioms Beal.MathlibMissing.chart_X_add_V_sq_ne_zero
 #print axioms Beal.MathlibMissing.chartOfModelTrue_normal_X_add_Vsq_ne_zero
 #print axioms Beal.MathlibMissing.centreIdeal_power_coeff_bound
 #print axioms Beal.MathlibMissing.centre_X_pow_mul_X_cube_sub_one_not_mem
+#print axioms Beal.MathlibMissing.chartNormal_X_add_Vsq_ne_zero
+#print axioms Beal.MathlibMissing.chartOfModelTrue_injective_iff_normalForm
 #print axioms Beal.MathlibMissing.chartOfModelTrue_injective
 
 end Beal.MathlibMissing
