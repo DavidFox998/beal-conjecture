@@ -23,10 +23,17 @@ the chart satisfies `T + Y + Y²·S³ = 0`, and that polynomial lies outside
 In characteristic 2, `Y·T` and `T²` follow from those three generators.
 Eliminating `X = Y·S` and `T = Y + Y²·S³` gives
 `𝔽₂[a,b][Y,S] / (Y²·(1 − Y·S³))`. The induced map onto `D₊(Yt)` is
-surjective. The relation `Y² = Y³·S³` does not produce a representative
-of `Y`-degree at most `2`: `Y³` is not congruent to any
-`A(S) + Y·B(S) + Y²·C(S)`. Injectivity remains open, so there is no
-`chart_Dplus_Yt_true_presentation`.
+surjective. In characteristic 2 the generator is `Y² + Y³·S³`, with
+leading monomial `Y³·S³`. A monomial `Y^i S^j` reduces only when
+`i ≥ 3` and `j ≥ 3`, by `Y^i S^j = Y^{i-1} S^{j-3}`. Every class
+therefore has a representative supported on monomials with `i ≤ 2` or
+`j ≤ 2`:
+`A(S) + Y·B(S) + Y²·C(S) + Y³·(E₀(Y) + S·E₁(Y) + S²·E₂(Y))`,
+with `E₀, E₁, E₂` independent. One polynomial `E(Y)` with constant
+coefficients of `1, S, S²` does not represent `Y³ + Y⁴·S`. The `Y`-degree
+of this remainder is unbounded, and `centreIdeal_power_coeff_bound` is a
+bound on `X`-powers, so injectivity of `chartOfModelTrueY_fixed` stays
+open. There is no `chart_Dplus_Yt_true_presentation`.
 
 `D₊(2t)` is already the zero ring (`chart_Dplus_2t_subsingleton_valuationOne`).
 A scheme gluing `Proj(Rees(I)/(2)) ≃ D₊(Xt) ∪ D₊(Yt)` is not claimed.
@@ -2045,5 +2052,434 @@ end YtRemainder
 #print axioms Beal.MathlibMissing.chartOfModelTrueY_fixed
 #print axioms Beal.MathlibMissing.chartOfModelTrueY_fixed_surjective
 #print axioms Beal.MathlibMissing.chartYtCusp_Y_cube_not_reduced
+
+/-!
+Normal form on `𝔽₂[a,b][Y,S] / (Y²·(1 − Y·S³))`.
+The generator is `Y² + Y³·S³` in characteristic 2. Its leading monomial
+is `Y³·S³`, so `Y^i S^j` with `i ≥ 3` and `j ≥ 3` rewrites to
+`Y^{i-1} S^{j-3}`. Repeating this removes every monomial divisible by
+`Y³·S³`. What remains is
+`A(S) + Y·B(S) + Y²·C(S) + Y³·(E₀(Y) + S·E₁(Y) + S²·E₂(Y))`.
+-/
+
+section YtNormalForm
+
+open MvPolynomial
+
+private lemma fin2_exponents (m : Fin 2 →₀ ℕ) :
+    m = Finsupp.single (0 : Fin 2) (m 0) + Finsupp.single (1 : Fin 2) (m 1) := by
+  ext i
+  fin_cases i <;> simp
+
+private lemma chartYtCusp_powShift (i : ℕ) (hi : 3 ≤ i) : i - 3 + 2 = i - 1 := by
+  have hsub : i - 3 + (3 - 1) = i - 3 + 3 - 1 :=
+    (Nat.add_sub_assoc (by decide : (1 : ℕ) ≤ 3) (i - 3)).symm
+  have hcancel : i - 3 + 3 - 1 = i - 1 := by
+    rw [Nat.sub_add_cancel hi]
+  exact hsub.trans hcancel
+
+private lemma monomial_YS (i j : ℕ) (c : MvPolynomial (Fin 2) (ZMod 2)) :
+    monomial (Finsupp.single (0 : Fin 2) i + Finsupp.single (1 : Fin 2) j) c =
+      C c * (X 0) ^ i * (X 1) ^ j := by
+  rw [monomial_add_single, C_mul_X_pow_eq_monomial]
+
+private lemma chartYtCusp_reduction_poly (i j : ℕ) (hi : 3 ≤ i) (hj : 3 ≤ j)
+    (c : MvPolynomial (Fin 2) (ZMod 2)) :
+    C c * (X 0) ^ i * (X 1) ^ j + C c * (X 0) ^ (i - 1) * (X 1) ^ (j - 3) =
+      C c * (X 0) ^ (i - 3) * (X 1) ^ (j - 3) * chartYtCuspRel := by
+  rw [chartYtCuspRel, CharTwo.sub_eq_add]
+  set y : chartYtCuspPoly := X (0 : Fin 2)
+  set s : chartYtCuspPoly := X (1 : Fin 2)
+  have hYi : y ^ i = y ^ (i - 3) * y ^ 3 := by
+    rw [← pow_add, Nat.sub_add_cancel hi]
+  have hY1 : y ^ (i - 1) = y ^ (i - 3) * y ^ 2 := by
+    rw [← pow_add, chartYtCusp_powShift i hi]
+  have hSj : s ^ j = s ^ (j - 3) * s ^ 3 := by
+    rw [← pow_add, Nat.sub_add_cancel hj]
+  calc
+    C c * y ^ i * s ^ j + C c * y ^ (i - 1) * s ^ (j - 3)
+        = C c * (y ^ (i - 3) * y ^ 3) * (s ^ (j - 3) * s ^ 3) +
+            C c * (y ^ (i - 3) * y ^ 2) * s ^ (j - 3) := by
+          rw [hYi, hSj, hY1]
+      _ = C c * y ^ (i - 3) * s ^ (j - 3) * (y ^ 2 * (1 + y * s ^ 3)) := by
+          ring
+
+/-- `Y^i·S^j ≡ Y^{i-1}·S^{j-3}` modulo `Y²·(1 − Y·S³)` when `i ≥ 3` and `j ≥ 3`. -/
+theorem chartYtCusp_reduction_step (i j : ℕ) (hi : 3 ≤ i) (hj : 3 ≤ j) :
+    (X (0 : Fin 2)) ^ i * (X 1) ^ j + (X 0) ^ (i - 1) * (X 1) ^ (j - 3) ∈
+      chartYtCuspIdeal := by
+  have h := chartYtCusp_reduction_poly i j hi hj 1
+  simp only [map_one, one_mul] at h
+  rw [h]
+  exact Ideal.mul_mem_left _ ((X 0) ^ (i - 3) * (X 1) ^ (j - 3))
+    (Ideal.subset_span (Set.mem_singleton chartYtCuspRel))
+
+private noncomputable def cuspBadSupport (p : chartYtCuspPoly) : Finset (Fin 2 →₀ ℕ) :=
+  p.support.filter fun m => 3 ≤ m (0 : Fin 2) ∧ 3 ≤ m (1 : Fin 2)
+
+private noncomputable def cuspBadSum (p : chartYtCuspPoly) : ℕ :=
+  (cuspBadSupport p).sum fun m => m (1 : Fin 2)
+
+private lemma chartYtCusp_reduce_one (p : chartYtCuspPoly) (m : Fin 2 →₀ ℕ)
+    (hm : m ∈ cuspBadSupport p) :
+    ∃ p' : chartYtCuspPoly, p + p' ∈ chartYtCuspIdeal ∧ cuspBadSum p' < cuspBadSum p := by
+  have hm' : m ∈ p.support ∧ 3 ≤ m (0 : Fin 2) ∧ 3 ≤ m (1 : Fin 2) :=
+    Finset.mem_filter.mp hm
+  let i : ℕ := m (0 : Fin 2)
+  let j : ℕ := m (1 : Fin 2)
+  have hi : 3 ≤ i := hm'.2.1
+  have hj : 3 ≤ j := hm'.2.2
+  let c : MvPolynomial (Fin 2) (ZMod 2) := p.coeff m
+  let m' : Fin 2 →₀ ℕ :=
+    Finsupp.single (0 : Fin 2) (i - 1) + Finsupp.single (1 : Fin 2) (j - 3)
+  have hne : m ≠ m' := by
+    intro h
+    have hmj : m (1 : Fin 2) = j := rfl
+    have hm'j : m' (1 : Fin 2) = j - 3 := by
+      simp [m', Finsupp.add_apply, Finsupp.single_apply]
+    have hlt : j - 3 < j := Nat.sub_lt_of_pos_le (by decide : 0 < 3) hj
+    apply Nat.ne_of_lt hlt
+    rw [← hm'j, ← hmj, h]
+  have hmexp : m = Finsupp.single (0 : Fin 2) i + Finsupp.single 1 j := by
+    simpa [i, j] using fin2_exponents m
+  have hmon_m : monomial m c = C c * (X 0) ^ i * (X 1) ^ j := by
+    rw [hmexp]
+    exact monomial_YS i j c
+  have hmon' : monomial m' c = C c * (X 0) ^ (i - 1) * (X 1) ^ (j - 3) := by
+    simpa [m'] using monomial_YS (i - 1) (j - 3) c
+  have hstep :
+      monomial m c + monomial m' c =
+        C c * (X 0) ^ (i - 3) * (X 1) ^ (j - 3) * chartYtCuspRel := by
+    rw [hmon_m, hmon', chartYtCusp_reduction_poly i j hi hj c]
+  let p' : chartYtCuspPoly := p + (monomial m c + monomial m' c)
+  have hmem : p + p' ∈ chartYtCuspIdeal := by
+    have hsum : p + p' = monomial m c + monomial m' c := by
+      dsimp only [p']
+      rw [← add_assoc, CharTwo.add_self_eq_zero p, zero_add]
+    rw [hsum, hstep, chartYtCuspIdeal]
+    exact Ideal.mul_mem_left _ _
+      (Ideal.subset_span (Set.mem_singleton chartYtCuspRel))
+  have hcoeff_m : p'.coeff m = 0 := by
+    dsimp only [p']
+    rw [coeff_add, coeff_add, coeff_monomial, if_pos rfl, coeff_monomial, if_neg hne.symm,
+      add_zero, CharTwo.add_self_eq_zero]
+  have hcoeff_other (n : Fin 2 →₀ ℕ) (hnm : n ≠ m) (hnm' : n ≠ m') :
+      p'.coeff n = p.coeff n := by
+    dsimp only [p']
+    rw [coeff_add, coeff_add, coeff_monomial, if_neg (Ne.symm hnm), coeff_monomial,
+      if_neg (Ne.symm hnm'), add_zero, add_zero]
+  have hsub : cuspBadSupport p' ⊆ (cuspBadSupport p).erase m ∪ {m'} := by
+    intro n hn
+    have hn' : n ∈ p'.support ∧ 3 ≤ n (0 : Fin 2) ∧ 3 ≤ n (1 : Fin 2) :=
+      Finset.mem_filter.mp hn
+    have hn0 : p'.coeff n ≠ 0 := mem_support_iff.mp hn'.1
+    have hnm : n ≠ m := by
+      intro h
+      apply hn0
+      rw [h]
+      exact hcoeff_m
+    rw [Finset.mem_union, Finset.mem_erase, Finset.mem_singleton]
+    by_cases hnm' : n = m'
+    · exact Or.inr hnm'
+    · refine Or.inl ⟨hnm, ?_⟩
+      have hcoeff : p.coeff n ≠ 0 := by
+        rw [← hcoeff_other n hnm hnm']
+        exact hn0
+      exact Finset.mem_filter.mpr ⟨mem_support_iff.mpr hcoeff, hn'.2⟩
+  have hsum_le : cuspBadSum p' ≤
+      ((cuspBadSupport p).erase m).sum (fun t => t (1 : Fin 2)) + m' (1 : Fin 2) := by
+    have hpos : ∀ t ∈ (cuspBadSupport p).erase m ∪ {m'},
+        t ∉ cuspBadSupport p' → 0 ≤ t (1 : Fin 2) :=
+      fun _ _ _ => Nat.zero_le _
+    have hineq :=
+      Finset.sum_le_sum_of_subset_of_nonneg (f := fun t => t (1 : Fin 2)) hsub hpos
+    refine le_trans hineq ?_
+    by_cases hm'in : m' ∈ (cuspBadSupport p).erase m
+    · rw [Finset.union_eq_left.mpr (Finset.singleton_subset_iff.mpr hm'in)]
+      exact Nat.le_add_right _ _
+    · rw [Finset.sum_union (Finset.disjoint_singleton_right.mpr hm'in), Finset.sum_singleton]
+  have herase :
+      ((cuspBadSupport p).erase m).sum (fun t => t (1 : Fin 2)) + m (1 : Fin 2) =
+        cuspBadSum p :=
+    Finset.sum_erase_add _ _ hm
+  have hm'j : m' (1 : Fin 2) = j - 3 := by
+    simp [m', Finsupp.add_apply, Finsupp.single_apply]
+  have hm1 : m (1 : Fin 2) = j := rfl
+  have hsplit : m (1 : Fin 2) = m' (1 : Fin 2) + 3 := by
+    rw [hm1, hm'j, Nat.sub_add_cancel hj]
+  have hlt_exp : m' (1 : Fin 2) < m (1 : Fin 2) := by
+    rw [hsplit]
+    exact Nat.lt_add_of_pos_right (by decide : 0 < 3)
+  have hlt_sum :
+      ((cuspBadSupport p).erase m).sum (fun t => t (1 : Fin 2)) + m' (1 : Fin 2) <
+        cuspBadSum p := by
+    rw [← herase]
+    exact Nat.add_lt_add_left hlt_exp _
+  exact ⟨p', hmem, lt_of_le_of_lt hsum_le hlt_sum⟩
+
+/-- Every class has a representative whose monomials `Y^i S^j` satisfy
+`i ≤ 2` or `j ≤ 2`. Those are the monomials not divisible by `Y³·S³`. -/
+theorem chartYtCusp_exists_reduced (p : chartYtCuspPoly) :
+    ∃ r : chartYtCuspPoly,
+      (∀ m ∈ r.support, m (0 : Fin 2) ≤ 2 ∨ m (1 : Fin 2) ≤ 2) ∧
+      p - r ∈ chartYtCuspIdeal := by
+  suffices ∀ n : ℕ, ∀ q : chartYtCuspPoly, cuspBadSum q = n →
+      ∃ r : chartYtCuspPoly,
+        (∀ m ∈ r.support, m (0 : Fin 2) ≤ 2 ∨ m (1 : Fin 2) ≤ 2) ∧
+        q - r ∈ chartYtCuspIdeal from
+    this (cuspBadSum p) p rfl
+  intro n
+  induction n using Nat.strong_induction_on with
+  | h n ih =>
+    intro q hn
+    by_cases hbad : (cuspBadSupport q).Nonempty
+    · obtain ⟨m, hm⟩ := hbad
+      obtain ⟨q', hmem, hlt⟩ := chartYtCusp_reduce_one q m hm
+      have hltn : cuspBadSum q' < n := by
+        rw [← hn]
+        exact hlt
+      obtain ⟨r, hrsup, hr⟩ := ih (cuspBadSum q') hltn q' rfl
+      refine ⟨r, hrsup, ?_⟩
+      have hstep : q - q' ∈ chartYtCuspIdeal := by
+        rw [CharTwo.sub_eq_add]
+        exact hmem
+      have hsum : q - r = (q - q') + (q' - r) := by ring
+      rw [hsum]
+      exact Ideal.add_mem _ hstep hr
+    · refine ⟨q, ?_, ?_⟩
+      · intro t ht
+        by_contra hbadt
+        apply hbad
+        have ht0 : 3 ≤ t (0 : Fin 2) := by
+          have : 2 < t (0 : Fin 2) := by
+            by_contra hle
+            exact hbadt (Or.inl (Nat.le_of_not_lt hle))
+          exact Nat.succ_le_of_lt this
+        have ht1 : 3 ≤ t (1 : Fin 2) := by
+          have : 2 < t (1 : Fin 2) := by
+            by_contra hle
+            exact hbadt (Or.inr (Nat.le_of_not_lt hle))
+          exact Nat.succ_le_of_lt this
+        exact ⟨t, Finset.mem_filter.mpr ⟨ht, ht0, ht1⟩⟩
+      · rw [sub_self]
+        exact Ideal.zero_mem _
+
+private noncomputable def cuspSum (r : chartYtCuspPoly) (P : (Fin 2 →₀ ℕ) → Prop)
+    [DecidablePred P] : chartYtCuspPoly :=
+  ∑ m ∈ r.support.filter P, monomial m (r.coeff m)
+
+private noncomputable def cuspShiftS (r : chartYtCuspPoly) (k : ℕ) : chartYtCuspPoly :=
+  ∑ m ∈ r.support.filter (fun t => t (0 : Fin 2) = k),
+    monomial (Finsupp.single (1 : Fin 2) (m (1 : Fin 2))) (r.coeff m)
+
+private noncomputable def cuspShiftY (r : chartYtCuspPoly) (j : ℕ) : chartYtCuspPoly :=
+  ∑ m ∈ r.support.filter (fun t => 3 ≤ t (0 : Fin 2) ∧ t (1 : Fin 2) = j),
+    monomial (Finsupp.single (0 : Fin 2) (m (0 : Fin 2) - 3)) (r.coeff m)
+
+private lemma cuspSum_low_factor (r : chartYtCuspPoly) (k : ℕ) :
+    cuspSum r (fun m => m (0 : Fin 2) = k) = (X (0 : Fin 2)) ^ k * cuspShiftS r k := by
+  rw [cuspSum, cuspShiftS, Finset.mul_sum]
+  refine Finset.sum_congr rfl ?_
+  intro m hm
+  have hk : m (0 : Fin 2) = k := (Finset.mem_filter.mp hm).2
+  rw [fin2_exponents m, hk, monomial_single_add]
+  have hidx :
+      (Finsupp.single (0 : Fin 2) k + Finsupp.single (1 : Fin 2) (m 1)) (1 : Fin 2) =
+        m (1 : Fin 2) := by
+    simp [Finsupp.add_apply, Finsupp.single_apply]
+  rw [hidx]
+
+private lemma degreeOf_cuspShiftS (r : chartYtCuspPoly) (k : ℕ) :
+    degreeOf (0 : Fin 2) (cuspShiftS r k) = 0 := by
+  refine Nat.eq_zero_of_le_zero ?_
+  rw [degreeOf_le_iff]
+  intro t ht
+  have hsub := support_sum ht
+  simp only [Finset.mem_biUnion] at hsub
+  obtain ⟨m, _, htmon⟩ := hsub
+  have ht' := support_monomial_subset htmon
+  simp only [Finset.mem_singleton] at ht'
+  rw [ht']
+  simp [Finsupp.single_apply]
+
+private lemma cuspSum_high_factor (r : chartYtCuspPoly) (j : ℕ) :
+    cuspSum r (fun m => 3 ≤ m (0 : Fin 2) ∧ m (1 : Fin 2) = j) =
+      (X (0 : Fin 2)) ^ 3 * (X (1 : Fin 2)) ^ j * cuspShiftY r j := by
+  rw [cuspSum, cuspShiftY, Finset.mul_sum]
+  refine Finset.sum_congr rfl ?_
+  intro m hm
+  have hm' := Finset.mem_filter.mp hm
+  have hge : 3 ≤ m (0 : Fin 2) := hm'.2.1
+  have hj : m (1 : Fin 2) = j := hm'.2.2
+  rw [mul_assoc, ← monomial_single_add, ← monomial_single_add]
+  have hexp :
+      Finsupp.single (0 : Fin 2) 3 +
+          (Finsupp.single (1 : Fin 2) j +
+            Finsupp.single (0 : Fin 2) (m (0 : Fin 2) - 3)) = m := by
+    rw [← add_assoc, add_right_comm, ← Finsupp.single_add, Nat.add_sub_of_le hge, ← hj,
+      ← fin2_exponents m]
+  rw [hexp]
+
+private lemma degreeOf_cuspShiftY (r : chartYtCuspPoly) (j : ℕ) :
+    degreeOf (1 : Fin 2) (cuspShiftY r j) = 0 := by
+  refine Nat.eq_zero_of_le_zero ?_
+  rw [degreeOf_le_iff]
+  intro t ht
+  have hsub := support_sum ht
+  simp only [Finset.mem_biUnion] at hsub
+  obtain ⟨m, _, htmon⟩ := hsub
+  have ht' := support_monomial_subset htmon
+  simp only [Finset.mem_singleton] at ht'
+  rw [ht']
+  simp [Finsupp.single_apply]
+
+private lemma coeff_cuspSum (r : chartYtCuspPoly) (P : (Fin 2 →₀ ℕ) → Prop)
+    [DecidablePred P] (n : Fin 2 →₀ ℕ) :
+    (cuspSum r P).coeff n = if n ∈ r.support.filter P then r.coeff n else 0 := by
+  rw [cuspSum, coeff_sum]
+  by_cases hn : n ∈ r.support.filter P
+  · rw [Finset.sum_eq_single n]
+    · simp [hn, coeff_monomial]
+    · intro m _ hmn
+      simp [coeff_monomial, hmn]
+    · intro h
+      exact absurd hn h
+  · rw [if_neg hn]
+    apply Finset.sum_eq_zero
+    intro m hm
+    have hmn : m ≠ n := by
+      intro h
+      apply hn
+      rw [← h]
+      exact hm
+    rw [coeff_monomial, if_neg hmn]
+
+private lemma cusp_reduced_part (r : chartYtCuspPoly)
+    (hr : ∀ m ∈ r.support, m (0 : Fin 2) ≤ 2 ∨ m (1 : Fin 2) ≤ 2)
+    (n : Fin 2 →₀ ℕ) (hn : n ∈ r.support) :
+    n (0 : Fin 2) = 0 ∨ n (0 : Fin 2) = 1 ∨ n (0 : Fin 2) = 2 ∨
+      (3 ≤ n (0 : Fin 2) ∧ n (1 : Fin 2) = 0) ∨
+      (3 ≤ n (0 : Fin 2) ∧ n (1 : Fin 2) = 1) ∨
+      (3 ≤ n (0 : Fin 2) ∧ n (1 : Fin 2) = 2) := by
+  rcases lt_or_ge (n (0 : Fin 2)) 3 with hlt | hge
+  · have hle : n (0 : Fin 2) ≤ 2 := Nat.le_of_lt_succ hlt
+    rcases Nat.eq_or_lt_of_le hle with h2 | hlt2
+    · exact Or.inr (Or.inr (Or.inl h2))
+    · rcases Nat.eq_or_lt_of_le (Nat.le_of_lt_succ hlt2) with h1 | hlt1
+      · exact Or.inr (Or.inl h1)
+      · exact Or.inl (Nat.eq_zero_of_le_zero (Nat.le_of_lt_succ hlt1))
+  · have hs : n (1 : Fin 2) ≤ 2 := by
+      rcases hr n hn with hlow | hs
+      · exact False.elim ((Nat.not_le_of_gt (Nat.lt_of_succ_le hge)) hlow)
+      · exact hs
+    rcases Nat.eq_or_lt_of_le hs with h2 | hlt2
+    · exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inr ⟨hge, h2⟩))))
+    · rcases Nat.eq_or_lt_of_le (Nat.le_of_lt_succ hlt2) with h1 | hlt1
+      · exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inl ⟨hge, h1⟩))))
+      · exact Or.inr (Or.inr (Or.inr (Or.inl ⟨hge, Nat.eq_zero_of_le_zero
+          (Nat.le_of_lt_succ hlt1)⟩)))
+
+private lemma cusp_reduced_split (r : chartYtCuspPoly)
+    (hr : ∀ m ∈ r.support, m (0 : Fin 2) ≤ 2 ∨ m (1 : Fin 2) ≤ 2) :
+    r = cuspSum r (fun m => m (0 : Fin 2) = 0) +
+        cuspSum r (fun m => m (0 : Fin 2) = 1) +
+        cuspSum r (fun m => m (0 : Fin 2) = 2) +
+        cuspSum r (fun m => 3 ≤ m (0 : Fin 2) ∧ m (1 : Fin 2) = 0) +
+        cuspSum r (fun m => 3 ≤ m (0 : Fin 2) ∧ m (1 : Fin 2) = 1) +
+        cuspSum r (fun m => 3 ≤ m (0 : Fin 2) ∧ m (1 : Fin 2) = 2) := by
+  apply ext
+  intro n
+  rw [coeff_add, coeff_add, coeff_add, coeff_add, coeff_add,
+    coeff_cuspSum, coeff_cuspSum, coeff_cuspSum, coeff_cuspSum, coeff_cuspSum,
+    coeff_cuspSum]
+  by_cases hnsup : n ∈ r.support
+  · rcases cusp_reduced_part r hr n hnsup with h0 | h1 | h2 | hH0 | hH1 | hH2
+    · simp [Finset.mem_filter, hnsup, h0, Nat.zero_ne_one, (by decide : (0 : ℕ) ≠ 2)]
+    · simp [Finset.mem_filter, hnsup, h1, Nat.one_ne_zero, (by decide : (1 : ℕ) ≠ 2)]
+    · simp [Finset.mem_filter, hnsup, h2, (by decide : (2 : ℕ) ≠ 0), (by decide : (2 : ℕ) ≠ 1)]
+    · have hge : ¬ n (0 : Fin 2) = 0 := by
+        intro h
+        have : (3 : ℕ) ≤ 0 := by rw [← h]; exact hH0.1
+        exact Nat.not_succ_le_zero 2 this
+      have hge1 : ¬ n (0 : Fin 2) = 1 := by
+        intro h
+        have : (3 : ℕ) ≤ 1 := by rw [← h]; exact hH0.1
+        exact (by decide : ¬ (3 : ℕ) ≤ 1) this
+      have hge2 : ¬ n (0 : Fin 2) = 2 := by
+        intro h
+        have : (3 : ℕ) ≤ 2 := by rw [← h]; exact hH0.1
+        exact (by decide : ¬ (3 : ℕ) ≤ 2) this
+      simp [Finset.mem_filter, hnsup, hH0, hge, hge1, hge2,
+        (by decide : (0 : ℕ) ≠ 1), (by decide : (0 : ℕ) ≠ 2)]
+    · have hge : ¬ n (0 : Fin 2) = 0 := by
+        intro h
+        have : (3 : ℕ) ≤ 0 := by rw [← h]; exact hH1.1
+        exact Nat.not_succ_le_zero 2 this
+      have hge1 : ¬ n (0 : Fin 2) = 1 := by
+        intro h
+        have : (3 : ℕ) ≤ 1 := by rw [← h]; exact hH1.1
+        exact (by decide : ¬ (3 : ℕ) ≤ 1) this
+      have hge2 : ¬ n (0 : Fin 2) = 2 := by
+        intro h
+        have : (3 : ℕ) ≤ 2 := by rw [← h]; exact hH1.1
+        exact (by decide : ¬ (3 : ℕ) ≤ 2) this
+      simp [Finset.mem_filter, hnsup, hH1, hge, hge1, hge2,
+        (by decide : (1 : ℕ) ≠ 0), (by decide : (1 : ℕ) ≠ 2)]
+    · have hge : ¬ n (0 : Fin 2) = 0 := by
+        intro h
+        have : (3 : ℕ) ≤ 0 := by rw [← h]; exact hH2.1
+        exact Nat.not_succ_le_zero 2 this
+      have hge1 : ¬ n (0 : Fin 2) = 1 := by
+        intro h
+        have : (3 : ℕ) ≤ 1 := by rw [← h]; exact hH2.1
+        exact (by decide : ¬ (3 : ℕ) ≤ 1) this
+      have hge2 : ¬ n (0 : Fin 2) = 2 := by
+        intro h
+        have : (3 : ℕ) ≤ 2 := by rw [← h]; exact hH2.1
+        exact (by decide : ¬ (3 : ℕ) ≤ 2) this
+      simp [Finset.mem_filter, hnsup, hH2, hge, hge1, hge2,
+        (by decide : (2 : ℕ) ≠ 0), (by decide : (2 : ℕ) ≠ 1)]
+  · simp [Finset.mem_filter, hnsup, not_mem_support_iff.mp hnsup]
+
+/-- `A(S) + Y·B(S) + Y²·C(S) + Y³·(E₀(Y) + S·E₁(Y) + S²·E₂(Y))`.
+`A,B,C` use only `S`. `E₀,E₁,E₂` use only `Y`, and they are independent:
+a single `E(Y)` with constant coefficients of `1, S, S²` does not represent
+`Y³ + Y⁴·S`. -/
+theorem chartYtCusp_normalForm (p : chartYtCuspPoly) :
+    ∃ A B C E0 E1 E2 : chartYtCuspPoly,
+      degreeOf (0 : Fin 2) A = 0 ∧ degreeOf (0 : Fin 2) B = 0 ∧
+        degreeOf (0 : Fin 2) C = 0 ∧
+        degreeOf (1 : Fin 2) E0 = 0 ∧ degreeOf (1 : Fin 2) E1 = 0 ∧
+        degreeOf (1 : Fin 2) E2 = 0 ∧
+        p - (A + (X 0) * B + (X 0) ^ 2 * C +
+          (X 0) ^ 3 * (E0 + (X 1) * E1 + (X 1) ^ 2 * E2)) ∈ chartYtCuspIdeal := by
+  obtain ⟨r, hr, hmem⟩ := chartYtCusp_exists_reduced p
+  refine ⟨cuspShiftS r 0, cuspShiftS r 1, cuspShiftS r 2,
+      cuspShiftY r 0, cuspShiftY r 1, cuspShiftY r 2,
+      degreeOf_cuspShiftS r 0, degreeOf_cuspShiftS r 1, degreeOf_cuspShiftS r 2,
+      degreeOf_cuspShiftY r 0, degreeOf_cuspShiftY r 1, degreeOf_cuspShiftY r 2, ?_⟩
+  have hsplit := cusp_reduced_split r hr
+  have hlow0 := cuspSum_low_factor r 0
+  have hlow1 := cuspSum_low_factor r 1
+  have hlow2 := cuspSum_low_factor r 2
+  have hhigh0 := cuspSum_high_factor r 0
+  have hhigh1 := cuspSum_high_factor r 1
+  have hhigh2 := cuspSum_high_factor r 2
+  have hr_form :
+      r = cuspShiftS r 0 + (X 0) * cuspShiftS r 1 + (X 0) ^ 2 * cuspShiftS r 2 +
+        (X 0) ^ 3 * (cuspShiftY r 0 + (X 1) * cuspShiftY r 1 +
+          (X 1) ^ 2 * cuspShiftY r 2) := by
+    rw [hlow0, hlow1, hlow2, hhigh0, hhigh1, hhigh2] at hsplit
+    simp only [pow_zero, pow_one, one_mul, mul_one] at hsplit
+    convert hsplit using 1
+    ring
+  rw [hr_form] at hmem
+  exact hmem
+
+end YtNormalForm
+
+#print axioms Beal.MathlibMissing.chartYtCusp_reduction_step
+#print axioms Beal.MathlibMissing.chartYtCusp_exists_reduced
+#print axioms Beal.MathlibMissing.chartYtCusp_normalForm
 
 end Beal.MathlibMissing
