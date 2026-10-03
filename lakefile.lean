@@ -79,7 +79,14 @@ lean_lib BealGeneral where
     .one `Beal.«Beal.General».TateEvenCoordinateCharts,
     .one `Beal.«Beal.General».TateEvenGenericFibre,
     .one `Beal.«Beal.General».TateEvenBranchGenericFibre,
+    .one `Beal.«Beal.General».CompatChart2t,
+    .one `Beal.«Beal.General».CompatChartXt,
+    .one `Beal.«Beal.General».CompatChartYt,
+    .one `Beal.«Beal.General».CompatPolynomialRestrictions,
+    .one `Beal.«Beal.General».SpecialFibrePolynomialCover,
+    .one `Beal.«Beal.General».SpecialFibreGluing,
     .one `Beal.«Beal.General».TateEvenSpecialFibre,
+    .one `Beal.«Beal.General».SpecialFibrePullbackIso,
     .one `Beal.«Beal.General».TateEvenTwoAdicTransport,
     .one `Beal.«Beal.General».TateEvenOverlapCompat,
     .one `Beal.«Beal.General».TateEvenPolynomialOverlapTransport,
@@ -89,6 +96,38 @@ lean_lib BealGeneral where
     .one `Beal.«Beal.General».Conductor,
     .one `Beal.«Beal.General».TwoPower,
     .one `Beal.«Beal.General».Modularity]
+
+/-- v34 packaging of the even-branch blow-up. Not a Beal proof.
+    The Lake module name is `Beal.«Beal.Even».FullReduction`
+    (directory `Beal/Beal.Even/`), not `Beal.Beal.Even.FullReduction`. -/
+lean_lib BealEven where
+  globs := #[.one `Beal.«Beal.Even».FullReduction]
+
+/-- Graded surjection `R[T₀,T₁,T₂] → Rees(I)`, the `O(1)` twisting
+    sheaf, and the family `Bl_{I_{a,b}}`. Not imported by `BealEven`. -/
+lean_lib BealMathlibMissing where
+  globs := #[.one `Beal.MathlibMissing.ProjProper,
+    .one `Beal.MathlibMissing.TwistingSheaf,
+    .one `Beal.MathlibMissing.Family,
+    .one `Beal.MathlibMissing.ChartSurjection,
+    .one `Beal.MathlibMissing.ChartTrueIdeal,
+    .one `Beal.MathlibMissing.CentrePower,
+    .one `Beal.MathlibMissing.ChartInjective]
+
+/-- v35 starter for odd exponents. Not a Beal proof.
+    The Lake module name is `Beal.«Beal.Odd».FullReduction`
+    (directory `Beal/Beal.Odd/`), not `Beal.Beal.Odd.FullReduction`. -/
+lean_lib BealOdd where
+  globs := #[.one `Beal.«Beal.Odd».FullReduction]
+
+/-- v36 starter for the modular lift. Not a Beal proof.
+    Directory `Beal/Beal.Modular/Axioms.lean` is the module
+    `Beal.«Beal.Modular».Axioms`, not `Beal.Beal.Modular.Axioms`.
+    `globs` entries are `Glob` values. `roots` selects that module,
+    and the default glob is `.one` of the root. -/
+lean_lib BealModular where
+  roots := #[`Beal.«Beal.Modular».Axioms]
+  globs := #[.one `Beal.«Beal.Modular».Axioms]
 
 @[default_target]
 lean_lib «BealMatveevBeal» where
