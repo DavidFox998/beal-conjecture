@@ -42,9 +42,15 @@ The same `β` does not satisfy `Y^m * N = 2·α + Y·β` together with
 term is therefore not in the kernel. An even number of those monomials
 can still sum to `0` in that residue, so the kernel of a general normal
 form is not settled. `centreIdeal_power_coeff_bound` applies to this
-cofactor in `I = (2, X, Y)`. The chart numerator of
-`A + Y·B + Y²·C + Y³·(E₀ + S·E₁ + S²·E₂)` is not yet that cofactor.
-Injectivity of `chartOfModelTrueY_fixed` stays open. There is no
+cofactor in `I = (2, X, Y)`. `chartVanishingY_normalForm_cofactor_lift`
+is the converse arrow: `Y^m·N = 2·(α + Y·β)` with `α + Y·β ∈ I^{D+m}`
+puts `(Yt)^m` times the degree-`D` monomial back in `(2)`. It holds for
+every `m`, not only `m ≥ 2`.
+The reduced class `1 + Y·S³` clears to `Y³ + Y·X³ = 2·Y·(X³ − 1)`.
+That cofactor lies outside `I³`, so the bound does not apply and does
+not force `E₀ = E₁ = E₂ = 0`. This class already has every `Eᵢ = 0`.
+`X = Y·S` is not a substitution in the surface ring where the bound
+lives. Injectivity of `chartOfModelTrueY_fixed` stays open. There is no
 `chart_Dplus_Yt_true_presentation`.
 
 `D₊(2t)` is already the zero ring (`chart_Dplus_2t_subsingleton_valuationOne`).
@@ -2707,11 +2713,118 @@ theorem chartVanishingY_fixed_cofactor_bound
     chartVanishingY_fixed_reesEquation_cofactor m D N hN hmem
   exact ⟨α, β, h2, centreIdeal_power_coeff_bound hI⟩
 
+/-- If `Y^m·N = 2·(α(X) + Y·β(X))` and the cofactor lies in `I^{D+m}`,
+then `(Yt)^m` times the degree-`D` monomial lies in the scalar ideal `(2)`.
+This is the converse of `yt_reesProd_two`. The normal form
+`A + Y·B + Y²·C + Y³·(E₀ + S·E₁ + S²·E₂)` is not an input: a centre
+numerator `N ∈ I^D` is enough, and the argument does not use `m ≥ 2`. -/
+theorem chartVanishingY_normalForm_cofactor_lift
+    (m D : ℕ) (N : surfaceRing valuationOneCurve) (hN : N ∈ vI ^ D)
+    (α β : Polynomial S)
+    (h2 : vY ^ m * N =
+      (2 : surfaceRing valuationOneCurve) *
+        Ideal.Quotient.mk (Ideal.span {surfacePolynomial valuationOneCurve})
+          (centreNormalPoly α β))
+    (hI : Ideal.Quotient.mk (Ideal.span {surfacePolynomial valuationOneCurve})
+        (centreNormalPoly α β) ∈ vI ^ (D + m)) :
+    (numeralReesYT valuationOneCurve 0 0) ^ m *
+      centreReesMonomial vI D ⟨N, hN⟩ ∈
+        numeralReesSpecialIdeal valuationOneCurve 0 0 := by
+  rw [yt_mul_num]
+  refine Ideal.mem_span_singleton'.mpr ⟨
+    centreReesMonomial vI (m + D)
+      ⟨Ideal.Quotient.mk (Ideal.span {surfacePolynomial valuationOneCurve})
+          (centreNormalPoly α β), by
+        rw [Nat.add_comm]
+        exact hI⟩, ?_⟩
+  apply Subtype.ext
+  simp only [centreReesMonomial, LinearMap.coe_mk, AddHom.coe_mk, Subtype.coe_mk,
+    Subalgebra.coe_mul, Subalgebra.coe_algebraMap]
+  rw [← Polynomial.C_eq_algebraMap, Polynomial.monomial_mul_C]
+  refine congrArg (Polynomial.monomial (m + D)) ?_
+  have hswap :
+      Ideal.Quotient.mk (Ideal.span {surfacePolynomial valuationOneCurve})
+          (centreNormalPoly α β) * (2 : surfaceRing valuationOneCurve) =
+        (2 : surfaceRing valuationOneCurve) *
+          Ideal.Quotient.mk (Ideal.span {surfacePolynomial valuationOneCurve})
+            (centreNormalPoly α β) := by ring
+  rw [hswap]
+  exact h2.symm
+
+lemma vX_cube_sub_vY_sq :
+    vX ^ 3 - vY ^ 2 = (2 : surfaceRing valuationOneCurve) := by
+  rw [vX_eq_mk, vY_eq_mk]
+  rw [← map_pow (Ideal.Quotient.mk (Ideal.span {surfacePolynomial valuationOneCurve})),
+    ← map_pow (Ideal.Quotient.mk (Ideal.span {surfacePolynomial valuationOneCurve})),
+    ← map_sub (Ideal.Quotient.mk (Ideal.span {surfacePolynomial valuationOneCurve}))]
+  exact valuationOne_two_eq.symm
+
+/-- Clearing `S = Xt/Yt` on the reduced class `1 + Y·S³` gives
+`Y³ + Y·X³ = 2·Y·(X³ − 1)`. -/
+theorem chartYt_one_add_YS3_surface :
+    vY ^ 3 + vY * vX ^ 3 =
+      (2 : surfaceRing valuationOneCurve) *
+        Ideal.Quotient.mk (Ideal.span {surfacePolynomial valuationOneCurve})
+          (centreNormalPoly 0 (Polynomial.X ^ 3 - 1)) := by
+  have hsum : vY ^ 2 + vX ^ 3 = (2 : surfaceRing valuationOneCurve) * (vX ^ 3 - 1) := by
+    calc vY ^ 2 + vX ^ 3
+        = (vX ^ 3 - (vX ^ 3 - vY ^ 2)) + vX ^ 3 := by ring
+      _ = (vX ^ 3 - (2 : surfaceRing valuationOneCurve)) + vX ^ 3 := by
+            rw [vX_cube_sub_vY_sq]
+      _ = (2 : surfaceRing valuationOneCurve) * (vX ^ 3 - 1) := by ring
+  rw [centre_beta_eval]
+  have hpoly : surfaceEvalHom (Polynomial.X ^ 3 - 1) = vX ^ 3 - 1 := by
+    simp [surfaceEvalHom, Polynomial.coe_eval₂RingHom, Polynomial.eval₂_sub,
+      Polynomial.eval₂_pow, Polynomial.eval₂_X, Polynomial.eval₂_one]
+  rw [hpoly]
+  calc vY ^ 3 + vY * vX ^ 3
+      = vY * (vY ^ 2 + vX ^ 3) := by ring
+    _ = vY * ((2 : surfaceRing valuationOneCurve) * (vX ^ 3 - 1)) := by rw [hsum]
+    _ = (2 : surfaceRing valuationOneCurve) * (vY * (vX ^ 3 - 1)) := by ring
+
+/-- `Y·(X³ − 1) ∉ I³`. Its coefficient of `X⁰` in the `Y` part is `-1`,
+and `⌊(3 − 0) / 2⌋ = 1`. -/
+theorem chartYt_Y_mul_Xcube_sub_one_not_mem :
+    Ideal.Quotient.mk (Ideal.span {surfacePolynomial valuationOneCurve})
+        (centreNormalPoly 0 (Polynomial.X ^ 3 - 1)) ∉ vI ^ 3 := by
+  intro h
+  have hb := (centreIdeal_power_coeff_bound h 0).2
+  have hβ : centreBetaBound 3 0 = 1 := by
+    unfold centreBetaBound
+    rfl
+  have hc : ((Polynomial.X ^ 3 - 1 : Polynomial S).coeff 0) = -1 := by
+    simp [Polynomial.coeff_sub, Polynomial.coeff_X_pow, Polynomial.coeff_one]
+  rw [hβ, hc] at hb
+  exact not_twoAdicNormBound_neg_one hb
+
+/-- `1 + Y·S³` is reduced of `Y`-degree at most `1`, and it is not in the
+cusp ideal `(Y²·(1 − Y·S³))`. Setting `Y = 0` kills the generator and
+sends this polynomial to `1`. -/
+theorem chartYtCusp_one_add_Y_Scube_not_mem :
+    (1 + MvPolynomial.X (0 : Fin 2) * MvPolynomial.X (1 : Fin 2) ^ 3) ∉
+      chartYtCuspIdeal := by
+  intro hmem
+  rw [chartYtCuspIdeal, Ideal.mem_span_singleton] at hmem
+  obtain ⟨f, hf⟩ := hmem
+  let φ := MvPolynomial.eval (fun _ : Fin 2 => (0 : MvPolynomial (Fin 2) (ZMod 2)))
+  have hφ := congrArg φ hf
+  have hrel : φ chartYtCuspRel = 0 := by
+    rw [chartYtCuspRel]
+    simp [φ, map_mul, map_pow, map_sub, map_one, map_add, MvPolynomial.eval_X]
+  have hwit : φ (1 + MvPolynomial.X (0 : Fin 2) * MvPolynomial.X (1 : Fin 2) ^ 3) = 1 := by
+    simp [φ, map_add, map_mul, map_pow, map_one, MvPolynomial.eval_X]
+  rw [map_mul, hrel, zero_mul, hwit] at hφ
+  exact one_ne_zero (α := MvPolynomial (Fin 2) (ZMod 2)) hφ
+
 #print axioms Beal.MathlibMissing.yt_reesProd_two
 #print axioms Beal.MathlibMissing.chartYt_monomial_ne_zero
 #print axioms Beal.MathlibMissing.chartOfModelTrueY_fixed_monomial
 #print axioms Beal.MathlibMissing.chartOfModelTrueY_fixed_monomial_ne_zero
 #print axioms Beal.MathlibMissing.chartVanishingY_fixed_reesEquation_cofactor
 #print axioms Beal.MathlibMissing.chartVanishingY_fixed_cofactor_bound
+#print axioms Beal.MathlibMissing.chartVanishingY_normalForm_cofactor_lift
+#print axioms Beal.MathlibMissing.chartYt_one_add_YS3_surface
+#print axioms Beal.MathlibMissing.chartYt_Y_mul_Xcube_sub_one_not_mem
+#print axioms Beal.MathlibMissing.chartYtCusp_one_add_Y_Scube_not_mem
 
 end Beal.MathlibMissing
