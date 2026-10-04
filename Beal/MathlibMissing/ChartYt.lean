@@ -50,7 +50,13 @@ The reduced class `1 + Y·S³` clears to `Y³ + Y·X³ = 2·Y·(X³ − 1)`.
 That cofactor lies outside `I³`, so the bound does not apply and does
 not force `E₀ = E₁ = E₂ = 0`. This class already has every `Eᵢ = 0`.
 `X = Y·S` is not a substitution in the surface ring where the bound
-lives. Injectivity of `chartOfModelTrueY_fixed` stays open. There is no
+lives. On the chart, `T + Y + Y²·S³ = 0`, `Y·T = 0`, and `T² = 0`.
+In characteristic 2 those say `T = Y·(1 + Y·S³)` with `T` nilpotent.
+`Yt^m · (2t)` lies in `(2)` only if `Y^m ∈ I^{m+1}`, and the centre
+bound forbids that, so `T ≠ 0`. Therefore `1 + Y·S³ ≠ 0` in `D₊(Yt)`,
+and `chartOfModelTrueY_fixed` does not kill the cusp class. The chart
+keeps this cusp torsion. Injectivity of `chartOfModelTrueY_fixed` stays
+open. There is no `chartYtCusp_Ei_vanish` and no
 `chart_Dplus_Yt_true_presentation`.
 
 `D₊(2t)` is already the zero ring (`chart_Dplus_2t_subsingleton_valuationOne`).
@@ -2816,6 +2822,256 @@ theorem chartYtCusp_one_add_Y_Scube_not_mem :
   rw [map_mul, hrel, zero_mul, hwit] at hφ
   exact one_ne_zero (α := MvPolynomial (Fin 2) (ZMod 2)) hφ
 
+private lemma coeff_zero_mul (p r : Polynomial S) :
+    (p * r).coeff 0 = p.coeff 0 * r.coeff 0 := by
+  rw [Polynomial.coeff_mul]
+  refine Finset.sum_eq_single (0, 0) ?_ ?_
+  · intro x hx hne
+    have hadd : x.1 + x.2 = 0 := Finset.mem_antidiagonal.mp hx
+    have hleft : x.1 = 0 := by
+      have hle : x.1 ≤ x.1 + x.2 := Nat.le_add_right _ _
+      rw [hadd] at hle
+      exact Nat.eq_zero_of_le_zero hle
+    have hright : x.2 = 0 := by
+      have hle : x.2 ≤ x.2 + x.1 := Nat.le_add_right _ _
+      rw [Nat.add_comm, hadd] at hle
+      exact Nat.eq_zero_of_le_zero hle
+    exact False.elim (hne (Prod.ext hleft hright))
+  · intro hmiss
+    exact False.elim (hmiss (Finset.mem_antidiagonal.mpr rfl))
+
+private lemma coeff_zero_pow (p : Polynomial S) (n : ℕ) :
+    (p ^ n).coeff 0 = p.coeff 0 ^ n := by
+  induction n with
+  | zero => simp
+  | succ n ih => rw [pow_succ, coeff_zero_mul, ih, pow_succ]
+
+private lemma surfaceEval_cuspPolyS_pow (q : ℕ) :
+    surfaceEvalHom (cuspPolyS ^ q) =
+      (vX ^ 3 - (2 : surfaceRing valuationOneCurve)) ^ q := by
+  have hone : cuspPowTerm (1 : S) 0 q = cuspPolyS ^ q := by
+    rw [cuspPowTerm, Polynomial.C_1, one_mul, pow_zero, one_mul]
+  rw [← hone, surfaceEval_cuspPow,
+    map_one (algebraMap S (surfaceRing valuationOneCurve)), pow_zero, one_mul, one_mul]
+
+private lemma cuspPolyS_pow_coeff_zero (q : ℕ) :
+    MvPolynomial.coeff (0 : Fin 2 →₀ ℕ) ((cuspPolyS ^ q).coeff 0) =
+      (((-1 : ℤ) ^ q * (2 : ℤ) ^ q : ℤ) : ℤ_[2]) := by
+  have h0 : cuspPolyS.coeff 0 = -(2 : S) := by
+    rw [cuspPolyS_eq]
+    simp [Polynomial.coeff_sub, Polynomial.coeff_X_pow, Polynomial.coeff_C]
+  rw [coeff_zero_pow, h0]
+  have hbase : (-(2 : S)) = MvPolynomial.C (-(2 : ℤ_[2])) := by
+    rw [← map_ofNat (MvPolynomial.C : ℤ_[2] →+* S) 2,
+      ← map_neg (MvPolynomial.C : ℤ_[2] →+* S)]
+  have hpowZ : (-(2 : ℤ_[2])) ^ q = (-1 : ℤ_[2]) ^ q * (2 : ℤ_[2]) ^ q := by
+    rw [neg_eq_neg_one_mul, mul_pow]
+  rw [hbase, ← map_pow (MvPolynomial.C : ℤ_[2] →+* S), hpowZ, (cast_signed q q).symm,
+    MvPolynomial.coeff_C, if_pos rfl]
+
+private lemma vY_even_centre (q : ℕ) :
+    vY ^ (2 * q) =
+      Ideal.Quotient.mk (Ideal.span {surfacePolynomial valuationOneCurve})
+        (centreNormalPoly (cuspPolyS ^ q) 0) := by
+  rw [vY_pow_even, ← surfaceEval_cuspPolyS_pow, ← centre_alpha_eval]
+
+private lemma vY_odd_centre (q : ℕ) :
+    vY ^ (2 * q + 1) =
+      Ideal.Quotient.mk (Ideal.span {surfacePolynomial valuationOneCurve})
+        (centreNormalPoly 0 (cuspPolyS ^ q)) := by
+  rw [vY_pow_odd, ← surfaceEval_cuspPolyS_pow, ← centre_beta_eval]
+
+/-- `Y^n ∉ I^{n+1}`. For `n = 2q` the class is `(X³ − 2)^q`, whose
+constant term is `(-2)^q`, and `⌈(2q+1)/2⌉ = q+1`. For `n = 2q+1` the
+same coefficient sits in the `Y` part and `⌊(2q+2)/2⌋ = q+1`. -/
+theorem vY_pow_not_mem_succ (n : ℕ) : vY ^ n ∉ vI ^ (n + 1) := by
+  intro hmem
+  rcases mod_two_dichotomy n with h0 | h1
+  · have hq : n = 2 * (n / 2) :=
+      (Nat.div_mul_cancel (Nat.dvd_of_mod_eq_zero h0)).symm.trans
+        (Nat.mul_comm (n / 2) 2)
+    rw [hq] at hmem
+    set q := n / 2
+    rw [vY_even_centre] at hmem
+    have hb := (centreIdeal_power_coeff_bound hmem 0).1
+    have hbound : centreAlphaBound (2 * q + 1) 0 = q + 1 := by
+      unfold centreAlphaBound
+      rw [Nat.sub_zero]
+      have : 2 * q + 1 + 1 = 2 * (q + 1) := by
+        calc
+          2 * q + 1 + 1 = 2 * q + (1 + 1) := by rw [Nat.add_assoc]
+          _ = 2 * q + 2 := by rfl
+          _ = 2 * q + 2 * 1 := by rw [Nat.mul_one]
+          _ = 2 * (q + 1) := by rw [← Nat.mul_add]
+      rw [this, Nat.mul_div_cancel_left _ (by decide : 0 < 2)]
+    rw [hbound] at hb
+    exact not_twoAdicNormBound_signed_coeff ((cuspPolyS ^ q).coeff 0) 0 q q
+      (cuspPolyS_pow_coeff_zero q) hb
+  · have hq : n = 2 * (n / 2) + 1 := by
+      have h := (Nat.div_add_mod n 2).symm
+      rw [h1] at h
+      exact h
+    rw [hq] at hmem
+    set q := n / 2
+    rw [vY_odd_centre] at hmem
+    have hb := (centreIdeal_power_coeff_bound hmem 0).2
+    have hbound : centreBetaBound (2 * q + 2) 0 = q + 1 := by
+      unfold centreBetaBound
+      rw [Nat.sub_zero]
+      have : 2 * q + 2 = 2 * (q + 1) := by
+        rw [Nat.mul_add, Nat.mul_one]
+      rw [this, Nat.mul_div_cancel_left _ (by decide : 0 < 2)]
+    rw [hbound] at hb
+    exact not_twoAdicNormBound_signed_coeff ((cuspPolyS ^ q).coeff 0) 0 q q
+      (cuspPolyS_pow_coeff_zero q) hb
+
+/-- `(2 : D₊(Yt)) = 0`. -/
+lemma chartYt_two_eq_zero :
+    (2 : chart_Dplus_Yt_ring valuationOneCurve 0 0) = 0 := by
+  rw [← map_ofNat (chartYtConstHom valuationOneCurve 0 0) 2]
+  have h := chartYtScalar_C_two valuationOneCurve 0 0
+  rw [chartYtScalar, RingHom.comp_apply] at h
+  have htwo : algebraMap S (surfaceRing valuationOneCurve) (MvPolynomial.C (2 : ℤ_[2])) =
+      (2 : surfaceRing valuationOneCurve) := by
+    rw [two_eq_quotient_mk]
+    rfl
+  rw [htwo] at h
+  exact h
+
+/-- `2t/Yt ≠ 0` in `D₊(Yt)`. A power of `Yt` killing `2t` in `Rees/(2)`
+would put `Y^m` in `I^{m+1}`. -/
+theorem chartYt_two_over_Y_ne_zero :
+    chartYt_two_over_Y valuationOneCurve 0 0 ≠ 0 := by
+  intro hzero
+  let I := numeralCentreIdeal valuationOneCurve 0 0
+  letI : GradedAlgebra (centreReesComponent I) := centreReesGrading I
+  let J := numeralReesSpecialIdeal valuationOneCurve 0 0
+  have _hJ : J.IsHomogeneous (centreReesComponent I) :=
+    numeralReesSpecialIdeal_isHomogeneous valuationOneCurve 0 0
+  let ℬ := homogeneousQuotientComponent (centreReesComponent I) J
+  letI : GradedAlgebra ℬ := homogeneousQuotientGrading (centreReesComponent I) J _hJ
+  let Q := (reesAlgebra I) ⧸ J
+  let f : Q := Ideal.Quotient.mk J (numeralReesYT valuationOneCurve 0 0)
+  have hval := congrArg (HomogeneousLocalization.val (x := Submonoid.powers f)) hzero
+  erw [HomogeneousLocalization.val_zero] at hval
+  simp only [chartYt_two_over_Y, HomogeneousLocalization.val_mk] at hval
+  rw [← Localization.mk_zero (1 : Submonoid.powers f), Localization.mk_eq_mk_iff] at hval
+  obtain ⟨c, hc⟩ := Localization.r_iff_exists.mp hval
+  have hc0 : (c : Q) *
+      Ideal.Quotient.mk J (numeralReesTwo valuationOneCurve 0 0) = 0 := by
+    have hc' :
+        (c : Q) * Ideal.Quotient.mk J (numeralReesTwo valuationOneCurve 0 0) =
+          (c : Q) *
+            (Ideal.Quotient.mk J (numeralReesYT valuationOneCurve 0 0) * 0) := by
+      simpa [one_mul] using hc
+    rw [mul_zero (Ideal.Quotient.mk J (numeralReesYT valuationOneCurve 0 0))] at hc'
+    rw [mul_zero (c : Q)] at hc'
+    exact hc'
+  obtain ⟨m, hm⟩ := (Submonoid.mem_powers_iff (c : Q) f).mp c.property
+  have hkill : f ^ m * Ideal.Quotient.mk J (numeralReesTwo valuationOneCurve 0 0) = 0 := by
+    rw [hm]
+    exact hc0
+  have hpre : (numeralReesYT valuationOneCurve 0 0) ^ m *
+      numeralReesTwo valuationOneCurve 0 0 ∈ J := by
+    rw [← Ideal.Quotient.eq_zero_iff_mem, map_mul, map_pow]
+    exact hkill
+  have h2mem : (2 : surfaceRing valuationOneCurve) ∈ vI ^ 1 := by
+    rw [pow_one]
+    exact two_mem_numeralCentreIdeal valuationOneCurve 0 0
+  have htwo : numeralReesTwo valuationOneCurve 0 0 =
+      centreReesMonomial vI 1 ⟨(2 : surfaceRing valuationOneCurve), h2mem⟩ := by
+    apply Subtype.ext
+    rfl
+  rw [htwo] at hpre
+  obtain ⟨z, hz, hzI⟩ := yt_reesProd_two m 1 (2 : surfaceRing valuationOneCurve) h2mem hpre
+  have hz' : (2 : surfaceRing valuationOneCurve) * vY ^ m =
+      (2 : surfaceRing valuationOneCurve) * z := by
+    have hcomm : vY ^ m * (2 : surfaceRing valuationOneCurve) =
+        (2 : surfaceRing valuationOneCurve) * vY ^ m := by ring
+    rw [← hcomm, hz]
+  have hsub : (2 : surfaceRing valuationOneCurve) * (vY ^ m - z) = 0 := by
+    have hdiff : (2 : surfaceRing valuationOneCurve) * vY ^ m -
+        (2 : surfaceRing valuationOneCurve) * z = 0 := by
+      rw [hz', sub_self]
+    convert hdiff using 1
+    ring
+  have heq : vY ^ m = z := sub_eq_zero.mp (valuationOne_two_regular _ hsub)
+  have hYm : vY ^ m ∈ vI ^ (m + 1) := by
+    rw [heq, Nat.add_comm]
+    exact hzI
+  exact vY_pow_not_mem_succ m hYm
+
+/-- On `D₊(Yt)`, `T = Y·(1 + Y·S³)`. `Y·T = 0` and `T² = 0` are the
+cusp relation and nilpotence of this product; neither one forces the
+factor `1 + Y·S³` to vanish. -/
+theorem chartYt_T_eq_Y_mul_one_add_Y_Scube :
+    chartYt_two_over_Y valuationOneCurve 0 0 =
+      chartYt_Y valuationOneCurve 0 0 *
+        (1 + chartYt_Y valuationOneCurve 0 0 *
+          chartYt_X_over_Y valuationOneCurve 0 0 ^ 3) := by
+  set T : chart_Dplus_Yt_ring valuationOneCurve 0 0 :=
+    chartYt_two_over_Y valuationOneCurve 0 0
+  set Yc : chart_Dplus_Yt_ring valuationOneCurve 0 0 :=
+    chartYt_Y valuationOneCurve 0 0
+  set Sc : chart_Dplus_Yt_ring valuationOneCurve 0 0 :=
+    chartYt_X_over_Y valuationOneCurve 0 0
+  rw [← sub_eq_zero]
+  have h2 := chartYt_two_eq_zero
+  have hneg : ∀ a : chart_Dplus_Yt_ring valuationOneCurve 0 0, -a = a := by
+    intro a
+    have h11 : (-1 : chart_Dplus_Yt_ring valuationOneCurve 0 0) = 1 := by
+      calc
+        (-1 : chart_Dplus_Yt_ring valuationOneCurve 0 0) = -(1 + 1) + 1 := by ring
+        _ = -((2 : chart_Dplus_Yt_ring valuationOneCurve 0 0)) + 1 := by ring
+        _ = -(0 : chart_Dplus_Yt_ring valuationOneCurve 0 0) + 1 := by rw [h2]
+        _ = 1 := by ring
+    calc
+      -a = (-1 : chart_Dplus_Yt_ring valuationOneCurve 0 0) * a := by ring
+      _ = (1 : chart_Dplus_Yt_ring valuationOneCurve 0 0) * a := by rw [h11]
+      _ = a := by ring
+  calc
+    T - Yc * (1 + Yc * Sc ^ 3)
+        = T + -(Yc * (1 + Yc * Sc ^ 3)) := by ring
+    _ = T + Yc * (1 + Yc * Sc ^ 3) := by rw [hneg]
+    _ = T + (Yc + Yc ^ 2 * Sc ^ 3) := by ring
+    _ = T + Yc + Yc ^ 2 * Sc ^ 3 := by ring
+    _ = 0 := chartYt_kernel_relation
+
+/-- `1 + Y·S³ ≠ 0` in `D₊(Yt)`. -/
+theorem chartYt_one_add_Y_Scube_ne_zero :
+    1 + chartYt_Y valuationOneCurve 0 0 *
+        chartYt_X_over_Y valuationOneCurve 0 0 ^ 3 ≠ 0 := by
+  intro hzero
+  have hT : chartYt_two_over_Y valuationOneCurve 0 0 = 0 := by
+    rw [chartYt_T_eq_Y_mul_one_add_Y_Scube, hzero, mul_zero]
+  exact chartYt_two_over_Y_ne_zero hT
+
+/-- `chartOfModelTrueY_fixed` sends the cusp class `1 + Y·S³` to
+`1 + Y·(Xt/Yt)³`, which is nonzero. The fixed ideal does not need an
+extra generator `1 + Y·S³`. -/
+theorem chartOfModelTrueY_fixed_one_add_Y_Scube_ne_zero :
+    chartOfModelTrueY_fixed
+        (cuspYtToClosed (Ideal.Quotient.mk chartYtCuspIdeal
+          (1 + MvPolynomial.X (0 : Fin 2) * (MvPolynomial.X (1 : Fin 2)) ^ 3))) ≠ 0 := by
+  have himage :
+      chartOfModelTrueY_fixed
+          (cuspYtToClosed (Ideal.Quotient.mk chartYtCuspIdeal
+            (1 + MvPolynomial.X (0 : Fin 2) * (MvPolynomial.X (1 : Fin 2)) ^ 3))) =
+        1 + chartYt_Y valuationOneCurve 0 0 *
+          chartYt_X_over_Y valuationOneCurve 0 0 ^ 3 := by
+    have h0 : ((MvPolynomial.X (0 : Fin 2) : chartYtCuspPoly) ^ 0 *
+          (MvPolynomial.X (1 : Fin 2)) ^ 0) = 1 := by
+      rw [pow_zero, pow_zero, mul_one]
+    have h1 : ((MvPolynomial.X (0 : Fin 2) : chartYtCuspPoly) ^ 1 *
+          (MvPolynomial.X (1 : Fin 2)) ^ 3) =
+        MvPolynomial.X 0 * (MvPolynomial.X 1) ^ 3 := by
+      rw [pow_one]
+    rw [← h0, ← h1, map_add (Ideal.Quotient.mk chartYtCuspIdeal), map_add cuspYtToClosed,
+      map_add chartOfModelTrueY_fixed, chartOfModelTrueY_fixed_monomial,
+      chartOfModelTrueY_fixed_monomial, pow_zero, pow_zero, one_mul, pow_one]
+  rw [himage]
+  exact chartYt_one_add_Y_Scube_ne_zero
+
 #print axioms Beal.MathlibMissing.yt_reesProd_two
 #print axioms Beal.MathlibMissing.chartYt_monomial_ne_zero
 #print axioms Beal.MathlibMissing.chartOfModelTrueY_fixed_monomial
@@ -2826,5 +3082,10 @@ theorem chartYtCusp_one_add_Y_Scube_not_mem :
 #print axioms Beal.MathlibMissing.chartYt_one_add_YS3_surface
 #print axioms Beal.MathlibMissing.chartYt_Y_mul_Xcube_sub_one_not_mem
 #print axioms Beal.MathlibMissing.chartYtCusp_one_add_Y_Scube_not_mem
+#print axioms Beal.MathlibMissing.vY_pow_not_mem_succ
+#print axioms Beal.MathlibMissing.chartYt_two_over_Y_ne_zero
+#print axioms Beal.MathlibMissing.chartYt_T_eq_Y_mul_one_add_Y_Scube
+#print axioms Beal.MathlibMissing.chartYt_one_add_Y_Scube_ne_zero
+#print axioms Beal.MathlibMissing.chartOfModelTrueY_fixed_one_add_Y_Scube_ne_zero
 
 end Beal.MathlibMissing
