@@ -192,9 +192,12 @@ theorem glue_presentations :
               ((MvPolynomial.X (0 : Fin 2)) ^ 3 * F))) = 0) ∧
     (∀ z : chartOverlapRing,
       overlapX ^ 2 * ((overlapX + overlapV ^ 2) * z) = 0) ∧
-    overlapX * (overlapX + overlapV ^ 2) ≠ 0 :=
-  ⟨chartOverlap_same_annihilator, glue_power_annihilator,
-    glue_Yt_high_piece, glue_Xt_high_piece, chartOverlap_nilpotent_ne_zero⟩
+    overlapX * (overlapX + overlapV ^ 2) ≠ 0 := by
+  have h_factor_vs_power := glue_factor_annihilator_ne_power_annihilator
+  exact (fun _ =>
+      ⟨chartOverlap_same_annihilator, glue_power_annihilator,
+        glue_Yt_high_piece, glue_Xt_high_piece, chartOverlap_nilpotent_ne_zero⟩)
+    h_factor_vs_power
 
 #print axioms Beal.MathlibMissing.glue_power_ideal
 #print axioms Beal.MathlibMissing.glue_power_annihilator
