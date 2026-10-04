@@ -30,10 +30,18 @@ therefore has a representative supported on monomials with `i ≤ 2` or
 `j ≤ 2`:
 `A(S) + Y·B(S) + Y²·C(S) + Y³·(E₀(Y) + S·E₁(Y) + S²·E₂(Y))`,
 with `E₀, E₁, E₂` independent. One polynomial `E(Y)` with constant
-coefficients of `1, S, S²` does not represent `Y³ + Y⁴·S`. The `Y`-degree
-of this remainder is unbounded, and `centreIdeal_power_coeff_bound` is a
-bound on `X`-powers, so injectivity of `chartOfModelTrueY_fixed` stays
-open. There is no `chart_Dplus_Yt_true_presentation`.
+coefficients of `1, S, S²` does not represent `Y³ + Y⁴·S`.
+Clearing a power of `Yt` is `yt_reesProd_two`: `Y^m * N = 2 * z` with
+`z ∈ I^{D+m}`. The cofactor is entirely divisible by `2`. That is not
+`Y^m * N = 2·α + Y·β` with only `α + Y·β ∈ I^{D+m}`.
+`chartYt_monomial_ne_zero` sends `Y^i S^j` to a nonzero class: the
+`(1,1)` residue kills a factor of `2` on `Y^{i+m} X^j`. A single remainder
+term is therefore not in the kernel, whether or not `i ≤ 2` or `j ≤ 2`.
+`centreIdeal_power_coeff_bound` bounds `X`-powers of `α(X) + Y·β(X)` in
+`I = (2, X, Y)`. It does not become a bound for `(2, Y)` by renaming, and
+`X = Y·S` is a chart relation, not a relation in that surface ring.
+Injectivity of `chartOfModelTrueY_fixed` stays open. There is no
+`chart_Dplus_Yt_true_presentation`.
 
 `D₊(2t)` is already the zero ring (`chart_Dplus_2t_subsingleton_valuationOne`).
 A scheme gluing `Proj(Rees(I)/(2)) ≃ D₊(Xt) ∪ D₊(Yt)` is not claimed.
@@ -2481,5 +2489,178 @@ end YtNormalForm
 #print axioms Beal.MathlibMissing.chartYtCusp_reduction_step
 #print axioms Beal.MathlibMissing.chartYtCusp_exists_reduced
 #print axioms Beal.MathlibMissing.chartYtCusp_normalForm
+
+/-!
+## Clearing a power of `Yt`
+
+`reesProd_two` extracts the coefficient of `(Xt)^m * (N t^D)` in the
+scalar ideal `(2)`. The same extraction with `Yt` in place of `Xt` gives
+`Y^m * N = 2 * z` and `z ∈ I^{D+m}`. Both parts of the centre normal form
+of `z` are divisible by `2`.
+
+On `D₊(Yt)`, the class `Y^i · (Xt / Yt)^j` is the fraction whose numerator
+is `Y^i · (Xt)^j`. If that class is zero, some `(Yt)^m` puts the numerator
+in `(2)`, so `Y^{i+m} X^j` is divisible by `2`. The residue `X ↦ 1`,
+`Y ↦ 1` sends that monomial to `1`.
+-/
+
+lemma yt_mul_num (m D : ℕ) (N : surfaceRing valuationOneCurve) (hN : N ∈ vI ^ D) :
+    (numeralReesYT valuationOneCurve 0 0) ^ m * centreReesMonomial vI D ⟨N, hN⟩ =
+      centreReesMonomial vI (m + D)
+        ⟨vY ^ m * N, by
+          rw [pow_add]
+          exact Ideal.mul_mem_mul (vY_pow_mem m) hN⟩ := by
+  rw [vYt_pow]
+  apply Subtype.ext
+  simp [Subalgebra.coe_mul, centreReesMonomial, Polynomial.monomial_mul_monomial]
+
+/-- `(Yt)^m` times a degree-`D` centre numerator lies in `(2)` only when the
+surface coefficient is twice an element of `I^{D+m}`. -/
+lemma yt_reesProd_two (m D : ℕ) (N : surfaceRing valuationOneCurve) (hN : N ∈ vI ^ D)
+    (hmem : (numeralReesYT valuationOneCurve 0 0) ^ m *
+        centreReesMonomial vI D ⟨N, hN⟩ ∈
+          numeralReesSpecialIdeal valuationOneCurve 0 0) :
+    ∃ z : surfaceRing valuationOneCurve,
+      vY ^ m * N = (2 : surfaceRing valuationOneCurve) * z ∧ z ∈ vI ^ (D + m) := by
+  obtain ⟨p, hp⟩ := (Ideal.mem_span_singleton').mp hmem
+  have hp' := congrArg (Subalgebra.val (reesAlgebra vI)) hp
+  rw [map_mul, AlgHom.commutes, yt_mul_num] at hp'
+  simp only [centreReesMonomial, LinearMap.coe_mk, AddHom.coe_mk, Subtype.coe_mk,
+    ← Polynomial.C_eq_algebraMap] at hp'
+  have hcoeff : ((Subalgebra.val (reesAlgebra vI) p) *
+        Polynomial.C (2 : surfaceRing valuationOneCurve)).coeff (m + D) = vY ^ m * N := by
+    rw [hp']
+    erw [Polynomial.coeff_monomial]
+    rw [if_pos rfl]
+  rw [Polynomial.coeff_mul_C] at hcoeff
+  have hswap : (Subalgebra.val (reesAlgebra vI) p).coeff (m + D) *
+        (2 : surfaceRing valuationOneCurve) =
+      (2 : surfaceRing valuationOneCurve) *
+        (Subalgebra.val (reesAlgebra vI) p).coeff (m + D) := by ring
+  rw [hswap] at hcoeff
+  refine ⟨(Subalgebra.val (reesAlgebra vI) p).coeff (m + D), hcoeff.symm, ?_⟩
+  rw [← Nat.add_comm m D]
+  exact ((mem_reesAlgebra_iff vI ((Subalgebra.val (reesAlgebra vI)) p)).mp p.property) (m + D)
+
+private lemma yt_const_mul_xt (i j : ℕ) :
+    numeralReesConst valuationOneCurve 0 0 (vY ^ i) *
+        (numeralReesXT valuationOneCurve 0 0) ^ j =
+      centreReesMonomial vI j
+        ⟨vY ^ i * vX ^ j, Ideal.mul_mem_left _ _ (vX_pow_mem j)⟩ := by
+  rw [vXt_pow]
+  exact vConst_mul_monomial (vY ^ i) j (vX ^ j) (vX_pow_mem j)
+
+private lemma valuationOne_X_residue_vX : valuationOne_X_residue vX = 1 := by
+  rw [vX_eq_mk]
+  exact valuationOne_X_residue_X
+
+private lemma valuationOne_X_residue_vY : valuationOne_X_residue vY = 1 := by
+  rw [vY_eq_mk]
+  exact valuationOne_X_residue_Y
+
+set_option maxHeartbeats 8000000 in
+set_option synthInstance.maxHeartbeats 400000 in
+/-- `Y^i · (Xt / Yt)^j` is nonzero in `D₊(Yt)`. -/
+theorem chartYt_monomial_ne_zero (i j : ℕ) :
+    (chartYt_Y valuationOneCurve 0 0) ^ i *
+        (chartYt_X_over_Y valuationOneCurve 0 0) ^ j ≠ 0 := by
+  intro hzero
+  let I := numeralCentreIdeal valuationOneCurve 0 0
+  letI : GradedAlgebra (centreReesComponent I) := centreReesGrading I
+  let J := numeralReesSpecialIdeal valuationOneCurve 0 0
+  have _hJ : J.IsHomogeneous (centreReesComponent I) :=
+    numeralReesSpecialIdeal_isHomogeneous valuationOneCurve 0 0
+  let ℬ := homogeneousQuotientComponent (centreReesComponent I) J
+  letI : GradedAlgebra ℬ := homogeneousQuotientGrading (centreReesComponent I) J _hJ
+  let Q := (reesAlgebra I) ⧸ J
+  let f : Q := Ideal.Quotient.mk J (numeralReesYT valuationOneCurve 0 0)
+  have hval := congrArg (HomogeneousLocalization.val (x := Submonoid.powers f)) hzero
+  erw [HomogeneousLocalization.val_mul, HomogeneousLocalization.val_pow,
+    HomogeneousLocalization.val_pow, HomogeneousLocalization.val_zero] at hval
+  simp only [chartYt_Y, chartYt_X_over_Y, HomogeneousLocalization.val_mk] at hval
+  rw [Localization.mk_pow, Localization.mk_pow, Localization.mk_mul] at hval
+  rw [← Localization.mk_zero (1 : Submonoid.powers f), Localization.mk_eq_mk_iff] at hval
+  obtain ⟨c, hc⟩ := Localization.r_iff_exists.mp hval
+  have hc0 : (c : Q) *
+      ((Ideal.Quotient.mk J
+          (numeralReesConst valuationOneCurve 0 0 (surfaceNumeralY valuationOneCurve 0))) ^ i *
+        (Ideal.Quotient.mk J (numeralReesXT valuationOneCurve 0 0)) ^ j) = 0 := by
+    have hc' :
+        (c : Q) *
+            ((Ideal.Quotient.mk J
+                (numeralReesConst valuationOneCurve 0 0
+                  (surfaceNumeralY valuationOneCurve 0))) ^ i *
+              (Ideal.Quotient.mk J (numeralReesXT valuationOneCurve 0 0)) ^ j) =
+          (c : Q) *
+            ((1 : Q) ^ i *
+              (Ideal.Quotient.mk J (numeralReesYT valuationOneCurve 0 0)) ^ j * 0) := by
+      simpa [one_mul] using hc
+    rw [mul_zero ((1 : Q) ^ i *
+      (Ideal.Quotient.mk J (numeralReesYT valuationOneCurve 0 0)) ^ j), mul_zero] at hc'
+    exact hc'
+  obtain ⟨m, hm⟩ := (Submonoid.mem_powers_iff (c : Q) f).mp c.property
+  have hkill : f ^ m *
+      ((Ideal.Quotient.mk J
+          (numeralReesConst valuationOneCurve 0 0 (surfaceNumeralY valuationOneCurve 0))) ^ i *
+        (Ideal.Quotient.mk J (numeralReesXT valuationOneCurve 0 0)) ^ j) = 0 := by
+    rw [hm]
+    exact hc0
+  have hnumeq : (Ideal.Quotient.mk J
+        (numeralReesConst valuationOneCurve 0 0 (surfaceNumeralY valuationOneCurve 0))) ^ i =
+      Ideal.Quotient.mk J (numeralReesConst valuationOneCurve 0 0 (vY ^ i)) := by
+    rw [← map_pow, vConst_pow]
+  have hpre :
+      (numeralReesYT valuationOneCurve 0 0) ^ m *
+        (numeralReesConst valuationOneCurve 0 0 (vY ^ i) *
+          (numeralReesXT valuationOneCurve 0 0) ^ j) ∈ J := by
+    rw [← Ideal.Quotient.eq_zero_iff_mem, map_mul, map_pow, map_mul, map_pow, ← hnumeq]
+    exact hkill
+  rw [yt_const_mul_xt] at hpre
+  obtain ⟨z, hz, _hzI⟩ := yt_reesProd_two m j (vY ^ i * vX ^ j)
+    (Ideal.mul_mem_left _ _ (vX_pow_mem j)) hpre
+  have hdiv : vY ^ (m + i) * vX ^ j = (2 : surfaceRing valuationOneCurve) * z := by
+    rw [← hz]
+    ring
+  have hφ := congrArg valuationOne_X_residue hdiv
+  have hleft : valuationOne_X_residue (vY ^ (m + i) * vX ^ j) = 1 := by
+    rw [map_mul, map_pow, valuationOne_X_residue_vY, one_pow, map_pow,
+      valuationOne_X_residue_vX, one_pow, one_mul]
+  have hright :
+      valuationOne_X_residue ((2 : surfaceRing valuationOneCurve) * z) = 0 := by
+    rw [map_mul, valuationOne_X_residue_two, zero_mul]
+  rw [hleft, hright] at hφ
+  exact one_ne_zero hφ
+
+/-- The cusp monomial `Y^i S^j` is sent to `Y^i · (Xt / Yt)^j`. -/
+theorem chartOfModelTrueY_fixed_monomial (i j : ℕ) :
+    chartOfModelTrueY_fixed
+        (cuspYtToClosed (Ideal.Quotient.mk chartYtCuspIdeal
+          ((MvPolynomial.X (0 : Fin 2)) ^ i * (MvPolynomial.X (1 : Fin 2)) ^ j))) =
+      (chartYt_Y valuationOneCurve 0 0) ^ i *
+        (chartYt_X_over_Y valuationOneCurve 0 0) ^ j := by
+  rw [chartOfModelTrueY_fixed, cuspYtToClosed, Ideal.Quotient.lift_mk,
+    RingHom.comp_apply, Ideal.Quotient.lift_mk]
+  have hY : cuspYtToClosedPoly (MvPolynomial.X (0 : Fin 2)) = MvPolynomial.X 1 := by
+    simp [cuspYtToClosedPoly, MvPolynomial.eval₂Hom_X']
+  have hS : cuspYtToClosedPoly (MvPolynomial.X (1 : Fin 2)) = MvPolynomial.X 2 := by
+    simp [cuspYtToClosedPoly, MvPolynomial.eval₂Hom_X']
+  rw [map_mul, map_pow, map_pow, hY, hS]
+  rw [map_mul, map_pow, map_pow, chartYtModelEval_X, chartYtModelEval_X]
+  rw [if_neg (by decide : (1 : Fin 4) ≠ 0), if_pos (rfl : (1 : Fin 4) = 1)]
+  rw [if_neg (by decide : (2 : Fin 4) ≠ 0), if_neg (by decide : (2 : Fin 4) ≠ 1),
+    if_pos (rfl : (2 : Fin 4) = 2)]
+
+/-- No cusp monomial lies in the kernel of `chartOfModelTrueY_fixed`. -/
+theorem chartOfModelTrueY_fixed_monomial_ne_zero (i j : ℕ) :
+    chartOfModelTrueY_fixed
+        (cuspYtToClosed (Ideal.Quotient.mk chartYtCuspIdeal
+          ((MvPolynomial.X (0 : Fin 2)) ^ i * (MvPolynomial.X (1 : Fin 2)) ^ j))) ≠ 0 := by
+  rw [chartOfModelTrueY_fixed_monomial]
+  exact chartYt_monomial_ne_zero i j
+
+#print axioms Beal.MathlibMissing.yt_reesProd_two
+#print axioms Beal.MathlibMissing.chartYt_monomial_ne_zero
+#print axioms Beal.MathlibMissing.chartOfModelTrueY_fixed_monomial
+#print axioms Beal.MathlibMissing.chartOfModelTrueY_fixed_monomial_ne_zero
 
 end Beal.MathlibMissing
