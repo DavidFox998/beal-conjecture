@@ -32,14 +32,18 @@ therefore has a representative supported on monomials with `i ≤ 2` or
 with `E₀, E₁, E₂` independent. One polynomial `E(Y)` with constant
 coefficients of `1, S, S²` does not represent `Y³ + Y⁴·S`.
 Clearing a power of `Yt` is `yt_reesProd_two`: `Y^m * N = 2 * z` with
-`z ∈ I^{D+m}`. The cofactor is entirely divisible by `2`. That is not
-`Y^m * N = 2·α + Y·β` with only `α + Y·β ∈ I^{D+m}`.
+`z ∈ I^{D+m}`. `chartVanishingY_fixed_reesEquation_cofactor` writes that
+cofactor as `α(X) + Y·β(X)`, so
+`Y^m * N = 2·(α + Y·β) = 2·α + Y·(2·β)` and `α + Y·β ∈ I^{D+m}`.
+The same `β` does not satisfy `Y^m * N = 2·α + Y·β` together with
+`α + Y·β ∈ I^{D+m}` unless the `Y` part of the cofactor is zero.
 `chartYt_monomial_ne_zero` sends `Y^i S^j` to a nonzero class: the
 `(1,1)` residue kills a factor of `2` on `Y^{i+m} X^j`. A single remainder
-term is therefore not in the kernel, whether or not `i ≤ 2` or `j ≤ 2`.
-`centreIdeal_power_coeff_bound` bounds `X`-powers of `α(X) + Y·β(X)` in
-`I = (2, X, Y)`. It does not become a bound for `(2, Y)` by renaming, and
-`X = Y·S` is a chart relation, not a relation in that surface ring.
+term is therefore not in the kernel. An even number of those monomials
+can still sum to `0` in that residue, so the kernel of a general normal
+form is not settled. `centreIdeal_power_coeff_bound` applies to this
+cofactor in `I = (2, X, Y)`. The chart numerator of
+`A + Y·B + Y²·C + Y³·(E₀ + S·E₁ + S²·E₂)` is not yet that cofactor.
 Injectivity of `chartOfModelTrueY_fixed` stays open. There is no
 `chart_Dplus_Yt_true_presentation`.
 
@@ -2658,9 +2662,56 @@ theorem chartOfModelTrueY_fixed_monomial_ne_zero (i j : ℕ) :
   rw [chartOfModelTrueY_fixed_monomial]
   exact chartYt_monomial_ne_zero i j
 
+/-- The cofactor in `yt_reesProd_two` is a centre class `α(X) + Y·β(X)`.
+`Y^m * N = 2·(α + Y·β) = 2·α + Y·(2·β)`, and `α + Y·β ∈ I^{D+m}`.
+Writing the product as `2·α + Y·β` with this same `β` drops the factor
+`2` on the `Y` term. -/
+theorem chartVanishingY_fixed_reesEquation_cofactor
+    (m D : ℕ) (N : surfaceRing valuationOneCurve) (hN : N ∈ vI ^ D)
+    (hmem : (numeralReesYT valuationOneCurve 0 0) ^ m *
+        centreReesMonomial vI D ⟨N, hN⟩ ∈
+          numeralReesSpecialIdeal valuationOneCurve 0 0) :
+    ∃ α β : Polynomial S,
+      vY ^ m * N =
+        (2 : surfaceRing valuationOneCurve) *
+          Ideal.Quotient.mk (Ideal.span {surfacePolynomial valuationOneCurve})
+            (centreNormalPoly α β) ∧
+      Ideal.Quotient.mk (Ideal.span {surfacePolynomial valuationOneCurve})
+          (centreNormalPoly α β) ∈ vI ^ (D + m) ∧
+      vY ^ m * N =
+        (2 : surfaceRing valuationOneCurve) * surfaceEvalHom α +
+          vY * ((2 : surfaceRing valuationOneCurve) * surfaceEvalHom β) := by
+  obtain ⟨z, hz, hzI⟩ := yt_reesProd_two m D N hN hmem
+  obtain ⟨α, β, hzform⟩ := exists_centreNormal z
+  refine ⟨α, β, ?_, ?_, ?_⟩
+  · rw [hz, hzform]
+  · simpa [hzform] using hzI
+  · rw [hz, hzform, centre_normal_eval]
+    ring
+
+/-- `centreIdeal_power_coeff_bound` on the cofactor `α(X) + Y·β(X)`.
+The centre is still `(2, X, Y)`. -/
+theorem chartVanishingY_fixed_cofactor_bound
+    (m D : ℕ) (N : surfaceRing valuationOneCurve) (hN : N ∈ vI ^ D)
+    (hmem : (numeralReesYT valuationOneCurve 0 0) ^ m *
+        centreReesMonomial vI D ⟨N, hN⟩ ∈
+          numeralReesSpecialIdeal valuationOneCurve 0 0) :
+    ∃ α β : Polynomial S,
+      vY ^ m * N =
+        (2 : surfaceRing valuationOneCurve) *
+          Ideal.Quotient.mk (Ideal.span {surfacePolynomial valuationOneCurve})
+            (centreNormalPoly α β) ∧
+      ∀ i, twoAdicNormBound (centreAlphaBound (D + m) i) (α.coeff i) ∧
+        twoAdicNormBound (centreBetaBound (D + m) i) (β.coeff i) := by
+  obtain ⟨α, β, h2, hI, _hexp⟩ :=
+    chartVanishingY_fixed_reesEquation_cofactor m D N hN hmem
+  exact ⟨α, β, h2, centreIdeal_power_coeff_bound hI⟩
+
 #print axioms Beal.MathlibMissing.yt_reesProd_two
 #print axioms Beal.MathlibMissing.chartYt_monomial_ne_zero
 #print axioms Beal.MathlibMissing.chartOfModelTrueY_fixed_monomial
 #print axioms Beal.MathlibMissing.chartOfModelTrueY_fixed_monomial_ne_zero
+#print axioms Beal.MathlibMissing.chartVanishingY_fixed_reesEquation_cofactor
+#print axioms Beal.MathlibMissing.chartVanishingY_fixed_cofactor_bound
 
 end Beal.MathlibMissing
