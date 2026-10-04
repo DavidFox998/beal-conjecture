@@ -113,6 +113,7 @@ lean_lib BealMathlibMissing where
     .one `Beal.MathlibMissing.ChartTrueIdeal,
     .one `Beal.MathlibMissing.CentrePower,
     .one `Beal.MathlibMissing.ChartInjective,
+    .one `Beal.MathlibMissing.ChartXtTorsionBound,
     .one `Beal.MathlibMissing.ChartYt,
     .one `Beal.MathlibMissing.ChartYtTorsionBound]
 
