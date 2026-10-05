@@ -70,8 +70,9 @@ Standard Lean and Mathlib dependencies are still acknowledged.
   dependencies.
 - Independent setup exited 137 before either requested target ran.
   Neither target is reported here as independently built exit 0.
-- The three-phase revision independently compiled with Tectonic exit 0:
-  17 pages, 182,601 bytes, searchable throughout, zero overfull-box and
+- The current manuscript including its version-history appendix compiled
+  with Tectonic exit 0: 18 pages, 190,267 bytes, searchable throughout,
+  zero overfull-box and
   undefined-reference warnings, no text spans outside the page.
   Some underfull spacing warnings remain.
 
@@ -84,6 +85,10 @@ input qualification. The population table is on page 2; Section 20 starts
 on page 13, the cusp/chart-map diagram is on page 14, and provenance is
 on page 15. The abstract explicitly names the general proof input
 `BealFinalData.bealTheorem` at line 53. See `MCOM_STRENGTHEN.md`.
+Appendix B starts on page 16 and records v24.4.0/v33/v37/v38 history
+within this repository. The 17-page verification is explicitly the
+`7531386` snapshot, not the current 18-page file. No mathematics,
+preceding TeX, bibliography entries, or Lean sources changed.
 `10.5281/zenodo.23120540` remains the cited v37 DOI.
 `02728795` is a commit, not a DOI. This revision includes no submission,
 merge, release, or DOI mint.

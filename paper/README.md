@@ -83,13 +83,13 @@ identifiers, and labelled cross-references. The short running title and
 split displays eliminate the earlier clipping without changing 12-point
 body text. The revised TeX and PDF are paired.
 
-The latest Tectonic build exited 0: **17 pages, 182,601 bytes**, every page
+The latest Tectonic build exited 0: **18 pages, 190,267 bytes**, every page
 searchable, zero overfull-box warnings, no undefined-reference warnings,
 and no extracted text spans outside the page. Some underfull spacing
 warnings remain. All-page overview and representative detailed page
 renderings were inspected.
 PDF SHA256:
-`6125bb683dee2759e0787de16836e1d70c41a7f963acbc9207daeb5d128afd41`.
+`280ee232db317535a7fc305599fa05e39a07f53ff8e64d468485c159307c421d`.
 
 The v38 visibility follow-up names `beal-v38 EQUIV:3 792b3f8`,
 `chartOfModelTrue_injective_from_Ei_constraint`, and
@@ -103,9 +103,17 @@ commutative square on page 14, with the kernel hypothesis and high/low image
 equality. The two chunked cutoff declarations have their 25-slice types
 stated separately from the Baker-conditional conclusion.
 Section 20 now starts on page 13; the provenance table is on page 15.
-The coefficient ledger has a dedicated label, and all 24 PDF link
+The coefficient ledger has a dedicated label, and all 26 PDF link
 annotations have zero-width borders. The single inline bibliography
 retains its existing keyed v37 entry; no duplicate bibliography is added.
+
+Appendix B, “Version history: this repository only”, starts on page 16.
+It records the historical v24.4.0, bounded v33, v37 chart presentation,
+v38 chain, baseline containing PR25, and verification limits.
+The 17-page result remains labelled as the Phase 4 snapshot at `7531386`;
+the current PDF including the appendix is 18 pages. Every TeX byte before
+the new appendix and the entire inline bibliography are unchanged from
+`7531386`. No new mathematics or fresh Lean verification is asserted.
 
 All Lean source files, `lean-toolchain`, `lake-manifest.json`, and the
 archived standalone v33 source remain unchanged. The local source scan

@@ -1137,6 +1137,100 @@ Repository-only source provenance is not a claim of having no
 external libraries. A \texttt{def Prop}, a folder name, or a
 certificate label is not by itself an inhabited theorem.
 
+\section{Version history: this repository only}
+\label{sec:version-history}
+This appendix records versions and their stated scope in
+\texttt{DavidFox998/beal-conjecture}. It introduces no new mathematics,
+changes no Lean theorem, and mints no tag, release, or DOI.
+Historical verification reports remain distinct from independent replay.
+
+\paragraph{v24.4.0: historical, superseded.}
+The record at \texttt{db7a556}, tagged
+\texttt{v24.4.0-Beal-44-13-Level-26-v24x-Final-Summary},
+has version DOI \texttt{10.5281/zenodo.22732209} and concept DOI
+\texttt{10.5281/zenodo.22379293}.
+It links the logarithmic upper bound to a conditional Matveev ratio
+toward $B_0$, not an unconditional Baker bound.
+Its stated historical scope reports zero \texttt{sorry} and
+[\texttt{propext}, \texttt{Classical.choice}, \texttt{Quot.sound}].
+That superseded report is not a fresh replay here; the keyed
+bibliography record is \cite{beal_level26_v24_4_0}.
+
+\paragraph{v33: bounded gluing and actual generic fibre.}
+\texttt{Beal/Beal.General/SpecialFibreGluing.lean} records
+quotient-Rees three-open gluing, alongside the actual blow-up's
+generic-fibre comparison. The scope is bounded: not general Beal,
+not a global special-fibre identification, and not a degree-one or
+nonvanishing certificate for $\overline{2t}$.
+\texttt{Beal/RELEASE_NOTES_v33.md} and
+\texttt{Beal/AUDIT_v33_HONESTY.md} supply the release and audit record.
+The standalone check of \texttt{TateEvenSpecialFibre.lean} timed out;
+the passing v33 modules imported its compiled declarations.
+The separate \texttt{TateEvenBranch.lean} has $2249$ physical lines
+in that audit and a separately reported direct check.
+
+The archived manuscript formerly at \texttt{papers/main.tex} is
+retained at \texttt{paper/v33-standalone/main.tex} and incorporated
+in Section~19 of PR28.
+Its sentence ``Neither a tag nor a release nor a v33 DOI exists yet''
+is historical, not present release status.
+\texttt{Beal/AUDIT_v33_HONESTY.md}, lines 79--88 and 120--124,
+records the v33 release and DOI \texttt{10.5281/zenodo.23054568}.
+That historical DOI is not substituted for the current v37 citation.
+
+\paragraph{v37: true-chart presentation.}
+The current chart-version citation is
+\texttt{10.5281/zenodo.23120540}, v37-true-chart
+\cite{beal_v37_true_chart}.
+The \texttt{chart_Dplus_Xt_ring} true-model presentation
+$R/I_{\mathrm{true}}$ is recorded in
+\texttt{Beal/MathlibMissing/ChartInjective.lean}, lines 3162--3176.
+This is a chart presentation, not a general Beal proof.
+
+\paragraph{v38: EQUIV:3 at \texttt{792b3f8}.}
+\texttt{chartOfModelTrue_injective_from_Ei_constraint} is recorded
+in \texttt{Beal/MathlibMissing/ChartTrueEquiv.lean}, lines 261--338.
+The chain \texttt{ddfb2642} $\to$ \texttt{e466e5a} $\to$
+\texttt{792b3f8} records, respectively, the $E_i$ constraint
+associated with \texttt{025b34c2}, the nonzero $B=1$ example,
+and the injectivity restatement.
+The constraint has $S$-degree at most two and
+$(1+YS^3)$ annihilates the high image; $Y^3\ne0$ remains outside
+the cusp ideal.
+The freeze object is \texttt{437b4c85} at \texttt{c48b1bd3};
+the separate EQUIV object is \texttt{c2f530ab} at \texttt{792b3f8}.
+The certificate and its explicit hypotheses remain those of Section~20.
+
+\paragraph{Baseline and manuscript snapshots.}
+The main-source baseline
+\texttt{02728795e15f6c858f0d360d560f80e4efb252a2}
+contains the PR25 merge \texttt{a2a23292}.
+The pinned tools are Lean 4.12.0 and Mathlib v4.12.0, with the
+vendored package \texttt{Level26/BealLevel26Foundations}.
+The PR28 manuscript sequence is
+\texttt{c67dc4e} $\to$ \texttt{d637e91} $\to$ \texttt{7531386}.
+The Phase~4 snapshot at \texttt{7531386}, before this appendix,
+has $17$ searchable pages: Tectonic exit zero, no overfull boxes
+or undefined references, and no detected page-boundary clipping;
+underfull spacing warnings remain.
+That page count describes the cited snapshot, not every later build.
+
+\paragraph{Verification boundary.}
+Independent cache setup exited $137$ before the two requested
+targets ran; two OOM kills were recorded. Fresh exact-target
+builds and printed axiom reports remain pending verification.
+The local lexical scan covered $57$ files from the $18$
+\texttt{BealMathlibMissing} roots and $39$ files from the one
+\texttt{BealEven} root, finding no active proof-hole tokens.
+It excludes external dependencies and is not a kernel check.
+The scoped repository report for the seven declarations printed
+in \texttt{ChartTrueEquiv.lean} is
+[\texttt{propext}, \texttt{Classical.choice}, \texttt{Quot.sound}].
+Other modules declare \texttt{darmon_merel_4413_axiom},
+\texttt{frey_modular_13}, and \texttt{ribet_level_lowering_26};
+dependencies must be assessed per theorem, not inferred from the
+chart's axiom report.
+
 \begin{thebibliography}{9}
 
 \bibitem{beal_level26_v24_4_0}

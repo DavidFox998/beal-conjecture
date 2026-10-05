@@ -41,7 +41,7 @@ All Lean sources and dependency pins remain unchanged.
 ## Independent manuscript verification
 
 - Tectonic exited 0.
-- Latest PDF: 17 pages, 182,601 bytes, searchable text on every page.
+- Latest PDF: 18 pages, 190,267 bytes, searchable text on every page.
 - Zero overfull-box and undefined-reference warnings.
 - No extracted text spans outside physical page boundaries.
 - Some underfull spacing warnings remain; this is not a claim of
@@ -56,7 +56,7 @@ All Lean sources and dependency pins remain unchanged.
 - `git diff --check` passed; no Lean, toolchain, or manifest changes.
 
 PDF SHA256:
-`6125bb683dee2759e0787de16836e1d70c41a7f963acbc9207daeb5d128afd41`.
+`280ee232db317535a7fc305599fa05e39a07f53ff8e64d468485c159307c421d`.
 
 ## v38 front-visibility follow-up
 
@@ -105,6 +105,23 @@ statements occur twice on page 1, in the abstract and opening introduction.
 The v33 section and the v38 theorem statement/proof remain unchanged from
 `d637e91`. Tectonic exit 0, no overfull-box or undefined-reference warnings,
 no text outside the page; underfull spacing warnings remain.
+
+## Repository-only version-history appendix
+
+The follow-up to `7531386` adds Appendix B on page 16, recording
+v24.4.0 as historical and superseded, v33's bounded scope and recorded
+release/DOI, v37's true-chart presentation, and the v38 chain and tag objects.
+Git ancestry confirms that baseline `02728795` contains PR25 merge
+`a2a23292`. The sequence is `c67dc4e → d637e91 → 7531386`.
+The appendix labels the 17-page check as that Phase 4 snapshot.
+
+The current PDF is 18 pages, 190,267 bytes, with 26 zero-border link
+annotations. Tectonic exited 0; no overfull boxes, undefined references,
+or extracted text outside page boundaries; underfull spacing warnings remain.
+Every page is searchable, and the rendered appendix pages were inspected.
+All TeX before the added appendix and the complete inline bibliography
+remain byte-for-byte unchanged from `7531386`. No new mathematical result
+or fresh Lean build/axiom replay is claimed.
 
 ## Lean verification limits
 
