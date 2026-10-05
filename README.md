@@ -833,3 +833,10 @@ There is no ring map from `D₊(Xt)` into the overlap. Seven theorems in `Beal/M
 ## Paper consolidation
 
 `paper/` is the single manuscript directory. The standalone v33 source that was `papers/main.tex` is archived at `paper/v33-standalone/`, and its body is a section of `paper/mcom-draft.tex`. Build with `cd paper && tectonic mcom-draft.tex` (or `latexmk -pdf mcom-draft.tex`). The downloadable file is `paper/mcom-draft.pdf`. See `paper/README.md`. This note does not mint a DOI.
+
+The three-phase MCOM revision corrects the `(4,4,13)` signature and
+fourth-power trace attribution, clarifies finite populations and v33
+chronology, and adds the v38 certificate, source ledger, and reproducibility
+appendix. The revised PDF is 15 searchable pages with no overfull boxes.
+See `AMS_EDITING_NOTES/` for scope and verification limits. No Lean proof,
+dependency pin, freeze tag, or release is changed by this manuscript work.

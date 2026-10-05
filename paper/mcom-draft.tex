@@ -1,57 +1,88 @@
 \documentclass[12pt]{amsart}
+\PassOptionsToPackage{obeyspaces}{url}
 \usepackage{amsmath,amssymb,amsthm,hyperref,enumitem,listings}
+\usepackage{xurl}
+\usepackage[nameinlink]{cleveref}
 \newtheorem{theorem}{Theorem}
-\title{Beal $(4,13,13)$ gap $3$ at level $26$: $5983$ rows $B\le 2\text{M}$ and first Kraus elimination via $p=53,443$}
+\renewcommand{\texttt}[1]{\ifmmode
+  \mbox{\small\upshape\nolinkurl{#1}}\else{\small\upshape\nolinkurl{#1}}\fi}
+\lstset{basicstyle=\footnotesize\ttfamily,breaklines=true,
+  columns=fullflexible,keepspaces=true}
+\setlength{\emergencystretch}{2em}
+\title[Finite residue certificates for the gap-three equation]
+{Finite residue certificates for the gap-three equation
+$A^4+B^4=(B+3)^{13}$: Beal $(4,4,13)$ at level $26$}
 \author{David Fox}
-\thanks{Code: \url{https://github.com/DavidFox998/beal-level-26-foundations/releases/tag/v10.0.0-paper-B14-Baker-1e6-DOI}.
-The Lean residue cover of the $352$ named $B\equiv 14$ rows is in
-\texttt{v8.84.0-B14-modq-kill}.
-The $62500$-value $B\le 10^6$ census is
-\texttt{v9.4.0-chunked-1e6-final}.
-Concept DOI \url{https://doi.org/10.5281/zenodo.22698257}.
-Math version DOI \url{https://doi.org/10.5281/zenodo.22712897}.
-Paper version DOI \url{https://doi.org/10.5281/zenodo.22713047}.}
+\thanks{Lean-source baseline:
+\url{https://github.com/DavidFox998/beal-conjecture/tree/02728795e15f6c858f0d360d560f80e4efb252a2}.
+The level-26 package is vendored under
+\texttt{Level26/BealLevel26Foundations/}.
+The current cited chart version is v37-true-chart,
+DOI \url{https://doi.org/10.5281/zenodo.23120540}.
+Historical software versions are distinguished from fresh verification below.}
 \begin{document}
 \maketitle
 
 \begin{abstract}
-We report a formally verified scaffold for Beal $(4,13,13)$ with gap $3$, $C=B+3$.
-Track~B: $5983=4488+5\cdot 299$ named rows $B\le 2.0\text{M}$ with density invariant
-$\Phi_{13}(B)=S_{\mathrm{val}}(B,B+3)$ where $S=(C^{13}-B^{13})/(C-B)$,
-each equipped with a small Zsigmondy witness \texttt{hasSmallZsigWitness} by
-\texttt{decide} in \texttt{ZMod }p / p*p.
-Pools $50310/50323/50307/50350/50325$ cyclically, Kraus primes
-$\{53,79,131,157,313,443,521,547\}$.
-Track~A: $S_2(26)$ $\dim 2$, forms $26.2.a.a/b$ via $q\text{-exp}_{26a1\_500}/q\text{-exp}_{26b1\_500}$
-\texttt{List.take }500 extending certified Weierstrass
-$[1,0,1,-5,-8]$ and $[1,-1,1,-3,3]$, SHA-locked $101$-coeff JSON $0259fe95\ldots$,
-prefix equality by \texttt{decide}.
-Locked lookups: $a_{53}(26a1)=0$, $a_{53}(26b1)=12$, $a_{443}(26a1)=21$,
-$a_{443}(26b1)=-39$ by \texttt{decide}.
-Frey $E_B: y^2=x(x-B^4)(x+C^4)$ displayed model $y^2=x(x-B)(x+C)$ point-counted
-Euler/\texttt{decide} (not \texttt{native\_decide}):
-$a_{53}(E_{196})=-2$ for $B=196,C=199$,
-$a_{443}(E_{1500003})=24$ for $B=1500003,C=1500006$ Step~56 $(1500003,1500006)$ $p=443$.
-Hence $(-2)\%13\neq 0\%13,12\%13$ and $24\%13\neq 21\%13,(-39)\%13$ by \texttt{decide}.
-Conjunction \texttt{kraus\_elimination\_q\_13\_level\_26} now theorem via
-$\langle\texttt{level26\_a\_eliminated\_by\_53},\texttt{level26\_b\_eliminated\_by\_443}\rangle$,
-Ribet-Mazur pack \texttt{ribet\_mazur\_pack\_q\_13\_level\_26} inhabited via
-\texttt{hK.left / hK.right}, $\#\texttt{print axioms}$ empty and
-$[\texttt{propext},\texttt{Quot.sound}]$ inside allowed
-$\{\texttt{propext},\texttt{Classical.choice},\texttt{Quot.sound}\}$.
-Honesty: displayed \texttt{exists\_newform\_level\_26\_dim2} inhabited
-($0\neq12$ at $p=53$); Chain \texttt{ExistsNewformLevel2} stays $0\neq0$
-(no newform at level $2$); density/step
-$\forall B$ \texttt{kraus\_elimination\_q\_13\_level\_26} uninhabited,
-\texttt{beal\_4\_13\_13\_gap3\_B\_le\_2M\_eliminated} stays \texttt{Classical.em},
-\texttt{zsig\_density\_links\_to\_kraus} list equality $+4488+5*299=5983$.
-Both lakes green twice, \texttt{verify-scaffold.sh} passed, \texttt{.zenodo.json}
-present. Zenodo DOI \url{https://doi.org/10.5281/zenodo.22698257} for $v8.69.0$ at $93a0c1d$ (\texttt{v8.70.0-zenodo-doi} trigger).
+We study the gap-three equation $A^4+B^4=(B+3)^{13}$, of
+signature $(4,4,13)$. Fourth-power residues modulo $16$ exclude every
+$B\not\equiv14\pmod{16}$. For a specified list of $352$ remaining
+named rows below two million, successive fourth-power non-residue tests
+at $53$, $29$, and $109$ exclude $266$, $77$, and $9$ rows.
+This list is not an exhaustive census of that residue class.
+A separate recorded cover addresses the $62500$ values
+$B\equiv14\pmod{16}$ below $10^6$; the extension to all $B$
+retains an explicit Baker-bound premise.
+Finite level-$26$ coefficient and trace certificates are distinguished
+from modularity and level-lowering inputs.
+We also retain the bounded v33 quotient-Rees gluing manuscript and
+state the v38 true-chart certificate with its actual hypotheses.
+The general Beal common-prime statement is recorded in a forward
+interface whose common-prime proof remains an explicit input.
+No implication from the chart certificate to that input is claimed.
 \end{abstract}
 
 \section{Introduction}
-Beal $(4,13,13)$ gap $3$: $A^4+B^4=C^{13}$ impossible? We treat $C=B+3$,
-$S=(C^{13}-B^{13})/(C-B)=\Phi_{13}$. Frey $E_B$.
+\label{sec:introduction}
+We study finite residue obstructions for
+$A^4+B^4=(B+3)^{13}$ and distinguish them from conditional modular
+and logarithmic arguments. The vendored SageMath 10.7 certificate
+\texttt{Level26/BealLevel26Foundations/sagemath/certs/j0_26_decomposition.json}
+(v1.3.0), generated by
+\texttt{sagemath/j0_26_decomp_foundation.sage} within that package,
+reports the elliptic factors $26a$ and $26b$ of $J_0(26)$.
+Their Cremona models $26a1$ and $26b1$ have coefficients
+$[1,0,1,-5,-8]$ and $[1,-1,1,-3,3]$, discriminants
+$-17576$ and $-1664$, and recorded $q$-expansion prefixes
+$a_0,\ldots,a_{20}$. The package module
+\texttt{lean/Beal/Foundations/J0_26_Decomp.lean} checks finite typed
+records and distinct prefixes; it does not identify a
+scheme-theoretic Jacobian. Displayed BSD rational data $1/3$ and
+$1/7$ are recorded separately, not asserted here as an analytic
+L-function construction or a proof of BSD.
+All cited Lean-source evidence is in \texttt{beal-conjecture};
+no private repository is required as an import.
+
+The populations in this paper must remain distinct.
+The $352$ named rows are not all $B\equiv14\pmod{16}$ below two million.
+The identity $5983=4488+5\cdot299$ is a recorded count, not an
+enumerated $5983$-element Lean list.
+The later \texttt{allKilled\_62500} and \texttt{allKilled\_1e6}
+statements concern the separate cutoff $10^6$.
+\texttt{baker\_conditional\_gap3\_full} takes
+$h_{\mathrm{Baker}}:\texttt{baker\_bound\_gap3}$ as a premise.
+The root \texttt{BealFinalData.fullB0Search} is an explicit interface
+input; differently scoped declarations are not identified silently.
+The finite named-row result is stated in \cref{thm:finite-cover};
+the separately bounded v33 manuscript is retained in
+\cref{sec:v33-incorporated}, and the general statement and v38
+certificate are presented in \cref{sec:v38}.
+
+For the historical coefficient ledger we write $C=B+3$ and
+$S=(C^{13}-B^{13})/(C-B)$, as in the recorded $\Phi_{13}$ identity.
+The certificate's SHA256 is
+\texttt{35ea70c995f9aed3ae8e2f44cf231d0b7a3ae606e11ad5646635c47fa522a750};
+its Git blob is \texttt{78a1a982c43201a0a0bdb503a62786ab2b1ef63c}.
 
 \section{Track B: Density $5983$ rows}
 Constants: $S\_val$, $\Phi_{13}=S\_val B(B+3)$, \texttt{hasSmallZsigWitness\_196} by
@@ -61,7 +92,8 @@ Pools $50310/50323/50307/50350/50325$. No Mathlib density import, equality plus 
 
 \section{Track A: $S_2(26)$ dim $2$}
 \texttt{newform\_26\_a\_qexp\_100 / newform\_26\_b\_qexp\_100 = List.take }500
-of $qExp\_26a1\_500/qExp\_26b1\_500$. Extends $[1,0,1,-5,-8]$ and $[1,-1,1,-3,3]$.
+of \texttt{qExp\_26a1\_500} and \texttt{qExp\_26b1\_500}.
+Extends $[1,0,1,-5,-8]$ and $[1,-1,1,-3,3]$.
 SHA-locked $101$-coeff JSON unchanged $0259fe95\ldots$. Prefix equality \texttt{decide}.
 Locked: $a_{53}(26a1)=0$, $a_{53}(26b1)=12$, $a_{443}(26a1)=21$, $a_{443}(26b1)=-39$.
 
@@ -74,8 +106,14 @@ $a_{53}(26a1)=a_{53}(26b1)$, but $0\neq12$ by \texttt{decide}, contradiction.
 This does \emph{not} inhabit Chain \texttt{ExistsNewformLevel2} ($S_2(\Gamma_0(2))$ displayed dimension $0$).
 
 \section{Frey traces}
-Displayed Weierstrass $y^2=x(x-B)(x+C)$ Euler count \texttt{decide} not
+Displayed Weierstrass $y^2=x(x-B^4)(x+C^4)$ Euler count \texttt{decide} not
 \texttt{native\_decide}: $a_{53}(E_{196})=-2$, $a_{443}(E_{1500003})=24$.
+The definitions are in
+\texttt{Level26/BealLevel26Foundations/lean/BealLevel26Foundations/Beal/FullProof/Level26_Newforms.lean},
+lines 235--278 at the source baseline.
+The equation's Beal Frey cubic $y^2=x(x-A^4)(x+B^4)$ is defined
+separately. No identification of these models or transport of their
+traces is used without a proved bridge.
 
 \section{Frey mod $13$ irreducible via $p=53,443$ traces $-2$ and $24$}
 \texttt{frey\_mod13\_irreducible} at $B=196$ or $B=1500003$ is the displayed
@@ -111,12 +149,15 @@ Chain \texttt{ExistsNewformLevel2} stays $0\neq0$. No new Beal $\forall$.
 $[\texttt{propext},\texttt{Quot.sound}]$ inside allowed.
 
 \section{Reproducibility for MCOM}
-\texttt{lake build BealLevel26Foundations} and
-\texttt{lake build BealLevel26FoundationsFullProof} green twice,
-\texttt{./scripts/verify-scaffold.sh} passed, GitHub About v8.71.0,
-$44$ Files Changed, \texttt{.zenodo.json} present, DOI $v8.70.0$-zenodo-doi.
-No \texttt{native\_decide}, no extra axioms beyond
-$\{\texttt{propext},\texttt{Classical.choice},\texttt{Quot.sound}\}$.
+The historical scaffold record reports successful builds of
+\texttt{BealLevel26Foundations} and
+\texttt{BealLevel26FoundationsFullProof}, and a passing
+\texttt{scripts/verify-scaffold.sh}. These are historical reports,
+not independent replay results from the present manuscript revision.
+The axiom footprint must be checked for each cited declaration;
+it is not a repository-wide certificate.
+Fresh-check commands and the local limitations are given in
+\cref{sec:reproducibility}.
 
 \section{Mod16}
 Fourth powers modulo $16$ are $0$ or $1$.
@@ -124,6 +165,8 @@ Odd thirteenth powers satisfy $c^{13}\equiv c\pmod{16}$;
 even thirteenth powers with exponent $\ge 4$ are $0$.
 
 \begin{center}
+\small
+\setlength{\tabcolsep}{4pt}
 \begin{tabular}{rccc}
 $B\bmod 16$ & $B^4$ & $(B+3)^{13}$ & $A^4+B^4\equiv(B+3)^{13}$? \\
 \hline
@@ -155,6 +198,8 @@ $\{-2,-10,1,6,14\}$ and all miss locked
 $a_{53}(26a1)=0$ and $a_{53}(26b1)=12$ at $\ell=13$.
 
 \begin{center}
+\small
+\setlength{\tabcolsep}{4pt}
 \begin{tabular}{rccc}
 $B$ & $a_{53}(E_B)$ & vs $0/12$ & note \\
 \hline
@@ -280,7 +325,7 @@ Not BCDT and not Ribet.  Not \texttt{Classical.em}.
 
 \section{$B\equiv 14$ A-mod-$53$ search, not BCDT}
 Fourth powers modulo $53$ are the $14$ residues
-$\{0,1,10,13,15,16,24,28,36,42,44,46,47,49\}$.
+$\{0,1,10,13,15,16,24,\allowbreak28,36,42,44,46,47,49\}$.
 Euler $a_{53}$ of the Beal Frey cubic
 $y^2=x(x-A^4)(x+B^4)$ on $\mathbb{F}_{53}$
 is searched on that $14\times 14$ table
@@ -305,7 +350,7 @@ stay Props.  Not \texttt{Classical.em}.
 % beal_4_13_13_gap3_B_le_2M_eliminated_B14_full
 \section{$B\equiv 14$ fourth-power residue cover}
 Fourth powers modulo $53$ are the $14$ residues
-$\{0,1,10,13,15,16,24,28,36,42,44,46,47,49\}$.
+$\{0,1,10,13,15,16,24,\allowbreak28,36,42,44,46,47,49\}$.
 If $(B+3)^{13}-B^4$ is not a fourth power in
 $\mathbb{F}_{53}$, there is no $A$ with
 $A^4+B^4=(B+3)^{13}$
@@ -321,7 +366,7 @@ $q=109$ kills the remaining $9$:
 $214430$, $312798$, $477854$, $603358$,
 $813118$, $863694$, $1136270$, $1287998$,
 $1420830$.
-$q=17$ is the named demo: fourth powers
+$q=17$ is the named demo on those $86$ mod-$53$ survivors: fourth powers
 $\{0,1,4,13,16\}$, $57$ killed
 (\texttt{direct\_mod17\_kill}).
 \texttt{beal\_4\_13\_13\_gap3\_B\_le\_2M\_eliminated\_86\_modq}
@@ -368,6 +413,7 @@ Not BCDT and not Ribet.  Not \texttt{Classical.em}.
 % baker_bound_gap3
 \section{MCOM submission (v8.86.0 residue theorem)}
 \begin{theorem}[gap $3$ at $B\le 2\mathrm{M}$]
+\label{thm:finite-cover}
 The empty-axiom residue cover of \texttt{v8.86.0-paper-B14-final-DOI}
 eliminates the named $B\le 2\mathrm{M}$ gap-$3$ rows:
 if $B\le 2000000$ and $B\not\equiv 14\pmod{16}$, there is no $A$
@@ -586,7 +632,13 @@ together with
 $0<\exp(C_{\mathrm{exp\_bound}})<10^{-12}<1$
 and
 $C_{\mathrm{exp\_bound}}=-(\mathrm{height}_{B_0}\log\mathrm{height}_{B_0})$,
-$\mathrm{height}_{B_0}=104382751019310000000=C_1^{\mathrm{floor}}\cdot 30^6$.
+where
+\[
+\begin{aligned}
+\mathrm{height}_{B_0}&=104382751019310000000\\
+ &=C_1^{\mathrm{floor}}\cdot 30^6.
+\end{aligned}
+\]
 \texttt{matveev\_v24x\_conditional\_summary}
 is the implication from the still-uninhabited
 \texttt{matveev\_inequality\_real\_target}.
@@ -640,9 +692,14 @@ It is not a proof of the general Beal conjecture, a global identification of
 the actual special-fibre pullback with the quotient Rees Proj, or a degree-one
 / nonvanishing certificate for $\overline{2t}$.
 
-The intended source for a future Zenodo DOI is the beal-conjecture GitHub
-Release v33. This note does not mint a DOI.
-The level-26 foundations repo is a later work mirror, not the v33 release source.
+The archived manuscript's deposit-planning language is historical.
+The current repository audit records a published v33 GitHub release
+and version DOI \texttt{10.5281/zenodo.23054568}; see
+\texttt{Beal/AUDIT\_v33\_HONESTY.md}, lines 79--88 and 120--124.
+This revision mints no DOI. The current cited chart version remains
+v37-true-chart, \cite{beal_v37_true_chart}; the old deposit language
+does not replace that citation.
+The level-26 foundations work mirror is not the v33 release source.
 See \texttt{Beal/AUDIT\_v33\_HONESTY.md}, \texttt{Beal/ZENODO\_DEPOSIT\_v33.md},
 and \texttt{Beal/RELEASE\_NOTES\_v33.md}.
 
@@ -653,6 +710,10 @@ at \texttt{c48b1bd3}, or the v37 citation
 \url{https://doi.org/10.5281/zenodo.23120540}.
 
 \subsection{Abstract of the v33 manuscript}
+
+The following abstract is retained from the archived working manuscript.
+Its release and webhook statements describe that manuscript's historical
+planning stage, not the current deposit status recorded above.
 
 This working v33 manuscript records a three-open \texttt{OpenCover} of the
 \emph{quotient} Rees scheme $\operatorname{Proj}(\mathrm{ReesMod2})$ by
@@ -753,17 +814,15 @@ lines) passed its separate direct check and was not refactored.
 
 \href{https://github.com/DavidFox998/beal-conjecture}
 {\texttt{beal-conjecture}} is the whole-project main audit and
-intended GitHub-release source. The
-\href{https://github.com/DavidFox998/beal-level-26-foundations}
-{\texttt{beal-level-26-foundations}} work repository is the later
-mirror for the level-26 scaffold; keep that scaffold separate rather
-than present it as an inhabited global Beal result.
-An authenticated GitHub-side check found one active Zenodo hook
-subscribed to \texttt{release} events for the main repository.
-Neither a tag nor a release nor a v33 DOI exists yet. Only after
-explicit release approval should the resulting Zenodo record,
-archive, metadata, and DOI be checked; no mirror push is authorized
-by this manuscript.
+intended GitHub-release source.
+The level-26 scaffold's Lean evidence is cited through the vendored
+\texttt{Level26/BealLevel26Foundations/lean/} tree at the immutable
+\texttt{beal-conjecture} baseline, not through an external code pointer.
+Keep that scaffold separate from an inhabited global Beal result.
+The archived manuscript said, ``Neither a tag nor a release nor a v33
+DOI exists yet.'' That sentence is historical: the current audit
+records the v33 release and DOI. This revision performs no release,
+deposit, DOI mint, or mirror push.
 
 
 \subsection{PDF printing}
@@ -771,6 +830,193 @@ Build from \texttt{paper/} with \texttt{latexmk -pdf mcom-draft.tex} or
 \texttt{tectonic mcom-draft.tex}. The generated file is
 \texttt{paper/mcom-draft.pdf}. The single source directory is \texttt{paper/}.
 
+
+\section{General Beal statement and the v38 true-chart certificate}
+\label{sec:v38}
+
+In this section $Y,S$ denote the cusp-chart variables, independently
+of the coefficient-ledger notation in \cref{sec:introduction}.
+Write $\overline N=\texttt{closedYtToCusp}\,N$ for the cusp class.
+
+\begin{theorem}[True-chart presentation and $E_i$ certificate (v38)]
+\label{thm:v38}
+Let
+\[
+\begin{gathered}
+ R=\mathbb F_2[a,b][X,Y,U,V],\\
+ I_{\mathrm{true}}=(XU,Y-XV,Y^2-X^3,U+X^2+XV^2).
+\end{gathered}
+\]
+The true model $R/I_{\mathrm{true}}$ is ring-isomorphic to the fixed
+chart \texttt{chart\_Dplus\_Xt\_ring valuationOneCurve 0 0}
+via \texttt{chart\_Dplus\_Xt\_true\_presentation}.
+Its map $\iota=\texttt{chartOfModelTrue}$ is injective.
+For $N:\texttt{modelYtChart\_fixed}$ with
+$\texttt{chartOfModelTrueY\_fixed}\,N=0$, the certificate supplies a
+cusp representative
+\[
+ \overline N=A+YB+Y^2C+Y^3(E_0+SE_1+S^2E_2).
+\]
+Here $A,B,C$ have $Y$-degree zero, and $E_0,E_1,E_2$ have
+$S$-degree zero. The high part $Y^3(E_0+SE_1+S^2E_2)$ has
+$S$-degree at most two. Its chart image equals that of the low part
+$A+YB+Y^2C$; writing the high-part image as $H_N$, it satisfies
+$(1+YS^3)H_N=0$.
+The recorded nonvanishing and annihilator conjuncts are retained:
+no vanishing of $B$ or $E_i$ is inferred.
+\end{theorem}
+
+\begin{proof}
+The ring presentation is \texttt{RingEquiv.ofBijective} applied to
+the existing injectivity and surjectivity proofs in
+\texttt{Beal/MathlibMissing/ChartInjective.lean}, lines 3162--3176.
+The v38 conjunction in
+\texttt{Beal/MathlibMissing/ChartTrueEquiv.lean}, lines 261--338,
+assembles \texttt{chartOfModelTrue\_injective},
+\texttt{chartTrueEquiv\_inj\_from\_Ei\_constraint N hN}, and
+\texttt{chartTrueEquiv\_annihilator\_presentations}.
+The statement above displays their chart-presentation and
+normal-form components, not a new arithmetic implication.
+\end{proof}
+
+\paragraph{Nonvanishing and overlap invariants.}
+The $B=1$ example remains nonzero outside the cusp;
+$Y^3$ is nonzero and outside the cusp ideal.
+In the centre-power assertion, $I$ is the centre ideal of the fixed
+2-adic model, not the characteristic-two ideal $I_{\mathrm{true}}$.
+In particular,
+\[
+ \texttt{centreNormalPoly}\,(X^3-1)\,0\notin I^2,
+ \qquad \texttt{centreAlphaBound}\,2\,0=1.
+\]
+The constant coefficient of $X^3-1$ is a unit in the 2-adic
+coefficient ring, incompatible with that required centre-power bound.
+The relation $X^2(X+V^2)z=0$ is distinct from $B=0$;
+$X+V^2$ stays outside the cusp ideal with nonzero image.
+On the overlap, $SV=1$, $Y=XV$, and $X=YS$. With
+$\operatorname{ann}(f)$ denoting the annihilator of the principal
+ideal generated by $f$, the recorded comparisons are
+\[
+\begin{aligned}
+ \operatorname{ann}(1+YS^3)&=\operatorname{ann}(X+V^2),\\
+ \operatorname{ann}(X^2)&=\operatorname{ann}(Y^2),\\
+ \operatorname{ann}(1+YS^3)&\ne\operatorname{ann}(X^2).
+\end{aligned}
+\]
+The distinguishing witness is $Y^2$: it annihilates the factor
+$1+YS^3$, not the power $X^2$.
+These are annihilator presentations. The source supplies no ring
+map $D_+(Xt)\to\text{overlap}$; no such arrow is inferred.
+The kernel hypothesis on $N$ refers to its defined chart map,
+not to an invented map into the overlap.
+
+\paragraph{The recorded general statement.}
+This records the general Beal conjecture succinctly: for positive
+bases and exponents at least three, an equality $x^p+y^q=z^r$
+entails a common prime divisor.
+The formal forward interface has an explicit input
+$D:\texttt{BealFinalData}$, including the field
+$D.\texttt{bealTheorem.commonPrime}$:
+\[
+\begin{gathered}
+ D:\texttt{BealFinalData},\quad x,y,z>0,\quad p,q,r\ge3,\\
+ x^p+y^q=z^r
+ \quad\Longrightarrow\quad
+ \exists\ell\in\mathbb N,\quad
+ \ell\text{ prime},\quad \ell\mid x,\ \ell\mid y,\ \ell\mid z.
+\end{gathered}
+\]
+\texttt{beal\_main\_theorem\_forward} returns that common-prime
+input field in \texttt{BealFinal/Main.lean}, lines 74--80.
+\Cref{thm:v38} displays chart injectivity and the accompanying
+$E_i$ and annihilator data; it does not supply the common-prime
+input. The v33 result in \cref{sec:v33-incorporated} remains
+separately bounded.
+
+\subsection{Immutable provenance}
+\label{sec:provenance}
+\begin{center}
+\small
+\begin{tabular}{@{}p{0.45\linewidth}p{0.18\linewidth}p{0.27\linewidth}@{}}
+Tag or version & Object & Target or citation\\
+\hline
+\texttt{beal-v38-freeze-Y-axis-glue} &
+\texttt{437b4c85} & \texttt{c48b1bd3}\\
+\texttt{beal-v38-equiv-Ei-constraint} &
+\texttt{c2f530ab} & \texttt{792b3f8}\\
+v37-true-chart & Version DOI &
+\texttt{10.5281/zenodo.23120540}
+\end{tabular}
+\end{center}
+The proof record is
+\texttt{ddfb2642} $\to$ \texttt{e466e5a} $\to$ \texttt{792b3f8}:
+the $E_i$ constraint associated with \texttt{025b34c2},
+then the nonzero $B=1$ example, then EQUIV:3.
+The code baseline is
+\texttt{02728795e15f6c858f0d360d560f80e4efb252a2};
+the manuscript revision starts from PR28 at \texttt{75b8a3a5}.
+These commit and tag-object identifiers are not new DOIs.
+
+\appendix
+\section{Exact-target reproducibility and source ledger}
+\label{sec:reproducibility}
+Retain Lean/Mathlib 4.12.0 and the checked-in manifest.
+Do not run \texttt{lake update} for this pinned replay.
+From the repository root, run each target separately and retain
+its complete log and actual exit status:
+\begin{lstlisting}
+lake --version
+lake exe cache get
+lake build BealMathlibMissing
+lake build BealEven
+\end{lstlisting}
+After successful target builds, directly check
+\texttt{Beal/MathlibMissing/ChartTrueEquiv.lean}; its seven
+\texttt{\#print axioms} commands are at lines 340--346.
+The repository reports
+[\texttt{propext}, \texttt{Classical.choice}, \texttt{Quot.sound}]
+for those declarations. Report any \texttt{sorryAx} in the replay.
+This is scoped, not an axiom certificate for every module.
+Other modules contain explicit declarations
+\texttt{darmon\_merel\_4413\_axiom},
+\texttt{frey\_modular\_13}, and
+\texttt{ribet\_level\_lowering\_26};
+their role must be assessed for each cited theorem.
+
+The manuscript review's independent cache-setup attempts exited
+$137$ before either requested target ran; the environment recorded
+two OOM kills. A lexical scan found no active
+\texttt{sorry}, \texttt{admit}, or \texttt{sorryAx} tokens in
+the resolved local import closures: $57$ files for the $18$
+\texttt{BealMathlibMissing} roots and $39$ files for the one
+\texttt{BealEven} root. External dependencies were excluded.
+That scan is not elaboration or a printed axiom report.
+The inspected workflow builds other Matveev targets; its status
+does not certify these two exact targets.
+The earlier PR28 PDF built to $11$ searchable pages;
+pagination changes in this revision are allowed for readability.
+
+\paragraph{Repository-only Lean evidence.}
+Use immutable paths within \texttt{DavidFox998/beal-conjecture}:
+\begin{itemize}
+\item Finite trace data:
+\texttt{Level26/BealLevel26Foundations/lean/BealLevel26Foundations/Beal/FullProof/Level26_Newforms.lean}.
+\item Named residue cover and conditional bound:
+\texttt{BealFreyMod53Kill.lean}, \texttt{BealFreyModQKill.lean},
+and \texttt{BealGap3BakerUpperBound.lean} in that same
+\texttt{FullProof/} directory.
+\item Bounded gluing:
+\texttt{Beal/Beal.General/SpecialFibreGluing.lean}.
+\item True chart and v38 data:
+\texttt{Beal/MathlibMissing/ChartInjective.lean} and
+\texttt{Beal/MathlibMissing/ChartTrueEquiv.lean}.
+\item General common-prime input interface:
+\texttt{BealFinal/Main.lean}.
+\end{itemize}
+Standard Lean, Mathlib, and SageMath dependencies remain acknowledged.
+Repository-only source provenance is not a claim of having no
+external libraries. A \texttt{def Prop}, a folder name, or a
+certificate label is not by itself an inhabited theorem.
 
 \begin{thebibliography}{9}
 
@@ -787,12 +1033,21 @@ IF Matveev (2000) Thm~1.4 target $|\Lambda|>\exp(C)$ held, THEN
 $0<\exp(C)<B^4/A^4$ and
 $B^4(1+\exp(C))>\exp(C)(B+3)^{13}$ toward Baker $B_0=10^6$.
 No lower bound claimed.
-Lean verified, $0$ sorry,
-$[\texttt{propext},\texttt{Classical.choice},\texttt{Quot.sound}]$ only.
+The historical release record reports Lean verification, $0$ sorry,
+and $[\texttt{propext},\texttt{Classical.choice},\texttt{Quot.sound}]$
+for its stated scope; this is not a fresh verification result here.
 DOI \url{https://doi.org/10.5281/zenodo.22732209},
 concept \url{https://doi.org/10.5281/zenodo.22379293},
 tag \texttt{v24.4.0-Beal-44-13-Level-26-v24x-Final-Summary}
 on \texttt{db7a556}.
+
+\bibitem{beal_v37_true_chart}
+\textsc{David Fox},
+\emph{Beal conjecture repository: v37-true-chart}.
+Version DOI \url{https://doi.org/10.5281/zenodo.23120540}.
+The true-chart presentation is cited through this chart-version
+record and the immutable repository paths above, not as a general
+Beal proof certificate.
 
 \end{thebibliography}
 
