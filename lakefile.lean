@@ -112,7 +112,18 @@ lean_lib BealMathlibMissing where
     .one `Beal.MathlibMissing.ChartSurjection,
     .one `Beal.MathlibMissing.ChartTrueIdeal,
     .one `Beal.MathlibMissing.CentrePower,
-    .one `Beal.MathlibMissing.ChartInjective]
+    .one `Beal.MathlibMissing.ChartInjective,
+    .one `Beal.MathlibMissing.ChartXtTorsionBound,
+    .one `Beal.MathlibMissing.ChartYt,
+    .one `Beal.MathlibMissing.ChartYtTorsionBound,
+    .one `Beal.MathlibMissing.ChartOverlapTorsion,
+    .one `Beal.MathlibMissing.ChartYtPresentation,
+    .one `Beal.MathlibMissing.ChartXtPresentation,
+    .one `Beal.MathlibMissing.GluePresentations,
+    .one `Beal.MathlibMissing.ChartXt,
+    .one `Beal.MathlibMissing.ChartXtFixed,
+    .one `Beal.MathlibMissing.GlueFinal,
+    .one `Beal.MathlibMissing.ChartTrueEquiv]
 
 /-- v35 starter for odd exponents. Not a Beal proof.
     The Lake module name is `Beal.«Beal.Odd».FullReduction`
