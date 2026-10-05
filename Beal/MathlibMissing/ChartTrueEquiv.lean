@@ -105,3 +105,9 @@ theorem chartTrueEquiv_annihilator_presentations :
 #print axioms Beal.MathlibMissing.chartTrueEquiv_annihilator_presentations
 
 end Beal.MathlibMissing
+
+-- Next layer: injective from annihilator bound
+-- Uses 81f15d00: ann(X²)=ann(Y²) via V unit, ann(1+Y·S³)=ann(X+V²)
+-- X²·(X+V²)z=0 does NOT give B=0 — B=1 outside cusp case via centreAlphaBound
+-- Need: from X²·(X+V²)z=0 + centreNormalPoly α+Yβ, get kernel torsion constrains Ei summand not Ei=0
+-- Skeleton only. chartOfModelTrue_injective is not restated.
