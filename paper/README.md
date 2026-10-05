@@ -83,20 +83,29 @@ identifiers, and labelled cross-references. The short running title and
 split displays eliminate the earlier clipping without changing 12-point
 body text. The revised TeX and PDF are paired.
 
-The latest Tectonic build exited 0: **15 pages, 171,568 bytes**, every page
+The latest Tectonic build exited 0: **17 pages, 182,601 bytes**, every page
 searchable, zero overfull-box warnings, no undefined-reference warnings,
 and no extracted text spans outside the page. Some underfull spacing
 warnings remain. All-page overview and representative detailed page
 renderings were inspected.
 PDF SHA256:
-`0236f4f0e3e197b3225e61dcdfcc1c871f4100db1eee39c954b50974ff6eb8e9`.
+`6125bb683dee2759e0787de16836e1d70c41a7f963acbc9207daeb5d128afd41`.
 
 The v38 visibility follow-up names `beal-v38 EQUIV:3 792b3f8`,
 `chartOfModelTrue_injective_from_Ei_constraint`, and
 `Function.Injective chartOfModelTrue` in both the abstract and the opening
 introduction on page 1. The abstract includes the chain, freeze object and
 target, and the forward wrapper's explicit common-prime input.
-Section 20 still starts on page 12; the provenance table is on page 14.
+Phase 4 expands the positive-natural-base general statement while retaining
+the explicit `BealFinalData.bealTheorem` input at `BealFinal/Main.lean:53`.
+It adds the finite-population table on page 2 and the named cusp/chart-map
+commutative square on page 14, with the kernel hypothesis and high/low image
+equality. The two chunked cutoff declarations have their 25-slice types
+stated separately from the Baker-conditional conclusion.
+Section 20 now starts on page 13; the provenance table is on page 15.
+The coefficient ledger has a dedicated label, and all 24 PDF link
+annotations have zero-width borders. The single inline bibliography
+retains its existing keyed v37 entry; no duplicate bibliography is added.
 
 All Lean source files, `lean-toolchain`, `lake-manifest.json`, and the
 archived standalone v33 source remain unchanged. The local source scan

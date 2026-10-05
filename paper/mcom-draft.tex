@@ -2,7 +2,9 @@
 \PassOptionsToPackage{obeyspaces}{url}
 \usepackage{amsmath,amssymb,amsthm,hyperref,enumitem,listings}
 \usepackage{xurl}
+\usepackage{amscd}
 \usepackage[nameinlink]{cleveref}
+\hypersetup{hidelinks}
 \newtheorem{theorem}{Theorem}
 \renewcommand{\texttt}[1]{\ifmmode
   \mbox{\small\upshape\nolinkurl{#1}}\else{\small\upshape\nolinkurl{#1}}\fi}
@@ -30,7 +32,13 @@ $B\not\equiv14\pmod{16}$. For a specified list of $352$ remaining
 named rows below two million, successive fourth-power non-residue tests
 at $53$, $29$, and $109$ exclude $266$, $77$, and $9$ rows.
 This list is not an exhaustive census of that residue class.
-This records the general Beal conjecture succinctly: the v38 certificate
+This records the general Beal conjecture succinctly: for positive
+$x,y,z\in\mathbb N$ and natural exponents $p,q,r\ge3$,
+$x^p+y^q=z^r$ entails a prime dividing all three bases.
+The forward interface assumes the common-prime proof in
+\texttt{BealFinalData.bealTheorem}
+(\texttt{BealFinal/Main.lean:53}).
+The v38 certificate
 \texttt{beal-v38 EQUIV:3 792b3f8},
 \texttt{chartOfModelTrue\_injective\_from\_Ei\_constraint},
 displays \texttt{Function.Injective chartOfModelTrue} with the
@@ -53,10 +61,13 @@ We also retain the separately bounded v33 quotient-Rees gluing manuscript.
 
 \section{Introduction}
 \label{sec:introduction}
-The v38 certificate \texttt{beal-v38 EQUIV:3 792b3f8},
-\texttt{chartOfModelTrue\_injective\_from\_Ei\_constraint},
-records \texttt{Function.Injective chartOfModelTrue} together with
-the $E_i$ constraint and annihilator presentations.
+\label{sec:coeff-ledger}
+\label{sec:level26}
+The v38 certificate \texttt{beal-v38 EQUIV:3 792b3f8}
+records \texttt{Function.Injective chartOfModelTrue}.
+Its declaration
+\texttt{chartOfModelTrue\_injective\_from\_Ei\_constraint}
+includes the $E_i$ constraint and annihilator presentations.
 The general Beal statement is recorded alongside it with the
 common-prime proof as an explicit input to the forward wrapper.
 \Cref{sec:v38} gives the precise certificate, that input interface,
@@ -82,6 +93,31 @@ L-function construction or a proof of BSD.
 All cited Lean-source evidence is in \texttt{beal-conjecture};
 no private repository is required as an import.
 
+\begin{table}[!ht]
+\centering
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}p{0.30\linewidth}p{0.13\linewidth}p{0.47\linewidth}@{}}
+Population & Count & Scope and certificate\\
+\hline
+Named $B\equiv14\pmod{16}$ list & $352$ &
+$266,77,9$ successive exclusions at $53,29,109$ exhaust this list.\\[3pt]
+Mod-$53$ survivors & $86$ &
+The $q=17$ count $57$ concerns these survivors.\\[3pt]
+Fourth-power residues mod $53$ & $14$ &
+The $14\times14$ Beal Frey search has trace set
+$\{-10,-2,0,1,6,14\}$; zero includes the singular cell.\\[3pt]
+Recorded count identity & $5983$ &
+$5983=4488+5\cdot299$; not an enumerated Lean list.\\[3pt]
+Chunked cover\newline $B\le10^6$ & $62500$ &
+\texttt{allKilled\_62500} and \texttt{allKilled\_1e6};
+distinct from the named list.
+\end{tabular}
+\caption{Finite populations kept separate.
+\texttt{BealFinalData.fullB0Search} remains an explicit interface input.}
+\label{tab:finite-populations}
+\end{table}
+
 The populations in this paper must remain distinct.
 The $352$ named rows are not all $B\equiv14\pmod{16}$ below two million.
 The identity $5983=4488+5\cdot299$ is a recorded count, not an
@@ -96,6 +132,22 @@ The finite named-row result is stated in \cref{thm:finite-cover};
 the separately bounded v33 manuscript is retained in
 \cref{sec:v33-incorporated}, and the general statement and v38
 certificate are presented in \cref{sec:v38}.
+
+In indexed notation, both chunk declarations have the same
+$25$-slice conjunction type
+\[
+ \bigwedge_{j=0}^{24}
+ \bigl(\texttt{allKilled}\,(2500j)\,2500=\texttt{true}\bigr),
+\]
+covering $B=14+16k$ for $0\le k<62500$.
+Separately, \texttt{baker\_conditional\_gap3\_full} has the input
+$h_{\mathrm{Baker}}:\texttt{baker\_bound\_gap3}$ and conclusion
+\[
+ \forall B\in\mathbb N,\quad
+ \neg\exists A\in\mathbb N,\quad A^4+B^4=(B+3)^{13}.
+\]
+These types, rather than their similarly named cutoffs, determine
+the scope of each result in \cref{tab:finite-populations}.
 
 For the historical coefficient ledger we write $C=B+3$ and
 $S=(C^{13}-B^{13})/(C-B)$, as in the recorded $\Phi_{13}$ identity.
@@ -854,7 +906,7 @@ Build from \texttt{paper/} with \texttt{latexmk -pdf mcom-draft.tex} or
 \label{sec:v38}
 
 In this section $Y,S$ denote the cusp-chart variables, independently
-of the coefficient-ledger notation in \cref{sec:introduction}.
+of the coefficient-ledger notation in \cref{sec:coeff-ledger}.
 Write $\overline N=\texttt{closedYtToCusp}\,N$ for the cusp class.
 
 \begin{theorem}[True-chart presentation and $E_i$ certificate (v38)]
@@ -897,6 +949,51 @@ assembles \texttt{chartOfModelTrue\_injective},
 The statement above displays their chart-presentation and
 normal-form components, not a new arithmetic implication.
 \end{proof}
+
+\begin{figure}[!htbp]
+\centering
+\small
+\begin{minipage}{\linewidth}
+Write $\mathcal M=\texttt{modelYtChart\_fixed}$,
+$\mathcal C=\texttt{chartYtCuspRing}$, and
+$\mathcal T=\texttt{chart\_Dplus\_Yt\_ring valuationOneCurve 0 0}$.
+The named maps are
+$c=\texttt{closedYtToCusp}$,
+$f=\texttt{chartOfModelTrueY\_fixed}$, and
+$\varphi=\texttt{chartOfCuspY}
+=f\circ\texttt{cuspYtToClosed}$.
+\[
+\begin{CD}
+\mathcal M @>{c}>> \mathcal C\\
+@V{f}VV @VV{\varphi}V\\
+\mathcal T @= \mathcal T
+\end{CD}
+\]
+The square commutes because
+$\texttt{cuspYtToClosed}\circ c=\mathrm{id}_{\mathcal M}$.
+For the kernel hypothesis $f(N)=0$, write the cusp representative
+as $\overline N=[L]+[Q]$, where
+\[
+\begin{aligned}
+ L&=A+YB+Y^2C,\\
+ Q&=Y^3(E_0+SE_1+S^2E_2),\qquad \deg_S Q\le2.
+\end{aligned}
+\]
+Then the certificate gives
+\[
+ \varphi([Q])=\varphi([L])=H_N,\qquad (1+YS^3)H_N=0.
+\]
+The image equality uses characteristic two, not coefficient
+vanishing. The maps and inverse identity are defined in
+\texttt{Beal/MathlibMissing/ChartYt.lean} and
+\texttt{Beal/MathlibMissing/ChartYtPresentation.lean}, lines 47--73
+of the latter file.
+\end{minipage}
+\caption{Defined cusp/chart maps and the annihilator presentation.
+No ring map $D_+(Xt)\to\text{overlap}$ is asserted;
+no vanishing of $B$ or $E_i$ is inferred.}
+\label{fig:cusp-chart}
+\end{figure}
 
 \paragraph{Nonvanishing and overlap invariants.}
 The $B=1$ example remains nonzero outside the cusp;
@@ -1029,6 +1126,9 @@ and \texttt{BealGap3BakerUpperBound.lean} in that same
 \item True chart and v38 data:
 \texttt{Beal/MathlibMissing/ChartInjective.lean} and
 \texttt{Beal/MathlibMissing/ChartTrueEquiv.lean}.
+\item Cusp/chart maps in \cref{fig:cusp-chart}:
+\texttt{Beal/MathlibMissing/ChartYt.lean} and
+\texttt{Beal/MathlibMissing/ChartYtPresentation.lean}.
 \item General common-prime input interface:
 \texttt{BealFinal/Main.lean}.
 \end{itemize}

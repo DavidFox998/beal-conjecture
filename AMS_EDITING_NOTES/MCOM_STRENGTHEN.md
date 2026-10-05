@@ -41,7 +41,7 @@ All Lean sources and dependency pins remain unchanged.
 ## Independent manuscript verification
 
 - Tectonic exited 0.
-- Latest PDF: 15 pages, 171,568 bytes, searchable text on every page.
+- Latest PDF: 17 pages, 182,601 bytes, searchable text on every page.
 - Zero overfull-box and undefined-reference warnings.
 - No extracted text spans outside physical page boundaries.
 - Some underfull spacing warnings remain; this is not a claim of
@@ -56,7 +56,7 @@ All Lean sources and dependency pins remain unchanged.
 - `git diff --check` passed; no Lean, toolchain, or manifest changes.
 
 PDF SHA256:
-`0236f4f0e3e197b3225e61dcdfcc1c871f4100db1eee39c954b50974ff6eb8e9`.
+`6125bb683dee2759e0787de16836e1d70c41a7f963acbc9207daeb5d128afd41`.
 
 ## v38 front-visibility follow-up
 
@@ -73,6 +73,38 @@ PDF text extraction and a rendered first-page check verify both front
 placements on page 1. The document remains 15 pages; Section 20 starts on
 page 12 and the provenance table is on page 14. TeX beyond the introduction,
 including Section 19 and Section 20, is unchanged by this follow-up.
+
+## Phase 4 — explicit populations and defined maps
+
+The preceding 15-page record describes the front-visibility follow-up at
+`d637e91`, not the current Phase 4 PDF.
+Phase 4 expands the general statement for positive natural bases and
+natural exponents at least three, and explicitly names the general proof
+input `BealFinalData.bealTheorem` at `BealFinal/Main.lean:53`.
+
+- The page-2 table distinguishes 352 named rows, 86 mod-53 survivors,
+  14 fourth-power residues, the recorded 5983 identity, and the separate
+  62500-value cutoff. The 25-slice conjunction types and Baker premise are
+  stated separately.
+- `sec:coeff-ledger` and `sec:level26` label the existing introduction
+  rather than adding a fictitious Level-26 section or renumbering Section 19.
+  The page-1 references still resolve; all 24 link annotations have
+  zero-width borders.
+- The page-14 diagram uses only `closedYtToCusp`,
+  `chartOfModelTrueY_fixed`, and `chartOfCuspY`, with
+  `chartOfCuspY=chartOfModelTrueY_fixed.comp cuspYtToClosed`.
+  The inverse identity makes the square commute. The kernel hypothesis,
+  high/low image equality, and annihilation are displayed, without an
+  Xt-to-overlap ring map or coefficient-vanishing inference.
+- The existing keyed v37 entry and single inline bibliography are retained.
+  No duplicate entry, new DOI macro, or malformed bibliography is added.
+
+Final PDF: 17 pages; Section 20 starts on page 13, the map diagram is on
+page 14, and provenance is on page 15. Both named v38 and injectivity
+statements occur twice on page 1, in the abstract and opening introduction.
+The v33 section and the v38 theorem statement/proof remain unchanged from
+`d637e91`. Tectonic exit 0, no overfull-box or undefined-reference warnings,
+no text outside the page; underfull spacing warnings remain.
 
 ## Lean verification limits
 

@@ -48,17 +48,20 @@ statement with its proof as an input field.
 
 ## Verification and remaining limits
 
-Latest PDF: Tectonic exit 0, 15 pages, 171,568 bytes, searchable text on
+Latest PDF: Tectonic exit 0, 17 pages, 182,601 bytes, searchable text on
 every page, no overfull-box or undefined-reference warnings, and no
 extracted text spans outside the page. Underfull spacing warnings remain.
 PDF SHA256:
-`0236f4f0e3e197b3225e61dcdfcc1c871f4100db1eee39c954b50974ff6eb8e9`.
+`6125bb683dee2759e0787de16836e1d70c41a7f963acbc9207daeb5d128afd41`.
 
 The v38 visibility follow-up places the named certificate and injectivity
 statement in both the abstract and opening introduction on page 1.
 The abstract displays the chain, freeze identifiers, and explicit
-common-prime input. Section 20 still begins on page 12; the provenance
-table is on page 14.
+common-prime input. Phase 4 states the positive-natural-base conclusion
+and explicit `BealFinalData.bealTheorem` proof input in the abstract.
+The population table is on page 2, Section 20 starts on page 13,
+the defined cusp/chart-map square is on page 14, and provenance is on
+page 15. All 24 link annotations have zero-width borders.
 
 Independent Lean setup exited 137 before either requested target ran.
 Local import-closure scans found no active `sorry`, `admit`, or `sorryAx`

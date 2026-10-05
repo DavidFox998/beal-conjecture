@@ -41,6 +41,7 @@ object `c2f530ab` and target `792b3f8`.
 | General forward interface | `BealFinal/Main.lean:74–80`, assumes `data : BealFinalData`, returns `data.bealTheorem.commonPrime`. |
 | True chart presentation | `Beal/MathlibMissing/ChartInjective.lean:3162–3176`, the displayed ring equivalence. |
 | v38 certificate | `Beal/MathlibMissing/ChartTrueEquiv.lean:261–338`, injectivity and constraint/annihilator conjuncts. |
+| Defined cusp/chart maps | `Beal/MathlibMissing/ChartYt.lean` and `ChartYtPresentation.lean:47–73`: `chartOfCuspY=chartOfModelTrueY_fixed.comp cuspYtToClosed`, with the inverse identity for `closedYtToCusp`. No Xt-to-overlap ring map is added. |
 | Bounded v33 gluing | `Beal/Beal.General/SpecialFibreGluing.lean`, with the scope in `Beal/AUDIT_v33_HONESTY.md`. |
 
 Submission wording: “This records the general Beal conjecture succinctly:
@@ -70,7 +71,7 @@ Standard Lean and Mathlib dependencies are still acknowledged.
 - Independent setup exited 137 before either requested target ran.
   Neither target is reported here as independently built exit 0.
 - The three-phase revision independently compiled with Tectonic exit 0:
-  15 pages, 171,568 bytes, searchable throughout, zero overfull-box and
+  17 pages, 182,601 bytes, searchable throughout, zero overfull-box and
   undefined-reference warnings, no text spans outside the page.
   Some underfull spacing warnings remain.
 
@@ -79,8 +80,10 @@ chronology is explicitly historical. Section 20 contains the v38 theorem
 and general common-prime input interface. The visibility follow-up now
 names the v38 certificate and injectivity statement in both the abstract
 and opening introduction on page 1, keeping the general wrapper's explicit
-input qualification. Section 20 starts on page 12; the provenance table
-is on page 14. See `MCOM_STRENGTHEN.md`.
+input qualification. The population table is on page 2; Section 20 starts
+on page 13, the cusp/chart-map diagram is on page 14, and provenance is
+on page 15. The abstract explicitly names the general proof input
+`BealFinalData.bealTheorem` at line 53. See `MCOM_STRENGTHEN.md`.
 `10.5281/zenodo.23120540` remains the cited v37 DOI.
 `02728795` is a commit, not a DOI. This revision includes no submission,
 merge, release, or DOI mint.

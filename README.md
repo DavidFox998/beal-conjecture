@@ -837,6 +837,7 @@ There is no ring map from `D₊(Xt)` into the overlap. Seven theorems in `Beal/M
 The three-phase MCOM revision corrects the `(4,4,13)` signature and
 fourth-power trace attribution, clarifies finite populations and v33
 chronology, and adds the v38 certificate, source ledger, and reproducibility
-appendix. The revised PDF is 15 searchable pages with no overfull boxes.
+appendix. The latest Phase 4 PDF is 17 searchable pages with no overfull boxes,
+including the population table and defined cusp/chart-map diagram.
 See `AMS_EDITING_NOTES/` for scope and verification limits. No Lean proof,
 dependency pin, freeze tag, or release is changed by this manuscript work.
