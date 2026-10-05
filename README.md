@@ -815,3 +815,17 @@ See [`docs/roadmap_without_wiles/README.md`](docs/roadmap_without_wiles/README.m
 for the four remaining Darmon–Merel `def Prop` gaps without
 Wiles (Tate conductor at `29`, Mazur via `X₀(13)`, Ribet
 `928/29=32`, Kolyvagin `Fintype` rank 0).
+
+## beal-v38 EQUIV chain — chartTrueEquiv → chartOfModelTrue_injective
+
+- `beal-v38-freeze-Y-axis-glue` `437b4c85` → `c48b1bd3` glue `X_fixed` + `Yt` on the `Y` axis
+- `beal-v38-equiv-Ei-constraint` `c2f530ab` → `792b3f8` EQUIV:3 restate `Function.Injective chartOfModelTrue`
+
+Chain: `ddfb2642` `Eᵢ` constraint `025b34c2`, `S`-degree at most 2, `(1+Y·S³)` kills the high image, `Y³ ≠ 0`, `Y³` outside the cusp ideal, so the constraint does not set `Eᵢ = 0`
+→ `e466e5a` EQUIV:2 `chartTrueEquiv_inj_from_Ei_constraint`, `B = 1` nonzero outside
+→ `792b3f8` EQUIV:3 `chartOfModelTrue_injective_from_Ei_constraint` via `chartOfModelTrue_injective`, conjoined with the `Eᵢ` constraint and the annihilator presentations.
+
+Invariants: `centreNormalPoly (X³ − 1) 0` lies outside `I²` because `centreAlphaBound 2 0 = 1`. The centre class remains `α(X) + Y·β(X)`.
+`X²·(X+V²)·z = 0` is a separate conjunct and does not set `B = 0`. `X+V²` stays outside the cusp ideal with nonzero image. `overlapX·(overlapX+overlapV²) ≠ 0`.
+`ann(1+Y·S³) ≠ ann(X²)` (`c39488ce`) is cited before the conjunction. `ann(1+Y·S³) = ann(X+V²)` and `ann(X²) = ann(Y²)`, with `V = S⁻¹`, `Y = X·V`, `X = Y·S`.
+There is no ring map from `D₊(Xt)` into the overlap. Seven theorems in `Beal/MathlibMissing/ChartTrueEquiv.lean` (355 lines) depend only on `[propext, Classical.choice, Quot.sound]`. The v37 citation remains [10.5281/zenodo.23120540](https://doi.org/10.5281/zenodo.23120540).

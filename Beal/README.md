@@ -139,3 +139,7 @@ rank-3 `‖v‖ < 32` and `|Λ| < 1/B`; do **not** add a
 `Beal/Matveev/` stub for it; `LLL_reduces_bound_to_B0` /
 `hGen` / `hLLL` stay `def Prop`.
 That is not the minted unconditional v25 tag.
+
+## v38 EQUIV:3 `792b3f8`
+
+The chart equivalence chain is recorded in the root `README.md`: `ddfb2642` `Eᵢ` constraint, `e466e5a` from that constraint with `B = 1` nonzero outside the cusp, `792b3f8` restating `Function.Injective chartOfModelTrue`. Tag `beal-v38-equiv-Ei-constraint` is `c2f530ab`. Tag `beal-v38-freeze-Y-axis-glue` is `437b4c85` at `c48b1bd3`.
