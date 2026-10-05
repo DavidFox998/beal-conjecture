@@ -83,13 +83,13 @@ identifiers, and labelled cross-references. The short running title and
 split displays eliminate the earlier clipping without changing 12-point
 body text. The revised TeX and PDF are paired.
 
-The latest Tectonic build exited 0: **18 pages, 190,267 bytes**, every page
+The latest Tectonic build exited 0: **20 pages, 191,886 bytes**, every page
 searchable, zero overfull-box warnings, no undefined-reference warnings,
 and no extracted text spans outside the page. Some underfull spacing
 warnings remain. All-page overview and representative detailed page
 renderings were inspected.
 PDF SHA256:
-`280ee232db317535a7fc305599fa05e39a07f53ff8e64d468485c159307c421d`.
+`2d687e574b1f9c6233105e74646cf0ce8134e6d7b1b4f29f4a5e1121286cfdcc`.
 
 The v38 visibility follow-up names `beal-v38 EQUIV:3 792b3f8`,
 `chartOfModelTrue_injective_from_Ei_constraint`, and
@@ -99,21 +99,29 @@ target, and the forward wrapper's explicit common-prime input.
 Phase 4 expands the positive-natural-base general statement while retaining
 the explicit `BealFinalData.bealTheorem` input at `BealFinal/Main.lean:53`.
 It adds the finite-population table on page 2 and the named cusp/chart-map
-commutative square on page 14, with the kernel hypothesis and high/low image
+commutative square (now page 15), with the kernel hypothesis and high/low image
 equality. The two chunked cutoff declarations have their 25-slice types
 stated separately from the Baker-conditional conclusion.
-Section 20 now starts on page 13; the provenance table is on page 15.
-The coefficient ledger has a dedicated label, and all 26 PDF link
+Section 20 now starts on page 14; the provenance table is on page 16.
+The coefficient ledger has a dedicated label, and all 27 PDF link
 annotations have zero-width borders. The single inline bibliography
 retains its existing keyed v37 entry; no duplicate bibliography is added.
 
-Appendix B, “Version history: this repository only”, starts on page 16.
+Appendix B, “Version history: this repository only”, now starts on page 17.
 It records the historical v24.4.0, bounded v33, v37 chart presentation,
 v38 chain, baseline containing PR25, and verification limits.
 The 17-page result remains labelled as the Phase 4 snapshot at `7531386`;
-the current PDF including the appendix is 18 pages. Every TeX byte before
-the new appendix and the entire inline bibliography are unchanged from
-`7531386`. No new mathematics or fresh Lean verification is asserted.
+the version-history-only PDF at `621d106` was 18 pages, with preceding
+TeX and bibliography unchanged from `7531386`.
+The final five editorial fixes produce the current 20-page file:
+the abstract has 180 extracted whitespace-separated tokens, the claim/source
+table is on page 3, and Appendix C's final checklist starts on page 19.
+Short provenance identifiers and the v37 DOI are unbroken; all six DOI
+links have the exact target `https://doi.org/10.5281/zenodo.23120540`.
+Microtype and array support typesetting; local ragged-right layout avoids
+overfull lines without global `sloppy` formatting.
+The archived v33 abstract/body and v38 theorem/proof remain unchanged.
+No new mathematics or fresh Lean verification is asserted.
 
 All Lean source files, `lean-toolchain`, `lake-manifest.json`, and the
 archived standalone v33 source remain unchanged. The local source scan

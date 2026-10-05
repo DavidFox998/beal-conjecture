@@ -70,8 +70,8 @@ Standard Lean and Mathlib dependencies are still acknowledged.
   dependencies.
 - Independent setup exited 137 before either requested target ran.
   Neither target is reported here as independently built exit 0.
-- The current manuscript including its version-history appendix compiled
-  with Tectonic exit 0: 18 pages, 190,267 bytes, searchable throughout,
+- The current manuscript including the final five editorial fixes compiled
+  with Tectonic exit 0: 20 pages, 191,886 bytes, searchable throughout,
   zero overfull-box and
   undefined-reference warnings, no text spans outside the page.
   Some underfull spacing warnings remain.
@@ -81,14 +81,17 @@ chronology is explicitly historical. Section 20 contains the v38 theorem
 and general common-prime input interface. The visibility follow-up now
 names the v38 certificate and injectivity statement in both the abstract
 and opening introduction on page 1, keeping the general wrapper's explicit
-input qualification. The population table is on page 2; Section 20 starts
-on page 13, the cusp/chart-map diagram is on page 14, and provenance is
-on page 15. The abstract explicitly names the general proof input
+input qualification. The population table is on page 2 and the claim/source
+table on page 3; Section 20 starts on page 14, the cusp/chart-map diagram
+is on page 15, and provenance is on page 16.
+The abstract explicitly names the general proof input
 `BealFinalData.bealTheorem` at line 53. See `MCOM_STRENGTHEN.md`.
-Appendix B starts on page 16 and records v24.4.0/v33/v37/v38 history
+Appendix B starts on page 17 and records v24.4.0/v33/v37/v38 history
 within this repository. The 17-page verification is explicitly the
-`7531386` snapshot, not the current 18-page file. No mathematics,
-preceding TeX, bibliography entries, or Lean sources changed.
+`7531386` snapshot; the 18-page snapshot is `621d106`.
+The current final-fixes PDF is 20 pages, with Appendix C's checklist
+starting on page 19. No mathematics or Lean sources changed.
+The archived v33 abstract/body and v38 theorem/proof remain unchanged.
 `10.5281/zenodo.23120540` remains the cited v37 DOI.
 `02728795` is a commit, not a DOI. This revision includes no submission,
 merge, release, or DOI mint.

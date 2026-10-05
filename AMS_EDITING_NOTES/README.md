@@ -25,6 +25,7 @@ lexical scans are not Lean elaboration or axiom certificates.
 - `BEAL_SUBMISSION_LEAN_ONLY.md`: exact source and claim ledger.
 - `MCOM_STRENGTHEN.md`: the three applied phases and ten concrete changes.
   It also records the Phase 4 and version-history follow-ups.
+  The final five editorial fixes and current PDF checks are recorded there.
 
 The manuscript source and rebuilt PDF are in `paper/`.
 `paper/v33-standalone/` remains the unmodified archive, with its complete
@@ -49,24 +50,28 @@ statement with its proof as an input field.
 
 ## Verification and remaining limits
 
-Latest PDF: Tectonic exit 0, 18 pages, 190,267 bytes, searchable text on
+Latest PDF: Tectonic exit 0, 20 pages, 191,886 bytes, searchable text on
 every page, no overfull-box or undefined-reference warnings, and no
 extracted text spans outside the page. Underfull spacing warnings remain.
 PDF SHA256:
-`280ee232db317535a7fc305599fa05e39a07f53ff8e64d468485c159307c421d`.
+`2d687e574b1f9c6233105e74646cf0ce8134e6d7b1b4f29f4a5e1121286cfdcc`.
 
 The v38 visibility follow-up places the named certificate and injectivity
 statement in both the abstract and opening introduction on page 1.
 The abstract displays the chain, freeze identifiers, and explicit
 common-prime input. Phase 4 states the positive-natural-base conclusion
 and explicit `BealFinalData.bealTheorem` proof input in the abstract.
-The population table is on page 2, Section 20 starts on page 13,
-the defined cusp/chart-map square is on page 14, and provenance is on
-page 15. All 26 link annotations have zero-width borders.
-Appendix B's repository-only version history starts on page 16.
+The population table is on page 2, the claim/source table is on page 3,
+Section 20 starts on page 14, the cusp/chart square is on page 15,
+and provenance is on page 16. All 27 link annotations have zero-width borders.
+Appendix B's repository-only version history starts on page 17.
 Its 17-page statement describes the earlier `7531386` snapshot.
-The history adds no mathematics; all preceding TeX and the inline
-bibliography remain unchanged from that snapshot.
+The history adds no mathematics. At `621d106`, all preceding TeX and the
+inline bibliography were unchanged from that snapshot.
+The final fixes shorten the abstract, keep short identifiers and the v37
+DOI unbroken, add the claim/source table and source policy, clean the
+incorporation notice, and add Appendix C's checklist on page 19.
+The archived v33 body and the v38 theorem/proof remain unchanged.
 
 Independent Lean setup exited 137 before either requested target ran.
 Local import-closure scans found no active `sorry`, `admit`, or `sorryAx`

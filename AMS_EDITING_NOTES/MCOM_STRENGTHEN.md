@@ -41,7 +41,7 @@ All Lean sources and dependency pins remain unchanged.
 ## Independent manuscript verification
 
 - Tectonic exited 0.
-- Latest PDF: 18 pages, 190,267 bytes, searchable text on every page.
+- Latest PDF: 20 pages, 191,886 bytes, searchable text on every page.
 - Zero overfull-box and undefined-reference warnings.
 - No extracted text spans outside physical page boundaries.
 - Some underfull spacing warnings remain; this is not a claim of
@@ -56,7 +56,7 @@ All Lean sources and dependency pins remain unchanged.
 - `git diff --check` passed; no Lean, toolchain, or manifest changes.
 
 PDF SHA256:
-`280ee232db317535a7fc305599fa05e39a07f53ff8e64d468485c159307c421d`.
+`2d687e574b1f9c6233105e74646cf0ce8134e6d7b1b4f29f4a5e1121286cfdcc`.
 
 ## v38 front-visibility follow-up
 
@@ -108,20 +108,48 @@ no text outside the page; underfull spacing warnings remain.
 
 ## Repository-only version-history appendix
 
-The follow-up to `7531386` adds Appendix B on page 16, recording
+At `621d106`, the follow-up to `7531386` added Appendix B on page 16, recording
 v24.4.0 as historical and superseded, v33's bounded scope and recorded
 release/DOI, v37's true-chart presentation, and the v38 chain and tag objects.
 Git ancestry confirms that baseline `02728795` contains PR25 merge
 `a2a23292`. The sequence is `c67dc4e → d637e91 → 7531386`.
 The appendix labels the 17-page check as that Phase 4 snapshot.
 
-The current PDF is 18 pages, 190,267 bytes, with 26 zero-border link
+That version-history-only PDF was 18 pages, 190,267 bytes, with 26 zero-border link
 annotations. Tectonic exited 0; no overfull boxes, undefined references,
 or extracted text outside page boundaries; underfull spacing warnings remain.
 Every page is searchable, and the rendered appendix pages were inspected.
 All TeX before the added appendix and the complete inline bibliography
-remain byte-for-byte unchanged from `7531386`. No new mathematical result
+were byte-for-byte unchanged from `7531386`. No new mathematical result
 or fresh Lean build/axiom replay is claimed.
+
+## Final five editorial fixes
+
+The uploaded script named the older `7531386` head, inserted the proposed
+claim table inside a float, and confused the 17- and 18-page snapshots.
+The intent was implemented safely against the actual PR28 head `621d106`.
+
+1. Added unbreakable short record identifiers and a linked, unbroken v37
+   DOI; all six short hashes have matching source/PDF occurrence counts.
+2. Shortened the abstract below 250 words (180 extracted tokens), retaining
+   the general statement, explicit proof input, v38 certificate, chain,
+   freeze identifiers, finite population, and Baker qualification.
+3. Added the claim/source table on page 3 outside the population float,
+   with submission wording and repository-only source policy.
+4. Cleaned the incorporation notice with local ragged-right layout.
+5. Added Appendix C's final verification checklist on page 19, preserving
+   pending Lean replay and separating `7531386`/17 pages from `621d106`/18.
+
+Current PDF: 20 pages, 191,886 bytes, with 12-point body text retained.
+Section 19 starts on page 11, Section 20 on page 14, the diagram is on
+page 15, provenance on page 16, and version history on page 17.
+Tectonic exit 0; no overfull or undefined-reference warnings, no extracted
+text outside the page; underfull warnings remain.
+All 27 link annotations have zero-width borders; six v37 DOI links have
+the exact correct URL. The v33 archived abstract/body and v38 theorem/proof
+are unchanged. The inline bibliography and keyed v37 entry remain singular.
+Microtype is enabled, not advertised as eliminating every spacing warning.
+No global `sloppy` formatting or unrelated research evidence was introduced.
 
 ## Lean verification limits
 

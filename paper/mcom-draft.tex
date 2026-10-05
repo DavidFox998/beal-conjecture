@@ -3,11 +3,16 @@
 \usepackage{amsmath,amssymb,amsthm,hyperref,enumitem,listings}
 \usepackage{xurl}
 \usepackage{amscd}
+\usepackage{microtype}
+\usepackage{array}
 \usepackage[nameinlink]{cleveref}
 \hypersetup{hidelinks}
 \newtheorem{theorem}{Theorem}
 \renewcommand{\texttt}[1]{\ifmmode
   \mbox{\small\upshape\nolinkurl{#1}}\else{\small\upshape\nolinkurl{#1}}\fi}
+\newcommand{\recordid}[1]{\mbox{\texttt{#1}}}
+\newcommand{\chartdoi}{\href{https://doi.org/10.5281/zenodo.23120540}
+  {\recordid{10.5281/zenodo.23120540}}}
 \lstset{basicstyle=\footnotesize\ttfamily,breaklines=true,
   columns=fullflexible,keepspaces=true}
 \setlength{\emergencystretch}{2em}
@@ -20,50 +25,43 @@ $A^4+B^4=(B+3)^{13}$: Beal $(4,4,13)$ at level $26$}
 The level-26 package is vendored under
 \texttt{Level26/BealLevel26Foundations/}.
 The current cited chart version is v37-true-chart,
-DOI \url{https://doi.org/10.5281/zenodo.23120540}.
+DOI \chartdoi.
 Historical software versions are distinguished from fresh verification below.}
 \begin{document}
 \maketitle
 
 \begin{abstract}
-We study the gap-three equation $A^4+B^4=(B+3)^{13}$, of
-signature $(4,4,13)$. Fourth-power residues modulo $16$ exclude every
-$B\not\equiv14\pmod{16}$. For a specified list of $352$ remaining
-named rows below two million, successive fourth-power non-residue tests
-at $53$, $29$, and $109$ exclude $266$, $77$, and $9$ rows.
-This list is not an exhaustive census of that residue class.
+We study $A^4+B^4=(B+3)^{13}$, of signature $(4,4,13)$.
+Fourth-power residues modulo $16$ exclude $B\not\equiv14\pmod{16}$.
+For $352$ named remaining rows below two million, successive
+non-residue tests at $53$, $29$, and $109$ exclude $266$, $77$,
+and $9$ rows. This list is not an exhaustive census.
 This records the general Beal conjecture succinctly: for positive
 $x,y,z\in\mathbb N$ and natural exponents $p,q,r\ge3$,
 $x^p+y^q=z^r$ entails a prime dividing all three bases.
-The forward interface assumes the common-prime proof in
-\texttt{BealFinalData.bealTheorem}
-(\texttt{BealFinal/Main.lean:53}).
-The v38 certificate
-\texttt{beal-v38 EQUIV:3 792b3f8},
+The forward wrapper returns \texttt{data.bealTheorem.commonPrime}
+from the explicit proof input \texttt{BealFinalData.bealTheorem}
+(\texttt{BealFinal/Main.lean:30--36,53,74--80}).
+The v38 certificate \texttt{beal-v38 EQUIV:3} \recordid{792b3f8},
 \texttt{chartOfModelTrue\_injective\_from\_Ei\_constraint},
-displays \texttt{Function.Injective chartOfModelTrue} with the
-$E_i$ constraint and annihilator presentations.
-Its chain is \texttt{ddfb2642} $\to$ \texttt{e466e5a} $\to$
-\texttt{792b3f8}; the freeze object is \texttt{437b4c85} at
-\texttt{c48b1bd3}.
-The general statement is the \texttt{commonPrime} field in
-\texttt{BealFinal/Main.lean:30--36}; the forward wrapper at
-lines 74--80 returns \texttt{data.bealTheorem.commonPrime}
-as an explicit input, not a consequence of the chart certificate.
+displays \texttt{Function.Injective chartOfModelTrue} with
+$E_i$ constraint and annihilator presentations, not the general proof.
+Its chain is \recordid{ddfb2642} $\to$ \recordid{e466e5a} $\to$
+\recordid{792b3f8}; the freeze object is \recordid{437b4c85}
+at \recordid{c48b1bd3}.
 
-A separate recorded cover addresses the $62500$ values
-$B\equiv14\pmod{16}$ below $10^6$; the extension to all $B$
-retains an explicit Baker-bound premise.
+A separate cover addresses $62500$ values $B\equiv14\pmod{16}$
+below $10^6$; extension to all $B$ retains a Baker-bound premise.
 Finite level-$26$ coefficient and trace certificates are distinguished
-from modularity and level-lowering inputs.
-We also retain the separately bounded v33 quotient-Rees gluing manuscript.
+from modularity and level-lowering inputs. The incorporated v33
+quotient-Rees gluing manuscript remains separately bounded.
 \end{abstract}
 
 \section{Introduction}
 \label{sec:introduction}
 \label{sec:coeff-ledger}
 \label{sec:level26}
-The v38 certificate \texttt{beal-v38 EQUIV:3 792b3f8}
+The v38 certificate \texttt{beal-v38 EQUIV:3} \recordid{792b3f8}
 records \texttt{Function.Injective chartOfModelTrue}.
 Its declaration
 \texttt{chartOfModelTrue\_injective\_from\_Ei\_constraint}
@@ -148,6 +146,48 @@ $h_{\mathrm{Baker}}:\texttt{baker\_bound\_gap3}$ and conclusion
 \]
 These types, rather than their similarly named cutoffs, determine
 the scope of each result in \cref{tab:finite-populations}.
+
+\begin{table}[!ht]
+\centering
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.28\linewidth}
+>{\raggedright\arraybackslash}p{0.64\linewidth}@{}}
+Claim & Lean source and status\\
+\hline
+General common-prime statement &
+\texttt{BealFinal/Main.lean:30--36}: field of
+\texttt{BealTheoremData}.\\[3pt]
+General forward interface &
+\texttt{BealFinal/Main.lean:74--80}: assumes
+\texttt{data:BealFinalData}, returns
+\texttt{data.bealTheorem.commonPrime}.\\[3pt]
+v38 chart injectivity with constraint &
+\texttt{Beal/MathlibMissing/ChartTrueEquiv.lean:261--338}:
+injectivity proof reused with the constraint and annihilator data.\\[3pt]
+Bounded v33 quotient-Rees gluing &
+\texttt{Beal/Beal.General/SpecialFibreGluing.lean};
+retain the scope of \texttt{Beal/AUDIT_v33_HONESTY.md}.
+\end{tabular}
+\caption{Claim-to-source distinction: repository only, no new mathematics.}
+\label{tab:claim-source}
+\end{table}
+
+\paragraph{Submission wording and source policy.}
+This records the general Beal conjecture succinctly: the v38 certificate
+displays chart injectivity with $E_i$ constraint and annihilator
+presentations; the general forward wrapper displays the common-prime
+conclusion with the common-prime theorem as explicit input.
+Use exact Lean paths at the immutable baseline
+\texttt{02728795e15f6c858f0d360d560f80e4efb252a2}
+within \texttt{DavidFox998/beal-conjecture}, including root modules,
+\texttt{Beal/}, \texttt{BealFinal/}, and vendored
+\texttt{Level26/BealLevel26Foundations/lean/} sources.
+A folder name, README inventory, certificate number, or
+\texttt{def Prop} is not an inhabited mathematical theorem.
+Other research repositories and private oracles are not evidence here.
+Standard Lean and Mathlib dependencies remain acknowledged:
+repository-only provenance does not mean absence of external libraries.
 
 For the historical coefficient ledger we write $C=B+3$ and
 $S=(C^{13}-B^{13})/(C-B)$, as in the recorded $\Phi_{13}$ identity.
@@ -774,11 +814,16 @@ The level-26 foundations work mirror is not the v33 release source.
 See \texttt{Beal/AUDIT\_v33\_HONESTY.md}, \texttt{Beal/ZENODO\_DEPOSIT\_v33.md},
 and \texttt{Beal/RELEASE\_NOTES\_v33.md}.
 
-This incorporation does not change the beal-v38 EQUIV:3 chain
-\texttt{ddfb2642} $\to$ \texttt{e466e5a} $\to$ \texttt{792b3f8},
-the freeze tag \texttt{beal-v38-freeze-Y-axis-glue} object \texttt{437b4c85}
-at \texttt{c48b1bd3}, or the v37 citation
-\url{https://doi.org/10.5281/zenodo.23120540}.
+\begingroup
+\raggedright
+This incorporation preserves the \recordid{beal-v38 EQUIV:3}
+chain \recordid{ddfb2642} $\to$ \recordid{e466e5a} $\to$
+\recordid{792b3f8}.
+The freeze tag is \recordid{beal-v38-freeze-Y-axis-glue},
+with object \recordid{437b4c85} at \recordid{c48b1bd3}.
+The v37 citation remains \chartdoi.
+\par
+\endgroup
 
 \subsection{Abstract of the v33 manuscript}
 
@@ -1056,16 +1101,15 @@ separately bounded.
 \begin{tabular}{@{}p{0.45\linewidth}p{0.18\linewidth}p{0.27\linewidth}@{}}
 Tag or version & Object & Target or citation\\
 \hline
-\texttt{beal-v38-freeze-Y-axis-glue} &
-\texttt{437b4c85} & \texttt{c48b1bd3}\\
-\texttt{beal-v38-equiv-Ei-constraint} &
-\texttt{c2f530ab} & \texttt{792b3f8}\\
-v37-true-chart & Version DOI &
-\texttt{10.5281/zenodo.23120540}
+\recordid{beal-v38-freeze-Y-axis-glue} &
+\recordid{437b4c85} & \recordid{c48b1bd3}\\
+\recordid{beal-v38-equiv-Ei-constraint} &
+\recordid{c2f530ab} & \recordid{792b3f8}\\
+v37-true-chart & \multicolumn{2}{l}{\chartdoi}
 \end{tabular}
 \end{center}
 The proof record is
-\texttt{ddfb2642} $\to$ \texttt{e466e5a} $\to$ \texttt{792b3f8}:
+\recordid{ddfb2642} $\to$ \recordid{e466e5a} $\to$ \recordid{792b3f8}:
 the $E_i$ constraint associated with \texttt{025b34c2},
 then the nonzero $B=1$ example, then EQUIV:3.
 The code baseline is
@@ -1180,25 +1224,25 @@ That historical DOI is not substituted for the current v37 citation.
 
 \paragraph{v37: true-chart presentation.}
 The current chart-version citation is
-\texttt{10.5281/zenodo.23120540}, v37-true-chart
+\chartdoi, v37-true-chart
 \cite{beal_v37_true_chart}.
 The \texttt{chart_Dplus_Xt_ring} true-model presentation
 $R/I_{\mathrm{true}}$ is recorded in
 \texttt{Beal/MathlibMissing/ChartInjective.lean}, lines 3162--3176.
 This is a chart presentation, not a general Beal proof.
 
-\paragraph{v38: EQUIV:3 at \texttt{792b3f8}.}
+\paragraph{v38: EQUIV:3 at \recordid{792b3f8}.}
 \texttt{chartOfModelTrue_injective_from_Ei_constraint} is recorded
 in \texttt{Beal/MathlibMissing/ChartTrueEquiv.lean}, lines 261--338.
-The chain \texttt{ddfb2642} $\to$ \texttt{e466e5a} $\to$
-\texttt{792b3f8} records, respectively, the $E_i$ constraint
+The chain \recordid{ddfb2642} $\to$ \recordid{e466e5a} $\to$
+\recordid{792b3f8} records, respectively, the $E_i$ constraint
 associated with \texttt{025b34c2}, the nonzero $B=1$ example,
 and the injectivity restatement.
 The constraint has $S$-degree at most two and
 $(1+YS^3)$ annihilates the high image; $Y^3\ne0$ remains outside
 the cusp ideal.
-The freeze object is \texttt{437b4c85} at \texttt{c48b1bd3};
-the separate EQUIV object is \texttt{c2f530ab} at \texttt{792b3f8}.
+The freeze object is \recordid{437b4c85} at \recordid{c48b1bd3};
+the separate EQUIV object is \recordid{c2f530ab} at \recordid{792b3f8}.
 The certificate and its explicit hypotheses remain those of Section~20.
 
 \paragraph{Baseline and manuscript snapshots.}
@@ -1231,6 +1275,36 @@ Other modules declare \texttt{darmon_merel_4413_axiom},
 dependencies must be assessed per theorem, not inferred from the
 chart's axiom report.
 
+\section{Verification status for editing: final checklist}
+\label{sec:final-checklist}
+\begin{itemize}
+\item The chart axiom footprint
+[\texttt{propext}, \texttt{Classical.choice}, \texttt{Quot.sound}]
+is a scoped repository report. Independent replay remains unverified.
+\item The lexical scan found no active proof-hole tokens in $57$
+local \texttt{BealMathlibMissing} files and $39$ local
+\texttt{BealEven} files. External dependency sources were excluded;
+this is not a substitute for a kernel build.
+\item Historical exit-zero reports for those two targets were not
+reproduced here. Independent cache setup exited $137$, with two
+OOM kills before either requested target ran.
+\item PR28 is a manuscript branch, not audited main.
+The $17$-page build at \texttt{7531386} and $18$-page build at
+\texttt{621d106} are distinct snapshots; neither page count is
+silently assigned to the other commit or to a later revision.
+PDF layout checks do not certify Lean proofs.
+\item The complete archived \texttt{papers/main.tex} body remains
+incorporated in Section~19 with its bounded v33 disclaimers,
+separate from the v38 certificate and general common-prime input.
+\item The current chart citation remains \chartdoi.
+\texttt{02728795} is a commit, not a DOI.
+This editing checklist performs no submission, merge, release,
+or DOI mint.
+\item No Lean sources, dependency pins, archived
+\texttt{paper/v33-standalone/} files, tags, releases, or DOIs
+are changed by this manuscript follow-up.
+\end{itemize}
+
 \begin{thebibliography}{9}
 
 \bibitem{beal_level26_v24_4_0}
@@ -1257,7 +1331,7 @@ on \texttt{db7a556}.
 \bibitem{beal_v37_true_chart}
 \textsc{David Fox},
 \emph{Beal conjecture repository: v37-true-chart}.
-Version DOI \url{https://doi.org/10.5281/zenodo.23120540}.
+Version DOI \chartdoi.
 The true-chart presentation is cited through this chart-version
 record and the immutable repository paths above, not as a general
 Beal proof certificate.
