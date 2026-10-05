@@ -20,3 +20,11 @@ Build from this directory with `latexmk -pdf main.tex` when available,
 or `tectonic main.tex`. Keep the historical, unrelated level-26 MCOM
 draft in `paper/mcom-draft.tex` unchanged. The v33 DOI and release date
 must only be added after they exist and have been verified.
+
+## beal-v39 note
+
+`main` is `a2a23292`. The EQUIV chain skeleton for a later PDF is
+[`MCOM/README.md`](MCOM/README.md). It does not replace `main.tex`, and
+it does not mint a DOI. The citation
+[10.5281/zenodo.23120540](https://doi.org/10.5281/zenodo.23120540)
+is unchanged.

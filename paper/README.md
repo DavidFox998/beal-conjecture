@@ -1,6 +1,8 @@
 # v37-true-chart
 
 Cite [10.5281/zenodo.23120540](https://doi.org/10.5281/zenodo.23120540), version `v37-true-chart`.
+`main` is `a2a23292` (merge of pull request 25), which contains `792b3f8`.
+The DOI link is unchanged. A superseding Zenodo record is not minted here.
 
 Do not cite [10.5281/zenodo.23120520](https://doi.org/10.5281/zenodo.23120520): that ingest still carries the old v33 title. Do not cite [10.5281/zenodo.23054568](https://doi.org/10.5281/zenodo.23054568): that is pre-injective `main` at `3dd7728f`.
 

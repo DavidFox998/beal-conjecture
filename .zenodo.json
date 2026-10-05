@@ -1,7 +1,7 @@
 {
-  "title": "Beal special-fibre charts - v38 EQUIV chain chartOfModelTrue_injective_from_Ei_constraint",
-  "version": "beal-v38",
-  "description": "Prep only. No DOI is minted by this file. Next Zenodo upload supersedes 10.5281/zenodo.23120540 (v37-true-chart). beal-v38 final notes: main a2a23292 merges PR 25 and contains 81105fd7 and 792b3f8 EQUIV:3 chartOfModelTrue_injective_from_Ei_constraint, with B=1 nonzero outside the cusp. Chain ddfb2642, e466e5a, 792b3f8. Y^3 is nonzero and stays outside the Yt cusp. centreNormalPoly stays outside I^2. centreAlphaBound 2 0 = 1. X+V^2 stays outside the cusp. ann(1+Y·S^3) is not ann(X^2). Seven theorems. Axiom footprint propext, Classical.choice, Quot.sound. This is not a proof of the Beal conjecture.",
+  "title": "Beal special-fibre charts - v38 EQUIV chain plus beal-v39-even wrapper",
+  "version": "beal-v39-even",
+  "description": "Prep only. No DOI is minted by this file. Transport of beal-conjecture onto the a2a23292 freeze. Includes 02728795 beal-v38 prep: the next Zenodo upload supersedes 10.5281/zenodo.23120540 (v37-true-chart). main a2a23292 merges PR 25 and contains 81105fd7 and 792b3f8 EQUIV:3 chartOfModelTrue_injective_from_Ei_constraint, with B=1 nonzero outside the cusp. Chain ddfb2642, e466e5a, 792b3f8. Y^3 is nonzero and stays outside the Yt cusp. centreNormalPoly stays outside I^2. centreAlphaBound 2 0 = 1. X+V^2 stays outside the cusp. ann(1+Y·S^3) is not ann(X^2). Seven theorems. Also includes 6f921f45: beal-v39-even 1fc60716 bealEven_from_chartTrueEquiv wraps chartOfModelTrue_injective_from_Ei_constraint. That wrapper gets its own DOI after its pull request merges to beal-conjecture main. It does not replace 10.5281/zenodo.23120540. Axiom footprint propext, Classical.choice, Quot.sound. This is not a proof of the Beal conjecture.",
   "creators": [
     {
       "name": "Fox, David"
