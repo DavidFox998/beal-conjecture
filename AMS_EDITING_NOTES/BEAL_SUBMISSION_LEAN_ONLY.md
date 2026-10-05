@@ -43,6 +43,7 @@ object `c2f530ab` and target `792b3f8`.
 | v38 certificate | `Beal/MathlibMissing/ChartTrueEquiv.lean:261–338`, injectivity and constraint/annihilator conjuncts. |
 | Defined cusp/chart maps | `Beal/MathlibMissing/ChartYt.lean` and `ChartYtPresentation.lean:47–73`: `chartOfCuspY=chartOfModelTrueY_fixed.comp cuspYtToClosed`, with the inverse identity for `closedYtToCusp`. No Xt-to-overlap ring map is added. |
 | Bounded v33 gluing | `Beal/Beal.General/SpecialFibreGluing.lean`, with the scope in `Beal/AUDIT_v33_HONESTY.md`. |
+| Finite Level-26 records | `Level26/BealLevel26Foundations/lean/Beal/Foundations/J0_26_Decomp.lean`: typed coefficient records, not a scheme-theoretic Jacobian. Displayed-cubic traces are separately recorded in `lean/BealLevel26Foundations/Beal/FullProof/Level26_Newforms.lean:235–278` within that package. |
 
 Submission wording: “This records the general Beal conjecture succinctly:
 the v38 certificate displays chart injectivity with Eᵢ constraint and
@@ -71,7 +72,7 @@ Standard Lean and Mathlib dependencies are still acknowledged.
 - Independent setup exited 137 before either requested target ran.
   Neither target is reported here as independently built exit 0.
 - The current manuscript including the final five editorial fixes compiled
-  with Tectonic exit 0: 20 pages, 191,886 bytes, searchable throughout,
+  with Tectonic exit 0: 20 pages, 194,555 bytes, searchable throughout,
   zero overfull-box and
   undefined-reference warnings, no text spans outside the page.
   Some underfull spacing warnings remain.
@@ -92,6 +93,10 @@ within this repository. The 17-page verification is explicitly the
 The current final-fixes PDF is 20 pages, with Appendix C's checklist
 starting on page 19. No mathematics or Lean sources changed.
 The archived v33 abstract/body and v38 theorem/proof remain unchanged.
+The page-one boundary explicitly distinguishes uninhabited Props,
+excluded middle, and the open Baker/unrestricted-Beal premises.
+The five-row claim/source table stays on page 3; the checklist retains
+the v33 abstract-overlap and v38 chart-only qualifications.
 `10.5281/zenodo.23120540` remains the cited v37 DOI.
 `02728795` is a commit, not a DOI. This revision includes no submission,
 merge, release, or DOI mint.

@@ -41,7 +41,7 @@ All Lean sources and dependency pins remain unchanged.
 ## Independent manuscript verification
 
 - Tectonic exited 0.
-- Latest PDF: 20 pages, 191,886 bytes, searchable text on every page.
+- Latest PDF: 20 pages, 194,555 bytes, searchable text on every page.
 - Zero overfull-box and undefined-reference warnings.
 - No extracted text spans outside physical page boundaries.
 - Some underfull spacing warnings remain; this is not a claim of
@@ -56,7 +56,7 @@ All Lean sources and dependency pins remain unchanged.
 - `git diff --check` passed; no Lean, toolchain, or manifest changes.
 
 PDF SHA256:
-`2d687e574b1f9c6233105e74646cf0ce8134e6d7b1b4f29f4a5e1121286cfdcc`.
+`7b61a64ed368fe3c14f3a38ae45c7ee7d7730ccf826821dca4336dce0a101222`.
 
 ## v38 front-visibility follow-up
 
@@ -140,7 +140,8 @@ The intent was implemented safely against the actual PR28 head `621d106`.
 5. Added Appendix C's final verification checklist on page 19, preserving
    pending Lean replay and separating `7531386`/17 pages from `621d106`/18.
 
-Current PDF: 20 pages, 191,886 bytes, with 12-point body text retained.
+The final-five snapshot at `00bddf7` was 20 pages, 191,886 bytes,
+with 12-point body text retained.
 Section 19 starts on page 11, Section 20 on page 14, the diagram is on
 page 15, provenance on page 16, and version history on page 17.
 Tectonic exit 0; no overfull or undefined-reference warnings, no extracted
@@ -150,6 +151,36 @@ the exact correct URL. The v33 archived abstract/body and v38 theorem/proof
 are unchanged. The inline bibliography and keyed v37 entry remain singular.
 Microtype is enabled, not advertised as eliminating every spacing warning.
 No global `sloppy` formatting or unrelated research evidence was introduced.
+
+## Page-one scope boundary and fifth claim/source row
+
+The follow-up starts at `00bddf7`. Existing identifier protections,
+version history, source policy, and checklist are reused, not duplicated.
+The full boundary is on page 1, naming the uninhabited Props and universal
+pack, excluded-middle rather than elimination, and the open density,
+modular-contradiction, unrestricted-Beal, and Baker premises.
+The abstract is below 250 words (213 extracted whitespace-separated tokens).
+
+The five-row claim/source table remains on page 3. Its new Level-26 row
+uses the actual vendored `lean/Beal/Foundations/J0_26_Decomp.lean` path,
+not the incomplete path in the supplied script. Typed coefficient
+records are separated from the displayed-cubic trace data and from any
+transport to the Beal Frey model.
+
+The existing checklist is strengthened: `Classical.choice` is not BCDT
+or Ribet; the density declaration's actual type is excluded middle;
+Zsigmondy/Step61+ does not supply the Baker premise. v33 product overlaps
+remain abstract pullbacks, with no polynomial/global special-fibre or
+degree-one/nonvanishing claim; v38 remains chart data, not unrestricted Beal.
+
+Current PDF: 20 pages, 194,555 bytes. Tectonic exit 0, all pages searchable,
+no overfull or undefined-reference warnings, no extracted text outside
+page boundaries. Underfull spacing warnings remain. All 27 links have
+zero-width borders; all six v37 DOI targets are exact. Short identifiers
+remain unbroken. Section 19 starts on page 11, Section 20 on page 14,
+the diagram is on page 15, provenance on page 16, version history on
+page 17, and the checklist on page 19. The archived v33 abstract/body
+and v38 theorem/proof are unchanged; no Lean or dependency-pin edits.
 
 ## Lean verification limits
 

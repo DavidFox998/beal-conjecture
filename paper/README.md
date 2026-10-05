@@ -83,13 +83,13 @@ identifiers, and labelled cross-references. The short running title and
 split displays eliminate the earlier clipping without changing 12-point
 body text. The revised TeX and PDF are paired.
 
-The latest Tectonic build exited 0: **20 pages, 191,886 bytes**, every page
+The latest Tectonic build exited 0: **20 pages, 194,555 bytes**, every page
 searchable, zero overfull-box warnings, no undefined-reference warnings,
 and no extracted text spans outside the page. Some underfull spacing
 warnings remain. All-page overview and representative detailed page
 renderings were inspected.
 PDF SHA256:
-`2d687e574b1f9c6233105e74646cf0ce8134e6d7b1b4f29f4a5e1121286cfdcc`.
+`7b61a64ed368fe3c14f3a38ae45c7ee7d7730ccf826821dca4336dce0a101222`.
 
 The v38 visibility follow-up names `beal-v38 EQUIV:3 792b3f8`,
 `chartOfModelTrue_injective_from_Ei_constraint`, and
@@ -113,8 +113,9 @@ v38 chain, baseline containing PR25, and verification limits.
 The 17-page result remains labelled as the Phase 4 snapshot at `7531386`;
 the version-history-only PDF at `621d106` was 18 pages, with preceding
 TeX and bibliography unchanged from `7531386`.
-The final five editorial fixes produce the current 20-page file:
-the abstract has 180 extracted whitespace-separated tokens, the claim/source
+The final-five snapshot at `00bddf7` was 20 pages with 180 extracted
+abstract tokens. The current scope-boundary follow-up remains 20 pages:
+the abstract has 213 extracted whitespace-separated tokens, the claim/source
 table is on page 3, and Appendix C's final checklist starts on page 19.
 Short provenance identifiers and the v37 DOI are unbroken; all six DOI
 links have the exact target `https://doi.org/10.5281/zenodo.23120540`.
@@ -122,6 +123,15 @@ Microtype and array support typesetting; local ragged-right layout avoids
 overfull lines without global `sloppy` formatting.
 The archived v33 abstract/body and v38 theorem/proof remain unchanged.
 No new mathematics or fresh Lean verification is asserted.
+
+The page-one boundary names the uninhabited `conductor_86`,
+`level_lowering_86`, and `B14_honest` pack; distinguishes excluded middle
+from elimination; and keeps unrestricted Beal and the Baker premise open.
+The page-three table now has five rows, including the verified vendored
+`lean/Beal/Foundations/J0_26_Decomp.lean` path and separately scoped
+displayed-cubic trace records. The checklist repeats the boundary and
+states that `Classical.choice` is not BCDT or Ribet.
+Existing version history, bibliography, and checklist are not duplicated.
 
 All Lean source files, `lean-toolchain`, `lake-manifest.json`, and the
 archived standalone v33 source remain unchanged. The local source scan

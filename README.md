@@ -840,6 +840,6 @@ chronology, and adds the v38 certificate, source ledger, and reproducibility
 appendix. The current PDF is 20 searchable pages with no overfull boxes,
 including the population table, defined cusp/chart-map diagram, and
 repository-only version-history appendix, claim/source table, and
-final verification checklist.
+final verification checklist, and page-one scope boundary.
 See `AMS_EDITING_NOTES/` for scope and verification limits. No Lean proof,
 dependency pin, freeze tag, or release is changed by this manuscript work.

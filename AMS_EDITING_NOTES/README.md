@@ -50,11 +50,11 @@ statement with its proof as an input field.
 
 ## Verification and remaining limits
 
-Latest PDF: Tectonic exit 0, 20 pages, 191,886 bytes, searchable text on
+Latest PDF: Tectonic exit 0, 20 pages, 194,555 bytes, searchable text on
 every page, no overfull-box or undefined-reference warnings, and no
 extracted text spans outside the page. Underfull spacing warnings remain.
 PDF SHA256:
-`2d687e574b1f9c6233105e74646cf0ce8134e6d7b1b4f29f4a5e1121286cfdcc`.
+`7b61a64ed368fe3c14f3a38ae45c7ee7d7730ccf826821dca4336dce0a101222`.
 
 The v38 visibility follow-up places the named certificate and injectivity
 statement in both the abstract and opening introduction on page 1.
@@ -72,6 +72,10 @@ The final fixes shorten the abstract, keep short identifiers and the v37
 DOI unbroken, add the claim/source table and source policy, clean the
 incorporation notice, and add Appendix C's checklist on page 19.
 The archived v33 body and the v38 theorem/proof remain unchanged.
+The scope-boundary follow-up adds the explicit boundary on page 1,
+a fifth verified Level-26 row on page 3, and checklist qualifications.
+The abstract remains below 250 words (213 extracted tokens).
+Existing appendices and bibliography entries are not duplicated.
 
 Independent Lean setup exited 137 before either requested target ran.
 Local import-closure scans found no active `sorry`, `admit`, or `sorryAx`

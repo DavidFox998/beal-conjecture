@@ -52,9 +52,16 @@ at \recordid{c48b1bd3}.
 
 A separate cover addresses $62500$ values $B\equiv14\pmod{16}$
 below $10^6$; extension to all $B$ retains a Baker-bound premise.
-Finite level-$26$ coefficient and trace certificates are distinguished
-from modularity and level-lowering inputs. The incorporated v33
-quotient-Rees gluing manuscript remains separately bounded.
+Finite level-$26$ data are not modularity or level lowering.
+
+Boundary: \texttt{conductor_86} and \texttt{level_lowering_86}
+remain uninhabited Props, as does the \texttt{B14_honest} universal pack.
+\texttt{beal_4_13_13_gap3_B_le_2M_eliminated} uses
+\texttt{Classical.em}, not elimination.
+Infinite density, full modular contradiction, and unrestricted Beal
+remain open. \texttt{baker_bound_gap3} is not closed by
+\texttt{smallZsigPrimes}. Bounded v33 gluing gives neither global special-fibre
+identification nor degree-one/nonvanishing of $\overline{2t}$.
 \end{abstract}
 
 \section{Introduction}
@@ -131,22 +138,6 @@ the separately bounded v33 manuscript is retained in
 \cref{sec:v33-incorporated}, and the general statement and v38
 certificate are presented in \cref{sec:v38}.
 
-In indexed notation, both chunk declarations have the same
-$25$-slice conjunction type
-\[
- \bigwedge_{j=0}^{24}
- \bigl(\texttt{allKilled}\,(2500j)\,2500=\texttt{true}\bigr),
-\]
-covering $B=14+16k$ for $0\le k<62500$.
-Separately, \texttt{baker\_conditional\_gap3\_full} has the input
-$h_{\mathrm{Baker}}:\texttt{baker\_bound\_gap3}$ and conclusion
-\[
- \forall B\in\mathbb N,\quad
- \neg\exists A\in\mathbb N,\quad A^4+B^4=(B+3)^{13}.
-\]
-These types, rather than their similarly named cutoffs, determine
-the scope of each result in \cref{tab:finite-populations}.
-
 \begin{table}[!ht]
 \centering
 \small
@@ -167,11 +158,33 @@ v38 chart injectivity with constraint &
 injectivity proof reused with the constraint and annihilator data.\\[3pt]
 Bounded v33 quotient-Rees gluing &
 \texttt{Beal/Beal.General/SpecialFibreGluing.lean};
-retain the scope of \texttt{Beal/AUDIT_v33_HONESTY.md}.
+retain the scope of \texttt{Beal/AUDIT_v33_HONESTY.md}.\\[3pt]
+Finite Level-26 data &
+\texttt{Level26/BealLevel26Foundations/lean/Beal/Foundations/J0_26_Decomp.lean}:
+typed coefficient records, not a scheme-theoretic Jacobian.
+\texttt{Level26_Newforms.lean:235--278} in the vendored
+\texttt{BealLevel26Foundations/Beal/FullProof/} tree:
+displayed-cubic trace data, not transport to the Beal Frey model.
 \end{tabular}
 \caption{Claim-to-source distinction: repository only, no new mathematics.}
 \label{tab:claim-source}
 \end{table}
+
+In indexed notation, both chunk declarations have the same
+$25$-slice conjunction type
+\[
+ \bigwedge_{j=0}^{24}
+ \bigl(\texttt{allKilled}\,(2500j)\,2500=\texttt{true}\bigr),
+\]
+covering $B=14+16k$ for $0\le k<62500$.
+Separately, \texttt{baker\_conditional\_gap3\_full} has the input
+$h_{\mathrm{Baker}}:\texttt{baker\_bound\_gap3}$ and conclusion
+\[
+ \forall B\in\mathbb N,\quad
+ \neg\exists A\in\mathbb N,\quad A^4+B^4=(B+3)^{13}.
+\]
+These types, rather than their similarly named cutoffs, determine
+the scope of each result in \cref{tab:finite-populations}.
 
 \paragraph{Submission wording and source policy.}
 This records the general Beal conjecture succinctly: the v38 certificate
@@ -1175,6 +1188,8 @@ and \texttt{BealGap3BakerUpperBound.lean} in that same
 \texttt{Beal/MathlibMissing/ChartYtPresentation.lean}.
 \item General common-prime input interface:
 \texttt{BealFinal/Main.lean}.
+\item Finite coefficient records:
+\texttt{Level26/BealLevel26Foundations/lean/Beal/Foundations/J0_26_Decomp.lean}.
 \end{itemize}
 Standard Lean, Mathlib, and SageMath dependencies remain acknowledged.
 Repository-only source provenance is not a claim of having no
@@ -1293,9 +1308,25 @@ The $17$-page build at \texttt{7531386} and $18$-page build at
 \texttt{621d106} are distinct snapshots; neither page count is
 silently assigned to the other commit or to a later revision.
 PDF layout checks do not certify Lean proofs.
+\item \texttt{conductor_86} and \texttt{level_lowering_86}
+remain recorded as uninhabited Props; \texttt{B14_honest} is the
+uninhabited universal pack, not a BCDT theorem.
+\texttt{Classical.choice} supplies neither Wiles/BCDT nor Ribet.
+\texttt{beal_4_13_13_gap3_B_le_2M_eliminated} proves excluded
+middle for a witness predicate using \texttt{Classical.em};
+it does not prove Beal elimination.
+Infinite density, full modular contradiction, and unrestricted Beal
+remain open. Beyond two million, the \texttt{baker_bound_gap3}
+premise is not supplied by Zsigmondy or the Step61+
+\texttt{smallZsigPrimes} continuation.
 \item The complete archived \texttt{papers/main.tex} body remains
 incorporated in Section~19 with its bounded v33 disclaimers,
 separate from the v38 certificate and general common-prime input.
+\item v33 glues the quotient-Rees \texttt{Proj(ReesMod2)} using
+abstract product pullbacks, not polynomial product-overlap presentations.
+It gives neither a global actual special-fibre identification nor
+a degree-one/nonvanishing certificate for $\overline{2t}$.
+The v38 true-chart/$E_i$ certificate is not an unrestricted Beal proof.
 \item The current chart citation remains \chartdoi.
 \texttt{02728795} is a commit, not a DOI.
 This editing checklist performs no submission, merge, release,
