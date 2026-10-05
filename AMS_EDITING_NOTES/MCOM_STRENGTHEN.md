@@ -41,7 +41,7 @@ All Lean sources and dependency pins remain unchanged.
 ## Independent manuscript verification
 
 - Tectonic exited 0.
-- PDF: 15 pages, 169,785 bytes, searchable text on every page.
+- Latest PDF: 15 pages, 171,568 bytes, searchable text on every page.
 - Zero overfull-box and undefined-reference warnings.
 - No extracted text spans outside physical page boundaries.
 - Some underfull spacing warnings remain; this is not a claim of
@@ -56,7 +56,23 @@ All Lean sources and dependency pins remain unchanged.
 - `git diff --check` passed; no Lean, toolchain, or manifest changes.
 
 PDF SHA256:
-`856c13e773a92dca5de5def175e7dc67e5724a689f4f1d6c3676e03906b620a9`.
+`0236f4f0e3e197b3225e61dcdfcc1c871f4100db1eee39c954b50974ff6eb8e9`.
+
+## v38 front-visibility follow-up
+
+The abstract now names `beal-v38 EQUIV:3 792b3f8`,
+`chartOfModelTrue_injective_from_Ei_constraint`, and
+`Function.Injective chartOfModelTrue` immediately after the finite named-row
+result. It displays the Eᵢ/annihilator scope, chain
+`ddfb2642 → e466e5a → 792b3f8`, freeze `437b4c85` at `c48b1bd3`,
+and the `BealFinal/Main.lean:30–36,74–80` common-prime input interface.
+The introduction opens with the same certificate and the explicit input
+qualification, not a new implication from chart data to the general theorem.
+
+PDF text extraction and a rendered first-page check verify both front
+placements on page 1. The document remains 15 pages; Section 20 starts on
+page 12 and the provenance table is on page 14. TeX beyond the introduction,
+including Section 19 and Section 20, is unchanged by this follow-up.
 
 ## Lean verification limits
 

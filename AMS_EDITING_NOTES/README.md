@@ -48,11 +48,17 @@ statement with its proof as an input field.
 
 ## Verification and remaining limits
 
-Revised PDF: Tectonic exit 0, 15 pages, 169,785 bytes, searchable text on
+Latest PDF: Tectonic exit 0, 15 pages, 171,568 bytes, searchable text on
 every page, no overfull-box or undefined-reference warnings, and no
 extracted text spans outside the page. Underfull spacing warnings remain.
 PDF SHA256:
-`856c13e773a92dca5de5def175e7dc67e5724a689f4f1d6c3676e03906b620a9`.
+`0236f4f0e3e197b3225e61dcdfcc1c871f4100db1eee39c954b50974ff6eb8e9`.
+
+The v38 visibility follow-up places the named certificate and injectivity
+statement in both the abstract and opening introduction on page 1.
+The abstract displays the chain, freeze identifiers, and explicit
+common-prime input. Section 20 still begins on page 12; the provenance
+table is on page 14.
 
 Independent Lean setup exited 137 before either requested target ran.
 Local import-closure scans found no active `sorry`, `admit`, or `sorryAx`

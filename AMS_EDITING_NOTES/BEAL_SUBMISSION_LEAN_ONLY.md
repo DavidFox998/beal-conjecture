@@ -70,13 +70,17 @@ Standard Lean and Mathlib dependencies are still acknowledged.
 - Independent setup exited 137 before either requested target ran.
   Neither target is reported here as independently built exit 0.
 - The three-phase revision independently compiled with Tectonic exit 0:
-  15 pages, 169,785 bytes, searchable throughout, zero overfull-box and
+  15 pages, 171,568 bytes, searchable throughout, zero overfull-box and
   undefined-reference warnings, no text spans outside the page.
   Some underfull spacing warnings remain.
 
 Section 19 retains the archived v33 abstract and mathematical body; deposit
 chronology is explicitly historical. Section 20 contains the v38 theorem
-and general common-prime input interface. See `MCOM_STRENGTHEN.md`.
+and general common-prime input interface. The visibility follow-up now
+names the v38 certificate and injectivity statement in both the abstract
+and opening introduction on page 1, keeping the general wrapper's explicit
+input qualification. Section 20 starts on page 12; the provenance table
+is on page 14. See `MCOM_STRENGTHEN.md`.
 `10.5281/zenodo.23120540` remains the cited v37 DOI.
 `02728795` is a commit, not a DOI. This revision includes no submission,
 merge, release, or DOI mint.

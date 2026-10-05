@@ -30,20 +30,39 @@ $B\not\equiv14\pmod{16}$. For a specified list of $352$ remaining
 named rows below two million, successive fourth-power non-residue tests
 at $53$, $29$, and $109$ exclude $266$, $77$, and $9$ rows.
 This list is not an exhaustive census of that residue class.
+This records the general Beal conjecture succinctly: the v38 certificate
+\texttt{beal-v38 EQUIV:3 792b3f8},
+\texttt{chartOfModelTrue\_injective\_from\_Ei\_constraint},
+displays \texttt{Function.Injective chartOfModelTrue} with the
+$E_i$ constraint and annihilator presentations.
+Its chain is \texttt{ddfb2642} $\to$ \texttt{e466e5a} $\to$
+\texttt{792b3f8}; the freeze object is \texttt{437b4c85} at
+\texttt{c48b1bd3}.
+The general statement is the \texttt{commonPrime} field in
+\texttt{BealFinal/Main.lean:30--36}; the forward wrapper at
+lines 74--80 returns \texttt{data.bealTheorem.commonPrime}
+as an explicit input, not a consequence of the chart certificate.
+
 A separate recorded cover addresses the $62500$ values
 $B\equiv14\pmod{16}$ below $10^6$; the extension to all $B$
 retains an explicit Baker-bound premise.
 Finite level-$26$ coefficient and trace certificates are distinguished
 from modularity and level-lowering inputs.
-We also retain the bounded v33 quotient-Rees gluing manuscript and
-state the v38 true-chart certificate with its actual hypotheses.
-The general Beal common-prime statement is recorded in a forward
-interface whose common-prime proof remains an explicit input.
-No implication from the chart certificate to that input is claimed.
+We also retain the separately bounded v33 quotient-Rees gluing manuscript.
 \end{abstract}
 
 \section{Introduction}
 \label{sec:introduction}
+The v38 certificate \texttt{beal-v38 EQUIV:3 792b3f8},
+\texttt{chartOfModelTrue\_injective\_from\_Ei\_constraint},
+records \texttt{Function.Injective chartOfModelTrue} together with
+the $E_i$ constraint and annihilator presentations.
+The general Beal statement is recorded alongside it with the
+common-prime proof as an explicit input to the forward wrapper.
+\Cref{sec:v38} gives the precise certificate, that input interface,
+and their distinct proof dependencies; \cref{sec:provenance}
+records the chain and separate freeze and EQUIV objects.
+
 We study finite residue obstructions for
 $A^4+B^4=(B+3)^{13}$ and distinguish them from conditional modular
 and logarithmic arguments. The vendored SageMath 10.7 certificate
