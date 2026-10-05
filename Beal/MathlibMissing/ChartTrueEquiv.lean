@@ -1,3 +1,4 @@
+import Beal.MathlibMissing.ChartXt
 import Beal.MathlibMissing.ChartXtFixed
 import Beal.MathlibMissing.GlueFinal
 
@@ -99,6 +100,76 @@ theorem chartTrueEquiv_annihilator_presentations :
         chartOverlap_nilpotent_ne_zero⟩)
     h_factor_vs_power
 
+/-- A kernel class constrains the `Eᵢ` summand and does not set it to zero.
+`chartYtCusp_kernel_torsion_condition` gives `S`-degree at most `2`,
+equal chart images of the high piece and of `A + Y·B + Y²·C`, and
+annihilation of the high image by `1 + Y·S³`. `Y³` stays nonzero.
+The `X²` annihilator holds on `D₊(Xt)` and does not set `B = 0`:
+`X + V²` stays outside the cusp ideal with nonzero image, and the
+cleared cofactor `X³ − 1 = centreNormalPoly (X³ − 1) 0` lies outside
+`I²` because `centreAlphaBound 2 0 = 1`. There is no ring map from
+`D₊(Xt)` into the overlap. `chartOfModelTrue_injective` is not restated. -/
+theorem chartTrueEquiv_Ei_constraint_not_vanish
+    (N : modelYtChart_fixed)
+    (hN : chartOfModelTrueY_fixed N = 0) :
+    (∃ A B C E0 E1 E2 : chartYtCuspPoly,
+      MvPolynomial.degreeOf (0 : Fin 2) A = 0 ∧
+        MvPolynomial.degreeOf (0 : Fin 2) B = 0 ∧
+        MvPolynomial.degreeOf (0 : Fin 2) C = 0 ∧
+        MvPolynomial.degreeOf (1 : Fin 2) E0 = 0 ∧
+        MvPolynomial.degreeOf (1 : Fin 2) E1 = 0 ∧
+        MvPolynomial.degreeOf (1 : Fin 2) E2 = 0 ∧
+        closedYtToCusp N =
+          Ideal.Quotient.mk chartYtCuspIdeal
+            (A + MvPolynomial.X (0 : Fin 2) * B +
+              (MvPolynomial.X (0 : Fin 2)) ^ 2 * C +
+              (MvPolynomial.X (0 : Fin 2)) ^ 3 *
+                (E0 + MvPolynomial.X (1 : Fin 2) * E1 +
+                  (MvPolynomial.X (1 : Fin 2)) ^ 2 * E2)) ∧
+        MvPolynomial.degreeOf (1 : Fin 2)
+            ((MvPolynomial.X (0 : Fin 2)) ^ 3 *
+              (E0 + MvPolynomial.X (1 : Fin 2) * E1 +
+                (MvPolynomial.X (1 : Fin 2)) ^ 2 * E2)) ≤ 2 ∧
+        chartOfModelTrueY_fixed
+            (cuspYtToClosed (Ideal.Quotient.mk chartYtCuspIdeal
+              ((MvPolynomial.X (0 : Fin 2)) ^ 3 *
+                (E0 + MvPolynomial.X (1 : Fin 2) * E1 +
+                  (MvPolynomial.X (1 : Fin 2)) ^ 2 * E2)))) =
+          chartOfModelTrueY_fixed
+            (cuspYtToClosed (Ideal.Quotient.mk chartYtCuspIdeal
+              (A + MvPolynomial.X (0 : Fin 2) * B +
+                (MvPolynomial.X (0 : Fin 2)) ^ 2 * C))) ∧
+        (1 + chartYt_Y valuationOneCurve 0 0 *
+            chartYt_X_over_Y valuationOneCurve 0 0 ^ 3) *
+          chartOfModelTrueY_fixed
+            (cuspYtToClosed (Ideal.Quotient.mk chartYtCuspIdeal
+              ((MvPolynomial.X (0 : Fin 2)) ^ 3 *
+                (E0 + MvPolynomial.X (1 : Fin 2) * E1 +
+                  (MvPolynomial.X (1 : Fin 2)) ^ 2 * E2)))) = 0) ∧
+    (∀ z : chart_Dplus_Xt_ring valuationOneCurve 0 0,
+      chart_X valuationOneCurve 0 0 ^ 2 *
+        ((chart_X valuationOneCurve 0 0 +
+            chart_Y_over_X valuationOneCurve 0 0 ^ 2) * z) = 0) ∧
+    (MvPolynomial.X (0 : Fin 2) + (MvPolynomial.X (1 : Fin 2)) ^ 2 ∉
+        chartNormalIdeal ∧
+      chartOfModelTrueX_fixed
+          (Ideal.Quotient.mk chartTrueIdeal
+            (normalPolyToModel
+              (MvPolynomial.X (0 : Fin 2) +
+                (MvPolynomial.X (1 : Fin 2)) ^ 2))) ≠ 0) ∧
+    (Ideal.Quotient.mk (Ideal.span {surfacePolynomial valuationOneCurve})
+        (centreNormalPoly (Polynomial.X ^ 3 - 1) 0) ∉ vI ^ 2) ∧
+    chartYt_Y valuationOneCurve 0 0 ^ 3 ≠ 0 := by
+  have h_factor_vs_power := chartTrueEquiv_factor_ne_power
+  exact (fun _ =>
+      ⟨chartYtCusp_kernel_torsion_condition N hN,
+        chartTrueEquiv_X_annihilator,
+        chartOfModelTrueX_fixed_B_one_outside,
+        chartXt_Xcube_sub_one_not_mem,
+        chartYt_Y_cube_ne_zero⟩)
+    h_factor_vs_power
+
+#print axioms Beal.MathlibMissing.chartTrueEquiv_Ei_constraint_not_vanish
 #print axioms Beal.MathlibMissing.chartTrueEquiv_X_annihilator
 #print axioms Beal.MathlibMissing.chartTrueEquiv_Y_annihilator
 #print axioms Beal.MathlibMissing.chartTrueEquiv_factor_ne_power
