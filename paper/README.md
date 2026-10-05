@@ -1,5 +1,13 @@
 # v37-true-chart
 
+## Submission editing audit
+
+See [`AMS_EDITING_NOTES`](../AMS_EDITING_NOTES/README.md) for the pinned
+Beal-only source boundary, target-specific verification, and manuscript
+editing findings. The manuscript consolidation remains an unmerged proposal.
+A successful PDF compile does not establish print readiness or a general
+Beal proof.
+
 Cite [10.5281/zenodo.23120540](https://doi.org/10.5281/zenodo.23120540), version `v37-true-chart`.
 
 Do not cite [10.5281/zenodo.23120520](https://doi.org/10.5281/zenodo.23120520): that ingest still carries the old v33 title. Do not cite [10.5281/zenodo.23054568](https://doi.org/10.5281/zenodo.23054568): that is pre-injective `main` at `3dd7728f`.
