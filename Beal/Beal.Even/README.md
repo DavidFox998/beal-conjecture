@@ -1,7 +1,14 @@
 # Beal.Even
 
 `lake build BealEven` builds `Beal/Beal.Even/FullReduction.lean` only.
-This library does not import `Beal/MathlibMissing/Family.lean`.
+This library does not import `Beal/MathlibMissing/Family.lean` or
+`Beal/MathlibMissing/ChartTrueEquiv.lean`.
+
+The v39 wrapper is the separate module `Beal/BealEven.lean`
+(`lake build Beal.BealEven`). It cites `chartOfModelTrue_injective`
+and the `Eᵢ` constraint. `main` is `a2a23292`. The citation
+[10.5281/zenodo.23120540](https://doi.org/10.5281/zenodo.23120540)
+is unchanged.
 
 ## v37-degree-one
 
