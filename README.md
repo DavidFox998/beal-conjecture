@@ -829,3 +829,7 @@ Invariants: `centreNormalPoly (X³ − 1) 0` lies outside `I²` because `centreA
 `X²·(X+V²)·z = 0` is a separate conjunct and does not set `B = 0`. `X+V²` stays outside the cusp ideal with nonzero image. `overlapX·(overlapX+overlapV²) ≠ 0`.
 `ann(1+Y·S³) ≠ ann(X²)` (`c39488ce`) is cited before the conjunction. `ann(1+Y·S³) = ann(X+V²)` and `ann(X²) = ann(Y²)`, with `V = S⁻¹`, `Y = X·V`, `X = Y·S`.
 There is no ring map from `D₊(Xt)` into the overlap. Seven theorems in `Beal/MathlibMissing/ChartTrueEquiv.lean` (355 lines) depend only on `[propext, Classical.choice, Quot.sound]`. The v37 citation remains [10.5281/zenodo.23120540](https://doi.org/10.5281/zenodo.23120540).
+
+## Paper consolidation
+
+`paper/` is the single manuscript directory. The standalone v33 source that was `papers/main.tex` is archived at `paper/v33-standalone/`, and its body is a section of `paper/mcom-draft.tex`. Build with `cd paper && tectonic mcom-draft.tex` (or `latexmk -pdf mcom-draft.tex`). The downloadable file is `paper/mcom-draft.pdf`. See `paper/README.md`. This note does not mint a DOI.

@@ -2,7 +2,7 @@
 
 Scope: branch `beal-10e6-inhabited-43735b3`; checked against the current
  root `README.md` About section, `Beal/Beal.General/README.md`,
- `.github/about.txt`, release notes, `papers/main.tex` and its PDF,
+ `.github/about.txt`, release notes, `paper/v33-standalone/main.tex` and its PDF,
  and Lean declarations. `ℤ_[2]` in
 this code means **2-adic integers**, not the localization `ℤ_(2)`.
 File:line references below point to the current working tree.
@@ -88,9 +88,11 @@ File:line references below point to the current working tree.
   was corrected to replace a stale pre-mint DOI notice, without a
   new DOI or archive change. A webhook credential was exposed during
   inspection; reconnect/rotate it without printing it again.
-- A separate v33 manuscript at `papers/main.tex` compiles to
-  `papers/main.pdf` (two pages); the historical level-26
-  `paper/mcom-draft.tex` is untouched. The PDF states the quotient
+- A separate v33 manuscript, formerly `papers/main.tex`, is archived at
+  `paper/v33-standalone/main.tex` and `paper/v33-standalone/main.pdf`
+  (two pages). Its body is also a section of `paper/mcom-draft.tex`.
+  The level-26 sections above that insertion are the historical draft.
+  The PDF states the quotient
   Rees `Proj` gluing and actual generic-fibre comparison, keeps
   overlaps abstract, and explicitly disclaims both `NEEDS FIX`
   assertions. It records the direct-check limits and pending DOI;
