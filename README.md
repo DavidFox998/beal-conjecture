@@ -193,6 +193,12 @@ is commit `385ff85c78c351de83b3fd625a208c9dea003647`, tree
 `626bbf615e9365a8af4b9f1b290259adee2936fd`, GitHub release `394869393`,
 and version DOI
 [10.5281/zenodo.22922473](https://doi.org/10.5281/zenodo.22922473).
+The published v25.0.2 and v25.0.3 kernel-checked records each have a
+duplicate deposit with identical content; cite the plain-named deposits:
+v25.0.2 [10.5281/zenodo.22927972](https://doi.org/10.5281/zenodo.22927972)
+(duplicate `22928145`), v25.0.3
+[10.5281/zenodo.22945142](https://doi.org/10.5281/zenodo.22945142)
+(duplicate `22945820`).
 `BealMatveevBealV25B0Search.Forward` exposes `MatveevBoundData`,
 `Level26SearchData`, `MatveevLevel26ForwardData`, `B0_search_forward`,
 `beal_matveev_level26_forward`, and `v25_numerical_surface_forward`.
