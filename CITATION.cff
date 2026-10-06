@@ -3,7 +3,12 @@ message: >-
   Cite v37-true-chart using DOI 10.5281/zenodo.23120540 from the
   beal-conjecture repository. The previous main record is
   10.5281/zenodo.23054568. The earlier foundations concept
-  DOI 10.5281/zenodo.22379293 is historical.
+  DOI 10.5281/zenodo.22379293 is historical. Published v25 records:
+  v25.0.1-forward 10.5281/zenodo.22922473; v25.0.2-10e6-kernel-checked
+  10.5281/zenodo.22927972 (duplicate 10.5281/zenodo.22928145 holds
+  identical content); v25.0.3-10e6-kernel-checked 10.5281/zenodo.22945142
+  (duplicate 10.5281/zenodo.22945820 holds identical content).
+  The Beal root integration record is 10.5281/zenodo.22923337.
 title: "modelXtChart equivalent to D_+(Xt) via the true chart presentation — v37-true-chart"
 type: software
 doi: 10.5281/zenodo.23120540
