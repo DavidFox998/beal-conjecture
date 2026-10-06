@@ -1,0 +1,99 @@
+# Build the 20-page MCOM submission PDF and upload it as an Actions artifact.
+# Tectonic 0.17.0 matches the local rebuild of paper/mcom-draft.tex.
+# This workflow does not mint a DOI and does not create a release.
+name: Paper PDF
+
+on:
+  push:
+    paths:
+      - paper/mcom-draft.tex
+      - .github/workflows/paper.yml
+  workflow_dispatch:
+
+concurrency:
+  group: paper-pdf-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pdf:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Tectonic 0.17.0 and Poppler
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y poppler-utils
+          curl -fsSL -o /tmp/tectonic.tar.gz \
+            https://github.com/tectonic-typesetting/tectonic/releases/download/tectonic%400.17.0/tectonic-0.17.0-x86_64-unknown-linux-gnu.tar.gz
+          tar -xzf /tmp/tectonic.tar.gz -C /tmp
+          sudo mv /tmp/tectonic /usr/local/bin/tectonic
+          tectonic --version
+
+      - name: Build paper/mcom-draft.pdf
+        working-directory: paper
+        run: |
+          set -euo pipefail
+          tectonic mcom-draft.tex 2>&1 | tee /tmp/tectonic.log
+          if grep -Ei 'overfull|undefined references|undefined citation|emergency stop' /tmp/tectonic.log; then
+            echo "Tectonic reported an overfull box or an undefined reference"
+            exit 1
+          fi
+
+      - name: Check page count, phrases, and link borders
+        run: |
+          set -euo pipefail
+          pages=$(pdfinfo paper/mcom-draft.pdf | awk '/^Pages:/ {print $2}')
+          echo "pages=${pages}"
+          test "$pages" = "20"
+          pdftotext paper/mcom-draft.pdf /tmp/mcom.txt
+          python3 - << 'PY'
+          from pathlib import Path
+          import re
+          text = Path("/tmp/mcom.txt").read_text(encoding="utf-8", errors="replace")
+          lines = text.splitlines()
+          def count(needle):
+              return sum(1 for line in lines if needle in line)
+          absent = ["Y-a xis-glue", "zeno.23120540", "dd fb2642"]
+          present = [
+              "ddfb2642",
+              "conductor_86",
+              "records the general Beal",
+              "792b3f8",
+              "Claim-to-source distinction",
+              "Y-axis-glue",
+              "10.5281/zenodo.23120540",
+          ]
+          failed = False
+          for needle in absent:
+              n = count(needle)
+              print(f"{n}\tABSENT\t{needle}")
+              if n != 0:
+                  failed = True
+          for needle in present:
+              n = count(needle)
+              print(f"{n}\tPRESENT\t{needle}")
+              if n < 1:
+                  failed = True
+          data = Path("paper/mcom-draft.pdf").read_bytes()
+          borders = re.findall(br"/Border\s*\[\s*([0-9. ]+)\]", data)
+          print(f"borders={len(borders)}")
+          if not borders:
+              failed = True
+          for raw in borders:
+              parts = raw.split()
+              if parts != [b"0", b"0", b"0"]:
+                  print("nonzero border", raw)
+                  failed = True
+          if failed:
+              raise SystemExit(1)
+          PY
+
+      - name: Upload mcom-draft.pdf
+        uses: actions/upload-artifact@v4
+        with:
+          name: mcom-draft.pdf
+          path: paper/mcom-draft.pdf
+          if-no-files-found: error

@@ -3,6 +3,9 @@
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22379293.svg)](https://doi.org/10.5281/zenodo.22379293)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22922473.svg)](https://doi.org/10.5281/zenodo.22922473)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22912430.svg)](https://doi.org/10.5281/zenodo.22912430)
+[![Paper PDF](https://github.com/DavidFox998/beal-conjecture/actions/workflows/paper.yml/badge.svg)](https://github.com/DavidFox998/beal-conjecture/actions/workflows/paper.yml)
+
+The 20-page submission draft is [`paper/mcom-draft.tex`](paper/mcom-draft.tex). Download the artifact `mcom-draft.pdf` from the latest successful [Paper PDF](https://github.com/DavidFox998/beal-conjecture/actions/workflows/paper.yml) run. That workflow builds with Tectonic 0.17.0 and mints nothing. The chart citation remains [10.5281/zenodo.23120540](https://doi.org/10.5281/zenodo.23120540).
 
 ## v37-true-chart — `modelXtChart` is the true chart
 

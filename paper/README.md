@@ -153,6 +153,8 @@ Read `Beal/AUDIT_v33_HONESTY.md`, `Beal/ZENODO_DEPOSIT_v33.md`, and
 
 `cd paper && tectonic mcom-draft.tex` writes `paper/mcom-draft.pdf`. That file is the downloadable draft for this branch.
 
+GitHub Actions workflow [Paper PDF](https://github.com/DavidFox998/beal-conjecture/actions/workflows/paper.yml) runs on a push that changes `paper/mcom-draft.tex` and on manual dispatch. It installs Tectonic 0.17.0, builds `paper/mcom-draft.tex`, checks that the PDF is 20 pages, and uploads the artifact `mcom-draft.pdf`. Open the latest successful run and download that artifact. The workflow mints no DOI.
+
 Legacy root v33 checks: `Beal/Beal.General/` checks `CompatChart2t` (191 lines), `CompatChartXt`/`CompatChartYt` (105 each), six polynomial-to-abstract restrictions, `SpecialFibreGluing` (167 lines). Product overlaps are abstract. See `Beal/RELEASE_NOTES_v33.md`.
 
 `v10.0.0-paper-B14-Baker-1e6-DOI` archives the math and paper Zenodo DOIs for the v9.4.0 census (62500/25 chunks), Baker-conditional ∀B, and Tate bound 2^5*rad*13.
