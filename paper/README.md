@@ -26,15 +26,39 @@ Tag v37-true-chart is merge 84c03d5b. This is not a proof of the Beal conjecture
 
 `centreNormalPoly (X³-1) 0` lies outside `I²` because `centreAlphaBound 2 0=1`. Centre class remains α(X)+Y·β(X). X²·(X+V²)·z=0 does not set B=0. X+V² stays outside the cusp ideal. overlapX·(overlapX+overlapV²)≠0. ann(1+Y·S³)≠ann(X²) is cited before the conjunction. There is no ring map from D₊(Xt) into the overlap. This note does not mint a new Zenodo record. The v37 citation remains 10.5281/zenodo.23120540.
 
-## Working v33 paper incorporated — Replit standalone into the draft
+## Working v33 body incorporated — full-manuscript working copies
 
-The v33 PDF was created as a standalone Replit manuscript. Its source is archived at `paper/v33-standalone/main.tex` and `paper/v33-standalone/main.pdf`. The full body, not a truncation, is now a section of `paper/mcom-draft.tex`: “Working v33 paper - bounded quotient-Rees gluing”.
+The v33 PDF was created as a two-page standalone Replit manuscript. Its original source remains in Git history and its published deposit. The full body, not a truncation, remains Section 19 of `paper/mcom-draft.tex`: “Working v33 paper - bounded quotient-Rees gluing”. `papers/main.tex` and `paper/v33-standalone/main.tex`, with their PDFs, now contain synchronized copies of the full expanded working manuscript, not replacement frozen-deposit files.
 
 That section is a bounded description of the quotient-Rees three-open gluing and the actual blow-up generic-fibre comparison. It is not a proof of the general Beal conjecture, a global identification of the actual special-fibre pullback with the quotient Rees Proj, or a degree-one / nonvanishing certificate for overline{2t}.
 
 Build: `cd paper && latexmk -pdf mcom-draft.tex`, or `tectonic mcom-draft.tex`.
 
-## Reproducibility: exact Lean targets and PDF recheck
+## Current 26-page working submission
+
+Sections 20 and 21 study the three gap propositions, the distinct three
+research axioms, and the formalization programme. The two-year roadmap
+contains acceptance criteria and explicit dependencies, not promised
+theorem completion. The Baker interface has cutoff `10^6`; the older
+beyond-two-million range is not its literal definition. The conductor
+and level-lowering aliases are not a computed conductor or Ribet theorem.
+`Classical.choice` and finite displayed records do not provide BCDT.
+
+All three full source copies build with Tectonic 0.15.0. The **Paper PDF**
+workflow checks synchronized sources, 26-page output, equivalent extracted
+text, no overfull boxes or undefined references, and invisible link borders.
+Download **mcom-draft.pdf** under **Artifacts** in the latest successful
+[Paper PDF run](https://github.com/DavidFox998/beal-conjecture/actions/workflows/paper.yml)
+for branch `sonnet-mcom-draft-consolidate-paper-papers-v33-incorporated`.
+The workflow also supports manual dispatch. No branch merge, Lean proof
+change, frozen-tag update, release, or DOI mint is part of this revision.
+Registration is for the bounded result, not a $1M Beal Prize claim.
+
+## Historical reproducibility: exact Lean targets and PDF recheck
+
+The following 11-page and 20-page editing records describe earlier
+revisions. Their page numbers and unchanged-archive statements are
+historical; use the current 26-page working-copy description above.
 
 From the repository root, preserve the checked-in `lean-toolchain` and
 `lake-manifest.json` (Lean and Mathlib 4.12.0):

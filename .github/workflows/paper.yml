@@ -1,5 +1,5 @@
-# Build the 20-page MCOM submission PDF and upload it as an Actions artifact.
-# Tectonic 0.17.0 matches the local rebuild of paper/mcom-draft.tex.
+# Build the 26-page MCOM submission PDF and its synchronized copies.
+# Tectonic 0.15.0 matches the local rebuild of paper/mcom-draft.tex.
 # This workflow does not mint a DOI and does not create a release.
 name: Paper PDF
 
@@ -7,6 +7,8 @@ on:
   push:
     paths:
       - paper/mcom-draft.tex
+      - papers/main.tex
+      - paper/v33-standalone/main.tex
       - .github/workflows/paper.yml
   workflow_dispatch:
 
@@ -21,22 +23,26 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Tectonic 0.17.0 and Poppler
+      - name: Install Tectonic 0.15.0 and Poppler
         run: |
           set -euo pipefail
           sudo apt-get update
           sudo apt-get install -y poppler-utils
           curl -fsSL -o /tmp/tectonic.tar.gz \
-            https://github.com/tectonic-typesetting/tectonic/releases/download/tectonic%400.17.0/tectonic-0.17.0-x86_64-unknown-linux-gnu.tar.gz
+            https://github.com/tectonic-typesetting/tectonic/releases/download/tectonic%400.15.0/tectonic-0.15.0-x86_64-unknown-linux-gnu.tar.gz
           tar -xzf /tmp/tectonic.tar.gz -C /tmp
           sudo mv /tmp/tectonic /usr/local/bin/tectonic
           tectonic --version
 
-      - name: Build paper/mcom-draft.pdf
-        working-directory: paper
+      - name: Build all manuscript sources
         run: |
           set -euo pipefail
-          tectonic mcom-draft.tex 2>&1 | tee /tmp/tectonic.log
+          cmp paper/mcom-draft.tex papers/main.tex
+          cmp paper/mcom-draft.tex paper/v33-standalone/main.tex
+          : > /tmp/tectonic.log
+          for source in paper/mcom-draft.tex papers/main.tex paper/v33-standalone/main.tex; do
+            (cd "$(dirname "$source")" && tectonic "$(basename "$source")") 2>&1 | tee -a /tmp/tectonic.log
+          done
           if grep -Ei 'overfull|undefined references|undefined citation|emergency stop' /tmp/tectonic.log; then
             echo "Tectonic reported an overfull box or an undefined reference"
             exit 1
@@ -47,7 +53,13 @@ jobs:
           set -euo pipefail
           pages=$(pdfinfo paper/mcom-draft.pdf | awk '/^Pages:/ {print $2}')
           echo "pages=${pages}"
-          test "$pages" = "20"
+          test "$pages" = "26"
+          for copy in papers/main.pdf paper/v33-standalone/main.pdf; do
+            test "$(pdfinfo "$copy" | awk '/^Pages:/ {print $2}')" = "26"
+            pdftotext "$copy" /tmp/copy.txt
+            pdftotext paper/mcom-draft.pdf /tmp/canonical.txt
+            cmp /tmp/canonical.txt /tmp/copy.txt
+          done
           pdftotext paper/mcom-draft.pdf /tmp/mcom.txt
           python3 - << 'PY'
           from pathlib import Path
@@ -55,8 +67,9 @@ jobs:
           import zlib
           text = Path("/tmp/mcom.txt").read_text(encoding="utf-8", errors="replace")
           lines = text.splitlines()
+          searchable = re.sub(r"\s+", " ", text)
           def count(needle):
-              return sum(1 for line in lines if needle in line)
+              return searchable.count(needle)
           absent = ["Y-a xis-glue", "zeno.23120540", "dd fb2642"]
           present = [
               "ddfb2642",
@@ -66,6 +79,10 @@ jobs:
               "Claim-to-source distinction",
               "Y-axis-glue",
               "10.5281/zenodo.23120540",
+               "Three Props",
+               "2-Year Resolution Plan",
+               "Overcoming Mathlib Gaps",
+               "No prize claim is made",
           ]
           failed = False
           for needle in absent:
@@ -98,6 +115,11 @@ jobs:
           print(f"borders={len(borders)}")
           if not borders:
               failed = True
+          for blob in blobs:
+               for style in re.findall(br"/BS\s*<<(.*?)>>", blob, re.S):
+                   for width in re.findall(br"/W\s+(-?[0-9.]+)", style):
+                       if float(width) != 0:
+                           failed = True
           for raw in borders:
               if raw.split() != [b"0", b"0", b"0"]:
                   print("nonzero border", raw)

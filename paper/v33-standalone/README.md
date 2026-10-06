@@ -1,8 +1,10 @@
-# v33 standalone archived from papers/
+# Full working manuscript with the v33 body
 
-Source: `papers/main.tex` (Replit). Working v33 paper. Bounded quotient-Rees three-open gluing. Not a proof of the general Beal conjecture.
+`main.tex` and `main.pdf` now contain the complete 26-page working submission, synchronized with `paper/mcom-draft.tex` and `papers/main.tex`. The original two-page v33 manuscript is preserved in Git history and its published deposit; its full body remains Section 19 of this manuscript.
 
-`main.tex` and `main.pdf` in this directory are that standalone manuscript. The same body is a section of `paper/mcom-draft.tex`, “Working v33 paper - bounded quotient-Rees gluing”. After this consolidation the draft source is `paper/mcom-draft.tex`.
+Method: edit the canonical `paper/mcom-draft.tex`, copy the entire source here, and rebuild with `cd paper/v33-standalone && tectonic main.tex` using Tectonic 0.15.0. Sections 20 and 21 are a conditional research plan, not newly proved Lean results. No external asset or bibliography file is required; the bibliography is inline.
+
+The geometric claim remains bounded quotient-Rees three-open gluing and the actual generic-fibre comparison. This working copy is not a replacement for the frozen v33 DOI files, a global special-fibre identification, or a general Beal proof. No $1M claim or new DOI is made.
 
 `README-from-papers.md` is the README that previously lived in `papers/`.
 

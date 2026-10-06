@@ -5,7 +5,7 @@
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22912430.svg)](https://doi.org/10.5281/zenodo.22912430)
 [![Paper PDF](https://github.com/DavidFox998/beal-conjecture/actions/workflows/paper.yml/badge.svg)](https://github.com/DavidFox998/beal-conjecture/actions/workflows/paper.yml)
 
-The 20-page submission draft is [`paper/mcom-draft.tex`](paper/mcom-draft.tex). Download the artifact `mcom-draft.pdf` from the latest successful [Paper PDF](https://github.com/DavidFox998/beal-conjecture/actions/workflows/paper.yml) run. That workflow builds with Tectonic 0.17.0 and mints nothing. The chart citation remains [10.5281/zenodo.23120540](https://doi.org/10.5281/zenodo.23120540).
+The 26-page submission draft is [`paper/mcom-draft.tex`](paper/mcom-draft.tex), synchronized with [`papers/main.tex`](papers/main.tex) and [`paper/v33-standalone/main.tex`](paper/v33-standalone/main.tex). Sections 20 and 21 study the three gap propositions and the formalization programme, including the distinct research axioms and a conditional two-year roadmap. Download `mcom-draft.pdf` from the latest successful [Paper PDF](https://github.com/DavidFox998/beal-conjecture/actions/workflows/paper.yml) run **on the PR28 branch**, under **Artifacts**. The workflow builds all three copies with Tectonic 0.15.0 and checks 26 pages, searchable scope statements, and invisible link borders. This is a bounded submission, not a $1M prize claim. It mints nothing and changes no frozen tag. The chart citation remains [10.5281/zenodo.23120540](https://doi.org/10.5281/zenodo.23120540); the historical v33 version remains [10.5281/zenodo.23054568](https://doi.org/10.5281/zenodo.23054568).
 
 ## v37-true-chart — `modelXtChart` is the true chart
 
@@ -835,7 +835,7 @@ There is no ring map from `D₊(Xt)` into the overlap. Seven theorems in `Beal/M
 
 ## Paper consolidation
 
-`paper/` is the single manuscript directory. The standalone v33 source that was `papers/main.tex` is archived at `paper/v33-standalone/`, and its body is a section of `paper/mcom-draft.tex`. Build with `cd paper && tectonic mcom-draft.tex` (or `latexmk -pdf mcom-draft.tex`). The downloadable file is `paper/mcom-draft.pdf`. See `paper/README.md`. This note does not mint a DOI.
+`paper/mcom-draft.tex` is the canonical manuscript. `papers/main.tex` and `paper/v33-standalone/main.tex` are synchronized full 26-page working copies, not replacements for the frozen v33 deposit; the original v33 body is retained in Section 19. Build with `cd paper && tectonic mcom-draft.tex` (or `latexmk -pdf mcom-draft.tex`). The downloadable file is `paper/mcom-draft.pdf`. See `paper/README.md`. This note does not mint a DOI.
 
 The three-phase MCOM revision corrects the `(4,4,13)` signature and
 fourth-power trace attribution, clarifies finite populations and v33
