@@ -14,10 +14,10 @@ Concept DOI `10.5281/zenodo.22379293`.
 
 ## Working manuscript PDF
 
-`paper.yml` builds `paper/mcom-draft.tex`, `papers/main.tex`, and
-`paper/v33-standalone/main.tex` with Tectonic 0.15.0 and Poppler.
-The three source files must be identical. The outputs must have 26
-searchable pages and identical extracted text; missing references,
+`paper.yml` builds only `paper/mcom-draft.tex` with Tectonic 0.15.0.
+It then uses `cp` to synchronize both the source and its single PDF
+into `papers/` and `paper/v33-standalone/`. `cmp` and MD5 hashes
+verify byte identity. Poppler checks 26 searchable pages; missing references,
 overfull boxes, and nonzero link borders fail the job.
 
 The workflow runs when a manuscript source or its workflow changes,

@@ -44,9 +44,25 @@ beyond-two-million range is not its literal definition. The conductor
 and level-lowering aliases are not a computed conductor or Ribet theorem.
 `Classical.choice` and finite displayed records do not provide BCDT.
 
-All three full source copies build with Tectonic 0.15.0. The **Paper PDF**
-workflow checks synchronized sources, 26-page output, equivalent extracted
-text, no overfull boxes or undefined references, and invisible link borders.
+Compile only `paper/mcom-draft.tex` with Tectonic 0.15.0. Then use `cp`
+for both its source and its PDF; do not build either mirror independently.
+The **Paper PDF** workflow follows this single-build process and requires
+byte-identical sources and PDFs, 26 searchable pages, no overfull boxes
+or undefined references, and invisible link borders.
+
+From the repository root:
+
+```sh
+(cd paper && tectonic mcom-draft.tex)
+cp paper/mcom-draft.tex papers/main.tex
+cp paper/mcom-draft.pdf papers/main.pdf
+cp paper/mcom-draft.tex paper/v33-standalone/main.tex
+cp paper/mcom-draft.pdf paper/v33-standalone/main.pdf
+md5sum paper/mcom-draft.pdf papers/main.pdf paper/v33-standalone/main.pdf
+```
+
+Matching hashes prove that the mirror files are copies of the same PDF,
+not independently generated documents.
 Download **mcom-draft.pdf** under **Artifacts** in the latest successful
 [Paper PDF run](https://github.com/DavidFox998/beal-conjecture/actions/workflows/paper.yml)
 for branch `sonnet-mcom-draft-consolidate-paper-papers-v33-incorporated`.

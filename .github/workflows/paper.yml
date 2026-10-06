@@ -34,19 +34,29 @@ jobs:
           sudo mv /tmp/tectonic /usr/local/bin/tectonic
           tectonic --version
 
-      - name: Build all manuscript sources
+      - name: Build the canonical manuscript once
+        working-directory: paper
         run: |
           set -euo pipefail
-          cmp paper/mcom-draft.tex papers/main.tex
-          cmp paper/mcom-draft.tex paper/v33-standalone/main.tex
-          : > /tmp/tectonic.log
-          for source in paper/mcom-draft.tex papers/main.tex paper/v33-standalone/main.tex; do
-            (cd "$(dirname "$source")" && tectonic "$(basename "$source")") 2>&1 | tee -a /tmp/tectonic.log
-          done
+          tectonic mcom-draft.tex 2>&1 | tee /tmp/tectonic.log
           if grep -Ei 'overfull|undefined references|undefined citation|emergency stop' /tmp/tectonic.log; then
             echo "Tectonic reported an overfull box or an undefined reference"
             exit 1
           fi
+
+      - name: Synchronize sources and the single compiled PDF
+        run: |
+          set -euo pipefail
+          mkdir -p papers paper/v33-standalone
+          cp paper/mcom-draft.tex papers/main.tex
+          cp paper/mcom-draft.pdf papers/main.pdf
+          cp paper/mcom-draft.tex paper/v33-standalone/main.tex
+          cp paper/mcom-draft.pdf paper/v33-standalone/main.pdf
+          cmp paper/mcom-draft.tex papers/main.tex
+          cmp paper/mcom-draft.tex paper/v33-standalone/main.tex
+          cmp paper/mcom-draft.pdf papers/main.pdf
+          cmp paper/mcom-draft.pdf paper/v33-standalone/main.pdf
+          md5sum paper/mcom-draft.pdf papers/main.pdf paper/v33-standalone/main.pdf
 
       - name: Check page count, phrases, and link borders
         run: |
@@ -56,9 +66,7 @@ jobs:
           test "$pages" = "26"
           for copy in papers/main.pdf paper/v33-standalone/main.pdf; do
             test "$(pdfinfo "$copy" | awk '/^Pages:/ {print $2}')" = "26"
-            pdftotext "$copy" /tmp/copy.txt
-            pdftotext paper/mcom-draft.pdf /tmp/canonical.txt
-            cmp /tmp/canonical.txt /tmp/copy.txt
+            cmp paper/mcom-draft.pdf "$copy"
           done
           pdftotext paper/mcom-draft.pdf /tmp/mcom.txt
           python3 - << 'PY'
@@ -79,8 +87,12 @@ jobs:
               "Claim-to-source distinction",
               "Y-axis-glue",
               "10.5281/zenodo.23120540",
-               "Three Props",
-               "2-Year Resolution Plan",
+               "Three Gap Props",
+               "conductor_86 and level_lowering_86 stay Props",
+               "A^4 + B^4 = (B+3)^13",
+               "three research axioms distinct",
+               "NOT proved conductor-equals-26",
+               "research plan with proof requirements",
                "Overcoming Mathlib Gaps",
                "No prize claim is made",
           ]

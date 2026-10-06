@@ -7,16 +7,21 @@ propositions, research axioms, and conditional two-year programme.
 
 ## Method and dependencies
 
-Edit the canonical manuscript, synchronize the entire source, and build:
+Build the canonical manuscript once, then synchronize the source and PDF.
+From the repository root:
 
 ```sh
-cd papers
-tectonic main.tex
+(cd paper && tectonic mcom-draft.tex)
+cp paper/mcom-draft.tex papers/main.tex
+cp paper/mcom-draft.pdf papers/main.pdf
+cmp paper/mcom-draft.pdf papers/main.pdf
 ```
 
 Use Tectonic 0.15.0. The first build downloads TeX dependencies.
 The bibliography is inline, and no external image files are needed.
-PDF checks use Poppler. Lean/Mathlib verification is a separate process:
+Do not compile this mirror independently. PDF checks use Poppler;
+matching hashes or `cmp` verify that the copies are byte-identical.
+Lean/Mathlib verification is a separate process:
 building a PDF does not prove the mathematical interfaces it describes.
 
 ## Publication boundary

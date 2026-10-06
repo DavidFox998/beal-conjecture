@@ -806,11 +806,10 @@ the Baker bound.
 \section{Working v33 paper - bounded quotient-Rees gluing (incorporated from Replit standalone)}
 \label{sec:v33-incorporated}
 
-The original working source was \texttt{papers/main.tex}.
-This section retains its full body, not a truncation.
-The expanded manuscript is copied to \texttt{papers/main.tex} and
-\texttt{paper/v33-standalone/main.tex}, with their PDFs.
-These working copies are not the frozen deposit.
+The build source was \texttt{papers/main.tex}, generated PDF \texttt{main.pdf}.
+The full source is archived at \texttt{paper/v33-standalone/main.tex} and the
+full PDF at \texttt{paper/v33-standalone/main.pdf}.
+This section is that manuscript's body, not a truncation.
 It is a bounded description of the quotient-Rees three-open gluing and the
 actual blow-up's generic-fibre comparison.
 It is not a proof of the general Beal conjecture, a global identification of
@@ -963,19 +962,18 @@ Build from \texttt{paper/} with \texttt{latexmk -pdf mcom-draft.tex} or
 
 \begingroup
 \small
-\section{In-Depth Study of the Three Props: Problem and 2-Year Resolution Plan}
+\section{In-Depth Study of the Three Gap Props Distinct from Three Research Axioms --- Research Plan}
 \label{sec:props-indepth}
 
-This is a research programme, not new proved mathematics or a \$1M
-Beal Prize claim. The submission concerns a bounded result.
-A two-year horizon is a planning interval, not a guarantee of resolution.
+This is a two-year research plan with proof requirements,
+not a promise of resolution. The bounded result is worthy of
+consideration, not a \$1M Beal Prize claim.
 
 \subsection{Three gap propositions are not the three research axioms}
-The study areas are \texttt{baker_bound_gap3},
-\texttt{conductor_86}, and \texttt{level_lowering_86}.
-The uninhabited \texttt{B14_honest} pack is related.
-A proposition definition asserts nothing; an axiom supplies an assumption
-to dependent proofs. The three named research axioms are different:
+\texttt{conductor_86} and \texttt{level_lowering_86} remain Props.
+\texttt{baker_bound_gap3} is the analytic gap; \texttt{B14_honest}
+stays uninhabited. We keep the three research axioms distinct
+from those propositions. Their assumptions are assessed per theorem:
 \begin{enumerate}[leftmargin=*,itemsep=3pt]
 \item \texttt{darmon_merel_4413_axiom}, in \texttt{BealTrueV25.lean},
 assumes the named coprime $(4,4,13)$ no-solution proposition.
@@ -1007,7 +1005,7 @@ The vendored \texttt{BealGap3BakerUpperBound.lean} defines
   \neg\exists A\in\mathbb N,\quad A^4+B^4=(B+3)^{13}.
 \]
 The older beyond-$2\mathrm M$ range is not this declaration's cutoff.
-The equation is $(4,4,13)$, not $A^4+B^{13}=C^{13}$.
+The equation has signature $(4,4,13)$.
 \texttt{hBaker} and \texttt{fullB0Search} remain separate inputs.
 Neither the $62500$-value cover through $10^6$ nor Step61+
 \texttt{smallZsigPrimes} witnesses supply an above-cutoff bound.
@@ -1042,6 +1040,7 @@ remains conditional. A version label cannot substitute for the
 missing theorem.
 
 \subsection{Prop 2: conductor study, not a conductor label}
+The status is: NOT proved conductor-equals-26.
 In \texttt{BealFreyB14.lean}, \texttt{conductor_86} is an alias
 of \texttt{FreyModularity.level_lowering_to_26}; it is not a
 definition of an actual conductor function or the assertion $N(E)=26$.
@@ -1116,8 +1115,9 @@ Do not replace an unresolved assumption with another opaque assumption.
 At month 24, a merge is justified only for the proofs actually completed.
 If a required bridge remains open, retain it in the statement.
 There is no promise that all three propositions will be resolved.
-Even successful completion would concern the precisely stated
-gap-three programme, not all exponent triples of Beal's conjecture.
+If correctly stated Props, model comparisons, and the matching exhaustive
+cover are proved, gap-three elimination through $2\mathrm M$ may become
+unconditional. That would not settle all exponent triples.
 Density beyond named populations, the general modular inference,
 and unrestricted Beal remain open. No prize claim is made.
 
@@ -1126,52 +1126,53 @@ and unrestricted Beal remain open. No prize claim is made.
 \label{sec:formalization-scaffolding}
 
 \subsection{Repository-only provenance and truthful interfaces}
-Project-owned Lean evidence is confined to this repository,
-including the vendored Level26 package. Standard Lean and Mathlib
-dependencies are acknowledged; unrelated research and private
-certificates are not proof premises. The immutable baseline
-\recordid{02728795} is a Git commit, not a DOI. This revision
-creates no release or deposit.
+The repository-only baseline is
+\texttt{02728795e15f6c858f0d360d560f80e4efb252a2},
+including PR25 \recordid{a2a23292} and the vendored Level26 package.
+Standard Lean and Mathlib dependencies are acknowledged.
+The historical lexical scan found no active proof-hole tokens in
+$57$ local files from $18$ \texttt{BealMathlibMissing} roots and
+$39$ files from the one \texttt{BealEven} root. It is not a kernel build.
+The recorded cache exit $137$, consistent with OOM, left the requested
+full builds pending; this is not a fresh verification result.
 
-Every claimed result needs four separate records: its exact Lean
-type, an inhabitant of that type, the inhabitant's axiom dependencies,
-and its interpretation as the intended mathematics. A finite record
-may certify coefficients or a residue table, but not automatically
-a modular curve, Jacobian, L-function, or residual representation.
-An interface with a proof-valued field is useful only once that
-field has been constructed without the disputed assumption.
+The classical trio
+[\texttt{propext}, \texttt{Classical.choice}, \texttt{Quot.sound}]
+is reported for seven declarations at
+\texttt{ChartTrueEquiv.lean:261--338}, not for all modules.
+The freeze is \recordid{437b4c85} at \recordid{c48b1bd3};
+the EQUIV object is \recordid{c2f530ab} at \recordid{792b3f8}.
+\texttt{Beal/AUDIT_v33_HONESTY.md:79--88,120--124}
+records the published v33 boundary. Exact types, proof inhabitants,
+axiom dependencies, and mathematical interpretation remain separate.
 
 \subsection{Existing chart mathematics is not merely finite data}
 The even-branch work includes genuine algebraic and scheme-theoretic
-constructions; it must not be described wholesale as finite records.
-The divided chart, saturated graph ideals, chart restrictions,
-and quotient-Rees cover are distinct objects.
+constructions, not merely finite records. The divided chart,
+saturated ideals, restrictions, and quotient-Rees cover are distinct.
 For $I=(2,X,Y)$, the reduction
 $\mathrm{Rees}(I)/(2)$ is by the degree-zero base scalar, not by $2t$.
 The v33 result concerns the quotient-Rees three-open gluing
 and the actual blow-up's generic-fibre comparison.
 
-The product-open overlaps are abstract pullbacks, not explicit
-polynomial overlap presentations. Neither a global identification
-of the actual special-fibre pullback with the quotient Rees Proj
-nor degree-one/nonvanishing of $\overline{2t}$ is asserted.
-The large special-fibre direct-check file is untouched.
-There is no general Beal proof in this geometric packaging.
+Product-open overlaps are abstract pullbacks. No global actual
+special-fibre identification or degree-one/nonvanishing of
+$\overline{2t}$ is asserted. The special-fibre direct-check file
+is untouched; this packaging does not prove general Beal.
 
 \subsection{From scaffolding to mathematical proof}
-Begin with a specification and a precisely typed gap, not a
-placeholder disguised as a theorem. Prove elementary components,
-transport them through explicit comparison maps, and only then
-construct the proof-valued field of the downstream interface.
-Retain the proposition definition and add its proof; a proposition
-does not cease to be a proposition when proved.
-If a model predicate must be replaced, document the change and
-prove any required equivalence rather than silently strengthening
-the meaning of an old name.
+Begin with a precise specification. Prove components, transport
+them through comparison maps, then construct the proof-valued field.
+Retain each proposition definition and add its proof.
+For a replaced model predicate, document the change and prove
+any required equivalence. Finite \texttt{J0_26_Decomp.lean} records
+are not a Jacobian; unrelated certificates are not proof premises.
 
 \clearpage
 \subsection{Matveev example: the bridge to be constructed}
 On a positive solution of the actual equation, put $C=B+3$.
+For literal text search the equation is
+\texttt{A^4 + B^4 = (B+3)^13}.
 The logarithmic form compatible with the existing calculations is
 \[
  \Lambda=13\log C-4\log A
@@ -1256,7 +1257,9 @@ every chart result by association.
 \item Keep the recorded seven-declaration v38 check distinct
 from fresh full-build status. Historical reports and timeouts
 remain labelled as such in the source ledger.
-\item Compile all three manuscript paths, check 26 searchable
+\item Compile the canonical manuscript once, then copy its source
+and PDF to both mirrors; require byte-identical files.
+Check 26 searchable
 pages, undefined references, overfull boxes, physical-page
 overflow, and zero-width hyperlink borders. A PDF check says
 nothing about completing a missing Lean theorem.
