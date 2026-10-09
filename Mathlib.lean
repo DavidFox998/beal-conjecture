@@ -1,3 +1,4 @@
 import Mathlib.Modular.ManinSymbols
 import Mathlib.Modular.WindingQuotient
 import Mathlib.Modular.FormalImmersion
+import Mathlib.Modular.Rank0_32a1

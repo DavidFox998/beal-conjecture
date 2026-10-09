@@ -76,6 +76,15 @@ and `AbelJacobi_64_formal_immersion` is `a₁ = 1`. Neither constructs a
 map of curves, and neither is a proof of `False`. The modularity and
 Ribet axioms remain.
 
+`Mathlib/Modular/Rank0_32a1.lean` is Fermat's descent for the same model
+`Y² = X³ - X`. `no_rat_point_nonzero` says a rational point in lowest or
+unreduced integer coordinates has `Y = 0`, and `int_points_are_two_torsion`
+adds `X ∈ {-1, 0, 1}`. The argument is infinite descent on primitive
+integer right triangles of square area, not a `native_decide` of a Selmer
+list. Cremona `32a1` is a different curve in the isogeny class, with
+torsion `ℤ/4ℤ`. This file does not identify the model with `X₀(32)`, and
+it does not prove that `a⁴ + b⁴ = c¹³` has no nonzero solution.
+
 `DarmonMerel/7_WindingQuotientAxiom4413.lean` uses those definitions.
 `native_decide` proves `(T_5 - 6) e = (0,0,4,-4,0,0)` at level `32` and
 `(0,0,0,2,2,-4,0,…)` at level `64`, so both are nonzero mod `13`, and
