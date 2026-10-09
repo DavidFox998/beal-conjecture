@@ -170,24 +170,24 @@ abbrev Δ (E : FreyCurve4413) : ℤ × ℤ :=
   delta_weierstrass E
 
 /-- `B² = (4 a⁴ - 4 b⁴, 8 a² b²)`. -/
-lemma B_sq_expand (E : FreyCurve4413) :
+theorem B_sq_expand (E : FreyCurve4413) :
     B_sq E = (4 * E.a ^ 4 - 4 * E.b ^ 4, 8 * E.a ^ 2 * E.b ^ 2) := by
   unfold B_sq Zsqrt1_mul
   rw [E.h_B_re, E.h_B_im]
-  grind -lia -linarith -ac
+  apply Prod.ext <;> grind -lia -linarith -ac
 
 /-- `A² - 4 B = (8 a², -8 b²)`. -/
-lemma A_sq_sub_4B_expand (E : FreyCurve4413) :
+theorem A_sq_sub_4B_expand (E : FreyCurve4413) :
     A_sq_sub_4B E = (8 * E.a ^ 2, -(8 * E.b ^ 2)) := by
   unfold A_sq_sub_4B
   rw [E.h_A, E.h_B_re, E.h_B_im]
-  grind -lia -linarith -ac
+  apply Prod.ext <;> grind -lia -linarith -ac
 
 /-- Pacetti's discriminant equals the Weierstrass discriminant in `ℤ[√-1]`.
 
 `h_eq` replaces `c^13` by `a^4 + b^4`. Both sides are then polynomials in `a`
 and `b`, and the ring solver closes the two components. -/
-lemma discriminant_eq_weierstrass (E : FreyCurve4413) :
+theorem discriminant_eq_weierstrass (E : FreyCurve4413) :
     E.discriminant_re = (delta_weierstrass E).1 ∧
     E.discriminant_im = (delta_weierstrass E).2 := by
   have h : E.a ^ 4 + E.b ^ 4 = E.c ^ 13 := E.h_eq
@@ -195,7 +195,7 @@ lemma discriminant_eq_weierstrass (E : FreyCurve4413) :
   unfold discriminant_re discriminant_im delta_weierstrass weierstrass_product
   rw [h1, B_sq_expand E, A_sq_sub_4B_expand E]
   unfold Zsqrt1_mul
-  grind -lia -linarith -ac
+  constructor <;> grind -lia -linarith -ac
 
 /-- `Δ = 2^9 (a² + b² √-1) c^13` and `Δ = 16 B² (A² - 4 B)`. -/
 theorem frey_discriminant_formula (E : FreyCurve4413) :

@@ -17,9 +17,10 @@ and the discriminant on the slide specializes to
 ```
 
 `ℤ[√-1]` is represented by the integer triple `(A_int, B_re, B_im)`.
-The coefficient identities are definitional (`rfl`). The file declares no
-axioms and proves no theorems; `discriminant_re` and `discriminant_im` are
-the formula from the talk, not a derivation of the Weierstrass discriminant.
+The coefficient identities are definitional (`rfl`). `discriminant_re` and
+`discriminant_im` are Pacetti's formula. `discriminant_eq_weierstrass` proves
+they equal the Weierstrass discriminant `16 B² (A² - 4 B)`, using
+`a^4 + b^4 = c^13`. The source declares no axioms and uses no `sorry`.
 
 Sources:
 
