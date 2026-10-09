@@ -131,6 +131,12 @@ solution exists.
 pairs it with `frey_qcurve_modular`. The first conjunct does not imply the
 second. There is no theorem here that a ℚ-curve over `ℚ(√-1)` is modular.
 
+`Mathlib/Modular/DiscriminantNorm.lean` proves the field norm of
+`Δ = 2⁹ (a² + b² √(-1)) c¹³` is `2¹⁸ c³⁹`. That is not Tate's algorithm
+and it is not the conductor. `norm_and_level_lowering_axiom` pairs the
+norm with `ribet_level_lowering_4413`. Irreducibility of `ρ_{E,13}` is
+still a hypothesis. The level is not forced into `{32, 64}`.
+
 `a⁴ + b⁴ = c¹³` still has no nonexistence theorem.
 
 `DarmonMerel/7_WindingQuotientAxiom4413.lean` uses those definitions.
