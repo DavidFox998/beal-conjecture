@@ -95,6 +95,16 @@ polynomial identity. When `a` and `b` are both nonzero, both components of
 `ribet_level_lowering_4413`, and it does not prove that `a⁴ + b⁴ = c¹³`
 has no nonzero solution.
 
+`Mathlib/Modular/X0Moduli32.lean` counts cusps of `X₀(N)` by the classical
+divisor formula: the orbit of `a/d` has size `φ(gcd(d, N/d))`, and it is
+rational when that gcd is at most `2`. Level `32` has `8` geometric cusps
+and `4` rational ones (`d ∈ {1, 2, 16, 32}`). Level `64` has `12`
+geometric cusps and `4` rational ones. `card_P1_32 = 48` is a count of
+Manin symbols, not of cusps. A nonzero solution still yields
+`velu_target_eq_twist_neg_two`, a nonzero discriminant, and, through the
+two axioms, a modular Frey curve with a newform of some level. That
+package is not a rational point of `X₀(32)`.
+
 `DarmonMerel/7_WindingQuotientAxiom4413.lean` uses those definitions.
 `native_decide` proves `(T_5 - 6) e = (0,0,4,-4,0,0)` at level `32` and
 `(0,0,0,2,2,-4,0,…)` at level `64`, so both are nonzero mod `13`, and
