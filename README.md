@@ -28,6 +28,12 @@ single axiom `frey_qcurve_modular` (Ribet 2004 and Breuil–Conrad–Diamond–T
 twisted representation `rho_E_p_twisted` is a `sorry` placeholder. The
 implication from that axiom to level lowering is proved.
 
+`DarmonMerel/3_RibetLowering4413.lean` is the second axiom,
+`ribet_level_lowering_4413` (Ribet, Invent. Math. 100 (1990), and Pacetti's
+slide “Ribet's lowering the level result”). For `d = 1` the sets `Qᵢ` are
+empty, so the lowered level is a power of two. Which power — `32` or `64` —
+is the placeholder `level_32_or_64`.
+
 Sources:
 
 - Pacetti, *On solutions to x⁴ + d y² = zᵖ*, Dubrovnik, 19 June 2023, Slide 3, equation (1). The curve is `y² = x³ + 4 a x² + 2 (a² + b √(-d)) x`, and `Δ = 2⁹ (a² + b √(-d)) cᵖ`.
@@ -41,6 +47,7 @@ The toolchain is pinned in `lean-toolchain` (Lean 4.34.1). With [elan](https://g
 ```bash
 lake build DarmonMerel.1_FreyCurve4413
 lake build DarmonMerel.2_Modularity4413
+lake build DarmonMerel.3_RibetLowering4413
 ```
 
 `lake build` builds the `DarmonMerel` library.
