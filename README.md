@@ -112,8 +112,11 @@ model of `X₀(32)`; the isomorphism is not formalized. `(2, ±4)` lie on
 the curve and double to `(0, 0)`. That is not a proof of rank `0`.
 Substituting `x = u + v √(-1)` and `y = s + t √(-1)` into the Frey
 equation gives two integer equations. The real part has `- 2 b² v`.
-Those equations are not a rational point of `X₀(32)`, and
-`a⁴ + b⁴ = c¹³` still has no nonexistence theorem.
+Those equations are not a rational point of `X₀(32)`. At `a = 1`, `b = 1`
+the cleared numerator of `j` has imaginary part `-6308233216`, so
+`j = -3328 - 3008 √(-1)`. A quadratic twist multiplies `c₄` by `d²`; that
+does not make this `j` rational. `a⁴ + b⁴ = c¹³` still has no nonexistence
+theorem.
 
 `DarmonMerel/7_WindingQuotientAxiom4413.lean` uses those definitions.
 `native_decide` proves `(T_5 - 6) e = (0,0,4,-4,0,0)` at level `32` and

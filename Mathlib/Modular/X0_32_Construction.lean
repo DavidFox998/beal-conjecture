@@ -31,7 +31,18 @@ The Frey curve `y² = x³ + (4a) x² + 2(a² + b² √(-1)) x`, written in
 coordinates `x = u + v √(-1)` and `y = s + t √(-1)`, splits into two
 integer equations. The real part carries `- 2 b² v`. A product
 `2 * 2 * 8 = 32` is not a cyclic kernel, and these equations are not a
-rational point of `X₀(32)`. `no_solution_4413` is not a theorem.
+rational point of `X₀(32)`.
+
+For `y² = x³ + A x² + B x` one has `c₄ = 16 A² - 48 B`. A quadratic twist
+`A ↦ d A`, `B ↦ d² B` multiplies `c₄` by `d²`. That scaling does not make
+the Frey `j`-invariant rational. At `a = 1`, `b = 1` one has `A = 4` and
+`B = 2 + 2 √(-1)`, and `c₄³` times the conjugate of `Δ` is
+`-6979321856 - 6308233216 √(-1)`. The norm of `Δ` is `2097152`, so
+`j = -3328 - 3008 √(-1)`. The conjugate of this model is 2-isogenous to
+its twist, not isomorphic to it, so equality of `j` with the twist is not
+the relation proved by `velu_target_eq_twist_neg_two`.
+
+`no_solution_4413` is not a theorem.
 `frey_qcurve_modular` and `ribet_level_lowering_4413` are unchanged.
 -/
 
@@ -185,3 +196,66 @@ theorem cusps_32_from_divisor_formula :
 theorem cusps_64_from_divisor_formula :
     rationalCuspDivisors 64 = [1, 2, 32, 64] ∧ geometricCuspCount 64 = 12 :=
   ⟨rational_cusp_divisors_64, geometric_cusps_64⟩
+
+/-- `c₄ = 16 A² - 48 B` for `y² = x³ + A x² + B x`, with `B` in `ℤ[√-1]`. -/
+def c4Pair (A Br Bi : Int) : Int × Int :=
+  (16 * A ^ 2 - 48 * Br, -48 * Bi)
+
+/-- `Δ = 16 B² (A² - 4 B)`. -/
+def discPair (A Br Bi : Int) : Int × Int :=
+  let B2 := FreyCurve4413.Zsqrt1_mul Br Bi Br Bi
+  let gap := (A ^ 2 - 4 * Br, -(4 * Bi))
+  let prod := FreyCurve4413.Zsqrt1_mul B2.1 B2.2 gap.1 gap.2
+  (16 * prod.1, 16 * prod.2)
+
+def pairCube (z : Int × Int) : Int × Int :=
+  let sq := FreyCurve4413.Zsqrt1_mul z.1 z.2 z.1 z.2
+  FreyCurve4413.Zsqrt1_mul z.1 z.2 sq.1 sq.2
+
+/-- Numerator of `j = c₄³ / Δ` after clearing the denominator by `conj(Δ)`. -/
+def jNumerator (A Br Bi : Int) : Int × Int :=
+  let cu := pairCube (c4Pair A Br Bi)
+  let d := discPair A Br Bi
+  FreyCurve4413.Zsqrt1_mul cu.1 cu.2 d.1 (-d.2)
+
+/-- Twisting `A ↦ d A` and `B ↦ d² B` multiplies `c₄` by `d²`. -/
+theorem twist_scales_c4 (d A Br Bi : Int) :
+    c4Pair (d * A) (d ^ 2 * Br) (d ^ 2 * Bi) =
+      (d ^ 2 * (c4Pair A Br Bi).1, d ^ 2 * (c4Pair A Br Bi).2) := by
+  unfold c4Pair
+  apply Prod.ext <;> grind
+
+theorem frey_coefficients_at_one :
+    (4 : Int) * 1 = 4 ∧ 2 * (1 : Int) ^ 2 = 2 := by
+  decide
+
+theorem c4_at_one : c4Pair 4 2 2 = (160, -96) := by
+  decide
+
+theorem disc_at_one : discPair 4 2 2 = (1024, 1024) := by
+  unfold discPair FreyCurve4413.Zsqrt1_mul
+  decide
+
+theorem j_numerator_at_one :
+    jNumerator 4 2 2 = (-6979321856, -6308233216) := by
+  unfold jNumerator pairCube c4Pair discPair FreyCurve4413.Zsqrt1_mul
+  decide
+
+theorem disc_norm_at_one : (1024 : Int) ^ 2 + 1024 ^ 2 = 2097152 := by
+  decide
+
+theorem frey_j_value_at_one :
+    (-6979321856 : Int) / 2097152 = -3328 ∧
+      (-6308233216 : Int) / 2097152 = -3008 := by
+  decide
+
+theorem frey_j_imaginary_at_one : (jNumerator 4 2 2).2 ≠ 0 := by
+  rw [j_numerator_at_one]
+  decide
+
+/-- Both counts are `4`: four rational cusp divisors, and three exhibited
+affine points together with the point at infinity. These are not the same set. -/
+theorem four_cusp_divisors_and_four_exhibited_points :
+    (rationalCuspDivisors 32).length = 4 ∧ 1 + 3 = 4 := by
+  refine ⟨rational_cusp_count_32, ?_⟩
+  decide
