@@ -66,9 +66,15 @@ through `19`, and that each of those `T_5`-eigenlines has dimension `1`.
 `Mathlib/Modular/FormalImmersion.lean` is Merel's numerical test
 `FormalImmersionAtCusp`. `formal_immersion_32_13` and
 `formal_immersion_64_13` take `q = 5`. The model `Y² = X³ - X` is
-recorded, with the three integral points `(0, 0)`, `(1, 0)`, and
-`(-1, 0)`. The normalized `q`-expansions have `a₁ = 1`. This is not a
-proof of `False`, and the modularity and Ribet axioms remain.
+recorded. `integral_two_torsion` classifies its integral points with
+`y = 0` as `x ∈ {-1, 0, 1}`, using the factorization
+`x³ - x = x(x - 1)(x + 1)`. The 4-division polynomial
+`ψ₄ = 4 y (x⁶ - 5 x⁴ - 5 x² + 1)` vanishes at those points because
+`y = 0`; the degree-6 factor does not. The normalized `q`-expansions
+have `a₁ = 1`. `AbelJacobi_32_is_formal_immersion` is the level-32 test,
+and `AbelJacobi_64_formal_immersion` is `a₁ = 1`. Neither constructs a
+map of curves, and neither is a proof of `False`. The modularity and
+Ribet axioms remain.
 
 `DarmonMerel/7_WindingQuotientAxiom4413.lean` uses those definitions.
 `native_decide` proves `(T_5 - 6) e = (0,0,4,-4,0,0)` at level `32` and

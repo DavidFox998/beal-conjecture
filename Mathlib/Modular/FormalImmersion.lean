@@ -21,8 +21,13 @@ and `96 - relationRank 64 = 10`. `winding_nonzero_mod13_32` and
 (T_5 - 6) e₆₄ = (0, 0, 0, 2, 2, -4, 0, 0, 0, 0)
 ```
 
-The model `Y² = X³ - X` is Cremona `32a1`. The four integral points below
-lie on it. That is not a determination of `X₀(32)(ℚ)`.
+The model `Y² = X³ - X` is Cremona `32a1`. Its 2-division polynomial is
+`x(x - 1)(x + 1)`, so an integral point with `y = 0` has
+`x ∈ {-1, 0, 1}`. The 4-division polynomial is
+`ψ₄ = 4 y (x⁶ - 5 x⁴ - 5 x² + 1)`. It vanishes at those three points
+because of the factor `y`; the degree-6 factor does not. This is not a
+determination of the Mordell–Weil group, and it does not identify
+`X₀(32)(ℚ)` with the cusps.
 
 The `q`-expansions are the normalized newforms whose prime coefficients
 are the Hecke eigenvalues proved in `WindingQuotient`. For a
@@ -86,6 +91,40 @@ theorem X0_32_integral_points :
       onCurve X0_32_model (-1) 0 = true := by
   native_decide
 
+/-- The 2-division polynomial of `Y² = X³ - X` is `x(x - 1)(x + 1)`. -/
+theorem cube_factor (x : Int) : x ^ 3 - x = x * (x - 1) * (x + 1) := by
+  grind
+
+/-- An integral point on `Y² = X³ - X` with `y = 0` has `x ∈ {-1, 0, 1}`. -/
+theorem integral_two_torsion (x y : Int) (hcurve : y * y = x ^ 3 - x) (hy : y = 0) :
+    x = -1 ∨ x = 0 ∨ x = 1 := by
+  have h0 : x ^ 3 - x = 0 := by
+    rw [← hcurve, hy]
+    simp
+  rw [cube_factor] at h0
+  rcases Int.mul_eq_zero.mp h0 with h | h
+  · rcases Int.mul_eq_zero.mp h with hx | hx
+    · exact Or.inr (Or.inl hx)
+    · exact Or.inr (Or.inr (by omega))
+  · exact Or.inl (by omega)
+
+/-- Degree-6 factor of `ψ₄` for `A = -1`, `B = 0`. -/
+def psi4Poly (x : Int) : Int :=
+  x ^ 6 - 5 * x ^ 4 - 5 * x ^ 2 + 1
+
+/-- `ψ₄(x, y) = 4 y (x⁶ - 5 x⁴ - 5 x² + 1)`. -/
+def psi4 (x y : Int) : Int :=
+  4 * y * psi4Poly x
+
+theorem psi4_vanishes_at_two_torsion :
+    psi4 0 0 = 0 ∧ psi4 1 0 = 0 ∧ psi4 (-1) 0 = 0 := by
+  decide
+
+/-- Vanishing of `ψ₄` at these points comes from the factor `y`, not from the sextic. -/
+theorem psi4Poly_nonzero_at_two_torsion :
+    psi4Poly 0 = 1 ∧ psi4Poly 1 = -8 ∧ psi4Poly (-1) = -8 := by
+  decide
+
 /-- Normalized `q`-expansion of `32.2.a.a` through `q¹⁹`.
 
 Prime coefficients are `hecke32_eigenvalues`. For `p ∤ 32`,
@@ -128,4 +167,13 @@ theorem abelJacobi_32_cotangent_mod13 : coeff 1 qExp32 % 13 ≠ 0 := by
   decide
 
 theorem abelJacobi_64_cotangent_mod13 : coeff 1 qExp64 % 13 ≠ 0 := by
+  decide
+
+/-- Level 32: Merel's test at `q = 5`. This is not a map `X₀(32) → J₀(32)`. -/
+theorem AbelJacobi_32_is_formal_immersion : FormalImmersionAtCusp 32 13 :=
+  formal_immersion_32_13
+
+/-- Level 64: the coefficient of `q` on `64.2.a.a` is `1`, hence nonzero mod `13`. -/
+theorem AbelJacobi_64_formal_immersion :
+    coeff 1 qExp64 = 1 ∧ coeff 1 qExp64 % 13 ≠ 0 := by
   decide
