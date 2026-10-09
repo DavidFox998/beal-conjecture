@@ -52,17 +52,24 @@ are `native_decide` proofs that both products are `0`. The same holds for
 `χ = ±1` and for both signs of `a₅`. `13 ∣ 0`, so `13 ∤ C(5, g)` is false
 and this product does not eliminate either form.
 
-`DarmonMerel/7_WindingQuotientAxiom4413.lean` is the third axiom,
-`winding_elimination_4413` (Darmon–Merel 1997, §7 winding element `e`,
-§8 Lemma 8.2, and Proposition 4.2 for `13 ≡ 1 (mod 4)`). It is the step
-that rules out `ab ≠ 0` when the Mazur product of the CM forms is `0`.
+`DarmonMerel/7_WindingQuotientAxiom4413.lean` computes the plus modular
+symbols at levels `32` and `64` (dimensions `6` and `10`). `T5_32` and
+`T5_64` are the matrices of `T_5`, and `e32`, `e64` are the winding class
+`{0, ∞}`. `native_decide` proves `(T_5 - 6) e = (0,0,4,-4,0,0)` at level
+`32` and `(0,0,0,2,2,-4,0,…)` at level `64`, so both are nonzero mod `13`.
+The same file checks `|ℙ¹(ℤ/32ℤ)| = 48`, `|ℙ¹(ℤ/64ℤ)| = 96`, and that `T_5`
+acts by the LMFDB eigenvalues `a₅ = -2` and `a₅ = 2` on explicit
+eigenvectors. `winding_elimination_4413` is that pair of nonvanishings.
+It is a theorem. It does not prove `False`: the Mazur products are `0`
+and the winding vectors are nonzero mod `13` at the same time. The map
+`X₀(N) → J_e` from Darmon–Merel Lemma 8.2 is not formalized.
 
-`DarmonMerel/6_NoSolution4413.lean` states `no_solution_4413`: there is no
-solution of `a⁴ + b⁴ = c¹³` with `a` and `b` both nonzero. The proof builds
-the Frey curve, applies modularity and Ribet, uses the computed products
-`C(5, 32.2.a.a) = C(5, 64.2.a.a) = 0`, and calls the winding axiom.
-`(1, 0, 1)` and `(0, 1, 1)` satisfy the equation. Darmon–Merel, Main
-Theorem, part 2, is the different equation `xⁿ + yⁿ = z²`.
+`DarmonMerel/6_NoSolution4413.lean` records the two consequences that do
+follow. `solution_modular_and_lowered` applies the modularity axiom and
+Ribet. `solution_meets_winding_test` adds the nonvanishing above.
+`(1, 0, 1)` and `(0, 1, 1)` satisfy the equation. There is no theorem
+that `a` and `b` cannot both be nonzero. Darmon–Merel, Main Theorem,
+part 2, is the different equation `xⁿ + yⁿ = z²`.
 
 Sources:
 
