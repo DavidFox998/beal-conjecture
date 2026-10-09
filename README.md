@@ -48,11 +48,29 @@ LMFDB, trivial character: `S₂(Γ₀(32))` is the one newform `32.2.a.a`, and
 `S₂(Γ₀(64))` is the one newform `64.2.a.a`. Dimension 2 at level 64 is
 `64.2.b.a`, which has nontrivial character.
 
+`DarmonMerel/5_WindingQuotient4413.lean` eliminates those two newforms.
+`winding_quotient_no_g_32` and `winding_quotient_no_g_64` are the only new
+`sorry`s, and there is no third axiom. `darmon_merel_elimination_4413`
+combines them: no newform in `S₂(Γ₀(32)) ∪ S₂(Γ₀(64))` survives Mazur's
+test at `p = 13`. The witness is `13 ∤ C(q, g)` for some auxiliary `q`.
+`C(q, g) ≠ 0` is not a witness, and `C = 0` still satisfies `13 ∣ C`
+(`mazur_allows_zero`). Darmon–Merel, Main Theorem, part 2, is the equation
+`xⁿ + yⁿ = z²` for `n ≥ 4`. Their §4 identifies the level-32 form with
+`X₀(32)`, and their §7–8 winding element `e` and formal immersion
+(Lemma 8.2) are the elimination method cited here. Proposition 4.2 of that
+paper already treats their own exponent `13`, because `13 ≡ 1 (mod 4)`.
+
+`DarmonMerel/6_NoSolution4413.lean` states `no_solution_4413`: `a⁴ + b⁴ = c¹³`
+has no solution with `a` and `b` both nonzero. The solutions `(1, 0, 1)` and
+`(0, 1, 1)` satisfy the equation. The proof builds the Frey curve, applies
+modularity, and invokes the winding-quotient elimination. One `sorry`
+remains for matching the lowered form with `32.2.a.a` or `64.2.a.a`.
+
 Sources:
 
 - Pacetti, *On solutions to x⁴ + d y² = zᵖ*, Dubrovnik, 19 June 2023, Slide 3, equation (1). The curve is `y² = x³ + 4 a x² + 2 (a² + b √(-d)) x`, and `Δ = 2⁹ (a² + b √(-d)) cᵖ`.
 - Pacetti–Villagra Torcomian, *ℚ-curves, Hecke characters and some Diophantine equations*, arXiv:2007.11486, §2.1.
-- Darmon–Merel, *Winding quotients and some variants of Fermat's Last Theorem*, J. Reine Angew. Math. 490 (1997), §2, Lemma 2.1. The rational Frey curve of that paper is a different model; Proposition 4.1 is the link with `ℚ(i)`.
+- Darmon–Merel, *Winding quotients and some variants of Fermat's Last Theorem*, J. Reine Angew. Math. 490 (1997), §2, Lemma 2.1, §4, §7 (winding element `e`), Lemma 8.2. The rational Frey curve of that paper is a different model; Proposition 4.1 is the link with `ℚ(i)`. Main Theorem, part 2, is `xⁿ + yⁿ = z²`.
 
 ## Build
 
@@ -63,6 +81,8 @@ lake build DarmonMerel.1_FreyCurve4413
 lake build DarmonMerel.2_Modularity4413
 lake build DarmonMerel.3_RibetLowering4413
 lake build DarmonMerel.4_MazurTrick4413
+lake build DarmonMerel.5_WindingQuotient4413
+lake build DarmonMerel.6_NoSolution4413
 ```
 
 `lake build` builds the `DarmonMerel` library.

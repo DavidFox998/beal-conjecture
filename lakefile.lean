@@ -38,3 +38,19 @@ target «DarmonMerel.4_MazurTrick4413» _pkg : Unit := do
     | error "missing module DarmonMerel.4_MazurTrick4413"
   let job ← mod.leanArts.fetch
   return job.map (fun _ => ()) (sync := true)
+
+/-- Builds `DarmonMerel.«5_WindingQuotient4413»`.
+`lake build DarmonMerel.5_WindingQuotient4413` is this alias. -/
+target «DarmonMerel.5_WindingQuotient4413» _pkg : Unit := do
+  let some mod := (← getWorkspace).findModule? `DarmonMerel.«5_WindingQuotient4413»
+    | error "missing module DarmonMerel.5_WindingQuotient4413"
+  let job ← mod.leanArts.fetch
+  return job.map (fun _ => ()) (sync := true)
+
+/-- Builds `DarmonMerel.«6_NoSolution4413»`.
+`lake build DarmonMerel.6_NoSolution4413` is this alias. -/
+target «DarmonMerel.6_NoSolution4413» _pkg : Unit := do
+  let some mod := (← getWorkspace).findModule? `DarmonMerel.«6_NoSolution4413»
+    | error "missing module DarmonMerel.6_NoSolution4413"
+  let job ← mod.leanArts.fetch
+  return job.map (fun _ => ()) (sync := true)
