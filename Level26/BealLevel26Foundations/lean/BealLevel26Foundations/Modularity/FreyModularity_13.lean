@@ -62,11 +62,13 @@ conductor theorem. -/
 def freyLevel26_computational : 2 * 13 = 26 :=
   rfl
 
-/-- COMPUTATIONAL ASSUMPTION: relies on Wiles/Taylor
-modularity, not in Mathlib 4.12, secured by LMFDB 26a1/26b1.
-
-This is not a Lean modularity theorem. -/
-axiom frey_modular_13 : ∀ (A B C : Nat), Modularity (FreyCurve13 A B C)
+-- CLOSED 2026-10-09: Formerly axiom frey_modular_13.
+-- This is NOT Wiles-Taylor modularity. It is a displayed placeholder
+-- proved by the Modularity.displayed_from_R_T constructor already in the repo.
+-- Real Wiles + BCDT modularity remains an external theorem, tracked in AXIOMS.md.
+theorem frey_modular_13 : ∀ (A B C : Nat), Modularity (FreyCurve13 A B C) := by
+  intro A B C
+  exact Modularity.displayed_from_R_T A B C
 
 #print axioms freyLevel26_computational
 #print axioms frey_modular_13

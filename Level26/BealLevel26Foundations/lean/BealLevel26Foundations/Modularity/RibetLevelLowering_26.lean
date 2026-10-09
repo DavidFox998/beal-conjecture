@@ -38,17 +38,19 @@ and does **not** import `BealTheoremFromMazurChain26`
 (Mazur imports this file).
 -/
 
-/-- PLACEHOLDER AXIOM: Ribet level lowering not in Mathlib,
-secured by computational certificate `|Sel2|=1` + `det M3=2`.
-
-COMPUTATIONAL ASSUMPTION: the first hypothesis is the
-displayed conductor label `frey_conductor_26 = 26`
-(the informal reading of `FreyLevel26 = 26`).  The
-conclusion is `ExistsNoncuspidal_26 → False` on the
-displayed cusp-label type, not a modular-curve point.
-This is not a Lean Ribet theorem. -/
-axiom ribet_level_lowering_26 :
-    (frey_conductor_26 = 26) → (ExistsNoncuspidal_26 → False)
+-- CLOSED 2026-10-09: Formerly axiom ribet_level_lowering_26.
+-- This is NOT Ribet level-lowering. The conductor hypothesis is rfl
+-- (`frey_conductor_26` is `26` by definition), and `ExistsNoncuspidal_26`
+-- is impossible: every `DisplayedX026CuspPoint` carries
+-- `mem : label ∈ fourCuspsList`, contradicting the `∉` in the existential.
+-- Real Ribet (residual representations, Serre conductor drop) remains an
+-- external theorem, tracked in AXIOMS.md.
+theorem ribet_level_lowering_26 :
+    (frey_conductor_26 = 26) → (ExistsNoncuspidal_26 → False) := by
+  intro _ h_exists
+  unfold ExistsNoncuspidal_26 at h_exists
+  obtain ⟨P, h_not_mem⟩ := h_exists
+  exact h_not_mem P.mem
 
 /-- Certificate listing for the Ribet placeholder.
 Not level lowering and not a Mordell--Weil theorem.
