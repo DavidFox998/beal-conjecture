@@ -20,7 +20,13 @@ and the discriminant on the slide specializes to
 The coefficient identities are definitional (`rfl`). `discriminant_re` and
 `discriminant_im` are Pacetti's formula. `discriminant_eq_weierstrass` proves
 they equal the Weierstrass discriminant `16 B² (A² - 4 B)`, using
-`a^4 + b^4 = c^13`. The source declares no axioms and uses no `sorry`.
+`a^4 + b^4 = c^13`. That file declares no axioms and uses no `sorry`.
+
+`DarmonMerel/2_Modularity4413.lean` states modularity of this ℚ-curve as the
+single axiom `frey_qcurve_modular` (Ribet 2004 and Breuil–Conrad–Diamond–Taylor
+2001; Pacetti 2023 invokes Serre and Taylor–Wiles for the same step). The
+twisted representation `rho_E_p_twisted` is a `sorry` placeholder. The
+implication from that axiom to level lowering is proved.
 
 Sources:
 
@@ -34,6 +40,7 @@ The toolchain is pinned in `lean-toolchain` (Lean 4.34.1). With [elan](https://g
 
 ```bash
 lake build DarmonMerel.1_FreyCurve4413
+lake build DarmonMerel.2_Modularity4413
 ```
 
 `lake build` builds the `DarmonMerel` library.
