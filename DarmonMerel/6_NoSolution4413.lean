@@ -33,7 +33,8 @@ theorem no_solution_4413 :
   let E := FreyCurve4413.mk' a b c heq
   have hmod : Modular E := frey_qcurve_modular a b c E
   have hirred : Irreducible (rho_E_p E) := trivial
-  have hp : ¬ ((13 : ℤ) ∣ 2) := thirteen_not_dvd_two
+  have hp : ¬ ((13 : ℕ) ∣ 2) := by decide
+  have _hpZ : ¬ ((13 : ℤ) ∣ 2) := thirteen_not_dvd_two
   rcases ribet_level_lowering_4413 a b c E hirred hp with ⟨n, g, hlow⟩
   have hlevels : loweredLevel 5 = 32 ∧ loweredLevel 6 = 64 := level_32_or_64
   have hC32 : C_q5 1 (a_q_32 5) = 0 := winding_quotient_no_g_32
