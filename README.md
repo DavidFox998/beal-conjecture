@@ -115,8 +115,17 @@ equation gives two integer equations. The real part has `- 2 b² v`.
 Those equations are not a rational point of `X₀(32)`. At `a = 1`, `b = 1`
 the cleared numerator of `j` has imaginary part `-6308233216`, so
 `j = -3328 - 3008 √(-1)`. A quadratic twist multiplies `c₄` by `d²`; that
-does not make this `j` rational. `a⁴ + b⁴ = c¹³` still has no nonexistence
-theorem.
+does not make this `j` rational.
+
+`Mathlib/Modular/GL2Type4413.lean` proves that this ratio is not in `ℚ`:
+a nonzero denominator cannot kill the imaginary part `-6308233216`.
+`1⁴ + 1⁴ = 2` is not a thirteenth power, so the counterexample is not a
+solution of `a⁴ + b⁴ = c¹³`. `gl2_type_interface` is the modularity axiom
+and Ribet's axiom. They return `Modular E` and a newform of some level.
+They do not return a coefficient field `ℚ(√2)` or a proof that no nonzero
+solution exists.
+
+`a⁴ + b⁴ = c¹³` still has no nonexistence theorem.
 
 `DarmonMerel/7_WindingQuotientAxiom4413.lean` uses those definitions.
 `native_decide` proves `(T_5 - 6) e = (0,0,4,-4,0,0)` at level `32` and

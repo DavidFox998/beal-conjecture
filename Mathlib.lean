@@ -5,3 +5,4 @@ import Mathlib.Modular.Rank0_32a1
 import Mathlib.Modular.QCurve4413
 import Mathlib.Modular.X0Moduli32
 import Mathlib.Modular.X0_32_Construction
+import Mathlib.Modular.GL2Type4413
