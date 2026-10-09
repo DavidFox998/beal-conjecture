@@ -105,6 +105,16 @@ Manin symbols, not of cusps. A nonzero solution still yields
 two axioms, a modular Frey curve with a newform of some level. That
 package is not a rational point of `X₀(32)`.
 
+`Mathlib/Modular/X0_32_Construction.lean` specializes Vélu's identity at
+`A = 0`, `B = -1`. The target coefficients are `A' = 0`, `B' = 4`, the
+equation `y² = x³ + 4x`. LMFDB calls that equation Cremona `32a1` and a
+model of `X₀(32)`; the isomorphism is not formalized. `(2, ±4)` lie on
+the curve and double to `(0, 0)`. That is not a proof of rank `0`.
+Substituting `x = u + v √(-1)` and `y = s + t √(-1)` into the Frey
+equation gives two integer equations. The real part has `- 2 b² v`.
+Those equations are not a rational point of `X₀(32)`, and
+`a⁴ + b⁴ = c¹³` still has no nonexistence theorem.
+
 `DarmonMerel/7_WindingQuotientAxiom4413.lean` uses those definitions.
 `native_decide` proves `(T_5 - 6) e = (0,0,4,-4,0,0)` at level `32` and
 `(0,0,0,2,2,-4,0,…)` at level `64`, so both are nonzero mod `13`, and
