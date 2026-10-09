@@ -1,3 +1,7 @@
+import Init
+
+notation "ℤ" => Int
+
 /-!
 # Frey ℚ-curve for `a^4 + b^4 = c^13`
 
