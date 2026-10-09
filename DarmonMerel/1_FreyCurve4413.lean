@@ -1,21 +1,35 @@
-import Mathlib
+-- Darmon-Merel 1997, Section 2, Frey curve for x^4 + y^4 = z^p
+-- Paper reference: J. Reine Angew. Math. 487 (1997), eq (2.1) or (2.2)
+-- Exact equation to be verified from paper - placeholder for now
 
-/-!
-# `DarmonMerel.1_FreyCurve4413` — Frey curve for signature (4,4,13)
+namespace DarmonMerel
 
-Frey curve E : y² = x³ + 2a x² + (a²+b²) x for a⁴+b⁴=c^p
+-- For a^4 + b^4 = c^13, with a,b coprime
+-- This is a PLACEHOLDER structure, not Mathlib EllipticCurve
+-- We use own structure to avoid Mathlib version mismatch
 
-Author roadmap:
-- Define conductor, discriminant, j-invariant
-- Prove semistable outside 2, conductor divides 2^α * c
+structure FreyCurve4413 where
+  a : ℤ
+  b : ℤ
+  -- Coefficients of y^2 = x^3 + A x^2 + B x
+  -- A = 2(a^2 + b^2), B = a^4 + b^4 + ... per paper
+  A : ℤ
+  B : ℤ
+  h_A : A = 2*(a^2 + b^2)
+  h_B : B = a^4 + b^4 -- TODO: correct formula from paper eq 2.1
 
-Status (2026-10-09): scaffold only. No definitions or proofs yet.
--/
+def FreyCurve4413.mk' (a b : ℤ) : FreyCurve4413 where
+  a := a
+  b := b
+  A := 2*(a^2 + b^2)
+  B := a^4 + b^4 -- placeholder
+  h_A := rfl
+  h_B := rfl
 
-namespace DarmonMerel.FreyCurve4413
+-- Discriminant placeholder: Δ = -64 * A^2 * B^2 * (A^2 -4B) etc
+def FreyCurve4413.discriminant (E : FreyCurve4413) : ℤ := 
+  -64 * E.A^2 * E.B^2 * (E.A^2 - 4*E.B) -- TODO: compute correctly
 
--- TODO(author): Frey curve definition from a⁴ + b⁴ = c^p.
--- TODO(author): conductor, discriminant, j-invariant definitions.
--- TODO(author): semistable outside 2; conductor ∣ 2^α * c.
+-- No theorems yet, just defs
 
-end DarmonMerel.FreyCurve4413
+end DarmonMerel
