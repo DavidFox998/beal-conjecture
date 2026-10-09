@@ -1,8 +1,6 @@
 import Init
 import DarmonMerel.«1_FreyCurve4413»
 
-notation "ℤ" => Int
-
 /-!
 # Modularity of the Frey ℚ-curve
 
@@ -54,7 +52,7 @@ opaque Modular (E : FreyCurve4413) : Prop := True
 Ribet's lowering-the-level theorem (Invent. Math. 100 (1990)) needs a modular
 extension of `ρ_{E,p}` to `Gal(ℚ̄/ℚ)`. This packages exactly that hypothesis.
 -/
-structure LevelLoweringPossible (E : FreyCurve4413) : Prop where
+structure LevelLoweringPossible (a b c : ℤ) (E : FreyCurve4413) : Prop where
   modular : Modular E
 
 /-- Ribet's theorem: `ρ_{E,p}` extends to `Gal(ℚ̄/ℚ)` and is modular.
@@ -80,9 +78,10 @@ noncomputable def rho_E_p_twisted (_E : FreyCurve4413) : GaloisRepresentation :=
 
 /-- Modularity of the Frey ℚ-curve is the hypothesis level lowering needs.
 
-There is no level-lowering argument in this file: the proof only records
-that `frey_qcurve_modular` supplies `LevelLoweringPossible`.
+There is no level-lowering argument in this file. `frey_qcurve_modular a b c E`
+is a term of type `Modular E`; this proof only packages such a term as
+`LevelLoweringPossible`.
 -/
 theorem modularity_needed_for_level_lowering (a b c : ℤ) (E : FreyCurve4413) :
-    frey_qcurve_modular a b c E → LevelLoweringPossible E :=
+    Modular E → LevelLoweringPossible a b c E :=
   fun h => ⟨h⟩
