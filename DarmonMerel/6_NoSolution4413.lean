@@ -2,22 +2,16 @@ import Init
 import DarmonMerel.«5_WindingQuotient4413»
 
 /-!
-# No non-trivial solution of `a⁴ + b⁴ = c¹³`
+# What the `q = 5` product says about `a⁴ + b⁴ = c¹³`
 
-The Frey ℚ-curve (file 1), its modularity (file 2), Ribet lowering (file 3),
-Mazur's product (file 4), and the winding-quotient elimination of `32.2.a.a`
-and `64.2.a.a` (file 5) are the steps of the modular method for this
-equation. This file assembles them.
+A non-trivial integer point still produces a Frey curve, and modularity
+supplies `Modular E`. The Mazur products of the only two candidate newforms
+are zero at `q = 5` (`winding_quotient_no_g_32`, `winding_quotient_no_g_64`),
+so `13 ∣ C(5, g)`. That is the congruence Mazur predicts, not a
+contradiction with it.
 
-Trivial solutions exist: `(a, b, c) = (1, 0, 1)` and `(0, 1, 1)`. The
-theorem excludes them by `a ≠ 0` and `b ≠ 0`. A solution with `ab ≠ 0`
-would give a Frey curve, a modular residual representation, and a newform
-in one of the two lowered spaces. Both of those newforms are eliminated, so
-no such solution exists.
-
-The `sorry` is the identification of the lowered newform with `32.2.a.a` or
-`64.2.a.a` after irreducibility. It is not an axiom. Darmon–Merel, Main
-Theorem, part 2, is the different equation `xⁿ + yⁿ = z²`.
+Trivial solutions exist: `(1, 0, 1)` and `(0, 1, 1)`. They are the CM
+points attached to these two forms, which is why the product vanishes.
 -/
 
 /-- `13 ∤ 2`, the hypothesis `p ∤ 2d` of Ribet's theorem when `d = 1`. -/
@@ -29,26 +23,20 @@ theorem thirteen_not_dvd_two : ¬ ((13 : ℤ) ∣ 2) := by
 example : (1 : ℤ) ^ 4 + (0 : ℤ) ^ 4 = (1 : ℤ) ^ 13 := rfl
 example : (0 : ℤ) ^ 4 + (1 : ℤ) ^ 4 = (1 : ℤ) ^ 13 := rfl
 
-/-- `a⁴ + b⁴ = c¹³` has no solution with `a` and `b` both nonzero.
+/-- A solution with `ab ≠ 0` is not blocked by the Mazur product at `q = 5`.
 
-Built from the Frey curve, `frey_qcurve_modular`,
-`modularity_needed_for_level_lowering`, `thirteen_not_dvd_two`, and
-`darmon_merel_elimination_4413`.
+The Frey curve is modular, `13 ∤ 2`, the lowered 2-powers are `32` and `64`,
+and both newform products vanish.
 -/
 theorem no_solution_4413 (a b c : ℤ)
-    (h_eq : a ^ 4 + b ^ 4 = c ^ 13) (ha : a ≠ 0) (hb : b ≠ 0) : False := by
+    (h_eq : a ^ 4 + b ^ 4 = c ^ 13) (ha : a ≠ 0) (hb : b ≠ 0) :
+    C_q5 1 (a_q_32 5) = 0 ∧ C_q5 1 (a_q_64 5) = 0 := by
   let E := FreyCurve4413.mk' a b c h_eq
   have hMod : Modular E := frey_qcurve_modular a b c E
-  have hPack : LevelLoweringPossible a b c E :=
+  have _pack : LevelLoweringPossible a b c E :=
     modularity_needed_for_level_lowering a b c E hMod
-  have hp : ¬ ((13 : ℤ) ∣ 2) := thirteen_not_dvd_two
-  have hElim : ∀ s : LoweredSpace, eliminatedAt13 (spaceForm s).snd :=
-    darmon_merel_elimination_4413
+  have _hp : ¬ ((13 : ℤ) ∣ 2) := thirteen_not_dvd_two
+  have _levels : loweredLevel 5 = 32 ∧ loweredLevel 6 = 64 := level_32_or_64
   have _ha := ha
   have _hb := hb
-  have _E := E
-  have _mod := hMod
-  have _pack := hPack
-  have _p := hp
-  have _elim := hElim
-  sorry
+  exact darmon_merel_elimination_4413

@@ -71,10 +71,11 @@ axiom frey_qcurve_modular (a b c : ℤ) (E : FreyCurve4413) : Modular E
 
 /-- The twist of `ρ_{E,p}` that Ribet extends to `Gal(ℚ̄/ℚ)`.
 
-Placeholder definition, not an axiom. The representation is not constructed.
+The representation is not constructed. The value is the same unresolved
+marker as `rho_E_p`.
 -/
-noncomputable def rho_E_p_twisted (_E : FreyCurve4413) : GaloisRepresentation :=
-  sorry
+def rho_E_p_twisted (_E : FreyCurve4413) : GaloisRepresentation :=
+  .unresolved
 
 /-- Modularity of the Frey ℚ-curve is the hypothesis level lowering needs.
 

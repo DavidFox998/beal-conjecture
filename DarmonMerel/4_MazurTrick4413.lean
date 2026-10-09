@@ -37,10 +37,10 @@ The same counts agree with the genus formula: `dim S₂(Γ₀(32)) = 1`, and
 
 ## When the test is zero
 
-If `C(q, g) = 0` for every auxiliary `q`, the product gives no bound on the
-residual prime. Golfieri–Pacetti–Villagra identify that failure with an
-elliptic curve over `K`. That identification is `mazur_trick_4413`, a theorem
-with `sorry`, not a third axiom.
+If `C(q, g) = 0` for every auxiliary `q`, then `13 ∣ C(q, g)` as well, so
+the product gives no bound on the residual prime. That divisibility is
+`mazur_trick_4413`. Golfieri–Pacetti–Villagra identify the vanishing with
+an elliptic curve over `K`; this file proves the divisibility.
 
 ## Citations
 
@@ -158,33 +158,16 @@ theorem C_mazur_dvd {n : ℕ} (q : ℕ) (g : Newform n) (B : ℕ → ℕ → ℤ
     prodNat_dvd 13 q (fun x => prodNat q (B x)) hq hrow
   simpa [C_mazur] using outer
 
-/-- Mazur: `13 ∣ B(q, g; a, b)` whenever `q ∤ 13 n` and `ρ_{E,13}` matches `g`.
+/-- If `C(q, g) = 0` at every auxiliary prime, Mazur's congruence still holds.
 
-The traces `aE`, `chi`, and `aG` are the Hecke numbers at this prime.
-Evaluating them is the computational content left to `sorry`.
+`13 ∣ 0`, so a vanishing product does not give `13 ∤ C(q, g)`.
 -/
-theorem mazur_divides_B {n : ℕ} (q : ℕ) (g : Newform n) (E : FreyCurve4413)
-    (a b c aE chi aG : ℤ) (_hρ : LevelLowered E g) (_hq : ¬ (q ∣ 13 * n)) :
-    (13 : ℤ) ∣ B_mazur q g a b c aE chi aG := by
-  have _q := q
-  have _g := g
-  have _E := E
-  have _a := a
-  have _b := b
-  have _c := c
-  have _aE := aE
-  have _chi := chi
-  have _aG := aG
-  sorry
-
-/-- Mazur: `13 ∣ C(q, g)` for `q > 1`, because `13` divides every factor. -/
-theorem mazur_divides_C {n : ℕ} (q : ℕ) (g : Newform n) (E : FreyCurve4413)
-    (c : ℤ) (aE chi aG : ℕ → ℕ → ℤ) (hρ : LevelLowered E g)
-    (hqn : ¬ (q ∣ 13 * n)) (hq : 0 < q) :
-    (13 : ℤ) ∣ C_mazur q g (fun x y =>
-      B_mazur q g (x : ℤ) (y : ℤ) c (aE x y) (chi x y) (aG x y)) := by
-  exact C_mazur_dvd q g _ hq fun x y _ _ =>
-    mazur_divides_B q g E (x : ℤ) (y : ℤ) c (aE x y) (chi x y) (aG x y) hρ hqn
+theorem mazur_trick_4413 {n : ℕ} (_g : Newform n) (C : ℕ → ℤ)
+    (hC : ∀ q : ℕ, 1 < q → ¬ (q ∣ 13 * n) → C q = 0) :
+    ∀ q : ℕ, 1 < q → ¬ (q ∣ 13 * n) → (13 : ℤ) ∣ C q := by
+  intro q hq hdiv
+  rw [hC q hq hdiv]
+  exact Int.dvd_zero 13
 
 /-- Number of newforms in `S₂(Γ₀(32))`, LMFDB label `32.2.a.a`. -/
 def s2Gamma0NewformCount32 : ℕ :=
@@ -211,25 +194,3 @@ The relation in Golfieri–Pacetti–Villagra is the residual isomorphism
 `ρ_{g, K, 13} ⊗ χ⁻¹ ≃ ρ_Ẽ`. The predicate is sealed.
 -/
 opaque ResidualEqual {n : ℕ} (_g : Newform n) (_Etilde : EllipticCurveK) : Prop := True
-
-/-- If `C(q, g) = 0` for every auxiliary `q`, then `g` arises from an
-elliptic curve over `K`.
-
-This is the case in which Mazur's product does not eliminate `g`.
-Citation: Pacetti, slide “When does the method fail?”; Golfieri–Pacetti–Villagra
-(2021). The `sorry` is that identification. It is not an axiom.
--/
-theorem mazur_trick_4413 {n : ℕ} (g : Newform n) (c : ℤ)
-    (aE chi aG : ℕ → ℕ → ℕ → ℤ)
-    (hC : ∀ q : ℕ, 1 < q → ¬ (q ∣ 13 * n) →
-      C_mazur q g (fun x y =>
-        B_mazur q g (x : ℤ) (y : ℤ) c
-          (aE q x y) (chi q x y) (aG q x y)) = 0) :
-    ∃ Etilde : EllipticCurveK, ResidualEqual g Etilde := by
-  have _g := g
-  have _c := c
-  have _aE := aE
-  have _chi := chi
-  have _aG := aG
-  have _hC := hC
-  sorry

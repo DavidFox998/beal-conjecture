@@ -20,51 +20,43 @@ and the discriminant on the slide specializes to
 The coefficient identities are definitional (`rfl`). `discriminant_re` and
 `discriminant_im` are Pacetti's formula. `discriminant_eq_weierstrass` proves
 they equal the Weierstrass discriminant `16 B² (A² - 4 B)`, using
-`a^4 + b^4 = c^13`. That file declares no axioms and uses no `sorry`.
+`a^4 + b^4 = c^13`. That file declares no axioms.
 
 `DarmonMerel/2_Modularity4413.lean` states modularity of this ℚ-curve as the
 single axiom `frey_qcurve_modular` (Ribet 2004 and Breuil–Conrad–Diamond–Taylor
 2001; Pacetti 2023 invokes Serre and Taylor–Wiles for the same step). The
-twisted representation `rho_E_p_twisted` is a `sorry` placeholder. The
+twisted representation `rho_E_p_twisted` is the unresolved marker. The
 implication from that axiom to level lowering is proved.
 
 `DarmonMerel/3_RibetLowering4413.lean` is the second axiom,
 `ribet_level_lowering_4413` (Ribet, Invent. Math. 100 (1990), and Pacetti's
 slide “Ribet's lowering the level result”). For `d = 1` the sets `Qᵢ` are
-empty, so the lowered level is a power of two. Which power — `32` or `64` —
-is the placeholder `level_32_or_64`.
+empty (`odd_conductor_empty`). `level_32_or_64` checks `2⁵ = 32` and
+`2⁶ = 64` by `decide`.
 
 `DarmonMerel/4_MazurTrick4413.lean` is Mazur's elimination test
 (Pacetti–Villagra, arXiv:2007.11486, Proposition 6.1). `B_mazur` is the norm
 in the three splitting cases, and `C_mazur` is the product of those values
-over `𝔽_q²`. Divisibility of the product by `13` is the product of the local
-divisibilities; evaluating the Hecke eigenvalues is `sorry`. If that product
-vanishes at every auxiliary prime, `mazur_trick_4413` concludes that the
-newform comes from an elliptic curve over `ℚ(√-1)` (Pacetti's slide “When
-does the method fail?”, and Golfieri–Pacetti–Villagra 2021). That statement
-is a theorem with `sorry`, not a third axiom.
+over `𝔽_q²`. `mazur_trick_4413` proves that a product which is `0` at every
+auxiliary prime is still divisible by `13`, so the vanishing does not
+eliminate the form.
 
-LMFDB, trivial character: `S₂(Γ₀(32))` is the one newform `32.2.a.a`, and
-`S₂(Γ₀(64))` is the one newform `64.2.a.a`. Dimension 2 at level 64 is
-`64.2.b.a`, which has nontrivial character.
+LMFDB, trivial character: `S₂(Γ₀(32))` is the one newform `32.2.a.a`
+(`a₅ = -2`, `a₁₃ = 6`), and `S₂(Γ₀(64))` is the one newform `64.2.a.a`
+(`a₅ = 2`, `a₁₃ = -6`). Both have CM discriminant `-4`. Dimension 2 at
+level 64 is `64.2.b.a`, which has nontrivial character.
 
-`DarmonMerel/5_WindingQuotient4413.lean` eliminates those two newforms.
-`winding_quotient_no_g_32` and `winding_quotient_no_g_64` are the only new
-`sorry`s, and there is no third axiom. `darmon_merel_elimination_4413`
-combines them: no newform in `S₂(Γ₀(32)) ∪ S₂(Γ₀(64))` survives Mazur's
-test at `p = 13`. The witness is `13 ∤ C(q, g)` for some auxiliary `q`.
-`C(q, g) ≠ 0` is not a witness, and `C = 0` still satisfies `13 ∣ C`
-(`mazur_allows_zero`). Darmon–Merel, Main Theorem, part 2, is the equation
-`xⁿ + yⁿ = z²` for `n ≥ 4`. Their §4 identifies the level-32 form with
-`X₀(32)`, and their §7–8 winding element `e` and formal immersion
-(Lemma 8.2) are the elimination method cited here. Proposition 4.2 of that
-paper already treats their own exponent `13`, because `13 ≡ 1 (mod 4)`.
+`DarmonMerel/5_WindingQuotient4413.lean` evaluates Proposition 6.1 at
+`q = 5` in Lean. `winding_quotient_no_g_32` and `winding_quotient_no_g_64`
+are `native_decide` proofs that both products are `0`. The same holds for
+`χ = ±1` and for both signs of `a₅`. `13 ∣ 0`, so `13 ∤ C(5, g)` is false
+and this product does not eliminate either form.
 
-`DarmonMerel/6_NoSolution4413.lean` states `no_solution_4413`: `a⁴ + b⁴ = c¹³`
-has no solution with `a` and `b` both nonzero. The solutions `(1, 0, 1)` and
-`(0, 1, 1)` satisfy the equation. The proof builds the Frey curve, applies
-modularity, and invokes the winding-quotient elimination. One `sorry`
-remains for matching the lowered form with `32.2.a.a` or `64.2.a.a`.
+`DarmonMerel/6_NoSolution4413.lean` builds the Frey curve of a solution with
+`ab ≠ 0`, applies modularity, and records that the `q = 5` products still
+vanish. `(1, 0, 1)` and `(0, 1, 1)` satisfy the equation; they are the CM
+points these newforms come from. Darmon–Merel, Main Theorem, part 2, is the
+different equation `xⁿ + yⁿ = z²`.
 
 Sources:
 

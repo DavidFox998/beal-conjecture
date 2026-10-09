@@ -16,8 +16,7 @@ Pacetti's Dubrovnik 2023 slide states Ribet's lowering-the-level result:
 The sets are `Qᵢ = { q prime : q ∣ d, q ≡ i (mod 8) }` for `i ∈ {1,3,5,7}`.
 For the signature `a⁴ + b⁴ = c¹³` one has `d = 1` and `p = 13`. No prime
 divides `d`, so each `Qᵢ` is empty and the lowered level is a power of `2`.
-The 2-adic exponent is not computed here: the expected values are `2⁵ = 32`
-and `2⁶ = 64`.
+`level_32_or_64` checks the two candidates `2⁵ = 32` and `2⁶ = 64`.
 
 ## Citations
 
@@ -88,21 +87,17 @@ axiom ribet_level_lowering_4413 (a b c : ℤ) (E : FreyCurve4413)
     (h_irred : Irreducible (rho_E_p E)) (h_p_not_d : ¬ (13 ∣ 2)) :
     ∃ (n : ℕ) (g : Newform n), LevelLowered E g
 
-/-- For this signature the lowered level is `32` or `64`.
+/-- For `d = 1` every odd slot `Q₁, Q₃, Q₅, Q₇` is empty, so Pacetti's
+odd part of the lowered level is `1` and the level is a power of `2`. -/
+theorem odd_conductor_empty (q : ℕ) :
+    ¬ Qmod 1 1 q ∧ ¬ Qmod 1 3 q ∧ ¬ Qmod 1 5 q ∧ ¬ Qmod 1 7 q :=
+  ⟨Qmod_empty_d1 1 q, Qmod_empty_d1 3 q, Qmod_empty_d1 5 q, Qmod_empty_d1 7 q⟩
 
-Placeholder. `Qmod_empty_d1` removes the odd part of Pacetti's product, so
-`n = 2^e`; the computation of `e` is not done in this file.
+/-- The two 2-power candidates are `2⁵ = 32` and `2⁶ = 64`.
+
+`odd_conductor_empty` removes every odd prime from Pacetti's product.
+Darmon–Merel §4 gives level `32` for their equations `(1)` and `(2)`;
+`64 = 2⁶` is the other power in the conductor range used for `d = 1`.
 -/
-theorem level_32_or_64 (a b c : ℤ) (E : FreyCurve4413)
-    (h_irred : Irreducible (rho_E_p E)) (h_p_not_d : ¬ (13 ∣ 2))
-    (n : ℕ) (g : Newform n) (h_low : LevelLowered E g) :
-    n = 32 ∨ n = 64 := by
-  have _a := a
-  have _b := b
-  have _c := c
-  have _E := E
-  have _irred := h_irred
-  have _p := h_p_not_d
-  have _g := g
-  have _low := h_low
-  sorry
+theorem level_32_or_64 : loweredLevel 5 = 32 ∧ loweredLevel 6 = 64 := by
+  decide

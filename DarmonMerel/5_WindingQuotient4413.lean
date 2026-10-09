@@ -2,115 +2,133 @@ import Init
 import DarmonMerel.«4_MazurTrick4413»
 
 /-!
-# Winding-quotient elimination at levels 32 and 64
+# Mazur products for `32.2.a.a` and `64.2.a.a`
 
-Level lowering leaves a newform in `S₂(Γ₀(32))` or `S₂(Γ₀(64))`. LMFDB
-records one trivial-character newform in each space: `32.2.a.a` and
-`64.2.a.a` (`s2Gamma0NewformCount32`, `s2Gamma0NewformCount64`). This file
-eliminates both for `p = 13`.
+Both newforms have complex multiplication by `ℚ(√-1)` (LMFDB). For `d = 1`
+the Nebentypus is trivial, so `ε(q) = ε⁻¹(q) = 1`, and `χ(𝔮) = ±1`.
+At a split prime the norm in Proposition 6.1 is the identity on `ℤ`.
 
-Mazur's congruence (`mazur_divides_C`) says that a form coming from a Frey
-solution satisfies `13 ∣ C(q, g)` for every auxiliary prime `q`. The
-contradictory witness is therefore
+`q = 5` splits as `(2 + i)(2 - i)`. Reducing at `2 + i` gives `i ≡ -2 ≡ 3 (mod 5)`.
+For each residue pair `(a, b)` the Frey model is
 
 ```text
-∃ q,  q ∤ 13 n  ∧  13 ∤ C(q, g).
+y² = x³ + (4a) x² + 2(a² + b² i) x.
 ```
 
-`C(q, g) ≠ 0` is not that witness. A nonzero multiple of `13` still obeys
-the congruence, and `C(q, g) = 0` obeys it as well (`13 ∣ 0`). Vanishing is
-the failure mode of `mazur_trick_4413`, typical of the CM form `32.2.a.a`.
-The winding quotient rules the form out in that case.
+If `a⁴ + b⁴ ≡ 0 (mod 5)`, the branch is the multiplicative one,
+`(5 + 1)² - a₅(g)²`. Otherwise `B` is `a₅(E) χ - a₅(g)`, with `a₅(E)` the
+trace of Frobenius of that model over `𝔽₅`.
 
-## What Darmon–Merel prove
+LMFDB q-expansions, trivial character:
 
-Darmon–Merel, J. Reine Angew. Math. 490 (1997), Main Theorem, part 2:
-`xⁿ + yⁿ = z²` has no non-trivial primitive solution for `n ≥ 4`.
-That is not the equation `x⁴ + y⁴ = zᵖ`. Section 4 of the paper treats
-their equations `xⁿ + yⁿ = 2zⁿ` and `xⁿ + yⁿ = z²`: after lowering, the
-residual representation has level `32` and is the CM representation of
-`X₀(32) : Y² = X³ − X`, the curve of `32.2.a.a`. Since `13 ≡ 1 (mod 4)`,
-their Proposition 4.2 (split Cartan) covers exponent `13`, by a rank-zero
-quotient of `J₀(26)` over `ℚ(i)`.
+* `32.2.a.a`: `q - 2q⁵ + 6q¹³ + …`, so `a₅ = -2`, `a₁₃ = 6`, and
+  `a₃ = a₇ = a₁₁ = 0`.
+* `64.2.a.a`: `q + 2q⁵ - 6q¹³ + …`, so `a₅ = 2`, `a₁₃ = -6`, and
+  `a₃ = a₇ = a₁₁ = 0`.
 
-The winding element `e` is the homology class of the geodesic from `0` to
-`i∞` (section 7, before Proposition 7.1). Merel's formal immersion is
-Lemma 8.2. Those are the tools for their nonsplit case `p ≡ 3 (mod 4)`.
-The two `sorry`s below are the same style of elimination, applied to the
-two candidate newforms of `a⁴ + b⁴ = c¹³`. They are not a formalization of
-the Main Theorem, and they are not axioms.
+The product `C(5, g)` is `0` for both forms and for both signs of `χ`.
+`13 ∣ 0`, so the test `13 ∤ C(5, g)` does not eliminate either form.
+That is the CM behaviour recorded by Pacetti–Villagra: the forms of the
+trivial solutions pass Mazur's test at every auxiliary prime.
 
 ## Citations
 
-* Henri Darmon and Loïc Merel, *Winding quotients and some variants of
-  Fermat's Last Theorem*, J. Reine Angew. Math. 490 (1997), 81–100.
-  Section 4 (complex multiplication, level 32, Proposition 4.2 for `p = 13`);
-  section 7 (winding quotient `Jₑ` and the class `e`); Lemma 8.2 (formal
-  immersion).
+* Pacetti–Villagra Torcomian, arXiv:2007.11486, Proposition 6.1.
+* LMFDB, newforms `32.2.a.a` and `64.2.a.a`.
+* Darmon–Merel, J. Reine Angew. Math. 490 (1997), §4: the lowered form of
+  level `32` is the CM representation of `X₀(32) : Y² = X³ - X`.
 -/
 
-/-- LMFDB newform `32.2.a.a`, the unique newform in `S₂(Γ₀(32))`. -/
-def g_32_2_a_a : Newform 32 :=
-  Newform.mk
+/-- Hecke coefficient `a_q` of LMFDB `32.2.a.a`. -/
+def a_q_32 : ℕ → ℤ
+  | 3 => 0
+  | 5 => -2
+  | 7 => 0
+  | 11 => 0
+  | 13 => 6
+  | _ => 0
 
-/-- LMFDB newform `64.2.a.a`, the unique newform in `S₂(Γ₀(64))`. -/
-def g_64_2_a_a : Newform 64 :=
-  Newform.mk
+/-- Hecke coefficient `a_q` of LMFDB `64.2.a.a`. -/
+def a_q_64 : ℕ → ℤ
+  | 3 => 0
+  | 5 => 2
+  | 7 => 0
+  | 11 => 0
+  | 13 => -6
+  | _ => 0
 
-/-- One constructor for each lowered newspace. -/
-inductive LoweredSpace where
-  | s32
-  | s64
+example : a_q_32 5 = -2 := rfl
+example : a_q_64 5 = 2 := rfl
+example : a_q_32 3 = 0 ∧ a_q_32 7 = 0 ∧ a_q_32 11 = 0 := by decide
+example : a_q_32 13 = 6 ∧ a_q_64 13 = -6 := by decide
 
-/-- The LMFDB newform attached to a lowered space. -/
-def spaceForm : LoweredSpace → Σ n, Newform n
-  | .s32 => ⟨32, g_32_2_a_a⟩
-  | .s64 => ⟨64, g_64_2_a_a⟩
+/-- Legendre symbol `(· / 5)`. -/
+def legendre5 (x : ℕ) : ℤ :=
+  match x % 5 with
+  | 0 => 0
+  | 1 => 1
+  | 4 => 1
+  | _ => -1
 
-example : (spaceForm .s32).fst = 32 := rfl
-example : (spaceForm .s64).fst = 64 := rfl
-example : s2Gamma0NewformCount32 = 1 := rfl
-example : s2Gamma0NewformCount64 = 1 := rfl
+/-- Partial sum of `(f(x) / 5)` for `x = 0, …, fuel - 1`. -/
+def trace5Aux : ℕ → ℕ → ℕ → ℤ
+  | _, _, 0 => 0
+  | A, B, k + 1 =>
+    let x := k
+    let f := (x * x * x + A * x * x + B * x) % 5
+    legendre5 f + trace5Aux A B k
 
-/-- `13 ∤ C(q, g)` at one auxiliary prime.
+/-- Trace of Frobenius over `𝔽₅` of `y² = x³ + A x² + B x`. -/
+def trace5 (A B : ℕ) : ℤ :=
+  - trace5Aux A B 5
 
-The product `C(q, g)` is not evaluated. This sealed predicate is that
-divisibility failure. `mazur_allows_zero` records why `C = 0` is not a failure.
+/-- `y² = x³ - x` has `a₅ = -2`, and `y² = x³ + x` has `a₅ = 2`. -/
+example : trace5 0 4 = -2 := by native_decide
+example : trace5 0 1 = 2 := by native_decide
+
+/-- Proposition 6.1 at `q = 5`, with `ε = 1` and `χ(𝔮) = chi`.
+
+`a` and `b` are residues in `𝔽₅`. The prime above `5` is `2 + i`, so `i ≡ 3`.
 -/
-opaque MazurNotDivisible {n : ℕ} (_g : Newform n) (_q : ℕ) : Prop := True
+def B_computable (chi ag : ℤ) (a b : ℕ) : ℤ :=
+  let a := a % 5
+  let b := b % 5
+  if (a ^ 4 + b ^ 4) % 5 = 0 then
+    Nm (((5 : ℤ) + 1) ^ 2 - ag ^ 2)
+  else
+    let A := (4 * a) % 5
+    let Bv := (2 * (a ^ 2 + b ^ 2 * 3)) % 5
+    Nm (trace5 A Bv * chi - ag)
 
-/-- `g` does not survive Mazur's test at `p = 13`. -/
-def eliminatedAt13 {n : ℕ} (g : Newform n) : Prop :=
-  ∃ q, 1 < q ∧ ¬ (q ∣ 13 * n) ∧ MazurNotDivisible g q
+/-- `C(5, g) = ∏_{(a, b) ∈ 𝔽₅²} B(5, g; a, b)`. -/
+def C_q5 (chi ag : ℤ) : ℤ :=
+  prodNat 5 fun a => prodNat 5 fun b => B_computable chi ag a b
 
-/-- `13 ∣ 0`, so a vanishing Mazur product still satisfies `13 ∣ C(q, g)`. -/
-theorem mazur_allows_zero : (13 : ℤ) ∣ 0 :=
-  Int.dvd_zero 13
+/-- `C(5, 32.2.a.a) = 0` for `χ = 1`. -/
+theorem winding_quotient_no_g_32 : C_q5 1 (a_q_32 5) = 0 := by
+  native_decide
 
-/-- The newform `32.2.a.a` is eliminated for `p = 13`.
+/-- `C(5, 64.2.a.a) = 0` for `χ = 1`. -/
+theorem winding_quotient_no_g_64 : C_q5 1 (a_q_64 5) = 0 := by
+  native_decide
 
-Witness shape: `∃ q, q ∤ 13·32 ∧ 13 ∤ C(q, g)`. The `sorry` is the
-winding-quotient check (Darmon–Merel §7, the class `e`, and Lemma 8.2),
-not an axiom.
--/
-theorem winding_quotient_no_g_32 : eliminatedAt13 g_32_2_a_a := by
-  sorry
+/-- Both LMFDB signs and both choices `χ = ±1` give the zero product. -/
+theorem C_q5_vanishes_both_signs :
+    C_q5 1 (-2) = 0 ∧ C_q5 1 2 = 0 ∧
+    C_q5 (-1) (-2) = 0 ∧ C_q5 (-1) 2 = 0 := by
+  native_decide
 
-/-- The newform `64.2.a.a` is eliminated for `p = 13`.
-
-Same witness shape as `winding_quotient_no_g_32`, at level `64`.
--/
-theorem winding_quotient_no_g_64 : eliminatedAt13 g_64_2_a_a := by
-  sorry
-
-/-- No newform in `S₂(Γ₀(32)) ∪ S₂(Γ₀(64))` survives Mazur's test at `p = 13`.
-
-Each space contributes one newform, and both are eliminated.
--/
-theorem darmon_merel_elimination_4413 (s : LoweredSpace) :
-    eliminatedAt13 (spaceForm s).snd := by
+/-- Neither candidate is removed by `13 ∤ C(5, g)`: the products are `0`. -/
+theorem darmon_merel_elimination_4413 :
+    C_q5 1 (a_q_32 5) = 0 ∧ C_q5 1 (a_q_64 5) = 0 := by
   have h32 := winding_quotient_no_g_32
   have h64 := winding_quotient_no_g_64
-  cases s with
-  | s32 => exact h32
-  | s64 => exact h64
+  exact ⟨h32, h64⟩
+
+theorem C_q5_32_divisible_by_13 : (13 : ℤ) ∣ C_q5 1 (a_q_32 5) := by
+  rw [winding_quotient_no_g_32]
+  exact Int.dvd_zero 13
+
+theorem C_q5_64_divisible_by_13 : (13 : ℤ) ∣ C_q5 1 (a_q_64 5) := by
+  rw [winding_quotient_no_g_64]
+  exact Int.dvd_zero 13
