@@ -125,6 +125,12 @@ and Ribet's axiom. They return `Modular E` and a newform of some level.
 They do not return a coefficient field `ℚ(√2)` or a proof that no nonzero
 solution exists.
 
+`Mathlib/Modular/CoefficientQCurve.lean` names that coefficient equality
+`IsCoefficientQCurve`. `frey_is_coefficient_qcurve` is
+`velu_target_eq_twist_neg_two`. `coefficient_relation_and_modularity_axiom`
+pairs it with `frey_qcurve_modular`. The first conjunct does not imply the
+second. There is no theorem here that a ℚ-curve over `ℚ(√-1)` is modular.
+
 `a⁴ + b⁴ = c¹³` still has no nonexistence theorem.
 
 `DarmonMerel/7_WindingQuotientAxiom4413.lean` uses those definitions.
