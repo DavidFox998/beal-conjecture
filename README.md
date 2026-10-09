@@ -85,6 +85,16 @@ list. Cremona `32a1` is a different curve in the isogeny class, with
 torsion `ℤ/4ℤ`. This file does not identify the model with `X₀(32)`, and
 it does not prove that `a⁴ + b⁴ = c¹³` has no nonzero solution.
 
+`Mathlib/Modular/QCurve4413.lean` is the coefficient form of the ℚ-curve
+relation for that Frey model. The conjugate `√(-1) ↦ -√(-1)` has Vélu target
+`A' = -8 a` and `B' = 8 a² + 8 b² √(-1)`, and `velu_target_eq_twist_neg_two`
+says this is the quadratic twist by `-2`. `velu_cleared` is the underlying
+polynomial identity. When `a` and `b` are both nonzero, both components of
+`Δ = 2⁹ (a² + b² √(-1)) c¹³` are nonzero. The file does not construct
+`X₀(32)` or `X₀(64)`, it does not call `frey_qcurve_modular` or
+`ribet_level_lowering_4413`, and it does not prove that `a⁴ + b⁴ = c¹³`
+has no nonzero solution.
+
 `DarmonMerel/7_WindingQuotientAxiom4413.lean` uses those definitions.
 `native_decide` proves `(T_5 - 6) e = (0,0,4,-4,0,0)` at level `32` and
 `(0,0,0,2,2,-4,0,…)` at level `64`, so both are nonzero mod `13`, and
