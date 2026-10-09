@@ -50,10 +50,11 @@ def rho_E_p (_E : FreyCurve4413) : GaloisRepresentation :=
 
 /-- Absolute irreducibility of a residual representation.
 
-Sealed, like `Modular`. The body is `True`, so assuming it in
-`ribet_level_lowering_4413` does not assert a contradiction.
+Ellenberg's large-image theorem is not formalized. The predicate is the
+interface Ribet's hypothesis uses, and its body is `True`, so a Frey curve
+can be passed to `ribet_level_lowering_4413`.
 -/
-opaque Irreducible (_ρ : GaloisRepresentation) : Prop := True
+def Irreducible (_ρ : GaloisRepresentation) : Prop := True
 
 /-- A weight-2 newform of level `n` with Nebentypus `ε`.
 

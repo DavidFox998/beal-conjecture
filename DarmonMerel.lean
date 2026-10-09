@@ -3,4 +3,5 @@ import DarmonMerel.«2_Modularity4413»
 import DarmonMerel.«3_RibetLowering4413»
 import DarmonMerel.«4_MazurTrick4413»
 import DarmonMerel.«5_WindingQuotient4413»
+import DarmonMerel.«7_WindingQuotientAxiom4413»
 import DarmonMerel.«6_NoSolution4413»

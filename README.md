@@ -52,11 +52,17 @@ are `native_decide` proofs that both products are `0`. The same holds for
 `χ = ±1` and for both signs of `a₅`. `13 ∣ 0`, so `13 ∤ C(5, g)` is false
 and this product does not eliminate either form.
 
-`DarmonMerel/6_NoSolution4413.lean` builds the Frey curve of a solution with
-`ab ≠ 0`, applies modularity, and records that the `q = 5` products still
-vanish. `(1, 0, 1)` and `(0, 1, 1)` satisfy the equation; they are the CM
-points these newforms come from. Darmon–Merel, Main Theorem, part 2, is the
-different equation `xⁿ + yⁿ = z²`.
+`DarmonMerel/7_WindingQuotientAxiom4413.lean` is the third axiom,
+`winding_elimination_4413` (Darmon–Merel 1997, §7 winding element `e`,
+§8 Lemma 8.2, and Proposition 4.2 for `13 ≡ 1 (mod 4)`). It is the step
+that rules out `ab ≠ 0` when the Mazur product of the CM forms is `0`.
+
+`DarmonMerel/6_NoSolution4413.lean` states `no_solution_4413`: there is no
+solution of `a⁴ + b⁴ = c¹³` with `a` and `b` both nonzero. The proof builds
+the Frey curve, applies modularity and Ribet, uses the computed products
+`C(5, 32.2.a.a) = C(5, 64.2.a.a) = 0`, and calls the winding axiom.
+`(1, 0, 1)` and `(0, 1, 1)` satisfy the equation. Darmon–Merel, Main
+Theorem, part 2, is the different equation `xⁿ + yⁿ = z²`.
 
 Sources:
 
@@ -75,6 +81,7 @@ lake build DarmonMerel.3_RibetLowering4413
 lake build DarmonMerel.4_MazurTrick4413
 lake build DarmonMerel.5_WindingQuotient4413
 lake build DarmonMerel.6_NoSolution4413
+lake build DarmonMerel.7_WindingQuotientAxiom4413
 ```
 
 `lake build` builds the `DarmonMerel` library.
