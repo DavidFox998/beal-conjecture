@@ -34,6 +34,20 @@ slide “Ribet's lowering the level result”). For `d = 1` the sets `Qᵢ` are
 empty, so the lowered level is a power of two. Which power — `32` or `64` —
 is the placeholder `level_32_or_64`.
 
+`DarmonMerel/4_MazurTrick4413.lean` is Mazur's elimination test
+(Pacetti–Villagra, arXiv:2007.11486, Proposition 6.1). `B_mazur` is the norm
+in the three splitting cases, and `C_mazur` is the product of those values
+over `𝔽_q²`. Divisibility of the product by `13` is the product of the local
+divisibilities; evaluating the Hecke eigenvalues is `sorry`. If that product
+vanishes at every auxiliary prime, `mazur_trick_4413` concludes that the
+newform comes from an elliptic curve over `ℚ(√-1)` (Pacetti's slide “When
+does the method fail?”, and Golfieri–Pacetti–Villagra 2021). That statement
+is a theorem with `sorry`, not a third axiom.
+
+LMFDB, trivial character: `S₂(Γ₀(32))` is the one newform `32.2.a.a`, and
+`S₂(Γ₀(64))` is the one newform `64.2.a.a`. Dimension 2 at level 64 is
+`64.2.b.a`, which has nontrivial character.
+
 Sources:
 
 - Pacetti, *On solutions to x⁴ + d y² = zᵖ*, Dubrovnik, 19 June 2023, Slide 3, equation (1). The curve is `y² = x³ + 4 a x² + 2 (a² + b √(-d)) x`, and `Δ = 2⁹ (a² + b √(-d)) cᵖ`.
@@ -48,6 +62,7 @@ The toolchain is pinned in `lean-toolchain` (Lean 4.34.1). With [elan](https://g
 lake build DarmonMerel.1_FreyCurve4413
 lake build DarmonMerel.2_Modularity4413
 lake build DarmonMerel.3_RibetLowering4413
+lake build DarmonMerel.4_MazurTrick4413
 ```
 
 `lake build` builds the `DarmonMerel` library.

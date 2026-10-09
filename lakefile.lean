@@ -30,3 +30,11 @@ target «DarmonMerel.3_RibetLowering4413» _pkg : Unit := do
     | error "missing module DarmonMerel.3_RibetLowering4413"
   let job ← mod.leanArts.fetch
   return job.map (fun _ => ()) (sync := true)
+
+/-- Builds `DarmonMerel.«4_MazurTrick4413»`.
+`lake build DarmonMerel.4_MazurTrick4413` is this alias. -/
+target «DarmonMerel.4_MazurTrick4413» _pkg : Unit := do
+  let some mod := (← getWorkspace).findModule? `DarmonMerel.«4_MazurTrick4413»
+    | error "missing module DarmonMerel.4_MazurTrick4413"
+  let job ← mod.leanArts.fetch
+  return job.map (fun _ => ()) (sync := true)
