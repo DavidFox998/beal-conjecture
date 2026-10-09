@@ -128,12 +128,16 @@ def cardP1 (N : Nat) : Nat :=
 def natMod (z : Int) (N : Nat) : Nat :=
   if N = 0 then 0 else (z.emod (N : Int)).toNat
 
-/-- Right action of a matrix on a Manin symbol, reduced into `ℙ¹`. -/
-def applyMat (N : Nat) (uv : Nat × Nat) (m : Int × Int × Int × Int) : Nat × Nat :=
+/-- Right action of a matrix on a Manin symbol, or `none` if the image is not in `ℙ¹`. -/
+def applyMat? (N : Nat) (uv : Nat × Nat) (m : Int × Int × Int × Int) : Option (Nat × Nat) :=
   let (u, v) := uv
   let (a, b, c, d) := m
-  match p1Normalize N (natMod (a * (u : Int) + c * (v : Int)) N)
-      (natMod (b * (u : Int) + d * (v : Int)) N) with
+  p1Normalize N (natMod (a * (u : Int) + c * (v : Int)) N)
+    (natMod (b * (u : Int) + d * (v : Int)) N)
+
+/-- Right action, sending a non-symbol image to `(0, 0)`. -/
+def applyMat (N : Nat) (uv : Nat × Nat) (m : Int × Int × Int × Int) : Nat × Nat :=
+  match applyMat? N uv m with
   | some r => r
   | none => (0, 0)
 
@@ -300,7 +304,9 @@ def qAdd (a b : Array Q) : Array Q :=
 def heckeOnSymbol (N p : Nat) (syms : List (Nat × Nat))
     (pivots : Array (Option (Array Q))) (free : Array Nat) (uv : Nat × Nat) : Array Q :=
   (heilbronn p).foldl (init := Array.replicate free.size (Q.ofInt 0)) fun acc m =>
-    qAdd acc (coordsOf pivots free (indexOfSym syms (applyMat N uv m)))
+    match applyMat? N uv m with
+    | none => acc
+    | some img => qAdd acc (coordsOf pivots free (indexOfSym syms img))
 
 /-- `T_p` on the plus space, rows indexed by `maninBasis N`. -/
 def heckeMatrix (N p : Nat) : List (List Int) :=

@@ -58,7 +58,17 @@ for `Γ₀(N)`. `card_P1_32` and `card_P1_64` are `|ℙ¹(ℤ/Nℤ)| = 48` and
 each `native_decide` on `|ℙ¹|` minus the rank of the Manin relation
 matrix. `e32`, `e64`, `T5_32`, and `T5_64` are the winding class
 `{0, ∞}` and the operator `T_5`, computed from that quotient.
-`lake build Mathlib` builds this library.
+
+`Mathlib/Modular/WindingQuotient.lean` proves `(T_5 - 6) e ≢ 0 (mod 13)`
+at both levels, the prime Hecke eigenvalues of `32.2.a.a` and `64.2.a.a`
+through `19`, and that each of those `T_5`-eigenlines has dimension `1`.
+
+`Mathlib/Modular/FormalImmersion.lean` is Merel's numerical test
+`FormalImmersionAtCusp`. `formal_immersion_32_13` and
+`formal_immersion_64_13` take `q = 5`. The model `Y² = X³ - X` is
+recorded, with the three integral points `(0, 0)`, `(1, 0)`, and
+`(-1, 0)`. The normalized `q`-expansions have `a₁ = 1`. This is not a
+proof of `False`, and the modularity and Ribet axioms remain.
 
 `DarmonMerel/7_WindingQuotientAxiom4413.lean` uses those definitions.
 `native_decide` proves `(T_5 - 6) e = (0,0,4,-4,0,0)` at level `32` and

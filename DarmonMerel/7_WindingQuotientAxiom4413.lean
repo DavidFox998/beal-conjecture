@@ -1,6 +1,6 @@
 import Init
 import DarmonMerel.«5_WindingQuotient4413»
-import Mathlib.Modular.ManinSymbols
+import Mathlib.Modular.WindingQuotient
 
 /-!
 # Winding element at levels 32 and 64
@@ -27,46 +27,12 @@ to the winding quotient and Lemma 8.2. This file does not prove `False`.
   Section 7 (winding element `e`), §8 Lemma 8.2.
 -/
 
-def intDot (row v : List ℤ) : ℤ :=
-  row.zip v |>.foldl (init := 0) fun s (x, y) => s + x * y
-
-def matVec (rows : List (List ℤ)) (v : List ℤ) : List ℤ :=
-  rows.map (intDot · v)
-
-def vecScale (k : ℤ) (v : List ℤ) : List ℤ :=
-  v.map (k * ·)
-
-def vecSub (a b : List ℤ) : List ℤ :=
-  a.zip b |>.map fun (x, y) => x - y
-
-/-- `(T_5 - (5 + 1)) v`. -/
-def t5Minus6 (T : List (List ℤ)) (v : List ℤ) : List ℤ :=
-  vecSub (matVec T v) (vecScale 6 v)
-
-/-- True when some coordinate is nonzero modulo `m`. -/
-def nonzeroMod (m : ℤ) (v : List ℤ) : Bool :=
-  v.any fun x => x % m != 0
-
-/-- Cuspidal eigenvector for `a₅(32.2.a.a) = -2`. -/
-def eig32 : List ℤ := [0, 0, -1, 1, 0, 0]
-
-/-- Cuspidal eigenvector for `a₅(64.2.a.a) = 2`. -/
-def eig64 : List ℤ := [0, 0, 0, -1, 1, 0, 0, 0, 0, 0]
-
 theorem t5_32_on_newform : matVec T5_32 eig32 = vecScale (-2) eig32 := by
   rw [T5_32_value]
   native_decide
 
 theorem t5_64_on_newform : matVec T5_64 eig64 = vecScale 2 eig64 := by
   rw [T5_64_value]
-  native_decide
-
-theorem t5_minus6_e32 : t5Minus6 T5_32 e32 = [0, 0, 4, -4, 0, 0] := by
-  rw [T5_32_value, e32_value]
-  native_decide
-
-theorem t5_minus6_e64 : t5Minus6 T5_64 e64 = [0, 0, 0, 2, 2, -4, 0, 0, 0, 0] := by
-  rw [T5_64_value, e64_value]
   native_decide
 
 /-- Merel's test at level `32`: `(T_5 - 6) e ≢ 0 (mod 13)`. -/
