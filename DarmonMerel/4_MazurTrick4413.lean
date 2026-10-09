@@ -210,7 +210,7 @@ structure EllipticCurveK where
 The relation in Golfieri–Pacetti–Villagra is the residual isomorphism
 `ρ_{g, K, 13} ⊗ χ⁻¹ ≃ ρ_Ẽ`. The predicate is sealed.
 -/
-opaque ResidualEqual {n : ℕ} (_g : Newform n) (_Ẽ : EllipticCurveK) : Prop := True
+opaque ResidualEqual {n : ℕ} (_g : Newform n) (_Etilde : EllipticCurveK) : Prop := True
 
 /-- If `C(q, g) = 0` for every auxiliary `q`, then `g` arises from an
 elliptic curve over `K`.
@@ -225,7 +225,7 @@ theorem mazur_trick_4413 {n : ℕ} (g : Newform n) (c : ℤ)
       C_mazur q g (fun x y =>
         B_mazur q g (x : ℤ) (y : ℤ) c
           (aE q x y) (chi q x y) (aG q x y)) = 0) :
-    ∃ Ẽ : EllipticCurveK, ResidualEqual g Ẽ := by
+    ∃ Etilde : EllipticCurveK, ResidualEqual g Etilde := by
   have _g := g
   have _c := c
   have _aE := aE
