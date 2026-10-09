@@ -52,17 +52,23 @@ are `native_decide` proofs that both products are `0`. The same holds for
 `χ = ±1` and for both signs of `a₅`. `13 ∣ 0`, so `13 ∤ C(5, g)` is false
 and this product does not eliminate either form.
 
-`DarmonMerel/7_WindingQuotientAxiom4413.lean` computes the plus modular
-symbols at levels `32` and `64` (dimensions `6` and `10`). `T5_32` and
-`T5_64` are the matrices of `T_5`, and `e32`, `e64` are the winding class
-`{0, ∞}`. `native_decide` proves `(T_5 - 6) e = (0,0,4,-4,0,0)` at level
-`32` and `(0,0,0,2,2,-4,0,…)` at level `64`, so both are nonzero mod `13`.
-The same file checks `|ℙ¹(ℤ/32ℤ)| = 48`, `|ℙ¹(ℤ/64ℤ)| = 96`, and that `T_5`
-acts by the LMFDB eigenvalues `a₅ = -2` and `a₅ = 2` on explicit
-eigenvectors. `winding_elimination_4413` is that pair of nonvanishings.
-It is a theorem. It does not prove `False`: the Mazur products are `0`
-and the winding vectors are nonzero mod `13` at the same time. The map
-`X₀(N) → J_e` from Darmon–Merel Lemma 8.2 is not formalized.
+`Mathlib/Modular/ManinSymbols.lean` is the plus Manin-symbol quotient
+for `Γ₀(N)`. `card_P1_32` and `card_P1_64` are `|ℙ¹(ℤ/Nℤ)| = 48` and
+`96`. `plusDim_32` and `plusDim_64` are the dimensions `6` and `10`,
+each `native_decide` on `|ℙ¹|` minus the rank of the Manin relation
+matrix. `e32`, `e64`, `T5_32`, and `T5_64` are the winding class
+`{0, ∞}` and the operator `T_5`, computed from that quotient.
+`lake build Mathlib` builds this library.
+
+`DarmonMerel/7_WindingQuotientAxiom4413.lean` uses those definitions.
+`native_decide` proves `(T_5 - 6) e = (0,0,4,-4,0,0)` at level `32` and
+`(0,0,0,2,2,-4,0,…)` at level `64`, so both are nonzero mod `13`, and
+that `T_5` acts by the LMFDB eigenvalues `a₅ = -2` and `a₅ = 2` on
+explicit eigenvectors. `winding_elimination_4413` is that pair of
+nonvanishings. It is a theorem. It does not prove `False`: the Mazur
+products are `0` and the winding vectors are nonzero mod `13` at the
+same time. The map `X₀(N) → J_e` from Darmon–Merel Lemma 8.2 is not
+formalized.
 
 `DarmonMerel/6_NoSolution4413.lean` records the two consequences that do
 follow. `solution_modular_and_lowered` applies the modularity axiom and
@@ -91,4 +97,4 @@ lake build DarmonMerel.6_NoSolution4413
 lake build DarmonMerel.7_WindingQuotientAxiom4413
 ```
 
-`lake build` builds the `DarmonMerel` library.
+`lake build` builds the `DarmonMerel` library. `lake build Mathlib` builds the Manin-symbol library.
