@@ -72,9 +72,15 @@ The substitution `u = π`, `r = s = t = 0` needs `v_π(a₄) ≥ 4`, so it is
 not integral. `pi_scaling_c_invariants_hold` records that the `c₄` and `Δ`
 conditions for that scaling do hold: `4 ≤ 10` and `12 ≤ 18`. `b2Frey` is
 `16 a`, so `π⁸` divides `b₂`. A translation does not change `c₄`, `c₆`, or
-`Δ`. Ogg's formula is the tame conductor; the wild part at `π` is
-`pacetti_2_8_open`. The sufficient test `v(c₄) < 4` or `v(Δ) < 12` does
-not apply. `MinimalModelAt2` stays opaque.
+`Δ`. `four_not_dvd_ten_does_not_block_scaling` records that `4 ∤ 10`
+is not the scaling test. `a4AfterPi_p2_exact_three_of_a_odd` and
+`a6AfterPi_p2_exact_four_of_a_odd` are the valuations after
+`x ↦ x + π` when `a` is odd. `translated_a4_splits_on_trivial_curves`
+shows `(1, 0, 1)` and `(0, 1, 1)` share `v_π(c₄) = 10` and `v_π(Δ) = 18`
+and have translated `a₄` valuations `3` and `6`. Ogg's formula is the
+tame conductor; the wild part at `π` is `pacetti_2_8_open`. The
+sufficient test `v(c₄) < 4` or `v(Δ) < 12` does not apply.
+`MinimalModelAt2` stays opaque.
 -/
 
 structure GaussInt where
@@ -1960,6 +1966,363 @@ theorem pi_scaling_c_invariants_hold (E : FreyCurve4413) (hodd : E.c.natAbs % 2 
       P2Exact ⟨E.B_re, E.B_im⟩ 2 ∧ 4 ≤ 10 ∧ 12 ≤ 18 ∧ ¬ (24 ≤ 18) :=
   ⟨c4_p2_exact_ten E hodd, delta_p2_exact_eighteen E hodd, a4_p2_exact_two E hodd,
     by decide, by decide, by decide⟩
+
+/-- `4 ∤ 10` is true, and it is not the scaling test.
+
+Scaling by `u = π` asks for `4 ≤ v_π(c₄)` and `12 ≤ v_π(Δ)`. Both hold
+when those valuations are `10` and `18`. A model is not proved minimal
+by the failure of `4 ∣ 10`.
+-/
+theorem four_not_dvd_ten_does_not_block_scaling :
+    (4 ≤ 10) ∧ (12 ≤ 18) ∧ ¬ (4 ∣ (10 : ℕ)) := by
+  decide
+
+theorem int_odd_of_natAbs_odd {n : ℤ} (h : n.natAbs % 2 = 1) : n % 2 = 1 := by
+  rcases int_mod_two n with hz | ho
+  · have heven : n.natAbs % 2 = 0 := natAbs_of_two_dvd (Int.dvd_of_emod_eq_zero hz)
+    omega
+  · exact ho
+
+theorem int_even_of_natAbs_even {n : ℤ} (h : n.natAbs % 2 = 0) : n % 2 = 0 := by
+  rcases Nat.dvd_of_mod_eq_zero h with ⟨k, hk⟩
+  cases n with
+  | ofNat m =>
+    simp [Int.natAbs] at hk
+    rw [hk]
+    change ((2 * k : ℕ) : ℤ) % 2 = 0
+    rw [Int.natCast_mul]
+    have h2 : ((2 : ℕ) : ℤ) = 2 := by decide
+    rw [h2]
+    exact Int.mul_emod_right 2 ↑k
+  | negSucc m =>
+    simp [Int.natAbs] at hk
+    rw [Int.negSucc_eq]
+    have happ : ↑m + 1 = ((m + 1 : ℕ) : ℤ) := by omega
+    have hcast : ((m + 1 : ℕ) : ℤ) = (2 : ℤ) * ↑k := by
+      rw [hk, Int.natCast_mul]
+      have h2 : ((2 : ℕ) : ℤ) = 2 := by decide
+      rw [h2]
+    rw [happ, hcast, Int.neg_mul_eq_mul_neg, Int.mul_emod_right]
+
+theorem int_even_split {n : ℤ} (h : n % 2 = 0) : n = 2 * (n / 2) :=
+  (Int.mul_ediv_cancel' (Int.dvd_of_emod_eq_zero h)).symm
+
+theorem int_odd_split {n : ℤ} (h : n % 2 = 1) : n = 2 * ((n - 1) / 2) + 1 := by
+  have hsub : (n - 1) % 2 = (n % 2 - (1 : ℤ) % 2) % 2 := Int.sub_emod n 1 2
+  rw [h] at hsub
+  have hone : ((1 : ℤ) % 2) = 1 := by decide
+  rw [hone] at hsub
+  have hzero : ((1 : ℤ) - 1) % 2 = 0 := by decide
+  rw [hzero] at hsub
+  have hcancel := Int.mul_ediv_cancel' (Int.dvd_of_emod_eq_zero hsub)
+  omega
+
+theorem sq_mod_two_of_even {n : ℤ} (h : n % 2 = 0) : n ^ 2 % 2 = 0 := by
+  rw [int_even_split h]
+  have hexp : (2 * (n / 2)) ^ 2 = 2 * (2 * (n / 2) ^ 2) := by
+    grind
+  rw [hexp, Int.mul_emod_right]
+
+theorem sq_mod_two_of_odd {n : ℤ} (h : n % 2 = 1) : n ^ 2 % 2 = 1 := by
+  rw [int_odd_split h]
+  have hexp : (2 * ((n - 1) / 2) + 1) ^ 2 =
+      2 * (2 * ((n - 1) / 2) ^ 2 + 2 * ((n - 1) / 2)) + 1 := by
+    grind
+  rw [hexp]
+  have hmod :
+      (2 * (2 * ((n - 1) / 2) ^ 2 + 2 * ((n - 1) / 2)) + 1) % 2 = (1 : ℤ) % 2 := by
+    rw [Int.add_comm, Int.add_mul_emod_self_left]
+  rw [hmod]
+  decide
+
+/-- If `c` is odd and `a` is odd, then `b` is even. -/
+theorem b_even_of_a_odd (E : FreyCurve4413) (hodd : E.c.natAbs % 2 = 1)
+    (ha : E.a.natAbs % 2 = 1) : E.b.natAbs % 2 = 0 := by
+  have hsum := odd_c_sum_squares_odd E hodd
+  have ha2 : E.a.natAbs ^ 2 % 2 = 1 := nat_odd_pow E.a.natAbs 2 ha
+  have hb2 : E.b.natAbs ^ 2 % 2 = 0 := by
+    have hmod := Nat.add_mod (E.a.natAbs ^ 2) (E.b.natAbs ^ 2) 2
+    rw [hsum] at hmod
+    have hpair : E.b.natAbs ^ 2 % 2 = 0 ∨ E.b.natAbs ^ 2 % 2 = 1 := by omega
+    rcases hpair with hb | hb
+    · exact hb
+    · rw [Nat.add_mod, ha2, hb] at hsum
+      omega
+  have hoddB : E.b.natAbs % 2 ≠ 1 := by
+    intro hb
+    have h1 := nat_odd_pow E.b.natAbs 2 hb
+    omega
+  have hpair : E.b.natAbs % 2 = 0 ∨ E.b.natAbs % 2 = 1 := by omega
+  rcases hpair with hb | hb
+  · exact hb
+  · exact absurd hb hoddB
+
+/-- If `c` is odd and `b` is odd, then `a` is even. -/
+theorem a_even_of_b_odd (E : FreyCurve4413) (hodd : E.c.natAbs % 2 = 1)
+    (hb : E.b.natAbs % 2 = 1) : E.a.natAbs % 2 = 0 := by
+  have hsum := odd_c_sum_squares_odd E hodd
+  have hb2 : E.b.natAbs ^ 2 % 2 = 1 := nat_odd_pow E.b.natAbs 2 hb
+  have ha2 : E.a.natAbs ^ 2 % 2 = 0 := by
+    have hmod := Nat.add_mod (E.a.natAbs ^ 2) (E.b.natAbs ^ 2) 2
+    rw [hsum] at hmod
+    have hpair : E.a.natAbs ^ 2 % 2 = 0 ∨ E.a.natAbs ^ 2 % 2 = 1 := by omega
+    rcases hpair with ha | ha
+    · exact ha
+    · rw [Nat.add_mod, ha, hb2] at hsum
+      omega
+  have hoddA : E.a.natAbs % 2 ≠ 1 := by
+    intro ha
+    have h1 := nat_odd_pow E.a.natAbs 2 ha
+    omega
+  have hpair : E.a.natAbs % 2 = 0 ∨ E.a.natAbs % 2 = 1 := by omega
+  rcases hpair with ha | ha
+  · exact ha
+  · exact absurd ha hoddA
+
+/-- `π³ = -2 + 2 √(-1)`. -/
+theorem piPow_three : piPow 3 = ⟨-2, 2⟩ := by
+  simp [piPow, pi, GaussInt.npow, GaussInt.mul, GaussInt.one]
+
+/-- `π⁴ = -4`. -/
+theorem piPow_four : piPow 4 = ⟨-4, 0⟩ := by
+  simp [piPow, pi, GaussInt.npow, GaussInt.mul, GaussInt.one]
+
+/-- `π⁵ = -4 - 4 √(-1)`. -/
+theorem piPow_five : piPow 5 = ⟨-4, -4⟩ := by
+  simp [piPow, pi, GaussInt.npow, GaussInt.mul, GaussInt.one]
+
+/-- `π⁶ = -8 √(-1)`. -/
+theorem piPow_six : piPow 6 = ⟨0, -8⟩ := by
+  simp [piPow, pi, GaussInt.npow, GaussInt.mul, GaussInt.one]
+
+/-- Coefficients after Pacetti's translation `x = x' + π` on
+`y² = x³ + 4 a x² + 2 (a² + b² √(-1)) x`.
+
+`a₂' = 4 a + 3 π`, `a₄' = 3 π² + 8 a π + 2 (a² + b² √(-1))`, and
+`a₆' = π³ + 4 a π² + 2 (a² + b² √(-1)) π`. A shift of `x` does not
+change `c₄`, `c₆`, or `Δ`.
+-/
+def a2AfterPi (E : FreyCurve4413) : GaussInt :=
+  ⟨4 * E.a + 3, 3⟩
+
+def a4AfterPi (E : FreyCurve4413) : GaussInt :=
+  ⟨2 * E.a ^ 2 + 8 * E.a, 2 * E.b ^ 2 + 8 * E.a + 6⟩
+
+def a6AfterPi (E : FreyCurve4413) : GaussInt :=
+  ⟨2 * E.a ^ 2 - 2 * E.b ^ 2 - 2, 2 * E.a ^ 2 + 2 * E.b ^ 2 + 8 * E.a + 2⟩
+
+theorem a2AfterPi_p2_exact_one (E : FreyCurve4413) : P2Exact (a2AfterPi E) 1 := by
+  refine ⟨⟨2 * E.a + 3, -(2 * E.a)⟩, ?_, ?_⟩
+  · simp [a2AfterPi, piPow, pi, GaussInt.npow, GaussInt.mul, GaussInt.one]
+    constructor <;> omega
+  · intro hdiv
+    simp [piDivides] at hdiv
+
+theorem two_dvd_b_sq_sub_a_sq_add_three {a b : ℤ} (ha : a % 2 = 1) (hb : b % 2 = 0) :
+    (2 : ℤ) ∣ b ^ 2 - a ^ 2 + 3 := by
+  let p := (a - 1) / 2
+  let q := b / 2
+  have ha' : a = 2 * p + 1 := int_odd_split ha
+  have hb' : b = 2 * q := int_even_split hb
+  refine ⟨2 * q ^ 2 - 2 * p ^ 2 - 2 * p + 1, ?_⟩
+  rw [ha', hb']
+  grind
+
+theorem two_dvd_a_sq_add_b_sq_add_eight_a_add_three {a b : ℤ}
+    (ha : a % 2 = 1) (hb : b % 2 = 0) :
+    (2 : ℤ) ∣ a ^ 2 + b ^ 2 + 8 * a + 3 := by
+  let p := (a - 1) / 2
+  let q := b / 2
+  have ha' : a = 2 * p + 1 := int_odd_split ha
+  have hb' : b = 2 * q := int_even_split hb
+  refine ⟨2 * p ^ 2 + 10 * p + 2 * q ^ 2 + 6, ?_⟩
+  rw [ha', hb']
+  grind
+
+theorem two_dvd_a_sq_sub_b_sq_sub_one {a b : ℤ} (ha : a % 2 = 1) (hb : b % 2 = 0) :
+    (2 : ℤ) ∣ a ^ 2 - b ^ 2 - 1 := by
+  let p := (a - 1) / 2
+  let q := b / 2
+  have ha' : a = 2 * p + 1 := int_odd_split ha
+  have hb' : b = 2 * q := int_even_split hb
+  refine ⟨2 * p ^ 2 + 2 * p - 2 * q ^ 2, ?_⟩
+  rw [ha', hb']
+  grind
+
+theorem two_dvd_a_sq_add_b_sq_add_four_a_add_one {a b : ℤ}
+    (ha : a % 2 = 1) (hb : b % 2 = 0) :
+    (2 : ℤ) ∣ a ^ 2 + b ^ 2 + 4 * a + 1 := by
+  let p := (a - 1) / 2
+  let q := b / 2
+  have ha' : a = 2 * p + 1 := int_odd_split ha
+  have hb' : b = 2 * q := int_even_split hb
+  refine ⟨2 * p ^ 2 + 6 * p + 2 * q ^ 2 + 3, ?_⟩
+  rw [ha', hb']
+  grind
+
+/-- If `c` is odd and `a` is odd, then `v_π(a₄') = 3` after `x ↦ x + π`.
+
+`b` is even. Pacetti's `b`-even branch of Lemma 2.8(2) starts from this
+valuation together with `v_π(a₆') = 4`. It is not `v_π(a₄') = 4`.
+-/
+theorem a4AfterPi_p2_exact_three_of_a_odd (E : FreyCurve4413)
+    (hodd : E.c.natAbs % 2 = 1) (ha : E.a.natAbs % 2 = 1) :
+    P2Exact (a4AfterPi E) 3 := by
+  have hb0 := b_even_of_a_odd E hodd ha
+  have ha2 := int_odd_of_natAbs_odd ha
+  have hb2 := int_even_of_natAbs_even hb0
+  have hure2 := two_dvd_b_sq_sub_a_sq_add_three ha2 hb2
+  have huim2 := two_dvd_a_sq_add_b_sq_add_eight_a_add_three ha2 hb2
+  let ure := (E.b ^ 2 - E.a ^ 2 + 3) / 2
+  let uim := -((E.a ^ 2 + E.b ^ 2 + 8 * E.a + 3) / 2)
+  have hure : (2 : ℤ) * ure = E.b ^ 2 - E.a ^ 2 + 3 :=
+    Int.mul_ediv_cancel' hure2
+  have huim : (2 : ℤ) * uim = -(E.a ^ 2 + E.b ^ 2 + 8 * E.a + 3) := by
+    have hpos := Int.mul_ediv_cancel' huim2
+    calc
+      (2 : ℤ) * uim =
+          (2 : ℤ) * (-((E.a ^ 2 + E.b ^ 2 + 8 * E.a + 3) / 2)) := rfl
+      _ = -((2 : ℤ) * ((E.a ^ 2 + E.b ^ 2 + 8 * E.a + 3) / 2)) := by
+        rw [Int.mul_neg]
+      _ = -(E.a ^ 2 + E.b ^ 2 + 8 * E.a + 3) := by rw [hpos]
+  refine ⟨⟨ure, uim⟩, ?_, ?_⟩
+  · rw [piPow_three]
+    simp [a4AfterPi, GaussInt.mul]
+    constructor
+    · have hlin : ure * -2 - uim * 2 = -(2 * ure + 2 * uim) := by grind
+      rw [hlin, hure, huim]
+      grind
+    · have hlin : ure * 2 + uim * -2 = 2 * ure - 2 * uim := by grind
+      rw [hlin, hure, huim]
+      grind
+  · intro hdiv
+    have hsum : ure + uim = -(E.a * (E.a + 4)) := by
+      have htwice : (2 : ℤ) * (ure + uim) = 2 * ure + 2 * uim := by grind
+      rw [hure, huim] at htwice
+      have hred : (2 : ℤ) * (ure + uim) = (2 : ℤ) * (-(E.a * (E.a + 4))) := by
+        grind
+      exact Int.eq_of_mul_eq_mul_left (by decide) hred
+    simp [piDivides] at hdiv
+    rw [hsum] at hdiv
+    have hprod : (E.a * (E.a + 4)) % 2 = 1 := by
+      have ha' := int_odd_split ha2
+      rw [ha']
+      have hexp : (2 * ((E.a - 1) / 2) + 1) * (2 * ((E.a - 1) / 2) + 1 + 4) =
+          2 * ((2 * ((E.a - 1) / 2) + 1) * ((E.a - 1) / 2 + 2)) + 1 := by
+        grind
+      rw [hexp]
+      have hmod : (2 * ((2 * ((E.a - 1) / 2) + 1) * ((E.a - 1) / 2 + 2)) + 1) % 2 =
+          (1 : ℤ) % 2 := by
+        rw [Int.add_comm, Int.add_mul_emod_self_left]
+      rw [hmod]
+      decide
+    have hnd : ¬ (2 : ℤ) ∣ E.a * (E.a + 4) := by
+      intro hd
+      rw [Int.emod_eq_zero_of_dvd hd] at hprod
+      omega
+    have hneg := Int.neg_emod (a := E.a * (E.a + 4)) (b := 2)
+    rw [ite_eq_right hnd, hprod] at hneg
+    rw [hneg] at hdiv
+    omega
+
+/-- If `c` is odd and `a` is odd, then `v_π(a₆') = 4` after `x ↦ x + π`. -/
+theorem a6AfterPi_p2_exact_four_of_a_odd (E : FreyCurve4413)
+    (hodd : E.c.natAbs % 2 = 1) (ha : E.a.natAbs % 2 = 1) :
+    P2Exact (a6AfterPi E) 4 := by
+  have hb0 := b_even_of_a_odd E hodd ha
+  have ha2 := int_odd_of_natAbs_odd ha
+  have hb2 := int_even_of_natAbs_even hb0
+  have hre2 := two_dvd_a_sq_sub_b_sq_sub_one ha2 hb2
+  have him2 := two_dvd_a_sq_add_b_sq_add_four_a_add_one ha2 hb2
+  let ure := -((E.a ^ 2 - E.b ^ 2 - 1) / 2)
+  let uim := -((E.a ^ 2 + E.b ^ 2 + 4 * E.a + 1) / 2)
+  have hure : (2 : ℤ) * ure = -(E.a ^ 2 - E.b ^ 2 - 1) := by
+    have hpos := Int.mul_ediv_cancel' hre2
+    calc
+      (2 : ℤ) * ure = (2 : ℤ) * (-((E.a ^ 2 - E.b ^ 2 - 1) / 2)) := rfl
+      _ = -((2 : ℤ) * ((E.a ^ 2 - E.b ^ 2 - 1) / 2)) := by rw [Int.mul_neg]
+      _ = -(E.a ^ 2 - E.b ^ 2 - 1) := by rw [hpos]
+  have huim : (2 : ℤ) * uim = -(E.a ^ 2 + E.b ^ 2 + 4 * E.a + 1) := by
+    have hpos := Int.mul_ediv_cancel' him2
+    calc
+      (2 : ℤ) * uim = (2 : ℤ) * (-((E.a ^ 2 + E.b ^ 2 + 4 * E.a + 1) / 2)) := rfl
+      _ = -((2 : ℤ) * ((E.a ^ 2 + E.b ^ 2 + 4 * E.a + 1) / 2)) := by rw [Int.mul_neg]
+      _ = -(E.a ^ 2 + E.b ^ 2 + 4 * E.a + 1) := by rw [hpos]
+  refine ⟨⟨ure, uim⟩, ?_, ?_⟩
+  · rw [piPow_four]
+    simp [a6AfterPi, GaussInt.mul]
+    constructor
+    · have hlin : ure * -4 = -(2 * (2 * ure)) := by grind
+      rw [hlin, hure]
+      grind
+    · have hlin : uim * -4 = -(2 * (2 * uim)) := by grind
+      rw [hlin, huim]
+      grind
+  · intro hdiv
+    have hsum : ure + uim = -(E.a * (E.a + 2)) := by
+      have htwice : (2 : ℤ) * (ure + uim) = 2 * ure + 2 * uim := by grind
+      rw [hure, huim] at htwice
+      have hred : (2 : ℤ) * (ure + uim) = (2 : ℤ) * (-(E.a * (E.a + 2))) := by
+        grind
+      exact Int.eq_of_mul_eq_mul_left (by decide) hred
+    simp [piDivides] at hdiv
+    rw [hsum] at hdiv
+    have hprod : (E.a * (E.a + 2)) % 2 = 1 := by
+      have ha' := int_odd_split ha2
+      rw [ha']
+      have hexp : (2 * ((E.a - 1) / 2) + 1) * (2 * ((E.a - 1) / 2) + 1 + 2) =
+          2 * ((2 * ((E.a - 1) / 2) + 1) * ((E.a - 1) / 2 + 1)) + 1 := by
+        grind
+      rw [hexp]
+      have hmod : (2 * ((2 * ((E.a - 1) / 2) + 1) * ((E.a - 1) / 2 + 1)) + 1) % 2 =
+          (1 : ℤ) % 2 := by
+        rw [Int.add_comm, Int.add_mul_emod_self_left]
+      rw [hmod]
+      decide
+    have hnd : ¬ (2 : ℤ) ∣ E.a * (E.a + 2) := by
+      intro hd
+      rw [Int.emod_eq_zero_of_dvd hd] at hprod
+      omega
+    have hneg := Int.neg_emod (a := E.a * (E.a + 2)) (b := 2)
+    rw [ite_eq_right hnd, hprod] at hneg
+    rw [hneg] at hdiv
+    omega
+
+/-- `(1, 0, 1)` and `(0, 1, 1)` have the same `v_π(c₄)` and `v_π(Δ)`, and
+different valuations of the translated `a₄`.
+
+Both have odd `c`. After `x ↦ x + π`, `v_π(a₄') = 3` on `(1, 0, 1)` and
+`v_π(a₄') = 6` on `(0, 1, 1)`. `v_π(a₆')` is `4` and `5`. A single
+`decide` on `v_π(c₄) = 10` and `v_π(Δ) = 18` does not choose one
+conductor exponent. `MinimalModelAt2` and
+`ConductorExponentAtPrimeAbove2` stay opaque.
+-/
+theorem translated_a4_splits_on_trivial_curves :
+    P2Exact (c4_Frey trivial.a trivial.b) 10 ∧
+      P2Exact (deltaGauss trivial) 18 ∧
+      P2Exact (a4AfterPi trivial) 3 ∧
+      P2Exact (a6AfterPi trivial) 4 ∧
+      P2Exact (c4_Frey trivialB.a trivialB.b) 10 ∧
+      P2Exact (deltaGauss trivialB) 18 ∧
+      P2Exact (a4AfterPi trivialB) 6 ∧
+      P2Exact (a6AfterPi trivialB) 5 := by
+  have hodd : trivial.c.natAbs % 2 = 1 := by decide
+  have hoddB : trivialB.c.natAbs % 2 = 1 := by decide
+  have ha : trivial.a.natAbs % 2 = 1 := by decide
+  refine ⟨c4_p2_exact_ten trivial hodd, delta_p2_exact_eighteen trivial hodd,
+    a4AfterPi_p2_exact_three_of_a_odd trivial hodd ha,
+    a6AfterPi_p2_exact_four_of_a_odd trivial hodd ha,
+    c4_p2_exact_ten trivialB hoddB, delta_p2_exact_eighteen trivialB hoddB, ?_, ?_⟩
+  · refine ⟨⟨-1, 0⟩, ?_, ?_⟩
+    · rw [piPow_six]
+      simp [a4AfterPi, trivialB, mk', GaussInt.mul]
+    · intro hdiv
+      simp [piDivides] at hdiv
+  · refine ⟨⟨0, -1⟩, ?_, ?_⟩
+    · rw [piPow_five]
+      simp [a6AfterPi, trivialB, mk', GaussInt.mul]
+    · intro hdiv
+      simp [piDivides] at hdiv
 
 theorem GaussInt.npow_one_nat (n : ℕ) : GaussInt.npow GaussInt.one n = GaussInt.one := by
   induction n with

@@ -127,7 +127,12 @@ integral. `pi_scaling_c_invariants_hold` is the comparison `4 ≤ 10` and
 `12 ≤ 18` for that scaling; `4 ∣ 10` is not the comparison. `b2Frey` is
 `16 a`. A translation leaves `c₄`, `c₆`, and `Δ` unchanged. The sufficient
 minimality test is `v(c₄) < 4` or `v(Δ) < 12`; neither inequality holds.
-`MinimalModelAt2` stays opaque, and so does this exponent. Ogg's formula
+`MinimalModelAt2` stays opaque, and so does this exponent. The test
+`4 ∤ 10` does not prove minimality: scaling by `π` uses `4 ≤ 10`, which
+holds. After the translation `x ↦ x + π`, `translated_a4_splits_on_trivial_curves`
+gives `v_π(a₄') = 3` on `(1, 0, 1)` and `v_π(a₄') = 6` on `(0, 1, 1)`,
+while both curves have `v_π(c₄) = 10` and `v_π(Δ) = 18`. Those two
+valuations do not choose one exponent. Ogg's formula
 is the tame conductor. The wild part at `π` is this proposition.
 `N(π^10) = 2^10`. Dividing the exponent by `2` is not the norm
 of the conductor ideal. This proposition does not prove `n = 32 ∨ n = 64`.

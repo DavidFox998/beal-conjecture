@@ -171,7 +171,9 @@ substitution and `18 < 24` blocks scaling by `π²`. `b₂ = 16 a`. A
 translation does not change `c₄` or `Δ`. Ogg's formula is the tame
 conductor. `v(c₄) < 4` or `v(Δ) < 12` does not hold.
 `N(π^10) = 2^10`. That valuation is not the conductor exponent, and it
-does not give `32 ∣ n`. `FreyValuationAt2` is `v₂(|c|)`.
+does not give `32 ∣ n`. `4 ∤ 10` does not prove the model minimal.
+After `x ↦ x + π`, `(1, 0, 1)` has `v_π(a₄') = 3` and `(0, 1, 1)` has
+`v_π(a₄') = 6`, with the same `v_π(c₄) = 10` and `v_π(Δ) = 18`. `FreyValuationAt2` is `v₂(|c|)`.
 `RhoE13Open` is sealed. `Psi13HasNoQiRoot` is stated only for
 `NontrivialFrey`. The unrestricted statement fails for `(0, 0, 0)`.
 `RhoE13NeedsSL2` is `Psi13HasNoQiRoot` together with the sealed
