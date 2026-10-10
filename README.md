@@ -150,6 +150,18 @@ statement; nothing proves it. `ribet_given_open_hypotheses` assumes both
 and still calls `ribet_level_lowering_4413`. The newform level `n` is not
 identified with `32`, `64`, or `N`.
 
+`Mathlib/Modular/DarmonMerel4413.lean` is the `n = 4`, `p = 13` layout of
+that strategy. `DarmonMerelFrey` is `IsQCurve` plus the non-rational `j`
+at `a = 1`, `b = 1`. That pair is not a solution. `norm_odd_prime_exponent`
+says that if an odd prime `q` divides `c` and `|c| = q^k m` with `q` not
+dividing `m`, then the exact power of `q` in `N(Δ)` is `q^(13 · 3k)`.
+That is the norm identity. `rho_E_13` is still unresolved, so the identity
+is not finiteness of a residual representation. `DarmonMerelLevelLowering`
+assumes `FreyConductor_OPEN` and `RhoE13Open` and returns a newform of some
+level `n`. `DarmonMerelFrozenFacts` records the winding vectors
+`(0,0,4,-4,0,0)` and `(0,0,0,2,2,-4,0,0,0,0)`, the cusp counts, and the
+integral points of `Y² = X³ - X`.
+
 `a⁴ + b⁴ = c¹³` still has no nonexistence theorem.
 
 `DarmonMerel/7_WindingQuotientAxiom4413.lean` uses those definitions.
