@@ -140,13 +140,15 @@ and it is not the conductor. `norm_and_level_lowering_axiom` pairs the
 norm with `ribet_level_lowering_4413`. Irreducibility of `ρ_{E,13}` is
 still a hypothesis. The level is not forced into `{32, 64}`.
 
-`Mathlib/Modular/LevelLowering4413.lean` records the two open steps.
-`FreyConductor_OPEN`: Tate's algorithm at `2` is not formalized, so the
-conductor exponents `5` and `6` are not theorems.
-`two_pow_eighteen_dvd_discriminant_norm` is only `2¹⁸ ∣ N(Δ)`.
-`rho_E_13_OPEN`: `rho_E_p` is the unresolved marker. The 13-division
-polynomial is not constructed, and there is no proof that it has no root
-in `ℚ(√-1)`.
+`Mathlib/Modular/LevelLowering4413.lean` isolates the missing steps.
+`discriminant_norm_odd_part` rewrites the norm as `2¹⁸ (c³)¹³`.
+`xDivisionDegree 13 = 84` is the count `(13² - 1) / 2`. The 13-division
+polynomial is not constructed. `rho_E_13` is the unresolved marker.
+`FreyConductor_OPEN E N` is the hypothesis that a supplied integer `N`
+equals `32 c²` or `64 c²`. `RhoE13Open` is the sealed irreducibility
+statement; nothing proves it. `ribet_given_open_hypotheses` assumes both
+and still calls `ribet_level_lowering_4413`. The newform level `n` is not
+identified with `32`, `64`, or `N`.
 
 `a⁴ + b⁴ = c¹³` still has no nonexistence theorem.
 
