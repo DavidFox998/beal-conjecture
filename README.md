@@ -191,8 +191,9 @@ odd, every `r, s, t` fails the integrality bounds for `u = π`: `v_π(t) = 0`
 fails `a₃`, `v_π(r) = 0` fails `a₄`, `v_π(r) = 1` fails `a₂`, and
 `v_π(r) ≥ 2` fails `a₄`. If `π²` divides `u`, then `u¹²` does not divide
 `Δ`. The shift `r = π²` on `(0, 1, 1)` gives `v_π(a₆) = 8`, `v_π(b₆) = 12`,
-and `v_π(D) = 8`, the numerical inputs for `n = 4`. The conductor exponent
-stays open. When `a` is odd,
+and `v_π(D) = 8`. For every even `a` and odd `c`, the same two `x`-shifts
+give `v_π(a₂) = 1`, `v_π(a₄) = 4`, `π⁷ ∣ a₆`, and `v_π(D) = 8`, the numerical
+inputs for `n = 4`. The conductor exponent stays open. When `a` is odd,
 `y ↦ y + π²` gives `v_π(a₃) = 4`, `v_π(a₄) = 3`, `v_π(a₆) = 5`,
 `v_π(b₆) = 8`, and `v_π(D) = 6`. Those are the numerical inputs for type
 `I₂*`. They are not the conductor exponent, and the wild part is not

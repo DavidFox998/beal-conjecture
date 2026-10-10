@@ -104,10 +104,13 @@ second translation `x ↦ x + π` on `(0, 1, 1)`: the `a₂` slot has valuation
 `no_integral_u_pi_of_c_odd` is the case split on `v_π(r)` and `v_π(t)` for
 every `r, s, t`, when `c` is odd: valuation `0` fails `a₃` or `a₄`,
 valuation `1` fails `a₂`, and valuation at least `2` fails `a₄`.
-`pi_sq_u_blocks_delta` is the case `v_π(u) ≥ 2`. `MinimalModelAt2` stays
-opaque. `trivialB_dokchitser_n4_inputs` is the shift `r = π²` on
-`(0, 1, 1)`, with `v_π(a₆) = 8`, `v_π(b₆) = 12`, and `v_π(D) = 8`. Those
-are numerical inputs for `n = 4`, not the conductor exponent. When `a` is odd, the further shift
+`pi_sq_u_blocks_delta` is the case `v_π(u) ≥ 2`. Both quantify over `ℤ[i]`.
+`MinimalModelAt2` stays opaque. `trivialB_dokchitser_n4_inputs` is the shift
+`r = π²` on `(0, 1, 1)`, with `v_π(a₆) = 8`. `even_a_dokchitser_n4_inputs`
+is the same pair of `x`-shifts for every even `a` when `c` is odd:
+`v_π(a₂) = 1`, `v_π(a₄) = 4`, `π⁷` divides `a₆` and `b₆`, and `v_π(D) = 8`.
+Those are the numerical inputs for `n = 4`, not a Kodaira symbol, not a wild
+part, and not the conductor exponent. When `a` is odd, the further shift
 `y ↦ y + π²` gives `v_π(a₃) = 4`, `v_π(a₄) = 3`, and `v_π(a₆) = 5`
 (`a_odd_after_pi_sq_valuations`), and `b6AfterPiSq_p2_exact_eight` together
 with `quadDiscAfterPiSq_p2_exact_six` give `v_π(b₆) = 8` and `v_π(D) = 6`.
@@ -2096,6 +2099,23 @@ theorem b_even_of_a_odd (E : FreyCurve4413) (hodd : E.c.natAbs % 2 = 1)
   · exact hb
   · exact absurd hb hoddB
 
+/-- If `c` is odd and `a` is even, then `b` is odd. -/
+theorem b_odd_of_a_even (E : FreyCurve4413) (hodd : E.c.natAbs % 2 = 1)
+    (ha : E.a.natAbs % 2 = 0) : E.b.natAbs % 2 = 1 := by
+  have hsum := odd_c_sum_squares_odd E hodd
+  have ha2 : E.a.natAbs ^ 2 % 2 = 0 := by
+    rw [Nat.pow_succ, Nat.pow_one, Nat.mul_mod, ha]
+  have hb2 : E.b.natAbs ^ 2 % 2 = 1 := by
+    have hmod := Nat.add_mod (E.a.natAbs ^ 2) (E.b.natAbs ^ 2) 2
+    rw [ha2, hsum] at hmod
+    omega
+  have hpair : E.b.natAbs % 2 = 0 ∨ E.b.natAbs % 2 = 1 := by omega
+  rcases hpair with hb | hb
+  · have h0 : E.b.natAbs ^ 2 % 2 = 0 := by
+      rw [Nat.pow_succ, Nat.pow_one, Nat.mul_mod, hb]
+    omega
+  · exact hb
+
 /-- If `c` is odd and `b` is odd, then `a` is even. -/
 theorem a_even_of_b_odd (E : FreyCurve4413) (hodd : E.c.natAbs % 2 = 1)
     (hb : E.b.natAbs % 2 = 1) : E.a.natAbs % 2 = 0 := by
@@ -2132,6 +2152,14 @@ theorem piPow_five : piPow 5 = ⟨-4, -4⟩ := by
 
 /-- `π⁶ = -8 √(-1)`. -/
 theorem piPow_six : piPow 6 = ⟨0, -8⟩ := by
+  simp [piPow, pi, GaussInt.npow, GaussInt.mul, GaussInt.one]
+
+/-- `π⁷ = 8 - 8 √(-1)`. -/
+theorem piPow_seven : piPow 7 = ⟨8, -8⟩ := by
+  simp [piPow, pi, GaussInt.npow, GaussInt.mul, GaussInt.one]
+
+/-- `π⁸ = 16`. -/
+theorem piPow_eight : piPow 8 = ⟨16, 0⟩ := by
   simp [piPow, pi, GaussInt.npow, GaussInt.mul, GaussInt.one]
 
 /-- Coefficients after Pacetti's translation `x = x' + π` on
@@ -3726,6 +3754,214 @@ theorem trivialB_dokchitser_n4_inputs :
       simp [GaussInt.mul]
     · intro hdiv
       simp [piDivides] at hdiv
+
+theorem a2AfterPiThenPiSq_expand (E : FreyCurve4413) :
+    a2AfterPiThenPiSq E = ⟨4 * E.a + 3, 9⟩ := by
+  simp [a2AfterPiThenPiSq, a2AfterPi, piPow_two, GaussInt.add, GaussInt.smul]
+
+theorem a4AfterPiThenPiSq_expand (E : FreyCurve4413) :
+    a4AfterPiThenPiSq E =
+      ⟨2 * E.a ^ 2 + 8 * E.a - 24, 2 * E.b ^ 2 + 24 * E.a + 18⟩ := by
+  simp [a4AfterPiThenPiSq, a4AfterPi, a2AfterPi, piPow_two, GaussInt.add, GaussInt.mul,
+    GaussInt.smul]
+  grind
+
+theorem a6AfterPiThenPiSq_expand (E : FreyCurve4413) :
+    a6AfterPiThenPiSq E =
+      ⟨2 * E.a ^ 2 - 6 * E.b ^ 2 - 32 * E.a - 26,
+        6 * E.a ^ 2 + 2 * E.b ^ 2 + 24 * E.a - 18⟩ := by
+  simp [a6AfterPiThenPiSq, a6AfterPi, a4AfterPi, a2AfterPi, piPow_two, GaussInt.add,
+    GaussInt.mul]
+  grind
+
+theorem quadDiscAfterPiThenPiSq_expand (E : FreyCurve4413) :
+    quadDiscAfterPiThenPiSq E =
+      ⟨4 * E.a ^ 4 - 4 * E.b ^ 4 + 96 * E.a ^ 2 + 72 * E.b ^ 2 + 416 * E.a - 84,
+        8 * E.a ^ 2 * E.b ^ 2 - 72 * E.a ^ 2 + 96 * E.b ^ 2 + 288 * E.a + 288⟩ := by
+  rw [quadDiscAfterPiThenPiSq, a2AfterPiThenPiSq_expand, a4AfterPiThenPiSq_expand,
+    a6AfterPiThenPiSq_expand]
+  simp [GaussInt.mul, GaussInt.smul, GaussInt.sub]
+  grind
+
+theorem a2AfterPiThenPiSq_p2_exact_one (E : FreyCurve4413) :
+    P2Exact (a2AfterPiThenPiSq E) 1 := by
+  rw [a2AfterPiThenPiSq_expand]
+  refine ⟨⟨2 * E.a + 6, 3 - 2 * E.a⟩, ?_, ?_⟩
+  · have hp : piPow 1 = pi := by
+      unfold piPow
+      exact GaussInt.npow_one pi
+    rw [hp]
+    simp [pi, GaussInt.mul]
+    constructor <;> omega
+  · intro hdiv
+    simp [piDivides] at hdiv
+    omega
+
+/-- If `c` is odd and `a` is even, `x ↦ x + π²` on the `π`-translate has
+`v_π(a₄) = 4`. -/
+theorem a4AfterPiThenPiSq_p2_exact_four_of_a_even (E : FreyCurve4413)
+    (hodd : E.c.natAbs % 2 = 1) (ha : E.a.natAbs % 2 = 0) :
+    P2Exact (a4AfterPiThenPiSq E) 4 := by
+  have hb0 := b_odd_of_a_even E hodd ha
+  have ha2 := int_even_of_natAbs_even ha
+  have hb2 := int_odd_of_natAbs_odd hb0
+  rw [a4AfterPiThenPiSq_expand]
+  let p := E.a / 2
+  let q := (E.b - 1) / 2
+  have ha' : E.a = 2 * p := int_even_split ha2
+  have hb' : E.b = 2 * q + 1 := int_odd_split hb2
+  let ure := -2 * p ^ 2 - 4 * p + 6
+  let uim := -(2 * q ^ 2 + 2 * q + 12 * p + 5)
+  refine ⟨⟨ure, uim⟩, ?_, ?_⟩
+  · rw [piPow_four]
+    simp [GaussInt.mul]
+    constructor
+    · rw [ha']
+      grind
+    · rw [ha', hb']
+      grind
+  · intro hdiv
+    have hsum : ure + uim = 2 * (-(p ^ 2) - q ^ 2 - 8 * p - q) + 1 := by grind
+    simp [piDivides] at hdiv
+    rw [hsum] at hdiv
+    have hoddSum : (2 * (-(p ^ 2) - q ^ 2 - 8 * p - q) + 1) % 2 = 1 := by
+      rw [Int.add_comm, Int.add_mul_emod_self_left]
+      decide
+    rw [hoddSum] at hdiv
+    omega
+
+/-- If `c` is odd and `a` is even, `π⁷` divides `a₆` after `x ↦ x + π`
+and `x ↦ x + π²`. The valuation is at least `7`. It is `7` for some curves
+and greater for others, so this is not an exact valuation. -/
+theorem a6AfterPiThenPiSq_pi_seven_of_a_even (E : FreyCurve4413)
+    (hodd : E.c.natAbs % 2 = 1) (ha : E.a.natAbs % 2 = 0) :
+    ∃ u, GaussInt.mul u (piPow 7) = a6AfterPiThenPiSq E := by
+  have hb0 := b_odd_of_a_even E hodd ha
+  have ha2 := int_even_of_natAbs_even ha
+  have hb2 := int_odd_of_natAbs_odd hb0
+  rw [a6AfterPiThenPiSq_expand]
+  let p := E.a / 2
+  let q := (E.b - 1) / 2
+  have ha' : E.a = 2 * p := int_even_split ha2
+  have hb' : E.b = 2 * q + 1 := int_odd_split hb2
+  let ure := -(p ^ 2) - 2 * q ^ 2 - 2 * q - 7 * p - 1
+  let uim := 2 * p ^ 2 - q ^ 2 - q - p - 3
+  refine ⟨⟨ure, uim⟩, ?_⟩
+  rw [piPow_seven]
+  simp [GaussInt.mul]
+  constructor
+  · have h16 : (16 : ℤ) * ure =
+        (2 * E.a ^ 2 - 6 * E.b ^ 2 - 32 * E.a - 26) -
+          (6 * E.a ^ 2 + 2 * E.b ^ 2 + 24 * E.a - 18) := by
+      rw [ha', hb']
+      grind
+    have h8 : (8 : ℤ) * ure + 8 * uim =
+        2 * E.a ^ 2 - 6 * E.b ^ 2 - 32 * E.a - 26 := by
+      have hsum : (16 : ℤ) * (ure + uim) =
+          ((2 * E.a ^ 2 - 6 * E.b ^ 2 - 32 * E.a - 26) -
+            (6 * E.a ^ 2 + 2 * E.b ^ 2 + 24 * E.a - 18)) +
+          ((2 * E.a ^ 2 - 6 * E.b ^ 2 - 32 * E.a - 26) +
+            (6 * E.a ^ 2 + 2 * E.b ^ 2 + 24 * E.a - 18)) := by
+        have him : (16 : ℤ) * uim =
+            (2 * E.a ^ 2 - 6 * E.b ^ 2 - 32 * E.a - 26) +
+              (6 * E.a ^ 2 + 2 * E.b ^ 2 + 24 * E.a - 18) := by
+          rw [ha', hb']
+          grind
+        grind
+      grind
+    have hcomm : ure * 8 - uim * -8 = 8 * ure + 8 * uim := by grind
+    rw [hcomm]
+    exact h8
+  · have h8 : (8 : ℤ) * uim - 8 * ure =
+        6 * E.a ^ 2 + 2 * E.b ^ 2 + 24 * E.a - 18 := by
+      have hdiff : (16 : ℤ) * (uim - ure) =
+          ((2 * E.a ^ 2 - 6 * E.b ^ 2 - 32 * E.a - 26) +
+            (6 * E.a ^ 2 + 2 * E.b ^ 2 + 24 * E.a - 18)) -
+          ((2 * E.a ^ 2 - 6 * E.b ^ 2 - 32 * E.a - 26) -
+            (6 * E.a ^ 2 + 2 * E.b ^ 2 + 24 * E.a - 18)) := by
+        have hre : (16 : ℤ) * ure =
+            (2 * E.a ^ 2 - 6 * E.b ^ 2 - 32 * E.a - 26) -
+              (6 * E.a ^ 2 + 2 * E.b ^ 2 + 24 * E.a - 18) := by
+          rw [ha', hb']
+          grind
+        have him : (16 : ℤ) * uim =
+            (2 * E.a ^ 2 - 6 * E.b ^ 2 - 32 * E.a - 26) +
+              (6 * E.a ^ 2 + 2 * E.b ^ 2 + 24 * E.a - 18) := by
+          rw [ha', hb']
+          grind
+        grind
+      grind
+    grind
+
+/-- If `c` is odd and `a` is even, `v_π(D) = 8` after the same two
+translations. `D = a₄² - 4 a₂ a₆`. -/
+theorem quadDiscAfterPiThenPiSq_p2_exact_eight_of_a_even (E : FreyCurve4413)
+    (hodd : E.c.natAbs % 2 = 1) (ha : E.a.natAbs % 2 = 0) :
+    P2Exact (quadDiscAfterPiThenPiSq E) 8 := by
+  have hb0 := b_odd_of_a_even E hodd ha
+  have ha2 := int_even_of_natAbs_even ha
+  have hb2 := int_odd_of_natAbs_odd hb0
+  rw [quadDiscAfterPiThenPiSq_expand]
+  let p := E.a / 2
+  let q := (E.b - 1) / 2
+  have ha' : E.a = 2 * p := int_even_split ha2
+  have hb' : E.b = 2 * q + 1 := int_odd_split hb2
+  let ure := 4 * p ^ 4 + 24 * p ^ 2 + 52 * p - 4 * q ^ 4 - 8 * q ^ 3 + 12 * q ^ 2 + 16 * q - 1
+  let uim := 8 * p ^ 2 * q ^ 2 + 8 * p ^ 2 * q - 16 * p ^ 2 + 36 * p + 24 * q ^ 2 + 24 * q + 24
+  refine ⟨⟨ure, uim⟩, ?_, ?_⟩
+  · rw [piPow_eight]
+    simp [GaussInt.mul]
+    constructor
+    · have h16 : (16 : ℤ) * ure =
+          4 * E.a ^ 4 - 4 * E.b ^ 4 + 96 * E.a ^ 2 + 72 * E.b ^ 2 + 416 * E.a - 84 := by
+        rw [ha', hb']
+        grind
+      grind
+    · have h16 : (16 : ℤ) * uim =
+          8 * E.a ^ 2 * E.b ^ 2 - 72 * E.a ^ 2 + 96 * E.b ^ 2 + 288 * E.a + 288 := by
+        rw [ha', hb']
+        grind
+      grind
+  · intro hdiv
+    have hsum : ure + uim =
+        2 * (2 * p ^ 4 + 4 * p ^ 2 * q ^ 2 + 4 * p ^ 2 * q + 4 * p ^ 2 + 44 * p -
+          2 * q ^ 4 - 4 * q ^ 3 + 18 * q ^ 2 + 20 * q + 11) + 1 := by
+      grind
+    simp [piDivides] at hdiv
+    rw [hsum] at hdiv
+    have hoddSum :
+        (2 * (2 * p ^ 4 + 4 * p ^ 2 * q ^ 2 + 4 * p ^ 2 * q + 4 * p ^ 2 + 44 * p -
+          2 * q ^ 4 - 4 * q ^ 3 + 18 * q ^ 2 + 20 * q + 11) + 1) % 2 = 1 := by
+      rw [Int.add_comm, Int.add_mul_emod_self_left]
+      decide
+    rw [hoddSum] at hdiv
+    omega
+
+/-- If `c` is odd and `a` is even, the two translations meet the numerical
+inputs for `n = 4` on every such curve.
+
+`v_π(a₂) = 1`, `v_π(a₄) = 4`, `π⁷` divides `a₆` and `b₆`, and `v_π(D) = 8`.
+Both translations are pure `x`-shifts, so `a₃` stays `0`. Dokchitser's `n = 4`
+bounds ask `v(a₆) ≥ 7`, `v(a₄) ≥ 4`, `v(b₆) ≥ 7`, and `v(D) = 8`. `(0, 1, 1)`
+is the case `v_π(a₆) = 8`. These are the inputs. They are not a Kodaira
+symbol, not a wild part, and not the conductor exponent.
+-/
+theorem even_a_dokchitser_n4_inputs (E : FreyCurve4413)
+    (hodd : E.c.natAbs % 2 = 1) (ha : E.a.natAbs % 2 = 0) :
+    P2Exact (a2AfterPiThenPiSq E) 1 ∧
+      P2Exact (a4AfterPiThenPiSq E) 4 ∧
+      (∃ u, GaussInt.mul u (piPow 7) = a6AfterPiThenPiSq E) ∧
+      (∃ u, GaussInt.mul u (piPow 7) = b6AfterPiThenPiSq E) ∧
+      P2Exact (quadDiscAfterPiThenPiSq E) 8 := by
+  refine ⟨a2AfterPiThenPiSq_p2_exact_one E,
+    a4AfterPiThenPiSq_p2_exact_four_of_a_even E hodd ha,
+    a6AfterPiThenPiSq_pi_seven_of_a_even E hodd ha, ?_,
+    quadDiscAfterPiThenPiSq_p2_exact_eight_of_a_even E hodd ha⟩
+  rcases a6AfterPiThenPiSq_pi_seven_of_a_even E hodd ha with ⟨u, hu⟩
+  refine ⟨GaussInt.smul 4 u, ?_⟩
+  rw [b6AfterPiThenPiSq, ← hu, piPow_seven]
+  simp [GaussInt.smul, GaussInt.mul]
+  constructor <;> grind
 
 theorem GaussInt.npow_one_nat (n : ℕ) : GaussInt.npow GaussInt.one n = GaussInt.one := by
   induction n with
