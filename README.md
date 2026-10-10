@@ -146,16 +146,22 @@ still a hypothesis. The level is not forced into `{32, 64}`.
 unresolved marker. `FreyConductor_OPEN E N` is the hypothesis that a
 supplied integer `N` equals `32 c²` or `64 c²`. `FreyConductorDivides`
 is `ConductorShape`: the same alternative for `N : ℕ` and `|c|`.
-`ribet_level_lowering_4413` takes that shape and `RhoE13Open`, and returns
-one `RibetLevel`: `n ∣ N`, coprimality for primes dividing `|c|`, a
-`RibetOutput`, and `n = 32 ∨ n = 64`. The disjunction is part of the axiom.
+`ribet_level_lowering_4413` takes that shape, `RhoE13Open`, and
+`TateAt2LowerBound`. It returns one `RibetLevel`: `n ∣ N`, coprimality
+for primes dividing `|c|`, and a `RibetOutput`. The disjunction
+`n = 32 ∨ n = 64` is not part of the axiom.
 `n_dvd_32_or_64_of_prime_to_c` removes those primes and concludes `n ∣ 32`
 or `n ∣ 64`. The positive divisors of `64` are `1, 2, 4, 8, 16, 32, 64`.
-`TateAt2LowerBound` is the open hypothesis `32 ∣ n` (`v₂(n) ≥ 5`). It is
-not an axiom. With it, `n_eq_32_or_64_of_lower_bound` is the equality.
-`RhoE13Open` is sealed; nothing produces a term. `RhoE13NeedsSL2` records
-that a missing linear factor of `ψ₁₃` is not absolute irreducibility: the
-image must contain `SL₂(𝔽₁₃)`.
+`TateAt2LowerBound` is the open hypothesis `32 ∣ n` (`v₂(n) ≥ 5`) for a
+model satisfying `MinimalModelAt2`. It is not an axiom. With it,
+`n_eq_32_or_64_of_lower_bound` is the equality, and `n_eq_32_or_64_of_tate`
+applies the open bound. If `c` is odd, `tate_lower_bound_of_c_odd` gives
+`v₂(N(Δ)) = 18` and `32 ∣ |N(Δ)|`. That is the field norm, not the
+conductor exponent, and it does not give `32 ∣ n`. `FreyValuationAt2` is
+`v₂(|c|)`. `RhoE13Open` is sealed; nothing produces a term.
+`RhoE13NeedsSL2` is `Psi13HasNoQiRoot` together with the sealed
+`ImageContainsSL2 E 13`. The implication to `RhoE13Open` is not a lemma.
+`GaussIntRootDecidable` decides evaluation at one Gaussian integer.
 
 `Mathlib/Modular/DarmonMerel4413.lean` is the `n = 4`, `p = 13` layout of
 that strategy. `DarmonMerelFrey` is `IsQCurve` plus the non-rational `j`
@@ -164,9 +170,10 @@ says that if an odd prime `q` divides `c` and `|c| = q^k m` with `q` not
 dividing `m`, then the exact power of `q` in `N(Δ)` is `q^(13 · 3k)`.
 That is the norm identity. `rho_E_13` is still unresolved, so the identity
 is not finiteness of a residual representation. `DarmonMerelLevelLowering`
-assumes `FreyConductor_OPEN` and `RhoE13Open` and returns the one newform
-from `ribet_level_lowering_4413`. `n = 32 ∨ n = 64` stays inside that
-axiom. `TateAt2LowerBound` is not a theorem. `Mathlib/Modular/EllipticCurveMinimal.lean` is the model
+assumes `FreyConductor_OPEN`, `RhoE13Open`, and `TateAt2LowerBound`, and
+returns the one newform from `ribet_level_lowering_4413`.
+`n = 32 ∨ n = 64` is not inside that axiom. `TateAt2LowerBound` is not a
+theorem. `Mathlib/Modular/EllipticCurveMinimal.lean` is the model
 `y² = x³ + a₂ x² + a₄ x + a₆` with coefficients in `ℤ[√-1]`.
 `c4_c6_discriminant` is `c₄³ - c₆² = 1728 Δ`. `divisionPsi` builds `ψ₁₃`
 by the classical recurrence. On `y² = x³ - x` that list has degree `84`

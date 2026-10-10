@@ -179,9 +179,10 @@ theorem discriminant_nonzero (s : NonzeroSolution4413) :
 
 `hIrr` is `RhoE13Open`. Nothing constructs a term of that type.
 -/
-theorem lowered (s : NonzeroSolution4413) (hIrr : RhoE13Open s.frey) :
+theorem lowered (s : NonzeroSolution4413) (hIrr : RhoE13Open s.frey)
+    (hTate : TateAt2LowerBound) :
     Modular s.frey ∧ ∃ n : Nat, ∃ g : Newform n, LevelLowered s.frey g :=
-  solution_modular_and_lowered s.a s.b s.c s.h_eq hIrr
+  solution_modular_and_lowered s.a s.b s.c s.h_eq hIrr hTate
 
 /-- The two powers written down for `d = 1` are `2⁵` and `2⁶`. -/
 theorem candidate_levels : loweredLevel 5 = 32 ∧ loweredLevel 6 = 64 :=

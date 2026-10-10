@@ -92,9 +92,29 @@ def FreyConductorDivides (c : ℤ) (N : ℕ) : Prop :=
 
 Nothing in this development produces a term. The body is sealed, so
 `trivial` does not apply. A missing linear factor of `ψ₁₃` is not this
-statement.
+statement. `RhoE13NeedsSL2` in `Irreducibility13` asks for that linear
+factor together with an image containing `SL₂(𝔽₁₃)`. The implication from
+that pair to `RhoE13Open` is not a lemma.
 -/
 opaque RhoE13Open (E : FreyCurve4413) : Prop := True
+
+/-- The Weierstrass model is minimal at the prime above `2`.
+
+Tate's algorithm is not formalized. Nothing produces a term.
+-/
+opaque MinimalModelAt2 (E : FreyCurve4413) : Prop := True
+
+/-- `v₂(n) ≥ 5` after the level has been lowered, for a minimal model.
+
+The intended case split is the parity of `c`. For the Frey curve over
+`ℚ(√-1)`, Kodaira type `Iₙ*` at `2` gives conductor exponent `5` when `c`
+is odd and `6` when `c` is even. That is not proved. If `c` is odd, the
+field norm satisfies `v₂(N(Δ)) = 18`, and `32 ∣ 2¹⁸`. That valuation is
+not this conductor exponent, and it does not give `32 ∣ n`.
+-/
+def TateAt2LowerBound : Prop :=
+  ∀ (c : ℤ) (N n : ℕ) (E : FreyCurve4413),
+    FreyConductorDivides c N → n ∣ N → MinimalModelAt2 E → 32 ∣ n
 
 /-- One lowered newform at level `n`, with `n ∣ N` stored on the structure. -/
 structure RibetOutput (E : FreyCurve4413) (N n : ℕ) where
@@ -104,33 +124,29 @@ structure RibetOutput (E : FreyCurve4413) (N n : ℕ) where
 
 /-- One Ribet output at one level.
 
-`n` divides the supplied `N`, no prime divisor of `|c|` divides `n`, and
-the axiom still carries `n = 32 ∨ n = 64`. The prime predicate is `IsPrime`
-(`2 ≤ p` and no proper divisor). `Nat.Prime` is not defined in this Init.
-The disjunction is not derived from a lower bound on `v₂(n)`.
+`n` divides the supplied `N`, and no prime divisor of `|c|` divides `n`.
+The prime predicate is `IsPrime`. There is no component `n = 32 ∨ n = 64`.
+That disjunction is `n_eq_32_or_64_of_lower_bound`, from `32 ∣ n`.
 -/
 def RibetLevel (c : ℤ) (E : FreyCurve4413) (N : ℕ) : Type :=
   Σ' (n : ℕ) (_h_dvd : n ∣ N)
-    (_h_coprime : ∀ p, IsPrime p → p ∣ c.natAbs → ¬ p ∣ n)
-    (_out : RibetOutput E N n),
-    n = 32 ∨ n = 64
+    (_h_coprime : ∀ p, IsPrime p → p ∣ c.natAbs → ¬ p ∣ n),
+    RibetOutput E N n
 
 /-- Ribet's lowering-the-level theorem for `d = 1`, `p = 13`, at one `N`.
 
 `hCond` says `N` equals `32 |c|²` or `64 |c|²`. It does not prove that this
 `N` is the conductor. `hIrr` is `RhoE13Open`; there is no term of that type.
-The result is one level `n`. It divides this `N`, it is coprime to the
-primes dividing `|c|`, and the package asserts `n = 32 ∨ n = 64`. That
-disjunction stays inside the axiom until a lower bound `v₂(n) ≥ 5` is a
-theorem. There is no second level.
+`hTate` is `TateAt2LowerBound`. The result is one level `n` with `n ∣ N`
+and the prime-coprimality condition. It does not contain `n = 32 ∨ n = 64`.
 
 Citation: Ribet 1990, Invent. Math. 100, and Pacetti's slide
 “Ribet's lowering the level result”.
 Note: this is axiom 2 until Mathlib has Ribet's theorem for ℚ-curves.
 -/
 axiom ribet_level_lowering_4413 {c : ℤ} {E : FreyCurve4413} (N : ℕ)
-    (hCond : FreyConductorDivides c N) (hIrr : RhoE13Open E) :
-    RibetLevel c E N
+    (hCond : FreyConductorDivides c N) (hIrr : RhoE13Open E)
+    (hTate : TateAt2LowerBound) : RibetLevel c E N
 
 def RibetLevel.level {c : ℤ} {E : FreyCurve4413} {N : ℕ}
     (p : RibetLevel c E N) : ℕ :=
@@ -146,11 +162,7 @@ theorem RibetLevel.coprime {c : ℤ} {E : FreyCurve4413} {N : ℕ}
 
 def RibetLevel.output {c : ℤ} {E : FreyCurve4413} {N : ℕ}
     (p : RibetLevel c E N) : RibetOutput E N p.level :=
-  p.2.2.2.1
-
-theorem RibetLevel.level_eq {c : ℤ} {E : FreyCurve4413} {N : ℕ}
-    (p : RibetLevel c E N) : p.level = 32 ∨ p.level = 64 :=
-  p.2.2.2.2
+  p.2.2.2
 
 /-- For `d = 1` every odd slot `Q₁, Q₃, Q₅, Q₇` is empty, so Pacetti's
 odd part of the lowered level is `1` and the level is a power of `2`. -/

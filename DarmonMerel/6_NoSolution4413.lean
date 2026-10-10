@@ -28,14 +28,17 @@ theorem thirteen_not_dvd_two : ¬ ((13 : ℤ) ∣ 2) := by
 example : (1 : ℤ) ^ 4 + (0 : ℤ) ^ 4 = (1 : ℤ) ^ 13 := rfl
 example : (0 : ℤ) ^ 4 + (1 : ℤ) ^ 4 = (1 : ℤ) ^ 13 := rfl
 
-/-- A solution is modular, and given `RhoE13Open` Ribet returns one newform.
+/-- A solution is modular, and given `RhoE13Open` and the Tate bound Ribet
+returns one newform.
 
 `N = 32 |c|²` satisfies `FreyConductorDivides` by construction. That is the
 shape hypothesis, not a proof that the conductor equals `32 |c|²`.
+`hTate` is not turned into `n = 32 ∨ n = 64` by this theorem.
 -/
 theorem solution_modular_and_lowered
     (a b c : ℤ) (heq : a ^ 4 + b ^ 4 = c ^ 13)
-    (hIrr : RhoE13Open (FreyCurve4413.mk' a b c heq)) :
+    (hIrr : RhoE13Open (FreyCurve4413.mk' a b c heq))
+    (hTate : TateAt2LowerBound) :
     Modular (FreyCurve4413.mk' a b c heq) ∧
       ∃ n : ℕ, ∃ g : Newform n,
         LevelLowered (FreyCurve4413.mk' a b c heq) g := by
@@ -43,7 +46,7 @@ theorem solution_modular_and_lowered
   refine ⟨frey_qcurve_modular a b c E, ?_⟩
   let N : ℕ := 32 * c.natAbs ^ 2
   have hCond : FreyConductorDivides c N := Or.inl rfl
-  let pkg : RibetLevel c E N := ribet_level_lowering_4413 N hCond hIrr
+  let pkg : RibetLevel c E N := ribet_level_lowering_4413 N hCond hIrr hTate
   exact ⟨pkg.level, pkg.output.g, pkg.output.lowered⟩
 
 /-- Merel's nonvanishing test at both CM levels.

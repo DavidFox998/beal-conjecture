@@ -1,5 +1,6 @@
 import Mathlib.Modular.DiscriminantNorm
 import Mathlib.Modular.Rank0_32a1
+import Mathlib.Modular.EllipticCurveMinimal
 
 /-!
 # What Ribet's level still needs
@@ -40,17 +41,18 @@ an axiom.
 
 ## From the conductor to the level
 
-`ribet_level_lowering_4413` takes one `N` with `FreyConductorDivides c N`
-and one `RhoE13Open E`, and returns one `RibetLevel`. That package is
-`n ∣ N`, coprimality to the primes dividing `|c|`, a `RibetOutput`, and
-`n = 32 ∨ n = 64`. The disjunction is part of the axiom. It is not the
-coprimality lemma.
+`ribet_level_lowering_4413` takes one `N` with `FreyConductorDivides c N`,
+`RhoE13Open E`, and `TateAt2LowerBound`. It returns one `RibetLevel`:
+`n ∣ N`, coprimality to the primes dividing `|c|`, and a `RibetOutput`.
+It does not contain `n = 32 ∨ n = 64`.
 
 `n_dvd_32_or_64_of_prime_to_c` removes those primes and concludes
 `n ∣ 32` or `n ∣ 64`. The positive divisors of `64` are
 `1, 2, 4, 8, 16, 32, 64`. `TateAt2LowerBound` is the missing hypothesis
-`32 ∣ n`, that is `v₂(n) ≥ 5`. It is not an axiom. With that hypothesis,
-`n_eq_32_or_64_of_lower_bound` is `n = 32 ∨ n = 64`.
+`32 ∣ n`, that is `v₂(n) ≥ 5`, for a model satisfying `MinimalModelAt2`.
+It is not an axiom. With that hypothesis, `n_eq_32_or_64_of_lower_bound`
+is `n = 32 ∨ n = 64`. If `c` is odd, `tate_lower_bound_of_c_odd` gives
+`v₂(N(Δ)) = 18`. That is the field norm, not the conductor exponent.
 -/
 
 /-- Classical count `(p² - 1) / 2` of the x-coordinates of the nonzero
@@ -143,24 +145,25 @@ theorem FreyConductor_OPEN.toDivides {E : FreyCurve4413} {N : ℕ}
       rw [hZ, ← hmul]
     exact Int.ofNat.inj heq
 
-/-- Conductor hypothesis, `RhoE13Open`, and one Ribet level.
+/-- Conductor hypothesis, `RhoE13Open`, the Tate bound, and one Ribet level.
 
-`hTate` is transported to `FreyConductorDivides` and passed to the axiom
-with `hRho`. The axiom returns one level dividing that `N`. `hTate` is not
-a theorem, and `hRho` has no term.
+`hOpen` is transported to `FreyConductorDivides`. `hLower` is
+`TateAt2LowerBound`. The axiom returns one level dividing `N`. It does not
+return `n = 32 ∨ n = 64`. `hOpen` and `hRho` are not theorems.
 -/
 theorem ribet_given_open_hypotheses
     (E : FreyCurve4413) (N : ℕ)
-    (hTate : FreyConductor_OPEN E (N : ℤ))
-    (hRho : RhoE13Open E) :
+    (hOpen : FreyConductor_OPEN E (N : ℤ))
+    (hRho : RhoE13Open E)
+    (hLower : TateAt2LowerBound) :
     E.discriminant_re ^ 2 + E.discriminant_im ^ 2 =
         (2 : ℤ) ^ 18 * (E.c ^ 3) ^ 13 ∧
       FreyConductor_OPEN E (N : ℤ) ∧
       RhoE13Open E ∧
       ∃ n : ℕ, ∃ g : Newform n, LevelLowered E g := by
-  refine ⟨discriminant_norm_odd_part E, hTate, hRho, ?_⟩
-  have hCond : FreyConductorDivides E.c N := FreyConductor_OPEN.toDivides hTate
-  let pkg : RibetLevel E.c E N := ribet_level_lowering_4413 N hCond hRho
+  refine ⟨discriminant_norm_odd_part E, hOpen, hRho, ?_⟩
+  have hCond : FreyConductorDivides E.c N := FreyConductor_OPEN.toDivides hOpen
+  let pkg : RibetLevel E.c E N := ribet_level_lowering_4413 N hCond hRho hLower
   exact ⟨pkg.level, pkg.output.g, pkg.output.lowered⟩
 
 theorem thirtyTwo_mul_dvd_sixtyFour (m : ℕ) : 32 * m ∣ 64 * m := by
@@ -280,13 +283,55 @@ theorem n_dvd_64_of_prime_to_c {c : ℤ} {N n : ℕ}
   · exact Nat.dvd_trans h (by decide)
   · exact h
 
-/-- Tate's algorithm at `2` would give `v₂(n) ≥ 5`, that is `32 ∣ n`.
+/-- The 2-adic valuation of a natural number. `natTwoVal 0 = 0`.
 
-This is an open hypothesis, in the same sense as `FreyConductor_OPEN`.
-It is not an axiom and it is not a theorem.
+An odd argument returns `0` before the recursive call.
 -/
-def TateAt2LowerBound : Prop :=
-  ∀ (E : FreyCurve4413) (N n : ℕ), ConductorShape E.c N → n ∣ N → 32 ∣ n
+def natTwoVal (n : ℕ) : ℕ :=
+  if n = 0 then 0
+  else if n % 2 = 1 then 0
+  else natTwoVal (n / 2) + 1
+termination_by n
+decreasing_by
+  have hn : 0 < n := by omega
+  exact Nat.div_lt_self hn (by decide)
+
+/-- `v₂(|c|)`. This is `0` when `c` is odd. It is not a conductor exponent. -/
+def FreyValuationAt2 (c : ℤ) : ℕ :=
+  natTwoVal c.natAbs
+
+theorem natTwoVal_odd {n : ℕ} (h : n % 2 = 1) : natTwoVal n = 0 := by
+  unfold natTwoVal
+  by_cases hz : n = 0
+  · simp [hz]
+  · simp [hz, h]
+
+theorem freyValuationAt2_odd {c : ℤ} (h : c.natAbs % 2 = 1) :
+    FreyValuationAt2 c = 0 :=
+  natTwoVal_odd h
+
+/-- If `c` is odd, `v₂(N(Δ)) = 18` and `32 ∣ N(Δ)` in absolute value.
+
+`N(Δ) = 2¹⁸ (c³)¹³`. An odd `c` contributes no factor `2`, so the power of
+`2` is exactly `18`. `32 = 2⁵` divides `2¹⁸`. Kodaira type `Iₙ*` at `2`
+would give conductor exponent `5` in this odd case and `6` when `c` is
+even. That exponent is `TateAt2LowerBound` together with `MinimalModelAt2`.
+This lemma does not conclude `32 ∣ n`.
+-/
+theorem tate_lower_bound_of_c_odd (E : FreyCurve4413)
+    (hodd : E.c.natAbs % 2 = 1) :
+    FreyValuationAt2 E.c = 0 ∧
+      (E.discriminant_re ^ 2 + E.discriminant_im ^ 2).natAbs =
+        2 ^ 18 * E.c.natAbs ^ 39 ∧
+      32 ∣ (E.discriminant_re ^ 2 + E.discriminant_im ^ 2).natAbs := by
+  refine ⟨freyValuationAt2_odd hodd, ?_⟩
+  have hc : E.c.natAbs = 2 ^ 0 * E.c.natAbs := by simp
+  have hnorm := norm_two_adic E 0 E.c.natAbs hc hodd
+  have hpow : 2 ^ (18 + 39 * 0) = 2 ^ 18 := by simp
+  rw [hpow] at hnorm
+  refine ⟨hnorm.1, ?_⟩
+  have h32 : 32 ∣ 2 ^ 18 := by decide
+  exact Nat.dvd_trans h32 ⟨E.c.natAbs ^ 39, hnorm.1⟩
 
 /-- The positive divisors of `2` are `1` and `2`. -/
 theorem eq_one_or_two_of_dvd_two {k : ℕ} (h : k ∣ 2) : k = 1 ∨ k = 2 := by
@@ -324,28 +369,32 @@ theorem n_eq_32_or_64_of_lower_bound {c : ℤ} {N n : ℕ}
     · rw [hk2] at hk
       exact Or.inr (hk.trans h64.symm)
 
-/-- The coprimality lemma plus the open Tate bound. -/
-theorem n_eq_32_or_64_of_tate {E : FreyCurve4413} {N n : ℕ}
+/-- The coprimality lemma plus the open Tate bound.
+
+`hMin` is `MinimalModelAt2`. `hTate` turns that into `32 ∣ n`. The equality
+does not use `ribet_level_lowering_4413`.
+-/
+theorem n_eq_32_or_64_of_tate {c : ℤ} {E : FreyCurve4413} {N n : ℕ}
     (hTate : TateAt2LowerBound)
-    (hDiv : FreyConductorDivides E.c N) (hn : n ∣ N)
-    (hcop : ∀ p, IsPrime p → p ∣ E.c.natAbs → ¬ p ∣ n) :
+    (hDiv : FreyConductorDivides c N) (hn : n ∣ N)
+    (hMin : MinimalModelAt2 E)
+    (hcop : ∀ p, IsPrime p → p ∣ c.natAbs → ¬ p ∣ n) :
     n = 32 ∨ n = 64 := by
-  have h32 : 32 ∣ n := hTate E N n hDiv hn
+  have h32 : 32 ∣ n := hTate c N n E hDiv hn hMin
   exact n_eq_32_or_64_of_lower_bound
     (n_dvd_32_or_64_of_prime_to_c hDiv hn hcop) h32
 
 /-- The Ribet axiom at one conductor-shaped `N`.
 
-This is `ribet_level_lowering_4413`. The package is one level: `n ∣ N`,
-coprimality for `IsPrime`, a `RibetOutput`, and `n = 32 ∨ n = 64`.
-The disjunction is the axiom's last component. `TateAt2LowerBound` is the
-hypothesis that would let the coprimality lemma prove that disjunction
-without the axiom.
+This is `ribet_level_lowering_4413`. The package is `n ∣ N`, coprimality
+for `IsPrime`, and a `RibetOutput`. `hTate` is an argument and is not turned
+into `n = 32 ∨ n = 64` inside the axiom. That equality is
+`n_eq_32_or_64_of_tate`.
 -/
 noncomputable def ribetOutput_of_open_hypotheses
     {c : ℤ} {E : FreyCurve4413} (N : ℕ)
-    (hCond : FreyConductorDivides c N) (hIrr : RhoE13Open E) :
-    RibetLevel c E N :=
-  ribet_level_lowering_4413 N hCond hIrr
+    (hCond : FreyConductorDivides c N) (hIrr : RhoE13Open E)
+    (hTate : TateAt2LowerBound) : RibetLevel c E N :=
+  ribet_level_lowering_4413 N hCond hIrr hTate
 
 end FreyCurve4413

@@ -56,10 +56,11 @@ polynomial is not a Galois representation and not `RhoE13Open`.
 if `|c| = 2^k m` with `m` odd, then `v₂(N(Δ)) = 18 + 39 k`. Tate's
 algorithm is not formalized. The conductor exponents `5` and `6` are not
 theorems, and `FreyConductor_OPEN` has no proof. `RhoE13Open` has no term.
-`ribet_level_lowering_4413` takes `RhoE13Open` and one integer of shape
-`32 |c|²` or `64 |c|²`, and returns one level dividing that integer.
-`n = 32 ∨ n = 64` is still a component of the axiom. `TateAt2LowerBound`
-(`32 ∣ n`) is not a theorem.
+`ribet_level_lowering_4413` takes `RhoE13Open`, `TateAt2LowerBound`, and one
+integer of shape `32 |c|²` or `64 |c|²`, and returns one level dividing
+that integer. `n = 32 ∨ n = 64` is `n_eq_32_or_64_of_tate`, not a component
+of the axiom. If `c` is odd, `v₂(N(Δ)) = 18`. That is not the conductor
+exponent.
 -/
 
 structure GaussInt where
