@@ -142,13 +142,16 @@ still a hypothesis. The level is not forced into `{32, 64}`.
 
 `Mathlib/Modular/LevelLowering4413.lean` isolates the missing steps.
 `discriminant_norm_odd_part` rewrites the norm as `2¹⁸ (c³)¹³`.
-`xDivisionDegree 13 = 84` is the count `(13² - 1) / 2`. The 13-division
-polynomial is not constructed. `rho_E_13` is the unresolved marker.
-`FreyConductor_OPEN E N` is the hypothesis that a supplied integer `N`
-equals `32 c²` or `64 c²`. `RhoE13Open` is the sealed irreducibility
-statement; nothing proves it. `ribet_given_open_hypotheses` assumes both
-and still calls `ribet_level_lowering_4413`. The newform level `n` is not
-identified with `32`, `64`, or `N`.
+`xDivisionDegree 13 = 84` is the count `(13² - 1) / 2`. `rho_E_13` is the
+unresolved marker. `FreyConductor_OPEN E N` is the hypothesis that a
+supplied integer `N` equals `32 c²` or `64 c²`. `FreyConductorDivides`
+is that alternative for `N : ℕ` and `|c|`. `RibetOutput` is a newform of
+some level `n`, with no equation `n = 32`, `n = 64`, or `n ∣ N`.
+`n_dvd_N_of_ribet` says that if `n ∣ N` and `FreyConductorDivides c N`,
+then `n ∣ 64 |c|²`. The axiom does not give `n ∣ N`. `RhoE13Open` is the
+sealed irreducibility statement; nothing proves it.
+`ribet_given_open_hypotheses` assumes both open hypotheses and still calls
+`ribet_level_lowering_4413`.
 
 `Mathlib/Modular/DarmonMerel4413.lean` is the `n = 4`, `p = 13` layout of
 that strategy. `DarmonMerelFrey` is `IsQCurve` plus the non-rational `j`
