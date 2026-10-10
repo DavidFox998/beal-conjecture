@@ -161,7 +161,10 @@ counterexample `N = 32`, `n = 1`, `c = 1`. `n_eq_32_or_64_of_tate` uses the
 conjunct `32 ∣ n`. If `c` is odd, `tate_lower_bound_of_c_odd` gives
 `v₂(N(Δ)) = 18`. `c4_c6_valuation` factors `2⁵` from `c₄` and `2⁸` from
 `c₆`. `c4_c6_coprime_to_2_when_c_odd` says `2` does not divide
-`5 a² - 3 b² √(-1)` when `c` is odd. `FreyValuationAt2` is `v₂(|c|)`.
+`5 a² - 3 b² √(-1)` when `c` is odd. `p2_valuation_of_two_pow` is
+`v_π(2^k) = 2k` at `π = 1 + √(-1)`, and `c4_p2_exact_ten` is `v_π(c₄) = 10`
+when `c` is odd. `N(π^10) = 2^10`. That valuation is not the conductor
+exponent, and it does not give `32 ∣ n`. `FreyValuationAt2` is `v₂(|c|)`.
 `RhoE13Open` is sealed. `Psi13HasNoQiRoot` is stated only for
 `NontrivialFrey`. The unrestricted statement fails for `(0, 0, 0)`.
 `RhoE13NeedsSL2` is `Psi13HasNoQiRoot` together with the sealed

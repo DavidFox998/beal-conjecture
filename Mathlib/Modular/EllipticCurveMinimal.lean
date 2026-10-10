@@ -1476,6 +1476,223 @@ theorem c4_c6_coprime_to_2_when_c_odd (E : FreyCurve4413)
   rw [Nat.add_mod, haSq, hbSq] at hsum
   simp at hsum
 
+/-- `π = 1 + √(-1)`, the prime of `ℤ[√-1]` above `2`. -/
+def pi : GaussInt := ⟨1, 1⟩
+
+def piPow (k : ℕ) : GaussInt :=
+  GaussInt.npow pi k
+
+/-- Divisible by `π`. Equivalent to `re + im` even. -/
+def piDivides (z : GaussInt) : Prop :=
+  (z.re + z.im) % 2 = 0
+
+/-- `z = u π^k` with `π` not dividing `u`. This is `v_π(z) = k`. -/
+def P2Exact (z : GaussInt) (k : ℕ) : Prop :=
+  ∃ u, GaussInt.mul u (piPow k) = z ∧ ¬ piDivides u
+
+/-- Unit `-√(-1)` raised to `k`. `2 = (-√(-1)) π²`. -/
+def twoUnit : ℕ → GaussInt
+  | 0 => ⟨1, 0⟩
+  | n + 1 => GaussInt.mul ⟨0, -1⟩ (twoUnit n)
+
+theorem pi_pow_norm (k : ℕ) : GaussInt.norm (piPow k) = (2 : ℤ) ^ k := by
+  rw [piPow, GaussInt.norm_npow]
+  have hpi : GaussInt.norm pi = 2 := by simp [pi, GaussInt.norm]
+  rw [hpi]
+
+theorem two_eq_neg_i_mul_pi_sq : GaussInt.mul ⟨0, -1⟩ (piPow 2) = GaussInt.ofInt 2 := by
+  simp [piPow, pi, GaussInt.npow, GaussInt.one, GaussInt.mul, GaussInt.ofInt]
+
+theorem smul_eq_mul_ofInt (n : ℤ) (z : GaussInt) :
+    GaussInt.smul n z = GaussInt.mul (GaussInt.ofInt n) z := by
+  cases z with
+  | mk x y =>
+    simp [GaussInt.smul, GaussInt.mul, GaussInt.ofInt]
+
+theorem mul_mul_comm_mid (a u p q : GaussInt) :
+    GaussInt.mul (GaussInt.mul a u) (GaussInt.mul p q) =
+      GaussInt.mul (GaussInt.mul (GaussInt.mul a p) u) q := by
+  rw [← GaussInt.mul_assoc (GaussInt.mul a u) p q,
+    GaussInt.mul_assoc a u p, GaussInt.mul_comm u p,
+    ← GaussInt.mul_assoc a p u]
+
+theorem mul_mul_swap (a b c : GaussInt) :
+    GaussInt.mul (GaussInt.mul a b) c = GaussInt.mul (GaussInt.mul a c) b := by
+  rw [GaussInt.mul_assoc a b c, GaussInt.mul_comm b c, ← GaussInt.mul_assoc a c b]
+
+theorem neg_i_preserves_pi (z : GaussInt) :
+    piDivides (GaussInt.mul ⟨0, -1⟩ z) ↔ piDivides z := by
+  cases z with
+  | mk x y =>
+    simp [piDivides, GaussInt.mul]
+    have hsum : y + -x = (x + y) + -(2 * x) := by omega
+    rw [hsum]
+    have hrewrite : (x + y) + -(2 * x) = (x + y) + 2 * -x := by
+      rw [Int.neg_mul_eq_mul_neg]
+    rw [hrewrite, Int.add_mul_emod_self_left]
+
+theorem twoUnit_preserves_pi (k : ℕ) (z : GaussInt) :
+    piDivides (GaussInt.mul (twoUnit k) z) ↔ piDivides z := by
+  induction k with
+  | zero =>
+    simp [twoUnit, piDivides, GaussInt.mul, Int.one_mul, Int.zero_mul, Int.sub_zero,
+      Int.add_zero]
+  | succ k ih =>
+    simp only [twoUnit]
+    rw [GaussInt.mul_assoc, neg_i_preserves_pi, ih]
+
+theorem two_pow_as_pi (k : ℕ) :
+    GaussInt.mul (twoUnit k) (piPow (2 * k)) = GaussInt.ofInt ((2 : ℤ) ^ k) := by
+  induction k with
+  | zero =>
+    simp [twoUnit, piPow, GaussInt.npow, GaussInt.one, GaussInt.mul, GaussInt.ofInt]
+  | succ k ih =>
+    have hunit : twoUnit (k + 1) = GaussInt.mul ⟨0, -1⟩ (twoUnit k) := rfl
+    have hidx : 2 * (k + 1) = 2 + 2 * k := by omega
+    have hpow : piPow (2 * (k + 1)) = GaussInt.mul (piPow 2) (piPow (2 * k)) := by
+      rw [hidx]
+      unfold piPow
+      rw [GaussInt.npow_add]
+    rw [hunit, hpow, mul_mul_comm_mid ⟨0, -1⟩ (twoUnit k) (piPow 2) (piPow (2 * k)),
+      two_eq_neg_i_mul_pi_sq,
+      GaussInt.mul_assoc (GaussInt.ofInt 2) (twoUnit k) (piPow (2 * k)), ih]
+    simp [GaussInt.mul, GaussInt.ofInt, Int.pow_succ']
+
+/-- `v_π(2^k) = 2k`. `N(π^k) = 2^k`, so `N(π^10) = 2^10` and `N(π^12) = 2^12`. -/
+theorem p2_valuation_of_two_pow (k : ℕ) :
+    P2Exact (GaussInt.ofInt ((2 : ℤ) ^ k)) (2 * k) := by
+  refine ⟨twoUnit k, two_pow_as_pi k, ?_⟩
+  intro hdiv
+  have h1 : piDivides GaussInt.one :=
+    (twoUnit_preserves_pi k GaussInt.one).mp
+      (by simpa [GaussInt.mul_one] using hdiv)
+  simp [piDivides, GaussInt.one] at h1
+
+theorem int_sq_as_natAbs (n : ℤ) : n ^ 2 = ↑(n.natAbs ^ 2) := by
+  cases n with
+  | ofNat k => simp [Int.natAbs]
+  | negSucc k => simp [Int.natAbs, Int.negSucc_pow]
+
+theorem nat_sub_emod_two (A B : ℕ) : ((↑A : ℤ) - ↑B) % 2 = ↑((A + B) % 2) := by
+  have hA : A % 2 = 0 ∨ A % 2 = 1 := by omega
+  have hB : B % 2 = 0 ∨ B % 2 = 1 := by omega
+  have hAB : (A + B) % 2 = (A % 2 + B % 2) % 2 := Nat.add_mod A B 2
+  rcases hA with hA | hA <;> rcases hB with hB | hB
+  · rcases Nat.dvd_of_mod_eq_zero hA with ⟨k, hk⟩
+    rcases Nat.dvd_of_mod_eq_zero hB with ⟨m, hm⟩
+    have hdiff : ((↑A : ℤ) - ↑B) = (2 : ℤ) * (↑k - ↑m) := by
+      rw [hk, hm, Int.natCast_mul, Int.natCast_mul]
+      omega
+    rw [hdiff, Int.mul_emod_right, hAB, hA, hB]
+    simp
+  · rcases Nat.dvd_of_mod_eq_zero hA with ⟨k, hk⟩
+    have hBform : B = 2 * (B / 2) + 1 := by
+      have hdiv := Nat.div_add_mod B 2
+      rw [hB] at hdiv
+      omega
+    have hdiff : ((↑A : ℤ) - ↑B) = (2 : ℤ) * (↑k - ↑(B / 2)) + -1 := by
+      rw [hk, hBform, Int.natCast_mul, Int.natCast_add, Int.natCast_mul]
+      omega
+    have hmod : ((2 : ℤ) * (↑k - ↑(B / 2)) + -1) % 2 = (-1 : ℤ) % 2 := by
+      rw [Int.add_comm, Int.add_mul_emod_self_left]
+    have hneg : (-1 : ℤ) % 2 = 1 := by decide
+    rw [hdiff, hmod, hneg, hAB, hA, hB]
+    simp
+  · rcases Nat.dvd_of_mod_eq_zero hB with ⟨m, hm⟩
+    have hAform : A = 2 * (A / 2) + 1 := by
+      have hdiv := Nat.div_add_mod A 2
+      rw [hA] at hdiv
+      omega
+    have hdiff : ((↑A : ℤ) - ↑B) = (2 : ℤ) * (↑(A / 2) - ↑m) + 1 := by
+      rw [hAform, hm, Int.natCast_add, Int.natCast_mul, Int.natCast_mul]
+      omega
+    have hmod : ((2 : ℤ) * (↑(A / 2) - ↑m) + 1) % 2 = (1 : ℤ) % 2 := by
+      rw [Int.add_comm, Int.add_mul_emod_self_left]
+    rw [hdiff, hmod, hAB, hA, hB]
+    simp
+  · have hAform : A = 2 * (A / 2) + 1 := by
+      have hdiv := Nat.div_add_mod A 2
+      rw [hA] at hdiv
+      omega
+    have hBform : B = 2 * (B / 2) + 1 := by
+      have hdiv := Nat.div_add_mod B 2
+      rw [hB] at hdiv
+      omega
+    have hdiff : ((↑A : ℤ) - ↑B) = (2 : ℤ) * (↑(A / 2) - ↑(B / 2)) := by
+      rw [hAform, hBform, Int.natCast_add, Int.natCast_add, Int.natCast_mul, Int.natCast_mul]
+      omega
+    rw [hdiff, Int.mul_emod_right, hAB, hA, hB]
+    simp
+
+/-- If `c` is odd, `π` does not divide `5 a² - 3 b² √(-1)`.
+
+`c4_c6_coprime_to_2_when_c_odd` is the weaker statement that `2 = -√(-1) π²`
+does not divide this factor. Here the factor is not divisible by `π` itself.
+-/
+theorem c4_cofactor_not_pi (E : FreyCurve4413) (hodd : E.c.natAbs % 2 = 1) :
+    ¬ piDivides ⟨5 * E.a ^ 2, -(3 * E.b ^ 2)⟩ := by
+  have hsum := odd_c_sum_squares_odd E hodd
+  have ha : E.a ^ 2 = ↑(E.a.natAbs ^ 2) := int_sq_as_natAbs E.a
+  have hb : E.b ^ 2 = ↑(E.b.natAbs ^ 2) := int_sq_as_natAbs E.b
+  have hA : (5 * E.a.natAbs ^ 2) % 2 = E.a.natAbs ^ 2 % 2 :=
+    odd_mul_mod_two (by decide : (5 : ℕ) % 2 = 1)
+  have hB : (3 * E.b.natAbs ^ 2) % 2 = E.b.natAbs ^ 2 % 2 :=
+    odd_mul_mod_two (by decide : (3 : ℕ) % 2 = 1)
+  have hsq : (E.a.natAbs ^ 2 + E.b.natAbs ^ 2) % 2 =
+      (5 * E.a.natAbs ^ 2 + 3 * E.b.natAbs ^ 2) % 2 := by
+    rw [Nat.add_mod (E.a.natAbs ^ 2) (E.b.natAbs ^ 2) 2,
+      Nat.add_mod (5 * E.a.natAbs ^ 2) (3 * E.b.natAbs ^ 2) 2, hA, hB]
+  rw [hsq] at hsum
+  have hdiff := nat_sub_emod_two (5 * E.a.natAbs ^ 2) (3 * E.b.natAbs ^ 2)
+  have hcast : 5 * E.a ^ 2 + -(3 * E.b ^ 2) =
+      ((5 * E.a.natAbs ^ 2 : ℕ) : ℤ) - ((3 * E.b.natAbs ^ 2 : ℕ) : ℤ) := by
+    rw [ha, hb, Int.natCast_mul, Int.natCast_mul, Int.sub_eq_add_neg]
+    have h5 : ((5 : ℕ) : ℤ) = 5 := by decide
+    have h3 : ((3 : ℕ) : ℤ) = 3 := by decide
+    rw [h5, h3]
+  intro hdiv
+  simp [piDivides] at hdiv
+  rw [hcast, hdiff, hsum] at hdiv
+  omega
+
+/-- If `c` is odd, `v_π(c₄) = 10`.
+
+`c₄ = 2⁵ (5 a² - 3 b² √(-1))` and `v_π(2⁵) = 10`, while the second factor
+is not divisible by `π`. This is the valuation of `c₄`. It is not the
+conductor exponent at `π`, and it does not give `32 ∣ n`.
+-/
+theorem c4_p2_exact_ten (E : FreyCurve4413) (hodd : E.c.natAbs % 2 = 1) :
+    P2Exact (c4_Frey E.a E.b) 10 := by
+  let z : GaussInt := ⟨5 * E.a ^ 2, -(3 * E.b ^ 2)⟩
+  have h2 := two_pow_as_pi 5
+  have h4 := (c4_c6_valuation E.a E.b).1
+  have hsmul : GaussInt.smul ((2 : ℤ) ^ 5) z =
+      GaussInt.mul (GaussInt.ofInt ((2 : ℤ) ^ 5)) z :=
+    smul_eq_mul_ofInt _ _
+  rw [hsmul] at h4
+  refine ⟨GaussInt.mul (twoUnit 5) z, ?_, ?_⟩
+  · rw [mul_mul_swap (twoUnit 5) z (piPow 10), h2]
+    exact h4.symm
+  · intro hdiv
+    exact c4_cofactor_not_pi E hodd ((twoUnit_preserves_pi 5 z).mp hdiv)
+
+/-- `π^16` divides `c₆`, because `c₆` is divisible by `2⁸` and `v_π(2⁸) = 16`.
+
+The cofactor may still be divisible by `π`, so this is a lower bound, not
+`v_π(c₆)`.
+-/
+theorem c6_p2_divisible_by_sixteen (a b : ℤ) :
+    ∃ u, GaussInt.mul u (piPow 16) = c6_Frey a b := by
+  let cof := GaussInt.mul (GaussInt.ofInt a) ⟨-(7 * a ^ 2), 9 * b ^ 2⟩
+  have h2 := two_pow_as_pi 8
+  have h6 := (c4_c6_valuation a b).2
+  refine ⟨GaussInt.mul (twoUnit 8) cof, ?_⟩
+  rw [h6]
+  have hsmul : GaussInt.smul ((2 : ℤ) ^ 8) cof =
+      GaussInt.mul (GaussInt.ofInt ((2 : ℤ) ^ 8)) cof :=
+    smul_eq_mul_ofInt _ _
+  rw [hsmul, ← h2, mul_mul_swap (twoUnit 8) cof (piPow 16)]
+
 theorem GaussInt.npow_one_nat (n : ℕ) : GaussInt.npow GaussInt.one n = GaussInt.one := by
   induction n with
   | zero => rfl
