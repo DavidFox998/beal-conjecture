@@ -100,7 +100,14 @@ and `8`, so `v ≥ 6` holds for one and fails for the other. Both have
 `v_π(a₂) = 1`. Sixteen tuples with `r` modulo `π²` and `s, t` modulo `π`
 do not decide integrality. `trivialB_second_pi_shift_a6_stays_five` is a
 second translation `x ↦ x + π` on `(0, 1, 1)`: the `a₂` slot has valuation
-`3`, the `a₄` numerator has valuation `2`, and `v_π(a₆)` stays `5`. When `a` is odd, the further shift
+`3`, the `a₄` numerator has valuation `2`, and `v_π(a₆)` stays `5`.
+`no_integral_u_pi_of_c_odd` is the case split on `v_π(r)` and `v_π(t)` for
+every `r, s, t`, when `c` is odd: valuation `0` fails `a₃` or `a₄`,
+valuation `1` fails `a₂`, and valuation at least `2` fails `a₄`.
+`pi_sq_u_blocks_delta` is the case `v_π(u) ≥ 2`. `MinimalModelAt2` stays
+opaque. `trivialB_dokchitser_n4_inputs` is the shift `r = π²` on
+`(0, 1, 1)`, with `v_π(a₆) = 8`, `v_π(b₆) = 12`, and `v_π(D) = 8`. Those
+are numerical inputs for `n = 4`, not the conductor exponent. When `a` is odd, the further shift
 `y ↦ y + π²` gives `v_π(a₃) = 4`, `v_π(a₄) = 3`, and `v_π(a₆) = 5`
 (`a_odd_after_pi_sq_valuations`), and `b6AfterPiSq_p2_exact_eight` together
 with `quadDiscAfterPiSq_p2_exact_six` give `v_π(b₆) = 8` and `v_π(D) = 6`.
@@ -3236,6 +3243,388 @@ The inputs are `v(a₂) = 1`, `v(a₃) = 4 ≥ 3`, `v(a₄) = 3`, `v(a₆) = 5`,
 formalized. These valuations do not produce a Kodaira symbol, a conductor
 exponent, or a wild part. `ConductorExponentAtPrimeAbove2` stays opaque.
 -/
+theorem piDivides_add_left {a b : GaussInt} (hb : piDivides b) :
+    piDivides (GaussInt.add a b) ↔ piDivides a := by
+  cases a with
+  | mk ar ai =>
+    cases b with
+    | mk br bi =>
+      simp [piDivides, GaussInt.add] at hb ⊢
+      have hsum : ar + br + (ai + bi) = (ar + ai) + (br + bi) := by omega
+      rw [hsum, Int.add_emod, hb, Int.add_zero, Int.emod_emod]
+
+theorem not_piDivides_add_of_right {a b : GaussInt} (ha : ¬ piDivides a) (hb : piDivides b) :
+    ¬ piDivides (GaussInt.add a b) :=
+  fun h => ha ((piDivides_add_left hb).1 h)
+
+theorem not_piDivides_add_of_left {a b : GaussInt} (ha : piDivides a) (hb : ¬ piDivides b) :
+    ¬ piDivides (GaussInt.add a b) := by
+  intro h
+  have hcomm : piDivides (GaussInt.add b a) := by
+    rw [GaussInt.add_comm]
+    exact h
+  exact hb ((piDivides_add_left ha).1 hcomm)
+
+theorem not_piPowDvd_of_exact_lt {z : GaussInt} {k m : ℕ}
+    (hk : k < m) (h : P2Exact z k) :
+    ¬ ∃ u, GaussInt.mul u (piPow m) = z := by
+  intro ⟨u, hu⟩
+  have hnot := not_piPowDvd_succ_of_exact h
+  apply hnot
+  have hle : k + 1 ≤ m := Nat.succ_le_of_lt hk
+  refine ⟨GaussInt.mul u (piPow (m - (k + 1))), ?_⟩
+  have hsum : m = m - (k + 1) + (k + 1) := (Nat.sub_add_cancel hle).symm
+  have hsplit : piPow m =
+      GaussInt.mul (piPow (m - (k + 1))) (piPow (k + 1)) := by
+    unfold piPow
+    exact (congrArg (GaussInt.npow pi) hsum).trans
+      (GaussInt.npow_add pi (m - (k + 1)) (k + 1))
+  rw [hsplit] at hu
+  rw [← GaussInt.mul_assoc] at hu
+  exact hu
+
+theorem P2Exact_add_of_higher {x y : GaussInt} {k : ℕ}
+    (hx : P2Exact x k) (hy : ∃ w, GaussInt.mul w (piPow (k + 1)) = y) :
+    P2Exact (GaussInt.add x y) k := by
+  rcases hx with ⟨u, hu, hnu⟩
+  rcases hy with ⟨w, hw⟩
+  have hp : piPow (k + 1) = GaussInt.mul pi (piPow k) := by
+    unfold piPow
+    rw [GaussInt.npow_succ]
+  refine ⟨GaussInt.add u (GaussInt.mul w pi), ?_, ?_⟩
+  · rw [GaussInt.add_mul, hu]
+    have hy' : y = GaussInt.mul (GaussInt.mul w pi) (piPow k) := by
+      rw [← hw, hp, ← GaussInt.mul_assoc]
+    rw [hy']
+  · intro hdiv
+    have hpiv : piDivides pi := by simp [piDivides, pi]
+    have hwp : piDivides (GaussInt.mul w pi) :=
+      (piDivides_mul w pi).2 (Or.inr hpiv)
+    exact hnu ((piDivides_add_left hwp).1 hdiv)
+
+/-- `a₂ + 3 r - s²` on the Frey model. -/
+def a2ChangeNum (E : FreyCurve4413) (r s : GaussInt) : GaussInt :=
+  GaussInt.sub (GaussInt.add (GaussInt.ofInt E.A_int) (GaussInt.smul 3 r))
+    (GaussInt.mul s s)
+
+/-- `2 t` on the Frey model, where `a₃ = 0`. -/
+def a3ChangeNum (t : GaussInt) : GaussInt :=
+  GaussInt.smul 2 t
+
+/-- `a₄ + 2 r a₂ + 3 r² - 2 s t` on the Frey model. -/
+def a4ChangeNum (E : FreyCurve4413) (r s t : GaussInt) : GaussInt :=
+  GaussInt.sub
+    (GaussInt.add
+      (GaussInt.add ⟨E.B_re, E.B_im⟩
+        (GaussInt.smul 2 (GaussInt.mul r (GaussInt.ofInt E.A_int))))
+      (GaussInt.smul 3 (GaussInt.mul r r)))
+    (GaussInt.smul 2 (GaussInt.mul s t))
+
+theorem a2_change_pi_four (E : FreyCurve4413) :
+    ∃ u, GaussInt.mul u (piPow 4) = GaussInt.ofInt E.A_int := by
+  have h4 : P2Exact (GaussInt.ofInt ((2 : ℤ) ^ 2)) 4 := p2_valuation_of_two_pow 2
+  have hpow : (2 : ℤ) ^ 2 = 4 := by decide
+  rw [hpow] at h4
+  rcases h4 with ⟨u, hu, _⟩
+  refine ⟨GaussInt.mul u (GaussInt.ofInt E.a), ?_⟩
+  rw [E.h_A, ← ofInt_mul, ← hu]
+  exact mul_mul_swap u (GaussInt.ofInt E.a) (piPow 4)
+
+theorem a3_change_fails_below_pi (t : GaussInt) (ht : ¬ piDivides t) :
+    ¬ ∃ u, GaussInt.mul u (piPow 3) = a3ChangeNum t := by
+  have h2 : P2Exact (GaussInt.ofInt 2) 2 := by
+    simpa [Int.pow_one] using p2_valuation_of_two_pow 1
+  have hexact : P2Exact (a3ChangeNum t) 2 := by
+    rw [a3ChangeNum, smul_eq_mul_ofInt]
+    exact P2Exact_mul h2 (P2Exact_zero_of_not_pi ht)
+  exact not_piPowDvd_succ_of_exact hexact
+
+theorem a4_change_fails_of_unit_r (E : FreyCurve4413) (r s t : GaussInt)
+    (hr : ¬ piDivides r) (ht : piDivides t) :
+    ¬ ∃ u, GaussInt.mul u (piPow 4) = a4ChangeNum E r s t := by
+  intro ⟨u, hu⟩
+  have hthree : ¬ piDivides (GaussInt.ofInt 3) :=
+    not_piDivides_ofInt_of_natAbs_odd (by decide : (3 : ℤ).natAbs % 2 = 1)
+  have hrr : ¬ piDivides (GaussInt.mul r r) := by
+    intro hdiv
+    rcases (piDivides_mul r r).1 hdiv with h | h
+    · exact hr h
+    · exact hr h
+  have hT3 : ¬ piDivides (GaussInt.smul 3 (GaussInt.mul r r)) := by
+    rw [smul_eq_mul_ofInt]
+    intro hdiv
+    rcases (piDivides_mul (GaussInt.ofInt 3) (GaussInt.mul r r)).1 hdiv with h | h
+    · exact hthree h
+    · exact hrr h
+  have hA4 : piDivides ⟨E.B_re, E.B_im⟩ := by
+    rw [a4_factor]
+    exact (piDivides_mul (GaussInt.ofInt 2) ⟨E.a ^ 2, E.b ^ 2⟩).2
+      (Or.inl ((piDivides_ofInt_iff 2).2 (by decide)))
+  have hA2 : piDivides (GaussInt.ofInt E.A_int) := by
+    rcases a2_change_pi_four E with ⟨w, hw⟩
+    rw [← hw, piPow_succ_right, ← GaussInt.mul_assoc]
+    exact (piDivides_mul (GaussInt.mul w (piPow 3)) pi).2
+      (Or.inr (by simp [piDivides, pi]))
+  have hT2 : piDivides (GaussInt.smul 2 (GaussInt.mul r (GaussInt.ofInt E.A_int))) := by
+    rw [smul_eq_mul_ofInt]
+    exact (piDivides_mul (GaussInt.ofInt 2) _).2
+      (Or.inr ((piDivides_mul r _).2 (Or.inr hA2)))
+  have hT4 : piDivides (GaussInt.smul 2 (GaussInt.mul s t)) := by
+    rw [smul_eq_mul_ofInt]
+    exact (piDivides_mul (GaussInt.ofInt 2) _).2
+      (Or.inr ((piDivides_mul s t).2 (Or.inr ht)))
+  have hsum : piDivides
+      (GaussInt.add ⟨E.B_re, E.B_im⟩
+        (GaussInt.smul 2 (GaussInt.mul r (GaussInt.ofInt E.A_int)))) :=
+    (piDivides_add_left hT2).2 hA4
+  have hnot : ¬ piDivides
+      (GaussInt.add
+        (GaussInt.add ⟨E.B_re, E.B_im⟩
+          (GaussInt.smul 2 (GaussInt.mul r (GaussInt.ofInt E.A_int))))
+        (GaussInt.smul 3 (GaussInt.mul r r))) :=
+    not_piDivides_add_of_left hsum hT3
+  have hneg : piDivides (GaussInt.neg (GaussInt.smul 2 (GaussInt.mul s t))) :=
+    (piDivides_neg _).2 hT4
+  have hwhole : ¬ piDivides (a4ChangeNum E r s t) := by
+    rw [a4ChangeNum, GaussInt.sub_eq_add_neg]
+    exact not_piDivides_add_of_right hnot hneg
+  have hpi4 : piDivides (piPow 4) := by
+    rw [piPow_four]
+    simp [piDivides]
+  have hdvd : piDivides (GaussInt.mul u (piPow 4)) :=
+    (piDivides_mul u (piPow 4)).2 (Or.inr hpi4)
+  rw [hu] at hdvd
+  exact hwhole hdvd
+
+theorem a2_change_fails_of_val_one (E : FreyCurve4413) (r s : GaussInt)
+    (hr : piDivides r) (hr1 : ¬ piDivides (piQuot r)) :
+    ¬ ∃ u, GaussInt.mul u (piPow 2) = a2ChangeNum E r s := by
+  let r1 := piQuot r
+  have hrEq : r = GaussInt.mul r1 pi := (mul_pi_piQuot r hr).symm
+  have h3 : ¬ piDivides (GaussInt.ofInt 3) :=
+    not_piDivides_ofInt_of_natAbs_odd (by decide : (3 : ℤ).natAbs % 2 = 1)
+  have hcof : ¬ piDivides (GaussInt.mul (GaussInt.ofInt 3) r1) := by
+    intro hdiv
+    rcases (piDivides_mul (GaussInt.ofInt 3) r1).1 hdiv with h | h
+    · exact h3 h
+    · exact hr1 h
+  have h3r : P2Exact (GaussInt.smul 3 r) 1 := by
+    refine ⟨GaussInt.mul (GaussInt.ofInt 3) r1, ?_, hcof⟩
+    have hp : piPow 1 = pi := by
+      unfold piPow
+      exact GaussInt.npow_one pi
+    rw [smul_eq_mul_ofInt, hp, hrEq, GaussInt.mul_assoc]
+  have hA2 : ∃ w, GaussInt.mul w (piPow 2) = GaussInt.ofInt E.A_int := by
+    rcases a2_change_pi_four E with ⟨w, hw⟩
+    refine ⟨GaussInt.mul w (piPow 2), ?_⟩
+    have hp : piPow 4 = GaussInt.mul (piPow 2) (piPow 2) := by
+      unfold piPow
+      rw [show (4 : ℕ) = 2 + 2 by decide, GaussInt.npow_add]
+    rw [← hw, hp, GaussInt.mul_assoc]
+  by_cases hs : piDivides s
+  · let s1 := piQuot s
+    have hsEq : s = GaussInt.mul s1 pi := (mul_pi_piQuot s hs).symm
+    have hs2 : ∃ w, GaussInt.mul w (piPow 2) = GaussInt.mul s s := by
+      refine ⟨GaussInt.mul s1 s1, ?_⟩
+      have hp2 : GaussInt.mul pi pi = piPow 2 := by
+        simp [piPow, GaussInt.npow, GaussInt.mul_one]
+      rw [hsEq, mul_mul_comm_mid s1 pi s1 pi,
+        GaussInt.mul_assoc (GaussInt.mul s1 s1) pi pi, hp2]
+    have hrest : ∃ w, GaussInt.mul w (piPow 2) =
+        GaussInt.sub (GaussInt.ofInt E.A_int) (GaussInt.mul s s) := by
+      rcases hA2 with ⟨wa, hwa⟩
+      rcases hs2 with ⟨ws, hws⟩
+      refine ⟨GaussInt.sub wa ws, ?_⟩
+      rw [GaussInt.sub_eq_add_neg, GaussInt.add_mul, GaussInt.neg_mul, hwa, hws,
+        ← GaussInt.sub_eq_add_neg]
+    have hexact : P2Exact (a2ChangeNum E r s) 1 := by
+      have horder : a2ChangeNum E r s =
+          GaussInt.add (GaussInt.smul 3 r)
+            (GaussInt.sub (GaussInt.ofInt E.A_int) (GaussInt.mul s s)) := by
+        rw [a2ChangeNum, GaussInt.sub_eq_add_neg, GaussInt.sub_eq_add_neg,
+          ← GaussInt.add_assoc, GaussInt.add_comm (GaussInt.smul 3 r) (GaussInt.ofInt E.A_int),
+          GaussInt.add_assoc]
+      rw [horder]
+      exact P2Exact_add_of_higher h3r hrest
+    exact not_piPowDvd_succ_of_exact hexact
+  · intro ⟨u, hu⟩
+    have hs2 : ¬ piDivides (GaussInt.mul s s) := by
+      intro hdiv
+      rcases (piDivides_mul s s).1 hdiv with h | h
+      · exact hs h
+      · exact hs h
+    have hpos : piDivides (GaussInt.add (GaussInt.ofInt E.A_int) (GaussInt.smul 3 r)) := by
+      have h3div : piDivides (GaussInt.smul 3 r) := by
+        rcases h3r with ⟨c, hc, _⟩
+        rw [← hc]
+        unfold piPow
+        rw [GaussInt.npow_one]
+        exact (piDivides_mul c pi).2 (Or.inr (by simp [piDivides, pi]))
+      exact (piDivides_add_left h3div).2 (by
+        rcases hA2 with ⟨w, hw⟩
+        rw [← hw]
+        exact (piDivides_mul w (piPow 2)).2
+          (Or.inr (by rw [piPow_two]; simp [piDivides])))
+    have hwhole : ¬ piDivides (a2ChangeNum E r s) := by
+      rw [a2ChangeNum, GaussInt.sub_eq_add_neg]
+      apply not_piDivides_add_of_left hpos
+      intro hdiv
+      exact hs2 ((piDivides_neg _).1 hdiv)
+    have hpi2 : piDivides (piPow 2) := by
+      rw [piPow_two]
+      simp [piDivides]
+    have hdvd : piDivides (GaussInt.mul u (piPow 2)) :=
+      (piDivides_mul u (piPow 2)).2 (Or.inr hpi2)
+    rw [hu] at hdvd
+    exact hwhole hdvd
+
+theorem a4_change_fails_of_val_ge_two (E : FreyCurve4413) (hodd : E.c.natAbs % 2 = 1)
+    (r s t : GaussInt) (hr : piDivides r) (hr2 : piDivides (piQuot r))
+    (ht : piDivides t) :
+    ¬ ∃ u, GaussInt.mul u (piPow 4) = a4ChangeNum E r s t := by
+  let r1 := piQuot r
+  let r2 := piQuot r1
+  have hrEq : r = GaussInt.mul r1 pi := (mul_pi_piQuot r hr).symm
+  have hr1Eq : r1 = GaussInt.mul r2 pi := (mul_pi_piQuot r1 hr2).symm
+  have hrSq : r = GaussInt.mul r2 (piPow 2) := by
+    rw [hrEq, hr1Eq, GaussInt.mul_assoc]
+    simp [piPow, GaussInt.npow, GaussInt.mul_one]
+  have hrr : GaussInt.mul r r = GaussInt.mul (GaussInt.mul r2 r2) (piPow 4) := by
+    rw [hrSq, mul_mul_comm_mid r2 (piPow 2) r2 (piPow 2), GaussInt.mul_assoc]
+    have hp4 : piPow 4 = GaussInt.mul (piPow 2) (piPow 2) := by
+      unfold piPow
+      rw [show (4 : ℕ) = 2 + 2 by decide, GaussInt.npow_add]
+    rw [hp4]
+  have hthree : ∃ w, GaussInt.mul w (piPow 3) =
+      GaussInt.smul 3 (GaussInt.mul r r) := by
+    refine ⟨GaussInt.mul (GaussInt.mul (GaussInt.ofInt 3) (GaussInt.mul r2 r2)) pi, ?_⟩
+    rw [smul_eq_mul_ofInt, hrr]
+    have hp : piPow 4 = GaussInt.mul pi (piPow 3) := by
+      unfold piPow
+      rw [GaussInt.npow_succ]
+    rw [hp,
+      ← GaussInt.mul_assoc (GaussInt.ofInt 3) (GaussInt.mul r2 r2) (GaussInt.mul pi (piPow 3)),
+      ← GaussInt.mul_assoc (GaussInt.mul (GaussInt.ofInt 3) (GaussInt.mul r2 r2)) pi (piPow 3)]
+  have htwo : ∃ w, GaussInt.mul w (piPow 3) =
+      GaussInt.smul 2 (GaussInt.mul r (GaussInt.ofInt E.A_int)) := by
+    rcases a2_change_pi_four E with ⟨wa, hwa⟩
+    refine ⟨GaussInt.mul (GaussInt.mul (GaussInt.ofInt 2) (GaussInt.mul r2 wa)) (piPow 3), ?_⟩
+    rw [smul_eq_mul_ofInt, hrSq, ← hwa,
+      mul_mul_comm_mid r2 (piPow 2) wa (piPow 4),
+      GaussInt.mul_assoc (GaussInt.mul r2 wa) (piPow 2) (piPow 4)]
+    have hp6 : piPow 6 = GaussInt.mul (piPow 2) (piPow 4) := by
+      unfold piPow
+      rw [show (6 : ℕ) = 2 + 4 by decide, GaussInt.npow_add]
+    have hp63 : piPow 6 = GaussInt.mul (piPow 3) (piPow 3) := by
+      unfold piPow
+      rw [show (6 : ℕ) = 3 + 3 by decide, GaussInt.npow_add]
+    rw [← hp6, hp63,
+      GaussInt.mul_assoc (GaussInt.mul (GaussInt.ofInt 2) (GaussInt.mul r2 wa)) (piPow 3)
+        (piPow 3),
+      GaussInt.mul_assoc (GaussInt.ofInt 2) (GaussInt.mul r2 wa)
+        (GaussInt.mul (piPow 3) (piPow 3))]
+  have hst : ∃ w, GaussInt.mul w (piPow 3) =
+      GaussInt.smul 2 (GaussInt.mul s t) := by
+    let t1 := piQuot t
+    have htEq : t = GaussInt.mul t1 pi := (mul_pi_piQuot t ht).symm
+    refine ⟨GaussInt.mul ⟨0, -1⟩ (GaussInt.mul s t1), ?_⟩
+    rw [smul_eq_mul_ofInt, htEq, ← two_eq_neg_i_mul_pi_sq, ← GaussInt.mul_assoc s t1 pi,
+      mul_mul_comm_mid ⟨0, -1⟩ (piPow 2) (GaussInt.mul s t1) pi]
+    have hp3 : piPow 3 = GaussInt.mul (piPow 2) pi := by
+      rw [piPow_succ_right]
+    rw [GaussInt.mul_assoc (GaussInt.mul ⟨0, -1⟩ (GaussInt.mul s t1)) (piPow 2) pi, ← hp3]
+  have hcorr : ∃ w, GaussInt.mul w (piPow 3) =
+      GaussInt.sub
+        (GaussInt.add
+          (GaussInt.smul 2 (GaussInt.mul r (GaussInt.ofInt E.A_int)))
+          (GaussInt.smul 3 (GaussInt.mul r r)))
+        (GaussInt.smul 2 (GaussInt.mul s t)) := by
+    rcases htwo with ⟨w2, hw2⟩
+    rcases hthree with ⟨w3, hw3⟩
+    rcases hst with ⟨w4, hw4⟩
+    refine ⟨GaussInt.sub (GaussInt.add w2 w3) w4, ?_⟩
+    rw [GaussInt.sub_eq_add_neg, GaussInt.add_mul, GaussInt.add_mul, GaussInt.neg_mul,
+      hw2, hw3, hw4, ← GaussInt.sub_eq_add_neg]
+  have hexact : P2Exact (a4ChangeNum E r s t) 2 := by
+    have horder : a4ChangeNum E r s t =
+        GaussInt.add ⟨E.B_re, E.B_im⟩
+          (GaussInt.sub
+            (GaussInt.add
+              (GaussInt.smul 2 (GaussInt.mul r (GaussInt.ofInt E.A_int)))
+              (GaussInt.smul 3 (GaussInt.mul r r)))
+            (GaussInt.smul 2 (GaussInt.mul s t))) := by
+      simp [a4ChangeNum, GaussInt.sub_eq_add_neg, GaussInt.add_assoc]
+    rw [horder]
+    exact P2Exact_add_of_higher (a4_p2_exact_two E hodd) hcorr
+  exact not_piPowDvd_of_exact_lt (by decide : 2 < 4) hexact
+
+/-- For odd `c`, no `r, s, t` makes the `u = π` change integral.
+
+`v_π(t) = 0` fails `a₃`, since `v_π(2 t) = 2 < 3`. `v_π(r) = 0` fails `a₄`:
+`3 r²` is the only term of valuation `0`. `v_π(r) = 1` fails `a₂`: the
+numerator has valuation `0` or `1`. `v_π(r) ≥ 2` fails `a₄`, because
+`v_π(a₄) = 2` and every correction has valuation at least `3`. These four
+cases cover every `r, s, t`. `MinimalModelAt2` stays opaque: this is the
+obstruction at valuation `1`, and the conductor exponent is not a consequence.
+-/
+theorem no_integral_u_pi_of_c_odd (E : FreyCurve4413) (hodd : E.c.natAbs % 2 = 1)
+    (r s t : GaussInt) :
+    ¬ ((∃ u, GaussInt.mul u (piPow 2) = a2ChangeNum E r s) ∧
+        (∃ u, GaussInt.mul u (piPow 3) = a3ChangeNum t) ∧
+        (∃ u, GaussInt.mul u (piPow 4) = a4ChangeNum E r s t)) := by
+  intro ⟨ha2, ha3, ha4⟩
+  by_cases ht : piDivides t
+  · by_cases hr : piDivides r
+    · by_cases hr2 : piDivides (piQuot r)
+      · exact a4_change_fails_of_val_ge_two E hodd r s t hr hr2 ht ha4
+      · exact a2_change_fails_of_val_one E r s hr hr2 ha2
+    · exact a4_change_fails_of_unit_r E r s t hr ht ha4
+  · exact a3_change_fails_below_pi t ht ha3
+
+theorem gauss_npow_mul_piPow (q : GaussInt) (k n : ℕ) :
+    GaussInt.npow (GaussInt.mul q (piPow k)) n =
+      GaussInt.mul (GaussInt.npow q n) (piPow (k * n)) := by
+  induction n with
+  | zero =>
+    simp [GaussInt.npow, piPow]
+  | succ n ih =>
+    rw [GaussInt.npow_succ, ih, mul_mul_comm_mid q (piPow k) (GaussInt.npow q n) (piPow (k * n)),
+      GaussInt.mul_assoc]
+    have hidx : k * (n + 1) = k + k * n := by
+      rw [Nat.mul_succ, Nat.add_comm]
+    have hp : piPow (k * (n + 1)) = GaussInt.mul (piPow k) (piPow (k * n)) := by
+      rw [hidx]
+      unfold piPow
+      exact GaussInt.npow_add pi k (k * n)
+    rw [← hp, GaussInt.npow_succ]
+
+theorem delta_not_divisible_by_pi_twentyFour (E : FreyCurve4413) (hodd : E.c.natAbs % 2 = 1) :
+    ¬ ∃ w, GaussInt.mul w (piPow 24) = deltaGauss E := by
+  intro ⟨w, hw⟩
+  have hnot := not_piPowDvd_succ_of_exact (delta_p2_exact_eighteen E hodd)
+  apply hnot
+  refine ⟨GaussInt.mul w (piPow 5), ?_⟩
+  have hsplit : piPow 24 = GaussInt.mul (piPow 5) (piPow 19) := by
+    unfold piPow
+    rw [show (24 : ℕ) = 5 + 19 by decide, GaussInt.npow_add]
+  rw [hsplit, ← GaussInt.mul_assoc] at hw
+  exact hw
+
+/-- If `π²` divides `u`, then `u¹²` does not divide `Δ` when `c` is odd.
+
+`v_π(Δ) = 18` and `v_π(u¹²) ≥ 24`. This is the case `v_π(u) ≥ 2`. Together
+with `no_integral_u_pi_of_c_odd`, no integral change with `v_π(u) ≥ 1` lowers
+the discriminant. The conductor exponent stays open.
+-/
+theorem pi_sq_u_blocks_delta (E : FreyCurve4413) (hodd : E.c.natAbs % 2 = 1)
+    (u q : GaussInt) (hu : GaussInt.mul q (piPow 2) = u) :
+    ¬ ∃ w, GaussInt.mul w (GaussInt.npow u 12) = deltaGauss E := by
+  intro ⟨w, hw⟩
+  have hpow : GaussInt.npow u 12 = GaussInt.mul (GaussInt.npow q 12) (piPow 24) := by
+    rw [← hu, gauss_npow_mul_piPow]
+  rw [hpow, ← GaussInt.mul_assoc] at hw
+  exact delta_not_divisible_by_pi_twentyFour E hodd ⟨GaussInt.mul w (GaussInt.npow q 12), hw⟩
+
 theorem a_odd_dokchitser_n2_inputs (E : FreyCurve4413)
     (hodd : E.c.natAbs % 2 = 1) (ha : E.a.natAbs % 2 = 1) :
     P2Exact (a2AfterPi E) 1 ∧ P2Exact a3AfterPiSq 4 ∧
@@ -3246,6 +3635,97 @@ theorem a_odd_dokchitser_n2_inputs (E : FreyCurve4413)
     a6AfterPiSq_p2_exact_five_of_a_odd E hodd ha,
     b6AfterPiSq_p2_exact_eight E hodd ha,
     quadDiscAfterPiSq_p2_exact_six E hodd ha⟩
+
+/-- Coefficients after `x ↦ x + π²` on the model already shifted by `π`. -/
+def a2AfterPiThenPiSq (E : FreyCurve4413) : GaussInt :=
+  GaussInt.add (a2AfterPi E) (GaussInt.smul 3 (piPow 2))
+
+def a4AfterPiThenPiSq (E : FreyCurve4413) : GaussInt :=
+  GaussInt.add (a4AfterPi E)
+    (GaussInt.add (GaussInt.smul 2 (GaussInt.mul (piPow 2) (a2AfterPi E)))
+      (GaussInt.smul 3 (GaussInt.mul (piPow 2) (piPow 2))))
+
+def a6AfterPiThenPiSq (E : FreyCurve4413) : GaussInt :=
+  GaussInt.add (a6AfterPi E)
+    (GaussInt.add (GaussInt.mul (piPow 2) (a4AfterPi E))
+      (GaussInt.add (GaussInt.mul (GaussInt.mul (piPow 2) (piPow 2)) (a2AfterPi E))
+        (GaussInt.mul (piPow 2) (GaussInt.mul (piPow 2) (piPow 2)))))
+
+/-- `b₆ = 4 a₆` after `x ↦ x + π²`. The curve starts with `a₃ = 0`, and an
+`x`-shift does not change `a₃`. -/
+def b6AfterPiThenPiSq (E : FreyCurve4413) : GaussInt :=
+  GaussInt.smul 4 (a6AfterPiThenPiSq E)
+
+/-- `D = a₄² - 4 a₂ a₆` after `x ↦ x + π²`. -/
+def quadDiscAfterPiThenPiSq (E : FreyCurve4413) : GaussInt :=
+  GaussInt.sub (GaussInt.mul (a4AfterPiThenPiSq E) (a4AfterPiThenPiSq E))
+    (GaussInt.smul 4 (GaussInt.mul (a2AfterPiThenPiSq E) (a6AfterPiThenPiSq E)))
+
+theorem trivialB_pi_sq_shift_values :
+    a2AfterPiThenPiSq trivialB = ⟨3, 9⟩ ∧
+      a4AfterPiThenPiSq trivialB = ⟨-24, 20⟩ ∧
+      a6AfterPiThenPiSq trivialB = ⟨-32, -16⟩ := by
+  simp [a2AfterPiThenPiSq, a4AfterPiThenPiSq, a6AfterPiThenPiSq, a2AfterPi, a4AfterPi,
+    a6AfterPi, trivialB, mk', piPow_two, GaussInt.add, GaussInt.mul, GaussInt.smul]
+
+/-- On `(0, 1, 1)`, `x ↦ x + π²` meets the numerical inputs for `n = 4`.
+
+`s` does not appear in `a₆` when `a₁ = a₃ = 0`. The pure shift `r = π` leaves
+`v_π(a₆) = 5`. This shift has `r = π²` and `s = t = 0`: `v_π(a₂) = 1`,
+`v_π(a₄) = 4`, `v_π(a₆) = 8`, `v_π(b₆) = 12`, and `v_π(D) = 8`. Dokchitser's
+`n = 4` bounds ask `v(a₆) ≥ 7`, `v(a₄) ≥ 4`, `v(b₆) ≥ 7`, and `v(D) = 8`.
+These equalities are the inputs. They are not the Kodaira symbol, not a wild
+part, and not the conductor exponent.
+-/
+theorem trivialB_dokchitser_n4_inputs :
+    P2Exact (a2AfterPiThenPiSq trivialB) 1 ∧
+      P2Exact (a4AfterPiThenPiSq trivialB) 4 ∧
+      P2Exact (a6AfterPiThenPiSq trivialB) 8 ∧
+      P2Exact (b6AfterPiThenPiSq trivialB) 12 ∧
+      P2Exact (quadDiscAfterPiThenPiSq trivialB) 8 := by
+  have hv := trivialB_pi_sq_shift_values
+  have hb6 : b6AfterPiThenPiSq trivialB = ⟨-128, -64⟩ := by
+    rw [b6AfterPiThenPiSq, hv.2.2]
+    simp [GaussInt.smul]
+  have hD : quadDiscAfterPiThenPiSq trivialB = ⟨-16, 384⟩ := by
+    rw [quadDiscAfterPiThenPiSq, hv.1, hv.2.1, hv.2.2]
+    simp [GaussInt.mul, GaussInt.smul, GaussInt.sub]
+  rw [hv.1, hv.2.1, hv.2.2, hb6, hD]
+  refine ⟨?_, ?_, ?_, ?_, ?_⟩
+  · refine ⟨⟨6, 3⟩, ?_, ?_⟩
+    · have hp : piPow 1 = pi := by
+        unfold piPow
+        exact GaussInt.npow_one pi
+      rw [hp]
+      simp [pi, GaussInt.mul]
+    · intro hdiv
+      simp [piDivides] at hdiv
+  · refine ⟨⟨6, -5⟩, ?_, ?_⟩
+    · rw [piPow_four]
+      simp [GaussInt.mul]
+    · intro hdiv
+      simp [piDivides] at hdiv
+  · refine ⟨⟨-2, -1⟩, ?_, ?_⟩
+    · have h8 : piPow 8 = ⟨16, 0⟩ := by
+        simp [piPow, pi, GaussInt.npow, GaussInt.mul, GaussInt.one]
+      rw [h8]
+      simp [GaussInt.mul]
+    · intro hdiv
+      simp [piDivides] at hdiv
+  · refine ⟨⟨2, 1⟩, ?_, ?_⟩
+    · have h12 : piPow 12 = ⟨-64, 0⟩ := by
+        simp [piPow, pi, GaussInt.npow, GaussInt.mul, GaussInt.one]
+      rw [h12]
+      simp [GaussInt.mul]
+    · intro hdiv
+      simp [piDivides] at hdiv
+  · refine ⟨⟨-1, 24⟩, ?_, ?_⟩
+    · have h8 : piPow 8 = ⟨16, 0⟩ := by
+        simp [piPow, pi, GaussInt.npow, GaussInt.mul, GaussInt.one]
+      rw [h8]
+      simp [GaussInt.mul]
+    · intro hdiv
+      simp [piDivides] at hdiv
 
 theorem GaussInt.npow_one_nat (n : ℕ) : GaussInt.npow GaussInt.one n = GaussInt.one := by
   induction n with

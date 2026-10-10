@@ -186,7 +186,13 @@ decide minimality. On `(0, 1, 1)`, `v_π(a₆') = 5` is below Dokchitser's
 and `v_π(-π²) = 2`. On `(0, 1, 1)`, `r = π` and `r = π + π²` are congruent
 modulo `π²` and have `a₆` valuations `5` and `8`. Sixteen tuples with `r`
 modulo `π²` and `s, t` modulo `π` do not decide minimality. A second
-translation `x ↦ x + π` on `(0, 1, 1)` leaves `v_π(a₆) = 5`. When `a` is odd,
+translation `x ↦ x + π` on `(0, 1, 1)` leaves `v_π(a₆) = 5`. When `c` is
+odd, every `r, s, t` fails the integrality bounds for `u = π`: `v_π(t) = 0`
+fails `a₃`, `v_π(r) = 0` fails `a₄`, `v_π(r) = 1` fails `a₂`, and
+`v_π(r) ≥ 2` fails `a₄`. If `π²` divides `u`, then `u¹²` does not divide
+`Δ`. The shift `r = π²` on `(0, 1, 1)` gives `v_π(a₆) = 8`, `v_π(b₆) = 12`,
+and `v_π(D) = 8`, the numerical inputs for `n = 4`. The conductor exponent
+stays open. When `a` is odd,
 `y ↦ y + π²` gives `v_π(a₃) = 4`, `v_π(a₄) = 3`, `v_π(a₆) = 5`,
 `v_π(b₆) = 8`, and `v_π(D) = 6`. Those are the numerical inputs for type
 `I₂*`. They are not the conductor exponent, and the wild part is not

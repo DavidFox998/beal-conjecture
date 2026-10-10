@@ -152,6 +152,12 @@ congruent modulo `π`, while `π⁶` divides the `a₆` numerator `0` and
 `8`. Sixteen tuples do not decide integrality.
 `trivialB_second_pi_shift_a6_stays_five` is the further translation
 `x ↦ x + π` on `(0, 1, 1)`: `v_π(a₆)` stays `5`, below `7`.
+`no_integral_u_pi_of_c_odd` splits every `r, s, t` by valuation when `c` is
+odd. `pi_sq_u_blocks_delta` blocks `v_π(u) ≥ 2`. Neither statement is
+`MinimalModelAt2`, and neither produces the exponent.
+`trivialB_dokchitser_n4_inputs` is `x ↦ x + π²` on `(0, 1, 1)`: `v_π(a₂) = 1`,
+`v_π(a₄) = 4`, `v_π(a₆) = 8`, `v_π(b₆) = 12`, and `v_π(D) = 8`. Those match
+the numerical inputs for `n = 4`. They are not a wild part and not `f = 10`.
 `a_odd_dokchitser_n2_inputs` meets the numerical inputs for `n = 2`,
 including `v_π(b₆) = 8` and `v_π(D) = 6`. Dokchitser's proposition is
 not formalized, and the wild part is not proved to vanish. Ogg's formula
