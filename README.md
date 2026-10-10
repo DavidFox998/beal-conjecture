@@ -147,18 +147,19 @@ unresolved marker. `FreyConductor_OPEN E N` is the hypothesis that a
 supplied integer `N` equals `32 c²` or `64 c²`. `FreyConductorDivides`
 is `ConductorShape`: the same alternative for `N : ℕ` and `|c|`.
 `ribet_level_lowering_4413` takes that shape, `RhoE13Open`, and
-`pacetti_2_8_open`. It returns one `RibetLevel`: `n ∣ N`, coprimality
-for primes dividing `|c|`, and a `RibetOutput`. Neither `32 ∣ n` nor
-`n = 32 ∨ n = 64` is part of the axiom.
+`pacetti_2_8_open`. It returns one `RibetLevel` whose `h_n_eq` is
+`n = 32 ∨ n = 64`, together with `n ∣ N`, coprimality for primes dividing
+`|c|`, and a `RibetOutput`. The disjunction is part of the axiom.
+`thirtyTwo_dvd_of_eq` turns it into `32 ∣ n`.
 `n_dvd_32_or_64_of_prime_to_c` removes those primes and concludes `n ∣ 32`
 or `n ∣ 64`. The positive divisors of `64` are `1, 2, 4, 8, 16, 32, 64`.
 `pacetti_2_8_open` is the open statement that a minimal model has conductor
 exponent `10` or `12` at the prime above `2`. `TateAt2LowerBound E n`
-packages that exponent with the separate assumption `32 ∣ n`. It is not an
-axiom and not a theorem. `thirtyTwo_dvd_of_conductor_shape` proves
-`32 ∣ N` from the shape. `shape_dvd_does_not_give_thirtyTwo` is the
-counterexample `N = 32`, `n = 1`, `c = 1`. `n_eq_32_or_64_of_tate` uses the
-conjunct `32 ∣ n`. If `c` is odd, `tate_lower_bound_of_c_odd` gives
+packages that exponent with the conjunct `n = 32 ∨ n = 64`. It is not an
+axiom and not a theorem. `thirtyTwo_dvd_of_tate_bound` uses only the
+disjunction. `thirtyTwo_dvd_of_conductor_shape` proves `32 ∣ N` from the
+shape. `shape_dvd_does_not_give_thirtyTwo` is the counterexample
+`N = 32`, `n = 1`, `c = 1`. If `c` is odd, `tate_lower_bound_of_c_odd` gives
 `v₂(N(Δ)) = 18`. `c4_c6_valuation` factors `2⁵` from `c₄` and `2⁸` from
 `c₆`. `c4_c6_coprime_to_2_when_c_odd` says `2` does not divide
 `5 a² - 3 b² √(-1)` when `c` is odd. `p2_valuation_of_two_pow` is
@@ -184,9 +185,10 @@ says that if an odd prime `q` divides `c` and `|c| = q^k m` with `q` not
 dividing `m`, then the exact power of `q` in `N(Δ)` is `q^(13 · 3k)`.
 That is the norm identity. `rho_E_13` is still unresolved, so the identity
 is not finiteness of a residual representation. `DarmonMerelLevelLowering`
-assumes `FreyConductor_OPEN`, `RhoE13Open`, and `TateAt2LowerBound`, and
-returns the one newform from `ribet_level_lowering_4413`.
-`n = 32 ∨ n = 64` is not inside that axiom. `TateAt2LowerBound` is not a
+assumes `FreyConductor_OPEN`, `RhoE13Open`, and `pacetti_2_8_open`, and
+returns existence of one newform from `ribet_level_lowering_4413`.
+The axiom's `RibetLevel` stores `n = 32 ∨ n = 64`. This existence
+theorem does not project that disjunction. `TateAt2LowerBound` is not a
 theorem. `Mathlib/Modular/EllipticCurveMinimal.lean` is the model
 `y² = x³ + a₂ x² + a₄ x + a₆` with coefficients in `ℤ[√-1]`.
 `c4_c6_discriminant` is `c₄³ - c₆² = 1728 Δ`. `divisionPsi` builds `ψ₁₃`

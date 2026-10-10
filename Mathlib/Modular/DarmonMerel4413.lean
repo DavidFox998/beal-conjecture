@@ -41,10 +41,10 @@ sixteen elements do not exhaust the candidates. `rho_E_13` is still
 unresolved: no linear factor is not the absence of a Galois-stable
 subgroup of order `13`.
 `DarmonMerelLevelLowering` calls `ribet_level_lowering_4413` at one
-conductor-shaped `N`, given `RhoE13Open` and `TateAt2LowerBound`, and
-returns that one newform. The axiom does not contain `n = 32 ∨ n = 64`.
-That equality is `n_eq_32_or_64_of_tate`. This theorem does not prove that
-`N` is the conductor.
+conductor-shaped `N`, given `RhoE13Open` and `pacetti_2_8_open`, and
+returns existence of one newform. The axiom's package stores
+`n = 32 ∨ n = 64`. This theorem does not project that disjunction, and it
+does not prove that `N` is the conductor.
 
 `DarmonMerelFrozenFacts` collects the winding vectors, the cusp counts, the
 integral points of `Y² = X³ - X`, the nonzero discriminant, and the Vélu
@@ -183,9 +183,9 @@ theorem DarmonMerelFrozenFacts (E : FreyCurve4413) :
 /-- Given the conductor hypothesis, `RhoE13Open`, and `TateAt2LowerBound`,
 Ribet's axiom returns one newform whose level divides `N`.
 
-The package does not contain `n = 32 ∨ n = 64`. `FreyConductor_OPEN` is the
-assumption that a supplied integer equals `32 c²` or `64 c²`. Tate's
-algorithm at `2` is not formalized.
+The package stores `n = 32 ∨ n = 64`; this theorem keeps existence only.
+`FreyConductor_OPEN` is the assumption that a supplied integer equals
+`32 c²` or `64 c²`. Tate's algorithm at `2` is not formalized.
 -/
 theorem DarmonMerelLevelLowering
     (E : FreyCurve4413) (N : ℕ)
@@ -197,8 +197,8 @@ theorem DarmonMerelLevelLowering
 
 /-- The frozen facts, the two open hypotheses, and a newform of some level.
 
-`n` is not proved equal to `32` or `64`. There is no theorem that
-`a⁴ + b⁴ = c¹³` has no nonzero solution.
+The existence statement does not project `n = 32 ∨ n = 64`. There is no
+theorem that `a⁴ + b⁴ = c¹³` has no nonzero solution.
 -/
 theorem DarmonMerelStrategy
     (E : FreyCurve4413) (N : ℕ)

@@ -130,24 +130,26 @@ minimality test is `v(c₄) < 4` or `v(Δ) < 12`; neither inequality holds.
 `MinimalModelAt2` stays opaque, and so does this exponent. Ogg's formula
 is the tame conductor. The wild part at `π` is this proposition.
 `N(π^10) = 2^10`. Dividing the exponent by `2` is not the norm
-of the conductor ideal, and this proposition does not give `32 ∣ n`.
-`RibetLevel` still stores `n ∣ N`, not `n` equal to the prime-to-`c` part
-of `N`.
+of the conductor ideal. This proposition does not prove `n = 32 ∨ n = 64`.
+That disjunction is stored on `RibetLevel` as part of the axiom's
+conclusion. `thirtyTwo_dvd_of_tate_bound` turns the disjunction into
+`32 ∣ n` and does not use this proposition.
 -/
 def pacetti_2_8_open : Prop :=
   ∀ E : FreyCurve4413, MinimalModelAt2 E →
     ExponentIn1012 (ConductorExponentAtPrimeAbove2 E)
 
-/-- Minimal model, Pacetti's exponent in `{10, 12}`, and `32 ∣ n`.
+/-- Minimal model, Pacetti's exponent in `{10, 12}`, and `n = 32 ∨ n = 64`.
 
-`32 ∣ n` is a conjunct. `shape_dvd_does_not_give_thirtyTwo` shows it does
-not follow from `n ∣ N`. `thirtyTwo_dvd_of_conductor_shape` is the
-divisibility for `N`.
+The disjunction is a conjunct. It is not derived from the exponent.
+`thirtyTwo_dvd_of_tate_bound` turns it into `32 ∣ n`.
+`shape_dvd_does_not_give_thirtyTwo` shows `n ∣ N` does not give `32 ∣ n`.
+`thirtyTwo_dvd_of_conductor_shape` is the divisibility for `N`.
 -/
 def TateAt2LowerBound (E : FreyCurve4413) (n : ℕ) : Prop :=
   MinimalModelAt2 E ∧
     ExponentIn1012 (ConductorExponentAtPrimeAbove2 E) ∧
-    32 ∣ n
+    (n = 32 ∨ n = 64)
 
 /-- One lowered newform at level `n`, with `n ∣ N` stored on the structure. -/
 structure RibetOutput (E : FreyCurve4413) (N n : ℕ) where
@@ -157,22 +159,24 @@ structure RibetOutput (E : FreyCurve4413) (N n : ℕ) where
 
 /-- One Ribet output at one level.
 
-`n` divides the supplied `N`, and no prime divisor of `|c|` divides `n`.
-The prime predicate is `IsPrime`. There is no component `n = 32 ∨ n = 64`.
-That disjunction is `n_eq_32_or_64_of_lower_bound`, from `32 ∣ n`.
+`h_n_eq` is `n = 32 ∨ n = 64`. The axiom supplies it. It is not a theorem
+from `pacetti_2_8_open`. `h_dvd` is `n ∣ N`. `h_coprime` uses `IsPrime`.
+`thirtyTwo_dvd_of_eq` turns `h_n_eq` into `32 ∣ n`.
 -/
-def RibetLevel (c : ℤ) (E : FreyCurve4413) (N : ℕ) : Type :=
-  Σ' (n : ℕ) (_h_dvd : n ∣ N)
-    (_h_coprime : ∀ p, IsPrime p → p ∣ c.natAbs → ¬ p ∣ n),
-    RibetOutput E N n
+structure RibetLevel (c : ℤ) (E : FreyCurve4413) (N : ℕ) where
+  n : ℕ
+  h_n_eq : n = 32 ∨ n = 64
+  h_dvd : n ∣ N
+  h_coprime : ∀ p, IsPrime p → p ∣ c.natAbs → ¬ p ∣ n
+  output : RibetOutput E N n
 
 /-- Ribet's lowering-the-level theorem for `d = 1`, `p = 13`, at one `N`.
 
 `hCond` says `N` equals `32 |c|²` or `64 |c|²`. It does not prove that this
 `N` is the conductor. `hIrr` is `RhoE13Open`; there is no term of that type.
-`hPacetti` is `pacetti_2_8_open`. The result is one level `n` with `n ∣ N`
-and the prime-coprimality condition. It does not contain `32 ∣ n` or
-`n = 32 ∨ n = 64`.
+`hPacetti` is `pacetti_2_8_open`. The result stores `n = 32 ∨ n = 64`,
+`n ∣ N`, and the prime-coprimality condition. The disjunction is part of
+this axiom. `32 ∣ n` is `RibetLevel.thirtyTwo_dvd`, from the disjunction.
 
 Citation: Ribet 1990, Invent. Math. 100, and Pacetti's slide
 “Ribet's lowering the level result”.
@@ -182,21 +186,21 @@ axiom ribet_level_lowering_4413 {c : ℤ} {E : FreyCurve4413} (N : ℕ)
     (hCond : FreyConductorDivides c N) (hIrr : RhoE13Open E)
     (hPacetti : pacetti_2_8_open) : RibetLevel c E N
 
-def RibetLevel.level {c : ℤ} {E : FreyCurve4413} {N : ℕ}
+abbrev RibetLevel.level {c : ℤ} {E : FreyCurve4413} {N : ℕ}
     (p : RibetLevel c E N) : ℕ :=
-  p.1
+  p.n
 
 theorem RibetLevel.dvd {c : ℤ} {E : FreyCurve4413} {N : ℕ}
     (p : RibetLevel c E N) : p.level ∣ N :=
-  p.2.1
+  p.h_dvd
 
 theorem RibetLevel.coprime {c : ℤ} {E : FreyCurve4413} {N : ℕ}
     (p : RibetLevel c E N) : ∀ q, IsPrime q → q ∣ c.natAbs → ¬ q ∣ p.level :=
-  p.2.2.1
+  p.h_coprime
 
-def RibetLevel.output {c : ℤ} {E : FreyCurve4413} {N : ℕ}
-    (p : RibetLevel c E N) : RibetOutput E N p.level :=
-  p.2.2.2
+theorem RibetLevel.level_eq {c : ℤ} {E : FreyCurve4413} {N : ℕ}
+    (p : RibetLevel c E N) : p.n = 32 ∨ p.n = 64 :=
+  p.h_n_eq
 
 /-- For `d = 1` every odd slot `Q₁, Q₃, Q₅, Q₇` is empty, so Pacetti's
 odd part of the lowered level is `1` and the level is a power of `2`. -/

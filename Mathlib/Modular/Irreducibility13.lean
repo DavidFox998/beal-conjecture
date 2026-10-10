@@ -36,10 +36,11 @@ statement is not a closed `decide`.
   linear factor is the wrong direction for absolute irreducibility.
 
 `FreyConductor_OPEN` stays a hypothesis. `ribet_level_lowering_4413` takes
-`FreyConductorDivides`, `RhoE13Open`, and `pacetti_2_8_open`. It returns
-one level with `n ∣ N`. It does not return `32 ∣ n` or `n = 32 ∨ n = 64`.
-`n_eq_32_or_64_of_tate` is that equality, from the conjunct `32 ∣ n` in
-`TateAt2LowerBound E n`.
+`FreyConductorDivides`, `RhoE13Open`, and `pacetti_2_8_open`. The returned
+`RibetLevel` stores `n = 32 ∨ n = 64` as part of the axiom.
+`thirtyTwo_dvd_of_tate_bound` turns the same disjunction on
+`TateAt2LowerBound` into `32 ∣ n`. `Psi13HasNoQiRoot` stays open on
+`NontrivialFrey`. `RhoE13Open` stays sealed.
 -/
 
 namespace FreyCurve4413

@@ -63,8 +63,9 @@ a theorem here, and it is not the pair `5`, `6`. `FreyConductor_OPEN` has
 no proof. `RhoE13Open` has no term.
 `ribet_level_lowering_4413` takes `RhoE13Open`, `pacetti_2_8_open`, and one
 integer of shape `32 |c|²` or `64 |c|²`, and returns one level dividing
-that integer. `n = 32 ∨ n = 64` is `n_eq_32_or_64_of_tate`, not a component
-of the axiom. If `c` is odd, `v₂(N(Δ)) = 18`. That is not the conductor
+that integer. The returned `RibetLevel` stores `n = 32 ∨ n = 64` as part
+of the axiom. `thirtyTwo_dvd_of_tate_bound` turns that disjunction into
+`32 ∣ n`. If `c` is odd, `v₂(N(Δ)) = 18`. That is not the conductor
 exponent. `delta_p2_exact_eighteen` is the element valuation `v_π(Δ) = 18`,
 from `Δ = 2⁹ (a² + b² √(-1)) c¹³`. `a4_p2_exact_two` is `v_π(a₄) = 2`.
 The substitution `u = π`, `r = s = t = 0` needs `v_π(a₄) ≥ 4`, so it is

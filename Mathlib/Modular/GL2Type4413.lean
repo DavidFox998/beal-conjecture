@@ -92,10 +92,9 @@ theorem stored_newforms_a1 :
 /-- What the two axioms return for a solution `a⁴ + b⁴ = c¹³`, given
 `RhoE13Open` and `pacetti_2_8_open`.
 
-`Modular E` is the modularity axiom. Ribet's axiom returns one newform.
-`n = 32 ∨ n = 64` is not part of that package. It is
-`n_eq_32_or_64_of_tate` once `32 ∣ n` is known. This theorem does not
-return a coefficient field or a point of `X₀(32)`. -/
+`Modular E` is the modularity axiom. Ribet's package stores
+`n = 32 ∨ n = 64`. This theorem only returns existence of a newform.
+It does not return a coefficient field or a point of `X₀(32)`. -/
 theorem gl2_type_interface (a b c : Int) (heq : a ^ 4 + b ^ 4 = c ^ 13)
     (hIrr : RhoE13Open (FreyCurve4413.mk' a b c heq))
     (hPacetti : pacetti_2_8_open) :

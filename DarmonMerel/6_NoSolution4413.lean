@@ -33,7 +33,8 @@ returns one newform.
 
 `N = 32 |c|²` satisfies `FreyConductorDivides` by construction. That is the
 shape hypothesis, not a proof that the conductor equals `32 |c|²`.
-`hTate` is not turned into `n = 32 ∨ n = 64` by this theorem.
+The axiom's package stores `n = 32 ∨ n = 64`. This theorem returns
+existence of a newform and does not project the disjunction.
 -/
 theorem solution_modular_and_lowered
     (a b c : ℤ) (heq : a ^ 4 + b ^ 4 = c ^ 13)
