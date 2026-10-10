@@ -29,18 +29,27 @@ has length `85` and leading coefficient `13`.
 
 `psi13_no_integral_root_on_minus_x` is that statement for the single curve
 `y² = x³ - x`: the constant term is a unit, so an integral root would be a
-unit, and none of `±1`, `±√(-1)` is a root. The Frey polynomial is a
-different list. `psi13_no_integral_root_OPEN` for a general coefficient
-triple is not a theorem. The norm `N(Δ) = 2¹⁸ (c³)¹³` is not the constant
-term of `ψ₁₃`.
+unit, and none of `±1`, `±√(-1)` is a root.
 
-A root `num / den` in `ℚ(√-1)` clears to an equation in which `den` divides
-`13 * num^84` once the leading coefficient is `13`. That does not force
-`den` to be a unit, so absence of an integral root does not yield absence
-of a root in `ℚ(√-1)`. `ℤ[√-1]` being a UFD is not formalized. A root-free
-division polynomial is not a Galois representation and not
-`RhoE13Open`: a cyclic subgroup of order `13` stable under
-`Gal(ℚ̄/ℚ(√-1))` cuts out a degree-6 factor, not a linear factor.
+On every curve `y² = x³ + a₂ x² + a₄ x`, `psi13_constant_term` says the
+constant term of `ψ₁₃` is `a₄ ^ 42`. For the Frey model that element is
+`(2 a² + 2 b² √(-1)) ^ 42`. `frey_psi13_constant_norm` says its norm is
+`2 ^ 84 * c ^ 546`, which is `2 ^ 84 * (c ^ 42) ^ 13`. This is not
+`N(Δ) = 2¹⁸ (c³)¹³`. The odd part of this norm is a thirteenth power.
+The exponent of `2` is `84`, and `13` does not divide `84`.
+`psi13_no_integral_root_OPEN` is still not a theorem for a Frey
+coefficient triple: an integral root divides `a₄ ^ 42`, and that divisor
+set depends on `a` and `b`.
+
+`num_divides_const_mul_den_pow` and `den_divides_lead_mul_num_pow` clear a
+ratio `num / den`. The second says `den * s = lead * num ^ (length - 1)`.
+`ℤ[√-1]` is not proved to be a UFD here, so Euclid's lemma is not
+available and the denominator is not forced to divide the leading
+coefficient. On `y² = x³ - x` that leading coefficient is `13`. The
+divisors of `13` are sixteen elements, classified in `QiDivisors13.lean`.
+`psi13_no_Qi_root_Frey_OPEN` is the statement that the Frey polynomial has
+no root in the fraction field. It is not a theorem. A root-free division
+polynomial is not a Galois representation and not `RhoE13Open`.
 `rho_E_13` stays unresolved. `FreyConductor_OPEN` stays a hypothesis.
 
 `norm_two_adic` is the 2-adic valuation of the field norm:
@@ -86,6 +95,115 @@ theorem mul_neg (z w : GaussInt) : mul z (neg w) = neg (mul z w) := by
   simp [mul, neg, Int.mul_neg]
   constructor <;> omega
 
+@[simp] theorem zero_add (z : GaussInt) : add zero z = z := by
+  cases z
+  simp [add, zero]
+
+@[simp] theorem add_zero (z : GaussInt) : add z zero = z := by
+  cases z
+  simp [add, zero]
+
+@[simp] theorem zero_mul (z : GaussInt) : mul zero z = zero := by
+  cases z
+  simp [mul, zero]
+
+@[simp] theorem mul_zero (z : GaussInt) : mul z zero = zero := by
+  cases z
+  simp [mul, zero]
+
+@[simp] theorem one_mul (z : GaussInt) : mul one z = z := by
+  cases z
+  simp [mul, one]
+
+@[simp] theorem mul_one (z : GaussInt) : mul z one = z := by
+  cases z
+  simp [mul, one]
+
+@[simp] theorem neg_zero : neg zero = zero := by
+  simp [neg, zero]
+
+theorem neg_neg (z : GaussInt) : neg (neg z) = z := by
+  cases z
+  simp [neg]
+
+theorem neg_mul (z w : GaussInt) : mul (neg z) w = neg (mul z w) := by
+  cases z
+  cases w
+  simp [mul, neg, Int.neg_mul]
+  constructor <;> omega
+
+theorem mul_assoc (a b c : GaussInt) : mul (mul a b) c = mul a (mul b c) := by
+  cases a
+  cases b
+  cases c
+  simp [mul]
+  constructor <;> grind
+
+theorem mul_comm (a b : GaussInt) : mul a b = mul b a := by
+  cases a
+  cases b
+  simp [mul]
+  constructor <;> grind
+
+theorem add_assoc (a b c : GaussInt) : add (add a b) c = add a (add b c) := by
+  cases a
+  cases b
+  cases c
+  simp [add]
+  constructor <;> omega
+
+theorem add_comm (a b : GaussInt) : add a b = add b a := by
+  cases a
+  cases b
+  simp [add]
+  constructor <;> omega
+
+theorem sub_eq_add_neg (a b : GaussInt) : sub a b = add a (neg b) := by
+  cases a
+  cases b
+  simp [sub, add, neg, Int.sub_eq_add_neg]
+
+theorem mul_add (a b c : GaussInt) : mul a (add b c) = add (mul a b) (mul a c) := by
+  cases a
+  cases b
+  cases c
+  simp [mul, add]
+  constructor <;> grind
+
+theorem add_mul (a b c : GaussInt) : mul (add a b) c = add (mul a c) (mul b c) := by
+  cases a
+  cases b
+  cases c
+  simp [mul, add]
+  constructor <;> grind
+
+/-- `z ^ n` in `ℤ[√-1]`. -/
+def npow (z : GaussInt) : Nat → GaussInt
+  | 0 => one
+  | n + 1 => mul z (npow z n)
+
+theorem npow_zero (z : GaussInt) : npow z 0 = one := rfl
+
+theorem npow_succ (z : GaussInt) (n : Nat) : npow z (n + 1) = mul z (npow z n) := rfl
+
+theorem npow_one (z : GaussInt) : npow z 1 = z := by
+  simp [npow, mul_one]
+
+theorem npow_add (z : GaussInt) (m n : Nat) : npow z (m + n) = mul (npow z m) (npow z n) := by
+  induction m with
+  | zero => simp [npow, one_mul]
+  | succ m ih =>
+    simp [Nat.succ_add, npow, ih, mul_assoc]
+
+theorem npow_npow (z : GaussInt) (m n : Nat) : npow (npow z m) n = npow z (m * n) := by
+  induction n with
+  | zero => simp [npow, Nat.mul_zero]
+  | succ n ih =>
+    rw [npow_succ, ih, ← npow_add, Nat.mul_succ, Nat.add_comm]
+
+theorem npow_neg_three (z : GaussInt) : npow (neg z) 3 = neg (npow z 3) := by
+  simp [npow, neg_mul, mul_neg, neg_neg, mul_one]
+
 theorem norm_mul (z w : GaussInt) : norm (mul z w) = norm z * norm w := by
   cases z
   cases w
@@ -111,6 +229,64 @@ theorem norm_nonneg (z : GaussInt) : 0 ≤ norm z := by
 theorem natAbs_sq_sum (re im : Int) :
     re * re + im * im = ↑(re.natAbs * re.natAbs + im.natAbs * im.natAbs) := by
   rw [self_sq_natAbs re, self_sq_natAbs im, nat_cast_add]
+
+theorem norm_eq_zero_iff (z : GaussInt) : norm z = 0 ↔ z = zero := by
+  constructor
+  · intro h
+    cases z with
+    | mk re im =>
+      have hsum : re.natAbs * re.natAbs + im.natAbs * im.natAbs = 0 := by
+        have hcast := natAbs_sq_sum re im
+        have hn : re * re + im * im = 0 := by simpa [norm] using h
+        rw [hcast] at hn
+        exact Int.ofNat.inj hn
+      have hre : re.natAbs * re.natAbs = 0 := by
+        have hle : re.natAbs * re.natAbs ≤ re.natAbs * re.natAbs + im.natAbs * im.natAbs :=
+          Nat.le_add_right _ _
+        rw [hsum] at hle
+        exact Nat.eq_zero_of_le_zero hle
+      have him : im.natAbs * im.natAbs = 0 := by
+        have hle : im.natAbs * im.natAbs ≤ re.natAbs * re.natAbs + im.natAbs * im.natAbs :=
+          Nat.le_add_left _ _
+        rw [hsum] at hle
+        exact Nat.eq_zero_of_le_zero hle
+      simp [zero, Int.natAbs_eq_zero.mp ((Nat.mul_eq_zero.mp hre).elim id id),
+        Int.natAbs_eq_zero.mp ((Nat.mul_eq_zero.mp him).elim id id)]
+  · intro h
+    simp [h, norm, zero]
+
+theorem norm_npow (z : GaussInt) (n : Nat) : norm (npow z n) = norm z ^ n := by
+  induction n with
+  | zero => simp [npow, norm, one]
+  | succ n ih =>
+    rw [npow_succ, norm_mul, ih, Int.pow_succ, Int.mul_comm]
+
+theorem mul_eq_zero {z w : GaussInt} : mul z w = zero ↔ z = zero ∨ w = zero := by
+  constructor
+  · intro h
+    have hn : norm z * norm w = 0 := by
+      rw [← norm_mul, h]
+      simp [norm, zero]
+    rcases Int.mul_eq_zero.mp hn with h0 | h0
+    · exact Or.inl ((norm_eq_zero_iff z).mp h0)
+    · exact Or.inr ((norm_eq_zero_iff w).mp h0)
+  · rintro (h | h) <;> simp [h]
+
+theorem npow_eq_zero {z : GaussInt} {n : Nat} (hn : n ≠ 0) (h : npow z n = zero) :
+    z = zero := by
+  induction n with
+  | zero => exact absurd rfl hn
+  | succ n ih =>
+    rw [npow_succ, mul_eq_zero] at h
+    cases n with
+    | zero =>
+      rcases h with h | h
+      · exact h
+      · simp [npow, one, zero] at h
+    | succ n =>
+      rcases h with h | h
+      · exact h
+      · exact ih (by omega) h
 
 /-- The only solutions of `re² + im² = 1` in `ℤ` are the four units. -/
 theorem norm_one_units (z : GaussInt) (h : norm z = 1) :
@@ -199,9 +375,18 @@ theorem add_eq_zero_neg {c z : GaussInt} (h : add c z = zero) : c = neg z := by
 
 end GaussInt
 
+/-- Drop coefficients of `x^k` for large `k` that are zero. Constant term first. -/
+def dropHighZeros : List GaussInt → List GaussInt
+  | [] => []
+  | a :: p =>
+    match dropHighZeros p with
+    | [] => if a == GaussInt.zero then [] else [a]
+    | b :: t => a :: b :: t
+
 def gaussTrim (p : List GaussInt) : List GaussInt :=
-  let t := (p.reverse.dropWhile (· == GaussInt.zero)).reverse
-  if t.isEmpty then [GaussInt.zero] else t
+  match dropHighZeros p with
+  | [] => [GaussInt.zero]
+  | t => t
 
 def gaussAdd : List GaussInt → List GaussInt → List GaussInt
   | [], q => q
@@ -216,6 +401,72 @@ def gaussPmul : List GaussInt → List GaussInt → List GaussInt
   | _, [] => [GaussInt.zero]
   | a :: p, q =>
     gaussPadd (q.map (GaussInt.mul a)) (GaussInt.zero :: gaussPmul p q)
+
+/-- Constant term of a polynomial stored constant-first. -/
+def ct (p : List GaussInt) : GaussInt := p.headD GaussInt.zero
+
+theorem ct_dropHighZeros (p : List GaussInt) :
+    ct (dropHighZeros p) = ct p := by
+  induction p with
+  | nil => rfl
+  | cons a ps ih =>
+    cases h : dropHighZeros ps with
+    | nil =>
+      by_cases ha : a = GaussInt.zero
+      · simp [dropHighZeros, h, ha, ct, GaussInt.zero]
+      · simp [dropHighZeros, h, ha, ct]
+    | cons b t =>
+      simp [dropHighZeros, h, ct]
+
+theorem ct_trim (p : List GaussInt) : ct (gaussTrim p) = ct p := by
+  cases h : dropHighZeros p with
+  | nil =>
+    have hct : ct p = GaussInt.zero := by
+      have := ct_dropHighZeros p
+      rw [h] at this
+      simpa [ct] using this.symm
+    simpa [gaussTrim, h, ct] using hct.symm
+  | cons b t =>
+    have hct : ct (b :: t) = ct p := by
+      have := ct_dropHighZeros p
+      rw [h] at this
+      exact this
+    simp [gaussTrim, h, hct]
+
+theorem ct_gaussAdd (p q : List GaussInt) : ct (gaussAdd p q) = GaussInt.add (ct p) (ct q) := by
+  induction p generalizing q with
+  | nil => simp [gaussAdd, ct, GaussInt.zero_add]
+  | cons a ps ih =>
+    cases q with
+    | nil => simp [gaussAdd, ct, GaussInt.add_zero]
+    | cons b qs => simp [gaussAdd, ct]
+
+theorem ct_padd (p q : List GaussInt) : ct (gaussPadd p q) = GaussInt.add (ct p) (ct q) := by
+  simp [gaussPadd, ct_trim, ct_gaussAdd]
+
+theorem ct_map_mul (a : GaussInt) (q : List GaussInt) :
+    ct (q.map (GaussInt.mul a)) = GaussInt.mul a (ct q) := by
+  cases q with
+  | nil => simp [ct, GaussInt.mul_zero]
+  | cons b qs => simp [ct]
+
+theorem ct_map_neg (p : List GaussInt) : ct (p.map GaussInt.neg) = GaussInt.neg (ct p) := by
+  cases p with
+  | nil => simp [ct, GaussInt.neg_zero]
+  | cons a ps => simp [ct]
+
+theorem ct_pmul (p q : List GaussInt) : ct (gaussPmul p q) = GaussInt.mul (ct p) (ct q) := by
+  induction p generalizing q with
+  | nil => simp [gaussPmul, ct, GaussInt.zero_mul]
+  | cons a ps ih =>
+    cases q with
+    | nil => simp [gaussPmul, ct, GaussInt.mul_zero]
+    | cons b qs =>
+      have hdef : gaussPmul (a :: ps) (b :: qs) =
+          gaussPadd ((b :: qs).map (GaussInt.mul a))
+            (GaussInt.zero :: gaussPmul ps (b :: qs)) := rfl
+      rw [hdef, ct_padd, ct_map_mul]
+      simp [ct, GaussInt.add_zero]
 
 /-- Horner evaluation, constant term first. -/
 def evalPoly : List GaussInt → GaussInt → GaussInt
@@ -235,6 +486,119 @@ theorem integral_root_divides_constant
   have hc : c = GaussInt.neg (GaussInt.mul r (evalPoly cs r)) :=
     GaussInt.add_eq_zero_neg h'
   rw [hc, GaussInt.mul_neg]
+
+/-- `den ^ deg * p(num / den)`, constant term first.
+
+The empty list contributes `0`. A cons cell `c :: cs` contributes
+`c * den ^ (length cs) + num *` the value on `cs`.
+-/
+def evalCleared : List GaussInt → GaussInt → GaussInt → GaussInt
+  | [], _, _ => GaussInt.zero
+  | c :: cs, num, den =>
+    GaussInt.add (GaussInt.mul c (GaussInt.npow den cs.length))
+      (GaussInt.mul num (evalCleared cs num den))
+
+/-- If the cleared value vanishes, the numerator divides
+`constant * den ^ degree`. -/
+theorem num_divides_const_mul_den_pow
+    (c : GaussInt) (cs : List GaussInt) (num den : GaussInt)
+    (h : evalCleared (c :: cs) num den = GaussInt.zero) :
+    GaussInt.mul num (GaussInt.neg (evalCleared cs num den)) =
+      GaussInt.mul c (GaussInt.npow den cs.length) := by
+  have h' : GaussInt.add (GaussInt.mul c (GaussInt.npow den cs.length))
+      (GaussInt.mul num (evalCleared cs num den)) = GaussInt.zero := by
+    simpa [evalCleared] using h
+  have hc := GaussInt.add_eq_zero_neg h'
+  rw [GaussInt.mul_neg, ← hc]
+
+/-- Split `evalCleared` into `lead * num ^ (length - 1) + den * r`. -/
+theorem evalCleared_split_lead (p : List GaussInt) (num den : GaussInt) (hne : p ≠ []) :
+    ∃ r, evalCleared p num den =
+      GaussInt.add
+        (GaussInt.mul (p.getLastD GaussInt.zero) (GaussInt.npow num (p.length - 1)))
+        (GaussInt.mul den r) := by
+  induction p with
+  | nil => exact absurd rfl hne
+  | cons c cs ih =>
+    cases cs with
+    | nil =>
+      refine ⟨GaussInt.zero, ?_⟩
+      simp [evalCleared, GaussInt.npow, GaussInt.mul_one, GaussInt.mul_zero,
+        GaussInt.add_zero, List.getLastD]
+    | cons d ds =>
+      rcases ih (by simp) with ⟨r, hr⟩
+      have hk : (d :: ds).length = (d :: ds).length - 1 + 1 := by
+        have : 0 < (d :: ds).length := by simp
+        omega
+      have hlast : (c :: d :: ds).getLastD GaussInt.zero =
+          (d :: ds).getLastD GaussInt.zero := by
+        have h1 : (c :: d :: ds).getLastD GaussInt.zero = (d :: ds).getLastD c :=
+          List.getLastD_cons
+        have h2 : (d :: ds).getLastD c = ds.getLastD d := List.getLastD_cons
+        have h3 : (d :: ds).getLastD GaussInt.zero = ds.getLastD d := List.getLastD_cons
+        rw [h1, h2, ← h3]
+      have hlenp : (c :: d :: ds).length - 1 = (d :: ds).length := by
+        simp [List.length]
+      let lead := (d :: ds).getLastD GaussInt.zero
+      let k := (d :: ds).length
+      let km := k - 1
+      have hkpow : k = km + 1 := by
+        simpa [k, km] using hk
+      refine ⟨GaussInt.add (GaussInt.mul c (GaussInt.npow den km))
+          (GaussInt.mul num r), ?_⟩
+      rw [evalCleared, hr, hlast, hlenp]
+      have hpowNum : GaussInt.npow num k = GaussInt.mul num (GaussInt.npow num km) := by
+        rw [hkpow, GaussInt.npow_succ]
+      have hpowDen : GaussInt.npow den k = GaussInt.mul den (GaussInt.npow den km) := by
+        rw [hkpow, GaussInt.npow_succ]
+      let A := GaussInt.mul lead (GaussInt.npow num km)
+      let B := GaussInt.mul den r
+      let C := GaussInt.mul c (GaussInt.npow den k)
+      have hexpand : GaussInt.mul num (GaussInt.add A B) =
+          GaussInt.add (GaussInt.mul num A) (GaussInt.mul num B) :=
+        GaussInt.mul_add _ _ _
+      have hleadPow : GaussInt.mul num A = GaussInt.mul lead (GaussInt.npow num k) := by
+        rw [show A = GaussInt.mul lead (GaussInt.npow num km) from rfl]
+        rw [← GaussInt.mul_assoc, GaussInt.mul_comm num lead, GaussInt.mul_assoc, ← hpowNum]
+      have hC : C = GaussInt.mul den (GaussInt.mul c (GaussInt.npow den km)) := by
+        rw [show C = GaussInt.mul c (GaussInt.npow den k) from rfl, hpowDen,
+          ← GaussInt.mul_assoc, GaussInt.mul_comm c den, GaussInt.mul_assoc]
+      have hB : GaussInt.mul num B = GaussInt.mul den (GaussInt.mul num r) := by
+        rw [show B = GaussInt.mul den r from rfl, ← GaussInt.mul_assoc,
+          GaussInt.mul_comm num den, GaussInt.mul_assoc]
+      have hsum : GaussInt.add C (GaussInt.mul num B) =
+          GaussInt.mul den (GaussInt.add (GaussInt.mul c (GaussInt.npow den km))
+            (GaussInt.mul num r)) := by
+        rw [hC, hB, ← GaussInt.mul_add]
+      have hswap : GaussInt.add C (GaussInt.add (GaussInt.mul num A) (GaussInt.mul num B)) =
+          GaussInt.add (GaussInt.mul num A)
+            (GaussInt.add C (GaussInt.mul num B)) := by
+        rw [← GaussInt.add_assoc, GaussInt.add_comm C (GaussInt.mul num A), GaussInt.add_assoc]
+      change GaussInt.add C
+          (GaussInt.mul num (GaussInt.add
+            (GaussInt.mul lead (GaussInt.npow num km)) (GaussInt.mul den r))) =
+        GaussInt.add (GaussInt.mul lead (GaussInt.npow num k))
+          (GaussInt.mul den (GaussInt.add (GaussInt.mul c (GaussInt.npow den km))
+            (GaussInt.mul num r)))
+      rw [show GaussInt.mul lead (GaussInt.npow num km) = A from rfl,
+        show GaussInt.mul den r = B from rfl, hexpand, hswap, hleadPow, hsum]
+
+/-- If the cleared value vanishes, the denominator divides
+`lead * num ^ (length - 1)`.
+
+This is divisibility in `ℤ[√-1]` after clearing. It is not Euclid's lemma,
+and it does not conclude that the denominator divides the leading coefficient.
+-/
+theorem den_divides_lead_mul_num_pow
+    (p : List GaussInt) (num den : GaussInt) (hne : p ≠ [])
+    (h : evalCleared p num den = GaussInt.zero) :
+    ∃ s, GaussInt.mul den s =
+      GaussInt.mul (p.getLastD GaussInt.zero) (GaussInt.npow num (p.length - 1)) := by
+  rcases evalCleared_split_lead p num den hne with ⟨r, hr⟩
+  rw [hr] at h
+  have hc := GaussInt.add_eq_zero_neg h
+  refine ⟨GaussInt.neg r, ?_⟩
+  rw [GaussInt.mul_neg, ← hc]
 
 structure EllipticCurveMinimal where
   a1 : Qi
@@ -383,6 +747,265 @@ def divisionPsi (n : Nat) (a2 a4 a6 : GaussInt) : List GaussInt :=
 def psi13 (a2 a4 a6 : GaussInt) : List Qi :=
   divisionPsi 13 a2 a4 a6
 
+private theorem ct_polySub (p q : List GaussInt) :
+    ct (polySub p q) = GaussInt.sub (ct p) (ct q) := by
+  rw [polySub, ct_padd, ct_map_neg, GaussInt.sub_eq_add_neg]
+
+private theorem ct_emul_u (a2 a4 : GaussInt) (p q : List GaussInt × List GaussInt) :
+    ct (emul a2 a4 GaussInt.zero p q).1 = GaussInt.mul (ct p.1) (ct q.1) := by
+  rw [emul, y2Poly, ct_padd, ct_pmul, ct_pmul, ct_pmul]
+  simp [ct, GaussInt.mul_zero, GaussInt.add_zero]
+
+private theorem ct_emul_v (a2 a4 : GaussInt) (p q : List GaussInt × List GaussInt) :
+    ct (emul a2 a4 GaussInt.zero p q).2 =
+      GaussInt.add (GaussInt.mul (ct p.1) (ct q.2)) (GaussInt.mul (ct p.2) (ct q.1)) := by
+  rw [emul, ct_padd, ct_pmul, ct_pmul]
+
+private theorem ct_epow_odd (a2 a4 : GaussInt) (uv : List GaussInt × List GaussInt)
+    (hv : ct uv.2 = GaussInt.zero) (n : Nat) :
+    ct (epow a2 a4 GaussInt.zero uv n).1 = GaussInt.npow (ct uv.1) n ∧
+      ct (epow a2 a4 GaussInt.zero uv n).2 = GaussInt.zero := by
+  induction n with
+  | zero => simp [epow, ct, GaussInt.npow]
+  | succ n ih =>
+    have hstep : epow a2 a4 GaussInt.zero uv (n + 1) =
+        emul a2 a4 GaussInt.zero uv (epow a2 a4 GaussInt.zero uv n) := rfl
+    refine ⟨?_, ?_⟩
+    · rw [hstep, ct_emul_u, ih.1, GaussInt.npow_succ]
+    · rw [hstep, ct_emul_v, ih.2, hv]
+      simp
+
+private theorem ct_epow_even_u (a2 a4 : GaussInt) (uv : List GaussInt × List GaussInt)
+    (hu : ct uv.1 = GaussInt.zero) (n : Nat) (hn : n ≠ 0) :
+    ct (epow a2 a4 GaussInt.zero uv n).1 = GaussInt.zero := by
+  cases n with
+  | zero => exact absurd rfl hn
+  | succ n =>
+    have hstep : epow a2 a4 GaussInt.zero uv (n + 1) =
+        emul a2 a4 GaussInt.zero uv (epow a2 a4 GaussInt.zero uv n) := rfl
+    rw [hstep, ct_emul_u, hu, GaussInt.zero_mul]
+
+private def uvAt (a2 a4 : GaussInt) (k : Nat) : List GaussInt × List GaussInt :=
+  (divisionTower (k + 1) a2 a4 GaussInt.zero).getLastD
+    ([GaussInt.zero], [GaussInt.zero])
+
+private theorem length_divisionTower (n : Nat) (a2 a4 a6 : GaussInt) :
+    (divisionTower n a2 a4 a6).length = n := by
+  induction n with
+  | zero => rfl
+  | succ n ih => simp [divisionTower, ih]
+
+private theorem getD_append_left {α : Type} (l1 l2 : List α) (i : Nat) (d : α)
+    (hi : i < l1.length) : (l1 ++ l2).getD i d = l1.getD i d := by
+  induction l1 generalizing i with
+  | nil => simp at hi
+  | cons a l ih =>
+    cases i with
+    | zero => rfl
+    | succ i =>
+      have hi' : i < l.length := by
+        simp [List.length] at hi
+        omega
+      simpa [List.getD] using ih i hi'
+
+private theorem getD_last {α : Type} (l : List α) (a d : α) :
+    (l ++ [a]).getD l.length d = a := by
+  induction l with
+  | nil => simp
+  | cons b l ih => simp [ih]
+
+private theorem uvAt_eq (a2 a4 : GaussInt) (k : Nat) :
+    uvAt a2 a4 k = psiAt k (divisionTower k a2 a4 GaussInt.zero) a2 a4 GaussInt.zero := by
+  simp [uvAt, divisionTower, List.getLastD_concat]
+
+private theorem tower_get (a2 a4 : GaussInt) (i k : Nat) (hik : i < k) :
+    (divisionTower k a2 a4 GaussInt.zero).getD i ([GaussInt.zero], [GaussInt.zero]) =
+      uvAt a2 a4 i := by
+  induction k generalizing i with
+  | zero => omega
+  | succ k ih =>
+    rw [divisionTower]
+    by_cases h : i = k
+    · subst h
+      have hlast := getD_last (divisionTower i a2 a4 GaussInt.zero)
+        (psiAt i (divisionTower i a2 a4 GaussInt.zero) a2 a4 GaussInt.zero)
+        ([GaussInt.zero], [GaussInt.zero])
+      rw [length_divisionTower] at hlast
+      rw [hlast]
+      exact (uvAt_eq a2 a4 i).symm
+    · rw [getD_append_left _ _ _ _ (by simpa [length_divisionTower] using (by omega : i < k))]
+      exact ih i (by omega)
+
+private theorem tower_get_opt (a2 a4 : GaussInt) (i k : Nat) (hik : i < k) :
+    ((divisionTower k a2 a4 GaussInt.zero)[i]?).getD ([GaussInt.zero], [GaussInt.zero]) =
+      uvAt a2 a4 i := by
+  simpa using tower_get a2 a4 i k hik
+
+private theorem const_shape (a2 a4 : GaussInt) (k : Nat) :
+    (k % 2 = 0 → ct (uvAt a2 a4 k).1 = GaussInt.zero) ∧
+      (k % 2 = 1 → ct (uvAt a2 a4 k).2 = GaussInt.zero) := by
+  induction k using Nat.strongRecOn with
+  | ind k ih =>
+    rw [uvAt_eq]
+    by_cases h0 : k = 0
+    · subst h0
+      simp [psiAt, ct]
+    by_cases h1 : k = 1
+    · subst h1
+      simp [psiAt, ct]
+    by_cases h2 : k = 2
+    · subst h2
+      simp [psiAt, ct]
+    by_cases h3 : k = 3
+    · subst h3
+      simp [psiAt, ct, bInv]
+    by_cases h4 : k = 4
+    · subst h4
+      simp [psiAt]
+      rw [ct_emul_u]
+      simp [ct]
+    · refine ⟨?_, ?_⟩
+      · intro he
+        simp [psiAt, h0, h1, h2, h3, h4, he, ct]
+      · intro ho
+        have hmlt : (k - 1) / 2 < k := by omega
+        have hm2 : (k - 1) / 2 + 2 < k := by omega
+        have hm1 : (k - 1) / 2 + 1 < k := by omega
+        have hmm : (k - 1) / 2 - 1 < k := by omega
+        simp [psiAt, h0, h1, h2, h3, h4, ho, ct_polySub, ct_emul_v,
+          tower_get_opt a2 a4 ((k - 1) / 2) k hmlt,
+          tower_get_opt a2 a4 ((k - 1) / 2 + 2) k hm2,
+          tower_get_opt a2 a4 ((k - 1) / 2 + 1) k hm1,
+          tower_get_opt a2 a4 ((k - 1) / 2 - 1) k hmm]
+        by_cases hme : ((k - 1) / 2) % 2 = 0
+        · have hUm2 : ct (uvAt a2 a4 ((k - 1) / 2 + 2)).1 = GaussInt.zero :=
+            (ih _ hm2).1 (by omega)
+          have hUm : ct (uvAt a2 a4 ((k - 1) / 2)).1 = GaussInt.zero :=
+            (ih _ hmlt).1 hme
+          have hVm1 : ct (uvAt a2 a4 ((k - 1) / 2 - 1)).2 = GaussInt.zero :=
+            (ih _ hmm).2 (by omega)
+          have hVp : ct (uvAt a2 a4 ((k - 1) / 2 + 1)).2 = GaussInt.zero :=
+            (ih _ hm1).2 (by omega)
+          have hEpU : ct (epow a2 a4 GaussInt.zero (uvAt a2 a4 ((k - 1) / 2)) 3).1 =
+              GaussInt.zero :=
+            ct_epow_even_u a2 a4 _ hUm 3 (by decide)
+          have hEpV : ct (epow a2 a4 GaussInt.zero (uvAt a2 a4 ((k - 1) / 2 + 1)) 3).2 =
+              GaussInt.zero :=
+            (ct_epow_odd a2 a4 _ hVp 3).2
+          simp [hUm2, hEpU, hVm1, hEpV, GaussInt.zero_mul, GaussInt.mul_zero,
+            GaussInt.add_zero, GaussInt.zero_add, GaussInt.sub_eq_add_neg, GaussInt.neg_zero]
+        · have hmo : ((k - 1) / 2) % 2 = 1 := by omega
+          have hVm : ct (uvAt a2 a4 ((k - 1) / 2)).2 = GaussInt.zero :=
+            (ih _ hmlt).2 hmo
+          have hVm2 : ct (uvAt a2 a4 ((k - 1) / 2 + 2)).2 = GaussInt.zero :=
+            (ih _ hm2).2 (by omega)
+          have hUm1 : ct (uvAt a2 a4 ((k - 1) / 2 - 1)).1 = GaussInt.zero :=
+            (ih _ hmm).1 (by omega)
+          have hUp : ct (uvAt a2 a4 ((k - 1) / 2 + 1)).1 = GaussInt.zero :=
+            (ih _ hm1).1 (by omega)
+          have hEpV : ct (epow a2 a4 GaussInt.zero (uvAt a2 a4 ((k - 1) / 2)) 3).2 =
+              GaussInt.zero :=
+            (ct_epow_odd a2 a4 _ hVm 3).2
+          have hEpU : ct (epow a2 a4 GaussInt.zero (uvAt a2 a4 ((k - 1) / 2 + 1)) 3).1 =
+              GaussInt.zero :=
+            ct_epow_even_u a2 a4 _ hUp 3 (by decide)
+          simp [hVm2, hEpV, hUm1, hEpU, GaussInt.zero_mul, GaussInt.mul_zero,
+            GaussInt.add_zero, GaussInt.zero_add, GaussInt.sub_eq_add_neg, GaussInt.neg_zero]
+
+private theorem ct_odd_rec (a2 a4 : GaussInt) (k : Nat) (hk : k % 2 = 1) (h5 : 5 ≤ k) :
+    ct (uvAt a2 a4 k).1 =
+      if ((k - 1) / 2) % 2 = 0 then
+        GaussInt.neg (GaussInt.mul (ct (uvAt a2 a4 ((k - 1) / 2 - 1)).1)
+          (GaussInt.npow (ct (uvAt a2 a4 ((k - 1) / 2 + 1)).1) 3))
+      else
+        GaussInt.mul (ct (uvAt a2 a4 ((k - 1) / 2 + 2)).1)
+          (GaussInt.npow (ct (uvAt a2 a4 ((k - 1) / 2)).1) 3) := by
+  have h0 : k ≠ 0 := by omega
+  have h1 : k ≠ 1 := by omega
+  have h2 : k ≠ 2 := by omega
+  have h3 : k ≠ 3 := by omega
+  have h4 : k ≠ 4 := by omega
+  have hmlt : (k - 1) / 2 < k := by omega
+  have hm2 : (k - 1) / 2 + 2 < k := by omega
+  have hm1 : (k - 1) / 2 + 1 < k := by omega
+  have hmm : (k - 1) / 2 - 1 < k := by omega
+  rw [uvAt_eq]
+  simp [psiAt, h0, h1, h2, h3, h4, hk, ct_polySub, ct_emul_u,
+    tower_get_opt a2 a4 ((k - 1) / 2) k hmlt,
+    tower_get_opt a2 a4 ((k - 1) / 2 + 2) k hm2,
+    tower_get_opt a2 a4 ((k - 1) / 2 + 1) k hm1,
+    tower_get_opt a2 a4 ((k - 1) / 2 - 1) k hmm]
+  by_cases hme : ((k - 1) / 2) % 2 = 0
+  · simp [hme]
+    have hUm : ct (uvAt a2 a4 ((k - 1) / 2)).1 = GaussInt.zero :=
+      (const_shape a2 a4 _).1 hme
+    have hVp : ct (uvAt a2 a4 ((k - 1) / 2 + 1)).2 = GaussInt.zero :=
+      (const_shape a2 a4 _).2 (by omega)
+    have hEpU : ct (epow a2 a4 GaussInt.zero (uvAt a2 a4 ((k - 1) / 2)) 3).1 =
+        GaussInt.zero :=
+      ct_epow_even_u a2 a4 _ hUm 3 (by decide)
+    have hEp := ct_epow_odd a2 a4 (uvAt a2 a4 ((k - 1) / 2 + 1)) hVp 3
+    simp [hEpU, hEp.1, GaussInt.mul_zero, GaussInt.sub_eq_add_neg, GaussInt.zero_add,
+      GaussInt.npow]
+  · have hmo : ((k - 1) / 2) % 2 = 1 := by omega
+    simp [hme, hmo]
+    have hUp : ct (uvAt a2 a4 ((k - 1) / 2 + 1)).1 = GaussInt.zero :=
+      (const_shape a2 a4 _).1 (by omega)
+    have hVm : ct (uvAt a2 a4 ((k - 1) / 2)).2 = GaussInt.zero :=
+      (const_shape a2 a4 _).2 hmo
+    have hEpU : ct (epow a2 a4 GaussInt.zero (uvAt a2 a4 ((k - 1) / 2 + 1)) 3).1 =
+        GaussInt.zero :=
+      ct_epow_even_u a2 a4 _ hUp 3 (by decide)
+    have hEp := ct_epow_odd a2 a4 (uvAt a2 a4 ((k - 1) / 2)) hVm 3
+    simp [hEpU, hEp.1, GaussInt.mul_zero, GaussInt.sub_eq_add_neg, GaussInt.add_zero,
+      GaussInt.neg_zero, GaussInt.npow]
+
+private theorem ct_divisionPsi_odd (a2 a4 : GaussInt) (n : Nat) (hn : n % 2 = 1) :
+    ct (divisionPsi n a2 a4 GaussInt.zero) = ct (uvAt a2 a4 n).1 := by
+  have hb : (n % 2 == 0) = false := by
+    rw [beq_eq_false_iff_ne]
+    omega
+  simp [divisionPsi, hb, tower_get_opt a2 a4 n (n + 1) (by omega)]
+
+private theorem ct_at_one (a2 a4 : GaussInt) : ct (uvAt a2 a4 1).1 = GaussInt.one := by
+  simp [uvAt_eq, psiAt, ct]
+
+private theorem ct_at_three (a2 a4 : GaussInt) :
+    ct (uvAt a2 a4 3).1 = GaussInt.neg (GaussInt.mul a4 a4) := by
+  simp [uvAt_eq, psiAt, bInv, ct, GaussInt.sub_eq_add_neg, GaussInt.mul_zero, GaussInt.zero_add]
+
+private theorem npow_sq (z : GaussInt) : GaussInt.npow z 2 = GaussInt.mul z z := by
+  rw [GaussInt.npow_succ, GaussInt.npow_one]
+
+/-- On `y² = x³ + a₂ x² + a₄ x`, the constant term of `ψ₁₃` is `a₄ ^ 42`.
+
+The value does not depend on `a₂`. It is not the field norm of the discriminant.
+-/
+theorem psi13_constant_term (a2 a4 : GaussInt) :
+    ct (psi13 a2 a4 GaussInt.zero) = GaussInt.npow a4 42 := by
+  have h5 : ct (uvAt a2 a4 5).1 =
+      GaussInt.neg (GaussInt.mul (ct (uvAt a2 a4 1).1)
+        (GaussInt.npow (ct (uvAt a2 a4 3).1) 3)) := by
+    simpa using ct_odd_rec a2 a4 5 (by decide) (by decide)
+  have h7 : ct (uvAt a2 a4 7).1 =
+      GaussInt.mul (ct (uvAt a2 a4 5).1) (GaussInt.npow (ct (uvAt a2 a4 3).1) 3) := by
+    simpa using ct_odd_rec a2 a4 7 (by decide) (by decide)
+  have h13 : ct (uvAt a2 a4 13).1 =
+      GaussInt.neg (GaussInt.mul (ct (uvAt a2 a4 5).1)
+        (GaussInt.npow (ct (uvAt a2 a4 7).1) 3)) := by
+    simpa using ct_odd_rec a2 a4 13 (by decide) (by decide)
+  have hc3p : ct (uvAt a2 a4 3).1 = GaussInt.neg (GaussInt.npow a4 2) := by
+    rw [ct_at_three, ← npow_sq]
+  have hc5 : ct (uvAt a2 a4 5).1 = GaussInt.npow a4 6 := by
+    rw [h5, ct_at_one, hc3p, GaussInt.one_mul, GaussInt.npow_neg_three, GaussInt.npow_npow,
+      GaussInt.neg_neg]
+  have hc7 : ct (uvAt a2 a4 7).1 = GaussInt.neg (GaussInt.npow a4 12) := by
+    rw [h7, hc5, hc3p, GaussInt.npow_neg_three, GaussInt.npow_npow, GaussInt.mul_neg,
+      ← GaussInt.npow_add]
+  rw [psi13, ct_divisionPsi_odd a2 a4 13 (by decide), h13, hc5, hc7,
+    GaussInt.npow_neg_three, GaussInt.npow_npow, GaussInt.mul_neg, GaussInt.neg_neg,
+    ← GaussInt.npow_add]
+
 /-- `ψ₃` has degree 4 and leading coefficient 3. -/
 theorem psi3_degree (a2 a4 a6 : GaussInt) :
     (divisionPsi 3 a2 a4 a6).length = 5 ∧
@@ -505,5 +1128,94 @@ theorem norm_two_adic (E : FreyCurve4413) (k m : Nat)
     rw [Nat.mul_comm]
   rw [hcomb, hexp] at hnorm
   exact ⟨hnorm, nat_odd_pow m 39 hodd⟩
+
+/-- The constant term of the Frey `ψ₁₃` is `(2 a² + 2 b² √(-1)) ^ 42`. -/
+theorem frey_psi13_constant_term (E : FreyCurve4413) :
+    ct (psi13 (GaussInt.ofInt E.A_int) ⟨E.B_re, E.B_im⟩ GaussInt.zero) =
+      GaussInt.npow ⟨E.B_re, E.B_im⟩ 42 :=
+  psi13_constant_term (GaussInt.ofInt E.A_int) ⟨E.B_re, E.B_im⟩
+
+theorem frey_a4_norm (E : FreyCurve4413) :
+    GaussInt.norm ⟨E.B_re, E.B_im⟩ = 4 * E.c ^ 13 := by
+  have h : E.a ^ 4 + E.b ^ 4 = E.c ^ 13 := E.h_eq
+  simp [GaussInt.norm, E.h_B_re, E.h_B_im]
+  grind
+
+/-- `N(a₄ ^ 42) = 2 ^ 84 * c ^ 546`.
+
+This is the field norm of the constant term of `ψ₁₃`, not `N(Δ) = 2¹⁸ c³⁹`.
+-/
+theorem frey_psi13_constant_norm (E : FreyCurve4413) :
+    GaussInt.norm (GaussInt.npow ⟨E.B_re, E.B_im⟩ 42) =
+      (2 : Int) ^ 84 * E.c ^ 546 := by
+  rw [GaussInt.norm_npow, frey_a4_norm, Int.mul_pow, ← Int.pow_mul]
+  rw [show (4 : Int) = (2 : Int) ^ 2 by decide, ← Int.pow_mul]
+
+/-- The odd part of that norm is a thirteenth power. The power of `2` is not. -/
+theorem frey_constant_norm_odd_part (E : FreyCurve4413) :
+    GaussInt.norm (GaussInt.npow ⟨E.B_re, E.B_im⟩ 42) =
+      (2 : Int) ^ 84 * (E.c ^ 42) ^ 13 := by
+  rw [frey_psi13_constant_norm, ← Int.pow_mul]
+
+theorem frey_constant_two_exponent_not_divisible_by_thirteen : ¬ (13 ∣ 84) := by
+  decide
+
+/-- A Gaussian divisor of the constant term has norm dividing `2 ^ 84 * c ^ 546`. -/
+theorem frey_constant_divisor_norm (E : FreyCurve4413) (z w : GaussInt)
+    (h : GaussInt.mul z w = GaussInt.npow ⟨E.B_re, E.B_im⟩ 42) :
+    GaussInt.norm z ∣ (2 : Int) ^ 84 * E.c ^ 546 := by
+  have hn : GaussInt.norm z * GaussInt.norm w =
+      (2 : Int) ^ 84 * E.c ^ 546 := by
+    rw [← GaussInt.norm_mul, h, frey_psi13_constant_norm]
+  exact ⟨GaussInt.norm w, hn.symm⟩
+
+private theorem int_sq (t : Int) : t ^ 2 = t * t := by
+  rw [Int.pow_succ, Int.pow_succ]
+  simp
+
+theorem frey_a4_eq_zero_iff (E : FreyCurve4413) :
+    ⟨E.B_re, E.B_im⟩ = GaussInt.zero ↔ E.a = 0 ∧ E.b = 0 := by
+  constructor
+  · intro h
+    have hre : E.B_re = 0 := by
+      have := congrArg GaussInt.re h
+      simpa [GaussInt.zero] using this
+    have him : E.B_im = 0 := by
+      have := congrArg GaussInt.im h
+      simpa [GaussInt.zero] using this
+    rw [E.h_B_re] at hre
+    rw [E.h_B_im] at him
+    rcases Int.mul_eq_zero.mp hre with h2 | ha
+    · exact absurd h2 (by decide)
+    · rcases Int.mul_eq_zero.mp him with h2 | hb
+      · exact absurd h2 (by decide)
+      · rw [int_sq] at ha
+        rw [int_sq] at hb
+        exact ⟨(Int.mul_eq_zero.mp ha).elim id id, (Int.mul_eq_zero.mp hb).elim id id⟩
+  · intro h
+    simp [GaussInt.zero, h.1, h.2, E.h_B_re, E.h_B_im]
+
+theorem frey_psi13_constant_ne_zero (E : FreyCurve4413) (hb : E.b ≠ 0) :
+    ct (psi13 (GaussInt.ofInt E.A_int) ⟨E.B_re, E.B_im⟩ GaussInt.zero) ≠
+      GaussInt.zero := by
+  rw [frey_psi13_constant_term]
+  intro h
+  have hz : ⟨E.B_re, E.B_im⟩ = GaussInt.zero :=
+    GaussInt.npow_eq_zero (by decide) h
+  have hb0 : E.b = 0 := ((frey_a4_eq_zero_iff E).mp hz).2
+  exact hb hb0
+
+/-- No root of the Frey `ψ₁₃` in the fraction field of `ℤ[√-1]`.
+
+`evalCleared` is `den ^ deg * ψ₁₃(num / den)`. This proposition is not
+proved. The constant term is `a₄ ^ 42`, whose norm is `2 ^ 84 * c ^ 546`,
+so the numerators are not a finite set independent of `a` and `b`.
+`den_divides_lead_mul_num_pow` does not force the denominator to divide
+`13`. A vanishing value would not be `RhoE13Open`.
+-/
+def psi13_no_Qi_root_Frey_OPEN (E : FreyCurve4413) : Prop :=
+  ∀ num den : GaussInt, den ≠ GaussInt.zero →
+    evalCleared (psi13 (GaussInt.ofInt E.A_int) ⟨E.B_re, E.B_im⟩ GaussInt.zero)
+      num den ≠ GaussInt.zero
 
 end FreyCurve4413

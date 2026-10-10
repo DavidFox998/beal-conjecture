@@ -163,10 +163,14 @@ level `n`. `Mathlib/Modular/EllipticCurveMinimal.lean` is the model
 `c4_c6_discriminant` is `c₄³ - c₆² = 1728 Δ`. `divisionPsi` builds `ψ₁₃`
 by the classical recurrence. On `y² = x³ - x` that list has degree `84`
 and leading coefficient `13`. `psi13_no_integral_root_on_minus_x` is that
-no-root statement for `y² = x³ - x` only. `psi13_no_integral_root_OPEN` is
-not a theorem for the Frey coefficients, and it does not produce
-`RhoE13Open`. `thirteen_split` is `13 = (2 + 3√-1)(2 - 3√-1)`, so a
-denominator of norm `13` still divides the leading coefficient.
+no-root statement for `y² = x³ - x` only. On `y² = x³ + a₂ x² + a₄ x` the
+constant term is `a₄ ^ 42`. For a Frey curve its norm is `2 ^ 84 * c ^ 546`,
+not `N(Δ)`. `psi13_no_integral_root_OPEN` and `psi13_no_Qi_root_Frey_OPEN`
+are not theorems for the Frey coefficients, and neither produces
+`RhoE13Open`. `QiDivisors13.lean` lists the sixteen divisors of `13`.
+`thirteen_split` is `13 = (2 + 3√-1)(2 - 3√-1)`. `5 + 12√-1` has norm `169`
+and does not divide `13`. Euclid's lemma is not proved, so a cleared
+denominator is not forced onto that list.
 `norm_two_adic`
 says `v₂(N(Δ)) = 18 + 39 k` when `|c| = 2^k m`
 with `m` odd. The conductor exponents `5` and `6` are not theorems.

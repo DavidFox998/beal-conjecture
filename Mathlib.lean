@@ -11,3 +11,4 @@ import Mathlib.Modular.DiscriminantNorm
 import Mathlib.Modular.LevelLowering4413
 import Mathlib.Modular.DarmonMerel4413
 import Mathlib.Modular.EllipticCurveMinimal
+import Mathlib.Modular.QiDivisors13
