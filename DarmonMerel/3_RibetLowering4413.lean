@@ -118,11 +118,17 @@ def ExponentIn1012 (e : ℕ) : Prop :=
 /-- Pacetti, arXiv:2007.11486, Lemma 2.8(2), for a minimal model.
 
 When `2` ramifies, that lemma states the exponent at the prime above `2`
-is `10` or `12`. The Tate case split is not formalized. `p2_valuation_of_two_pow`
-is `v_π(2^k) = 2k` for `π = 1 + √(-1)`, and `c4_p2_exact_ten` is
-`v_π(c₄) = 10` when `c` is odd. That is the valuation of `c₄`, not this
-conductor exponent. `N(π^10) = 2^10`. The comparison with `2⁵` and `2⁶`
-is not a theorem, and this proposition does not give `32 ∣ n`.
+is `10` or `12`. The Tate case split, including translations, is not
+formalized. `p2_valuation_of_two_pow` is `v_π(2^k) = 2k` for
+`π = 1 + √(-1)`. `c4_p2_exact_ten` is `v_π(c₄) = 10` when `c` is odd, and
+`delta_p2_exact_eighteen` is `v_π(Δ) = 18`. `a4_p2_exact_two` is
+`v_π(a₄) = 2`, so the substitution `u = π`, `r = s = t = 0` is not
+integral. The sufficient minimality test is `v(c₄) < 4` or `v(Δ) < 12`;
+neither inequality holds. `MinimalModelAt2` stays opaque, and so does this
+exponent. `N(π^10) = 2^10`. Dividing the exponent by `2` is not the norm
+of the conductor ideal, and this proposition does not give `32 ∣ n`.
+`RibetLevel` still stores `n ∣ N`, not `n` equal to the prime-to-`c` part
+of `N`.
 -/
 def pacetti_2_8_open : Prop :=
   ∀ E : FreyCurve4413, MinimalModelAt2 E →

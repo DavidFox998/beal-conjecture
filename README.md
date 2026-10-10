@@ -163,8 +163,11 @@ conjunct `32 ∣ n`. If `c` is odd, `tate_lower_bound_of_c_odd` gives
 `c₆`. `c4_c6_coprime_to_2_when_c_odd` says `2` does not divide
 `5 a² - 3 b² √(-1)` when `c` is odd. `p2_valuation_of_two_pow` is
 `v_π(2^k) = 2k` at `π = 1 + √(-1)`, and `c4_p2_exact_ten` is `v_π(c₄) = 10`
-when `c` is odd. `N(π^10) = 2^10`. That valuation is not the conductor
-exponent, and it does not give `32 ∣ n`. `FreyValuationAt2` is `v₂(|c|)`.
+when `c` is odd. `delta_p2_exact_eighteen` is `v_π(Δ) = 18`, and
+`a4_p2_exact_two` is `v_π(a₄) = 2`. The substitution `u = π` with no
+translation is not integral, and `v(c₄) < 4` or `v(Δ) < 12` does not hold.
+`N(π^10) = 2^10`. That valuation is not the conductor exponent, and it
+does not give `32 ∣ n`. `FreyValuationAt2` is `v₂(|c|)`.
 `RhoE13Open` is sealed. `Psi13HasNoQiRoot` is stated only for
 `NontrivialFrey`. The unrestricted statement fails for `(0, 0, 0)`.
 `RhoE13NeedsSL2` is `Psi13HasNoQiRoot` together with the sealed

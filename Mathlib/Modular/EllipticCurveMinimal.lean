@@ -65,7 +65,11 @@ no proof. `RhoE13Open` has no term.
 integer of shape `32 |c|²` or `64 |c|²`, and returns one level dividing
 that integer. `n = 32 ∨ n = 64` is `n_eq_32_or_64_of_tate`, not a component
 of the axiom. If `c` is odd, `v₂(N(Δ)) = 18`. That is not the conductor
-exponent.
+exponent. `delta_p2_exact_eighteen` is the element valuation `v_π(Δ) = 18`,
+from `Δ = 2⁹ (a² + b² √(-1)) c¹³`. `a4_p2_exact_two` is `v_π(a₄) = 2`.
+The substitution `u = π`, `r = s = t = 0` needs `v_π(a₄) ≥ 4`, so it is
+not integral. The sufficient test `v(c₄) < 4` or `v(Δ) < 12` does not
+apply. `MinimalModelAt2` stays opaque.
 -/
 
 structure GaussInt where
@@ -1692,6 +1696,162 @@ theorem c6_p2_divisible_by_sixteen (a b : ℤ) :
       GaussInt.mul (GaussInt.ofInt ((2 : ℤ) ^ 8)) cof :=
     smul_eq_mul_ofInt _ _
   rw [hsmul, ← h2, mul_mul_swap (twoUnit 8) cof (piPow 16)]
+
+theorem int_mod_two (t : ℤ) : t % 2 = 0 ∨ t % 2 = 1 := by
+  have hnn : 0 ≤ t % 2 := Int.emod_nonneg t (by decide : (2 : ℤ) ≠ 0)
+  have hlt : t % 2 < 2 := Int.emod_lt_of_pos t (by decide : (0 : ℤ) < 2)
+  omega
+
+/-- `π` is prime for this parity: it divides a product iff it divides a factor. -/
+theorem piDivides_mul (z w : GaussInt) :
+    piDivides (GaussInt.mul z w) ↔ piDivides z ∨ piDivides w := by
+  cases z with
+  | mk xr xi =>
+    cases w with
+    | mk yr yi =>
+      simp [piDivides, GaussInt.mul]
+      have hs : xr * yr - xi * yi + (xr * yi + xi * yr) =
+          (xr + xi) * (yr + yi) + -(2 * xi * yi) := by
+        grind
+      rw [hs]
+      have hneg : -(2 * xi * yi) = 2 * -(xi * yi) := by
+        rw [Int.mul_assoc 2 xi yi, Int.neg_mul_eq_mul_neg]
+      rw [hneg, Int.add_mul_emod_self_left, Int.mul_emod]
+      rcases int_mod_two (xr + xi) with hzx | hzx <;>
+        rcases int_mod_two (yr + yi) with hwy | hwy
+      · simp [hzx, hwy]
+      · simp [hzx, hwy]
+      · simp [hzx, hwy]
+      · simp [hzx, hwy]
+
+theorem P2Exact_mul {z w : GaussInt} {m n : ℕ}
+    (hz : P2Exact z m) (hw : P2Exact w n) :
+    P2Exact (GaussInt.mul z w) (m + n) := by
+  rcases hz with ⟨u, hu, hnu⟩
+  rcases hw with ⟨v, hv, hnv⟩
+  refine ⟨GaussInt.mul u v, ?_, ?_⟩
+  · have hp : piPow (m + n) = GaussInt.mul (piPow m) (piPow n) := by
+      unfold piPow
+      exact GaussInt.npow_add pi m n
+    rw [hp, mul_mul_comm_mid u v (piPow m) (piPow n), hu,
+      GaussInt.mul_assoc z v (piPow n), hv]
+  · intro hdiv
+    rcases (piDivides_mul u v).1 hdiv with h | h
+    · exact hnu h
+    · exact hnv h
+
+theorem P2Exact_zero_of_not_pi {z : GaussInt} (h : ¬ piDivides z) : P2Exact z 0 := by
+  refine ⟨z, ?_, h⟩
+  simp [piPow, GaussInt.npow, GaussInt.mul_one]
+
+theorem piDivides_ofInt_iff (n : ℤ) :
+    piDivides (GaussInt.ofInt n) ↔ n % 2 = 0 := by
+  simp [piDivides, GaussInt.ofInt]
+
+theorem not_piDivides_ofInt_of_natAbs_odd {n : ℤ} (h : n.natAbs % 2 = 1) :
+    ¬ piDivides (GaussInt.ofInt n) := by
+  intro hdiv
+  have hmod : n % 2 = 0 := (piDivides_ofInt_iff n).1 hdiv
+  have heven : n.natAbs % 2 = 0 :=
+    natAbs_of_two_dvd (Int.dvd_of_emod_eq_zero hmod)
+  omega
+
+theorem nat_odd_cast_mod_two {n : ℕ} (h : n % 2 = 1) : ((n : ℤ) % 2) = 1 := by
+  have hform : n = 2 * (n / 2) + 1 := by
+    have hdiv := Nat.div_add_mod n 2
+    rw [h] at hdiv
+    exact hdiv.symm
+  rw [hform]
+  have hcast : ((2 * (n / 2) + 1 : ℕ) : ℤ) = (2 : ℤ) * ↑(n / 2) + 1 := by
+    rw [Int.natCast_add, Int.natCast_mul]
+    have h2 : ((2 : ℕ) : ℤ) = 2 := by decide
+    have h1 : ((1 : ℕ) : ℤ) = 1 := by decide
+    rw [h2, h1]
+  rw [hcast]
+  have hmod : ((2 : ℤ) * ↑(n / 2) + 1) % 2 = (1 : ℤ) % 2 := by
+    rw [Int.add_comm, Int.add_mul_emod_self_left]
+  rw [hmod]
+  decide
+
+theorem c_pow_not_pi (E : FreyCurve4413) (hodd : E.c.natAbs % 2 = 1) :
+    ¬ piDivides (GaussInt.ofInt (E.c ^ 13)) := by
+  apply not_piDivides_ofInt_of_natAbs_odd
+  rw [Int.natAbs_pow]
+  exact nat_odd_pow E.c.natAbs 13 hodd
+
+/-- If `c` is odd, exactly one of `a²`, `b²` is odd, so `π` misses `a² + b² √(-1)`. -/
+theorem sum_squares_not_pi (E : FreyCurve4413) (hodd : E.c.natAbs % 2 = 1) :
+    ¬ piDivides ⟨E.a ^ 2, E.b ^ 2⟩ := by
+  have hsum := odd_c_sum_squares_odd E hodd
+  have ha := int_sq_as_natAbs E.a
+  have hb := int_sq_as_natAbs E.b
+  intro hdiv
+  simp [piDivides] at hdiv
+  rw [ha, hb, ← Int.natCast_add] at hdiv
+  rw [nat_odd_cast_mod_two hsum] at hdiv
+  omega
+
+/-- Pacetti's `Δ = 2⁹ (a² + b² √(-1)) c¹³` as an element of `ℤ[√-1]`. -/
+def deltaGauss (E : FreyCurve4413) : GaussInt :=
+  ⟨E.discriminant_re, E.discriminant_im⟩
+
+theorem deltaGauss_factor (E : FreyCurve4413) :
+    deltaGauss E =
+      GaussInt.mul (GaussInt.ofInt ((2 : ℤ) ^ 9))
+        (GaussInt.mul ⟨E.a ^ 2, E.b ^ 2⟩ (GaussInt.ofInt (E.c ^ 13))) := by
+  unfold deltaGauss discriminant_re discriminant_im
+  simp [GaussInt.mul, GaussInt.ofInt, Int.mul_zero, Int.zero_mul, Int.sub_zero, Int.add_zero]
+  constructor <;> grind
+
+theorem deltaGauss_eq_weierstrass (E : FreyCurve4413) :
+    deltaGauss E = ⟨E.Δ.1, E.Δ.2⟩ := by
+  have h := discriminant_eq_weierstrass E
+  simp [deltaGauss, h.1, h.2]
+
+/-- If `c` is odd, `v_π(Δ) = 18`.
+
+`v_π(2⁹) = 18`, and neither `a² + b² √(-1)` nor `c¹³` is divisible by `π`.
+`v₂(N(Δ)) = 18` is the field norm. Here the exponent `18` is `v_π` of the
+element `Δ` itself. It is not a conductor exponent.
+-/
+theorem delta_p2_exact_eighteen (E : FreyCurve4413) (hodd : E.c.natAbs % 2 = 1) :
+    P2Exact (deltaGauss E) 18 := by
+  rw [deltaGauss_factor]
+  exact P2Exact_mul (p2_valuation_of_two_pow 9)
+    (P2Exact_mul (P2Exact_zero_of_not_pi (sum_squares_not_pi E hodd))
+      (P2Exact_zero_of_not_pi (c_pow_not_pi E hodd)))
+
+theorem a4_factor (E : FreyCurve4413) :
+    ⟨E.B_re, E.B_im⟩ =
+      GaussInt.mul (GaussInt.ofInt 2) ⟨E.a ^ 2, E.b ^ 2⟩ := by
+  rw [E.h_B_re, E.h_B_im]
+  simp [GaussInt.mul, GaussInt.ofInt]
+
+/-- If `c` is odd, `v_π(a₄) = 2`.
+
+`a₄ = 2 (a² + b² √(-1))`. The substitution `x = π² x'`, `y = π³ y'` divides
+`a₄` by `π⁴` and needs valuation at least `4`. Valuation `2` blocks that
+substitution. A translation `x = x' + r` is not this substitution, so this
+does not produce a term of `MinimalModelAt2`.
+-/
+theorem a4_p2_exact_two (E : FreyCurve4413) (hodd : E.c.natAbs % 2 = 1) :
+    P2Exact ⟨E.B_re, E.B_im⟩ 2 := by
+  have h2 : P2Exact (GaussInt.ofInt 2) 2 := by
+    simpa [Int.pow_one] using p2_valuation_of_two_pow 1
+  rw [a4_factor]
+  exact P2Exact_mul h2 (P2Exact_zero_of_not_pi (sum_squares_not_pi E hodd))
+
+/-- The sufficient minimality test does not apply to this model when `c` is odd.
+
+A model is minimal at `π` if `v_π(c₄) < 4` or `v_π(Δ) < 12`. The Frey
+valuations are `10` and `18`. The bounds `12`, `18`, and `24` are the
+divisibilities for scaling by `π³`. `v_π(c₄) = 10` does not give
+`MinimalModelAt2`, and `ConductorExponentAtPrimeAbove2` stays opaque.
+-/
+theorem silverman_test_does_not_apply (E : FreyCurve4413) (hodd : E.c.natAbs % 2 = 1) :
+    P2Exact (c4_Frey E.a E.b) 10 ∧ P2Exact (deltaGauss E) 18 ∧
+      ¬ (10 < 4) ∧ ¬ (18 < 12) :=
+  ⟨c4_p2_exact_ten E hodd, delta_p2_exact_eighteen E hodd, by decide, by decide⟩
 
 theorem GaussInt.npow_one_nat (n : ℕ) : GaussInt.npow GaussInt.one n = GaussInt.one := by
   induction n with
