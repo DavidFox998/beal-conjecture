@@ -181,7 +181,12 @@ below `4`. For `k ≥ 2`, `12 k ≤ v_π(Δ) = 18` fails, so `u = π^k` does not
 give an integral discriminant. `r = 0` and `r = π` are congruent modulo `π`
 and have `a₂` valuations `1` and `3`, so eight residue classes do not
 decide minimality. On `(0, 1, 1)`, `v_π(a₆') = 5` is below Dokchitser's
-`n = 4` bound `7`, and `a₆' - t²` does not reach valuation `6`. When `a` is odd,
+`n = 4` bound `7`, and `a₆' - t²` does not reach valuation `6`. `t = 0` and
+`t = π` are congruent modulo `π`; the `a₆` numerators are `0` and `-π²`,
+and `v_π(-π²) = 2`. On `(0, 1, 1)`, `r = π` and `r = π + π²` are congruent
+modulo `π²` and have `a₆` valuations `5` and `8`. Sixteen tuples with `r`
+modulo `π²` and `s, t` modulo `π` do not decide minimality. A second
+translation `x ↦ x + π` on `(0, 1, 1)` leaves `v_π(a₆) = 5`. When `a` is odd,
 `y ↦ y + π²` gives `v_π(a₃) = 4`, `v_π(a₄) = 3`, `v_π(a₆) = 5`,
 `v_π(b₆) = 8`, and `v_π(D) = 6`. Those are the numerical inputs for type
 `I₂*`. They are not the conductor exponent, and the wild part is not

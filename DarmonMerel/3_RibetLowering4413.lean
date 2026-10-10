@@ -145,7 +145,13 @@ integrality. `v_π(a₂') = 1` does not prove `MinimalModelAt2`.
 On `(0, 1, 1)`, `trivialB_a6_below_dokchitser_I4` is `v_π(a₆') = 5`,
 below the `n = 4` bound `7`. `trivialB_y_shift_stays_below_six` says a
 pure shift `a₆' - t²` does not reach valuation `6`. Those valuations are
-not type `I₄*`.
+not type `I₄*`. `t_zero_and_pi_split_a6` shows `t = 0` and `t = π` are
+congruent modulo `π`, while `π⁶` divides the `a₆` numerator `0` and
+`v_π(-π²) = 2`. `trivialB_a6_splits_mod_pi_sq` shows `r = π` and
+`r = π + π²` are congruent modulo `π²` and have `a₆` valuations `5` and
+`8`. Sixteen tuples do not decide integrality.
+`trivialB_second_pi_shift_a6_stays_five` is the further translation
+`x ↦ x + π` on `(0, 1, 1)`: `v_π(a₆)` stays `5`, below `7`.
 `a_odd_dokchitser_n2_inputs` meets the numerical inputs for `n = 2`,
 including `v_π(b₆) = 8` and `v_π(D) = 6`. Dokchitser's proposition is
 not formalized, and the wild part is not proved to vanish. Ogg's formula

@@ -92,7 +92,15 @@ with `a₂` valuations `1` and `3`. On `(0, 1, 1)`, a pure shift
 `a₆ ↦ a₆ - t²` does not reach valuation `6`, because `v_π(a₆') = 5` is odd
 (`y_shift_keeps_valuation_five`). On `(0, 1, 1)`, `v_π(a₄') = 6` does not block
 `u = π`, and `v_π(a₆') = 5` does. That value `5` is below Dokchitser's
-`n = 4` bound `v(a₆) ≥ 7`. When `a` is odd, the further shift
+`n = 4` bound `v(a₆) ≥ 7`. `t_zero_and_pi_split_a6` has `t = 0` and
+`t = π` congruent modulo `π`, with `a₆` numerators `0` and `-π²`: `π⁶`
+divides `0`, and `v_π(-π²) = 2`. `trivialB_a6_splits_mod_pi_sq` has
+`r = π` and `r = π + π²` congruent modulo `π²`, with `a₆` valuations `5`
+and `8`, so `v ≥ 6` holds for one and fails for the other. Both have
+`v_π(a₂) = 1`. Sixteen tuples with `r` modulo `π²` and `s, t` modulo `π`
+do not decide integrality. `trivialB_second_pi_shift_a6_stays_five` is a
+second translation `x ↦ x + π` on `(0, 1, 1)`: the `a₂` slot has valuation
+`3`, the `a₄` numerator has valuation `2`, and `v_π(a₆)` stays `5`. When `a` is odd, the further shift
 `y ↦ y + π²` gives `v_π(a₃) = 4`, `v_π(a₄) = 3`, and `v_π(a₆) = 5`
 (`a_odd_after_pi_sq_valuations`), and `b6AfterPiSq_p2_exact_eight` together
 with `quadDiscAfterPiSq_p2_exact_six` give `v_π(b₆) = 8` and `v_π(D) = 6`.
@@ -2956,6 +2964,157 @@ theorem trivialB_y_shift_stays_below_six (t : GaussInt) :
     ¬ ∃ u, GaussInt.mul u (piPow 6) =
       GaussInt.sub (a6AfterPi trivialB) (GaussInt.mul t t) :=
   y_shift_keeps_valuation_five trivialB_a6_below_dokchitser_I4.1
+
+/-- `a₆` numerator of `x ↦ x + r`, `y ↦ y + t` on the Frey model.
+
+`a₁ = a₃ = a₆ = 0` and `s = 0`, so Silverman's formula is
+`r a₄ + r² a₂ + r³ - t²`.
+-/
+def a6Numerator (E : FreyCurve4413) (r t : GaussInt) : GaussInt :=
+  GaussInt.sub
+    (GaussInt.add
+      (GaussInt.add (GaussInt.mul r ⟨E.B_re, E.B_im⟩)
+        (GaussInt.mul (GaussInt.mul r r) (GaussInt.ofInt E.A_int)))
+      (GaussInt.mul (GaussInt.mul r r) r))
+    (GaussInt.mul t t)
+
+theorem a6Numerator_at_r_zero (E : FreyCurve4413) (t : GaussInt) :
+    a6Numerator E GaussInt.zero t = GaussInt.neg (GaussInt.mul t t) := by
+  simp [a6Numerator, GaussInt.zero_mul, GaussInt.mul_zero, GaussInt.zero_add,
+    GaussInt.add_zero, GaussInt.sub_eq_add_neg, GaussInt.add_zero]
+
+theorem piPow_two_exact : P2Exact (piPow 2) 2 := by
+  refine ⟨GaussInt.one, GaussInt.one_mul (piPow 2), ?_⟩
+  simp [piDivides, GaussInt.one]
+
+/-- `t = 0` and `t = π` are the same class modulo `π`, and the `a₆` slot splits.
+
+With `r = s = 0`, the numerator is `-t²`. It is `0` at `t = 0`, and `π⁶`
+divides `0`. It is `-π²` at `t = π`, with valuation `2`, so `π⁶` does not
+divide it. Integrality for `u = π` needs valuation at least `6`. One
+representative of this class does not decide the slot. `MinimalModelAt2`
+stays opaque.
+-/
+theorem t_zero_and_pi_split_a6 (E : FreyCurve4413) :
+    piDivides (GaussInt.sub pi GaussInt.zero) ∧
+      a6Numerator E GaussInt.zero GaussInt.zero = GaussInt.zero ∧
+      (∃ u, GaussInt.mul u (piPow 6) = a6Numerator E GaussInt.zero GaussInt.zero) ∧
+      a6Numerator E GaussInt.zero pi = GaussInt.neg (piPow 2) ∧
+      P2Exact (GaussInt.neg (piPow 2)) 2 ∧
+      ¬ ∃ u, GaussInt.mul u (piPow 6) = GaussInt.neg (piPow 2) := by
+  refine ⟨?_, ?_, ?_, ?_, P2Exact_neg piPow_two_exact, ?_⟩
+  · simp [piDivides, pi, GaussInt.sub, GaussInt.zero]
+  · rw [a6Numerator_at_r_zero]
+    simp [GaussInt.mul_zero, GaussInt.neg_zero]
+  · exact ⟨GaussInt.zero, by rw [a6Numerator_at_r_zero]; simp [GaussInt.mul_zero, GaussInt.neg_zero, GaussInt.zero_mul]⟩
+  · rw [a6Numerator_at_r_zero]
+    have hsq : piPow 2 = GaussInt.mul pi pi := by
+      simp [piPow, GaussInt.npow, GaussInt.mul_one]
+    rw [hsq]
+  · intro ⟨u, hu⟩
+    have hnot := not_piPowDvd_succ_of_exact (P2Exact_neg piPow_two_exact)
+    apply hnot
+    refine ⟨GaussInt.mul u (piPow 3), ?_⟩
+    have h6 : piPow 6 = GaussInt.mul (piPow 3) (piPow 3) := by
+      unfold piPow
+      rw [show (6 : ℕ) = 3 + 3 by decide, GaussInt.npow_add]
+    rw [h6, ← GaussInt.mul_assoc] at hu
+    exact hu
+
+theorem a6Numerator_pi_trivialB :
+    a6Numerator trivialB pi GaussInt.zero = a6AfterPi trivialB := by
+  simp [a6Numerator, a6AfterPi, trivialB, mk', pi, GaussInt.sub, GaussInt.add,
+    GaussInt.mul, GaussInt.ofInt, GaussInt.zero]
+
+theorem a6Numerator_pi_plus_pi_sq_trivialB :
+    a6Numerator trivialB (GaussInt.add pi (piPow 2)) GaussInt.zero = ⟨-32, -16⟩ := by
+  rw [piPow_two]
+  simp [a6Numerator, trivialB, mk', pi, GaussInt.sub, GaussInt.add, GaussInt.mul,
+    GaussInt.ofInt, GaussInt.zero]
+
+/-- On `(0, 1, 1)`, `r = π` and `r = π + π²` are one class modulo `π²`.
+
+The `a₆` valuations are `5` and `8`. The inequality `v ≥ 6` fails for `r = π`
+and holds for `r = π + π²`. Both `a₂` numerators have valuation `1`, below
+the integrality bound `2`, so neither change is an integral model. A list of
+four representatives modulo `π²` does not compute this slot.
+`MinimalModelAt2` stays opaque.
+-/
+theorem trivialB_a6_splits_mod_pi_sq :
+    GaussInt.sub (GaussInt.add pi (piPow 2)) pi = piPow 2 ∧
+      a6Numerator trivialB pi GaussInt.zero = a6AfterPi trivialB ∧
+      P2Exact (a6AfterPi trivialB) 5 ∧ ¬ (6 ≤ (5 : ℕ)) ∧
+      a6Numerator trivialB (GaussInt.add pi (piPow 2)) GaussInt.zero = ⟨-32, -16⟩ ∧
+      P2Exact ⟨-32, -16⟩ 8 ∧ (6 ≤ (8 : ℕ)) ∧
+      P2Exact (a2AfterPi trivialB) 1 ∧ ¬ (2 ≤ (1 : ℕ)) ∧
+      GaussInt.add (GaussInt.ofInt trivialB.A_int)
+        (GaussInt.smul 3 (GaussInt.add pi (piPow 2))) = ⟨3, 9⟩ ∧
+      P2Exact ⟨3, 9⟩ 1 ∧ ¬ (2 ≤ (1 : ℕ)) := by
+  refine ⟨?_, a6Numerator_pi_trivialB, trivialB_a6_below_dokchitser_I4.1, by decide,
+    a6Numerator_pi_plus_pi_sq_trivialB, ?_, by decide, a2AfterPi_p2_exact_one trivialB,
+    by decide, ?_, ?_, by decide⟩
+  · rw [piPow_two]
+    simp [pi, GaussInt.sub, GaussInt.add]
+  · refine ⟨⟨-2, -1⟩, ?_, ?_⟩
+    · have h8 : piPow 8 = ⟨16, 0⟩ := by
+        simp [piPow, pi, GaussInt.npow, GaussInt.mul, GaussInt.one]
+      rw [h8]
+      simp [GaussInt.mul]
+    · intro hdiv
+      simp [piDivides] at hdiv
+  · rw [piPow_two]
+    simp [trivialB, mk', pi, GaussInt.add, GaussInt.smul, GaussInt.ofInt]
+  · refine ⟨⟨6, 3⟩, ?_, ?_⟩
+    · have hp : piPow 1 = pi := by
+        simp [piPow, GaussInt.npow, GaussInt.mul_one]
+      rw [hp]
+      simp [pi, GaussInt.mul]
+    · intro hdiv
+      simp [piDivides] at hdiv
+
+/-- `a₆` after a second translation `x ↦ x + π` of the model `x ↦ x + π`. -/
+def a6AfterSecondPi (E : FreyCurve4413) : GaussInt :=
+  GaussInt.add (a6AfterPi E)
+    (GaussInt.add (GaussInt.mul pi (a4AfterPi E))
+      (GaussInt.add (GaussInt.mul (piPow 2) (a2AfterPi E)) (piPow 3)))
+
+theorem trivialB_a6AfterSecondPi_value :
+    a6AfterSecondPi trivialB = ⟨-20, 20⟩ := by
+  simp [a6AfterSecondPi, a6AfterPi, a4AfterPi, a2AfterPi, trivialB, mk', pi, piPow,
+    GaussInt.add, GaussInt.mul, GaussInt.npow, GaussInt.one]
+
+/-- On `(0, 1, 1)`, `x ↦ x + π` a second time does not raise `v_π(a₆)` to `7`.
+
+The `a₂` numerator `a₂' + 3 π` has valuation `3`, so that slot meets `≥ 2`.
+The `a₄` numerator has valuation `2`, below `4`. The `a₆` numerator has
+valuation `5`. The term `π a₄'` has valuation `7`, and `π² a₂'` together
+with `π³` has valuation `3` before cancellation; the sum stays at `5`.
+This is below `6` and below Dokchitser's `n = 4` bound `7`. Type `I₄*` and
+exponent `10` are not theorems.
+-/
+theorem trivialB_second_pi_shift_a6_stays_five :
+    GaussInt.add (a2AfterPi trivialB) (GaussInt.smul 3 pi) = ⟨6, 6⟩ ∧
+      P2Exact ⟨6, 6⟩ 3 ∧ (2 ≤ (3 : ℕ)) ∧
+      P2Exact ⟨0, 26⟩ 2 ∧ ¬ (4 ≤ (2 : ℕ)) ∧
+      a6AfterSecondPi trivialB = ⟨-20, 20⟩ ∧
+      P2Exact ⟨-20, 20⟩ 5 ∧ ¬ (6 ≤ (5 : ℕ)) ∧ ¬ (7 ≤ (5 : ℕ)) := by
+  have hodd : trivialB.c.natAbs % 2 = 1 := by decide
+  have ha2eq : GaussInt.add (a2AfterPi trivialB) (GaussInt.smul 3 pi) = ⟨6, 6⟩ := by
+    rw [a2_numerator_at_r_pi]
+    simp [trivialB, mk']
+  have hv3 : P2Exact ⟨6, 6⟩ 3 := by
+    simpa [trivialB, mk'] using a2_plus_three_pi_p2_exact_three trivialB
+  have ha4eq : (⟨2 * trivialB.a ^ 2 + 16 * trivialB.a,
+      2 * trivialB.b ^ 2 + 16 * trivialB.a + 24⟩ : GaussInt) = ⟨0, 26⟩ := by
+    simp [trivialB, mk']
+  have hv2 : P2Exact ⟨0, 26⟩ 2 := by
+    simpa [ha4eq] using pi_r_pi_a4_numerator_p2_exact_two trivialB hodd
+  refine ⟨ha2eq, hv3, by decide, hv2, by decide, trivialB_a6AfterSecondPi_value, ?_, by decide, by decide⟩
+  · refine ⟨⟨0, -5⟩, ?_, ?_⟩
+    · rw [piPow_five]
+      simp [GaussInt.mul]
+    · intro hdiv
+      simp [piDivides] at hdiv
 
 /-- `b₆ = a₃² + 4 a₆` after `y ↦ y + π²`. -/
 def b6AfterPiSq (E : FreyCurve4413) : GaussInt :=
