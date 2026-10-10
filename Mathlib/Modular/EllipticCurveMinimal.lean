@@ -54,8 +54,13 @@ polynomial is not a Galois representation and not `RhoE13Open`.
 
 `norm_two_adic` is the 2-adic valuation of the field norm:
 if `|c| = 2^k m` with `m` odd, then `v₂(N(Δ)) = 18 + 39 k`. Tate's
-algorithm is not formalized. The conductor exponents `5` and `6` are not
-theorems, and `FreyConductor_OPEN` has no proof. `RhoE13Open` has no term.
+algorithm is not formalized. `c4_Frey` and `c6_Frey` are the invariants of
+this model: both components of `c₄` are divisible by `2⁵`, and both
+components of `c₆` are divisible by `2⁸`. Those contents are not conductor
+exponents. Pacetti's Lemma 2.8, for `2` ramified in `ℚ(√-1)`, states the
+exponent at the prime above `2` lies in `{10, 12}`. That case split is not
+a theorem here, and it is not the pair `5`, `6`. `FreyConductor_OPEN` has
+no proof. `RhoE13Open` has no term.
 `ribet_level_lowering_4413` takes `RhoE13Open`, `TateAt2LowerBound`, and one
 integer of shape `32 |c|²` or `64 |c|²`, and returns one level dividing
 that integer. `n = 32 ∨ n = 64` is `n_eq_32_or_64_of_tate`, not a component
@@ -1221,5 +1226,164 @@ def psi13_no_Qi_root_Frey_OPEN (E : FreyCurve4413) : Prop :=
   ∀ num den : GaussInt, den ≠ GaussInt.zero →
     evalCleared (psi13 (GaussInt.ofInt E.A_int) ⟨E.B_re, E.B_im⟩ GaussInt.zero)
       num den ≠ GaussInt.zero
+
+/-- `c₄` of `y² = x³ + (4a) x² + 2(a² + b² √(-1)) x`.
+
+`c₄ = 160 a² - 96 b² √(-1) = 2⁵ (5 a² - 3 b² √(-1))`. The exponent `5` is
+the power of `2` factored out of both components. It is not a conductor
+exponent, and it is not `v₂` of either component when `a` is even.
+-/
+def c4_Frey (a b : ℤ) : GaussInt :=
+  ⟨160 * a ^ 2, -96 * b ^ 2⟩
+
+/-- `c₆` of the same model.
+
+`c₆ = -1792 a³ + 2304 a b² √(-1) = 2⁸ a (-7 a² + 9 b² √(-1))`. The exponent
+`8` is the power of `2` factored out of both components.
+-/
+def c6_Frey (a b : ℤ) : GaussInt :=
+  ⟨-1792 * a ^ 3, 2304 * a * b ^ 2⟩
+
+/-- Power of `2` factored from both components of `c4_Frey`. -/
+def v2_c4 : ℕ := 5
+
+/-- Power of `2` factored from both components of `c6_Frey`. -/
+def v2_c6 : ℕ := 8
+
+theorem c4_Frey_eq_c4Pair (a b : ℤ) :
+    c4_Frey a b =
+      ⟨(c4Pair (4 * a) (2 * a ^ 2) (2 * b ^ 2)).1,
+        (c4Pair (4 * a) (2 * a ^ 2) (2 * b ^ 2)).2⟩ := by
+  simp [c4_Frey, c4Pair]
+  constructor <;> grind
+
+theorem c6_Frey_eq_c6Of (a b : ℤ) :
+    c6_Frey a b = EllipticCurveMinimal.c6Of (4 * a) (2 * a ^ 2) (2 * b ^ 2) := by
+  simp [c6_Frey, EllipticCurveMinimal.c6Of]
+  constructor <;> grind
+
+theorem c4_Frey_factor (a b : ℤ) :
+    c4_Frey a b = GaussInt.smul (2 ^ v2_c4) ⟨5 * a ^ 2, -(3 * b ^ 2)⟩ := by
+  simp [c4_Frey, v2_c4, GaussInt.smul]
+  constructor <;> grind
+
+theorem c6_Frey_factor (a b : ℤ) :
+    c6_Frey a b = GaussInt.smul (2 ^ v2_c6) ⟨-(7 * a ^ 3), 9 * a * b ^ 2⟩ := by
+  simp [c6_Frey, v2_c6, GaussInt.smul]
+  constructor <;> grind
+
+theorem two_pow_v2_c4_dvd (a b : ℤ) :
+    (2 : ℤ) ^ v2_c4 ∣ (c4_Frey a b).re ∧ (2 : ℤ) ^ v2_c4 ∣ (c4_Frey a b).im := by
+  rw [c4_Frey_factor]
+  simp [GaussInt.smul]
+
+theorem two_pow_v2_c6_dvd (a b : ℤ) :
+    (2 : ℤ) ^ v2_c6 ∣ (c6_Frey a b).re ∧ (2 : ℤ) ^ v2_c6 ∣ (c6_Frey a b).im := by
+  rw [c6_Frey_factor]
+  simp [GaussInt.smul]
+
+/-- `n ^ 4` is even if and only if `n` is even. -/
+theorem nat_fourth_mod_two (n : ℕ) : n ^ 4 % 2 = n % 2 := by
+  have h : n % 2 = 0 ∨ n % 2 = 1 := by omega
+  rcases h with h | h
+  · have h2 : 2 ∣ n := Nat.dvd_of_mod_eq_zero h
+    rcases h2 with ⟨k, hk⟩
+    rw [hk, Nat.mul_pow]
+    have hpow : 2 ^ 4 * k ^ 4 = 2 * (2 ^ 3 * k ^ 4) := by
+      rw [show (2 : ℕ) ^ 4 = 2 * 2 ^ 3 by decide, Nat.mul_assoc]
+    rw [hpow, Nat.mul_mod, Nat.mod_self]
+    simp
+  · rw [nat_odd_pow n 4 h, h]
+
+theorem int_pow_four_eq_natAbs (n : ℤ) : n ^ 4 = ↑(n.natAbs ^ 4) := by
+  have h2 : n ^ 2 = ↑(n.natAbs ^ 2) := by
+    cases n with
+    | ofNat k => simp [Int.natAbs]
+    | negSucc k => simp [Int.natAbs, Int.negSucc_pow]
+  have h4 : n ^ 4 = (n ^ 2) ^ 2 := by
+    rw [← Int.pow_mul]
+  rw [h4, h2]
+  have hnat : n.natAbs ^ 4 = (n.natAbs ^ 2) ^ 2 := by
+    rw [← Nat.pow_mul]
+  rw [hnat, ← Int.natCast_pow]
+
+/-- If `c` is odd then exactly one of `|a|`, `|b|` is odd, so `a² + b²` is odd.
+
+`a² + b² √(-1)` is then not divisible by `1 + √(-1)`. The norm computation
+`v₂(N(Δ)) = 18` already says the same thing: `N(a² + b² √(-1)) = c¹³` is odd.
+-/
+theorem odd_c_sum_squares_odd (E : FreyCurve4413) (hodd : E.c.natAbs % 2 = 1) :
+    (E.a.natAbs ^ 2 + E.b.natAbs ^ 2) % 2 = 1 := by
+  have ha : E.a ^ 4 = ↑(E.a.natAbs ^ 4) := int_pow_four_eq_natAbs E.a
+  have hb : E.b ^ 4 = ↑(E.b.natAbs ^ 4) := int_pow_four_eq_natAbs E.b
+  have hsum :
+      E.a ^ 4 + E.b ^ 4 = ↑(E.a.natAbs ^ 4 + E.b.natAbs ^ 4) := by
+    rw [ha, hb, Int.natCast_add]
+  have hnonneg : 0 ≤ E.c ^ 13 := by
+    rw [← E.h_eq, hsum]
+    exact Int.natCast_nonneg _
+  have hc13 : E.c ^ 13 = ↑(E.c.natAbs ^ 13) := by
+    have hnat : (E.c ^ 13).natAbs = E.c.natAbs ^ 13 := Int.natAbs_pow E.c 13
+    rw [← hnat, Int.natAbs_of_nonneg hnonneg]
+  have hnat : E.a.natAbs ^ 4 + E.b.natAbs ^ 4 = E.c.natAbs ^ 13 := by
+    have hcast :
+        (↑(E.a.natAbs ^ 4 + E.b.natAbs ^ 4) : ℤ) = ↑(E.c.natAbs ^ 13) := by
+      rw [← hsum, E.h_eq, hc13]
+    exact Int.ofNat_inj.mp hcast
+  have hmod : (E.a.natAbs ^ 4 + E.b.natAbs ^ 4) % 2 = 1 := by
+    rw [hnat, nat_odd_pow E.c.natAbs 13 hodd]
+  have hpar :
+      (E.a.natAbs ^ 4 + E.b.natAbs ^ 4) % 2 =
+        (E.a.natAbs % 2 + E.b.natAbs % 2) % 2 := by
+    rw [Nat.add_mod, nat_fourth_mod_two, nat_fourth_mod_two]
+  have hsq : ∀ n : ℕ, n ^ 2 % 2 = n % 2 := by
+    intro n
+    have h : n % 2 = 0 ∨ n % 2 = 1 := by omega
+    rcases h with h | h
+    · rcases Nat.dvd_of_mod_eq_zero h with ⟨k, hk⟩
+      rw [h, hk]
+      apply Nat.mod_eq_zero_of_dvd
+      refine ⟨2 * k ^ 2, ?_⟩
+      calc
+        (2 * k) ^ 2 = 2 ^ 2 * k ^ 2 := Nat.mul_pow 2 k 2
+        _ = (2 * 2) * k ^ 2 := by rw [show (2 : ℕ) ^ 2 = 2 * 2 by decide]
+        _ = 2 * (2 * k ^ 2) := Nat.mul_assoc 2 2 (k ^ 2)
+    · rw [nat_odd_pow n 2 h, h]
+  rw [hpar] at hmod
+  rw [Nat.add_mod, hsq, hsq]
+  exact hmod
+
+theorem GaussInt.npow_one_nat (n : ℕ) : GaussInt.npow GaussInt.one n = GaussInt.one := by
+  induction n with
+  | zero => rfl
+  | succ n ih => simp [GaussInt.npow, ih, GaussInt.mul_one]
+
+theorem evalPoly_zero (p : List GaussInt) : evalPoly p GaussInt.zero = ct p := by
+  cases p with
+  | nil => simp [evalPoly, ct]
+  | cons c cs => simp [evalPoly, ct, GaussInt.add_zero]
+
+theorem evalCleared_zero_den_one (p : List GaussInt) :
+    evalCleared p GaussInt.zero GaussInt.one = ct p := by
+  cases p with
+  | nil => simp [evalCleared, ct]
+  | cons c cs =>
+    simp [evalCleared, ct, GaussInt.zero_mul, GaussInt.add_zero, GaussInt.npow_one_nat]
+
+/-- The curve of `(0, 0, 0)` is singular, and `ψ₁₃` vanishes at `0`.
+
+`Psi13HasNoQiRoot` is therefore false for this curve. It is not a theorem
+for every `FreyCurve4413`. For a curve with `b ≠ 0` the constant term is
+nonzero, so `0` is not a root, and the other candidates still depend on
+`a` and `b`.
+-/
+theorem psi13_vanishes_on_zero_curve :
+    evalCleared
+        (psi13 (GaussInt.ofInt 0) ⟨0, 0⟩ GaussInt.zero)
+        GaussInt.zero GaussInt.one =
+      GaussInt.zero := by
+  rw [evalCleared_zero_den_one, psi13_constant_term]
+  rw [show (42 : ℕ) = Nat.succ 41 by decide]
+  simp [GaussInt.npow, GaussInt.mul, GaussInt.zero]
 
 end FreyCurve4413

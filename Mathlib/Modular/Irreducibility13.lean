@@ -11,6 +11,10 @@ that constant term is `2 ^ 84 * c ^ 546`.
 
 `Psi13HasNoQiRoot` is `psi13_no_Qi_root_Frey_OPEN`: the cleared polynomial
 has no root in the fraction field of `ℤ[√-1]`. It is not a theorem.
+`psi13_vanishes_on_zero_curve` shows it is false for `(0, 0, 0)`.
+The rational-root candidates of a norm polynomial would be the divisors of
+the constant term `a₄ ^ 42`, whose norm is `2 ^ 84 * c ^ 546`. That list
+depends on `a` and `b`, so it is not a closed `decide`.
 
 `RhoE13Open E → Psi13HasNoQiRoot E` is not a lemma in this file.
 
@@ -95,5 +99,17 @@ conjunction is not `RhoE13Open`. The implication
 -/
 def RhoE13NeedsSL2 (E : FreyCurve4413) : Prop :=
   Psi13HasNoQiRoot E ∧ ImageContainsSL2 E 13
+
+/-- `(0, 0, 0)` makes `ψ₁₃` vanish at `0`, so the no-root statement is false.
+
+`RhoE13Open` is not this statement, and it is not `ImageContainsSL2`.
+-/
+theorem not_psi13HasNoQiRoot_zero_curve :
+    ¬ Psi13HasNoQiRoot (FreyCurve4413.mk' 0 0 0 rfl) := by
+  intro h
+  have hden : (GaussInt.one : GaussInt) ≠ GaussInt.zero := by decide
+  have hzero := h GaussInt.zero GaussInt.one hden
+  simp [Psi13OverQi, FreyCurve4413.mk', GaussInt.ofInt] at hzero
+  exact hzero psi13_vanishes_on_zero_curve
 
 end FreyCurve4413

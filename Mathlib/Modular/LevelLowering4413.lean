@@ -50,9 +50,13 @@ It does not contain `n = 32 ∨ n = 64`.
 `n ∣ 32` or `n ∣ 64`. The positive divisors of `64` are
 `1, 2, 4, 8, 16, 32, 64`. `TateAt2LowerBound` is the missing hypothesis
 `32 ∣ n`, that is `v₂(n) ≥ 5`, for a model satisfying `MinimalModelAt2`.
-It is not an axiom. With that hypothesis, `n_eq_32_or_64_of_lower_bound`
-is `n = 32 ∨ n = 64`. If `c` is odd, `tate_lower_bound_of_c_odd` gives
-`v₂(N(Δ)) = 18`. That is the field norm, not the conductor exponent.
+It is not an axiom and not a theorem. `thirtyTwo_dvd_of_conductor_shape`
+is the true half: the shape forces `32 ∣ N`. `shape_dvd_does_not_give_thirtyTwo`
+is `N = 32`, `n = 1`, `c = 1`. Coprimality holds there because no prime
+divides `1`, and `32` does not divide `1`. If `c` is odd,
+`tate_lower_bound_of_c_odd` gives `v₂(N(Δ)) = 18`. That is the field norm.
+`c4_Frey` is divisible by `2⁵` in each component and `c6_Frey` by `2⁸`.
+Those contents are not conductor exponents.
 -/
 
 /-- Classical count `(p² - 1) / 2` of the x-coordinates of the nonzero
@@ -313,10 +317,8 @@ theorem freyValuationAt2_odd {c : ℤ} (h : c.natAbs % 2 = 1) :
 /-- If `c` is odd, `v₂(N(Δ)) = 18` and `32 ∣ N(Δ)` in absolute value.
 
 `N(Δ) = 2¹⁸ (c³)¹³`. An odd `c` contributes no factor `2`, so the power of
-`2` is exactly `18`. `32 = 2⁵` divides `2¹⁸`. Kodaira type `Iₙ*` at `2`
-would give conductor exponent `5` in this odd case and `6` when `c` is
-even. That exponent is `TateAt2LowerBound` together with `MinimalModelAt2`.
-This lemma does not conclude `32 ∣ n`.
+`2` is exactly `18`. `32 = 2⁵` divides `2¹⁸`. This is not a conductor
+exponent and it does not conclude `32 ∣ n`.
 -/
 theorem tate_lower_bound_of_c_odd (E : FreyCurve4413)
     (hodd : E.c.natAbs % 2 = 1) :
@@ -396,5 +398,39 @@ noncomputable def ribetOutput_of_open_hypotheses
     (hCond : FreyConductorDivides c N) (hIrr : RhoE13Open E)
     (hTate : TateAt2LowerBound) : RibetLevel c E N :=
   ribet_level_lowering_4413 N hCond hIrr hTate
+
+/-- A conductor shape is divisible by `32 = 2⁵`.
+
+This is the divisibility for `N`. It is not a divisibility for a level
+`n` that merely divides `N`.
+-/
+theorem thirtyTwo_dvd_of_conductor_shape {c : ℤ} {N : ℕ}
+    (h : FreyConductorDivides c N) : 32 ∣ N := by
+  rcases h with h | h
+  · rw [h]
+    exact ⟨c.natAbs ^ 2, rfl⟩
+  · rw [h]
+    refine ⟨2 * c.natAbs ^ 2, ?_⟩
+    rw [show (64 : ℕ) = 32 * 2 by decide, Nat.mul_assoc]
+
+/-- No prime divides `1`, so coprimality at `|c| = 1` holds for every `n`. -/
+theorem prime_not_dvd_one {p : ℕ} (hp : IsPrime p) : ¬ p ∣ 1 := by
+  intro h
+  have hp1 : p = 1 := Nat.dvd_one.mp h
+  have hge : 2 ≤ p := hp.1
+  omega
+
+/-- `N = 32`, `n = 1`, `c = 1` satisfies the shape and `n ∣ N`, and `32 ∤ n`.
+
+Coprimality holds because `prime_not_dvd_one` says no prime divides `|c|`.
+`TateAt2LowerBound` asks for `32 ∣ n` for every such divisor. This example
+is why that proposition is not a consequence of the shape.
+-/
+theorem shape_dvd_does_not_give_thirtyTwo :
+    FreyConductorDivides (1 : ℤ) 32 ∧ (1 ∣ 32) ∧
+      (∀ p, IsPrime p → p ∣ (1 : ℤ).natAbs → ¬ p ∣ 1) ∧ ¬ 32 ∣ 1 := by
+  exact ⟨Or.inl (by decide), ⟨32, rfl⟩,
+    fun p hp _hdv => prime_not_dvd_one hp,
+    by decide⟩
 
 end FreyCurve4413

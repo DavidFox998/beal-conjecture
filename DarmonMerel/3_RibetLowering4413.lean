@@ -106,11 +106,14 @@ opaque MinimalModelAt2 (E : FreyCurve4413) : Prop := True
 
 /-- `v₂(n) ≥ 5` after the level has been lowered, for a minimal model.
 
-The intended case split is the parity of `c`. For the Frey curve over
-`ℚ(√-1)`, Kodaira type `Iₙ*` at `2` gives conductor exponent `5` when `c`
-is odd and `6` when `c` is even. That is not proved. If `c` is odd, the
-field norm satisfies `v₂(N(Δ)) = 18`, and `32 ∣ 2¹⁸`. That valuation is
-not this conductor exponent, and it does not give `32 ∣ n`.
+This proposition is not a theorem. `FreyConductorDivides c N` and `n ∣ N`
+do not give `32 ∣ n`: `N = 32`, `n = 1`, and `c = 1` is a counterexample,
+and every prime fails to divide `|c| = 1`, so coprimality does not remove
+a factor and put `2⁵` into `n`. If `c` is odd, `v₂(N(Δ)) = 18`. That is
+the field norm. Pacetti, arXiv:2007.11486, Lemma 2.8(2), states that when
+`2` ramifies the conductor exponent at the prime above `2` lies in
+`{10, 12}`. That Tate case split is not formalized, and the exponents `5`
+and `6` are not its conclusion.
 -/
 def TateAt2LowerBound : Prop :=
   ∀ (c : ℤ) (N n : ℕ) (E : FreyCurve4413),

@@ -153,12 +153,19 @@ for primes dividing `|c|`, and a `RibetOutput`. The disjunction
 `n_dvd_32_or_64_of_prime_to_c` removes those primes and concludes `n ∣ 32`
 or `n ∣ 64`. The positive divisors of `64` are `1, 2, 4, 8, 16, 32, 64`.
 `TateAt2LowerBound` is the open hypothesis `32 ∣ n` (`v₂(n) ≥ 5`) for a
-model satisfying `MinimalModelAt2`. It is not an axiom. With it,
-`n_eq_32_or_64_of_lower_bound` is the equality, and `n_eq_32_or_64_of_tate`
-applies the open bound. If `c` is odd, `tate_lower_bound_of_c_odd` gives
-`v₂(N(Δ)) = 18` and `32 ∣ |N(Δ)|`. That is the field norm, not the
-conductor exponent, and it does not give `32 ∣ n`. `FreyValuationAt2` is
-`v₂(|c|)`. `RhoE13Open` is sealed; nothing produces a term.
+model satisfying `MinimalModelAt2`. It is not an axiom and not a theorem.
+`thirtyTwo_dvd_of_conductor_shape` proves `32 ∣ N` from the shape.
+`shape_dvd_does_not_give_thirtyTwo` is the counterexample `N = 32`, `n = 1`,
+`c = 1`: coprimality holds, and `32` does not divide `1`. With the open
+bound, `n_eq_32_or_64_of_lower_bound` is the equality, and
+`n_eq_32_or_64_of_tate` applies that bound. If `c` is odd,
+`tate_lower_bound_of_c_odd` gives `v₂(N(Δ)) = 18` and `32 ∣ |N(Δ)|`. That
+is the field norm, not the conductor exponent. `c4_Frey` and `c6_Frey` factor
+out `2⁵` and `2⁸`. Pacetti's Lemma 2.8 states the exponent at the prime
+above `2` lies in `{10, 12}` when `2` ramifies; that argument is not
+formalized. `FreyValuationAt2` is `v₂(|c|)`. `RhoE13Open` is sealed;
+nothing produces a term. `Psi13HasNoQiRoot` is false for the singular curve
+`(0, 0, 0)`.
 `RhoE13NeedsSL2` is `Psi13HasNoQiRoot` together with the sealed
 `ImageContainsSL2 E 13`. The implication to `RhoE13Open` is not a lemma.
 `GaussIntRootDecidable` decides evaluation at one Gaussian integer.
