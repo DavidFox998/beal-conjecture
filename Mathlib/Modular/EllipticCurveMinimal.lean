@@ -118,6 +118,11 @@ Those are the numerical inputs of Dokchitser's criterion for type `I₂*`.
 The criterion is not formalized, and neither is a wild part. They are not
 the conductor exponent. Ogg's formula is the tame conductor; the wild part
 at `π` is `pacetti_2_8_open`.
+`no_qi_integral_change_of_c_odd` quantifies over `ℚ(i)`, not only `ℤ[i]`.
+`v_π(a₂) ≥ 4`, so `v_π(s) = -1` is a real case, and a denominator coprime to
+`π` is not an element of `ℤ[i]`. For odd `c`, `v_π(u) ≥ 2` makes
+`v_π(Δ') < 0`, and `v_π(u) = 1` fails `a₁`, `a₂`, `a₃`, or `a₄`.
+`MinimalModelAt2`, the wild part, and the exponent stay open.
 `pi_ten_principal` is `(-√(-1))^5 · π^10 = 32` with norm `2^10`, and
 `pi_twelve_principal` is the same for `64` and `2^12`. The principal
 ideals agree. That equality does not produce `n = 32 ∨ n = 64`. The
@@ -3995,5 +4000,1130 @@ theorem psi13_vanishes_on_zero_curve :
   rw [evalCleared_zero_den_one, psi13_constant_term]
   rw [show (42 : ℕ) = Nat.succ 41 by decide]
   simp [GaussInt.npow, GaussInt.mul, GaussInt.zero]
+
+instance (z : GaussInt) : Decidable (piDivides z) :=
+  inferInstanceAs (Decidable ((z.re + z.im) % 2 = 0))
+
+/-- Peel factors of `π`. `fuel = 0` stops. -/
+def vPiFuel : Nat → GaussInt → Nat
+  | 0, _ => 0
+  | n + 1, z =>
+      if z = GaussInt.zero then 0
+      else if piDivides z then vPiFuel n (piQuot z) + 1
+      else 0
+
+/-- `v_π` on `ℤ[i]`. The zero element is sent to `0` and is not a valuation. -/
+def vPi (z : GaussInt) : Nat :=
+  vPiFuel ((GaussInt.norm z).toNat + 1) z
+
+theorem vPiFuel_zero (n : Nat) : vPiFuel (n + 1) GaussInt.zero = 0 := by
+  simp [vPiFuel]
+
+theorem vPiFuel_not_div (n : Nat) (z : GaussInt) (hz : z ≠ GaussInt.zero)
+    (hp : ¬ piDivides z) : vPiFuel (n + 1) z = 0 := by
+  simp [vPiFuel, hz, hp]
+
+theorem vPiFuel_div (n : Nat) (z : GaussInt) (hz : z ≠ GaussInt.zero)
+    (hp : piDivides z) : vPiFuel (n + 1) z = vPiFuel n (piQuot z) + 1 := by
+  simp [vPiFuel, hz, hp]
+
+theorem norm_piQuot (z : GaussInt) (h : piDivides z) :
+    GaussInt.norm z = 2 * GaussInt.norm (piQuot z) := by
+  have hmul := mul_pi_piQuot z h
+  have hn := GaussInt.norm_mul (piQuot z) pi
+  rw [hmul] at hn
+  have hpi : GaussInt.norm pi = 2 := by simp [pi, GaussInt.norm]
+  rw [hpi, Int.mul_comm] at hn
+  exact hn
+
+theorem piQuot_ne_zero (z : GaussInt) (hz : z ≠ GaussInt.zero) (hp : piDivides z) :
+    piQuot z ≠ GaussInt.zero := by
+  intro hq
+  have hmul := mul_pi_piQuot z hp
+  rw [hq, GaussInt.zero_mul] at hmul
+  exact hz hmul.symm
+
+theorem norm_piQuot_lt (z : GaussInt) (hz : z ≠ GaussInt.zero) (hp : piDivides z) :
+    (GaussInt.norm (piQuot z)).toNat < (GaussInt.norm z).toNat := by
+  have hn := norm_piQuot z hp
+  have hpos : 0 < GaussInt.norm z := by
+    have hnn := GaussInt.norm_nonneg z
+    have hne : GaussInt.norm z ≠ 0 := by
+      intro h0
+      exact hz ((GaussInt.norm_eq_zero_iff z).1 h0)
+    omega
+  have hhalf : GaussInt.norm (piQuot z) * 2 = GaussInt.norm z := by
+    rw [Int.mul_comm]
+    exact hn.symm
+  have hnat : (GaussInt.norm z).toNat = (GaussInt.norm (piQuot z)).toNat * 2 := by
+    have hnn := GaussInt.norm_nonneg (piQuot z)
+    have h2 : (0 : Int) ≤ 2 := by decide
+    rw [← hhalf, Int.toNat_mul hnn h2]
+    simp
+  omega
+
+theorem vPi_zero : vPi GaussInt.zero = 0 := by
+  simp [vPi, GaussInt.zero, vPiFuel]
+
+theorem vPi_not_div (z : GaussInt) (hz : z ≠ GaussInt.zero) (hp : ¬ piDivides z) :
+    vPi z = 0 := by
+  simp [vPi, vPiFuel, hz, hp]
+
+theorem exists_pi_shape_fuel (n : Nat) (z : GaussInt) (hz : z ≠ GaussInt.zero)
+    (hn : (GaussInt.norm z).toNat < n) :
+    ∃ u, ¬ piDivides u ∧ GaussInt.mul u (piPow (vPiFuel n z)) = z := by
+  match n with
+  | 0 => omega
+  | n + 1 =>
+    by_cases hp : piDivides z
+    · have hzq := piQuot_ne_zero z hz hp
+      have hlt := norm_piQuot_lt z hz hp
+      have hn' : (GaussInt.norm (piQuot z)).toNat < n := by omega
+      rcases exists_pi_shape_fuel n (piQuot z) hzq hn' with ⟨u, hu, heq⟩
+      refine ⟨u, hu, ?_⟩
+      have hv : vPiFuel (n + 1) z = vPiFuel n (piQuot z) + 1 := vPiFuel_div n z hz hp
+      rw [hv]
+      have hpow : piPow (vPiFuel n (piQuot z) + 1) =
+          GaussInt.mul (piPow (vPiFuel n (piQuot z))) pi := by
+        rw [piPow_succ_right]
+      rw [hpow, ← GaussInt.mul_assoc, heq]
+      exact mul_pi_piQuot z hp
+    · refine ⟨z, hp, ?_⟩
+      rw [vPiFuel_not_div n z hz hp]
+      simp [piPow, GaussInt.npow, GaussInt.mul_one]
+
+theorem exists_pi_shape (z : GaussInt) (hz : z ≠ GaussInt.zero) :
+    ∃ u, ¬ piDivides u ∧ GaussInt.mul u (piPow (vPi z)) = z := by
+  have hn : (GaussInt.norm z).toNat < (GaussInt.norm z).toNat + 1 := by omega
+  simpa [vPi] using exists_pi_shape_fuel ((GaussInt.norm z).toNat + 1) z hz hn
+
+theorem not_piDivides_ne_zero {u : GaussInt} (hu : ¬ piDivides u) : u ≠ GaussInt.zero := by
+  intro h0
+  exact hu (by rw [h0]; simp [piDivides, GaussInt.zero])
+
+theorem vPiFuel_shape (n k : Nat) (z u : GaussInt) (hu : ¬ piDivides u)
+    (hk : GaussInt.mul u (piPow k) = z) (hn : k < n) : vPiFuel n z = k := by
+  match n with
+  | 0 => omega
+  | n + 1 =>
+    have hz : z ≠ GaussInt.zero := by
+      intro hz
+      rw [hz] at hk
+      rcases (GaussInt.mul_eq_zero.mp hk) with hu0 | hp
+      · exact hu (by rw [hu0]; simp [piDivides, GaussInt.zero])
+      · exact piPow_ne_zero k hp
+    cases k with
+    | zero =>
+      rw [piPow, GaussInt.npow_zero, GaussInt.mul_one] at hk
+      have hpz : ¬ piDivides z := by
+        rw [← hk]
+        exact hu
+      exact vPiFuel_not_div n z hz hpz
+    | succ k =>
+      have hp : piDivides z := by
+        rw [← hk, piPow_succ_right, ← GaussInt.mul_assoc]
+        exact (piDivides_mul (GaussInt.mul u (piPow k)) pi).2
+          (Or.inr (by simp [piDivides, pi]))
+      rw [vPiFuel_div n z hz hp]
+      have hquot : GaussInt.mul u (piPow k) = piQuot z := by
+        have hmul := mul_pi_piQuot z hp
+        have hright : z = GaussInt.mul (GaussInt.mul u (piPow k)) pi := by
+          rw [← hk, piPow_succ_right, ← GaussInt.mul_assoc]
+        exact (mul_right_cancel (by decide : pi ≠ GaussInt.zero) (hmul.trans hright)).symm
+      have hklt : k < n := by omega
+      rw [vPiFuel_shape n k (piQuot z) u hu hquot hklt]
+
+theorem norm_piPow (k : Nat) : GaussInt.norm (piPow k) = (2 : Int) ^ k := by
+  simpa [piPow] using pi_pow_norm k
+
+theorem two_pow_le_norm_of_shape (z u : GaussInt) (k : Nat) (hu : ¬ piDivides u)
+    (hk : GaussInt.mul u (piPow k) = z) : (2 : Nat) ^ k ≤ (GaussInt.norm z).toNat := by
+  induction k generalizing z u with
+  | zero =>
+    rw [piPow, GaussInt.npow_zero, GaussInt.mul_one] at hk
+    rw [← hk]
+    have hne : GaussInt.norm u ≠ 0 := by
+      intro h0
+      exact not_piDivides_ne_zero hu ((GaussInt.norm_eq_zero_iff u).1 h0)
+    have hnn := GaussInt.norm_nonneg u
+    omega
+  | succ k ih =>
+    have hp : piDivides z := by
+      rw [← hk, piPow_succ_right, ← GaussInt.mul_assoc]
+      exact (piDivides_mul (GaussInt.mul u (piPow k)) pi).2
+        (Or.inr (by simp [piDivides, pi]))
+    have hquot : GaussInt.mul u (piPow k) = piQuot z := by
+      have hmul := mul_pi_piQuot z hp
+      have hright : z = GaussInt.mul (GaussInt.mul u (piPow k)) pi := by
+        rw [← hk, piPow_succ_right, ← GaussInt.mul_assoc]
+      exact (mul_right_cancel (by decide : pi ≠ GaussInt.zero) (hmul.trans hright)).symm
+    have ihk := ih (piQuot z) u hu hquot
+    have hn := norm_piQuot z hp
+    have hnn := GaussInt.norm_nonneg (piQuot z)
+    have hto : (GaussInt.norm z).toNat = (GaussInt.norm (piQuot z)).toNat * 2 := by
+      rw [hn, Int.toNat_mul (by decide : (0 : Int) ≤ 2) hnn]
+      have h2 : Int.toNat (2 : Int) = 2 := by decide
+      rw [h2, Nat.mul_comm]
+    have hpow : (2 : Nat) ^ (k + 1) = (2 : Nat) ^ k * 2 := by
+      rw [Nat.pow_succ, Nat.mul_comm]
+    omega
+
+theorem k_lt_two_pow (k : Nat) : k < (2 : Nat) ^ k := by
+  induction k with
+  | zero => decide
+  | succ k ih =>
+    rw [Nat.pow_succ]
+    omega
+
+theorem vPi_of_shape (z u : GaussInt) (k : Nat) (hu : ¬ piDivides u)
+    (hk : GaussInt.mul u (piPow k) = z) : vPi z = k := by
+  have hle := two_pow_le_norm_of_shape z u k hu hk
+  have hpow : k < (GaussInt.norm z).toNat + 1 := by
+    have hlt := k_lt_two_pow k
+    omega
+  exact vPiFuel_shape ((GaussInt.norm z).toNat + 1) k z u hu hk hpow
+
+theorem vPi_piPow (k : Nat) : vPi (piPow k) = k := by
+  have h1 : ¬ piDivides GaussInt.one := by
+    decide
+  exact vPi_of_shape (piPow k) GaussInt.one k h1 (GaussInt.one_mul (piPow k))
+
+theorem vPi_mul (x y : GaussInt) (hx : x ≠ GaussInt.zero) (hy : y ≠ GaussInt.zero) :
+    vPi (GaussInt.mul x y) = vPi x + vPi y := by
+  rcases exists_pi_shape x hx with ⟨ux, hux, hex⟩
+  rcases exists_pi_shape y hy with ⟨uy, huy, hey⟩
+  have hcof : ¬ piDivides (GaussInt.mul ux uy) := by
+    intro hdiv
+    rcases (piDivides_mul ux uy).1 hdiv with h | h
+    · exact hux h
+    · exact huy h
+  have hpow : piPow (vPi x + vPi y) =
+      GaussInt.mul (piPow (vPi x)) (piPow (vPi y)) := by
+    unfold piPow
+    exact GaussInt.npow_add pi (vPi x) (vPi y)
+  have hxy : GaussInt.mul (GaussInt.mul ux uy) (piPow (vPi x + vPi y)) =
+      GaussInt.mul x y := by
+    calc
+      GaussInt.mul (GaussInt.mul ux uy) (piPow (vPi x + vPi y))
+          = GaussInt.mul (GaussInt.mul ux uy)
+              (GaussInt.mul (piPow (vPi x)) (piPow (vPi y))) := by rw [hpow]
+      _ = GaussInt.mul (GaussInt.mul (GaussInt.mul ux uy) (piPow (vPi x)))
+            (piPow (vPi y)) := by
+          rw [← GaussInt.mul_assoc (GaussInt.mul ux uy) (piPow (vPi x)) (piPow (vPi y))]
+      _ = GaussInt.mul (GaussInt.mul (GaussInt.mul ux (piPow (vPi x))) uy)
+            (piPow (vPi y)) := by rw [mul_mul_swap ux uy (piPow (vPi x))]
+      _ = GaussInt.mul (GaussInt.mul ux (piPow (vPi x)))
+            (GaussInt.mul uy (piPow (vPi y))) := by
+          rw [← GaussInt.mul_assoc (GaussInt.mul ux (piPow (vPi x))) uy (piPow (vPi y))]
+      _ = GaussInt.mul x y := by rw [hex, hey]
+  exact vPi_of_shape _ _ _ hcof hxy
+
+theorem vPi_add_lt (x y : GaussInt) (hx : x ≠ GaussInt.zero) (hy : y ≠ GaussInt.zero)
+    (hlt : vPi x < vPi y) :
+    GaussInt.add x y ≠ GaussInt.zero ∧ vPi (GaussInt.add x y) = vPi x := by
+  rcases exists_pi_shape x hx with ⟨ux, hux, hex⟩
+  rcases exists_pi_shape y hy with ⟨uy, huy, hey⟩
+  let m := vPi y - vPi x
+  have hm : vPi y = vPi x + m := by omega
+  have hm1 : 1 ≤ m := by omega
+  have hpow : piPow (vPi y) = GaussInt.mul (piPow m) (piPow (vPi x)) := by
+    rw [hm]
+    unfold piPow
+    rw [GaussInt.npow_add pi (vPi x) m, GaussInt.mul_comm]
+  have hy' : GaussInt.mul (GaussInt.mul uy (piPow m)) (piPow (vPi x)) = y := by
+    calc
+      GaussInt.mul (GaussInt.mul uy (piPow m)) (piPow (vPi x))
+          = GaussInt.mul uy (GaussInt.mul (piPow m) (piPow (vPi x))) := by
+            rw [GaussInt.mul_assoc uy (piPow m) (piPow (vPi x))]
+      _ = GaussInt.mul uy (piPow (vPi y)) := by rw [← hpow]
+      _ = y := hey
+  have hpm : piDivides (piPow m) := by
+    have hm' : m = (m - 1) + 1 := by omega
+    rw [hm', piPow_succ_right]
+    exact (piDivides_mul (piPow (m - 1)) pi).2 (Or.inr (by simp [piDivides, pi]))
+  have hcof : ¬ piDivides (GaussInt.add ux (GaussInt.mul uy (piPow m))) :=
+    not_piDivides_add_of_right hux ((piDivides_mul uy (piPow m)).2 (Or.inr hpm))
+  have hsum : GaussInt.mul (GaussInt.add ux (GaussInt.mul uy (piPow m))) (piPow (vPi x)) =
+      GaussInt.add x y := by
+    calc
+      GaussInt.mul (GaussInt.add ux (GaussInt.mul uy (piPow m))) (piPow (vPi x))
+          = GaussInt.add (GaussInt.mul ux (piPow (vPi x)))
+              (GaussInt.mul (GaussInt.mul uy (piPow m)) (piPow (vPi x))) := by
+            rw [GaussInt.add_mul]
+      _ = GaussInt.add x y := by rw [hex, hy']
+  have hne : GaussInt.add x y ≠ GaussInt.zero := by
+    intro hz
+    have hmul0 : GaussInt.mul (GaussInt.add ux (GaussInt.mul uy (piPow m))) (piPow (vPi x)) =
+        GaussInt.zero := hsum.trans hz
+    rcases (GaussInt.mul_eq_zero.mp hmul0) with hc | hp
+    · exact hcof (by rw [hc]; simp [piDivides, GaussInt.zero])
+    · exact piPow_ne_zero (vPi x) hp
+  exact ⟨hne, vPi_of_shape _ _ _ hcof hsum⟩
+
+/-- An element of `ℚ(i)`, as a ratio of Gaussian integers. -/
+structure GRat where
+  num : GaussInt
+  den : GaussInt
+  den_ne : den ≠ GaussInt.zero
+
+def gOf (z : GaussInt) : GRat where
+  num := z
+  den := GaussInt.one
+  den_ne := by decide
+
+/-- `none` is the zero element, whose valuation is infinite. -/
+def vRat? (x : GRat) : Option Int :=
+  if x.num = GaussInt.zero then none
+  else some ((vPi x.num : Int) - (vPi x.den : Int))
+
+def gmul (x y : GRat) : GRat where
+  num := GaussInt.mul x.num y.num
+  den := GaussInt.mul x.den y.den
+  den_ne := by
+    intro h
+    rcases (GaussInt.mul_eq_zero.mp h) with h | h
+    · exact x.den_ne h
+    · exact y.den_ne h
+
+def gadd (x y : GRat) : GRat where
+  num := GaussInt.add (GaussInt.mul x.num y.den) (GaussInt.mul y.num x.den)
+  den := GaussInt.mul x.den y.den
+  den_ne := by
+    intro h
+    rcases (GaussInt.mul_eq_zero.mp h) with h | h
+    · exact x.den_ne h
+    · exact y.den_ne h
+
+def gneg (x : GRat) : GRat where
+  num := GaussInt.neg x.num
+  den := x.den
+  den_ne := x.den_ne
+
+def valGe (x : GRat) (n : Int) : Prop :=
+  match vRat? x with
+  | none => True
+  | some k => n ≤ k
+
+theorem vRat?_gOf_zero (z : GaussInt) (hz : z = GaussInt.zero) : vRat? (gOf z) = none := by
+  simp [vRat?, gOf, hz]
+
+theorem vRat?_gOf_ne (z : GaussInt) (hz : z ≠ GaussInt.zero) :
+    vRat? (gOf z) = some (vPi z) := by
+  simp [vRat?, gOf, hz, vPi_not_div GaussInt.one (by decide) (by simp [piDivides, GaussInt.one])]
+
+theorem v_gmul (x y : GRat) {a b : Int} (hx : vRat? x = some a) (hy : vRat? y = some b) :
+    vRat? (gmul x y) = some (a + b) := by
+  have hx0 : x.num ≠ GaussInt.zero := by
+    intro h
+    simp [vRat?, h] at hx
+  have hy0 : y.num ≠ GaussInt.zero := by
+    intro h
+    simp [vRat?, h] at hy
+  have hxm : (vPi x.num : Int) - vPi x.den = a := by
+    simp [vRat?, hx0] at hx
+    exact hx
+  have hym : (vPi y.num : Int) - vPi y.den = b := by
+    simp [vRat?, hy0] at hy
+    exact hy
+  have hprod : GaussInt.mul x.num y.num ≠ GaussInt.zero := by
+    intro h
+    rcases (GaussInt.mul_eq_zero.mp h) with h | h
+    · exact hx0 h
+    · exact hy0 h
+  simp [vRat?, gmul, hprod, vPi_mul x.num y.num hx0 hy0, vPi_mul x.den y.den x.den_ne y.den_ne]
+  omega
+
+theorem v_gneg (x : GRat) : vRat? (gneg x) = vRat? x := by
+  by_cases hx : x.num = GaussInt.zero
+  · simp [vRat?, gneg, hx, GaussInt.neg_zero]
+  · have hne : GaussInt.neg x.num ≠ GaussInt.zero := by
+      intro h
+      apply hx
+      have := congrArg GaussInt.neg h
+      simpa [GaussInt.neg_neg, GaussInt.neg_zero] using this
+    have hv : vPi (GaussInt.neg x.num) = vPi x.num := by
+      rcases exists_pi_shape x.num hx with ⟨u, hu, heq⟩
+      have hneg : GaussInt.mul (GaussInt.neg u) (piPow (vPi x.num)) = GaussInt.neg x.num := by
+        calc
+          GaussInt.mul (GaussInt.neg u) (piPow (vPi x.num))
+              = GaussInt.neg (GaussInt.mul u (piPow (vPi x.num))) := by rw [GaussInt.neg_mul]
+          _ = GaussInt.neg x.num := by rw [heq]
+      have hu' : ¬ piDivides (GaussInt.neg u) := by
+        intro hdiv
+        exact hu ((piDivides_neg u).1 hdiv)
+      exact vPi_of_shape _ _ _ hu' hneg
+    simp [vRat?, gneg, hx, hne, hv]
+
+theorem v_gadd_zero_right (x y : GRat) (hy : y.num = GaussInt.zero) :
+    vRat? (gadd x y) = vRat? x := by
+  simp [gadd, vRat?, hy, GaussInt.add_zero]
+  by_cases hx : x.num = GaussInt.zero
+  · simp [hx]
+  · have hden : GaussInt.mul x.num y.den ≠ GaussInt.zero := by
+      intro h
+      rcases (GaussInt.mul_eq_zero.mp h) with h | h
+      · exact hx h
+      · exact y.den_ne h
+    simp [hx, hden, vPi_mul x.num y.den hx y.den_ne, vPi_mul x.den y.den x.den_ne y.den_ne]
+    omega
+
+theorem v_gadd_lt (x y : GRat) {a b : Int} (hx : vRat? x = some a) (hy : vRat? y = some b)
+    (hlt : a < b) : vRat? (gadd x y) = some a := by
+  have hx0 : x.num ≠ GaussInt.zero := by intro h; simp [vRat?, h] at hx
+  have hy0 : y.num ≠ GaussInt.zero := by intro h; simp [vRat?, h] at hy
+  have hxa : (vPi x.num : Int) - vPi x.den = a := by simp [vRat?, hx0] at hx; exact hx
+  have hyb : (vPi y.num : Int) - vPi y.den = b := by simp [vRat?, hy0] at hy; exact hy
+  have hnx0 : GaussInt.mul x.num y.den ≠ GaussInt.zero := by
+    intro h
+    rcases (GaussInt.mul_eq_zero.mp h) with h | h
+    · exact hx0 h
+    · exact y.den_ne h
+  have hny0 : GaussInt.mul y.num x.den ≠ GaussInt.zero := by
+    intro h
+    rcases (GaussInt.mul_eq_zero.mp h) with h | h
+    · exact hy0 h
+    · exact x.den_ne h
+  have hltN : vPi (GaussInt.mul x.num y.den) < vPi (GaussInt.mul y.num x.den) := by
+    have hnx := vPi_mul x.num y.den hx0 y.den_ne
+    have hny := vPi_mul y.num x.den hy0 x.den_ne
+    omega
+  have hadd := vPi_add_lt (GaussInt.mul x.num y.den) (GaussInt.mul y.num x.den) hnx0 hny0 hltN
+  simp [gadd, vRat?, hadd.1, hadd.2, vPi_mul x.den y.den x.den_ne y.den_ne,
+    vPi_mul x.num y.den hx0 y.den_ne]
+  omega
+
+theorem vPi_ge_of_mul_piPow (z u : GaussInt) (k : Nat)
+    (hk : GaussInt.mul u (piPow k) = z) (hz : z ≠ GaussInt.zero) : k ≤ vPi z := by
+  have hu : u ≠ GaussInt.zero := by
+    intro h0
+    exact hz (hk.symm.trans (by rw [h0, GaussInt.zero_mul]))
+  rcases exists_pi_shape u hu with ⟨u', hu', heq⟩
+  have hpow : piPow (vPi u + k) =
+      GaussInt.mul (piPow (vPi u)) (piPow k) := by
+    unfold piPow
+    exact GaussInt.npow_add pi (vPi u) k
+  have hz' : GaussInt.mul u' (piPow (vPi u + k)) = z := by
+    calc
+      GaussInt.mul u' (piPow (vPi u + k))
+          = GaussInt.mul u' (GaussInt.mul (piPow (vPi u)) (piPow k)) := by rw [hpow]
+      _ = GaussInt.mul (GaussInt.mul u' (piPow (vPi u))) (piPow k) := by
+          rw [← GaussInt.mul_assoc u' (piPow (vPi u)) (piPow k)]
+      _ = GaussInt.mul u (piPow k) := by rw [heq]
+      _ = z := hk
+  have hv := vPi_of_shape z u' (vPi u + k) hu' hz'
+  omega
+
+theorem vPi_one : vPi GaussInt.one = 0 :=
+  vPi_not_div GaussInt.one (by decide) (by decide)
+
+theorem vPi_ofInt_two : vPi (GaussInt.ofInt 2) = 2 :=
+  vPi_of_shape (GaussInt.ofInt 2) ⟨0, -1⟩ 2 (by decide) two_eq_neg_i_mul_pi_sq
+
+theorem vPi_ofInt_three : vPi (GaussInt.ofInt 3) = 0 :=
+  vPi_not_div (GaussInt.ofInt 3) (by decide)
+    (not_piDivides_ofInt_of_natAbs_odd (by decide : (3 : ℤ).natAbs % 2 = 1))
+
+theorem vPi_a4 (E : FreyCurve4413) (hodd : E.c.natAbs % 2 = 1) :
+    vPi ⟨E.B_re, E.B_im⟩ = 2 := by
+  rcases a4_p2_exact_two E hodd with ⟨u, hu, hnu⟩
+  exact vPi_of_shape _ u 2 hnu hu
+
+theorem vPi_a2_ge (E : FreyCurve4413) (hne : GaussInt.ofInt E.A_int ≠ GaussInt.zero) :
+    4 ≤ vPi (GaussInt.ofInt E.A_int) := by
+  rcases a2_change_pi_four E with ⟨u, hu⟩
+  exact vPi_ge_of_mul_piPow _ u 4 hu hne
+
+theorem vPi_delta (E : FreyCurve4413) (hodd : E.c.natAbs % 2 = 1) :
+    vPi (deltaGauss E) = 18 := by
+  rcases delta_p2_exact_eighteen E hodd with ⟨u, hu, hnu⟩
+  exact vPi_of_shape _ u 18 hnu hu
+
+theorem vPi_add_ge (x y : GaussInt) (hx : x ≠ GaussInt.zero) (hy : y ≠ GaussInt.zero) :
+    GaussInt.add x y = GaussInt.zero ∨
+      (GaussInt.add x y ≠ GaussInt.zero ∧
+        min (vPi x) (vPi y) ≤ vPi (GaussInt.add x y)) := by
+  rcases exists_pi_shape x hx with ⟨ux, hux, hex⟩
+  rcases exists_pi_shape y hy with ⟨uy, huy, hey⟩
+  by_cases hlt : vPi x < vPi y
+  · have h := vPi_add_lt x y hx hy hlt
+    refine Or.inr ⟨h.1, ?_⟩
+    rw [h.2]
+    exact Nat.min_le_left (vPi x) (vPi y)
+  · by_cases hgt : vPi y < vPi x
+    · have h := vPi_add_lt y x hy hx hgt
+      refine Or.inr ⟨?_, ?_⟩
+      · intro hz
+        exact h.1 (by rw [GaussInt.add_comm]; exact hz)
+      · have hcomm : vPi (GaussInt.add x y) = vPi y := by
+          rw [GaussInt.add_comm x y, h.2]
+        rw [hcomm]
+        exact Nat.min_le_right (vPi x) (vPi y)
+    · have heqv : vPi x = vPi y := by omega
+      have hsum : GaussInt.add x y =
+          GaussInt.mul (GaussInt.add ux uy) (piPow (vPi x)) := by
+        calc
+          GaussInt.add x y
+              = GaussInt.add (GaussInt.mul ux (piPow (vPi x))) y :=
+                congrArg (fun z => GaussInt.add z y) hex.symm
+          _ = GaussInt.add (GaussInt.mul ux (piPow (vPi x)))
+                (GaussInt.mul uy (piPow (vPi y))) :=
+                congrArg (fun z => GaussInt.add (GaussInt.mul ux (piPow (vPi x))) z) hey.symm
+          _ = GaussInt.add (GaussInt.mul ux (piPow (vPi x)))
+                (GaussInt.mul uy (piPow (vPi x))) := by rw [heqv]
+          _ = GaussInt.mul (GaussInt.add ux uy) (piPow (vPi x)) :=
+                (GaussInt.add_mul ux uy (piPow (vPi x))).symm
+      by_cases hzu : GaussInt.add ux uy = GaussInt.zero
+      · exact Or.inl (hsum.trans (by rw [hzu, GaussInt.zero_mul]))
+      · refine Or.inr ?_
+        rcases exists_pi_shape (GaussInt.add ux uy) hzu with ⟨u', hu', heq'⟩
+        have hpow : piPow (vPi (GaussInt.add ux uy) + vPi x) =
+            GaussInt.mul (piPow (vPi (GaussInt.add ux uy))) (piPow (vPi x)) := by
+          unfold piPow
+          exact GaussInt.npow_add pi (vPi (GaussInt.add ux uy)) (vPi x)
+        have hz' : GaussInt.mul u' (piPow (vPi (GaussInt.add ux uy) + vPi x)) =
+            GaussInt.add x y := by
+          calc
+            GaussInt.mul u' (piPow (vPi (GaussInt.add ux uy) + vPi x))
+                = GaussInt.mul u'
+                    (GaussInt.mul (piPow (vPi (GaussInt.add ux uy))) (piPow (vPi x))) := by
+                  rw [hpow]
+            _ = GaussInt.mul (GaussInt.mul u' (piPow (vPi (GaussInt.add ux uy))))
+                  (piPow (vPi x)) := by
+                rw [← GaussInt.mul_assoc u' (piPow (vPi (GaussInt.add ux uy))) (piPow (vPi x))]
+            _ = GaussInt.mul (GaussInt.add ux uy) (piPow (vPi x)) := by rw [heq']
+            _ = GaussInt.add x y := hsum.symm
+        have hv := vPi_of_shape _ _ _ hu' hz'
+        have hne : GaussInt.add x y ≠ GaussInt.zero := by
+          intro hz
+          have hmul0 := hz'.trans hz
+          rcases (GaussInt.mul_eq_zero.mp hmul0) with hc | hp
+          · exact hu' (by rw [hc]; simp [piDivides, GaussInt.zero])
+          · exact piPow_ne_zero _ hp
+        refine ⟨hne, ?_⟩
+        rw [heqv]
+        exact Nat.le_trans (Nat.min_le_left (vPi y) (vPi y)) (by
+          rw [← heqv, hv]
+          omega)
+
+theorem num_eq_zero_of_vRat?_none (x : GRat) (h : vRat? x = none) : x.num = GaussInt.zero := by
+  by_cases hz : x.num = GaussInt.zero
+  · exact hz
+  · simp [vRat?, hz] at h
+
+theorem v_gadd_zero_left (x y : GRat) (hx : x.num = GaussInt.zero) :
+    vRat? (gadd x y) = vRat? y := by
+  simp [gadd, vRat?, hx, GaussInt.zero_mul, GaussInt.zero_add]
+  by_cases hy : y.num = GaussInt.zero
+  · simp [hy]
+  · have hden : GaussInt.mul y.num x.den ≠ GaussInt.zero := by
+      intro h
+      rcases (GaussInt.mul_eq_zero.mp h) with h | h
+      · exact hy h
+      · exact x.den_ne h
+    simp [hy, hden, vPi_mul y.num x.den hy x.den_ne, vPi_mul x.den y.den x.den_ne y.den_ne]
+    omega
+
+theorem vRat?_gadd_comm (x y : GRat) : vRat? (gadd x y) = vRat? (gadd y x) := by
+  have hnum : (gadd x y).num = (gadd y x).num := by
+    simp [gadd, GaussInt.add_comm]
+  have hden : (gadd x y).den = (gadd y x).den := by
+    simp [gadd, GaussInt.mul_comm]
+  simp [vRat?, hnum, hden]
+
+/-- `v_π(x) > k`, with `none` the zero element. -/
+def ValAbove (x : GRat) (k : Int) : Prop :=
+  ∀ a, vRat? x = some a → k < a
+
+theorem valAbove_of_none (x : GRat) (k : Int) (h : vRat? x = none) : ValAbove x k := by
+  intro a ha
+  rw [h] at ha
+  cases ha
+
+theorem v_gadd_ge_eq (x y : GRat) {a : Int} (hx : vRat? x = some a) (hy : vRat? y = some a) :
+    vRat? (gadd x y) = none ∨ ∃ c, vRat? (gadd x y) = some c ∧ a ≤ c := by
+  have hx0 : x.num ≠ GaussInt.zero := by intro h; simp [vRat?, h] at hx
+  have hy0 : y.num ≠ GaussInt.zero := by intro h; simp [vRat?, h] at hy
+  have hxa : (vPi x.num : Int) - (vPi x.den : Int) = a := by
+    simp [vRat?, hx0] at hx
+    exact hx
+  have hyb : (vPi y.num : Int) - (vPi y.den : Int) = a := by
+    simp [vRat?, hy0] at hy
+    exact hy
+  have hnx0 : GaussInt.mul x.num y.den ≠ GaussInt.zero := by
+    intro h
+    rcases (GaussInt.mul_eq_zero.mp h) with h | h
+    · exact hx0 h
+    · exact y.den_ne h
+  have hny0 : GaussInt.mul y.num x.den ≠ GaussInt.zero := by
+    intro h
+    rcases (GaussInt.mul_eq_zero.mp h) with h | h
+    · exact hy0 h
+    · exact x.den_ne h
+  have hvx := vPi_mul x.num y.den hx0 y.den_ne
+  have hvy := vPi_mul y.num x.den hy0 x.den_ne
+  have hvd := vPi_mul x.den y.den x.den_ne y.den_ne
+  have hveq : vPi (GaussInt.mul x.num y.den) = vPi (GaussInt.mul y.num x.den) := by
+    omega
+  have hge := vPi_add_ge (GaussInt.mul x.num y.den) (GaussInt.mul y.num x.den) hnx0 hny0
+  rcases hge with h0 | ⟨hne, hmin⟩
+  · left
+    simp [gadd, vRat?, h0]
+  · right
+    have hv : vRat? (gadd x y) =
+        some ((vPi (GaussInt.add (GaussInt.mul x.num y.den) (GaussInt.mul y.num x.den)) : Int) -
+          (vPi (GaussInt.mul x.den y.den) : Int)) := by
+      simp [gadd, vRat?, hne]
+    refine ⟨_, hv, ?_⟩
+    have hmin' : vPi (GaussInt.mul y.num x.den) ≤
+        vPi (GaussInt.add (GaussInt.mul x.num y.den) (GaussInt.mul y.num x.den)) := by
+      rw [hveq] at hmin
+      have hself : min (vPi (GaussInt.mul y.num x.den)) (vPi (GaussInt.mul y.num x.den)) =
+          vPi (GaussInt.mul y.num x.den) := by
+        rw [Nat.min_def, ite_eq_left (Nat.le_refl _)]
+      rw [hself] at hmin
+      exact hmin
+    have hay : (vPi (GaussInt.mul y.num x.den) : Int) -
+        (vPi (GaussInt.mul x.den y.den) : Int) = a := by
+      rw [hvy, hvd]
+      omega
+    omega
+
+theorem valAbove_gadd (x y : GRat) (k : Int) (hx : ValAbove x k) (hy : ValAbove y k) :
+    ValAbove (gadd x y) k := by
+  intro c hc
+  match hxv : vRat? x with
+  | none =>
+    have hval := v_gadd_zero_left x y (num_eq_zero_of_vRat?_none x hxv)
+    rw [hval] at hc
+    exact hy c hc
+  | some a =>
+    match hyv : vRat? y with
+    | none =>
+      have hval := v_gadd_zero_right x y (num_eq_zero_of_vRat?_none y hyv)
+      rw [hval] at hc
+      exact hx c hc
+    | some b =>
+      by_cases hlt : a < b
+      · have hv := v_gadd_lt x y hxv hyv hlt
+        rw [hv] at hc
+        injection hc with heq
+        have ha : k < a := hx a hxv
+        omega
+      · by_cases hgt : b < a
+        · have hv := v_gadd_lt y x hyv hxv hgt
+          rw [vRat?_gadd_comm y x] at hv
+          rw [hv] at hc
+          injection hc with heq
+          have hb : k < b := hy b hyv
+          omega
+        · have heqa : a = b := by omega
+          rw [heqa] at hxv
+          rcases v_gadd_ge_eq x y hxv hyv with hnone | ⟨d, hd, hle⟩
+          · rw [hnone] at hc
+            cases hc
+          · rw [hd] at hc
+            injection hc with heq
+            have hb : k < b := hy b hyv
+            omega
+
+theorem v_gadd_left_min (x y : GRat) {a : Int} (hx : vRat? x = some a) (hy : ValAbove y a) :
+    vRat? (gadd x y) = some a := by
+  match hyv : vRat? y with
+  | none =>
+    rw [v_gadd_zero_right x y (num_eq_zero_of_vRat?_none y hyv), hx]
+  | some b =>
+    exact v_gadd_lt x y hx hyv (hy b hyv)
+
+theorem v_gadd_right_min (x y : GRat) {b : Int} (hy : vRat? y = some b) (hx : ValAbove x b) :
+    vRat? (gadd x y) = some b := by
+  match hxv : vRat? x with
+  | none =>
+    rw [v_gadd_zero_left x y (num_eq_zero_of_vRat?_none x hxv), hy]
+  | some a =>
+    have hv := v_gadd_lt y x hy hxv (hx a hxv)
+    rw [vRat?_gadd_comm y x] at hv
+    exact hv
+
+theorem not_valGe_of_eq {x : GRat} {n k : Int} (hk : vRat? x = some k) (hlt : k < n) :
+    ¬ valGe x n := by
+  intro h
+  simp [valGe, hk] at h
+  omega
+
+def twoG : GRat := gOf (GaussInt.ofInt 2)
+
+def threeG : GRat := gOf (GaussInt.ofInt 3)
+
+theorem v_twoG : vRat? twoG = some 2 := by
+  simpa [twoG, vPi_ofInt_two] using
+    vRat?_gOf_ne (GaussInt.ofInt 2) (by decide)
+
+theorem v_threeG : vRat? threeG = some 0 := by
+  simpa [threeG, vPi_ofInt_three] using
+    vRat?_gOf_ne (GaussInt.ofInt 3) (by decide)
+
+def a1Slot (s : GRat) : GRat := gmul twoG s
+
+def a3Slot (t : GRat) : GRat := gmul twoG t
+
+def a2Orig (E : FreyCurve4413) : GRat := gOf (GaussInt.ofInt E.A_int)
+
+def a4Orig (E : FreyCurve4413) : GRat := gOf ⟨E.B_re, E.B_im⟩
+
+def term3r (r : GRat) : GRat := gmul threeG r
+
+def termSsq (s : GRat) : GRat := gneg (gmul s s)
+
+def term2rA2 (E : FreyCurve4413) (r : GRat) : GRat :=
+  gmul (gmul twoG r) (a2Orig E)
+
+def term3rr (r : GRat) : GRat := gmul threeG (gmul r r)
+
+def term2st (s t : GRat) : GRat := gneg (gmul (gmul twoG s) t)
+
+def a2Slot (E : FreyCurve4413) (r s : GRat) : GRat :=
+  gadd (gadd (a2Orig E) (term3r r)) (termSsq s)
+
+def a4Slot (E : FreyCurve4413) (r s t : GRat) : GRat :=
+  gadd (gadd (gadd (a4Orig E) (term2rA2 E r)) (term3rr r)) (term2st s t)
+
+theorem v_a4Orig (E : FreyCurve4413) (hodd : E.c.natAbs % 2 = 1) :
+    vRat? (a4Orig E) = some 2 := by
+  have hv := vPi_a4 E hodd
+  have hne : ⟨E.B_re, E.B_im⟩ ≠ GaussInt.zero := by
+    intro h
+    rw [h, vPi_zero] at hv
+    omega
+  simpa [a4Orig, hv] using vRat?_gOf_ne ⟨E.B_re, E.B_im⟩ hne
+
+theorem valAbove_a4Orig (E : FreyCurve4413) (hodd : E.c.natAbs % 2 = 1) (k : Int)
+    (hk : k < 2) : ValAbove (a4Orig E) k := by
+  intro c hc
+  rw [v_a4Orig E hodd] at hc
+  injection hc with heq
+  omega
+
+theorem valAbove_a2Orig (E : FreyCurve4413) (k : Int) (hk : k < 4) :
+    ValAbove (a2Orig E) k := by
+  intro c hc
+  by_cases h0 : GaussInt.ofInt E.A_int = GaussInt.zero
+  · rw [a2Orig, vRat?_gOf_zero _ h0] at hc
+    cases hc
+  · have hge := vPi_a2_ge E h0
+    rw [a2Orig, vRat?_gOf_ne _ h0] at hc
+    injection hc with heq
+    omega
+
+theorem v_term3r_none (r : GRat) (hr : vRat? r = none) : vRat? (term3r r) = none := by
+  simp [term3r, gmul, vRat?, num_eq_zero_of_vRat?_none r hr]
+
+theorem v_term3r_some (r : GRat) {a : Int} (hr : vRat? r = some a) :
+    vRat? (term3r r) = some a := by
+  have h := v_gmul threeG r v_threeG hr
+  rw [Int.zero_add] at h
+  simpa [term3r] using h
+
+theorem v_termSsq_none (s : GRat) (hs : vRat? s = none) : vRat? (termSsq s) = none := by
+  simp [termSsq, gneg, gmul, vRat?, num_eq_zero_of_vRat?_none s hs, GaussInt.mul_zero]
+
+theorem v_termSsq_some (s : GRat) {a : Int} (hs : vRat? s = some a) :
+    vRat? (termSsq s) = some (a + a) := by
+  rw [termSsq, v_gneg]
+  exact v_gmul s s hs hs
+
+theorem v_term3rr_none (r : GRat) (hr : r.num = GaussInt.zero) : vRat? (term3rr r) = none := by
+  simp [term3rr, gmul, vRat?, hr, GaussInt.mul_zero]
+
+theorem v_term3rr_some (r : GRat) {a : Int} (hr : vRat? r = some a) :
+    vRat? (term3rr r) = some (a + a) := by
+  have hs := v_gmul r r hr hr
+  have h := v_gmul threeG (gmul r r) v_threeG hs
+  rw [Int.zero_add] at h
+  simpa [term3rr] using h
+
+theorem v_term2st_none_s (s t : GRat) (hs : s.num = GaussInt.zero) :
+    vRat? (term2st s t) = none := by
+  simp [term2st, gneg, gmul, vRat?, hs, GaussInt.mul_zero]
+
+theorem v_term2st_none_t (s t : GRat) (ht : t.num = GaussInt.zero) :
+    vRat? (term2st s t) = none := by
+  simp [term2st, gneg, gmul, vRat?, ht, GaussInt.mul_zero]
+
+theorem v_term2st_some (s t : GRat) {vs vt : Int}
+    (hs : vRat? s = some vs) (ht : vRat? t = some vt) :
+    vRat? (term2st s t) = some ((2 + vs) + vt) := by
+  have hs2 := v_gmul twoG s v_twoG hs
+  rw [term2st, v_gneg]
+  exact v_gmul (gmul twoG s) t hs2 ht
+
+theorem v_term2rA2_none (E : FreyCurve4413) (r : GRat) (hr : r.num = GaussInt.zero) :
+    vRat? (term2rA2 E r) = none := by
+  simp [term2rA2, gmul, vRat?, hr, GaussInt.mul_zero]
+
+theorem valAbove_term2rA2 (E : FreyCurve4413) (r : GRat) {vr : Int}
+    (hr : vRat? r = some vr) (k : Int) (hk : k < (2 + vr) + 4) :
+    ValAbove (term2rA2 E r) k := by
+  intro c hc
+  by_cases h0 : GaussInt.ofInt E.A_int = GaussInt.zero
+  · have hnone : vRat? (term2rA2 E r) = none := by
+      simp [term2rA2, a2Orig, gOf, gmul, vRat?, h0, GaussInt.mul_zero]
+    rw [hnone] at hc
+    cases hc
+  · have hge := vPi_a2_ge E h0
+    have hr2 := v_gmul twoG r v_twoG hr
+    have hva := vRat?_gOf_ne _ h0
+    have hprod := v_gmul (gmul twoG r) (gOf (GaussInt.ofInt E.A_int)) hr2 hva
+    rw [term2rA2, a2Orig, hprod] at hc
+    injection hc with heq
+    omega
+
+theorem valAbove_term2st (s t : GRat) (k : Int)
+    (hs : vRat? s = none ∨ ∃ vs, vRat? s = some vs ∧ (0 : Int) ≤ vs)
+    (ht : vRat? t = none ∨ ∃ vt, vRat? t = some vt ∧ (1 : Int) ≤ vt)
+    (hk : k < 3) : ValAbove (term2st s t) k := by
+  rcases hs with hs | ⟨vs, hsv, hvs⟩
+  · exact valAbove_of_none _ _ (v_term2st_none_s s t (num_eq_zero_of_vRat?_none s hs))
+  · rcases ht with ht | ⟨vt, hvt, hvt1⟩
+    · exact valAbove_of_none _ _ (v_term2st_none_t s t (num_eq_zero_of_vRat?_none t ht))
+    · have hv := v_term2st_some s t hsv hvt
+      intro c hc
+      rw [hv] at hc
+      injection hc with heq
+      omega
+
+def gpow (x : GRat) : Nat → GRat
+  | 0 => gOf GaussInt.one
+  | n + 1 => gmul x (gpow x n)
+
+theorem gpow_num_ne (x : GRat) (n : Nat) (hx : x.num ≠ GaussInt.zero) :
+    (gpow x n).num ≠ GaussInt.zero := by
+  induction n with
+  | zero =>
+    simp [gpow, gOf, GaussInt.one, GaussInt.zero]
+  | succ n ih =>
+    intro h
+    simp [gpow, gmul] at h
+    rcases (GaussInt.mul_eq_zero.mp h) with h | h
+    · exact hx h
+    · exact ih h
+
+theorem v_gpow (x : GRat) {a : Int} (hx : vRat? x = some a) (n : Nat) :
+    vRat? (gpow x n) = some ((n : Int) * a) := by
+  induction n with
+  | zero =>
+    simp [gpow, vRat?, gOf, GaussInt.one, GaussInt.zero, Int.zero_mul]
+  | succ n ih =>
+    have h := v_gmul x (gpow x n) hx ih
+    have hcast : ((n + 1 : Nat) : Int) = (n : Int) + 1 := by simp
+    have hcoeff : a + (n : Int) * a = ((n + 1 : Nat) : Int) * a := by
+      rw [hcast, Int.add_mul, Int.one_mul, Int.add_comm]
+    rw [hcoeff] at h
+    simpa [gpow] using h
+
+def ginv (x : GRat) (h : x.num ≠ GaussInt.zero) : GRat where
+  num := x.den
+  den := x.num
+  den_ne := h
+
+theorem v_ginv (x : GRat) {a : Int} (hx : vRat? x = some a) (h : x.num ≠ GaussInt.zero) :
+    vRat? (ginv x h) = some (-a) := by
+  simp [vRat?, ginv, x.den_ne]
+  have hxa : (vPi x.num : Int) - (vPi x.den : Int) = a := by
+    simp [vRat?, h] at hx
+    exact hx
+  omega
+
+def deltaSlot (E : FreyCurve4413) (u : GRat) (hu : (gpow u 12).num ≠ GaussInt.zero) : GRat :=
+  gmul (gOf (deltaGauss E)) (ginv (gpow u 12) hu)
+
+theorem v_deltaSlot (E : FreyCurve4413) (hodd : E.c.natAbs % 2 = 1) (u : GRat) {a : Int}
+    (hu : u.num ≠ GaussInt.zero) (hvu : vRat? u = some a) :
+    vRat? (deltaSlot E u (gpow_num_ne u 12 hu)) =
+      some (18 + -(((12 : Nat) : Int) * a)) := by
+  have hdne : deltaGauss E ≠ GaussInt.zero := by
+    intro h
+    have hv := vPi_delta E hodd
+    rw [h, vPi_zero] at hv
+    omega
+  have hd := vRat?_gOf_ne (deltaGauss E) hdne
+  rw [vPi_delta E hodd] at hd
+  have hpow := v_gpow u hvu 12
+  have hinv := v_ginv (gpow u 12) hpow (gpow_num_ne u 12 hu)
+  simpa [deltaSlot] using v_gmul (gOf (deltaGauss E)) _ hd hinv
+
+theorem deltaSlot_fails_of_val_ge_two (E : FreyCurve4413) (hodd : E.c.natAbs % 2 = 1)
+    (u : GRat) {a : Int} (hu : u.num ≠ GaussInt.zero) (hvu : vRat? u = some a)
+    (ha : 2 ≤ a) :
+    ¬ valGe (deltaSlot E u (gpow_num_ne u 12 hu)) 0 := by
+  have hv := v_deltaSlot E hodd u hu hvu
+  apply not_valGe_of_eq hv
+  omega
+
+theorem a3_fails_of_nonpos (t : GRat) {vt : Int} (ht : vRat? t = some vt) (hv : vt ≤ 0) :
+    ¬ valGe (a3Slot t) 3 := by
+  have hv3 := v_gmul twoG t v_twoG ht
+  exact not_valGe_of_eq (by simpa [a3Slot] using hv3) (by omega)
+
+theorem a1_fails_of_le_neg_two (s : GRat) {vs : Int} (hs : vRat? s = some vs) (hv : vs ≤ -2) :
+    ¬ valGe (a1Slot s) 1 := by
+  have hv1 := v_gmul twoG s v_twoG hs
+  exact not_valGe_of_eq (by simpa [a1Slot] using hv1) (by omega)
+
+theorem a4_fails_s_neg_one_r_neg_two (E : FreyCurve4413) (hodd : E.c.natAbs % 2 = 1)
+    (r s t : GRat) (hr : vRat? r = some (-2)) (hs : vRat? s = some (-1))
+    (ht : vRat? t = none ∨ ∃ vt, vRat? t = some vt ∧ 1 ≤ vt) :
+    ¬ valGe (a4Slot E r s t) 4 := by
+  have hrr := v_term3rr_some r hr
+  have hA4 : ValAbove (a4Orig E) ((-2) + (-2)) :=
+    valAbove_a4Orig E hodd _ (by omega)
+  have hR : ValAbove (term2rA2 E r) ((-2) + (-2)) :=
+    valAbove_term2rA2 E r hr _ (by omega)
+  have hleft := valAbove_gadd (a4Orig E) (term2rA2 E r) _ hA4 hR
+  have hmid := v_gadd_right_min (gadd (a4Orig E) (term2rA2 E r)) (term3rr r) hrr hleft
+  have hST : ValAbove (term2st s t) ((-2) + (-2)) := by
+    rcases ht with ht | ⟨vt, hvt, hge⟩
+    · exact valAbove_of_none _ _
+        (v_term2st_none_t s t (num_eq_zero_of_vRat?_none t ht))
+    · have hvst := v_term2st_some s t hs hvt
+      intro c hc
+      rw [hvst] at hc
+      injection hc with heq
+      omega
+  have hfin :=
+    v_gadd_left_min (gadd (gadd (a4Orig E) (term2rA2 E r)) (term3rr r)) (term2st s t) hmid hST
+  exact not_valGe_of_eq hfin (by omega)
+
+theorem a2_fails_s_neg_one (E : FreyCurve4413) (r s : GRat) (hs : vRat? s = some (-1))
+    (hr : vRat? r = none ∨ ∃ vr, vRat? r = some vr ∧ vr ≠ -2) :
+    ¬ valGe (a2Slot E r s) 2 := by
+  have hss := v_termSsq_some s hs
+  rcases hr with hr | ⟨vr, hvr, hne⟩
+  · have h3 := v_term3r_none r hr
+    have ha := valAbove_a2Orig E ((-1) + (-1)) (by omega)
+    have h3a := valAbove_of_none (term3r r) ((-1) + (-1)) h3
+    have hsum := valAbove_gadd (a2Orig E) (term3r r) ((-1) + (-1)) ha h3a
+    have hfin := v_gadd_right_min (gadd (a2Orig E) (term3r r)) (termSsq s) hss hsum
+    exact not_valGe_of_eq hfin (by omega)
+  · by_cases hlt : vr < -2
+    · have h3 := v_term3r_some r hvr
+      have ha := valAbove_a2Orig E vr (by omega)
+      have hmid := v_gadd_right_min (a2Orig E) (term3r r) h3 ha
+      have hssA : ValAbove (termSsq s) vr := by
+        intro c hc
+        rw [hss] at hc
+        injection hc with heq
+        omega
+      have hfin := v_gadd_left_min (gadd (a2Orig E) (term3r r)) (termSsq s) hmid hssA
+      exact not_valGe_of_eq hfin (by omega)
+    · have hgt : -2 < vr := by omega
+      have h3 := v_term3r_some r hvr
+      have ha := valAbove_a2Orig E ((-1) + (-1)) (by omega)
+      have h3a : ValAbove (term3r r) ((-1) + (-1)) := by
+        intro c hc
+        rw [h3] at hc
+        injection hc with heq
+        omega
+      have hsum := valAbove_gadd (a2Orig E) (term3r r) ((-1) + (-1)) ha h3a
+      have hfin := v_gadd_right_min (gadd (a2Orig E) (term3r r)) (termSsq s) hss hsum
+      exact not_valGe_of_eq hfin (by omega)
+
+theorem a2_fails_r_le_neg_one (E : FreyCurve4413) (r s : GRat) {vr : Int}
+    (hr : vRat? r = some vr) (hvr : vr ≤ -1)
+    (hs : vRat? s = none ∨ ∃ vs, vRat? s = some vs ∧ (0 : Int) ≤ vs) :
+    ¬ valGe (a2Slot E r s) 2 := by
+  have h3 := v_term3r_some r hr
+  have ha := valAbove_a2Orig E vr (by omega)
+  have hmid := v_gadd_right_min (a2Orig E) (term3r r) h3 ha
+  have hss : ValAbove (termSsq s) vr := by
+    rcases hs with hs | ⟨vs, hsv, hvs⟩
+    · exact valAbove_of_none _ _ (v_termSsq_none s hs)
+    · have hsq := v_termSsq_some s hsv
+      intro c hc
+      rw [hsq] at hc
+      injection hc with heq
+      omega
+  have hfin := v_gadd_left_min (gadd (a2Orig E) (term3r r)) (termSsq s) hmid hss
+  exact not_valGe_of_eq hfin (by omega)
+
+theorem a2_fails_r_one (E : FreyCurve4413) (r s : GRat) (hr : vRat? r = some 1)
+    (hs : vRat? s = none ∨ ∃ vs, vRat? s = some vs ∧ (0 : Int) ≤ vs) :
+    ¬ valGe (a2Slot E r s) 2 := by
+  rcases hs with hs | ⟨vs, hsv, hvs⟩
+  · have h3 := v_term3r_some r hr
+    have ha := valAbove_a2Orig E 1 (by omega)
+    have hmid := v_gadd_right_min (a2Orig E) (term3r r) h3 ha
+    have hss := valAbove_of_none (termSsq s) 1 (v_termSsq_none s hs)
+    have hfin := v_gadd_left_min (gadd (a2Orig E) (term3r r)) (termSsq s) hmid hss
+    exact not_valGe_of_eq hfin (by omega)
+  · by_cases h0 : vs = 0
+    · have hsq := v_termSsq_some s hsv
+      rw [h0] at hsq
+      have ha := valAbove_a2Orig E (0 + 0) (by omega)
+      have h3 : ValAbove (term3r r) (0 + 0) := by
+        intro c hc
+        rw [v_term3r_some r hr] at hc
+        injection hc with heq
+        omega
+      have hsum := valAbove_gadd (a2Orig E) (term3r r) (0 + 0) ha h3
+      have hfin := v_gadd_right_min (gadd (a2Orig E) (term3r r)) (termSsq s) hsq hsum
+      exact not_valGe_of_eq hfin (by omega)
+    · have hvs1 : 1 ≤ vs := by omega
+      have h3 := v_term3r_some r hr
+      have ha := valAbove_a2Orig E 1 (by omega)
+      have hmid := v_gadd_right_min (a2Orig E) (term3r r) h3 ha
+      have hss : ValAbove (termSsq s) 1 := by
+        have hsq := v_termSsq_some s hsv
+        intro c hc
+        rw [hsq] at hc
+        injection hc with heq
+        omega
+      have hfin := v_gadd_left_min (gadd (a2Orig E) (term3r r)) (termSsq s) hmid hss
+      exact not_valGe_of_eq hfin (by omega)
+
+theorem a4_fails_r_zero (E : FreyCurve4413) (hodd : E.c.natAbs % 2 = 1) (r s t : GRat)
+    (hr : vRat? r = some 0)
+    (hs : vRat? s = none ∨ ∃ vs, vRat? s = some vs ∧ (0 : Int) ≤ vs)
+    (ht : vRat? t = none ∨ ∃ vt, vRat? t = some vt ∧ (1 : Int) ≤ vt) :
+    ¬ valGe (a4Slot E r s t) 4 := by
+  have hrr := v_term3rr_some r hr
+  have hA4 := valAbove_a4Orig E hodd (0 + 0) (by omega)
+  have hR := valAbove_term2rA2 E r hr (0 + 0) (by omega)
+  have hleft := valAbove_gadd (a4Orig E) (term2rA2 E r) _ hA4 hR
+  have hmid := v_gadd_right_min (gadd (a4Orig E) (term2rA2 E r)) (term3rr r) hrr hleft
+  have hST := valAbove_term2st s t (0 + 0) hs ht (by omega)
+  have hfin :=
+    v_gadd_left_min (gadd (gadd (a4Orig E) (term2rA2 E r)) (term3rr r)) (term2st s t) hmid hST
+  exact not_valGe_of_eq hfin (by omega)
+
+theorem a4_fails_r_high (E : FreyCurve4413) (hodd : E.c.natAbs % 2 = 1) (r s t : GRat)
+    (hr : vRat? r = none ∨ ∃ vr, vRat? r = some vr ∧ 2 ≤ vr)
+    (hs : vRat? s = none ∨ ∃ vs, vRat? s = some vs ∧ (0 : Int) ≤ vs)
+    (ht : vRat? t = none ∨ ∃ vt, vRat? t = some vt ∧ (1 : Int) ≤ vt) :
+    ¬ valGe (a4Slot E r s t) 4 := by
+  have hA4 := v_a4Orig E hodd
+  have hR : ValAbove (term2rA2 E r) 2 := by
+    rcases hr with hr | ⟨vr, hvr, hge⟩
+    · exact valAbove_of_none _ _ (v_term2rA2_none E r (num_eq_zero_of_vRat?_none r hr))
+    · exact valAbove_term2rA2 E r hvr 2 (by omega)
+  have hRR : ValAbove (term3rr r) 2 := by
+    rcases hr with hr | ⟨vr, hvr, hge⟩
+    · exact valAbove_of_none _ _ (v_term3rr_none r (num_eq_zero_of_vRat?_none r hr))
+    · have hv := v_term3rr_some r hvr
+      intro c hc
+      rw [hv] at hc
+      injection hc with heq
+      omega
+  have hST := valAbove_term2st s t 2 hs ht (by omega)
+  have h1 := v_gadd_left_min (a4Orig E) (term2rA2 E r) hA4 hR
+  have h2 := v_gadd_left_min (gadd (a4Orig E) (term2rA2 E r)) (term3rr r) h1 hRR
+  have hfin :=
+    v_gadd_left_min (gadd (gadd (a4Orig E) (term2rA2 E r)) (term3rr r)) (term2st s t) h2 hST
+  exact not_valGe_of_eq hfin (by decide)
+
+/-- For odd `c`, no `u, r, s, t` in `ℚ(i)` with `v_π(u) ≥ 1` makes the changed
+model integral at `π`.
+
+`v_π(a₂) ≥ 4`, so the `a₂` slot does not force `v_π(s) ≥ 0`: `v_π(s) = -1`
+is a separate case. A denominator coprime to `π`, such as `3`, is not an
+element of `ℤ[i]`, so `no_integral_u_pi_of_c_odd` does not cover this
+statement. `v_π(u) ≥ 2` makes `v_π(Δ') = 18 - 12 v_π(u) < 0`. `v_π(u) = 1`
+fails `a₁`, `a₂`, `a₃`, or `a₄`. This is not `MinimalModelAt2`, and it is not
+the conductor exponent.
+-/
+theorem no_qi_integral_change_of_c_odd (E : FreyCurve4413) (hodd : E.c.natAbs % 2 = 1)
+    (u r s t : GRat) (hu : u.num ≠ GaussInt.zero)
+    (hv : (1 : Int) ≤ (vPi u.num : Int) - (vPi u.den : Int)) :
+    ¬ (valGe (a1Slot s) ((vPi u.num : Int) - (vPi u.den : Int)) ∧
+        valGe (a2Slot E r s) (2 * ((vPi u.num : Int) - (vPi u.den : Int))) ∧
+        valGe (a3Slot t) (3 * ((vPi u.num : Int) - (vPi u.den : Int))) ∧
+        valGe (a4Slot E r s t) (4 * ((vPi u.num : Int) - (vPi u.den : Int))) ∧
+        valGe (deltaSlot E u (gpow_num_ne u 12 hu)) 0) := by
+  intro hbad
+  let vu : Int := (vPi u.num : Int) - (vPi u.den : Int)
+  have hvuEq : vu = (vPi u.num : Int) - (vPi u.den : Int) := rfl
+  rw [← hvuEq] at hbad
+  rcases hbad with ⟨h1, h2, h3, h4, hΔ⟩
+  have hsome : vRat? u = some vu := by
+    simp [vRat?, hu, hvuEq]
+  by_cases h2le : 2 ≤ vu
+  · exact deltaSlot_fails_of_val_ge_two E hodd u hu hsome h2le hΔ
+  · have hvu1 : vu = 1 := by omega
+    have h1' : valGe (a1Slot s) 1 := by
+      rw [hvu1] at h1
+      exact h1
+    have h2' : valGe (a2Slot E r s) 2 := by
+      rw [hvu1] at h2
+      simpa [Int.mul_one] using h2
+    have h3' : valGe (a3Slot t) 3 := by
+      rw [hvu1] at h3
+      simpa [Int.mul_one] using h3
+    have h4' : valGe (a4Slot E r s t) 4 := by
+      rw [hvu1] at h4
+      simpa [Int.mul_one] using h4
+    have hT : vRat? t = none ∨ ∃ vt, vRat? t = some vt ∧ 1 ≤ vt := by
+      by_cases ht0 : t.num = GaussInt.zero
+      · exact Or.inl (by simp [vRat?, ht0])
+      · right
+        refine ⟨(vPi t.num : Int) - (vPi t.den : Int), ?_, ?_⟩
+        · simp [vRat?, ht0]
+        · by_cases hle : (vPi t.num : Int) - (vPi t.den : Int) ≤ 0
+          · exact False.elim (a3_fails_of_nonpos t (by simp [vRat?, ht0]) hle h3')
+          · omega
+    have hS : vRat? s = none ∨ ∃ vs, vRat? s = some vs ∧ -1 ≤ vs := by
+      by_cases hs0 : s.num = GaussInt.zero
+      · exact Or.inl (by simp [vRat?, hs0])
+      · right
+        refine ⟨(vPi s.num : Int) - (vPi s.den : Int), ?_, ?_⟩
+        · simp [vRat?, hs0]
+        · by_cases hle : (vPi s.num : Int) - (vPi s.den : Int) ≤ -2
+          · exact False.elim (a1_fails_of_le_neg_two s (by simp [vRat?, hs0]) hle h1')
+          · omega
+    have hSnonnegOrNeg :
+        vRat? s = none ∨
+          (∃ vs, vRat? s = some vs ∧ 0 ≤ vs) ∨
+            (∃ vs, vRat? s = some vs ∧ vs = -1) := by
+      rcases hS with hs | ⟨vs, hsv, hge⟩
+      · exact Or.inl hs
+      · by_cases hneg : vs = -1
+        · exact Or.inr (Or.inr ⟨vs, hsv, hneg⟩)
+        · exact Or.inr (Or.inl ⟨vs, hsv, by omega⟩)
+    rcases hSnonnegOrNeg with hs | hrest
+    · have hs' : vRat? s = none ∨ ∃ vs, vRat? s = some vs ∧ (0 : Int) ≤ vs := Or.inl hs
+      by_cases hr0 : r.num = GaussInt.zero
+      · exact a4_fails_r_high E hodd r s t (Or.inl (by simp [vRat?, hr0])) hs' hT h4'
+      · let vr : Int := (vPi r.num : Int) - (vPi r.den : Int)
+        have hvr : vRat? r = some vr := by simp [vRat?, hr0, vr]
+        by_cases hrneg : vr ≤ -1
+        · exact a2_fails_r_le_neg_one E r s hvr hrneg hs' h2'
+        · by_cases hrzero : vr = 0
+          · exact a4_fails_r_zero E hodd r s t (by rw [hrzero] at hvr; exact hvr) hs' hT h4'
+          · by_cases hrone : vr = 1
+            · exact a2_fails_r_one E r s (by rw [hrone] at hvr; exact hvr) hs' h2'
+            · have hrge : 2 ≤ vr := by omega
+              exact a4_fails_r_high E hodd r s t (Or.inr ⟨vr, hvr, hrge⟩) hs' hT h4'
+    · rcases hrest with ⟨vs, hsv, hvs⟩ | ⟨vs, hsv, hneg⟩
+      · have hs' : vRat? s = none ∨ ∃ vs, vRat? s = some vs ∧ (0 : Int) ≤ vs :=
+          Or.inr ⟨vs, hsv, hvs⟩
+        by_cases hr0 : r.num = GaussInt.zero
+        · exact a4_fails_r_high E hodd r s t (Or.inl (by simp [vRat?, hr0])) hs' hT h4'
+        · let vr : Int := (vPi r.num : Int) - (vPi r.den : Int)
+          have hvr : vRat? r = some vr := by simp [vRat?, hr0, vr]
+          by_cases hrneg : vr ≤ -1
+          · exact a2_fails_r_le_neg_one E r s hvr hrneg hs' h2'
+          · by_cases hrzero : vr = 0
+            · exact a4_fails_r_zero E hodd r s t (by rw [hrzero] at hvr; exact hvr) hs' hT h4'
+            · by_cases hrone : vr = 1
+              · exact a2_fails_r_one E r s (by rw [hrone] at hvr; exact hvr) hs' h2'
+              · have hrge : 2 ≤ vr := by omega
+                exact a4_fails_r_high E hodd r s t (Or.inr ⟨vr, hvr, hrge⟩) hs' hT h4'
+      · rw [hneg] at hsv
+        by_cases hr0 : r.num = GaussInt.zero
+        · exact a2_fails_s_neg_one E r s hsv (Or.inl (by simp [vRat?, hr0])) h2'
+        · let vr : Int := (vPi r.num : Int) - (vPi r.den : Int)
+          have hvr : vRat? r = some vr := by simp [vRat?, hr0, vr]
+          by_cases hrm2 : vr = -2
+          · exact a4_fails_s_neg_one_r_neg_two E hodd r s t
+              (by rw [hrm2] at hvr; exact hvr) hsv hT h4'
+          · exact a2_fails_s_neg_one E r s hsv (Or.inr ⟨vr, hvr, hrm2⟩) h2'
 
 end FreyCurve4413

@@ -163,7 +163,10 @@ inputs for `n = 4`. They are not a wild part and not `f = 10`.
 `a_odd_dokchitser_n2_inputs` meets the numerical inputs for `n = 2`,
 including `v_π(b₆) = 8` and `v_π(D) = 6`. Dokchitser's proposition is
 not formalized, and the wild part is not proved to vanish. Ogg's formula
-is the tame conductor. The wild part at `π` is this proposition. `pi_ten_principal` is
+is the tame conductor. The wild part at `π` is this proposition.
+`no_qi_integral_change_of_c_odd` is the same integrality split over `ℚ(i)`:
+`v_π(a₂) ≥ 4`, so `v_π(s) = -1` still occurs, and a `π`-unit denominator is
+not in `ℤ[i]`. It is not `MinimalModelAt2` and not the exponent. `pi_ten_principal` is
 `(-√(-1))^5 · π^10 = 32` with `N(π^10) = 2^10`. `pi_twelve_principal` is
 `(-√(-1))^6 · π^12 = 64` with norm `2^12`. The principal ideals
 `(π)^10 = (32)` and `(π)^12 = (64)` agree. Dividing the exponent by `2`
