@@ -158,7 +158,14 @@ dividing `m`, then the exact power of `q` in `N(Δ)` is `q^(13 · 3k)`.
 That is the norm identity. `rho_E_13` is still unresolved, so the identity
 is not finiteness of a residual representation. `DarmonMerelLevelLowering`
 assumes `FreyConductor_OPEN` and `RhoE13Open` and returns a newform of some
-level `n`. `DarmonMerelFrozenFacts` records the winding vectors
+level `n`. `Mathlib/Modular/EllipticCurveMinimal.lean` is the model
+`y² = x³ + a₂ x² + a₄ x + a₆` with coefficients in `ℤ[√-1]`.
+`c4_c6_discriminant` is `c₄³ - c₆² = 1728 Δ`. `divisionPsi` builds `ψ₁₃`
+by the classical recurrence. On `y² = x³ - x` that list has degree `84`
+and leading coefficient `13`. `psi13_no_integral_root_OPEN` is not a
+theorem. `norm_two_adic` says `v₂(N(Δ)) = 18 + 39 k` when `|c| = 2^k m`
+with `m` odd. The conductor exponents `5` and `6` are not theorems.
+`DarmonMerelFrozenFacts` records the winding vectors
 `(0,0,4,-4,0,0)` and `(0,0,0,2,2,-4,0,0,0,0)`, the cusp counts, and the
 integral points of `Y² = X³ - X`.
 
