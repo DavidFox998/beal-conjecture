@@ -127,15 +127,26 @@ solution exists.
 
 `Mathlib/Modular/CoefficientQCurve.lean` names that coefficient equality
 `IsCoefficientQCurve`. `frey_is_coefficient_qcurve` is
-`velu_target_eq_twist_neg_two`. `coefficient_relation_and_modularity_axiom`
-pairs it with `frey_qcurve_modular`. The first conjunct does not imply the
-second. There is no theorem here that a ℚ-curve over `ℚ(√-1)` is modular.
+`velu_target_eq_twist_neg_two`. `IsQCurve` packages the twist `-2`, the
+numerator exponent `2` from `ξ = x² + A x + B`, and that equality.
+`FreyQCurve_is_QCurve` is this package. `Modular E` is still only
+`frey_qcurve_modular`. Serre's conjecture and Taylor–Wiles lifting are not
+formalized. `coefficient_relation_and_modularity_axiom` keeps the two
+statements side by side.
 
 `Mathlib/Modular/DiscriminantNorm.lean` proves the field norm of
 `Δ = 2⁹ (a² + b² √(-1)) c¹³` is `2¹⁸ c³⁹`. That is not Tate's algorithm
 and it is not the conductor. `norm_and_level_lowering_axiom` pairs the
 norm with `ribet_level_lowering_4413`. Irreducibility of `ρ_{E,13}` is
 still a hypothesis. The level is not forced into `{32, 64}`.
+
+`Mathlib/Modular/LevelLowering4413.lean` records the two open steps.
+`FreyConductor_OPEN`: Tate's algorithm at `2` is not formalized, so the
+conductor exponents `5` and `6` are not theorems.
+`two_pow_eighteen_dvd_discriminant_norm` is only `2¹⁸ ∣ N(Δ)`.
+`rho_E_13_OPEN`: `rho_E_p` is the unresolved marker. The 13-division
+polynomial is not constructed, and there is no proof that it has no root
+in `ℚ(√-1)`.
 
 `a⁴ + b⁴ = c¹³` still has no nonexistence theorem.
 

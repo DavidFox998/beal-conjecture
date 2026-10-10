@@ -8,3 +8,4 @@ import Mathlib.Modular.X0_32_Construction
 import Mathlib.Modular.GL2Type4413
 import Mathlib.Modular.CoefficientQCurve
 import Mathlib.Modular.DiscriminantNorm
+import Mathlib.Modular.LevelLowering4413
