@@ -32,9 +32,9 @@ proof that `j` lies in `ℚ`.
 The coordinate equations `freyOnQi_expanded` are what substitution of
 `x = u + v √(-1)` and `y = s + t √(-1)` produces over `ℤ`. They are not an
 abelian surface, and they do not carry real multiplication by `ℚ(√2)`.
-`gl2_type_interface` is the modularity axiom and Ribet's axiom: `Modular E`,
-and a newform of some level. The level is not forced into `{32, 64}`, and
-the coefficient field is not part of either statement. `qExp32` and `qExp64`
+`gl2_type_interface` is the modularity axiom and Ribet's axiom, given
+`RhoE13Open`: `Modular E`, and one newform. `RhoE13Open` has no term.
+The coefficient field is not part of either statement. `qExp32` and `qExp64`
 are two integral `q`-expansions with `a₁ = 1`. They are not a list of all
 newforms. `formal_immersion_32_13` and `formal_immersion_64_13` are the
 nonvanishing of `(T₅ - 6) e` modulo `13`. None of this proves that
@@ -88,13 +88,16 @@ theorem stored_newforms_a1 :
     coeff 1 qExp32 = 1 ∧ coeff 1 qExp64 = 1 := by
   decide
 
-/-- What the two axioms return for a solution `a⁴ + b⁴ = c¹³`.
+/-- What the two axioms return for a solution `a⁴ + b⁴ = c¹³`, given
+`RhoE13Open`.
 
-`Modular E` is the modularity axiom. Ribet's axiom returns a newform of
-some level `n`. It does not return `n ∈ {32, 64}`, a coefficient field, or
-a point of `X₀(32)`. -/
-theorem gl2_type_interface (a b c : Int) (heq : a ^ 4 + b ^ 4 = c ^ 13) :
+`Modular E` is the modularity axiom. Ribet's axiom returns one newform.
+This theorem does not extract `n = 32 ∨ n = 64` from that package, and it
+does not return a coefficient field or a point of `X₀(32)`. `RhoE13Open`
+has no term here. -/
+theorem gl2_type_interface (a b c : Int) (heq : a ^ 4 + b ^ 4 = c ^ 13)
+    (hIrr : RhoE13Open (FreyCurve4413.mk' a b c heq)) :
     Modular (FreyCurve4413.mk' a b c heq) ∧
       ∃ n : Nat, ∃ g : Newform n,
         LevelLowered (FreyCurve4413.mk' a b c heq) g :=
-  solution_modular_and_lowered a b c heq
+  solution_modular_and_lowered a b c heq hIrr

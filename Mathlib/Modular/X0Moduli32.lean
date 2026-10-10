@@ -30,12 +30,12 @@ the integral points of that second equation. It does not list the cusps.
 `plusDim_32 = 6` is the dimension of the plus quotient, not the genus.
 
 A nonzero solution of `a⁴ + b⁴ = c¹³` produces the coefficient identity
-`velu_target_eq_twist_neg_two` and a nonzero discriminant. Through
-`frey_qcurve_modular` and `ribet_level_lowering_4413` it also produces
-`Modular E` and a newform of some level. `loweredLevel 5 = 32` and
+`velu_target_eq_twist_neg_two` and a nonzero discriminant. Given
+`RhoE13Open`, `ribet_level_lowering_4413` returns one newform whose level
+divides the supplied conductor shape. `loweredLevel 5 = 32` and
 `loweredLevel 6 = 64` are the two powers written down in
-`level_32_or_64`. The axiom does not return a sum of those levels, and
-none of these statements is a rational point of `X₀(32)` or `X₀(64)`.
+`level_32_or_64`. None of these statements is a rational point of
+`X₀(32)` or `X₀(64)`.
 
 A non-cuspidal rational point of `X₀(32)` would be an elliptic curve over
 `ℚ` with a cyclic `32`-isogeny over `ℚ`. The Frey curve in this repository
@@ -175,10 +175,13 @@ theorem discriminant_nonzero (s : NonzeroSolution4413) :
     s.frey.discriminant_re ≠ 0 ∧ s.frey.discriminant_im ≠ 0 :=
   FreyCurve4413.discriminant_nonzero_of_ab_ne_zero s.frey s.ha s.hb
 
-/-- Modularity and Ribet give a newform of some level, not a point of `X₀(32)`. -/
-theorem lowered (s : NonzeroSolution4413) :
+/-- Modularity and Ribet give one newform, not a point of `X₀(32)`.
+
+`hIrr` is `RhoE13Open`. Nothing constructs a term of that type.
+-/
+theorem lowered (s : NonzeroSolution4413) (hIrr : RhoE13Open s.frey) :
     Modular s.frey ∧ ∃ n : Nat, ∃ g : Newform n, LevelLowered s.frey g :=
-  solution_modular_and_lowered s.a s.b s.c s.h_eq
+  solution_modular_and_lowered s.a s.b s.c s.h_eq hIrr
 
 /-- The two powers written down for `d = 1` are `2⁵` and `2⁶`. -/
 theorem candidate_levels : loweredLevel 5 = 32 ∧ loweredLevel 6 = 64 :=

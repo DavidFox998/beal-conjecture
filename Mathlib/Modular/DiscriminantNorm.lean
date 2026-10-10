@@ -26,17 +26,18 @@ theorem discriminant_norm (E : FreyCurve4413) :
   unfold discriminant_re discriminant_im
   grind
 
-/-- The norm formula, together with level lowering from the axiom.
+/-- The norm formula, together with one Ribet level.
 
-The first conjunct is `discriminant_norm`. The second is
-`ribet_level_lowering_4413`. Irreducibility of `ρ_{E,13}` is still a
-hypothesis, and the norm does not produce a newform of level `32` or `64`.
+The first conjunct is `discriminant_norm`. The second is the newform from
+`ribet_level_lowering_4413` at the supplied shape `N`. `RhoE13Open` is still
+a hypothesis. The norm does not produce it.
 -/
 theorem norm_and_level_lowering_axiom
-    (a b c : ℤ) (E : FreyCurve4413)
-    (h_irred : Irreducible (rho_E_p E)) (hp : ¬ ((13 : ℕ) ∣ 2)) :
+    {c : ℤ} (E : FreyCurve4413) (N : ℕ)
+    (hCond : FreyConductorDivides c N) (hIrr : RhoE13Open E) :
     E.discriminant_re ^ 2 + E.discriminant_im ^ 2 = (2 : ℤ) ^ 18 * E.c ^ 39 ∧
-      ∃ n : ℕ, ∃ g : Newform n, LevelLowered E g :=
-  ⟨discriminant_norm E, (ribet_level_lowering_4413 a b c E h_irred hp).1⟩
+      ∃ n : ℕ, ∃ g : Newform n, LevelLowered E g := by
+  let pkg : RibetLevel c E N := ribet_level_lowering_4413 N hCond hIrr
+  exact ⟨discriminant_norm E, pkg.level, pkg.output.g, pkg.output.lowered⟩
 
 end FreyCurve4413

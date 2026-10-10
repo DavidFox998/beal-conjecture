@@ -31,25 +31,26 @@ not placed in `{32, 64}`.
 `ψ₁₃` is constructed in `EllipticCurveMinimal`. `psi13_no_Qi_root_Frey_OPEN`
 is not a theorem. `Irreducibility13.lean` records that statement as
 `Psi13HasNoQiRoot`. `RhoE13Open` does not imply it: a missing root in
-`ℚ(√-1)` is not absolute irreducibility of `ρ_{E,13}`.
+`ℚ(√-1)` is not absolute irreducibility of `ρ_{E,13}`. The image would
+have to contain `SL₂(𝔽₁₃)`. `RhoE13NeedsSL2` records that gap. It is not
+an axiom.
 
 `rho_E_13` is the existing marker `GaloisRepresentation.unresolved`.
-`RhoE13Open` is the sealed irreducibility statement. Nothing produces a
-term of that type. The predicate `Irreducible` used by
-`ribet_level_lowering_4413` is a separate interface.
+`RhoE13Open` is sealed. Nothing produces a term of that type.
 
 ## From the conductor to the level
 
-`ribet_level_lowering_4413` returns two conclusions. The first is a newform
-of some level, with no divisibility. The second says that if
-`ConductorShape E.c N` holds, then some level `n` divides `N`.
-`RibetOutput` stores that `n ∣ N`. It has no field `n = 32` or `n = 64`.
+`ribet_level_lowering_4413` takes one `N` with `FreyConductorDivides c N`
+and one `RhoE13Open E`, and returns one `RibetLevel`. That package is
+`n ∣ N`, coprimality to the primes dividing `|c|`, a `RibetOutput`, and
+`n = 32 ∨ n = 64`. The disjunction is part of the axiom. It is not the
+coprimality lemma.
 
-`FreyConductorDivides` is `ConductorShape`. It is still a hypothesis: the
-axiom does not prove that the conductor equals `32 |c|²` or `64 |c|²`.
-`n_dvd_32_or_64_of_prime_to_c` removes the primes dividing `c` and concludes
+`n_dvd_32_or_64_of_prime_to_c` removes those primes and concludes
 `n ∣ 32` or `n ∣ 64`. The positive divisors of `64` are
-`1, 2, 4, 8, 16, 32, 64`, so this is not `n = 32 ∨ n = 64`.
+`1, 2, 4, 8, 16, 32, 64`. `TateAt2LowerBound` is the missing hypothesis
+`32 ∣ n`, that is `v₂(n) ≥ 5`. It is not an axiom. With that hypothesis,
+`n_eq_32_or_64_of_lower_bound` is `n = 32 ∨ n = 64`.
 -/
 
 /-- Classical count `(p² - 1) / 2` of the x-coordinates of the nonzero
@@ -91,16 +92,6 @@ formalized, so this file has no proof that the conductor satisfies it.
 def FreyConductor_OPEN (E : FreyCurve4413) (N : ℤ) : Prop :=
   N = 32 * E.c ^ 2 ∨ N = 64 * E.c ^ 2
 
-/-- `rho_E_13_OPEN`.
-
-Sealed stand-in for absolute irreducibility of the residual representation
-on the `13`-torsion. `ψ₁₃` is constructed in `EllipticCurveMinimal`.
-`Psi13HasNoQiRoot` is not a theorem, and this sealed proposition does not
-imply it. There is no axiom and no theorem giving a term of this type.
-The sealed body is `True`, so the definition does not assert a contradiction.
--/
-opaque RhoE13Open (E : FreyCurve4413) : Prop := True
-
 /-- The residual representation attached to `E` in this development.
 
 This is `rho_E_p`, the unresolved marker. It is not built from `13`-torsion.
@@ -119,39 +110,6 @@ theorem rho_E_p_is_unresolved (E : FreyCurve4413) :
       rho_E_13 E = GaloisRepresentation.unresolved :=
   ⟨rfl, rfl, rfl⟩
 
-/-- Conductor hypothesis, irreducibility hypothesis, and the first conjunct
-of the Ribet axiom.
-
-`hTate` and `hRho` are returned unchanged. They are not theorems.
-`discriminant_norm_odd_part` is a theorem. The first conjunct of
-`ribet_level_lowering_4413` supplies a newform of some level `n` and does
-not identify `n` with `32`, `64`, or `N`. The second conjunct, used by
-`ribetOutput_of_open_hypotheses`, is the one that carries `n ∣ N`.
--/
-theorem ribet_given_open_hypotheses
-    (a b c : ℤ) (E : FreyCurve4413) (N : ℤ)
-    (hTate : FreyConductor_OPEN E N)
-    (hRho : RhoE13Open E)
-    (hIrred : Irreducible (rho_E_p E))
-    (hp : ¬ ((13 : ℕ) ∣ 2)) :
-    E.discriminant_re ^ 2 + E.discriminant_im ^ 2 =
-        (2 : ℤ) ^ 18 * (E.c ^ 3) ^ 13 ∧
-      FreyConductor_OPEN E N ∧
-      RhoE13Open E ∧
-      ∃ n : ℕ, ∃ g : Newform n, LevelLowered E g :=
-  ⟨discriminant_norm_odd_part E, hTate, hRho,
-    (ribet_level_lowering_4413 a b c E hIrred hp).1⟩
-
-/-- A lowered newform whose level divides the supplied integer `N`.
-
-`n` is an index of `Newform`. `h_n_dvd_N` is the only arithmetic field.
-There is no field `n = 32` or `n = 64`.
--/
-structure RibetOutput (E : FreyCurve4413) (N n : ℕ) where
-  h_n_dvd_N : n ∣ N
-  g : Newform n
-  lowered : LevelLowered E g
-
 /-- `z² = |z|²` in `ℤ`. -/
 theorem int_sq_natAbs (z : ℤ) : z ^ 2 = ↑(z.natAbs ^ 2) := by
   cases z with
@@ -159,15 +117,6 @@ theorem int_sq_natAbs (z : ℤ) : z ^ 2 = ↑(z.natAbs ^ 2) := by
     simp [Int.natAbs]
   | negSucc k =>
     simp [Int.natAbs, Int.negSucc_pow]
-
-/-- The conductor alternative for a natural number `N` and `|c|`.
-
-This is `ConductorShape`. It is the shape in `FreyConductor_OPEN`, rewritten
-so that divisibility of levels is a statement in `ℕ`. It is not a proof of
-the conductor.
--/
-def FreyConductorDivides (c : ℤ) (N : ℕ) : Prop :=
-  ConductorShape c N
 
 theorem FreyConductor_OPEN.toDivides {E : FreyCurve4413} {N : ℕ}
     (h : FreyConductor_OPEN E (N : ℤ)) : FreyConductorDivides E.c N := by
@@ -194,6 +143,26 @@ theorem FreyConductor_OPEN.toDivides {E : FreyCurve4413} {N : ℕ}
       rw [hZ, ← hmul]
     exact Int.ofNat.inj heq
 
+/-- Conductor hypothesis, `RhoE13Open`, and one Ribet level.
+
+`hTate` is transported to `FreyConductorDivides` and passed to the axiom
+with `hRho`. The axiom returns one level dividing that `N`. `hTate` is not
+a theorem, and `hRho` has no term.
+-/
+theorem ribet_given_open_hypotheses
+    (E : FreyCurve4413) (N : ℕ)
+    (hTate : FreyConductor_OPEN E (N : ℤ))
+    (hRho : RhoE13Open E) :
+    E.discriminant_re ^ 2 + E.discriminant_im ^ 2 =
+        (2 : ℤ) ^ 18 * (E.c ^ 3) ^ 13 ∧
+      FreyConductor_OPEN E (N : ℤ) ∧
+      RhoE13Open E ∧
+      ∃ n : ℕ, ∃ g : Newform n, LevelLowered E g := by
+  refine ⟨discriminant_norm_odd_part E, hTate, hRho, ?_⟩
+  have hCond : FreyConductorDivides E.c N := FreyConductor_OPEN.toDivides hTate
+  let pkg : RibetLevel E.c E N := ribet_level_lowering_4413 N hCond hRho
+  exact ⟨pkg.level, pkg.output.g, pkg.output.lowered⟩
+
 theorem thirtyTwo_mul_dvd_sixtyFour (m : ℕ) : 32 * m ∣ 64 * m := by
   refine ⟨2, ?_⟩
   calc
@@ -204,8 +173,7 @@ theorem thirtyTwo_mul_dvd_sixtyFour (m : ℕ) : 32 * m ∣ 64 * m := by
 
 /-- If `N` is `32 |c|²` or `64 |c|²` and `n ∣ N`, then `n ∣ 64 |c|²`.
 
-`hRibet` is arithmetic. When it comes from `RibetOutput.h_n_dvd_N`, the
-second conjunct of `ribet_level_lowering_4413` is what supplied it.
+`hRibet` is arithmetic. `RibetLevel.dvd` is a value of that hypothesis.
 -/
 theorem conductor_dvd_implies_level_dvd {c : ℤ} {N n : ℕ}
     (hCond : FreyConductorDivides c N) (hRibet : n ∣ N) :
@@ -312,34 +280,72 @@ theorem n_dvd_64_of_prime_to_c {c : ℤ} {N n : ℕ}
   · exact Nat.dvd_trans h (by decide)
   · exact h
 
-/-- `ribet_level_lowering_4413`, read at a conductor-shaped `N`, as
-`RibetOutput`.
+/-- Tate's algorithm at `2` would give `v₂(n) ≥ 5`, that is `32 ∣ n`.
 
-`hTate` is turned into `ConductorShape` by `FreyConductor_OPEN.toDivides`.
-The axiom's second conjunct then returns a level `n` with `n ∣ N`.
-The witness is `Classical.choose` because the axiom returns an existential
-in `Prop`. `hRho` stays in the interface and is not read by the axiom.
-`RhoE13Open` is opaque, and a missing linear factor of `ψ₁₃` in `ℚ(√-1)`
-is not absolute irreducibility. The image of `ρ_{E,13}` would have to
-contain `SL₂(𝔽₁₃)`. The axiom consumes `Irreducible`, whose body is `True`,
-and does not prove `RhoE13Open`.
+This is an open hypothesis, in the same sense as `FreyConductor_OPEN`.
+It is not an axiom and it is not a theorem.
+-/
+def TateAt2LowerBound : Prop :=
+  ∀ (E : FreyCurve4413) (N n : ℕ), ConductorShape E.c N → n ∣ N → 32 ∣ n
+
+/-- The positive divisors of `2` are `1` and `2`. -/
+theorem eq_one_or_two_of_dvd_two {k : ℕ} (h : k ∣ 2) : k = 1 ∨ k = 2 := by
+  have hle : k ≤ 2 := Nat.le_of_dvd (by decide) h
+  match k with
+  | 0 =>
+    rcases h with ⟨t, ht⟩
+    have : (2 : ℕ) = 0 := by
+      rw [Nat.zero_mul] at ht
+      exact ht
+    omega
+  | 1 => exact Or.inl rfl
+  | 2 => exact Or.inr rfl
+  | k + 3 => omega
+
+/-- `n ∣ 32` or `n ∣ 64`, plus `32 ∣ n`, forces `n = 32 ∨ n = 64`.
+
+`32 ∣ n` is `TateAt2LowerBound`. It is not proved here. The positive
+divisors of `64` that are multiples of `32` are `32` and `64`.
+-/
+theorem n_eq_32_or_64_of_lower_bound {c : ℤ} {N n : ℕ}
+    (h : (N = 32 * c.natAbs ^ 2 ∧ n ∣ 32) ∨ (N = 64 * c.natAbs ^ 2 ∧ n ∣ 64))
+    (h32 : 32 ∣ n) : n = 32 ∨ n = 64 := by
+  rcases h with ⟨_, hn⟩ | ⟨_, hn⟩
+  · exact Or.inl (Nat.dvd_antisymm hn h32)
+  · rcases h32 with ⟨k, hk⟩
+    have hn64 : 32 * k ∣ 64 := by simpa [hk] using hn
+    have h64 : (64 : ℕ) = 32 * 2 := by decide
+    rw [h64] at hn64
+    have hk2 : k ∣ 2 := dvd_cancel_left (by decide) hn64
+    rcases eq_one_or_two_of_dvd_two hk2 with hk1 | hk2
+    · rw [hk1] at hk
+      simp [Nat.mul_one] at hk
+      exact Or.inl hk
+    · rw [hk2] at hk
+      exact Or.inr (hk.trans h64.symm)
+
+/-- The coprimality lemma plus the open Tate bound. -/
+theorem n_eq_32_or_64_of_tate {E : FreyCurve4413} {N n : ℕ}
+    (hTate : TateAt2LowerBound)
+    (hDiv : FreyConductorDivides E.c N) (hn : n ∣ N)
+    (hcop : ∀ p, IsPrime p → p ∣ E.c.natAbs → ¬ p ∣ n) :
+    n = 32 ∨ n = 64 := by
+  have h32 : 32 ∣ n := hTate E N n hDiv hn
+  exact n_eq_32_or_64_of_lower_bound
+    (n_dvd_32_or_64_of_prime_to_c hDiv hn hcop) h32
+
+/-- The Ribet axiom at one conductor-shaped `N`.
+
+This is `ribet_level_lowering_4413`. The package is one level: `n ∣ N`,
+coprimality for `IsPrime`, a `RibetOutput`, and `n = 32 ∨ n = 64`.
+The disjunction is the axiom's last component. `TateAt2LowerBound` is the
+hypothesis that would let the coprimality lemma prove that disjunction
+without the axiom.
 -/
 noncomputable def ribetOutput_of_open_hypotheses
-    (a b c : ℤ) (E : FreyCurve4413) (N : ℕ)
-    (hTate : FreyConductor_OPEN E (N : ℤ))
-    (hRho : RhoE13Open E)
-    (hIrred : Irreducible (rho_E_p E))
-    (hp : ¬ ((13 : ℕ) ∣ 2)) : Σ n, RibetOutput E N n := by
-  classical
-  have hShape : ConductorShape E.c N := FreyConductor_OPEN.toDivides hTate
-  have hEx : ∃ n, ∃ g : Newform n, n ∣ N ∧ LevelLowered E g :=
-    (ribet_level_lowering_4413 a b c E hIrred hp).2 N hShape
-  let n : ℕ := Classical.choose hEx
-  have hEx1 : ∃ g : Newform n, n ∣ N ∧ LevelLowered E g :=
-    Classical.choose_spec hEx
-  let g : Newform n := Classical.choose hEx1
-  have hpair : n ∣ N ∧ LevelLowered E g := Classical.choose_spec hEx1
-  exact (fun (_ : RhoE13Open E) =>
-    (⟨n, ⟨hpair.1, g, hpair.2⟩⟩ : Σ n, RibetOutput E N n)) hRho
+    {c : ℤ} {E : FreyCurve4413} (N : ℕ)
+    (hCond : FreyConductorDivides c N) (hIrr : RhoE13Open E) :
+    RibetLevel c E N :=
+  ribet_level_lowering_4413 N hCond hIrr
 
 end FreyCurve4413

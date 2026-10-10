@@ -1,5 +1,6 @@
 import Init
 import DarmonMerel.«2_Modularity4413»
+import Mathlib.Modular.Rank0_32a1
 
 notation "ℕ" => Nat
 
@@ -83,25 +84,73 @@ formalized.
 def ConductorShape (c : ℤ) (N : ℕ) : Prop :=
   N = 32 * c.natAbs ^ 2 ∨ N = 64 * c.natAbs ^ 2
 
-/-- Ribet's lowering-the-level theorem for `d = 1`, `p = 13`.
+/-- The same shape, under the name used for level divisibility in `ℕ`. -/
+def FreyConductorDivides (c : ℤ) (N : ℕ) : Prop :=
+  ConductorShape c N
 
-`h_p_not_d` is the slide hypothesis `p ∤ 2d` in this case: `13 ∤ 2`.
-The first conjunct is a newform of some level. The second conjunct says
-that if `N` equals `32 |c|²` or `64 |c|²`, then some newform level divides
-that `N`. The two levels need not be equal: `64` need not divide `32 |c|²`.
-`RhoE13Open` is not an argument. It is opaque, and the callers that only
-have `Irreducible` cannot build a term of it. It does not prove `n = 32`,
-`n = 64`, or that `N` is the conductor.
+/-- Sealed stand-in for absolute irreducibility of `ρ_{E,13}`.
+
+Nothing in this development produces a term. The body is sealed, so
+`trivial` does not apply. A missing linear factor of `ψ₁₃` is not this
+statement.
+-/
+opaque RhoE13Open (E : FreyCurve4413) : Prop := True
+
+/-- One lowered newform at level `n`, with `n ∣ N` stored on the structure. -/
+structure RibetOutput (E : FreyCurve4413) (N n : ℕ) where
+  h_n_dvd_N : n ∣ N
+  g : Newform n
+  lowered : LevelLowered E g
+
+/-- One Ribet output at one level.
+
+`n` divides the supplied `N`, no prime divisor of `|c|` divides `n`, and
+the axiom still carries `n = 32 ∨ n = 64`. The prime predicate is `IsPrime`
+(`2 ≤ p` and no proper divisor). `Nat.Prime` is not defined in this Init.
+The disjunction is not derived from a lower bound on `v₂(n)`.
+-/
+def RibetLevel (c : ℤ) (E : FreyCurve4413) (N : ℕ) : Type :=
+  Σ' (n : ℕ) (_h_dvd : n ∣ N)
+    (_h_coprime : ∀ p, IsPrime p → p ∣ c.natAbs → ¬ p ∣ n)
+    (_out : RibetOutput E N n),
+    n = 32 ∨ n = 64
+
+/-- Ribet's lowering-the-level theorem for `d = 1`, `p = 13`, at one `N`.
+
+`hCond` says `N` equals `32 |c|²` or `64 |c|²`. It does not prove that this
+`N` is the conductor. `hIrr` is `RhoE13Open`; there is no term of that type.
+The result is one level `n`. It divides this `N`, it is coprime to the
+primes dividing `|c|`, and the package asserts `n = 32 ∨ n = 64`. That
+disjunction stays inside the axiom until a lower bound `v₂(n) ≥ 5` is a
+theorem. There is no second level.
 
 Citation: Ribet 1990, Invent. Math. 100, and Pacetti's slide
 “Ribet's lowering the level result”.
 Note: this is axiom 2 until Mathlib has Ribet's theorem for ℚ-curves.
 -/
-axiom ribet_level_lowering_4413 (a b c : ℤ) (E : FreyCurve4413)
-    (h_irred : Irreducible (rho_E_p E)) (h_p_not_d : ¬ (13 ∣ 2)) :
-    (∃ (n : ℕ) (g : Newform n), LevelLowered E g) ∧
-      ∀ N : ℕ, ConductorShape E.c N →
-        ∃ (n : ℕ) (g : Newform n), n ∣ N ∧ LevelLowered E g
+axiom ribet_level_lowering_4413 {c : ℤ} {E : FreyCurve4413} (N : ℕ)
+    (hCond : FreyConductorDivides c N) (hIrr : RhoE13Open E) :
+    RibetLevel c E N
+
+def RibetLevel.level {c : ℤ} {E : FreyCurve4413} {N : ℕ}
+    (p : RibetLevel c E N) : ℕ :=
+  p.1
+
+theorem RibetLevel.dvd {c : ℤ} {E : FreyCurve4413} {N : ℕ}
+    (p : RibetLevel c E N) : p.level ∣ N :=
+  p.2.1
+
+theorem RibetLevel.coprime {c : ℤ} {E : FreyCurve4413} {N : ℕ}
+    (p : RibetLevel c E N) : ∀ q, IsPrime q → q ∣ c.natAbs → ¬ q ∣ p.level :=
+  p.2.2.1
+
+def RibetLevel.output {c : ℤ} {E : FreyCurve4413} {N : ℕ}
+    (p : RibetLevel c E N) : RibetOutput E N p.level :=
+  p.2.2.2.1
+
+theorem RibetLevel.level_eq {c : ℤ} {E : FreyCurve4413} {N : ℕ}
+    (p : RibetLevel c E N) : p.level = 32 ∨ p.level = 64 :=
+  p.2.2.2.2
 
 /-- For `d = 1` every odd slot `Q₁, Q₃, Q₅, Q₇` is empty, so Pacetti's
 odd part of the lowered level is `1` and the level is a power of `2`. -/

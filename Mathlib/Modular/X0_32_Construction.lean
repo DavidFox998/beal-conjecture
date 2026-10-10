@@ -43,7 +43,8 @@ its twist, not isomorphic to it, so equality of `j` with the twist is not
 the relation proved by `velu_target_eq_twist_neg_two`.
 
 `no_solution_4413` is not a theorem.
-`frey_qcurve_modular` and `ribet_level_lowering_4413` are unchanged.
+`frey_qcurve_modular` is the modularity axiom. `ribet_level_lowering_4413`
+takes `RhoE13Open` and one conductor shape and returns one level.
 -/
 
 def x3_plus_4x_model : WeierstrassModel where

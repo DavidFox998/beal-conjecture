@@ -23,15 +23,15 @@ has no root in the fraction field of `ℤ[√-1]`. It is not a theorem.
 * `rho_E_13` is `GaloisRepresentation.unresolved`.
 * A missing linear factor of `ψ₁₃` in `ℚ(√-1)` is not absolute
   irreducibility for GL2-type over `ℚ(√-1)`. The image must contain
-  `SL₂(𝔽₁₃)`. `RhoE13Open → Psi13HasNoQiRoot` is not proved, and neither
-  is the converse.
+  `SL₂(𝔽₁₃)`. `RhoE13NeedsSL2` is that gap. `RhoE13Open → Psi13HasNoQiRoot`
+  is not proved. That direction is not the one absolute irreducibility
+  needs, and the converse is not proved either.
 
-`FreyConductor_OPEN` and `FreyConductorDivides` stay hypotheses.
-The second conjunct of `ribet_level_lowering_4413` supplies `n ∣ N` when
-`N` has `ConductorShape`. `RibetOutput.h_n_dvd_N` stores it.
-`n_dvd_64csq_of_ribet` turns that into `n ∣ 64 |c|²`.
-`n_dvd_32_or_64_of_prime_to_c` then removes primes dividing `c`.
-It does not conclude `n = 32 ∨ n = 64`.
+`FreyConductor_OPEN` stays a hypothesis. `ribet_level_lowering_4413` takes
+`FreyConductorDivides` and `RhoE13Open` and returns one level with
+`n ∣ N`. `n_dvd_32_or_64_of_prime_to_c` removes primes dividing `|c|` and
+concludes `n ∣ 32` or `n ∣ 64`. `TateAt2LowerBound` is the open hypothesis
+`32 ∣ n`. It is not an axiom.
 -/
 
 namespace FreyCurve4413
@@ -46,5 +46,16 @@ def Psi13HasNoQiRoot (E : FreyCurve4413) : Prop :=
 
 theorem xDivisionDegree_13_count : xDivisionDegree 13 = 84 :=
   xDivisionDegree_13
+
+/-- The image of `ρ_{E,13}` contains `SL₂(𝔽₁₃)`.
+
+`rho_E_13` is `GaloisRepresentation.unresolved`, so the containment is not
+a subgroup of a matrix group. `Psi13HasNoQiRoot` is the absence of a linear
+factor of `ψ₁₃`. That is not this image statement, and it does not produce
+`RhoE13Open`. The proposition is the pair of those open hypotheses. It is
+not an axiom and it has no proof.
+-/
+def RhoE13NeedsSL2 (E : FreyCurve4413) : Prop :=
+  RhoE13Open E ∧ Psi13HasNoQiRoot E
 
 end FreyCurve4413

@@ -53,8 +53,8 @@ Cremona `32a1` has torsion `ℤ/4ℤ`. Nothing here proves
 `a⁴ + b⁴ = c¹³` has no nonzero solution.
 
 `frey_qcurve_modular` and `ribet_level_lowering_4413` are not used. The first
-returns `Modular E`. The second returns a newform of some level `2^e`. Neither
-returns a point of `X₀(32)` or `X₀(64)`.
+returns `Modular E`. The second, given `RhoE13Open` and one conductor shape,
+returns one newform. Neither returns a point of `X₀(32)` or `X₀(64)`.
 -/
 
 private theorem sq_mul (n : ℤ) : n ^ 2 = n * n := by

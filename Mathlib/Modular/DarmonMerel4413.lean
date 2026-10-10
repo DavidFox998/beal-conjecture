@@ -40,10 +40,10 @@ divides `lead * num ^ deg`, and Euclid's lemma is not available, so those
 sixteen elements do not exhaust the candidates. `rho_E_13` is still
 unresolved: no linear factor is not the absence of a Galois-stable
 subgroup of order `13`.
-`DarmonMerelLevelLowering` calls the first conjunct of
-`ribet_level_lowering_4413` and returns a newform of some level `n`.
-The second conjunct supplies `n ∣ N` when `N` has `ConductorShape`.
-This theorem does not prove `n = 32`, `n = 64`, or `n = N`.
+`DarmonMerelLevelLowering` calls `ribet_level_lowering_4413` at one
+conductor-shaped `N` and returns that one newform. The axiom also carries
+`n = 32 ∨ n = 64`. This theorem does not derive that disjunction from
+`TateAt2LowerBound`, and it does not prove that `N` is the conductor.
 
 `DarmonMerelFrozenFacts` collects the winding vectors, the cusp counts, the
 integral points of `Y² = X³ - X`, the nonzero discriminant, and the Vélu
@@ -180,21 +180,19 @@ theorem DarmonMerelFrozenFacts (E : FreyCurve4413) :
     not_two_thirteenth⟩
 
 /-- Given the conductor hypothesis and `RhoE13Open`, Ribet's axiom returns
-a newform of some level `n`.
+one newform whose level divides `N`.
 
-The literature's lowered level is `32` or `64`. This theorem does not prove
-`n = 32`, `n = 64`, or `n = N`. `FreyConductor_OPEN` is the assumption that
-a supplied integer equals `32 c²` or `64 c²`. Tate's algorithm at `2` is
-not formalized.
+The axiom's package also contains `n = 32 ∨ n = 64`. This theorem does not
+restate that disjunction, and it does not prove `TateAt2LowerBound`.
+`FreyConductor_OPEN` is the assumption that a supplied integer equals
+`32 c²` or `64 c²`. Tate's algorithm at `2` is not formalized.
 -/
 theorem DarmonMerelLevelLowering
-    (a b c : ℤ) (E : FreyCurve4413) (N : ℤ)
-    (hTate : FreyConductor_OPEN E N)
-    (hRho : RhoE13Open E)
-    (hIrred : Irreducible (rho_E_p E))
-    (hp : ¬ ((13 : ℕ) ∣ 2)) :
+    (E : FreyCurve4413) (N : ℕ)
+    (hTate : FreyConductor_OPEN E (N : ℤ))
+    (hRho : RhoE13Open E) :
     ∃ n : ℕ, ∃ g : Newform n, LevelLowered E g :=
-  (ribet_given_open_hypotheses a b c E N hTate hRho hIrred hp).2.2.2
+  (ribet_given_open_hypotheses E N hTate hRho).2.2.2
 
 /-- The frozen facts, the two open hypotheses, and a newform of some level.
 
@@ -202,18 +200,16 @@ theorem DarmonMerelLevelLowering
 `a⁴ + b⁴ = c¹³` has no nonzero solution.
 -/
 theorem DarmonMerelStrategy
-    (a b c : ℤ) (E : FreyCurve4413) (N : ℤ)
-    (hTate : FreyConductor_OPEN E N)
-    (hRho : RhoE13Open E)
-    (hIrred : Irreducible (rho_E_p E))
-    (hp : ¬ ((13 : ℕ) ∣ 2)) :
+    (E : FreyCurve4413) (N : ℕ)
+    (hTate : FreyConductor_OPEN E (N : ℤ))
+    (hRho : RhoE13Open E) :
     (IsQCurve E ∧
       t5Minus6 T5_32 e32 = [0, 0, 4, -4, 0, 0] ∧
       t5Minus6 T5_64 e64 = [0, 0, 0, 2, 2, -4, 0, 0, 0, 0]) ∧
-      FreyConductor_OPEN E N ∧
+      FreyConductor_OPEN E (N : ℤ) ∧
       RhoE13Open E ∧
       ∃ n : ℕ, ∃ g : Newform n, LevelLowered E g := by
-  refine ⟨?_, hTate, hRho, DarmonMerelLevelLowering a b c E N hTate hRho hIrred hp⟩
+  refine ⟨?_, hTate, hRho, DarmonMerelLevelLowering E N hTate hRho⟩
   exact ⟨(DarmonMerelFrozenFacts E).1,
     (DarmonMerelFrozenFacts E).2.2.2.2.2.2.1,
     (DarmonMerelFrozenFacts E).2.2.2.2.2.2.2.1⟩
