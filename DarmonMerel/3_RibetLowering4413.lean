@@ -137,9 +137,15 @@ shows `v_π(a₂') = 1` blocks pure scaling by every `π^k` with `k ≥ 1`.
 `a2_plus_three_pi_p2_exact_three` is `v_π(a₂' + 3 π) = 3`, so the `a₂`
 slot of `u = π`, `r = π` is integral, and
 `pi_r_pi_a4_numerator_p2_exact_two` blocks that substitution at `a₄`
-with valuation `2`. `v_π(a₂') = 1` does not prove `MinimalModelAt2`.
+with valuation `2`. `higher_u_blocked_by_delta` rules out `u = π^k` for
+`k ≥ 2`, because `12 k ≤ v_π(Δ) = 18` fails. `a2_shift_by_pi_same_residue`
+shows `r = 0` and `r = π` are congruent modulo `π` and have `a₂`
+valuations `1` and `3`, so eight residue classes do not decide
+integrality. `v_π(a₂') = 1` does not prove `MinimalModelAt2`.
 On `(0, 1, 1)`, `trivialB_a6_below_dokchitser_I4` is `v_π(a₆') = 5`,
-below the `n = 4` bound `7`, so those valuations are not type `I₄*`.
+below the `n = 4` bound `7`. `trivialB_y_shift_stays_below_six` says a
+pure shift `a₆' - t²` does not reach valuation `6`. Those valuations are
+not type `I₄*`.
 `a_odd_dokchitser_n2_inputs` meets the numerical inputs for `n = 2`,
 including `v_π(b₆) = 8` and `v_π(D) = 6`. Dokchitser's proposition is
 not formalized, and the wild part is not proved to vanish. Ogg's formula

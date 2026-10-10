@@ -177,8 +177,11 @@ After `x ↦ x + π`, `(1, 0, 1)` has `v_π(a₄') = 3` and `(0, 1, 1)` has
 `v_π(a₂') = 1` blocks pure scaling by `π^k`. The transformed coefficient
 `a₂' + 3 π` has valuation `3`, so `r = π` meets the `a₂` slot for `u = π`.
 When `c` is odd the `a₄` numerator of that substitution has valuation `2`,
-below `4`. `v_π(a₂') = 1` does not prove minimality. On `(0, 1, 1)`,
-`v_π(a₆') = 5` is below Dokchitser's `n = 4` bound `7`. When `a` is odd,
+below `4`. For `k ≥ 2`, `12 k ≤ v_π(Δ) = 18` fails, so `u = π^k` does not
+give an integral discriminant. `r = 0` and `r = π` are congruent modulo `π`
+and have `a₂` valuations `1` and `3`, so eight residue classes do not
+decide minimality. On `(0, 1, 1)`, `v_π(a₆') = 5` is below Dokchitser's
+`n = 4` bound `7`, and `a₆' - t²` does not reach valuation `6`. When `a` is odd,
 `y ↦ y + π²` gives `v_π(a₃) = 4`, `v_π(a₄) = 3`, `v_π(a₆) = 5`,
 `v_π(b₆) = 8`, and `v_π(D) = 6`. Those are the numerical inputs for type
 `I₂*`. They are not the conductor exponent, and the wild part is not

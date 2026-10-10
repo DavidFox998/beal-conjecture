@@ -84,7 +84,13 @@ is `v_π(a₂') = 1`. `translated_pi_scaling_blocked_by_a2` blocks pure scaling
 `v_π(a₂' + 3 π) = 3`, so `r = π` meets the `a₂` slot for `u = π`.
 When `c` is odd, `pi_r_pi_a4_numerator_p2_exact_two` is valuation `2`,
 below `4`, so that substitution is not integral. `v_π(a₂') = 1` does not
-prove `MinimalModelAt2`. On `(0, 1, 1)`, `v_π(a₄') = 6` does not block
+prove `MinimalModelAt2`. `higher_u_blocked_by_delta` is the bound
+`12 k ≤ 18` failing for `k ≥ 2`, since `Δ` scales by `u¹²` for every
+`r, s, t`. The remaining case `u = π` is not eight residue classes:
+`a2_shift_by_pi_same_residue` has `r = 0` and `r = π` congruent modulo `π`,
+with `a₂` valuations `1` and `3`. On `(0, 1, 1)`, a pure shift
+`a₆ ↦ a₆ - t²` does not reach valuation `6`, because `v_π(a₆') = 5` is odd
+(`y_shift_keeps_valuation_five`). On `(0, 1, 1)`, `v_π(a₄') = 6` does not block
 `u = π`, and `v_π(a₆') = 5` does. That value `5` is below Dokchitser's
 `n = 4` bound `v(a₆) ≥ 7`. When `a` is odd, the further shift
 `y ↦ y + π²` gives `v_π(a₃) = 4`, `v_π(a₄) = 3`, and `v_π(a₆) = 5`
@@ -2691,6 +2697,246 @@ theorem a2_one_does_not_prove_minimal (E : FreyCurve4413)
   ⟨a2AfterPi_p2_exact_one E, a2_plus_three_pi_p2_exact_three E, by decide,
     pi_r_pi_a4_numerator_p2_exact_two E hodd, by decide⟩
 
+/-- For `k ≥ 2`, `u = π^k` does not give an integral discriminant.
+
+A Weierstrass change multiplies `Δ` by `u⁻¹²` and does not use `r`, `s`, or
+`t`. Here `v_π(Δ) = 18`, and `12 k ≥ 24`. The new discriminant would have
+negative valuation. This leaves `k = 1`. It does not settle that case, and
+it does not produce `MinimalModelAt2`.
+-/
+theorem higher_u_blocked_by_delta (E : FreyCurve4413) (hodd : E.c.natAbs % 2 = 1)
+    (k : ℕ) (hk : 2 ≤ k) :
+    P2Exact (deltaGauss E) 18 ∧ ¬ (12 * k ≤ 18) :=
+  ⟨delta_p2_exact_eighteen E hodd, by omega⟩
+
+/-- `r = 0` and `r = π` are the same class modulo `π`, with different `a₂` valuations.
+
+Both numerators `a₂'` and `a₂' + 3 π` differ by `3 π`, so `π` divides the
+difference. Their valuations are `1` and `3`. The residue ring
+`ℤ[√(-1)] / (π)` has two classes, and these two translations lie in one
+class. An eight-element check of `(r, s, t)` modulo `π` does not compute
+the valuations. `MinimalModelAt2` stays opaque.
+-/
+theorem a2_shift_by_pi_same_residue (E : FreyCurve4413) :
+    piDivides (GaussInt.sub ⟨4 * E.a + 6, 6⟩ (a2AfterPi E)) ∧
+      P2Exact (a2AfterPi E) 1 ∧ P2Exact ⟨4 * E.a + 6, 6⟩ 3 ∧ (1 : ℕ) ≠ 3 := by
+  refine ⟨?_, a2AfterPi_p2_exact_one E, a2_plus_three_pi_p2_exact_three E, by decide⟩
+  have hsub : GaussInt.sub ⟨4 * E.a + 6, 6⟩ (a2AfterPi E) =
+      GaussInt.mul (GaussInt.ofInt 3) pi := by
+    simp [a2AfterPi, pi, GaussInt.sub, GaussInt.mul, GaussInt.ofInt]
+    grind
+  have hp : piDivides pi := by
+    simp [piDivides, pi]
+  rw [hsub]
+  exact (piDivides_mul (GaussInt.ofInt 3) pi).2 (Or.inr hp)
+
+/-- Quotient by `π` when `re + im` is even. -/
+def piQuot (z : GaussInt) : GaussInt :=
+  ⟨(z.re + z.im) / 2, (z.im - z.re) / 2⟩
+
+theorem mul_pi_piQuot (z : GaussInt) (h : piDivides z) :
+    GaussInt.mul (piQuot z) pi = z := by
+  have hsum : (2 : ℤ) ∣ z.re + z.im := Int.dvd_of_emod_eq_zero (by simpa [piDivides] using h)
+  rcases hsum with ⟨s, hs⟩
+  have hdiff : z.im - z.re = 2 * (s - z.re) := by
+    omega
+  have hq : (z.re + z.im) / 2 = s := by
+    have hdvdSum : (2 : ℤ) ∣ z.re + z.im := ⟨s, hs⟩
+    have hmul := Int.mul_ediv_cancel' hdvdSum
+    rw [hs] at hmul
+    have hdiv : (2 * s) / 2 = s :=
+      Int.eq_of_mul_eq_mul_left (by decide : (2 : ℤ) ≠ 0) hmul
+    rw [hs]
+    exact hdiv
+  have hdvd : (2 : ℤ) ∣ z.im - z.re := ⟨s - z.re, hdiff⟩
+  have hqi : (z.im - z.re) / 2 = s - z.re := by
+    have hmul := Int.mul_ediv_cancel' hdvd
+    rw [hdiff] at hmul
+    have hdiv : (2 * (s - z.re)) / 2 = s - z.re :=
+      Int.eq_of_mul_eq_mul_left (by decide : (2 : ℤ) ≠ 0) hmul
+    rw [hdiff]
+    exact hdiv
+  have hprod : GaussInt.mul (piQuot z) pi = ⟨z.re, z.im⟩ := by
+    simp [piQuot, pi, GaussInt.mul, hq, hqi]
+    constructor <;> omega
+  simpa using hprod
+
+theorem piPow_succ_right (k : ℕ) : piPow (k + 1) = GaussInt.mul (piPow k) pi := by
+  unfold piPow
+  rw [GaussInt.npow_succ, GaussInt.mul_comm]
+
+theorem piPow_ne_zero (k : ℕ) : piPow k ≠ GaussInt.zero := by
+  intro h
+  have hn : GaussInt.norm (piPow k) = (2 : ℤ) ^ k := by
+    rw [piPow, GaussInt.norm_npow]
+    have hpi : GaussInt.norm pi = 2 := by simp [pi, GaussInt.norm]
+    rw [hpi]
+  rw [h] at hn
+  simp [GaussInt.norm, GaussInt.zero] at hn
+  have hpos : (0 : ℤ) < (2 : ℤ) ^ k := Int.pow_pos (by decide)
+  omega
+
+theorem add_neg_self (z : GaussInt) : GaussInt.add z (GaussInt.neg z) = GaussInt.zero := by
+  cases z
+  simp [GaussInt.add, GaussInt.neg, GaussInt.zero]
+  constructor <;> omega
+
+theorem mul_left_cancel {a b c : GaussInt} (ha : a ≠ GaussInt.zero)
+    (h : GaussInt.mul a b = GaussInt.mul a c) : b = c := by
+  have hzero : GaussInt.mul a (GaussInt.sub b c) = GaussInt.zero := by
+    rw [GaussInt.sub_eq_add_neg, GaussInt.mul_add, GaussInt.mul_neg, h,
+      add_neg_self]
+  rcases (GaussInt.mul_eq_zero.mp hzero) with ha0 | hs
+  · exact absurd ha0 ha
+  · have hb := GaussInt.add_eq_zero_neg (c := b) (z := GaussInt.neg c)
+      (by rw [← GaussInt.sub_eq_add_neg]; exact hs)
+    rw [GaussInt.neg_neg] at hb
+    exact hb
+
+theorem mul_right_cancel {a b c : GaussInt} (ha : a ≠ GaussInt.zero)
+    (h : GaussInt.mul b a = GaussInt.mul c a) : b = c := by
+  have h' : GaussInt.mul a b = GaussInt.mul a c := by
+    rw [GaussInt.mul_comm a b, GaussInt.mul_comm a c, h]
+  exact mul_left_cancel ha h'
+
+theorem not_piPowDvd_succ_of_exact {z : GaussInt} {k : ℕ} (h : P2Exact z k) :
+    ¬ ∃ u, GaussInt.mul u (piPow (k + 1)) = z := by
+  intro ⟨u, hu⟩
+  rcases h with ⟨v, hv, hnv⟩
+  have hpSucc : piPow (k + 1) = GaussInt.mul pi (piPow k) := by
+    unfold piPow
+    rw [GaussInt.npow_succ]
+  rw [hpSucc] at hu
+  have hu' : GaussInt.mul (GaussInt.mul u pi) (piPow k) = z := by
+    rw [← GaussInt.mul_assoc] at hu
+    exact hu
+  have hv' : GaussInt.mul (GaussInt.mul u pi) (piPow k) = GaussInt.mul v (piPow k) := by
+    rw [hu', hv]
+  have hcancel := mul_right_cancel (piPow_ne_zero k) hv'
+  have hp : piDivides pi := by
+    simp [piDivides, pi]
+  have hdiv : piDivides (GaussInt.mul u pi) := (piDivides_mul u pi).2 (Or.inr hp)
+  rw [hcancel] at hdiv
+  exact hnv hdiv
+
+theorem square_as_quot (t : GaussInt) (h : piDivides t) :
+    GaussInt.mul t t =
+      GaussInt.mul (GaussInt.mul (piQuot t) (piQuot t)) (piPow 2) := by
+  let q := piQuot t
+  have htq : t = GaussInt.mul q pi := (mul_pi_piQuot t h).symm
+  have h2 : piPow 2 = GaussInt.mul pi pi := by
+    simp [piPow, pi, GaussInt.npow, GaussInt.mul, GaussInt.one]
+  have hstep : GaussInt.mul t t = GaussInt.mul (GaussInt.mul q pi) (GaussInt.mul q pi) := by
+    rw [htq]
+  rw [hstep, mul_mul_comm_mid q pi q pi, GaussInt.mul_assoc, ← h2]
+
+theorem piDivides_sq_of_pi (t : GaussInt) (h : piDivides (GaussInt.mul t t)) : piDivides t :=
+  Or.elim ((piDivides_mul t t).1 h) id id
+
+/-- `π⁵ ∣ t²` implies `π⁶ ∣ t²`. The valuation of a square is even. -/
+theorem square_pi_five_gives_six (t : GaussInt)
+    (h : ∃ u, GaussInt.mul u (piPow 5) = GaussInt.mul t t) :
+    ∃ u, GaussInt.mul u (piPow 6) = GaussInt.mul t t := by
+  rcases h with ⟨u, hu⟩
+  have hp : piDivides pi := by
+    simp [piDivides, pi]
+  have hdivt : piDivides t := by
+    have hsq : piDivides (GaussInt.mul t t) := by
+      rw [← hu, piPow_succ_right, ← GaussInt.mul_assoc]
+      exact (piDivides_mul (GaussInt.mul u (piPow 4)) pi).2 (Or.inr hp)
+    exact piDivides_sq_of_pi t hsq
+  let t1 := piQuot t
+  have hsq1 := square_as_quot t hdivt
+  have hpow5 : piPow 5 = GaussInt.mul (piPow 3) (piPow 2) := by
+    unfold piPow
+    rw [show (5 : ℕ) = 3 + 2 by decide, GaussInt.npow_add]
+  have ht1 : GaussInt.mul t1 t1 = GaussInt.mul u (piPow 3) := by
+    have hboth : GaussInt.mul (GaussInt.mul t1 t1) (piPow 2) =
+        GaussInt.mul (GaussInt.mul u (piPow 3)) (piPow 2) := by
+      rw [← hsq1, ← hu, hpow5, GaussInt.mul_assoc]
+    exact mul_right_cancel (piPow_ne_zero 2) hboth
+  have hdiv1 : piDivides t1 := by
+    have hsq : piDivides (GaussInt.mul t1 t1) := by
+      rw [ht1, piPow_succ_right, ← GaussInt.mul_assoc]
+      exact (piDivides_mul (GaussInt.mul u (piPow 2)) pi).2 (Or.inr hp)
+    exact piDivides_sq_of_pi t1 hsq
+  let t2 := piQuot t1
+  have hsq2 := square_as_quot t1 hdiv1
+  have hpow3 : piPow 3 = GaussInt.mul pi (piPow 2) := by
+    unfold piPow
+    rw [show (3 : ℕ) = 1 + 2 by decide, GaussInt.npow_add, GaussInt.npow_one]
+  have ht2 : GaussInt.mul t2 t2 = GaussInt.mul u pi := by
+    have hboth : GaussInt.mul (GaussInt.mul t2 t2) (piPow 2) =
+        GaussInt.mul (GaussInt.mul u pi) (piPow 2) := by
+      rw [← hsq2, ht1, hpow3, GaussInt.mul_assoc]
+    exact mul_right_cancel (piPow_ne_zero 2) hboth
+  have hdiv2 : piDivides t2 :=
+    piDivides_sq_of_pi t2 (by
+      rw [ht2]
+      exact (piDivides_mul u pi).2 (Or.inr hp))
+  let t3 := piQuot t2
+  have ht3 : GaussInt.mul t3 pi = t2 := mul_pi_piQuot t2 hdiv2
+  have hu_fac : u = GaussInt.mul (GaussInt.mul t3 t3) pi := by
+    have hsq : GaussInt.mul t2 t2 =
+        GaussInt.mul (GaussInt.mul t3 t3) (GaussInt.mul pi pi) := by
+      rw [← ht3, mul_mul_comm_mid t3 pi t3 pi, GaussInt.mul_assoc]
+    rw [ht2] at hsq
+    have hne : pi ≠ GaussInt.zero := by
+      have h1 : piPow 1 = pi := by
+        unfold piPow
+        exact GaussInt.npow_one pi
+      rw [← h1]
+      exact piPow_ne_zero 1
+    have hboth : GaussInt.mul (GaussInt.mul (GaussInt.mul t3 t3) pi) pi = GaussInt.mul u pi := by
+      rw [GaussInt.mul_assoc, ← hsq]
+    exact (mul_right_cancel hne hboth).symm
+  refine ⟨GaussInt.mul t3 t3, ?_⟩
+  have hp6 : piPow 6 = GaussInt.mul pi (piPow 5) := by
+    unfold piPow
+    rw [GaussInt.npow_succ]
+  rw [← hu, hu_fac, hp6, ← GaussInt.mul_assoc]
+
+/-- If `v_π(z) = 5`, no square `t²` makes `v_π(z - t²) ≥ 6`.
+
+`v_π(t²)` is even, so it is never `5`. Subtracting a square cannot clear
+an odd valuation. On the model with `a₁ = a₃ = 0`, the pure shift
+`y ↦ y + t` sends `a₆` to `a₆ - t²`. This does not reach Dokchitser's
+`n = 4` bound `v(a₆) ≥ 7`.
+-/
+theorem y_shift_keeps_valuation_five {z t : GaussInt} (h : P2Exact z 5) :
+    ¬ ∃ u, GaussInt.mul u (piPow 6) = GaussInt.sub z (GaussInt.mul t t) := by
+  intro ⟨u, hu⟩
+  let tt := GaussInt.mul t t
+  have hback : GaussInt.add (GaussInt.sub z tt) tt = z := by
+    rw [GaussInt.sub_eq_add_neg, GaussInt.add_assoc]
+    have h0 : GaussInt.add (GaussInt.neg tt) tt = GaussInt.zero := by
+      rw [GaussInt.add_comm, add_neg_self]
+    rw [h0, GaussInt.add_zero]
+  have htt5 : ∃ w, GaussInt.mul w (piPow 5) = tt := by
+    rcases h with ⟨v, hv, _⟩
+    refine ⟨GaussInt.sub v (GaussInt.mul u pi), ?_⟩
+    rw [GaussInt.sub_eq_add_neg, GaussInt.add_mul, GaussInt.neg_mul, hv]
+    have hsub : GaussInt.mul (GaussInt.mul u pi) (piPow 5) = GaussInt.sub z tt := by
+      have hp6 : piPow 6 = GaussInt.mul pi (piPow 5) := by
+        unfold piPow
+        rw [GaussInt.npow_succ]
+      rw [GaussInt.mul_assoc, ← hp6, hu]
+    rw [hsub, ← GaussInt.sub_eq_add_neg]
+    have hdiff : GaussInt.sub z (GaussInt.sub z tt) = tt := by
+      cases z with
+      | mk zr zi =>
+        cases tt with
+        | mk tr ti =>
+          simp [GaussInt.sub]
+          constructor <;> omega
+    exact hdiff
+  have htt6 := square_pi_five_gives_six t htt5
+  have hz6 : ∃ w, GaussInt.mul w (piPow 6) = z := by
+    rcases htt6 with ⟨s, hs⟩
+    refine ⟨GaussInt.add u s, ?_⟩
+    rw [GaussInt.add_mul, hu, hs, hback]
+  exact not_piPowDvd_succ_of_exact h hz6
+
 /-- `(0, 1, 1)` has `v_π(a₆') = 5`, below Dokchitser's `n = 4` bound `7`.
 
 The bound for type `I₄*` asks `v(a₆) ≥ 7`. These valuations do not meet
@@ -2700,6 +2946,16 @@ theorem trivialB_a6_below_dokchitser_I4 :
     P2Exact (a6AfterPi trivialB) 5 ∧ ¬ (7 ≤ (5 : ℕ)) := by
   have h := translated_a4_splits_on_trivial_curves
   exact ⟨h.2.2.2.2.2.2.2, by decide⟩
+
+/-- On `(0, 1, 1)`, `y ↦ y + t` does not make `v_π(a₆) ≥ 6`.
+
+The translated model still has `a₃ = 0`, so this shift sends `a₆'` to
+`a₆' - t²`. Valuation `5` stays below `6`, and below the `n = 4` bound `7`.
+-/
+theorem trivialB_y_shift_stays_below_six (t : GaussInt) :
+    ¬ ∃ u, GaussInt.mul u (piPow 6) =
+      GaussInt.sub (a6AfterPi trivialB) (GaussInt.mul t t) :=
+  y_shift_keeps_valuation_five trivialB_a6_below_dokchitser_I4.1
 
 /-- `b₆ = a₃² + 4 a₆` after `y ↦ y + π²`. -/
 def b6AfterPiSq (E : FreyCurve4413) : GaussInt :=
