@@ -133,15 +133,17 @@ holds. After the translation `x ↦ x + π`, `translated_a4_splits_on_trivial_cu
 gives `v_π(a₄') = 3` on `(1, 0, 1)` and `v_π(a₄') = 6` on `(0, 1, 1)`,
 while both curves have `v_π(c₄) = 10` and `v_π(Δ) = 18`. Those two
 valuations do not choose one exponent. `translated_pi_scaling_blocked_by_a2`
-shows `v_π(a₂') = 1` blocks scaling that model by every `π^k` with
-`k ≥ 1`. On `(0, 1, 1)`, `trivialB_a6_blocks_pi_scaling` shows `a₄'` does
-not block `u = π` and `a₆'` does. A later translation changes the `aᵢ`,
-so neither parity case is `MinimalModelAt2`. `a_odd_after_pi_sq_valuations`
-is the further shift `y ↦ y + π²` when `a` is odd: `v_π(a₂) = 1`,
-`v_π(a₃) = 4`, `v_π(a₄) = 3`, and `v_π(a₆) = 5`. These meet Dokchitser's
-bounds for type `I₂*`. They do not define the exponent. The odd-`b`
-subalgorithm is not run. Ogg's formula is the tame conductor. The wild
-part at `π` is this proposition. `pi_ten_principal` is
+shows `v_π(a₂') = 1` blocks pure scaling by every `π^k` with `k ≥ 1`.
+`a2_plus_three_pi_p2_exact_three` is `v_π(a₂' + 3 π) = 3`, so the `a₂`
+slot of `u = π`, `r = π` is integral, and
+`pi_r_pi_a4_numerator_p2_exact_two` blocks that substitution at `a₄`
+with valuation `2`. `v_π(a₂') = 1` does not prove `MinimalModelAt2`.
+On `(0, 1, 1)`, `trivialB_a6_below_dokchitser_I4` is `v_π(a₆') = 5`,
+below the `n = 4` bound `7`, so those valuations are not type `I₄*`.
+`a_odd_dokchitser_n2_inputs` meets the numerical inputs for `n = 2`,
+including `v_π(b₆) = 8` and `v_π(D) = 6`. Dokchitser's proposition is
+not formalized, and the wild part is not proved to vanish. Ogg's formula
+is the tame conductor. The wild part at `π` is this proposition. `pi_ten_principal` is
 `(-√(-1))^5 · π^10 = 32` with `N(π^10) = 2^10`. `pi_twelve_principal` is
 `(-√(-1))^6 · π^12 = 64` with norm `2^12`. The principal ideals
 `(π)^10 = (32)` and `(π)^12 = (64)` agree. Dividing the exponent by `2`

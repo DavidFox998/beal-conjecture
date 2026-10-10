@@ -174,12 +174,15 @@ conductor. `v(c₄) < 4` or `v(Δ) < 12` does not hold.
 does not give `32 ∣ n`. `4 ∤ 10` does not prove the model minimal.
 After `x ↦ x + π`, `(1, 0, 1)` has `v_π(a₄') = 3` and `(0, 1, 1)` has
 `v_π(a₄') = 6`, with the same `v_π(c₄) = 10` and `v_π(Δ) = 18`.
-`v_π(a₂') = 1` blocks scaling that translated model by `π^k` for every
-`k ≥ 1`, while `4 ≤ 10` and `12 ≤ 18` still hold. On `(0, 1, 1)`, `a₄'`
-does not block `u = π` and `a₆'` does. A further translation changes
-`a₂`, so this is not minimality. When `a` is odd, `y ↦ y + π²` gives
-`v_π(a₃) = 4`, `v_π(a₄) = 3`, and `v_π(a₆) = 5`, the numerical bounds for
-type `I₂*`. Those bounds are not the conductor exponent.
+`v_π(a₂') = 1` blocks pure scaling by `π^k`. The transformed coefficient
+`a₂' + 3 π` has valuation `3`, so `r = π` meets the `a₂` slot for `u = π`.
+When `c` is odd the `a₄` numerator of that substitution has valuation `2`,
+below `4`. `v_π(a₂') = 1` does not prove minimality. On `(0, 1, 1)`,
+`v_π(a₆') = 5` is below Dokchitser's `n = 4` bound `7`. When `a` is odd,
+`y ↦ y + π²` gives `v_π(a₃) = 4`, `v_π(a₄) = 3`, `v_π(a₆) = 5`,
+`v_π(b₆) = 8`, and `v_π(D) = 6`. Those are the numerical inputs for type
+`I₂*`. They are not the conductor exponent, and the wild part is not
+proved to be `0`.
 `(-√(-1))^5 · π^10 = 32` with norm `2^10`, and `(-√(-1))^6 · π^12 = 64`
 with norm `2^12`. The principal ideals agree. That equality does not give
 `n = 32 ∨ n = 64`. `FreyValuationAt2` is `v₂(|c|)`.

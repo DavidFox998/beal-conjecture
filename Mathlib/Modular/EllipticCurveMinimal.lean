@@ -78,15 +78,22 @@ is not the scaling test. `a4AfterPi_p2_exact_three_of_a_odd` and
 `x ↦ x + π` when `a` is odd. `translated_a4_splits_on_trivial_curves`
 shows `(1, 0, 1)` and `(0, 1, 1)` share `v_π(c₄) = 10` and `v_π(Δ) = 18`
 and have translated `a₄` valuations `3` and `6`. `a2AfterPi_p2_exact_one`
-is `v_π(a₂') = 1`. `translated_pi_scaling_blocked_by_a2` uses that to
-block scaling the translated model by `π^k` for every `k ≥ 1`, while
-`4 ≤ 10` and `12 ≤ 18` still hold. A further translation changes `a₂`,
-so this is not `MinimalModelAt2`. On `(0, 1, 1)`, `v_π(a₄') = 6` does
-not block `u = π`, and `v_π(a₆') = 5` does. When `a` is odd, the further
-shift `y ↦ y + π²` gives `v_π(a₃) = 4`, `v_π(a₄) = 3`, and `v_π(a₆) = 5`
-(`a_odd_after_pi_sq_valuations`). Those are Dokchitser's numerical bounds
-for type `I₂*`. They are not the conductor exponent. Ogg's formula is the
-tame conductor; the wild part at `π` is `pacetti_2_8_open`.
+is `v_π(a₂') = 1`. `translated_pi_scaling_blocked_by_a2` blocks pure scaling
+(`r = s = t = 0`) by `π^k`. The transformed coefficient is
+`a₂ + 3 r - s²`. `a2_plus_three_pi_p2_exact_three` is
+`v_π(a₂' + 3 π) = 3`, so `r = π` meets the `a₂` slot for `u = π`.
+When `c` is odd, `pi_r_pi_a4_numerator_p2_exact_two` is valuation `2`,
+below `4`, so that substitution is not integral. `v_π(a₂') = 1` does not
+prove `MinimalModelAt2`. On `(0, 1, 1)`, `v_π(a₄') = 6` does not block
+`u = π`, and `v_π(a₆') = 5` does. That value `5` is below Dokchitser's
+`n = 4` bound `v(a₆) ≥ 7`. When `a` is odd, the further shift
+`y ↦ y + π²` gives `v_π(a₃) = 4`, `v_π(a₄) = 3`, and `v_π(a₆) = 5`
+(`a_odd_after_pi_sq_valuations`), and `b6AfterPiSq_p2_exact_eight` together
+with `quadDiscAfterPiSq_p2_exact_six` give `v_π(b₆) = 8` and `v_π(D) = 6`.
+Those are the numerical inputs of Dokchitser's criterion for type `I₂*`.
+The criterion is not formalized, and neither is a wild part. They are not
+the conductor exponent. Ogg's formula is the tame conductor; the wild part
+at `π` is `pacetti_2_8_open`.
 `pi_ten_principal` is `(-√(-1))^5 · π^10 = 32` with norm `2^10`, and
 `pi_twelve_principal` is the same for `64` and `2^12`. The principal
 ideals agree. That equality does not produce `n = 32 ∨ n = 64`. The
@@ -2578,6 +2585,252 @@ theorem pi_twelve_principal :
   · have h := pi_pow_norm 12
     rw [show (2 : ℤ) ^ 12 = 4096 by decide] at h
     exact h
+
+/-- `v_π(a₂' + 3 π) = 3`.
+
+With `a₁ = 0` and `s = 0`, the change of variables `x = u² x' + r` asks
+for `v_π(a₂ + 3 r) ≥ 2 v_π(u)`. Here `r = π` and the valuation is `3`,
+so the `a₂` slot of `u = π` is integral. `v_π(a₂') = 1` does not forbid
+that substitution.
+-/
+theorem a2_plus_three_pi_p2_exact_three (E : FreyCurve4413) :
+    P2Exact ⟨4 * E.a + 6, 6⟩ 3 := by
+  refine ⟨⟨-E.a, -E.a - 3⟩, ?_, ?_⟩
+  · rw [piPow_three]
+    simp [GaussInt.mul]
+    constructor <;> omega
+  · intro hdiv
+    have hsum : -E.a + (-E.a - 3) = -(2 * E.a + 3) := by grind
+    simp [piDivides] at hdiv
+    rw [hsum] at hdiv
+    have hprod : (2 * E.a + 3) % 2 = 1 := by
+      have hexp : 2 * E.a + 3 = 2 * (E.a + 1) + 1 := by grind
+      rw [hexp]
+      have hmod : (2 * (E.a + 1) + 1) % 2 = (1 : ℤ) % 2 := by
+        rw [Int.add_comm, Int.add_mul_emod_self_left]
+      rw [hmod]
+      decide
+    have hnd : ¬ (2 : ℤ) ∣ 2 * E.a + 3 := by
+      intro hd
+      rw [Int.emod_eq_zero_of_dvd hd] at hprod
+      omega
+    have hneg := Int.neg_emod (a := 2 * E.a + 3) (b := 2)
+    rw [ite_eq_right hnd, hprod] at hneg
+    rw [hneg] at hdiv
+    omega
+
+theorem a2_numerator_at_r_pi (E : FreyCurve4413) :
+    GaussInt.add (a2AfterPi E) (GaussInt.smul 3 pi) = ⟨4 * E.a + 6, 6⟩ := by
+  simp [a2AfterPi, pi, GaussInt.add, GaussInt.smul]
+  omega
+
+/-- If `c` is odd, the `a₄` numerator of `u = π`, `r = π`, `s = t = 0` has
+valuation `2`.
+
+The transformed coefficient is `a₄ + 2 r a₂ + 3 r²`. Integrality for
+`u = π` needs valuation at least `4`. The value `2` is below `4`, so this
+substitution is not an integral model. Together with
+`a2_plus_three_pi_p2_exact_three`, the `a₂` slot does not give the
+obstruction and the `a₄` slot does, for this one substitution.
+`MinimalModelAt2` stays opaque.
+-/
+theorem pi_r_pi_a4_numerator_p2_exact_two (E : FreyCurve4413)
+    (hodd : E.c.natAbs % 2 = 1) :
+    P2Exact ⟨2 * E.a ^ 2 + 16 * E.a, 2 * E.b ^ 2 + 16 * E.a + 24⟩ 2 := by
+  let re := E.a ^ 2 + 8 * E.a
+  let im := E.b ^ 2 + 8 * E.a + 12
+  have h2 : P2Exact (GaussInt.ofInt 2) 2 := by
+    simpa [Int.pow_one] using p2_valuation_of_two_pow 1
+  have hform : ⟨2 * E.a ^ 2 + 16 * E.a, 2 * E.b ^ 2 + 16 * E.a + 24⟩ =
+      GaussInt.mul (GaussInt.ofInt 2) ⟨re, im⟩ := by
+    rw [← smul_eq_mul_ofInt]
+    simp [GaussInt.smul]
+    grind
+  have hsq : E.a ^ 2 + E.b ^ 2 = ↑(E.a.natAbs ^ 2 + E.b.natAbs ^ 2) := by
+    rw [int_sq_as_natAbs E.a, int_sq_as_natAbs E.b, Int.natCast_add]
+  have hcast : (↑(E.a.natAbs ^ 2 + E.b.natAbs ^ 2) : ℤ) % 2 = 1 :=
+    nat_odd_cast_mod_two (odd_c_sum_squares_odd E hodd)
+  have hsumSq : (E.a ^ 2 + E.b ^ 2) % 2 = 1 := by
+    rw [hsq, hcast]
+  have hnot : ¬ piDivides ⟨re, im⟩ := by
+    intro hdiv
+    simp [piDivides] at hdiv
+    have hexp : re + im = (E.a ^ 2 + E.b ^ 2) + 2 * (8 * E.a + 6) := by
+      grind
+    rw [hexp] at hdiv
+    have hmod : ((E.a ^ 2 + E.b ^ 2) + 2 * (8 * E.a + 6)) % 2 =
+        (E.a ^ 2 + E.b ^ 2) % 2 := by
+      rw [Int.add_mul_emod_self_left]
+    rw [hmod, hsumSq] at hdiv
+    omega
+  have hcof : P2Exact ⟨re, im⟩ 0 := by
+    refine ⟨⟨re, im⟩, ?_, hnot⟩
+    simp [piPow, GaussInt.npow, GaussInt.mul_one]
+  rw [hform]
+  exact P2Exact_mul h2 hcof
+
+theorem a4_numerator_at_r_pi (E : FreyCurve4413) :
+    GaussInt.add (a4AfterPi E)
+        (GaussInt.add (GaussInt.smul 2 (GaussInt.mul pi (a2AfterPi E)))
+          (GaussInt.smul 3 (GaussInt.mul pi pi))) =
+      ⟨2 * E.a ^ 2 + 16 * E.a, 2 * E.b ^ 2 + 16 * E.a + 24⟩ := by
+  simp [a4AfterPi, a2AfterPi, pi, GaussInt.add, GaussInt.mul, GaussInt.smul]
+  grind
+
+/-- `v_π(a₂') = 1` does not prove minimality.
+
+`v_π(a₂' + 3 π) = 3 ≥ 2`, so the `a₂` condition for `u = π` and `r = π`
+holds. When `c` is odd the `a₄` numerator of that substitution has
+valuation `2 < 4`. `MinimalModelAt2` is not produced.
+-/
+theorem a2_one_does_not_prove_minimal (E : FreyCurve4413)
+    (hodd : E.c.natAbs % 2 = 1) :
+    P2Exact (a2AfterPi E) 1 ∧ P2Exact ⟨4 * E.a + 6, 6⟩ 3 ∧ (2 ≤ 3) ∧
+      P2Exact ⟨2 * E.a ^ 2 + 16 * E.a, 2 * E.b ^ 2 + 16 * E.a + 24⟩ 2 ∧
+      ¬ (4 ≤ 2) :=
+  ⟨a2AfterPi_p2_exact_one E, a2_plus_three_pi_p2_exact_three E, by decide,
+    pi_r_pi_a4_numerator_p2_exact_two E hodd, by decide⟩
+
+/-- `(0, 1, 1)` has `v_π(a₆') = 5`, below Dokchitser's `n = 4` bound `7`.
+
+The bound for type `I₄*` asks `v(a₆) ≥ 7`. These valuations do not meet
+it. Type `I₄*` and exponent `10` are not theorems.
+-/
+theorem trivialB_a6_below_dokchitser_I4 :
+    P2Exact (a6AfterPi trivialB) 5 ∧ ¬ (7 ≤ (5 : ℕ)) := by
+  have h := translated_a4_splits_on_trivial_curves
+  exact ⟨h.2.2.2.2.2.2.2, by decide⟩
+
+/-- `b₆ = a₃² + 4 a₆` after `y ↦ y + π²`. -/
+def b6AfterPiSq (E : FreyCurve4413) : GaussInt :=
+  GaussInt.add (GaussInt.mul a3AfterPiSq a3AfterPiSq)
+    (GaussInt.smul 4 (a6AfterPiSq E))
+
+/-- `D = a₄² - 4 a₂ a₆` after `y ↦ y + π²`. -/
+def quadDiscAfterPiSq (E : FreyCurve4413) : GaussInt :=
+  GaussInt.sub (GaussInt.mul (a4AfterPi E) (a4AfterPi E))
+    (GaussInt.smul 4 (GaussInt.mul (a2AfterPi E) (a6AfterPiSq E)))
+
+theorem b6AfterPiSq_expand (E : FreyCurve4413) :
+    b6AfterPiSq E =
+      ⟨8 * (E.a ^ 2 - E.b ^ 2 - 1), 8 * (E.a ^ 2 + E.b ^ 2 + 4 * E.a + 1)⟩ := by
+  simp [b6AfterPiSq, a3AfterPiSq, a6AfterPiSq, GaussInt.mul, GaussInt.smul, GaussInt.add]
+  grind
+
+/-- If `c` is odd and `a` is odd, then `v_π(b₆) = 8` after `y ↦ y + π²`.
+
+Dokchitser's even-`n` bound for `n = 2` asks `v(b₆) ≥ 5`. The value `8`
+meets that inequality. It is not a Kodaira type.
+-/
+theorem b6AfterPiSq_p2_exact_eight (E : FreyCurve4413)
+    (hodd : E.c.natAbs % 2 = 1) (ha : E.a.natAbs % 2 = 1) :
+    P2Exact (b6AfterPiSq E) 8 := by
+  have hb0 := b_even_of_a_odd E hodd ha
+  have ha2 := int_odd_of_natAbs_odd ha
+  have hb2 := int_even_of_natAbs_even hb0
+  let p := (E.a - 1) / 2
+  let q := E.b / 2
+  have ha' : E.a = 2 * p + 1 := int_odd_split ha2
+  have hb' : E.b = 2 * q := int_even_split hb2
+  let R := p * (p + 1) - q ^ 2
+  let S := 2 * p ^ 2 + 2 * q ^ 2 + 6 * p + 3
+  have hR : 4 * R = E.a ^ 2 - E.b ^ 2 - 1 := by
+    rw [ha', hb']
+    grind
+  have hS : 2 * S = E.a ^ 2 + E.b ^ 2 + 4 * E.a + 1 := by
+    rw [ha', hb']
+    grind
+  have hw : P2Exact ⟨E.a ^ 2 - E.b ^ 2 - 1, E.a ^ 2 + E.b ^ 2 + 4 * E.a + 1⟩ 2 := by
+    refine ⟨⟨S, -(2 * R)⟩, ?_, ?_⟩
+    · rw [piPow_two]
+      simp [GaussInt.mul]
+      constructor <;> grind
+    · intro hdiv
+      have hSmod : S % 2 = 1 := by
+        have hexp : S = 2 * (p ^ 2 + q ^ 2 + 3 * p) + 3 := by grind
+        rw [hexp]
+        have hmod : (2 * (p ^ 2 + q ^ 2 + 3 * p) + 3) % 2 = (3 : ℤ) % 2 := by
+          rw [Int.add_comm, Int.add_mul_emod_self_left]
+        rw [hmod]
+        decide
+      simp [piDivides] at hdiv
+      rw [hSmod] at hdiv
+      omega
+  have h8 : P2Exact (GaussInt.ofInt 8) 6 := by
+    have hpow : (2 : ℤ) ^ 3 = 8 := by decide
+    simpa [hpow] using p2_valuation_of_two_pow 3
+  have hform : b6AfterPiSq E =
+      GaussInt.mul (GaussInt.ofInt 8)
+        ⟨E.a ^ 2 - E.b ^ 2 - 1, E.a ^ 2 + E.b ^ 2 + 4 * E.a + 1⟩ := by
+    rw [b6AfterPiSq_expand, ← smul_eq_mul_ofInt]
+    simp [GaussInt.smul]
+  rw [hform]
+  exact P2Exact_mul h8 hw
+
+/-- If `c` is odd and `a` is odd, then `v_π(D) = 6` after `y ↦ y + π²`.
+
+`D = a₄² - 4 a₂ a₆`. Dokchitser's count for `n = 2` is `v(D) = n + 4 = 6`.
+This equality meets that count. It does not prove the model has type `I₂*`
+and it does not set a wild part to `0`.
+-/
+theorem quadDiscAfterPiSq_p2_exact_six (E : FreyCurve4413)
+    (hodd : E.c.natAbs % 2 = 1) (ha : E.a.natAbs % 2 = 1) :
+    P2Exact (quadDiscAfterPiSq E) 6 := by
+  have hb0 := b_even_of_a_odd E hodd ha
+  have ha2 := int_odd_of_natAbs_odd ha
+  have hb2 := int_even_of_natAbs_even hb0
+  let p := (E.a - 1) / 2
+  let q := E.b / 2
+  have ha' : E.a = 2 * p + 1 := int_odd_split ha2
+  have hb' : E.b = 2 * q := int_even_split hb2
+  let ure := 12 * p ^ 2 + 20 * p + 13 - 4 * q ^ 2 * (2 * p + 1) ^ 2
+  let uim := 8 * p ^ 4 + 16 * p ^ 3 + 12 * p ^ 2 - 4 * p - 8 + 12 * q ^ 2 - 8 * q ^ 4
+  refine ⟨⟨ure, uim⟩, ?_, ?_⟩
+  · rw [piPow_six]
+    simp [quadDiscAfterPiSq, a4AfterPi, a2AfterPi, a6AfterPiSq, GaussInt.mul,
+      GaussInt.sub, GaussInt.smul, ha', hb']
+    grind
+  · intro hdiv
+    have hure : ure % 2 = 1 := by
+      have hexp : ure =
+          2 * (6 * p ^ 2 + 10 * p + 6 - 2 * q ^ 2 * (2 * p + 1) ^ 2) + 1 := by
+        grind
+      rw [hexp]
+      have hmod : (2 * (6 * p ^ 2 + 10 * p + 6 - 2 * q ^ 2 * (2 * p + 1) ^ 2) + 1) % 2 =
+          (1 : ℤ) % 2 := by
+        rw [Int.add_comm, Int.add_mul_emod_self_left]
+      rw [hmod]
+      decide
+    have huim : uim % 2 = 0 := by
+      have hexp : uim =
+          2 * (4 * p ^ 4 + 8 * p ^ 3 + 6 * p ^ 2 - 2 * p - 4 + 6 * q ^ 2 - 4 * q ^ 4) := by
+        grind
+      rw [hexp, Int.mul_emod_right]
+    have hsum : (ure + uim) % 2 = 1 := by
+      rw [Int.add_emod, hure, huim]
+      decide
+    simp [piDivides] at hdiv
+    rw [hsum] at hdiv
+    omega
+
+/-- The `a`-odd model after `y ↦ y + π²` meets Dokchitser's numerical inputs
+for `n = 2`.
+
+The inputs are `v(a₂) = 1`, `v(a₃) = 4 ≥ 3`, `v(a₄) = 3`, `v(a₆) = 5`,
+`v(b₆) = 8 ≥ 5`, and `v(D) = 6`. Dokchitser's proposition is not
+formalized. These valuations do not produce a Kodaira symbol, a conductor
+exponent, or a wild part. `ConductorExponentAtPrimeAbove2` stays opaque.
+-/
+theorem a_odd_dokchitser_n2_inputs (E : FreyCurve4413)
+    (hodd : E.c.natAbs % 2 = 1) (ha : E.a.natAbs % 2 = 1) :
+    P2Exact (a2AfterPi E) 1 ∧ P2Exact a3AfterPiSq 4 ∧
+      P2Exact (a4AfterPi E) 3 ∧ P2Exact (a6AfterPiSq E) 5 ∧
+      P2Exact (b6AfterPiSq E) 8 ∧ P2Exact (quadDiscAfterPiSq E) 6 :=
+  ⟨a2AfterPi_p2_exact_one E, a3AfterPiSq_p2_exact_four,
+    a4AfterPi_p2_exact_three_of_a_odd E hodd ha,
+    a6AfterPiSq_p2_exact_five_of_a_odd E hodd ha,
+    b6AfterPiSq_p2_exact_eight E hodd ha,
+    quadDiscAfterPiSq_p2_exact_six E hodd ha⟩
 
 theorem GaussInt.npow_one_nat (n : ℕ) : GaussInt.npow GaussInt.one n = GaussInt.one := by
   induction n with
