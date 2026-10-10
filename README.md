@@ -145,13 +145,17 @@ still a hypothesis. The level is not forced into `{32, 64}`.
 `xDivisionDegree 13 = 84` is the count `(13² - 1) / 2`. `rho_E_13` is the
 unresolved marker. `FreyConductor_OPEN E N` is the hypothesis that a
 supplied integer `N` equals `32 c²` or `64 c²`. `FreyConductorDivides`
-is that alternative for `N : ℕ` and `|c|`. `RibetOutput` is a newform of
-some level `n`, with no equation `n = 32`, `n = 64`, or `n ∣ N`.
-`n_dvd_N_of_ribet` says that if `n ∣ N` and `FreyConductorDivides c N`,
-then `n ∣ 64 |c|²`. The axiom does not give `n ∣ N`. `RhoE13Open` is the
-sealed irreducibility statement; nothing proves it.
-`ribet_given_open_hypotheses` assumes both open hypotheses and still calls
-`ribet_level_lowering_4413`.
+is `ConductorShape`: the same alternative for `N : ℕ` and `|c|`.
+`ribet_level_lowering_4413` returns a newform of some level, and, when
+`N` equals `32 |c|²` or `64 |c|²`, a level `n` with `n ∣ N`.
+`RibetOutput` stores that divisibility as `h_n_dvd_N`. It has no field
+`n = 32` or `n = 64`. `n_dvd_64csq_of_ribet` says that this `n` divides
+`64 |c|²`. `n_dvd_32_or_64_of_prime_to_c` removes the primes dividing `c`
+and concludes `n ∣ 32` or `n ∣ 64`. The positive divisors of `64` include
+`1`, so this is not `n = 32 ∨ n = 64`. `RhoE13Open` is the sealed
+irreducibility statement; nothing proves it, and the axiom does not take
+it as an argument. `ribetOutput_of_open_hypotheses` reads the second
+conjunct. `ribet_given_open_hypotheses` still returns the first.
 
 `Mathlib/Modular/DarmonMerel4413.lean` is the `n = 4`, `p = 13` layout of
 that strategy. `DarmonMerelFrey` is `IsQCurve` plus the non-rational `j`

@@ -38,7 +38,7 @@ theorem solution_modular_and_lowered
   refine ⟨frey_qcurve_modular a b c E, ?_⟩
   have hirred : Irreducible (rho_E_p E) := trivial
   have hp : ¬ ((13 : ℕ) ∣ 2) := by decide
-  exact ribet_level_lowering_4413 a b c E hirred hp
+  exact (ribet_level_lowering_4413 a b c E hirred hp).1
 
 /-- The same solution meets Merel's nonvanishing test at both CM levels.
 
@@ -54,6 +54,6 @@ theorem solution_meets_winding_test
   have hmod : Modular E := frey_qcurve_modular a b c E
   have hirred : Irreducible (rho_E_p E) := trivial
   have hp : ¬ ((13 : ℕ) ∣ 2) := by decide
-  rcases ribet_level_lowering_4413 a b c E hirred hp with ⟨n, g, hlow⟩
+  rcases (ribet_level_lowering_4413 a b c E hirred hp).1 with ⟨n, g, hlow⟩
   exact winding_elimination_4413 a b c ha hb heq E g hmod hlow
     level_32_or_64 winding_quotient_no_g_32 winding_quotient_no_g_64

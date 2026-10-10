@@ -75,10 +75,23 @@ def loweredLevel (e : ℕ) : ℕ :=
 example : loweredLevel 5 = 32 := rfl
 example : loweredLevel 6 = 64 := rfl
 
+/-- Numerical shape `32 |c|²` or `64 |c|²`.
+
+This is not a proof that `N` is the conductor. Tate's algorithm is not
+formalized.
+-/
+def ConductorShape (c : ℤ) (N : ℕ) : Prop :=
+  N = 32 * c.natAbs ^ 2 ∨ N = 64 * c.natAbs ^ 2
+
 /-- Ribet's lowering-the-level theorem for `d = 1`, `p = 13`.
 
 `h_p_not_d` is the slide hypothesis `p ∤ 2d` in this case: `13 ∤ 2`.
-The conclusion is a newform of some level `n = 2^e`.
+The first conjunct is a newform of some level. The second conjunct says
+that if `N` equals `32 |c|²` or `64 |c|²`, then some newform level divides
+that `N`. The two levels need not be equal: `64` need not divide `32 |c|²`.
+`RhoE13Open` is not an argument. It is opaque, and the callers that only
+have `Irreducible` cannot build a term of it. It does not prove `n = 32`,
+`n = 64`, or that `N` is the conductor.
 
 Citation: Ribet 1990, Invent. Math. 100, and Pacetti's slide
 “Ribet's lowering the level result”.
@@ -86,7 +99,9 @@ Note: this is axiom 2 until Mathlib has Ribet's theorem for ℚ-curves.
 -/
 axiom ribet_level_lowering_4413 (a b c : ℤ) (E : FreyCurve4413)
     (h_irred : Irreducible (rho_E_p E)) (h_p_not_d : ¬ (13 ∣ 2)) :
-    ∃ (n : ℕ) (g : Newform n), LevelLowered E g
+    (∃ (n : ℕ) (g : Newform n), LevelLowered E g) ∧
+      ∀ N : ℕ, ConductorShape E.c N →
+        ∃ (n : ℕ) (g : Newform n), n ∣ N ∧ LevelLowered E g
 
 /-- For `d = 1` every odd slot `Q₁, Q₃, Q₅, Q₇` is empty, so Pacetti's
 odd part of the lowered level is `1` and the level is a power of `2`. -/

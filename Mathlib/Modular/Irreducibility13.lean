@@ -21,10 +21,17 @@ has no root in the fraction field of `ℤ[√-1]`. It is not a theorem.
   linear factor is not that statement, and the sealed irreducibility
   hypothesis does not prove the missing linear factor.
 * `rho_E_13` is `GaloisRepresentation.unresolved`.
+* A missing linear factor of `ψ₁₃` in `ℚ(√-1)` is not absolute
+  irreducibility for GL2-type over `ℚ(√-1)`. The image must contain
+  `SL₂(𝔽₁₃)`. `RhoE13Open → Psi13HasNoQiRoot` is not proved, and neither
+  is the converse.
 
 `FreyConductor_OPEN` and `FreyConductorDivides` stay hypotheses.
-`n_dvd_N_of_ribet` needs an extra assumption `n ∣ N`, which
-`ribet_level_lowering_4413` does not produce.
+The second conjunct of `ribet_level_lowering_4413` supplies `n ∣ N` when
+`N` has `ConductorShape`. `RibetOutput.h_n_dvd_N` stores it.
+`n_dvd_64csq_of_ribet` turns that into `n ∣ 64 |c|²`.
+`n_dvd_32_or_64_of_prime_to_c` then removes primes dividing `c`.
+It does not conclude `n = 32 ∨ n = 64`.
 -/
 
 namespace FreyCurve4413

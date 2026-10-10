@@ -40,9 +40,10 @@ divides `lead * num ^ deg`, and Euclid's lemma is not available, so those
 sixteen elements do not exhaust the candidates. `rho_E_13` is still
 unresolved: no linear factor is not the absence of a Galois-stable
 subgroup of order `13`.
-`DarmonMerelLevelLowering` calls `ribet_level_lowering_4413`
-and returns a newform of some level `n`. It does not prove `n = 32`,
-`n = 64`, or `n = N`.
+`DarmonMerelLevelLowering` calls the first conjunct of
+`ribet_level_lowering_4413` and returns a newform of some level `n`.
+The second conjunct supplies `n ∣ N` when `N` has `ConductorShape`.
+This theorem does not prove `n = 32`, `n = 64`, or `n = N`.
 
 `DarmonMerelFrozenFacts` collects the winding vectors, the cusp counts, the
 integral points of `Y² = X³ - X`, the nonzero discriminant, and the Vélu

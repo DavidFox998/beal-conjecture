@@ -37,6 +37,6 @@ theorem norm_and_level_lowering_axiom
     (h_irred : Irreducible (rho_E_p E)) (hp : ¬ ((13 : ℕ) ∣ 2)) :
     E.discriminant_re ^ 2 + E.discriminant_im ^ 2 = (2 : ℤ) ^ 18 * E.c ^ 39 ∧
       ∃ n : ℕ, ∃ g : Newform n, LevelLowered E g :=
-  ⟨discriminant_norm E, ribet_level_lowering_4413 a b c E h_irred hp⟩
+  ⟨discriminant_norm E, (ribet_level_lowering_4413 a b c E h_irred hp).1⟩
 
 end FreyCurve4413
