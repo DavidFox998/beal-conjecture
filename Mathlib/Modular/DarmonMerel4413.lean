@@ -29,8 +29,12 @@ Ribet's finiteness condition is a statement about inertia on the `13`-torsion.
 not discharge that condition. Tate's algorithm is not used.
 
 `FreyConductor_OPEN` and `RhoE13Open` stay hypotheses. `divisionPsi`
-constructs `ψ₁₃` as a list in `ℤ[√-1][x]`; `psi13_no_integral_root_OPEN`
-is not a theorem, and `rho_E_13` is still unresolved.
+constructs `ψ₁₃` as a list in `ℤ[√-1][x]`. That list has no integral root
+on the auxiliary curve `y² = x³ - x`. The Frey list is not that polynomial,
+and `psi13_no_integral_root_OPEN` is not a theorem for it. A denominator
+dividing the leading coefficient `13` can still give a root in `ℚ(√-1)`.
+`rho_E_13` is still unresolved: no linear factor is not the absence of a
+Galois-stable subgroup of order `13`.
 `DarmonMerelLevelLowering` calls `ribet_level_lowering_4413`
 and returns a newform of some level `n`. It does not prove `n = 32`,
 `n = 64`, or `n = N`.

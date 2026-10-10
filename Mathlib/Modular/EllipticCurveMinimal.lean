@@ -27,11 +27,21 @@ Odd values lie in `ℤ[√-1][x]`. `divisionDegree_13` is the count
 `(13² - 1) / 2 = 84`. On the curve `y² = x³ - x`, the constructed list
 has length `85` and leading coefficient `13`.
 
-`psi13_no_integral_root_OPEN` is the statement that this list has no root
-in `ℤ[√-1]`. It is not a theorem. `integral_root_divides_constant` is the
-divisibility such a root would satisfy. Roots in `ℚ(√-1)` that are not
-integral are not covered, and the non-rational `j` at `a = 1`, `b = 1` is
-a different fact. That pair is not a solution of `a⁴ + b⁴ = c¹³`.
+`psi13_no_integral_root_on_minus_x` is that statement for the single curve
+`y² = x³ - x`: the constant term is a unit, so an integral root would be a
+unit, and none of `±1`, `±√(-1)` is a root. The Frey polynomial is a
+different list. `psi13_no_integral_root_OPEN` for a general coefficient
+triple is not a theorem. The norm `N(Δ) = 2¹⁸ (c³)¹³` is not the constant
+term of `ψ₁₃`.
+
+A root `num / den` in `ℚ(√-1)` clears to an equation in which `den` divides
+`13 * num^84` once the leading coefficient is `13`. That does not force
+`den` to be a unit, so absence of an integral root does not yield absence
+of a root in `ℚ(√-1)`. `ℤ[√-1]` being a UFD is not formalized. A root-free
+division polynomial is not a Galois representation and not
+`RhoE13Open`: a cyclic subgroup of order `13` stable under
+`Gal(ℚ̄/ℚ(√-1))` cuts out a degree-6 factor, not a linear factor.
+`rho_E_13` stays unresolved. `FreyConductor_OPEN` stays a hypothesis.
 
 `norm_two_adic` is the 2-adic valuation of the field norm:
 if `|c| = 2^k m` with `m` odd, then `v₂(N(Δ)) = 18 + 39 k`. Tate's
@@ -75,6 +85,109 @@ theorem mul_neg (z w : GaussInt) : mul z (neg w) = neg (mul z w) := by
   cases w
   simp [mul, neg, Int.mul_neg]
   constructor <;> omega
+
+theorem norm_mul (z w : GaussInt) : norm (mul z w) = norm z * norm w := by
+  cases z
+  cases w
+  simp [norm, mul]
+  grind
+
+theorem self_sq_natAbs (n : Int) : n * n = ↑(n.natAbs * n.natAbs) := by
+  cases n with
+  | ofNat k => rfl
+  | negSucc k =>
+    rw [Int.negSucc_eq, Int.neg_mul_neg, Int.natAbs_neg]
+    have h : (↑(k + 1) : Int) = ↑k + 1 := by simp
+    rw [← h, Int.natAbs_natCast]
+    rfl
+
+theorem nat_cast_add (a b : Nat) : (↑(a + b) : Int) = ↑a + ↑b := by
+  simp
+
+theorem norm_nonneg (z : GaussInt) : 0 ≤ norm z := by
+  rw [norm, self_sq_natAbs z.re, self_sq_natAbs z.im, ← nat_cast_add]
+  exact Int.natCast_nonneg _
+
+theorem natAbs_sq_sum (re im : Int) :
+    re * re + im * im = ↑(re.natAbs * re.natAbs + im.natAbs * im.natAbs) := by
+  rw [self_sq_natAbs re, self_sq_natAbs im, nat_cast_add]
+
+/-- The only solutions of `re² + im² = 1` in `ℤ` are the four units. -/
+theorem norm_one_units (z : GaussInt) (h : norm z = 1) :
+    z = ⟨1, 0⟩ ∨ z = ⟨-1, 0⟩ ∨ z = ⟨0, 1⟩ ∨ z = ⟨0, -1⟩ := by
+  cases z with
+  | mk re im =>
+    have hsum : re.natAbs * re.natAbs + im.natAbs * im.natAbs = 1 := by
+      have hcast := natAbs_sq_sum re im
+      have hn : re * re + im * im = 1 := by simpa [norm] using h
+      rw [hcast] at hn
+      exact Int.ofNat.inj hn
+    have hi2 : im.natAbs * im.natAbs ≤ 1 := by
+      have : im.natAbs * im.natAbs ≤ re.natAbs * re.natAbs + im.natAbs * im.natAbs :=
+        Nat.le_add_left _ _
+      omega
+    have hr2 : re.natAbs * re.natAbs ≤ 1 := by
+      have : re.natAbs * re.natAbs ≤ re.natAbs * re.natAbs + im.natAbs * im.natAbs :=
+        Nat.le_add_right _ _
+      omega
+    have hi : im.natAbs = 0 ∨ im.natAbs = 1 := by
+      match him : im.natAbs with
+      | 0 => exact Or.inl rfl
+      | 1 => exact Or.inr rfl
+      | n + 2 =>
+        have h4 : 4 ≤ (n + 2) * (n + 2) :=
+          Nat.mul_le_mul (show 2 ≤ n + 2 by omega) (show 2 ≤ n + 2 by omega)
+        have hsq : (n + 2) * (n + 2) ≤ 1 := by
+          simpa [him] using hi2
+        have : 4 ≤ 1 := Nat.le_trans h4 hsq
+        omega
+    have hr : re.natAbs = 0 ∨ re.natAbs = 1 := by
+      match hre : re.natAbs with
+      | 0 => exact Or.inl rfl
+      | 1 => exact Or.inr rfl
+      | n + 2 =>
+        have h4 : 4 ≤ (n + 2) * (n + 2) :=
+          Nat.mul_le_mul (show 2 ≤ n + 2 by omega) (show 2 ≤ n + 2 by omega)
+        have hsq : (n + 2) * (n + 2) ≤ 1 := by
+          simpa [hre] using hr2
+        have : 4 ≤ 1 := Nat.le_trans h4 hsq
+        omega
+    have hone (n : Int) (hn : n.natAbs = 1) : n = 1 ∨ n = -1 := by
+      cases n with
+      | ofNat k =>
+        simp [Int.natAbs] at hn
+        subst hn
+        exact Or.inl rfl
+      | negSucc k =>
+        simp [Int.natAbs] at hn
+        have : k = 0 := by omega
+        subst this
+        exact Or.inr rfl
+    rcases hr with hr | hr <;> rcases hi with hi | hi
+    · simp [hr, hi] at hsum
+    · have hre0 : re = 0 := Int.natAbs_eq_zero.mp hr
+      rcases hone im hi with him | him
+      · exact Or.inr (Or.inr (Or.inl (by simp [hre0, him])))
+      · exact Or.inr (Or.inr (Or.inr (by simp [hre0, him])))
+    · have him0 : im = 0 := Int.natAbs_eq_zero.mp hi
+      rcases hone re hr with hre | hre
+      · exact Or.inl (by simp [hre, him0])
+      · exact Or.inr (Or.inl (by simp [hre, him0]))
+    · simp [hr, hi] at hsum
+
+theorem norm_eq_one_of_mul_norm_one (z q : GaussInt) (h : norm (mul z q) = 1) :
+    norm z = 1 := by
+  rw [norm_mul] at h
+  have hz : 0 ≤ norm z := norm_nonneg z
+  have hq : 0 ≤ norm q := norm_nonneg q
+  have hnat : (norm z).toNat * (norm q).toNat = 1 := by
+    have hmul : (norm z).toNat * (norm q).toNat = (norm z * norm q).toNat :=
+      (Int.toNat_mul hz hq).symm
+    rw [hmul, h]
+    rfl
+  have hzn : (norm z).toNat = 1 := Nat.eq_one_of_mul_eq_one_right hnat
+  have hz' : norm z = ↑(norm z).toNat := (Int.toNat_of_nonneg hz).symm
+  simpa [hzn] using hz'
 
 theorem add_eq_zero_neg {c z : GaussInt} (h : add c z = zero) : c = neg z := by
   have hr := congrArg re h
@@ -276,19 +389,87 @@ theorem psi3_degree (a2 a4 a6 : GaussInt) :
       (divisionPsi 3 a2 a4 a6).getLastD GaussInt.zero = GaussInt.ofInt 3 := by
   simp [divisionPsi, divisionTower, psiAt, bInv]
 
+/-- `psi13_no_integral_root_OPEN`.
+
+The statement that `ψ₁₃` has no root in `ℤ[√-1]`. Proved below only for
+`y² = x³ - x`. Not a theorem for a general Frey coefficient triple. A root
+in `ℚ(√-1)` that is not integral is a further statement, also not proved.
+-/
+def psi13_no_integral_root_OPEN (a2 a4 a6 : GaussInt) : Prop :=
+  ∀ r : GaussInt, evalPoly (psi13 a2 a4 a6) r ≠ GaussInt.zero
+
 /-- On `y² = x³ - x`, the constructed `ψ₁₃` has degree 84 and leading coefficient 13. -/
 theorem psi13_on_minus_x :
     let p := psi13 (GaussInt.ofInt 0) (GaussInt.ofInt (-1)) (GaussInt.ofInt 0)
     p.length = 85 ∧ p.getLastD GaussInt.zero = GaussInt.ofInt 13 := by
   native_decide
 
-/-- `psi13_no_integral_root_OPEN`.
+/-- Constant term and the four units, on `y² = x³ - x`. -/
+theorem psi13_minus_x_units :
+    let p := psi13 (GaussInt.ofInt 0) (GaussInt.ofInt (-1)) (GaussInt.ofInt 0)
+    (p.headD GaussInt.zero = ⟨1, 0⟩ ∨ p.headD GaussInt.zero = ⟨-1, 0⟩) ∧
+      evalPoly p ⟨1, 0⟩ ≠ GaussInt.zero ∧
+      evalPoly p ⟨-1, 0⟩ ≠ GaussInt.zero ∧
+      evalPoly p ⟨0, 1⟩ ≠ GaussInt.zero ∧
+      evalPoly p ⟨0, -1⟩ ≠ GaussInt.zero := by
+  native_decide
 
-The statement that `ψ₁₃` has no root in `ℤ[√-1]`. Not a theorem. A root in
-`ℚ(√-1)` that is not integral is a further statement, also not proved.
+/-- `13 = (2 + 3√-1)(2 - 3√-1)` in `ℤ[√-1]`.
+
+The leading coefficient of `ψ₁₃` on `y² = x³ - x` is `13`. The factor
+`2 + 3√-1` has norm `13`, so it is not a unit. A root in `ℚ(√-1)` whose
+denominator is that factor is compatible with the leading coefficient and
+need not lie in `ℤ[√-1]`. -/
+theorem thirteen_split :
+    GaussInt.mul ⟨2, 3⟩ ⟨2, -3⟩ = GaussInt.ofInt 13 := by
+  native_decide
+
+theorem thirteen_factor_norm : GaussInt.norm ⟨2, 3⟩ = 13 := by
+  native_decide
+
+theorem eval_head (p : List GaussInt) (r : GaussInt) (hne : p ≠ [])
+    (h : evalPoly p r = GaussInt.zero) :
+    GaussInt.mul r (GaussInt.neg (evalPoly p.tail r)) = p.headD GaussInt.zero := by
+  cases p with
+  | nil => exact absurd rfl hne
+  | cons c cs =>
+    simpa [List.headD] using integral_root_divides_constant c cs r h
+
+/-- `ψ₁₃` has no root in `ℤ[√-1]` on `y² = x³ - x`.
+
+The constant term is `±1`, so `integral_root_divides_constant` forces a root
+to be a unit. This curve is not the Frey model of a solution of
+`a⁴ + b⁴ = c¹³`.
 -/
-def psi13_no_integral_root_OPEN (a2 a4 a6 : GaussInt) : Prop :=
-  ∀ r : GaussInt, evalPoly (psi13 a2 a4 a6) r ≠ GaussInt.zero
+theorem psi13_no_integral_root_on_minus_x :
+    psi13_no_integral_root_OPEN (GaussInt.ofInt 0) (GaussInt.ofInt (-1)) (GaussInt.ofInt 0) := by
+  intro r hr
+  let p := psi13 (GaussInt.ofInt 0) (GaussInt.ofInt (-1)) (GaussInt.ofInt 0)
+  have hdata := psi13_minus_x_units
+  have hlen : p.length = 85 := psi13_on_minus_x.1
+  have hne : p ≠ [] := by
+    intro hempty
+    simp [hempty] at hlen
+  have hdiv := eval_head p r hne hr
+  have hc : p.headD GaussInt.zero = ⟨1, 0⟩ ∨
+      p.headD GaussInt.zero = ⟨-1, 0⟩ := hdata.1
+  have hnorm : GaussInt.norm r = 1 := by
+    have hmul : GaussInt.norm (GaussInt.mul r (GaussInt.neg (evalPoly p.tail r))) = 1 := by
+      rw [hdiv]
+      rcases hc with hc | hc
+      · rw [hc]; simp [GaussInt.norm]
+      · rw [hc]; simp [GaussInt.norm]
+    exact GaussInt.norm_eq_one_of_mul_norm_one r _ hmul
+  have hunit := GaussInt.norm_one_units r hnorm
+  rcases hunit with h | h | h | h
+  · rw [h] at hr
+    exact hdata.2.1 hr
+  · rw [h] at hr
+    exact hdata.2.2.1 hr
+  · rw [h] at hr
+    exact hdata.2.2.2.1 hr
+  · rw [h] at hr
+    exact hdata.2.2.2.2 hr
 
 namespace FreyCurve4413
 
