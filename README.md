@@ -164,8 +164,11 @@ conjunct `32 ∣ n`. If `c` is odd, `tate_lower_bound_of_c_odd` gives
 `5 a² - 3 b² √(-1)` when `c` is odd. `p2_valuation_of_two_pow` is
 `v_π(2^k) = 2k` at `π = 1 + √(-1)`, and `c4_p2_exact_ten` is `v_π(c₄) = 10`
 when `c` is odd. `delta_p2_exact_eighteen` is `v_π(Δ) = 18`, and
-`a4_p2_exact_two` is `v_π(a₄) = 2`. The substitution `u = π` with no
-translation is not integral, and `v(c₄) < 4` or `v(Δ) < 12` does not hold.
+`a4_p2_exact_two` is `v_π(a₄) = 2`. `pi_scaling_c_invariants_hold` is
+`4 ≤ 10` and `12 ≤ 18` for scaling by `π`, while `v_π(a₄) = 2` blocks that
+substitution and `18 < 24` blocks scaling by `π²`. `b₂ = 16 a`. A
+translation does not change `c₄` or `Δ`. Ogg's formula is the tame
+conductor. `v(c₄) < 4` or `v(Δ) < 12` does not hold.
 `N(π^10) = 2^10`. That valuation is not the conductor exponent, and it
 does not give `32 ∣ n`. `FreyValuationAt2` is `v₂(|c|)`.
 `RhoE13Open` is sealed. `Psi13HasNoQiRoot` is stated only for

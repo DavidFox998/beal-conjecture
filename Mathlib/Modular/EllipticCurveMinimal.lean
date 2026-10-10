@@ -68,8 +68,12 @@ of the axiom. If `c` is odd, `v₂(N(Δ)) = 18`. That is not the conductor
 exponent. `delta_p2_exact_eighteen` is the element valuation `v_π(Δ) = 18`,
 from `Δ = 2⁹ (a² + b² √(-1)) c¹³`. `a4_p2_exact_two` is `v_π(a₄) = 2`.
 The substitution `u = π`, `r = s = t = 0` needs `v_π(a₄) ≥ 4`, so it is
-not integral. The sufficient test `v(c₄) < 4` or `v(Δ) < 12` does not
-apply. `MinimalModelAt2` stays opaque.
+not integral. `pi_scaling_c_invariants_hold` records that the `c₄` and `Δ`
+conditions for that scaling do hold: `4 ≤ 10` and `12 ≤ 18`. `b2Frey` is
+`16 a`, so `π⁸` divides `b₂`. A translation does not change `c₄`, `c₆`, or
+`Δ`. Ogg's formula is the tame conductor; the wild part at `π` is
+`pacetti_2_8_open`. The sufficient test `v(c₄) < 4` or `v(Δ) < 12` does
+not apply. `MinimalModelAt2` stays opaque.
 -/
 
 structure GaussInt where
@@ -1852,6 +1856,109 @@ theorem silverman_test_does_not_apply (E : FreyCurve4413) (hodd : E.c.natAbs % 2
     P2Exact (c4_Frey E.a E.b) 10 ∧ P2Exact (deltaGauss E) 18 ∧
       ¬ (10 < 4) ∧ ¬ (18 < 12) :=
   ⟨c4_p2_exact_ten E hodd, delta_p2_exact_eighteen E hodd, by decide, by decide⟩
+
+theorem ofInt_mul (m n : ℤ) :
+    GaussInt.mul (GaussInt.ofInt m) (GaussInt.ofInt n) = GaussInt.ofInt (m * n) := by
+  simp [GaussInt.mul, GaussInt.ofInt, Int.mul_zero, Int.zero_mul, Int.sub_zero, Int.add_zero]
+
+theorem piDivides_neg (z : GaussInt) :
+    piDivides (GaussInt.neg z) ↔ piDivides z := by
+  cases z with
+  | mk x y =>
+    simp [piDivides, GaussInt.neg]
+    have hsum : -x + -y = -(x + y) := by omega
+    have ht : -(x + y) = (x + y) + 2 * -(x + y) := by omega
+    rw [hsum, ht, Int.add_mul_emod_self_left]
+
+theorem P2Exact_neg {z : GaussInt} {k : ℕ} (h : P2Exact z k) :
+    P2Exact (GaussInt.neg z) k := by
+  rcases h with ⟨u, hu, hnu⟩
+  refine ⟨GaussInt.neg u, ?_, ?_⟩
+  · rw [GaussInt.neg_mul, hu]
+  · intro hdiv
+    exact hnu ((piDivides_neg u).1 hdiv)
+
+/-- `b₂ = a₁² + 4 a₂ = 16 a` on the Frey model. `a₁ = 0` and `a₂ = 4 a`. -/
+def b2Frey (E : FreyCurve4413) : GaussInt :=
+  GaussInt.ofInt (16 * E.a)
+
+/-- `b₄ = 2 a₄ + a₁ a₃ = 2 a₄`. -/
+def b4Frey (E : FreyCurve4413) : GaussInt :=
+  GaussInt.smul 2 ⟨E.B_re, E.B_im⟩
+
+/-- `b₆ = a₃² + 4 a₆ = 0`. -/
+def b6Frey (_E : FreyCurve4413) : GaussInt :=
+  GaussInt.zero
+
+/-- `b₈ = -a₄²` when `a₁ = a₃ = a₆ = 0`. -/
+def b8Frey (E : FreyCurve4413) : GaussInt :=
+  GaussInt.neg (GaussInt.mul ⟨E.B_re, E.B_im⟩ ⟨E.B_re, E.B_im⟩)
+
+theorem b2Frey_from_a2 (E : FreyCurve4413) :
+    b2Frey E = GaussInt.smul 4 (GaussInt.ofInt E.A_int) := by
+  rw [E.h_A]
+  simp [b2Frey, GaussInt.smul, GaussInt.ofInt]
+  omega
+
+/-- `π⁸` divides `b₂`, because `b₂ = 2⁴ a` and `v_π(2⁴) = 8`.
+
+`a` may still be divisible by `π`. Equality `v_π(b₂) = 8` needs `a` odd,
+which is stronger than `c` odd.
+-/
+theorem b2_divisible_by_pi_eight (E : FreyCurve4413) :
+    ∃ u, GaussInt.mul u (piPow 8) = b2Frey E := by
+  have h2 := two_pow_as_pi 4
+  have hpow : (2 : ℤ) ^ 4 = 16 := by decide
+  refine ⟨GaussInt.mul (twoUnit 4) (GaussInt.ofInt E.a), ?_⟩
+  rw [mul_mul_swap (twoUnit 4) (GaussInt.ofInt E.a) (piPow 8), h2, ofInt_mul, hpow]
+  rfl
+
+theorem b2_p2_exact_eight_of_a_odd (E : FreyCurve4413) (ha : E.a.natAbs % 2 = 1) :
+    P2Exact (b2Frey E) 8 := by
+  have hform : b2Frey E =
+      GaussInt.mul (GaussInt.ofInt ((2 : ℤ) ^ 4)) (GaussInt.ofInt E.a) := by
+    rw [ofInt_mul]
+    have hpow : (2 : ℤ) ^ 4 = 16 := by decide
+    simp [b2Frey, hpow]
+  rw [hform]
+  exact P2Exact_mul (p2_valuation_of_two_pow 4)
+    (P2Exact_zero_of_not_pi (not_piDivides_ofInt_of_natAbs_odd ha))
+
+/-- If `c` is odd, `v_π(b₄) = 4`. `b₄ = 2 a₄` and `v_π(a₄) = 2`. -/
+theorem b4_p2_exact_four (E : FreyCurve4413) (hodd : E.c.natAbs % 2 = 1) :
+    P2Exact (b4Frey E) 4 := by
+  have h2 : P2Exact (GaussInt.ofInt 2) 2 := by
+    simpa [Int.pow_one] using p2_valuation_of_two_pow 1
+  rw [show b4Frey E = GaussInt.mul (GaussInt.ofInt 2) ⟨E.B_re, E.B_im⟩ from
+    smul_eq_mul_ofInt 2 ⟨E.B_re, E.B_im⟩]
+  exact P2Exact_mul h2 (a4_p2_exact_two E hodd)
+
+theorem b6Frey_zero (E : FreyCurve4413) : b6Frey E = GaussInt.zero := rfl
+
+/-- If `c` is odd, `v_π(b₈) = 4`. `b₈ = -a₄²`. -/
+theorem b8_p2_exact_four (E : FreyCurve4413) (hodd : E.c.natAbs % 2 = 1) :
+    P2Exact (b8Frey E) 4 := by
+  exact P2Exact_neg (P2Exact_mul (a4_p2_exact_two E hodd) (a4_p2_exact_two E hodd))
+
+/-- Scaling by `u = π` meets the `c₄` and `Δ` divisibility conditions.
+
+`c₄' = c₄ / π⁴` and `Δ' = Δ / π¹²` are integral in those two invariants
+when `4 ≤ v_π(c₄)` and `12 ≤ v_π(Δ)`. The valuations are `10` and `18`,
+so both inequalities hold. `4 ∣ 10` is not this comparison. The same
+substitution divides `a₄` by `π⁴`, and `v_π(a₄) = 2` is below `4`, so
+`u = π` with `r = s = t = 0` is not an integral model. Scaling by `π²`
+asks for `v_π(Δ) ≥ 24`, and `18` is below `24`.
+
+A translation `x = x' + r` does not change `c₄`, `c₆`, or `Δ`, so it
+leaves these valuations in place. Ogg's formula `v(Δ) - m + 1` is the
+tame conductor. At `π` the wild part is the open statement
+`pacetti_2_8_open`. This theorem does not produce `MinimalModelAt2`.
+-/
+theorem pi_scaling_c_invariants_hold (E : FreyCurve4413) (hodd : E.c.natAbs % 2 = 1) :
+    P2Exact (c4_Frey E.a E.b) 10 ∧ P2Exact (deltaGauss E) 18 ∧
+      P2Exact ⟨E.B_re, E.B_im⟩ 2 ∧ 4 ≤ 10 ∧ 12 ≤ 18 ∧ ¬ (24 ≤ 18) :=
+  ⟨c4_p2_exact_ten E hodd, delta_p2_exact_eighteen E hodd, a4_p2_exact_two E hodd,
+    by decide, by decide, by decide⟩
 
 theorem GaussInt.npow_one_nat (n : ℕ) : GaussInt.npow GaussInt.one n = GaussInt.one := by
   induction n with

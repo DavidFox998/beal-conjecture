@@ -123,9 +123,13 @@ formalized. `p2_valuation_of_two_pow` is `v_π(2^k) = 2k` for
 `π = 1 + √(-1)`. `c4_p2_exact_ten` is `v_π(c₄) = 10` when `c` is odd, and
 `delta_p2_exact_eighteen` is `v_π(Δ) = 18`. `a4_p2_exact_two` is
 `v_π(a₄) = 2`, so the substitution `u = π`, `r = s = t = 0` is not
-integral. The sufficient minimality test is `v(c₄) < 4` or `v(Δ) < 12`;
-neither inequality holds. `MinimalModelAt2` stays opaque, and so does this
-exponent. `N(π^10) = 2^10`. Dividing the exponent by `2` is not the norm
+integral. `pi_scaling_c_invariants_hold` is the comparison `4 ≤ 10` and
+`12 ≤ 18` for that scaling; `4 ∣ 10` is not the comparison. `b2Frey` is
+`16 a`. A translation leaves `c₄`, `c₆`, and `Δ` unchanged. The sufficient
+minimality test is `v(c₄) < 4` or `v(Δ) < 12`; neither inequality holds.
+`MinimalModelAt2` stays opaque, and so does this exponent. Ogg's formula
+is the tame conductor. The wild part at `π` is this proposition.
+`N(π^10) = 2^10`. Dividing the exponent by `2` is not the norm
 of the conductor ideal, and this proposition does not give `32 ∣ n`.
 `RibetLevel` still stores `n ∣ N`, not `n` equal to the prime-to-`c` part
 of `N`.
