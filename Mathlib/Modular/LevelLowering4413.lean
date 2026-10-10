@@ -42,17 +42,17 @@ an axiom.
 ## From the conductor to the level
 
 `ribet_level_lowering_4413` takes one `N` with `FreyConductorDivides c N`,
-`RhoE13Open E`, and `TateAt2LowerBound`. It returns one `RibetLevel`:
+`RhoE13Open E`, and `pacetti_2_8_open`. It returns one `RibetLevel`:
 `n ∣ N`, coprimality to the primes dividing `|c|`, and a `RibetOutput`.
-It does not contain `n = 32 ∨ n = 64`.
+It does not contain `32 ∣ n` or `n = 32 ∨ n = 64`.
 
 `n_dvd_32_or_64_of_prime_to_c` removes those primes and concludes
 `n ∣ 32` or `n ∣ 64`. The positive divisors of `64` are
-`1, 2, 4, 8, 16, 32, 64`. `TateAt2LowerBound` is the missing hypothesis
-`32 ∣ n`, that is `v₂(n) ≥ 5`, for a model satisfying `MinimalModelAt2`.
-It is not an axiom and not a theorem. `thirtyTwo_dvd_of_conductor_shape`
-is the true half: the shape forces `32 ∣ N`. `shape_dvd_does_not_give_thirtyTwo`
-is `N = 32`, `n = 1`, `c = 1`. Coprimality holds there because no prime
+`1, 2, 4, 8, 16, 32, 64`. `TateAt2LowerBound E n` packages a minimal model,
+Pacetti's exponent in `{10, 12}`, and the assumption `32 ∣ n`. It is not
+an axiom and not a theorem. `thirtyTwo_dvd_of_conductor_shape` is the true
+half: the shape forces `32 ∣ N`. `shape_dvd_does_not_give_thirtyTwo` is
+`N = 32`, `n = 1`, `c = 1`. Coprimality holds there because no prime
 divides `1`, and `32` does not divide `1`. If `c` is odd,
 `tate_lower_bound_of_c_odd` gives `v₂(N(Δ)) = 18`. That is the field norm.
 `c4_Frey` is divisible by `2⁵` in each component and `c6_Frey` by `2⁸`.
@@ -152,14 +152,14 @@ theorem FreyConductor_OPEN.toDivides {E : FreyCurve4413} {N : ℕ}
 /-- Conductor hypothesis, `RhoE13Open`, the Tate bound, and one Ribet level.
 
 `hOpen` is transported to `FreyConductorDivides`. `hLower` is
-`TateAt2LowerBound`. The axiom returns one level dividing `N`. It does not
+`pacetti_2_8_open`. The axiom returns one level dividing `N`. It does not
 return `n = 32 ∨ n = 64`. `hOpen` and `hRho` are not theorems.
 -/
 theorem ribet_given_open_hypotheses
     (E : FreyCurve4413) (N : ℕ)
     (hOpen : FreyConductor_OPEN E (N : ℤ))
     (hRho : RhoE13Open E)
-    (hLower : TateAt2LowerBound) :
+    (hLower : pacetti_2_8_open) :
     E.discriminant_re ^ 2 + E.discriminant_im ^ 2 =
         (2 : ℤ) ^ 18 * (E.c ^ 3) ^ 13 ∧
       FreyConductor_OPEN E (N : ℤ) ∧
@@ -371,33 +371,31 @@ theorem n_eq_32_or_64_of_lower_bound {c : ℤ} {N n : ℕ}
     · rw [hk2] at hk
       exact Or.inr (hk.trans h64.symm)
 
-/-- The coprimality lemma plus the open Tate bound.
+/-- The coprimality lemma plus `32 ∣ n` from `TateAt2LowerBound E n`.
 
-`hMin` is `MinimalModelAt2`. `hTate` turns that into `32 ∣ n`. The equality
-does not use `ribet_level_lowering_4413`.
+The exponent conjunct is not used. `32 ∣ n` is assumed, not derived from
+`n ∣ N`. The equality does not use `ribet_level_lowering_4413`.
 -/
 theorem n_eq_32_or_64_of_tate {c : ℤ} {E : FreyCurve4413} {N n : ℕ}
-    (hTate : TateAt2LowerBound)
+    (hTate : TateAt2LowerBound E n)
     (hDiv : FreyConductorDivides c N) (hn : n ∣ N)
-    (hMin : MinimalModelAt2 E)
     (hcop : ∀ p, IsPrime p → p ∣ c.natAbs → ¬ p ∣ n) :
     n = 32 ∨ n = 64 := by
-  have h32 : 32 ∣ n := hTate c N n E hDiv hn hMin
   exact n_eq_32_or_64_of_lower_bound
-    (n_dvd_32_or_64_of_prime_to_c hDiv hn hcop) h32
+    (n_dvd_32_or_64_of_prime_to_c hDiv hn hcop) hTate.2.2
 
 /-- The Ribet axiom at one conductor-shaped `N`.
 
 This is `ribet_level_lowering_4413`. The package is `n ∣ N`, coprimality
-for `IsPrime`, and a `RibetOutput`. `hTate` is an argument and is not turned
-into `n = 32 ∨ n = 64` inside the axiom. That equality is
-`n_eq_32_or_64_of_tate`.
+for `IsPrime`, and a `RibetOutput`. `hPacetti` is `pacetti_2_8_open`. It
+is not turned into `32 ∣ n` or `n = 32 ∨ n = 64` inside the axiom. That
+equality is `n_eq_32_or_64_of_tate`, from the conjunct `32 ∣ n`.
 -/
 noncomputable def ribetOutput_of_open_hypotheses
     {c : ℤ} {E : FreyCurve4413} (N : ℕ)
     (hCond : FreyConductorDivides c N) (hIrr : RhoE13Open E)
-    (hTate : TateAt2LowerBound) : RibetLevel c E N :=
-  ribet_level_lowering_4413 N hCond hIrr hTate
+    (hPacetti : pacetti_2_8_open) : RibetLevel c E N :=
+  ribet_level_lowering_4413 N hCond hIrr hPacetti
 
 /-- A conductor shape is divisible by `32 = 2⁵`.
 
@@ -423,8 +421,8 @@ theorem prime_not_dvd_one {p : ℕ} (hp : IsPrime p) : ¬ p ∣ 1 := by
 /-- `N = 32`, `n = 1`, `c = 1` satisfies the shape and `n ∣ N`, and `32 ∤ n`.
 
 Coprimality holds because `prime_not_dvd_one` says no prime divides `|c|`.
-`TateAt2LowerBound` asks for `32 ∣ n` for every such divisor. This example
-is why that proposition is not a consequence of the shape.
+`TateAt2LowerBound E n` still has `32 ∣ n` as a conjunct for one `n`. This
+example is why that conjunct is not a consequence of the shape.
 -/
 theorem shape_dvd_does_not_give_thirtyTwo :
     FreyConductorDivides (1 : ℤ) 32 ∧ (1 ∣ 32) ∧

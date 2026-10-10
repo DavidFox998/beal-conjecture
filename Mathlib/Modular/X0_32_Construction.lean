@@ -44,7 +44,7 @@ the relation proved by `velu_target_eq_twist_neg_two`.
 
 `no_solution_4413` is not a theorem.
 `frey_qcurve_modular` is the modularity axiom. `ribet_level_lowering_4413`
-takes `RhoE13Open`, `TateAt2LowerBound`, and one conductor shape, and
+takes `RhoE13Open`, `pacetti_2_8_open`, and one conductor shape, and
 returns one level. `n = 32 ∨ n = 64` is not part of that level.
 -/
 

@@ -35,10 +35,10 @@ a hypothesis. The norm does not produce it.
 theorem norm_and_level_lowering_axiom
     {c : ℤ} (E : FreyCurve4413) (N : ℕ)
     (hCond : FreyConductorDivides c N) (hIrr : RhoE13Open E)
-    (hTate : TateAt2LowerBound) :
+    (hPacetti : pacetti_2_8_open) :
     E.discriminant_re ^ 2 + E.discriminant_im ^ 2 = (2 : ℤ) ^ 18 * E.c ^ 39 ∧
       ∃ n : ℕ, ∃ g : Newform n, LevelLowered E g := by
-  let pkg : RibetLevel c E N := ribet_level_lowering_4413 N hCond hIrr hTate
+  let pkg : RibetLevel c E N := ribet_level_lowering_4413 N hCond hIrr hPacetti
   exact ⟨discriminant_norm E, pkg.level, pkg.output.g, pkg.output.lowered⟩
 
 end FreyCurve4413

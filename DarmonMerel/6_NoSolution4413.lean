@@ -38,7 +38,7 @@ shape hypothesis, not a proof that the conductor equals `32 |c|²`.
 theorem solution_modular_and_lowered
     (a b c : ℤ) (heq : a ^ 4 + b ^ 4 = c ^ 13)
     (hIrr : RhoE13Open (FreyCurve4413.mk' a b c heq))
-    (hTate : TateAt2LowerBound) :
+    (hPacetti : pacetti_2_8_open) :
     Modular (FreyCurve4413.mk' a b c heq) ∧
       ∃ n : ℕ, ∃ g : Newform n,
         LevelLowered (FreyCurve4413.mk' a b c heq) g := by
@@ -46,7 +46,7 @@ theorem solution_modular_and_lowered
   refine ⟨frey_qcurve_modular a b c E, ?_⟩
   let N : ℕ := 32 * c.natAbs ^ 2
   have hCond : FreyConductorDivides c N := Or.inl rfl
-  let pkg : RibetLevel c E N := ribet_level_lowering_4413 N hCond hIrr hTate
+  let pkg : RibetLevel c E N := ribet_level_lowering_4413 N hCond hIrr hPacetti
   exact ⟨pkg.level, pkg.output.g, pkg.output.lowered⟩
 
 /-- Merel's nonvanishing test at both CM levels.

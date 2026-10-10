@@ -104,20 +104,38 @@ Tate's algorithm is not formalized. Nothing produces a term.
 -/
 opaque MinimalModelAt2 (E : FreyCurve4413) : Prop := True
 
-/-- `v₂(n) ≥ 5` after the level has been lowered, for a minimal model.
+/-- Conductor exponent of `E` at the prime of `ℤ[√-1]` above `2`.
 
-This proposition is not a theorem. `FreyConductorDivides c N` and `n ∣ N`
-do not give `32 ∣ n`: `N = 32`, `n = 1`, and `c = 1` is a counterexample,
-and every prime fails to divide `|c| = 1`, so coprimality does not remove
-a factor and put `2⁵` into `n`. If `c` is odd, `v₂(N(Δ)) = 18`. That is
-the field norm. Pacetti, arXiv:2007.11486, Lemma 2.8(2), states that when
-`2` ramifies the conductor exponent at the prime above `2` lies in
-`{10, 12}`. That Tate case split is not formalized, and the exponents `5`
-and `6` are not its conclusion.
+`2` ramifies in `ℚ(√-1)`. The body is sealed, so this is not the integer
+`0` and it is not proved to lie in `{10, 12}`.
 -/
-def TateAt2LowerBound : Prop :=
-  ∀ (c : ℤ) (N n : ℕ) (E : FreyCurve4413),
-    FreyConductorDivides c N → n ∣ N → MinimalModelAt2 E → 32 ∣ n
+opaque ConductorExponentAtPrimeAbove2 (E : FreyCurve4413) : ℕ := 0
+
+/-- The exponent lies in `{10, 12}`, as in Pacetti's Lemma 2.8(2). -/
+def ExponentIn1012 (e : ℕ) : Prop :=
+  e = 10 ∨ e = 12
+
+/-- Pacetti, arXiv:2007.11486, Lemma 2.8(2), for a minimal model.
+
+When `2` ramifies, that lemma states the exponent at the prime above `2`
+is `10` or `12`. The Tate case split is not formalized. The norm of
+`𝔭₂ ^ 10` is `2 ^ 10`. The comparison with the rational powers `2⁵` and
+`2⁶` is not a theorem, and this proposition does not give `32 ∣ n`.
+-/
+def pacetti_2_8_open : Prop :=
+  ∀ E : FreyCurve4413, MinimalModelAt2 E →
+    ExponentIn1012 (ConductorExponentAtPrimeAbove2 E)
+
+/-- Minimal model, Pacetti's exponent in `{10, 12}`, and `32 ∣ n`.
+
+`32 ∣ n` is a conjunct. `shape_dvd_does_not_give_thirtyTwo` shows it does
+not follow from `n ∣ N`. `thirtyTwo_dvd_of_conductor_shape` is the
+divisibility for `N`.
+-/
+def TateAt2LowerBound (E : FreyCurve4413) (n : ℕ) : Prop :=
+  MinimalModelAt2 E ∧
+    ExponentIn1012 (ConductorExponentAtPrimeAbove2 E) ∧
+    32 ∣ n
 
 /-- One lowered newform at level `n`, with `n ∣ N` stored on the structure. -/
 structure RibetOutput (E : FreyCurve4413) (N n : ℕ) where
@@ -140,8 +158,9 @@ def RibetLevel (c : ℤ) (E : FreyCurve4413) (N : ℕ) : Type :=
 
 `hCond` says `N` equals `32 |c|²` or `64 |c|²`. It does not prove that this
 `N` is the conductor. `hIrr` is `RhoE13Open`; there is no term of that type.
-`hTate` is `TateAt2LowerBound`. The result is one level `n` with `n ∣ N`
-and the prime-coprimality condition. It does not contain `n = 32 ∨ n = 64`.
+`hPacetti` is `pacetti_2_8_open`. The result is one level `n` with `n ∣ N`
+and the prime-coprimality condition. It does not contain `32 ∣ n` or
+`n = 32 ∨ n = 64`.
 
 Citation: Ribet 1990, Invent. Math. 100, and Pacetti's slide
 “Ribet's lowering the level result”.
@@ -149,7 +168,7 @@ Note: this is axiom 2 until Mathlib has Ribet's theorem for ℚ-curves.
 -/
 axiom ribet_level_lowering_4413 {c : ℤ} {E : FreyCurve4413} (N : ℕ)
     (hCond : FreyConductorDivides c N) (hIrr : RhoE13Open E)
-    (hTate : TateAt2LowerBound) : RibetLevel c E N
+    (hPacetti : pacetti_2_8_open) : RibetLevel c E N
 
 def RibetLevel.level {c : ℤ} {E : FreyCurve4413} {N : ℕ}
     (p : RibetLevel c E N) : ℕ :=

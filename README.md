@@ -147,25 +147,23 @@ unresolved marker. `FreyConductor_OPEN E N` is the hypothesis that a
 supplied integer `N` equals `32 c²` or `64 c²`. `FreyConductorDivides`
 is `ConductorShape`: the same alternative for `N : ℕ` and `|c|`.
 `ribet_level_lowering_4413` takes that shape, `RhoE13Open`, and
-`TateAt2LowerBound`. It returns one `RibetLevel`: `n ∣ N`, coprimality
-for primes dividing `|c|`, and a `RibetOutput`. The disjunction
-`n = 32 ∨ n = 64` is not part of the axiom.
+`pacetti_2_8_open`. It returns one `RibetLevel`: `n ∣ N`, coprimality
+for primes dividing `|c|`, and a `RibetOutput`. Neither `32 ∣ n` nor
+`n = 32 ∨ n = 64` is part of the axiom.
 `n_dvd_32_or_64_of_prime_to_c` removes those primes and concludes `n ∣ 32`
 or `n ∣ 64`. The positive divisors of `64` are `1, 2, 4, 8, 16, 32, 64`.
-`TateAt2LowerBound` is the open hypothesis `32 ∣ n` (`v₂(n) ≥ 5`) for a
-model satisfying `MinimalModelAt2`. It is not an axiom and not a theorem.
-`thirtyTwo_dvd_of_conductor_shape` proves `32 ∣ N` from the shape.
-`shape_dvd_does_not_give_thirtyTwo` is the counterexample `N = 32`, `n = 1`,
-`c = 1`: coprimality holds, and `32` does not divide `1`. With the open
-bound, `n_eq_32_or_64_of_lower_bound` is the equality, and
-`n_eq_32_or_64_of_tate` applies that bound. If `c` is odd,
-`tate_lower_bound_of_c_odd` gives `v₂(N(Δ)) = 18` and `32 ∣ |N(Δ)|`. That
-is the field norm, not the conductor exponent. `c4_Frey` and `c6_Frey` factor
-out `2⁵` and `2⁸`. Pacetti's Lemma 2.8 states the exponent at the prime
-above `2` lies in `{10, 12}` when `2` ramifies; that argument is not
-formalized. `FreyValuationAt2` is `v₂(|c|)`. `RhoE13Open` is sealed;
-nothing produces a term. `Psi13HasNoQiRoot` is false for the singular curve
-`(0, 0, 0)`.
+`pacetti_2_8_open` is the open statement that a minimal model has conductor
+exponent `10` or `12` at the prime above `2`. `TateAt2LowerBound E n`
+packages that exponent with the separate assumption `32 ∣ n`. It is not an
+axiom and not a theorem. `thirtyTwo_dvd_of_conductor_shape` proves
+`32 ∣ N` from the shape. `shape_dvd_does_not_give_thirtyTwo` is the
+counterexample `N = 32`, `n = 1`, `c = 1`. `n_eq_32_or_64_of_tate` uses the
+conjunct `32 ∣ n`. If `c` is odd, `tate_lower_bound_of_c_odd` gives
+`v₂(N(Δ)) = 18`. `c4_c6_valuation` factors `2⁵` from `c₄` and `2⁸` from
+`c₆`. `c4_c6_coprime_to_2_when_c_odd` says `2` does not divide
+`5 a² - 3 b² √(-1)` when `c` is odd. `FreyValuationAt2` is `v₂(|c|)`.
+`RhoE13Open` is sealed. `Psi13HasNoQiRoot` is stated only for
+`NontrivialFrey`. The unrestricted statement fails for `(0, 0, 0)`.
 `RhoE13NeedsSL2` is `Psi13HasNoQiRoot` together with the sealed
 `ImageContainsSL2 E 13`. The implication to `RhoE13Open` is not a lemma.
 `GaussIntRootDecidable` decides evaluation at one Gaussian integer.

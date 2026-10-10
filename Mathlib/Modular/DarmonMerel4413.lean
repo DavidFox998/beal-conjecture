@@ -191,9 +191,9 @@ theorem DarmonMerelLevelLowering
     (E : FreyCurve4413) (N : ℕ)
     (hOpen : FreyConductor_OPEN E (N : ℤ))
     (hRho : RhoE13Open E)
-    (hTate : TateAt2LowerBound) :
+    (hPacetti : pacetti_2_8_open) :
     ∃ n : ℕ, ∃ g : Newform n, LevelLowered E g :=
-  (ribet_given_open_hypotheses E N hOpen hRho hTate).2.2.2
+  (ribet_given_open_hypotheses E N hOpen hRho hPacetti).2.2.2
 
 /-- The frozen facts, the two open hypotheses, and a newform of some level.
 
@@ -204,14 +204,14 @@ theorem DarmonMerelStrategy
     (E : FreyCurve4413) (N : ℕ)
     (hOpen : FreyConductor_OPEN E (N : ℤ))
     (hRho : RhoE13Open E)
-    (hTate : TateAt2LowerBound) :
+    (hPacetti : pacetti_2_8_open) :
     (IsQCurve E ∧
       t5Minus6 T5_32 e32 = [0, 0, 4, -4, 0, 0] ∧
       t5Minus6 T5_64 e64 = [0, 0, 0, 2, 2, -4, 0, 0, 0, 0]) ∧
       FreyConductor_OPEN E (N : ℤ) ∧
       RhoE13Open E ∧
       ∃ n : ℕ, ∃ g : Newform n, LevelLowered E g := by
-  refine ⟨?_, hOpen, hRho, DarmonMerelLevelLowering E N hOpen hRho hTate⟩
+  refine ⟨?_, hOpen, hRho, DarmonMerelLevelLowering E N hOpen hRho hPacetti⟩
   exact ⟨(DarmonMerelFrozenFacts E).1,
     (DarmonMerelFrozenFacts E).2.2.2.2.2.2.1,
     (DarmonMerelFrozenFacts E).2.2.2.2.2.2.2.1⟩

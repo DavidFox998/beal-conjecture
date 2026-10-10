@@ -61,7 +61,7 @@ exponents. Pacetti's Lemma 2.8, for `2` ramified in `ℚ(√-1)`, states the
 exponent at the prime above `2` lies in `{10, 12}`. That case split is not
 a theorem here, and it is not the pair `5`, `6`. `FreyConductor_OPEN` has
 no proof. `RhoE13Open` has no term.
-`ribet_level_lowering_4413` takes `RhoE13Open`, `TateAt2LowerBound`, and one
+`ribet_level_lowering_4413` takes `RhoE13Open`, `pacetti_2_8_open`, and one
 integer of shape `32 |c|²` or `64 |c|²`, and returns one level dividing
 that integer. `n = 32 ∨ n = 64` is `n_eq_32_or_64_of_tate`, not a component
 of the axiom. If `c` is odd, `v₂(N(Δ)) = 18`. That is not the conductor
@@ -1272,6 +1272,23 @@ theorem c6_Frey_factor (a b : ℤ) :
   simp [c6_Frey, v2_c6, GaussInt.smul]
   constructor <;> grind
 
+/-- The factored forms of `c₄` and `c₆` on the Frey model.
+
+`2 ^ 5` and `2 ^ 8` are the contents of the two components. They are not
+the conductor exponent at the prime above `2`.
+-/
+theorem c4_c6_valuation (a b : ℤ) :
+    c4_Frey a b = GaussInt.smul (2 ^ 5) ⟨5 * a ^ 2, -(3 * b ^ 2)⟩ ∧
+      c6_Frey a b =
+        GaussInt.smul (2 ^ 8) (GaussInt.mul (GaussInt.ofInt a)
+          ⟨-(7 * a ^ 2), 9 * b ^ 2⟩) := by
+  have h4 := c4_Frey_factor a b
+  have h6 := c6_Frey_factor a b
+  simp [v2_c4, v2_c6] at h4 h6
+  refine ⟨h4, ?_⟩
+  simp [GaussInt.smul, GaussInt.mul, GaussInt.ofInt] at h6 ⊢
+  grind
+
 theorem two_pow_v2_c4_dvd (a b : ℤ) :
     (2 : ℤ) ^ v2_c4 ∣ (c4_Frey a b).re ∧ (2 : ℤ) ^ v2_c4 ∣ (c4_Frey a b).im := by
   rw [c4_Frey_factor]
@@ -1352,6 +1369,112 @@ theorem odd_c_sum_squares_odd (E : FreyCurve4413) (hodd : E.c.natAbs % 2 = 1) :
   rw [hpar] at hmod
   rw [Nat.add_mod, hsq, hsq]
   exact hmod
+
+theorem natAbs_of_two_dvd {n : ℤ} (h : (2 : ℤ) ∣ n) : n.natAbs % 2 = 0 := by
+  rcases h with ⟨k, hk⟩
+  have hn : n.natAbs = (2 * k).natAbs := congrArg Int.natAbs hk
+  rw [Int.natAbs_mul] at hn
+  have h2 : ((2 : ℤ).natAbs) = 2 := rfl
+  rw [h2] at hn
+  rw [hn, Nat.mul_mod, Nat.mod_self]
+  simp
+
+theorem odd_mul_mod_two {m n : ℕ} (hm : m % 2 = 1) : (m * n) % 2 = n % 2 := by
+  rw [Nat.mul_mod, hm]
+  simp
+
+/-- If `c` is odd, `2` does not divide `5 a² - 3 b² √(-1)` in `ℤ[√-1]`.
+
+One of `|a|` and `|b|` is odd, so one component of `⟨5 a², -3 b²⟩` is odd.
+`2 = -√(-1) (1 + √(-1))²`, so this also says the element is not divisible
+by `(1 + √(-1))²`. It does not compute the conductor exponent.
+-/
+theorem c4_c6_coprime_to_2_when_c_odd (E : FreyCurve4413)
+    (hodd : E.c.natAbs % 2 = 1) :
+    ¬ ∃ w : GaussInt,
+      GaussInt.mul (GaussInt.ofInt 2) w = ⟨5 * E.a ^ 2, -(3 * E.b ^ 2)⟩ := by
+  intro ⟨w, hw⟩
+  have hre : 5 * E.a ^ 2 = 2 * w.re := by
+    have hcomp := congrArg GaussInt.re hw
+    simp [GaussInt.mul, GaussInt.ofInt] at hcomp
+    exact hcomp.symm
+  have him : -(3 * E.b ^ 2) = 2 * w.im := by
+    have hcomp := congrArg GaussInt.im hw
+    simp [GaussInt.mul, GaussInt.ofInt] at hcomp
+    exact hcomp.symm
+  have ha2 : (2 : ℤ) ∣ 5 * E.a ^ 2 := ⟨w.re, hre⟩
+  have hb2 : (2 : ℤ) ∣ 3 * E.b ^ 2 := ⟨-w.im, by
+    calc
+      3 * E.b ^ 2 = -(-(3 * E.b ^ 2)) := (Int.neg_neg (3 * E.b ^ 2)).symm
+      _ = -(2 * w.im) := by rw [him]
+      _ = 2 * -w.im := (Int.mul_neg 2 w.im).symm⟩
+  have haEven : E.a.natAbs % 2 = 0 := by
+    have hmod := natAbs_of_two_dvd ha2
+    have hnorm : (5 * E.a ^ 2).natAbs = 5 * E.a.natAbs ^ 2 := by
+      rw [Int.natAbs_mul, Int.natAbs_pow]
+      rfl
+    rw [hnorm] at hmod
+    have h5 : (5 * E.a.natAbs ^ 2) % 2 = E.a.natAbs ^ 2 % 2 :=
+      odd_mul_mod_two (by decide : 5 % 2 = 1)
+    rw [h5] at hmod
+    have hsq : E.a.natAbs ^ 2 % 2 = E.a.natAbs % 2 := by
+      have h : E.a.natAbs % 2 = 0 ∨ E.a.natAbs % 2 = 1 := by omega
+      rcases h with h | h
+      · rcases Nat.dvd_of_mod_eq_zero h with ⟨k, hk⟩
+        rw [h, hk]
+        apply Nat.mod_eq_zero_of_dvd
+        refine ⟨2 * k ^ 2, ?_⟩
+        calc
+          (2 * k) ^ 2 = 2 ^ 2 * k ^ 2 := Nat.mul_pow 2 k 2
+          _ = (2 * 2) * k ^ 2 := by rw [show (2 : ℕ) ^ 2 = 2 * 2 by decide]
+          _ = 2 * (2 * k ^ 2) := Nat.mul_assoc 2 2 (k ^ 2)
+      · rw [nat_odd_pow E.a.natAbs 2 h, h]
+    rw [hsq] at hmod
+    exact hmod
+  have hbEven : E.b.natAbs % 2 = 0 := by
+    have hmod := natAbs_of_two_dvd hb2
+    have hnorm : (3 * E.b ^ 2).natAbs = 3 * E.b.natAbs ^ 2 := by
+      rw [Int.natAbs_mul, Int.natAbs_pow]
+      rfl
+    rw [hnorm] at hmod
+    have h3 : (3 * E.b.natAbs ^ 2) % 2 = E.b.natAbs ^ 2 % 2 :=
+      odd_mul_mod_two (by decide : 3 % 2 = 1)
+    rw [h3] at hmod
+    have hsq : E.b.natAbs ^ 2 % 2 = E.b.natAbs % 2 := by
+      have h : E.b.natAbs % 2 = 0 ∨ E.b.natAbs % 2 = 1 := by omega
+      rcases h with h | h
+      · rcases Nat.dvd_of_mod_eq_zero h with ⟨k, hk⟩
+        rw [h, hk]
+        apply Nat.mod_eq_zero_of_dvd
+        refine ⟨2 * k ^ 2, ?_⟩
+        calc
+          (2 * k) ^ 2 = 2 ^ 2 * k ^ 2 := Nat.mul_pow 2 k 2
+          _ = (2 * 2) * k ^ 2 := by rw [show (2 : ℕ) ^ 2 = 2 * 2 by decide]
+          _ = 2 * (2 * k ^ 2) := Nat.mul_assoc 2 2 (k ^ 2)
+      · rw [nat_odd_pow E.b.natAbs 2 h, h]
+    rw [hsq] at hmod
+    exact hmod
+  have hsum := odd_c_sum_squares_odd E hodd
+  have haSq : E.a.natAbs ^ 2 % 2 = 0 := by
+    rcases Nat.dvd_of_mod_eq_zero haEven with ⟨k, hk⟩
+    rw [hk]
+    apply Nat.mod_eq_zero_of_dvd
+    refine ⟨2 * k ^ 2, ?_⟩
+    calc
+      (2 * k) ^ 2 = 2 ^ 2 * k ^ 2 := Nat.mul_pow 2 k 2
+      _ = (2 * 2) * k ^ 2 := by rw [show (2 : ℕ) ^ 2 = 2 * 2 by decide]
+      _ = 2 * (2 * k ^ 2) := Nat.mul_assoc 2 2 (k ^ 2)
+  have hbSq : E.b.natAbs ^ 2 % 2 = 0 := by
+    rcases Nat.dvd_of_mod_eq_zero hbEven with ⟨k, hk⟩
+    rw [hk]
+    apply Nat.mod_eq_zero_of_dvd
+    refine ⟨2 * k ^ 2, ?_⟩
+    calc
+      (2 * k) ^ 2 = 2 ^ 2 * k ^ 2 := Nat.mul_pow 2 k 2
+      _ = (2 * 2) * k ^ 2 := by rw [show (2 : ℕ) ^ 2 = 2 * 2 by decide]
+      _ = 2 * (2 * k ^ 2) := Nat.mul_assoc 2 2 (k ^ 2)
+  rw [Nat.add_mod, haSq, hbSq] at hsum
+  simp at hsum
 
 theorem GaussInt.npow_one_nat (n : ℕ) : GaussInt.npow GaussInt.one n = GaussInt.one := by
   induction n with
