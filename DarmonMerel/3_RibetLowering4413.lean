@@ -132,10 +132,21 @@ minimality test is `v(c₄) < 4` or `v(Δ) < 12`; neither inequality holds.
 holds. After the translation `x ↦ x + π`, `translated_a4_splits_on_trivial_curves`
 gives `v_π(a₄') = 3` on `(1, 0, 1)` and `v_π(a₄') = 6` on `(0, 1, 1)`,
 while both curves have `v_π(c₄) = 10` and `v_π(Δ) = 18`. Those two
-valuations do not choose one exponent. Ogg's formula
-is the tame conductor. The wild part at `π` is this proposition.
-`N(π^10) = 2^10`. Dividing the exponent by `2` is not the norm
-of the conductor ideal. This proposition does not prove `n = 32 ∨ n = 64`.
+valuations do not choose one exponent. `translated_pi_scaling_blocked_by_a2`
+shows `v_π(a₂') = 1` blocks scaling that model by every `π^k` with
+`k ≥ 1`. On `(0, 1, 1)`, `trivialB_a6_blocks_pi_scaling` shows `a₄'` does
+not block `u = π` and `a₆'` does. A later translation changes the `aᵢ`,
+so neither parity case is `MinimalModelAt2`. `a_odd_after_pi_sq_valuations`
+is the further shift `y ↦ y + π²` when `a` is odd: `v_π(a₂) = 1`,
+`v_π(a₃) = 4`, `v_π(a₄) = 3`, and `v_π(a₆) = 5`. These meet Dokchitser's
+bounds for type `I₂*`. They do not define the exponent. The odd-`b`
+subalgorithm is not run. Ogg's formula is the tame conductor. The wild
+part at `π` is this proposition. `pi_ten_principal` is
+`(-√(-1))^5 · π^10 = 32` with `N(π^10) = 2^10`. `pi_twelve_principal` is
+`(-√(-1))^6 · π^12 = 64` with norm `2^12`. The principal ideals
+`(π)^10 = (32)` and `(π)^12 = (64)` agree. Dividing the exponent by `2`
+is not the norm of the conductor ideal. This proposition does not prove
+`n = 32 ∨ n = 64`.
 That disjunction is stored on `RibetLevel` as part of the axiom's
 conclusion. `thirtyTwo_dvd_of_tate_bound` turns the disjunction into
 `32 ∣ n` and does not use this proposition.
