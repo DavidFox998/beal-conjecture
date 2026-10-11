@@ -71,6 +71,7 @@ From `a⁴ + b⁴ = c¹³` on `FreyCurve4413`, with `gcd(|a|, |b|) = 1`:
 - In `Mathlib/Modular/ReducibleShape13.lean`, kernel axioms only: the units of `ℤ[√-1]` are `{±1, ±√(-1)}`, they stay distinct modulo `π ^ n` for `n ≥ 3`, a `π`-unit satisfies `z ^ (2 ^ m) ≡ 1 (mod π ^ (m + 1))`, and a multiplicative character of `(ℤ[i] / π ^ n)ˣ` with values in `𝔽₁₃ˣ` has order dividing `4`. The fourth roots are `1`, `5`, `8`, `12`. This is not irreducibility.
 - In `Mathlib/Modular/Cyclotomic13.lean`, kernel axioms only: `primitive_root_two` (`2` has order exactly `12` in `𝔽₁₃ˣ`), `shift_no_monic_factor` (`Φ₁₃(x + 1)` has no monic factor of positive degree in `ℤ[x]`), `gauss_period_square` (`η² + η = 3`), `gauss_period_disc` (`(2η + 1)² = 13`), `sqrt13_not_in_qi`, and `cyclotomic_pow_order_div_four` (`(2 ^ e) ^ 4 = 1` if and only if `3 ∣ e`, for `e < 12`). `omega_order_twelve` packages them. Gauss's lemma and the unique quadratic subfield of `ℚ(ζ₁₃)` are not theorems, so `[ℚ(i, ζ₁₃):ℚ(i)] = 12` is not a computed degree.
 - `not_three_div_complement` is kernel axioms only: both cyclotomic exponents divisible by `3` force `2 ^ 4 = 1`. `reducible_shape_contradicts_omega` is `False` for a coprime curve with `a ≠ 0` and `b ≠ 0`, conditional on `reducible_shape_13_open`, `ray_class_mod_pi_open`, `inertia_trivial_of_tate_13_open`, and `chars_unramified_above_13_open`. It is not unconditional irreducibility and it does not produce a term of `RhoE13Open`.
+- In `Mathlib/Modular/CmVanishing32.lean`: the endomorphisms `(X, Y) ↦ (-X, i Y)` of `Y² = X³ - X` and `Y² = X³ + X` (`cm_endomorphism_x3_sub_x`, `cm_endomorphism_x3_add_x`), so both CM discriminants are `-4`. Inert primes through `19` are `3, 7, 11, 19`. `cm_vanish_32` and `cm_vanish_64` read `a_p = 0` there off `hecke32_eigenvalues` and `hecke64_eigenvalues`; they add no new `native_decide`. The same four primes have trace `0` on both Weierstrass models (`cm_curve_trace_inert_sub`, `cm_curve_trace_inert_add`), with no axioms. `three_not_dvd_c` says a coprime solution is not divisible by `3`. `freyTrace3_not_div_13` is the `𝔽₉` point count: the trace lies in `{-2, 4, 6}`. `lowered_form_contradicts_trace3` is `False` conditional on `qcurve_descent_13_open`. It does not prove `no_newform_32_64_open`.
 
 `pacetti_2_8_open` (the Artin exponent `FTameAtPi + SwanAtPi` lies in `{10, 12}`) is a theorem of `components_n_plus_five_open` alone (`pacetti_of_components`). It is not an independent open proposition.
 
@@ -109,7 +110,7 @@ Two further open propositions sit beside the sealed irreducibility predicate. Th
 - **Tate parameter.** Tate uniformization at odd `ℓ ∣ c`: a parameter `q` with `v(q) = v(Δ)` on a minimal model, and `13 ∣ v(q)`. For `ℓ ≠ 13` that divisibility kills the Kummer class of `q` in `𝔽₁₃ˣ`. At `ℓ = 13` it is the input to finiteness of the group scheme. Neither uniformization nor the Kummer sequence is formalized. The proved input is the norm valuation, not this divisibility.
 - **Odd Serre level.** `OddPrimaryLevel E = 1`. The arithmetic lemma `nat_eq_one_of_prime_divisors_removed` needs two facts that are not theorems: every prime divisor of `OddPrimaryLevel` is an odd prime divisor of `c`, and `13 ∣ tateParameter` removes that prime. `odd_conductor_empty` removes primes dividing `d = 1` only.
 - **Uneven splitting**, unnamed. It is not a named open proposition. It is why `multiplicative_at_dvd_c` does not prove `tate_param_13_dvd_of_coprime`. See below. Closing it is a theorem that `13 ∣ v_𝔭(Δ)` at each Gaussian prime above `p ∣ c`. That still would not be a Tate parameter.
-- **`no_newform_32_64_open`.** Darmon–Merel Lemma 8.2. The existing Mazur products vanish, and the winding nonvanishing does not produce `False`. This is the last open proposition in `no_solution_4413_of_frontier`.
+- **`no_newform_32_64_open`.** Darmon–Merel Lemma 8.2. The existing Mazur products vanish, and the winding nonvanishing does not produce `False`. `CmVanishing32` starts the CM route and does not discharge this proposition. The blocker is `qcurve_descent_13_open`: `ρ̄_f` is a representation of `G_ℚ` and `ρ̄_E` is a representation of `G_{ℚ(i)}`, and `LevelLowered` does not equate `a_3` of the eigenline with the Frey trace over `𝔽₉`. `a_3(f) = 0` and `a_3(E) ≢ 0 (mod 13)` are theorems. The general vanishing `a_p(f) = 0` for every inert prime, past the Hecke range through `19`, is not a theorem. This remains an open proposition in `no_solution_4413_of_frontier`.
 - **`RhoE13Open`.** A term. The predicate is `opaque`, so there is no equation lemma and the body cannot be unfolded. `rhoE13_open_of_psi` is the open proposition `Psi13HasNoQiRoot → ImageContainsSL2 → RhoE13Open` on a nontrivial solution. It is not a theorem. `Psi13HasNoQiRoot` stays open on `NontrivialFrey`, and it is false for the singular curve `(0, 0, 0)` in the unrestricted form. `GL2F13.order_thirteen` and `GL2F13.transvection_classification_13` prove that a supplied matrix of order `13` is conjugate to `(1 1; 0 1)`, with no smaller positive exponent. `GL2F13.normal_closure_contains_SL2` writes every determinant-`1` matrix as a product of ambient `GL₂`-conjugates of that transvection. That does not move the fixed line inside an arbitrary subgroup, so `GL2F13.dickson_13_open` stays open. `steinberg_prime_13_open` asks for a prime of multiplicative reduction with `13 ∤ tateParameter`. No such prime is constructed, and the classification does not assume the proposition: a prime is not a matrix. `multiplicative_at_dvd_c` does not give `13 ∤ tateParameter`. `tate_param_13_dvd_of_coprime` asserts the opposite divisibility at odd primes dividing `c`. If `13 ∣ tateParameter` at every bad prime, strategy A is dead and irreducibility must come from strategy B. None of this produces a term of `RhoE13Open`. The capstone still takes that term as a hypothesis because `ribet_level_lowering_4413` requires one. Strategy B does not discharge it either. `reducible_shape_contradicts_omega` is a conditional `False` under the reducible shape and three further opens; it is not a term of the seal.
 - **Modularity.** Replace `frey_qcurve_modular` by ℚ-curve modularity.
 - **Level lowering.** Replace `ribet_level_lowering_4413`. `h_n_eq_of_tate` does not discharge `RibetLevel.h_n_eq`: the conclusion is a product of two sealed functions, not that field.
@@ -204,6 +205,17 @@ Nodes outside the requested list, printed the same way, because they sit on the 
 'Cyc13.omega_order_twelve' depends on axioms: [propext, Classical.choice, Quot.sound]
 'not_three_div_complement' depends on axioms: [propext, Classical.choice, Quot.sound]
 'reduible_shape_contradicts_omega' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Cm32.cm_endomorphism_x3_sub_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Cm32.cm_endomorphism_x3_add_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Cm32.splitting_through_19' does not depend on any axioms
+'Cm32.cm_vanish_32' depends on axioms: [propext, Quot.sound, hecke32_eigenvalues._native.native_decide.ax_1_1]
+'Cm32.cm_vanish_64' depends on axioms: [propext, Quot.sound, hecke64_eigenvalues._native.native_decide.ax_1_1]
+'Cm32.cm_curve_trace_inert_sub' does not depend on any axioms
+'Cm32.cm_curve_trace_inert_add' does not depend on any axioms
+'Cm32.freyTrace3_table' does not depend on any axioms
+'Cm32.freyTrace3_not_div_13' depends on axioms: [propext, Quot.sound]
+'Cm32.three_not_dvd_c' depends on axioms: [propext, Quot.sound]
+'lowered_form_contradicts_trace3' depends on axioms: [propext, Quot.sound]
 'FreyCurve4413.thirtyTwo_dvd_of_conductor_shape' depends on axioms: [propext]
 'FreyCurve4413.shape_dvd_does_not_give_thirtyTwo' depends on axioms: [propext, Quot.sound]
 'odd_conductor_empty' depends on axioms: [propext, Quot.sound]
@@ -211,7 +223,7 @@ Nodes outside the requested list, printed the same way, because they sit on the 
 'not_minimal_even_c' depends on axioms: [propext, Classical.choice, Quot.sound]
 ```
 
-The `native_decide` axioms are the flag. They are kernel trust of the compiler for the Manin-symbol matrices and for `C(5, g) = 0`. They are not `frey_qcurve_modular` or `ribet_level_lowering_4413`. They do not appear in the conductor chain (`FTameAtPi` through `h_n_eq_of_tate`).
+The `native_decide` axioms are the flag. They are kernel trust of the compiler for the Manin-symbol matrices and for `C(5, g) = 0`. They are not `frey_qcurve_modular` or `ribet_level_lowering_4413`. They do not appear in the conductor chain (`FTameAtPi` through `h_n_eq_of_tate`). `cm_vanish_32` and `cm_vanish_64` depend on the existing Hecke `native_decide` axioms. They do not add one. The point counts `cm_curve_trace_inert_sub`, `cm_curve_trace_inert_add`, and `freyTrace3_table` depend on no axioms.
 
 ## No cycle in the tame/wild split
 
@@ -325,9 +337,15 @@ The bridges are open propositions, not theorems:
 | `frobenius_trace_sum_open` | At a good prime, `a_𝔭 = χ₁(Frob) + χ₂(Frob)`. |
 | `weil_bound_open` | `\|a_𝔭\| ≤ 2 √N(𝔭)`, written `a² ≤ 4 N(𝔭)`. |
 | `trace_outside_weil_open` | The character constraint forces a value outside that range. Not `False`, and not `¬ (a⁴ + b⁴ = c¹³)`. |
-| `chars_unramified_above_13_open` | Under the shape, the ray-class bridge, and inertia trivial at `p ∣ c`, both cyclotomic exponents are divisible by `3`. Finite flat group schemes are not formalized. Finite flat of weight `2` would force the inertial exponents `0` and `1`, which sum to `1` and do not put both characters in the order-`4` group. Not assumed. |
+| `chars_unramified_above_13_open` | OPEN. Under the shape, the ray-class bridge, and inertia trivial at `p ∣ c`, both cyclotomic exponents are divisible by `3`. Finite flat of weight `2` would force the inertial exponents `{0, 1}`. Those sum to `1` and do not give order dividing `4`, hence the order-`4` criterion is `3 ∣ e_i`, not the pair `{0, 1}`. Not assumed. |
 
 `shape_forces_order_div_four` is the order bound conditional on `reducible_shape_13_open`. `character_sum_matches_pacetti` is the Artin sum conditional on `components_n_plus_five_open` and `artin_exponent_of_characters_open`. `reducible_shape_contradicts_omega` is `False` for a coprime curve with `a ≠ 0` and `b ≠ 0`, conditional on `reducible_shape_13_open`, `ray_class_mod_pi_open`, `inertia_trivial_of_tate_13_open`, and `chars_unramified_above_13_open`. The proof is `not_three_div_complement`: each exponent divisible by `3` makes `2 ^ e` a fourth root, the two powers multiply to `2` because the exponents sum to `1` modulo `12`, and a product of fourth roots is a fourth root, so `2 ^ 4 = 1`, which `omega_order_twelve` forbids. None of these claims unconditional irreducibility.
+
+## CM vanishing at levels 32 and 64
+
+`no_newform_32_64_open` is Darmon–Merel Lemma 8.2. `C(5, g) = 0` and `(T₅ - 6) e ≢ 0 (mod 13)` are not recomputed. Both rational newforms have CM discriminant `-4`. The models `Y² = X³ - X` and `Y² = X³ + X` admit `(X, Y) ↦ (-X, i Y)`. Primes inert in `ℚ(i)` through `19` are `3, 7, 11, 19` (`splitting_through_19`). `cm_vanish_32` and `cm_vanish_64` are `a_p = 0` there, taken from the existing Hecke matrices, and the split eigenvalues `a_5`, `a_13`, `a_17` are not zero. The same four inert primes have trace `0` on both curves. Vanishing for every inert prime is not a theorem: the matrices stop at `19`, and `Newform` stores no eigenvalues.
+
+A coprime solution has `3 ∤ c` (`three_not_dvd_c`). Over `𝔽₉` the Frey trace is in `{-2, 4, 6}` (`freyTrace3_table`), hence not `0` mod `13`. The comparison with `a_3(f)` crosses from `G_ℚ` to `G_{ℚ(i)}`. That is the open proposition `qcurve_descent_13_open`. `lowered_form_contradicts_trace3` is `False` for a coprime curve with `a ≠ 0`, `b ≠ 0`, `Modular E`, and a `RibetLevel`, conditional on that proposition. It does not prove `no_newform_32_64_open`.
 
 ## Dependency tree
 
@@ -424,8 +442,9 @@ a⁴ + b⁴ = c¹³                                          PROVED data on Frey
 │    │       Galois correspondence is not formalized
 │    │  ord(2^e) | 4 iff 3 | e                          PROVED  cyclotomic_pow_order_div_four
 │    │  both exponents divisible by 3                   OPEN PROP  chars_unramified_above_13_open
-│    │       finite flat would give exponents 0 and 1
-│    │       those sum to 1 and do not yield order | 4
+│    │       finite flat would give exponents {0, 1}
+│    │       those sum to 1 and do not give order | 4
+│    │       hence the criterion is 3 ∣ e_i
 │    │       not assumed
 │    │  both such exponents force 2^4 = 1              PROVED  not_three_div_complement
 │    │  reducible shape contradicts order 12           CONDITIONAL
@@ -445,6 +464,20 @@ a⁴ + b⁴ = c¹³                                          PROVED data on Frey
 │    the map X₀(N) → J_e is not formalized
 ├─ no_newform_32_64_open                               OPEN PROP
 │    RibetLevel of a modular curve with a ≠ 0, b ≠ 0 is impossible
+│    CM discriminant -4                                PROVED  (X,Y) ↦ (-X, i Y)
+│         Y² = X³ - X and Y² = X³ + X
+│    inert primes 3, 7, 11, 19                         PROVED  splitting_through_19
+│    a_p(eig) = 0 at those primes                      PROVED  cm_vanish_32, cm_vanish_64
+│         read from hecke32_eigenvalues, hecke64_eigenvalues
+│         split a_5, a_13, a_17 are not 0
+│         a_p = 0 for every inert p                    not a theorem
+│    trace 0 on both CM models at those primes        PROVED  no axioms
+│    3 ∤ c for a coprime solution                      PROVED  three_not_dvd_c
+│    Frey trace over F₉ is in {-2, 4, 6}               PROVED  freyTrace3_not_div_13
+│    ρ̄_f over Q versus ρ̄_E over Q(i)                  OPEN PROP  qcurve_descent_13_open
+│    lowered form contradicts that trace               CONDITIONAL
+│         lowered_form_contradicts_trace3
+│         does not prove no_newform_32_64_open
 └─ no_solution_4413_of_frontier                        PROVED from the five opens,
      the two axioms, and a term of RhoE13Open
      a ≠ 0, b ≠ 0, gcd = 1, c > 0

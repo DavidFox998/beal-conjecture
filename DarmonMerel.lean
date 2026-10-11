@@ -5,3 +5,4 @@ import DarmonMerel.«4_MazurTrick4413»
 import DarmonMerel.«5_WindingQuotient4413»
 import DarmonMerel.«7_WindingQuotientAxiom4413»
 import DarmonMerel.«6_NoSolution4413»
+import Mathlib.Modular.CmVanishing32
