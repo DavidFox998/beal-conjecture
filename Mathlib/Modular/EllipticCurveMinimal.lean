@@ -6230,6 +6230,51 @@ theorem valAtLeast_anti {z : GaussInt} {k m : ℕ} (h : valAtLeast z m) (hk : k 
       _ = GaussInt.mul u (piPow m) := by rw [← hpow]
       _ = z := hu
 
+theorem valAtLeast_mul {z w : GaussInt} {k m : ℕ}
+    (hz : valAtLeast z k) (hw : valAtLeast w m) :
+    valAtLeast (GaussInt.mul z w) (k + m) := by
+  rcases hz with rfl | ⟨u, hu⟩
+  · rw [GaussInt.zero_mul]
+    exact Or.inl rfl
+  rcases hw with rfl | ⟨v, hv⟩
+  · rw [GaussInt.mul_zero]
+    exact Or.inl rfl
+  refine Or.inr ⟨GaussInt.mul u v, ?_⟩
+  have hp : piPow (k + m) = GaussInt.mul (piPow k) (piPow m) := by
+    unfold piPow
+    exact GaussInt.npow_add pi k m
+  rw [← hu, ← hv, hp, mul_mul_comm_mid u (piPow k) v (piPow m),
+    GaussInt.mul_assoc (GaussInt.mul u v) (piPow k) (piPow m)]
+
+theorem valAtLeast_add {z w : GaussInt} {k : ℕ}
+    (hz : valAtLeast z k) (hw : valAtLeast w k) :
+    valAtLeast (GaussInt.add z w) k := by
+  rcases hz with rfl | ⟨u, hu⟩
+  · rw [GaussInt.zero_add]
+    exact hw
+  rcases hw with rfl | ⟨v, hv⟩
+  · unfold valAtLeast
+    rw [GaussInt.add_zero]
+    exact Or.inr ⟨u, hu⟩
+  refine Or.inr ⟨GaussInt.add u v, ?_⟩
+  rw [← hu, ← hv]
+  exact GaussInt.add_mul u v (piPow k)
+
+theorem valAtLeast_neg {z : GaussInt} {k : ℕ} (h : valAtLeast z k) :
+    valAtLeast (GaussInt.neg z) k := by
+  rcases h with rfl | ⟨u, hu⟩
+  · rw [GaussInt.neg_zero]
+    exact Or.inl rfl
+  · refine Or.inr ⟨GaussInt.neg u, ?_⟩
+    rw [← hu]
+    exact GaussInt.neg_mul u (piPow k)
+
+theorem valAtLeast_sub {z w : GaussInt} {k : ℕ}
+    (hz : valAtLeast z k) (hw : valAtLeast w k) :
+    valAtLeast (GaussInt.sub z w) k := by
+  rw [GaussInt.sub_eq_add_neg]
+  exact valAtLeast_add hz (valAtLeast_neg hw)
+
 /-- Tate's Step 3 exit. The algorithm labels it type II.
 
 `π² ∤ a₆`. This predicate is that divisibility. It is not a Kodaira symbol.
@@ -6244,6 +6289,15 @@ This predicate is that divisibility. It is not a Kodaira symbol.
 -/
 def TateExitIV (b6 : GaussInt) : Prop :=
   ¬ valAtLeast b6 3
+
+/-- Tate's Step 4 exit. The algorithm labels it type III.
+
+`π³ ∤ b₈`, with
+`b₈ = a₁² a₆ + 4 a₂ a₆ - a₁ a₃ a₄ + a₂ a₃² - a₄²`.
+This predicate is that divisibility. It is not a Kodaira symbol.
+-/
+def TateExitIII (b8 : GaussInt) : Prop :=
+  ¬ valAtLeast b8 3
 
 /-- Tate's Step 6 exit. The algorithm labels it type `I₀*`.
 
@@ -6270,6 +6324,55 @@ theorem not_TateExitII_of_valAtLeast {a6 : GaussInt} {k : ℕ}
 theorem not_TateExitIV_of_valAtLeast {b6 : GaussInt} {k : ℕ}
     (h : valAtLeast b6 k) (hk : 3 ≤ k) : ¬ TateExitIV b6 :=
   fun hex => hex (valAtLeast_anti h hk)
+
+theorem not_TateExitIII_of_valAtLeast {b8 : GaussInt}
+    (h : valAtLeast b8 3) : ¬ TateExitIII b8 :=
+  fun hex => hex h
+
+/-- `IsINStar` forces `π³ ∣ b₈`, so Step 4 does not fire.
+
+`b₈ = a₁² a₆ + 4 a₂ a₆ - a₁ a₃ a₄ + a₂ a₃² - a₄²`.
+For positive even `n`, the bounds give `v(a₄) ≥ 3` and `v(a₆) ≥ 5`,
+and every term then has valuation at least `3`. The type III exit is
+`π³ ∤ b₈`. This is not a Kodaira symbol.
+-/
+theorem tate_exit_III_of_IsINStar {n : ℕ} {a1 a2 a3 a4 a6 b6 D : GaussInt}
+    (h : IsINStar n a1 a2 a3 a4 a6 b6 D) :
+    valAtLeast (b8Of a1 a2 a3 a4 a6) 3 ∧
+      ¬ TateExitIII (b8Of a1 a2 a3 a4 a6) := by
+  rcases h with ⟨hn, heven, ha1, ha2, ha3, ha4, ha6, _, _⟩
+  have hhalf : 3 ≤ (n + 4) / 2 := by omega
+  have hn5 : 5 ≤ n + 3 := by omega
+  have ha2_1 : valAtLeast a2 1 := valAtLeast_of_P2Exact ha2 (by decide)
+  have ha3_3 := valAtLeast_anti ha3 hhalf
+  have ha4_3 := valAtLeast_anti ha4 hhalf
+  have ha6_5 := valAtLeast_anti ha6 hn5
+  have h4pi : valAtLeast (GaussInt.ofInt 4) 4 := by
+    have hpow : (2 : ℤ) ^ 2 = 4 := by decide
+    have hv := p2_valuation_of_two_pow 2
+    rw [hpow] at hv
+    exact valAtLeast_of_P2Exact hv (by decide)
+  have t_a1a6 : valAtLeast (GaussInt.mul (GaussInt.mul a1 a1) a6) 7 :=
+    valAtLeast_mul (valAtLeast_mul ha1 ha1) ha6_5
+  have t_4a2a6 : valAtLeast (GaussInt.smul 4 (GaussInt.mul a2 a6)) 10 := by
+    rw [smul_eq_mul_ofInt]
+    exact valAtLeast_mul h4pi (valAtLeast_mul ha2_1 ha6_5)
+  have t_a1a3a4 : valAtLeast (GaussInt.mul (GaussInt.mul a1 a3) a4) 7 :=
+    valAtLeast_mul (valAtLeast_mul ha1 ha3_3) ha4_3
+  have t_a2a3sq : valAtLeast (GaussInt.mul a2 (GaussInt.mul a3 a3)) 7 :=
+    valAtLeast_mul ha2_1 (valAtLeast_mul ha3_3 ha3_3)
+  have t_a4sq : valAtLeast (GaussInt.mul a4 a4) 6 :=
+    valAtLeast_mul ha4_3 ha4_3
+  have s12 := valAtLeast_add (valAtLeast_anti (k := 3) t_a1a6 (by decide))
+    (valAtLeast_anti (k := 3) t_4a2a6 (by decide))
+  have s34 := valAtLeast_add
+    (valAtLeast_neg (valAtLeast_anti (k := 3) t_a1a3a4 (by decide)))
+    (valAtLeast_anti (k := 3) t_a2a3sq (by decide))
+  have hall := valAtLeast_sub (valAtLeast_add s12 s34)
+    (valAtLeast_anti (k := 3) t_a4sq (by decide))
+  have hb8 : valAtLeast (b8Of a1 a2 a3 a4 a6) 3 := by
+    simpa [b8Of] using hall
+  exact ⟨hb8, not_TateExitIII_of_valAtLeast hb8⟩
 
 theorem not_TateExitI0Star_of_gt {d : GaussInt} {k : ℕ}
     (h : vPi d = k) (hk : 6 < k) : ¬ TateExitI0Star d ∧ 6 < vPi d := by
@@ -6319,6 +6422,34 @@ theorem tate_exit_not_II_IV_of_a_even (E : FreyCurve4413)
   have h7b : valAtLeast (b6AfterPiThenPiSq E) 7 := valAtLeast_of_dvd hub6
   exact ⟨h7a, not_TateExitII_of_valAtLeast h7a (by decide),
     h7b, not_TateExitIV_of_valAtLeast h7b (by decide)⟩
+
+/-- On the odd-`a` translate, Step 4 fails.
+
+`b₈` is `b8Of` on `a₁ = 0` and the coefficients after `x ↦ x + π`,
+`y ↦ y + π²`. `tate_exit_III_of_IsINStar` gives `π³ ∣ b₈` from
+`IsINStar 2`. The type III exit does not trigger.
+-/
+theorem tate_exit_not_III_of_a_odd (E : FreyCurve4413)
+    (hodd : E.c.natAbs % 2 = 1) (ha : E.a.natAbs % 2 = 1) :
+    valAtLeast (b8Of GaussInt.zero (a2AfterPi E) a3AfterPiSq (a4AfterPi E)
+        (a6AfterPiSq E)) 3 ∧
+      ¬ TateExitIII (b8Of GaussInt.zero (a2AfterPi E) a3AfterPiSq (a4AfterPi E)
+        (a6AfterPiSq E)) :=
+  tate_exit_III_of_IsINStar (a_odd_IsINStar E hodd ha)
+
+/-- On the even-`a` translate, Step 4 fails.
+
+`b₈` is `b8Of` on `a₁ = a₃ = 0` and the coefficients after the two
+`x`-shifts. `tate_exit_III_of_IsINStar` gives `π³ ∣ b₈` from `IsINStar 4`.
+The type III exit does not trigger.
+-/
+theorem tate_exit_not_III_of_a_even (E : FreyCurve4413)
+    (hodd : E.c.natAbs % 2 = 1) (ha : E.a.natAbs % 2 = 0) :
+    valAtLeast (b8Of GaussInt.zero (a2AfterPiThenPiSq E) GaussInt.zero
+        (a4AfterPiThenPiSq E) (a6AfterPiThenPiSq E)) 3 ∧
+      ¬ TateExitIII (b8Of GaussInt.zero (a2AfterPiThenPiSq E) GaussInt.zero
+        (a4AfterPiThenPiSq E) (a6AfterPiThenPiSq E)) :=
+  tate_exit_III_of_IsINStar (even_a_IsINStar E hodd ha)
 
 /-- On the odd-`a` translate, the type `I₀*` exit fails.
 
@@ -6386,11 +6517,14 @@ opaque KodairaInStar (n : ℕ) (E : FreyCurve4413) : Prop
 Dokchitser–Dokchitser, arXiv:1209.1414, Theorem 1, sends a minimal model
 with `v(d) > 6` and `v(a₂² - 3 a₄) = 2` to type `I_n*` for some `n > 0`.
 Proposition 2 recovers even `n` from `v(d) = n + 6`. On these two rows
-the antecedents are proved: `IsINStar`, `v(d) = 8` or `10`, and the three
+the antecedents are proved: `IsINStar`, `v(d) = 8` or `10`, and the
 exits `tate_exit_not_II_IV_*`, `tate_exit_not_I0Star_*`, and
 `tate_exit_not_triple_root_*`. The implication to `KodairaInStar` is this
-proposition. Step 4, type III (`π³ ∤ b₈`), is not an antecedent.
-`components_n_plus_five_open` is the component count, not this symbol.
+proposition. Step 4, type III (`π³ ∤ b₈`), needs no antecedent:
+`tate_exit_III_of_IsINStar` proves `π³ ∣ b₈` from `IsINStar` alone, and
+`tate_exit_not_III_of_a_odd` and `tate_exit_not_III_of_a_even` apply it
+to the two rows. `components_n_plus_five_open` is the component count,
+not this symbol.
 -/
 def kodaira_in_star_of_tate_exits_open : Prop :=
   ∀ E : FreyCurve4413, qiLocalMinimalAtPi E →
