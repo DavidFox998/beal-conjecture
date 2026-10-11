@@ -141,8 +141,11 @@ Weierstrass discriminant. For odd `c`, `v_π(Δ) = 18`. Dokchitser's `d` is
 the cubic discriminant: `v_π(d) = 10` after the even-`a` shifts
 (`even_a_cubic_ten`, and `Δ = 16 d`) and `v_π(d) = 8` after the odd-`a`
 shifts (`a_odd_cubic_eight`). Those are the values `n + 6` for `n = 4` and
-`n = 2`. Tate's Step 7 is not formalized. `FTameAtPi` and `SwanAtPi` are
-sealed. `swan_vanishes_open` is not a theorem.
+`n = 2`. `NeronSpecialFiberComponents` is sealed.
+`components_n_plus_five_open` asks whether that count is `n + 5`.
+`FTameAtPi` is `v_π(Δ) - m + 1` with that sealed `m`. It equals `10` or `12`
+only under the open component hypothesis. `SwanAtPi` stays sealed.
+`swan_vanishes_open` is not a theorem.
 `pi_ten_principal` is `(-√(-1))^5 · π^10 = 32` with norm `2^10`, and
 `pi_twelve_principal` is the same for `64` and `2^12`. The principal
 ideals agree. That equality does not produce `n = 32 ∨ n = 64`. The
@@ -1936,8 +1939,8 @@ theorem a4_p2_exact_two (E : FreyCurve4413) (hodd : E.c.natAbs % 2 = 1) :
 A model is minimal at `π` if `v_π(c₄) < 4` or `v_π(Δ) < 12`. The Frey
 valuations are `10` and `18`. The bounds `12`, `18`, and `24` are the
 divisibilities for scaling by `π³`. `v_π(c₄) = 10` does not give
-`MinimalModelAt2`. `FTameAtPi` and `SwanAtPi` stay sealed, so their sum is
-not a numeral.
+`MinimalModelAt2`. `NeronSpecialFiberComponents` and `SwanAtPi` stay sealed,
+so `FTameAtPi + SwanAtPi` is not a numeral.
 -/
 theorem silverman_test_does_not_apply (E : FreyCurve4413) (hodd : E.c.natAbs % 2 = 1) :
     P2Exact (c4_Frey E.a E.b) 10 ∧ P2Exact (deltaGauss E) 18 ∧
@@ -2459,8 +2462,8 @@ different valuations of the translated `a₄`.
 Both have odd `c`. After `x ↦ x + π`, `v_π(a₄') = 3` on `(1, 0, 1)` and
 `v_π(a₄') = 6` on `(0, 1, 1)`. `v_π(a₆')` is `4` and `5`. A single
 `decide` on `v_π(c₄) = 10` and `v_π(Δ) = 18` does not choose one
-conductor exponent. `MinimalModelAt2` is `qiLocalMinimalAtPi`. `FTameAtPi`
-and `SwanAtPi` stay sealed.
+conductor exponent. `MinimalModelAt2` is `qiLocalMinimalAtPi`.
+`NeronSpecialFiberComponents` and `SwanAtPi` stay sealed.
 -/
 theorem translated_a4_splits_on_trivial_curves :
     P2Exact (c4_Frey trivial.a trivial.b) 10 ∧
@@ -2687,7 +2690,7 @@ Dokchitser's bounds for a minimal model of type `I₂*` ask for
 valuations meet the bounds. The converse, Tate's exit
 `f = v(Δ) - 4 - n`, and the wild Swan conductor are not theorems.
 `a_odd_cubic_eight` is `v_π(d) = 8` and `v_π(Δ) = 18` on this translate.
-`FTameAtPi` and `SwanAtPi` stay sealed. Pacetti's Lemma 2.8(2)
+`NeronSpecialFiberComponents` and `SwanAtPi` stay sealed. Pacetti's Lemma 2.8(2)
 prints type `I₂*` and exponent `12` for the even-`b` branch, which is
 this `a`-odd case, and type `I₄*` and exponent `10` for odd `b`.
 The printed value `v(a₄') = 4` on that second branch does not hold:
@@ -3368,7 +3371,8 @@ for `n = 2`.
 The inputs are `v(a₂) = 1`, `v(a₃) = 4 ≥ 3`, `v(a₄) = 3`, `v(a₆) = 5`,
 `v(b₆) = 8 ≥ 5`, and `v(D) = 6`. Dokchitser's proposition is not
 formalized. These valuations do not produce a Kodaira symbol, a conductor
-exponent, or a wild part. `FTameAtPi` and `SwanAtPi` stay sealed. The
+exponent, or a wild part. `NeronSpecialFiberComponents` and `SwanAtPi` stay
+sealed. The
 proved value `v_π(D) = 6` is not `v_π(Δ) = 18`.
 -/
 theorem piDivides_add_left {a b : GaussInt} (hb : piDivides b) :
@@ -4120,17 +4124,13 @@ ramified at `π`, using `ℓ = 3 ≠ p = 2`, is not formalized.
 -/
 opaque SwanAtPi (E : FreyCurve4413) : ℕ := 0
 
-/-- Tame part of the conductor exponent at `π`.
+/-- Number of irreducible components of the Néron special fiber of `E` at `π`.
 
-The equation is hidden. This is not defined to be `2`, `10`, or `12`, and
-it is not `v_π(Δ) - 4 - n`. `ogg_tame_of_INStar_discriminant` is the table
-arithmetic `(n + 6) - 4 - n = 2`. `ogg_count_if_components` is
-`18 - (n + 5) + 1`, equal to `10` or `12`: Ogg's expression when a minimal
-special fiber has `m = n + 5` components. `tate_step7_inputs` is the
-valuation data of the row. It does not count those components, so this
-sealed value is not that expression.
+The equation is hidden. This is not defined to be `n + 5`, and `rfl` does
+not decide it. The blow-ups in Tate's algorithm are not formalized.
+`FTameAtPi` is defined from this count after `vPi`.
 -/
-opaque FTameAtPi (E : FreyCurve4413) : ℕ := 0
+opaque NeronSpecialFiberComponents (E : FreyCurve4413) : ℕ := 0
 
 theorem a_odd_IsINStar (E : FreyCurve4413)
     (hodd : E.c.natAbs % 2 = 1) (ha : E.a.natAbs % 2 = 1) :
@@ -4205,6 +4205,18 @@ def vPiFuel : Nat → GaussInt → Nat
 /-- `v_π` on `ℤ[i]`. The zero element is sent to `0` and is not a valuation. -/
 def vPi (z : GaussInt) : Nat :=
   vPiFuel ((GaussInt.norm z).toNat + 1) z
+
+/-- Tame part of the conductor exponent at `π`.
+
+Ogg's expression `v_π(Δ) - m + 1`, with `m` the sealed count
+`NeronSpecialFiberComponents`. When `qiLocalMinimalAtPi E` holds, `Δ` is a
+minimal discriminant and this is the shape of Ogg's formula. It is not the
+numeral `2`, `10`, or `12`. `ftame_ogg_of_components` rewrites it to
+`18 - (n + 5) + 1` only under `components_n_plus_five_open`. `SwanAtPi` is
+not part of this expression.
+-/
+def FTameAtPi (E : FreyCurve4413) : ℕ :=
+  vPi (deltaGauss E) - NeronSpecialFiberComponents E + 1
 
 theorem vPiFuel_zero (n : Nat) : vPiFuel (n + 1) GaussInt.zero = 0 := by
   simp [vPiFuel]
@@ -5605,9 +5617,10 @@ equal to `8` for `n = 4` and `10` for `n = 2`. On the even-`a` translate
 that gap is `v_π(16)`, because `Δ = 16 d`. It is not `SwanAtPi`. Ogg's
 count on this model uses `v(Δ) = 18`, so `v(Δ) - 4 - n` is `10` or `12`
 before any Swan conductor. `ogg_count_if_components` is that arithmetic
-written as `18 - (n + 5) + 1`. The component count `m = n + 5` is not
-`IsINStar`, and `FTameAtPi` is not set to `10` or `12`. This statement
-remains the open claim that `SwanAtPi` is `0`.
+written as `18 - (n + 5) + 1`. `components_n_plus_five_open` is the missing
+identification `m = n + 5`. `ftame_ten_twelve_of_components` turns it into
+`FTameAtPi = 10` or `12`. This statement remains the open claim that
+`SwanAtPi` is `0`.
 -/
 def swan_vanishes_open : Prop :=
   ∀ E : FreyCurve4413, E.a.natAbs.gcd E.b.natAbs = 1 → SwanAtPi E = 0
@@ -6104,7 +6117,7 @@ theorem weierstrass_cubic_gap :
 `v_π(D) = n + 4` and `π^(n + 3) ∣ b₆`, with `n` positive and even. A minimal
 model of type `I_n*` has `m = n + 5` irreducible components, and Ogg's
 formula then returns `v(Δ) - m + 1`. These valuations do not produce that
-component count, and they do not evaluate `FTameAtPi`.
+component count. `components_n_plus_five_open` is the missing statement.
 -/
 theorem tate_step7_inputs {n : ℕ} {a1 a2 a3 a4 a6 b6 D : GaussInt}
     (h : IsINStar n a1 a2 a3 a4 a6 b6 D) :
@@ -6120,9 +6133,9 @@ theorem tate_step7_inputs {n : ℕ} {a1 a2 a3 a4 a6 b6 D : GaussInt}
 
 `18 - (4 + 5) + 1 = 10` and `18 - (2 + 5) + 1 = 12`, the same values as
 `18 - 4 - 4` and `18 - 4 - 2`. `m = n + 5` is the component count of type
-`I_n*`. `tate_step7_inputs` does not prove that count. `FTameAtPi` is sealed
-and is not `10` or `12`. For odd `c`, minimality is `qiLocalMinimalAtPi_of_c_odd`.
-It is a hypothesis of the formula and not a value of `FTameAtPi`.
+`I_n*`. `tate_step7_inputs` does not prove that count.
+`components_n_plus_five_open` names it and is not a theorem. For odd `c`,
+minimality is `qiLocalMinimalAtPi_of_c_odd`.
 -/
 theorem ogg_count_if_components :
     (18 - (4 + 5) + 1 = 18 - 4 - 4 ∧ 18 - 4 - 4 = 10) ∧
@@ -6132,7 +6145,8 @@ theorem ogg_count_if_components :
 /-- On a coprime curve, `v_π(Δ) = 18`, so the same two expressions are `10` and `12`.
 
 `c_odd_of_coprime` supplies odd `c`, and `vPi_delta` supplies the valuation.
-The subtractions use `m = 9` and `m = 7`. They are not `FTameAtPi`.
+The subtractions use `m = 9` and `m = 7`. `ftame_ten_twelve_of_components`
+is the same arithmetic for `FTameAtPi`, under `components_n_plus_five_open`.
 -/
 theorem ogg_numbers_of_coprime (E : FreyCurve4413)
     (hcop : E.a.natAbs.gcd E.b.natAbs = 1) :
@@ -6143,5 +6157,66 @@ theorem ogg_numbers_of_coprime (E : FreyCurve4413)
   refine ⟨hv, ?_, ?_⟩
   · rw [hv]
   · rw [hv]
+
+/-- Open: a minimal model whose `u = 1` translate satisfies `IsINStar n` has `n + 5` components.
+
+The blow-up sequence of Tate's algorithm Steps 3–6 and the component count
+of the Néron special fiber are not formalized. `tate_step7_double_root` is
+only `v(a₂² - 3 a₄) = 2`. The discriminant hypothesis says the row is a
+`u = 1` model of `E`. This proposition is not a theorem and not an axiom.
+-/
+def components_n_plus_five_open : Prop :=
+  ∀ (E : FreyCurve4413) (n : ℕ) (a1 a2 a3 a4 a6 b6 D : GaussInt),
+    0 < n → n % 2 = 0 →
+    IsINStar n a1 a2 a3 a4 a6 b6 D →
+    qiLocalMinimalAtPi E →
+    weierstrassDisc a1 a2 a3 a4 a6 = deltaGauss E →
+    NeronSpecialFiberComponents E = n + 5
+
+/-- Ogg's expression equals `18 - (n + 5) + 1` when the component count is `n + 5`.
+
+`FTameAtPi` is `v_π(Δ) - m + 1`. `hcomp` supplies `m = n + 5`, and `hΔ`
+supplies `v_π(Δ) = 18`. The evenness hypothesis is `n % 2 = 0`.
+-/
+theorem ftame_ogg_of_components (hcomp : components_n_plus_five_open)
+    {n : ℕ} {E : FreyCurve4413} {a1 a2 a3 a4 a6 b6 D : GaussInt}
+    (hn : 0 < n) (heven : n % 2 = 0)
+    (h : IsINStar n a1 a2 a3 a4 a6 b6 D)
+    (hmin : qiLocalMinimalAtPi E)
+    (hmodel : weierstrassDisc a1 a2 a3 a4 a6 = deltaGauss E)
+    (hΔ : vPi (deltaGauss E) = 18) :
+    FTameAtPi E = 18 - (n + 5) + 1 := by
+  have hm : NeronSpecialFiberComponents E = n + 5 :=
+    hcomp E n a1 a2 a3 a4 a6 b6 D hn heven h hmin hmodel
+  show vPi (deltaGauss E) - NeronSpecialFiberComponents E + 1 = 18 - (n + 5) + 1
+  rw [hΔ, hm]
+
+/-- On a coprime curve, the two rows give `FTameAtPi = 10` and `FTameAtPi = 12`.
+
+`c_odd_of_coprime` and `qiLocalMinimalAtPi_of_c_odd` give minimality.
+`vPi_delta` gives `v_π(Δ) = 18`. `18 - (4 + 5) + 1 = 10` and
+`18 - (2 + 5) + 1 = 12`. Both conclusions need `components_n_plus_five_open`.
+-/
+theorem ftame_ten_twelve_of_components (hcomp : components_n_plus_five_open)
+    (E : FreyCurve4413) (hcop : E.a.natAbs.gcd E.b.natAbs = 1) :
+    (IsINStar 4 GaussInt.zero (a2AfterPiThenPiSq E) GaussInt.zero
+        (a4AfterPiThenPiSq E) (a6AfterPiThenPiSq E) (b6AfterPiThenPiSq E)
+        (quadDiscAfterPiThenPiSq E) →
+      FTameAtPi E = 10) ∧
+    (IsINStar 2 GaussInt.zero (a2AfterPi E) a3AfterPiSq (a4AfterPi E)
+        (a6AfterPiSq E) (b6AfterPiSq E) (quadDiscAfterPiSq E) →
+      FTameAtPi E = 12) := by
+  have hodd := c_odd_of_coprime E hcop
+  have hmin := qiLocalMinimalAtPi_of_c_odd E hodd
+  have hΔ := vPi_delta E hodd
+  refine ⟨?_, ?_⟩
+  · intro h4
+    have hft := ftame_ogg_of_components (n := 4) hcomp (by decide) (by decide) h4 hmin
+      (even_a_weierstrass_eq_delta E) hΔ
+    exact hft
+  · intro h2
+    have hft := ftame_ogg_of_components (n := 2) hcomp (by decide) (by decide) h2 hmin
+      (a_odd_weierstrass_eq_delta E) hΔ
+    exact hft
 
 end FreyCurve4413

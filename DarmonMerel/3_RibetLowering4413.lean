@@ -107,7 +107,8 @@ discriminant. An integral model would have to satisfy those conditions, so
 for odd `c` this is `minimalAt2_of_c_odd`. `not_minimal_even_c` is the
 curve `(8, 8, 2)`: `u = π`, `r = s = t = 0` lowers `Δ`. The conductor
 exponent does not follow. `IsINStar` is Dokchitser's numerical bounds for
-even `n`. `FTameAtPi` and `SwanAtPi` are sealed. `(π)^10 = (32)`
+even `n`. `NeronSpecialFiberComponents` and `SwanAtPi` are sealed.
+`FTameAtPi` is `v_π(Δ) - m + 1`. `(π)^10 = (32)`
 does not set Ribet's `n`.
 `ConductorExponentAtPrimeAbove2` is their sum, and `h_n_eq` stays on the axiom.
 -/
@@ -141,7 +142,8 @@ theorem not_minimal_even_c :
 /-- Conductor exponent of `E` at the prime of `ℤ[√-1]` above `2`.
 
 `2` ramifies in `ℚ(√-1)`. The exponent is the sum of the tame part and the
-Swan conductor. Both summands are sealed, so the sum is not a numeral and
+Swan conductor. `FTameAtPi` is `v_π(Δ) - m + 1` with `m` sealed, and
+`SwanAtPi` is sealed, so the sum is not a numeral and
 it is not proved to lie in `{10, 12}`. On the translated model,
 `v_π(Δ) = 18` and Dokchitser's cubic discriminant has `v_π(d) = n + 6`.
 -/
@@ -239,14 +241,38 @@ that valuation with `v_π(D) = n + 4` and `π^(n+3) ∣ b₆`. The Kodaira symbo
 is not a theorem. `ogg_count_if_components` is `18 - (n + 5) + 1`, equal to
 `10` for `n = 4` and `12` for `n = 2`. The component count `m = n + 5` is
 the special fiber of type `I_n*`. It is not derived from the bounds.
-`minimalAt2_of_coprime` is minimality. It does not evaluate `FTameAtPi`.
-`swan_vanishes_open` is not a theorem, and this statement does not
-follow from it. `(8, 8, 2)` fails the coprimality hypothesis and stays a
+`minimalAt2_of_coprime` is minimality.
+`components_n_plus_five_open` is the open claim that the Néron fiber has
+`n + 5` components. `ftame_ten_twelve_of_components` is `FTameAtPi = 10`
+or `12` under that claim. `swan_vanishes_open` is not a theorem.
+`pacetti_of_components_and_swan` is this statement under both open
+hypotheses. `(8, 8, 2)` fails the coprimality hypothesis and stays a
 non-minimal even-`c` curve. `h_n_eq` stays on the axiom.
 -/
 def pacetti_2_8_open : Prop :=
   ∀ E : FreyCurve4413, E.a.natAbs.gcd E.b.natAbs = 1 →
     ExponentIn1012 (FreyCurve4413.FTameAtPi E + FreyCurve4413.SwanAtPi E)
+
+/-- `pacetti_2_8_open` follows from the component count and `SwanAtPi = 0`.
+
+A coprime curve has odd `c`, so exactly one of `a` and `b` is even.
+`even_a_IsINStar` and `a_odd_IsINStar` supply the rows. Neither open
+hypothesis is proved here.
+-/
+theorem pacetti_of_components_and_swan
+    (hcomp : FreyCurve4413.components_n_plus_five_open)
+    (hswan : FreyCurve4413.swan_vanishes_open) : pacetti_2_8_open := by
+  intro E hcop
+  have hodd := FreyCurve4413.c_odd_of_coprime E hcop
+  have hft := FreyCurve4413.ftame_ten_twelve_of_components hcomp E hcop
+  have hsw := hswan E hcop
+  rcases Nat.mod_two_eq_zero_or_one E.a.natAbs with ha | ha
+  · have h10 := hft.1 (FreyCurve4413.even_a_IsINStar E hodd ha)
+    apply Or.inl
+    rw [h10, hsw]
+  · have h12 := hft.2 (FreyCurve4413.a_odd_IsINStar E hodd ha)
+    apply Or.inr
+    rw [h12, hsw]
 
 /-- Minimal model, Pacetti's exponent in `{10, 12}`, and `n = 32 ∨ n = 64`.
 

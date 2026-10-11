@@ -216,12 +216,15 @@ discriminant on that translate has `v_π(d) = 10` when `a` is even and
 `v_π(d) = 8` when `a` is odd. For even `a`, `Δ = 16 d` and `v_π(16) = 8`.
 `tate_step7_double_root` is `v(a₂² - 3 a₄) = 2` from those bounds.
 `tate_step7_inputs` packages it with `v_π(D) = n + 4`. The Kodaira symbol
-is not a theorem, and `FTameAtPi` is not the table value `2` and not `10`
-or `12`. `ogg_count_if_components` is `18 - (n + 5) + 1`, equal to `10` or
-`12`, if the special fiber had `m = n + 5` components. That count is not
-a consequence of the bounds. The gap `18 - (n + 6)` is `8` or `10`; on the
-even-`a` translate it is `v_π(16)`. It is not the Swan conductor.
-`swan_vanishes_open` is not a theorem. `not_minimal_even_c` is the curve `(8, 8, 2)`, where
+is not a theorem. `NeronSpecialFiberComponents` is sealed.
+`components_n_plus_five_open` asks whether that count is `n + 5`, and it is
+not a theorem. `FTameAtPi` is `v_π(Δ) - m + 1`. Under the open component
+hypothesis, `ftame_ten_twelve_of_components` is `FTameAtPi = 10` or `12`.
+`ogg_count_if_components` is the same arithmetic without that hypothesis.
+The gap `18 - (n + 6)` is `8` or `10`; on the even-`a` translate it is
+`v_π(16)`. It is not the Swan conductor. `swan_vanishes_open` is not a
+theorem. `pacetti_2_8_open` follows from those two open hypotheses and is
+not proved. `not_minimal_even_c` is the curve `(8, 8, 2)`, where
 `u = π` and `r = s = t = 0` lowers `Δ`, and `gcd(8, 8) = 8`.
 `IsINStar` is Dokchitser's numerical bounds for even `n` on that translate.
 It records `v_π(D) = 8` or `6`. The cubic discriminant on the same
