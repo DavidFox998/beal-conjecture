@@ -118,9 +118,12 @@ with `quadDiscAfterPiSq_p2_exact_six` give `v_π(b₆) = 8` and `v_π(D) = 6`.
 Those are the numerical inputs of Dokchitser's criterion for type `I₂*`.
 The criterion is not formalized, and neither is a wild part. They are not
 the conductor exponent. Ogg's formula is the tame conductor. On type `I_n*`
-it uses `v(Δ) = n + 6` and equals `2`. `swan_vanishes_open` is the unproved
-claim that the Swan conductor vanishes, and `pacetti_2_8_open` is the
-unproved claim that the sum of the two sealed parts lies in `{10, 12}`.
+the table uses discriminant valuation `n + 6`. `even_a_cubic_ten` and
+`a_odd_cubic_eight` put Dokchitser's cubic discriminant and the Weierstrass
+discriminant on the translated model: `v_π(d) = n + 6` and `v_π(Δ) = 18`.
+`swan_vanishes_open` is the unproved claim that the Swan conductor vanishes,
+and `pacetti_2_8_open` is the unproved claim that the sum of the two sealed
+parts lies in `{10, 12}`.
 `no_qi_integral_change_of_c_odd` quantifies over `ℚ(i)`, not only `ℤ[i]`.
 `v_π(a₂) ≥ 4`, so `v_π(s) = -1` is a real case, and a denominator coprime to
 `π` is not an element of `ℤ[i]`. For odd `c`, `v_π(u) ≥ 2` makes
@@ -131,12 +134,15 @@ this predicate. For odd `c` it is a theorem. `minimal_even_c_open` is false:
 `8⁴ + 8⁴ = 2¹³`, and `u = π`, `r = s = t = 0` is integral at `π` and lowers
 `Δ`. `c_odd_of_coprime` is `gcd(|a|, |b|) = 1 → c` odd, so a primitive pair
 is already covered by the odd-`c` minimality theorem. `(8, 8, 2)` is not
-coprime. `IsINStar` records Dokchitser's numerical bounds for even `n`. Those
-bounds constrain `v_π(D)`, not `v_π(Δ)`. `FTameAtPi` and `SwanAtPi` are
-sealed. Their sum is the conductor exponent, and neither summand is a
-numeral. `swan_vanishes_open` is not a theorem. On a minimal model of type
-`I_n*` one has `v(Δ) = n + 6`, and Ogg's tame value is then `2`. For odd
-`c`, `v_π(Δ) = 18`, which is not `2 + 6` and not `4 + 6`.
+coprime. `IsINStar` records Dokchitser's coefficient bounds for even `n` on a
+`u = 1` translate of the Frey equation. `even_a_weierstrass_eq_delta` and
+`a_odd_weierstrass_eq_delta` show that this translate has the same
+Weierstrass discriminant. For odd `c`, `v_π(Δ) = 18`. Dokchitser's `d` is
+the cubic discriminant: `v_π(d) = 10` after the even-`a` shifts
+(`even_a_cubic_ten`, and `Δ = 16 d`) and `v_π(d) = 8` after the odd-`a`
+shifts (`a_odd_cubic_eight`). Those are the values `n + 6` for `n = 4` and
+`n = 2`. Tate's Step 7 is not formalized. `FTameAtPi` and `SwanAtPi` are
+sealed. `swan_vanishes_open` is not a theorem.
 `pi_ten_principal` is `(-√(-1))^5 · π^10 = 32` with norm `2^10`, and
 `pi_twelve_principal` is the same for `64` and `2^12`. The principal
 ideals agree. That equality does not produce `n = 32 ∨ n = 64`. The
@@ -2680,8 +2686,8 @@ Dokchitser's bounds for a minimal model of type `I₂*` ask for
 `v(a₂) = 1`, `v(a₃) ≥ 3`, `v(a₄) ≥ 3`, and `v(a₆) ≥ 5`. These
 valuations meet the bounds. The converse, Tate's exit
 `f = v(Δ) - 4 - n`, and the wild Swan conductor are not theorems.
-Type `I₂*` has `v(Δ) = 8`, and this model has `v_π(Δ) = 18`. `FTameAtPi`
-and `SwanAtPi` stay sealed. Pacetti's Lemma 2.8(2)
+`a_odd_cubic_eight` is `v_π(d) = 8` and `v_π(Δ) = 18` on this translate.
+`FTameAtPi` and `SwanAtPi` stay sealed. Pacetti's Lemma 2.8(2)
 prints type `I₂*` and exponent `12` for the even-`b` branch, which is
 this `a`-odd case, and type `I₄*` and exponent `10` for odd `b`.
 The printed value `v(a₄') = 4` on that second branch does not hold:
@@ -4090,10 +4096,10 @@ theorem valAtLeast_of_P2Exact {z : GaussInt} {m k : ℕ}
 `D = a₄² - 4 a₂ a₆`. Zero has infinite valuation, so it meets a lower bound.
 For `n = 2` the bounds are `3, 3, 5, 5` and `v(D) = 6`. For `n = 4` they are
 `4, 4, 7, 7` and `v(D) = 8`. These inequalities are not a Kodaira symbol.
-They do not mention the Weierstrass discriminant. A minimal model of type
-`I_n*` has `v(Δ) = n + 6`, and `v_π(Δ) = 18` is not that valuation for
-`n = 2` or `n = 4`. `SwanAtPi` is not part of this predicate, and `f` is
-not computed.
+They are conditions on a `u = 1` translate, whose Weierstrass discriminant
+is still `deltaGauss`. Dokchitser's `d` on that translate has valuation
+`n + 6`, while `v_π(Δ) = 18`. `SwanAtPi` is not part of this predicate,
+and `f` is not computed.
 -/
 def IsINStar (n : ℕ) (a1 a2 a3 a4 a6 b6 D : GaussInt) : Prop :=
   0 < n ∧ n % 2 = 0 ∧
@@ -5528,11 +5534,11 @@ theorem c_odd_of_coprime (E : FreyCurve4413)
     omega
   · exact hone
 
-/-- Ogg's tame conductor on a genuine minimal model of type `I_n*`.
+/-- Arithmetic form of Ogg's expression when the discriminant slot is `n + 6`.
 
-Silverman's table gives `v(Δ) = n + 6` and `m = n + 5` components, so
-`v(Δ) - m + 1 = (n + 6) - 4 - n = 2`. This identity uses the discriminant
-valuation `n + 6`. It is not a value of `FTameAtPi`.
+`(n + 6) - 4 - n = 2`. On the translated Frey model the Weierstrass
+valuation is `18` and Dokchitser's cubic discriminant has valuation `n + 6`.
+This identity is not a value of `FTameAtPi`.
 -/
 theorem ogg_tame_of_INStar_discriminant (n : ℕ) : (n + 6) - 4 - n = 2 := by
   have h : n + 6 = (n + 2) + 4 := by omega
@@ -5540,18 +5546,16 @@ theorem ogg_tame_of_INStar_discriminant (n : ℕ) : (n + 6) - 4 - n = 2 := by
 
 /-- The subtractions `18 - 4 - 4` and `18 - 4 - 2`.
 
-These are equalities in `ℕ`. They are not values of `FTameAtPi`. Ogg's
-formula on type `I_n*` uses `v(Δ) = n + 6` and equals `2`.
+These are equalities in `ℕ`. They are not values of `FTameAtPi`.
 -/
 theorem arith_eighteen_minus_four_minus_n :
     18 - 4 - 4 = 10 ∧ 18 - 4 - 2 = 12 := by
   decide
 
-/-- When `c` is odd, `v_π(Δ) = 18` is not the discriminant of type `I₂*` or `I₄*`.
+/-- When `c` is odd, the Weierstrass valuation is `18`, not `8` or `10`.
 
-Type `I_n*` has `v(Δ) = n + 6`. For `n = 2` that is `8`, and for `n = 4`
-that is `10`. The model is minimal at `π` by `qiLocalMinimalAtPi_of_c_odd`,
-so `18` is the valuation of a minimal discriminant.
+`8 = 2 + 6` and `10 = 4 + 6` are the cubic-discriminant slots `v(d)`.
+`even_a_cubic_ten` and `a_odd_cubic_eight` are those slots. `18` is `v_π(Δ)`.
 -/
 theorem frey_delta_not_INStar_discriminant (E : FreyCurve4413)
     (hodd : E.c.natAbs % 2 = 1) :
@@ -5564,11 +5568,10 @@ theorem frey_delta_not_INStar_discriminant_of_coprime (E : FreyCurve4413)
     vPi (deltaGauss E) = 18 ∧ 18 ≠ 2 + 6 ∧ 18 ≠ 4 + 6 :=
   frey_delta_not_INStar_discriminant E (c_odd_of_coprime E hcop)
 
-/-- The even-`a` shift has `v_π(D) = 8` while `v_π(Δ) = 18`.
+/-- The even-`a` shift has `v_π(D) = 8` and `v_π(Δ) = 18`.
 
-`IsINStar 4` records `v(D) = n + 4`. Dokchitser's comparison of that
-valuation with `v(Δ) = n + 6` would ask for `8 + 2 = 10`. The Weierstrass
-discriminant of the Frey model has valuation `18`.
+`v(D) + 2 = 10` is `v_π(d)`, not `v_π(Δ)`. `even_a_cubic_ten` is
+`Δ = 16 d` with `v_π(16) = 8` and `v_π(d) = 10`.
 -/
 theorem even_a_disc_mismatch (E : FreyCurve4413)
     (hodd : E.c.natAbs % 2 = 1) (ha : E.a.natAbs % 2 = 0) :
@@ -5577,11 +5580,10 @@ theorem even_a_disc_mismatch (E : FreyCurve4413)
   rcases even_a_dokchitser_n4_inputs E hodd ha with ⟨_, _, _, _, hD⟩
   exact ⟨hD, vPi_delta E hodd, by decide⟩
 
-/-- The odd-`a` shift has `v_π(D) = 6` while `v_π(Δ) = 18`.
+/-- The odd-`a` shift has `v_π(D) = 6` and `v_π(Δ) = 18`.
 
-`IsINStar 2` records `v(D) = n + 4`. The comparison `v(Δ) = v(D) + 2`
-would give `8`, and type `I₂*` asks for `v(Δ) = 8`. The Frey discriminant
-has valuation `18`.
+`v(D) + 2 = 8` is `v_π(d)`. The model has `a₃ = 2 π²`, so `Δ` is not `16 d`.
+`a_odd_cubic_eight` records both valuations.
 -/
 theorem a_odd_disc_mismatch (E : FreyCurve4413)
     (hodd : E.c.natAbs % 2 = 1) (ha : E.a.natAbs % 2 = 1) :
@@ -5599,5 +5601,392 @@ stays sealed, and this proposition is not used to place
 -/
 def swan_vanishes_open : Prop :=
   ∀ E : FreyCurve4413, E.a.natAbs.gcd E.b.natAbs = 1 → SwanAtPi E = 0
+
+/-- `b₂ = a₁² + 4 a₂`. -/
+def b2Of (a1 a2 : GaussInt) : GaussInt :=
+  GaussInt.add (GaussInt.mul a1 a1) (GaussInt.smul 4 a2)
+
+/-- `b₄ = 2 a₄ + a₁ a₃`. -/
+def b4Of (a1 a3 a4 : GaussInt) : GaussInt :=
+  GaussInt.add (GaussInt.smul 2 a4) (GaussInt.mul a1 a3)
+
+/-- `b₆ = a₃² + 4 a₆`. -/
+def b6Of (a3 a6 : GaussInt) : GaussInt :=
+  GaussInt.add (GaussInt.mul a3 a3) (GaussInt.smul 4 a6)
+
+/-- `b₈ = a₁² a₆ + 4 a₂ a₆ - a₁ a₃ a₄ + a₂ a₃² - a₄²`. -/
+def b8Of (a1 a2 a3 a4 a6 : GaussInt) : GaussInt :=
+  GaussInt.sub
+    (GaussInt.add
+      (GaussInt.add (GaussInt.mul (GaussInt.mul a1 a1) a6)
+        (GaussInt.smul 4 (GaussInt.mul a2 a6)))
+      (GaussInt.add (GaussInt.neg (GaussInt.mul (GaussInt.mul a1 a3) a4))
+        (GaussInt.mul a2 (GaussInt.mul a3 a3))))
+    (GaussInt.mul a4 a4)
+
+/-- Weierstrass discriminant `-b₂² b₈ - 8 b₄³ - 27 b₆² + 9 b₂ b₄ b₆`. -/
+def weierstrassDisc (a1 a2 a3 a4 a6 : GaussInt) : GaussInt :=
+  let b2 := b2Of a1 a2
+  let b4 := b4Of a1 a3 a4
+  let b6 := b6Of a3 a6
+  let b8 := b8Of a1 a2 a3 a4 a6
+  GaussInt.add
+    (GaussInt.add
+      (GaussInt.neg (GaussInt.mul (GaussInt.mul b2 b2) b8))
+      (GaussInt.neg (GaussInt.smul 8 (GaussInt.mul b4 (GaussInt.mul b4 b4)))))
+    (GaussInt.add
+      (GaussInt.neg (GaussInt.smul 27 (GaussInt.mul b6 b6)))
+      (GaussInt.smul 9 (GaussInt.mul b2 (GaussInt.mul b4 b6))))
+
+/-- Discriminant of the monic cubic `x³ + a₂ x² + a₄ x + a₆`.
+
+This is Dokchitser's `d`, not the Weierstrass discriminant.
+-/
+def cubicDisc (a2 a4 a6 : GaussInt) : GaussInt :=
+  GaussInt.add
+    (GaussInt.add
+      (GaussInt.smul 18 (GaussInt.mul a2 (GaussInt.mul a4 a6)))
+      (GaussInt.neg (GaussInt.smul 4
+        (GaussInt.mul (GaussInt.mul (GaussInt.mul a2 a2) a2) a6))))
+    (GaussInt.add
+      (GaussInt.add
+        (GaussInt.mul (GaussInt.mul a2 a2) (GaussInt.mul a4 a4))
+        (GaussInt.neg (GaussInt.smul 4 (GaussInt.mul a4 (GaussInt.mul a4 a4)))))
+      (GaussInt.neg (GaussInt.smul 27 (GaussInt.mul a6 a6))))
+
+/-- `D = a₄² - 4 a₂ a₆`, the discriminant of `a₂ x² + a₄ x + a₆`. -/
+def quadDisc (a2 a4 a6 : GaussInt) : GaussInt :=
+  GaussInt.sub (GaussInt.mul a4 a4) (GaussInt.smul 4 (GaussInt.mul a2 a6))
+
+/-- The terms in `d - a₂² D`. -/
+def cubicError (a2 a4 a6 : GaussInt) : GaussInt :=
+  GaussInt.add
+    (GaussInt.add
+      (GaussInt.neg (GaussInt.smul 4 (GaussInt.mul a4 (GaussInt.mul a4 a4))))
+      (GaussInt.neg (GaussInt.smul 27 (GaussInt.mul a6 a6))))
+    (GaussInt.smul 18 (GaussInt.mul a2 (GaussInt.mul a4 a6)))
+
+theorem cubicDisc_split (a2 a4 a6 : GaussInt) :
+    cubicDisc a2 a4 a6 =
+      GaussInt.add (GaussInt.mul (GaussInt.mul a2 a2) (quadDisc a2 a4 a6))
+        (cubicError a2 a4 a6) := by
+  cases a2
+  cases a4
+  cases a6
+  simp [cubicDisc, quadDisc, cubicError, GaussInt.mul, GaussInt.add, GaussInt.sub,
+    GaussInt.smul, GaussInt.neg]
+  constructor <;> grind
+
+/-- For `a₁ = a₃ = 0`, `Δ = 16 d`. -/
+theorem weierstrassDisc_eq_sixteen_cubic (a2 a4 a6 : GaussInt) :
+    weierstrassDisc GaussInt.zero a2 GaussInt.zero a4 a6 =
+      GaussInt.smul 16 (cubicDisc a2 a4 a6) := by
+  cases a2
+  cases a4
+  cases a6
+  simp [weierstrassDisc, cubicDisc, b2Of, b4Of, b6Of, b8Of, GaussInt.mul, GaussInt.add,
+    GaussInt.sub, GaussInt.smul, GaussInt.neg, GaussInt.zero]
+  constructor <;> grind
+
+/-- Pure `x`-shift by `r`, with `u = 1` and `s = t = 0`. -/
+def xShiftA2 (r a2 : GaussInt) : GaussInt :=
+  GaussInt.add a2 (GaussInt.smul 3 r)
+
+def xShiftA4 (r a2 a4 : GaussInt) : GaussInt :=
+  GaussInt.add a4
+    (GaussInt.add (GaussInt.smul 2 (GaussInt.mul r a2))
+      (GaussInt.smul 3 (GaussInt.mul r r)))
+
+def xShiftA6 (r a2 a4 a6 : GaussInt) : GaussInt :=
+  GaussInt.add a6
+    (GaussInt.add (GaussInt.mul r a4)
+      (GaussInt.add (GaussInt.mul (GaussInt.mul r r) a2)
+        (GaussInt.mul r (GaussInt.mul r r))))
+
+/-- An `x`-shift does not change the Weierstrass discriminant when `a₁ = a₃ = 0`. -/
+theorem weierstrassDisc_xShift (r a2 a4 a6 : GaussInt) :
+    weierstrassDisc GaussInt.zero (xShiftA2 r a2) GaussInt.zero
+      (xShiftA4 r a2 a4) (xShiftA6 r a2 a4 a6) =
+    weierstrassDisc GaussInt.zero a2 GaussInt.zero a4 a6 := by
+  cases r
+  cases a2
+  cases a4
+  cases a6
+  simp [weierstrassDisc, b2Of, b4Of, b6Of, b8Of, xShiftA2, xShiftA4, xShiftA6,
+    GaussInt.mul, GaussInt.add, GaussInt.sub, GaussInt.smul, GaussInt.neg, GaussInt.zero]
+  constructor <;> grind
+
+/-- A `y`-shift `y ↦ y + t` does not change the Weierstrass discriminant when `a₁ = 0`. -/
+theorem weierstrassDisc_yShift (t a2 a3 a4 a6 : GaussInt) :
+    weierstrassDisc GaussInt.zero a2 (GaussInt.add a3 (GaussInt.smul 2 t)) a4
+      (GaussInt.sub (GaussInt.sub a6 (GaussInt.mul t a3)) (GaussInt.mul t t)) =
+    weierstrassDisc GaussInt.zero a2 a3 a4 a6 := by
+  cases t
+  cases a2
+  cases a3
+  cases a4
+  cases a6
+  simp [weierstrassDisc, b2Of, b4Of, b6Of, b8Of, GaussInt.mul, GaussInt.add, GaussInt.sub,
+    GaussInt.smul, GaussInt.neg, GaussInt.zero]
+  constructor <;> grind
+
+theorem cubicDisc_a6_zero (a2 a4 : GaussInt) :
+    cubicDisc a2 a4 GaussInt.zero =
+      GaussInt.mul (GaussInt.mul a4 a4)
+        (GaussInt.sub (GaussInt.mul a2 a2) (GaussInt.smul 4 a4)) := by
+  cases a2
+  cases a4
+  simp [cubicDisc, GaussInt.mul, GaussInt.add, GaussInt.sub, GaussInt.smul, GaussInt.neg,
+    GaussInt.zero]
+  constructor <;> grind
+
+theorem frey_weierstrassDisc (E : FreyCurve4413) :
+    weierstrassDisc GaussInt.zero (GaussInt.ofInt E.A_int) GaussInt.zero
+      ⟨E.B_re, E.B_im⟩ GaussInt.zero =
+    deltaGauss E := by
+  rw [weierstrassDisc_eq_sixteen_cubic, deltaGauss_eq_weierstrass, cubicDisc_a6_zero]
+  simp [delta_weierstrass, weierstrass_product, B_sq, A_sq_sub_4B, Zsqrt1_mul,
+    GaussInt.mul, GaussInt.sub, GaussInt.smul, GaussInt.ofInt, Δ]
+  rw [E.h_A, E.h_B_re, E.h_B_im]
+  constructor <;> grind -lia -linarith -ac
+
+theorem a2AfterPi_xShift (E : FreyCurve4413) :
+    a2AfterPi E = xShiftA2 pi (GaussInt.ofInt E.A_int) := by
+  rw [E.h_A]
+  simp [a2AfterPi, xShiftA2, pi, GaussInt.add, GaussInt.smul, GaussInt.ofInt]
+
+theorem a4AfterPi_xShift (E : FreyCurve4413) :
+    a4AfterPi E = xShiftA4 pi (GaussInt.ofInt E.A_int) ⟨E.B_re, E.B_im⟩ := by
+  rw [E.h_A, E.h_B_re, E.h_B_im]
+  simp [a4AfterPi, xShiftA4, pi, GaussInt.add, GaussInt.mul, GaussInt.smul, GaussInt.ofInt]
+  constructor <;> omega
+
+theorem a6AfterPi_xShift (E : FreyCurve4413) :
+    a6AfterPi E = xShiftA6 pi (GaussInt.ofInt E.A_int) ⟨E.B_re, E.B_im⟩ GaussInt.zero := by
+  rw [E.h_A, E.h_B_re, E.h_B_im]
+  simp [a6AfterPi, xShiftA6, pi, GaussInt.add, GaussInt.mul, GaussInt.ofInt, GaussInt.zero]
+  constructor <;> omega
+
+theorem P2Exact_ne_zero {z : GaussInt} {k : ℕ} (h : P2Exact z k) : z ≠ GaussInt.zero := by
+  rcases h with ⟨u, hu, hnu⟩
+  intro hz
+  have hmul : GaussInt.mul u (piPow k) = GaussInt.zero := by rw [hu, hz]
+  rcases GaussInt.mul_eq_zero.mp hmul with hu0 | hk
+  · have hzdiv : piDivides GaussInt.zero := by decide
+    exact hnu (hu0 ▸ hzdiv)
+  · exact piPow_ne_zero k hk
+
+theorem vPi_of_P2Exact {z : GaussInt} {k : ℕ} (h : P2Exact z k) : vPi z = k := by
+  rcases h with ⟨u, hu, hnu⟩
+  exact vPi_of_shape z u k hnu hu
+
+theorem vPi_ofInt_sixteen : vPi (GaussInt.ofInt 16) = 8 := by
+  have h16 : (2 : ℤ) ^ 4 = 16 := by decide
+  have h := p2_valuation_of_two_pow 4
+  rw [h16] at h
+  exact vPi_of_P2Exact h
+
+/-- The two `x`-shifts are `u = 1` translations of the Frey equation.
+
+`IsINStar 4` is a condition on this translated model. Its Weierstrass
+discriminant is `deltaGauss`, so the model is minimal at `π` whenever the
+original model is. `v_π(Δ) = 18` and `v_π(D) = 8` are valuations of this
+same equation.
+-/
+theorem even_a_weierstrass_eq_delta (E : FreyCurve4413) :
+    weierstrassDisc GaussInt.zero (a2AfterPiThenPiSq E) GaussInt.zero
+      (a4AfterPiThenPiSq E) (a6AfterPiThenPiSq E) = deltaGauss E := by
+  have hfirst := weierstrassDisc_xShift pi (GaussInt.ofInt E.A_int)
+    ⟨E.B_re, E.B_im⟩ GaussInt.zero
+  rw [← a2AfterPi_xShift E, ← a4AfterPi_xShift E, ← a6AfterPi_xShift E] at hfirst
+  have hsecond := weierstrassDisc_xShift (piPow 2) (a2AfterPi E) (a4AfterPi E) (a6AfterPi E)
+  have ha2 : a2AfterPiThenPiSq E = xShiftA2 (piPow 2) (a2AfterPi E) := rfl
+  have ha4 : a4AfterPiThenPiSq E = xShiftA4 (piPow 2) (a2AfterPi E) (a4AfterPi E) := rfl
+  have ha6 : a6AfterPiThenPiSq E =
+      xShiftA6 (piPow 2) (a2AfterPi E) (a4AfterPi E) (a6AfterPi E) := rfl
+  rw [ha2, ha4, ha6, hsecond, hfirst, frey_weierstrassDisc]
+
+/-- On the even-`a` translate, `Δ = 16 d` and `v_π(d) = 10`.
+
+`d` is the cubic discriminant. `v_π(16) = 8` and `v_π(Δ) = 18`, so
+`18 = 8 + 10`. Dokchitser's row for `n = 4` asks for `v(d) = 10` and
+`v(D) = 8`. Both hold on this model. Tate's Step 7 is not formalized, and
+neither is the conductor exponent.
+-/
+theorem even_a_cubic_ten (E : FreyCurve4413)
+    (hodd : E.c.natAbs % 2 = 1) (ha : E.a.natAbs % 2 = 0) :
+    deltaGauss E =
+      GaussInt.smul 16 (cubicDisc (a2AfterPiThenPiSq E) (a4AfterPiThenPiSq E)
+        (a6AfterPiThenPiSq E)) ∧
+    vPi (GaussInt.ofInt 16) = 8 ∧
+    vPi (cubicDisc (a2AfterPiThenPiSq E) (a4AfterPiThenPiSq E)
+      (a6AfterPiThenPiSq E)) = 10 ∧
+    vPi (deltaGauss E) = 18 ∧
+    P2Exact (quadDiscAfterPiThenPiSq E) 8 := by
+  have hΔ := even_a_weierstrass_eq_delta E
+  have h16 := weierstrassDisc_eq_sixteen_cubic (a2AfterPiThenPiSq E)
+    (a4AfterPiThenPiSq E) (a6AfterPiThenPiSq E)
+  have heq : deltaGauss E =
+      GaussInt.smul 16 (cubicDisc (a2AfterPiThenPiSq E) (a4AfterPiThenPiSq E)
+        (a6AfterPiThenPiSq E)) := by
+    rw [← hΔ, h16]
+  have hmul : deltaGauss E =
+      GaussInt.mul (GaussInt.ofInt 16)
+        (cubicDisc (a2AfterPiThenPiSq E) (a4AfterPiThenPiSq E)
+          (a6AfterPiThenPiSq E)) := by
+    rw [heq, smul_eq_mul_ofInt]
+  have hd16 : P2Exact (deltaGauss E) 18 := delta_p2_exact_eighteen E hodd
+  have hne16 : GaussInt.ofInt 16 ≠ GaussInt.zero := by decide
+  have hned : cubicDisc (a2AfterPiThenPiSq E) (a4AfterPiThenPiSq E)
+      (a6AfterPiThenPiSq E) ≠ GaussInt.zero := by
+    intro hz
+    have hzero : deltaGauss E = GaussInt.zero := by
+      rw [hmul, hz, GaussInt.mul_zero]
+    exact P2Exact_ne_zero hd16 hzero
+  have hv := vPi_mul (GaussInt.ofInt 16)
+    (cubicDisc (a2AfterPiThenPiSq E) (a4AfterPiThenPiSq E) (a6AfterPiThenPiSq E))
+    hne16 hned
+  rw [← hmul, vPi_ofInt_sixteen, vPi_delta E hodd] at hv
+  have hten : vPi (cubicDisc (a2AfterPiThenPiSq E) (a4AfterPiThenPiSq E)
+      (a6AfterPiThenPiSq E)) = 10 := by omega
+  exact ⟨heq, vPi_ofInt_sixteen, hten, vPi_delta E hodd,
+    (even_a_dokchitser_n4_inputs E hodd ha).2.2.2.2⟩
+
+theorem a3AfterPiSq_yShift :
+    a3AfterPiSq = GaussInt.add GaussInt.zero (GaussInt.smul 2 (piPow 2)) := by
+  rw [a3AfterPiSq_from_shift]
+  simp [GaussInt.add, GaussInt.zero, GaussInt.smul]
+
+theorem a6AfterPiSq_yShift (E : FreyCurve4413) :
+    a6AfterPiSq E =
+      GaussInt.sub (GaussInt.sub (a6AfterPi E) (GaussInt.mul (piPow 2) GaussInt.zero))
+        (GaussInt.mul (piPow 2) (piPow 2)) := by
+  rw [a6AfterPiSq_from_shift]
+  have hpow : piPow 4 = GaussInt.mul (piPow 2) (piPow 2) := by
+    unfold piPow
+    rw [show (4 : ℕ) = 2 + 2 by decide, GaussInt.npow_add]
+  rw [hpow]
+  simp [GaussInt.sub, GaussInt.mul, GaussInt.zero]
+
+/-- The odd-`a` model is an `x`-shift by `π` followed by a `y`-shift by `π²`.
+
+Both have `u = 1`, so the Weierstrass discriminant stays `deltaGauss`.
+`IsINStar 2` is a condition on this translated model, and `v_π(Δ) = 18`
+is the valuation of that same discriminant.
+-/
+theorem a_odd_weierstrass_eq_delta (E : FreyCurve4413) :
+    weierstrassDisc GaussInt.zero (a2AfterPi E) a3AfterPiSq (a4AfterPi E)
+      (a6AfterPiSq E) = deltaGauss E := by
+  have hfirst := weierstrassDisc_xShift pi (GaussInt.ofInt E.A_int)
+    ⟨E.B_re, E.B_im⟩ GaussInt.zero
+  rw [← a2AfterPi_xShift E, ← a4AfterPi_xShift E, ← a6AfterPi_xShift E] at hfirst
+  have hy := weierstrassDisc_yShift (piPow 2) (a2AfterPi E) GaussInt.zero
+    (a4AfterPi E) (a6AfterPi E)
+  rw [← a3AfterPiSq_yShift, ← a6AfterPiSq_yShift E] at hy
+  rw [hy, hfirst, frey_weierstrassDisc]
+
+theorem P2Exact_ofInt_nine : P2Exact (GaussInt.ofInt 9) 0 :=
+  P2Exact_zero_of_not_pi
+    (not_piDivides_ofInt_of_natAbs_odd (by decide : (9 : ℤ).natAbs % 2 = 1))
+
+theorem P2Exact_ofInt_twentySeven : P2Exact (GaussInt.ofInt 27) 0 :=
+  P2Exact_zero_of_not_pi
+    (not_piDivides_ofInt_of_natAbs_odd (by decide : (27 : ℤ).natAbs % 2 = 1))
+
+theorem P2Exact_ofInt_eighteen : P2Exact (GaussInt.ofInt 18) 2 := by
+  have hform : GaussInt.ofInt 18 =
+      GaussInt.mul (GaussInt.ofInt 2) (GaussInt.ofInt 9) := by
+    simp [GaussInt.mul, GaussInt.ofInt]
+  rw [hform]
+  exact P2Exact_mul (by simpa [Int.pow_one] using p2_valuation_of_two_pow 1)
+    P2Exact_ofInt_nine
+
+theorem P2Exact_smul_of {n : ℤ} {z : GaussInt} {k m : ℕ}
+    (hn : P2Exact (GaussInt.ofInt n) k) (hz : P2Exact z m) :
+    P2Exact (GaussInt.smul n z) (k + m) := by
+  rw [smul_eq_mul_ofInt]
+  exact P2Exact_mul hn hz
+
+/-- On the odd-`a` translate, `v_π(d) = 8` and `v_π(Δ) = 18`.
+
+`a₃ = 2 π²`, so this model is not of the shape `a₁ = a₃ = 0` and `Δ` is
+not `16 d`. The cubic discriminant still satisfies `v(d) = 8 = v(D) + 2`,
+because `d - a₂² D` has valuation `10` and `v(a₂² D) = 8`. Dokchitser's
+row for `n = 2` asks for `v(d) = 8` and `v(D) = 6`. Tate's Step 7 is not
+formalized.
+-/
+theorem a_odd_cubic_eight (E : FreyCurve4413)
+    (hodd : E.c.natAbs % 2 = 1) (ha : E.a.natAbs % 2 = 1) :
+    weierstrassDisc GaussInt.zero (a2AfterPi E) a3AfterPiSq (a4AfterPi E)
+      (a6AfterPiSq E) = deltaGauss E ∧
+    vPi (deltaGauss E) = 18 ∧
+    vPi (cubicDisc (a2AfterPi E) (a4AfterPi E) (a6AfterPiSq E)) = 8 ∧
+    P2Exact (quadDiscAfterPiSq E) 6 := by
+  have hΔ := a_odd_weierstrass_eq_delta E
+  have hvΔ := vPi_delta E hodd
+  have hD := quadDiscAfterPiSq_p2_exact_six E hodd ha
+  have ha2 := a2AfterPi_p2_exact_one E
+  have ha4 := a4AfterPi_p2_exact_three_of_a_odd E hodd ha
+  have ha6 := a6AfterPiSq_p2_exact_five_of_a_odd E hodd ha
+  have hsq : P2Exact (GaussInt.mul (a2AfterPi E) (a2AfterPi E)) 2 :=
+    P2Exact_mul ha2 ha2
+  have hmain : P2Exact
+      (GaussInt.mul (GaussInt.mul (a2AfterPi E) (a2AfterPi E)) (quadDiscAfterPiSq E)) 8 :=
+    P2Exact_mul hsq hD
+  let a2 := a2AfterPi E
+  let a4 := a4AfterPi E
+  let a6 := a6AfterPiSq E
+  have herr4 : P2Exact
+      (GaussInt.neg (GaussInt.smul 4 (GaussInt.mul a4 (GaussInt.mul a4 a4)))) 13 := by
+    have h4 : P2Exact (GaussInt.ofInt 4) 4 := by
+      have hpow : (2 : ℤ) ^ 2 = 4 := by decide
+      simpa [hpow] using p2_valuation_of_two_pow 2
+    have hcube := P2Exact_mul ha4 (P2Exact_mul ha4 ha4)
+    have hsum : 4 + (3 + (3 + 3)) = 13 := by decide
+    have hs := P2Exact_neg (P2Exact_smul_of h4 hcube)
+    simpa [hsum] using hs
+  have herr27 : P2Exact
+      (GaussInt.neg (GaussInt.smul 27 (GaussInt.mul a6 a6))) 10 := by
+    have hs := P2Exact_neg (P2Exact_smul_of P2Exact_ofInt_twentySeven (P2Exact_mul ha6 ha6))
+    have hsum : 0 + (5 + 5) = 10 := by decide
+    simpa [hsum] using hs
+  have herr18 : P2Exact
+      (GaussInt.smul 18 (GaussInt.mul a2 (GaussInt.mul a4 a6))) 11 := by
+    have hprod := P2Exact_mul ha2 (P2Exact_mul ha4 ha6)
+    have hs := P2Exact_smul_of P2Exact_ofInt_eighteen hprod
+    have hsum : 2 + (1 + (3 + 5)) = 11 := by decide
+    simpa [hsum] using hs
+  have hpair := vPi_add_lt
+    (GaussInt.neg (GaussInt.smul 27 (GaussInt.mul a6 a6)))
+    (GaussInt.neg (GaussInt.smul 4 (GaussInt.mul a4 (GaussInt.mul a4 a4))))
+    (P2Exact_ne_zero herr27) (P2Exact_ne_zero herr4)
+    (by rw [vPi_of_P2Exact herr27, vPi_of_P2Exact herr4]; decide)
+  have hpairV : vPi (GaussInt.add
+      (GaussInt.neg (GaussInt.smul 4 (GaussInt.mul a4 (GaussInt.mul a4 a4))))
+      (GaussInt.neg (GaussInt.smul 27 (GaussInt.mul a6 a6)))) = 10 := by
+    rw [GaussInt.add_comm, hpair.2, vPi_of_P2Exact herr27]
+  have herrMid := vPi_add_lt
+    (GaussInt.add
+      (GaussInt.neg (GaussInt.smul 4 (GaussInt.mul a4 (GaussInt.mul a4 a4))))
+      (GaussInt.neg (GaussInt.smul 27 (GaussInt.mul a6 a6))))
+    (GaussInt.smul 18 (GaussInt.mul a2 (GaussInt.mul a4 a6)))
+    (by
+      rw [GaussInt.add_comm]
+      exact hpair.1) (P2Exact_ne_zero herr18)
+    (by rw [hpairV, vPi_of_P2Exact herr18]; decide)
+  have herrV : vPi (cubicError a2 a4 a6) = 10 := by
+    rw [cubicError, herrMid.2, hpairV]
+  have hmainV : vPi (GaussInt.mul (GaussInt.mul a2 a2) (quadDiscAfterPiSq E)) = 8 :=
+    vPi_of_P2Exact hmain
+  have hjoin := vPi_add_lt
+    (GaussInt.mul (GaussInt.mul a2 a2) (quadDiscAfterPiSq E))
+    (cubicError a2 a4 a6)
+    (P2Exact_ne_zero hmain) herrMid.1
+    (by rw [hmainV, herrV]; decide)
+  have hcub : vPi (cubicDisc a2 a4 a6) = 8 := by
+    have hsplit := cubicDisc_split a2 a4 a6
+    have hDdef : quadDisc a2 a4 a6 = quadDiscAfterPiSq E := rfl
+    rw [hsplit, hDdef, hjoin.2, hmainV]
+  exact ⟨hΔ, hvΔ, hcub, hD⟩
 
 end FreyCurve4413

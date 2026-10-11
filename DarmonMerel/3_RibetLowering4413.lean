@@ -142,9 +142,8 @@ theorem not_minimal_even_c :
 
 `2` ramifies in `ℚ(√-1)`. The exponent is the sum of the tame part and the
 Swan conductor. Both summands are sealed, so the sum is not a numeral and
-it is not proved to lie in `{10, 12}`. `ogg_tame_of_INStar_discriminant`
-is `2` when `v(Δ) = n + 6`. For odd `c`, `v_π(Δ) = 18` is not `n + 6` for
-`n = 2` or `n = 4`.
+it is not proved to lie in `{10, 12}`. On the translated model,
+`v_π(Δ) = 18` and Dokchitser's cubic discriminant has `v_π(d) = n + 6`.
 -/
 def ConductorExponentAtPrimeAbove2 (E : FreyCurve4413) : ℕ :=
   FreyCurve4413.FTameAtPi E + FreyCurve4413.SwanAtPi E
@@ -203,8 +202,8 @@ inputs for `n = 4`. They are not a wild part and not `f = 10`.
 `a_odd_dokchitser_n2_inputs` meets the numerical inputs for `n = 2`,
 including `v_π(b₆) = 8` and `v_π(D) = 6`. Dokchitser's proposition is
 not formalized, and the wild part is not proved to vanish. Ogg's formula
-is the tame conductor. On type `I_n*` it uses `v(Δ) = n + 6` and equals `2`.
-`v_π(Δ) = 18` is not that valuation for `n = 2` or `n = 4`.
+is the tame conductor. `even_a_cubic_ten` and `a_odd_cubic_eight` are the
+valuations on one model: `v_π(d) = 10` or `8`, and `v_π(Δ) = 18`.
 `swan_vanishes_open` is the unproved claim that `SwanAtPi` is `0`. This
 proposition is the unproved claim that the sum lies in `{10, 12}`.
 `no_qi_integral_change_of_c_odd` is the same integrality split over `ℚ(i)`:
@@ -226,9 +225,11 @@ conclusion. `thirtyTwo_dvd_of_tate_bound` turns the disjunction into
 On a coprime pair, `minimalAt2_of_coprime` is `MinimalModelAt2`, so this
 statement does not take minimality as a hypothesis. It asks whether
 `FTameAtPi + SwanAtPi` lies in `{10, 12}` when `gcd(|a|, |b|) = 1`.
-`frey_delta_not_INStar_discriminant` is `v_π(Δ) = 18` for odd `c`, while
-type `I_n*` has `v(Δ) = n + 6`. `ogg_tame_of_INStar_discriminant` is `2`
-on that discriminant. `arith_eighteen_minus_four_minus_n` is the arithmetic
+`IsINStar` is stated on a `u = 1` translate of the minimal model.
+`even_a_weierstrass_eq_delta` and `a_odd_weierstrass_eq_delta` keep
+`v_π(Δ) = 18` on that translate, and `even_a_cubic_ten` together with
+`a_odd_cubic_eight` give `v_π(d) = n + 6`. Tate's Step 7 is not formalized.
+`arith_eighteen_minus_four_minus_n` is the arithmetic
 `18 - 4 - 4 = 10` and `18 - 4 - 2 = 12`; it is not `FTameAtPi`.
 `swan_vanishes_open` is not a theorem, and this statement does not follow
 from it. `(8, 8, 2)` fails the coprimality hypothesis and stays a
