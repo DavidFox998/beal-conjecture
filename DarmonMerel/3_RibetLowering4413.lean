@@ -118,6 +118,16 @@ theorem minimalAt2_of_c_odd (E : FreyCurve4413) (hodd : E.c.natAbs % 2 = 1) :
     MinimalModelAt2 E :=
   FreyCurve4413.qiLocalMinimalAtPi_of_c_odd E hodd
 
+/-- A coprime pair is minimal at `π`.
+
+`c_odd_of_coprime` turns `gcd(|a|, |b|) = 1` into odd `c`, and
+`minimalAt2_of_c_odd` is the local condition. `(8, 8, 2)` is not coprime
+and is not minimal.
+-/
+theorem minimalAt2_of_coprime (E : FreyCurve4413)
+    (hcop : E.a.natAbs.gcd E.b.natAbs = 1) : MinimalModelAt2 E :=
+  minimalAt2_of_c_odd E (FreyCurve4413.c_odd_of_coprime E hcop)
+
 theorem minimal_even_c_open_iff :
     FreyCurve4413.minimal_even_c_open =
       (∀ E : FreyCurve4413, E.c.natAbs % 2 = 0 → MinimalModelAt2 E) :=
@@ -205,9 +215,13 @@ is not the norm of the conductor ideal. This proposition does not prove
 That disjunction is stored on `RibetLevel` as part of the axiom's
 conclusion. `thirtyTwo_dvd_of_tate_bound` turns the disjunction into
 `32 ∣ n` and does not use this proposition.
+On a coprime pair, `minimalAt2_of_coprime` is `MinimalModelAt2`, so this
+statement does not take minimality as a hypothesis. It asks for the exponent
+when `gcd(|a|, |b|) = 1`. The exponent stays opaque. `(8, 8, 2)` fails the
+coprimality hypothesis and stays a non-minimal even-`c` curve.
 -/
 def pacetti_2_8_open : Prop :=
-  ∀ E : FreyCurve4413, MinimalModelAt2 E →
+  ∀ E : FreyCurve4413, E.a.natAbs.gcd E.b.natAbs = 1 →
     ExponentIn1012 (ConductorExponentAtPrimeAbove2 E)
 
 /-- Minimal model, Pacetti's exponent in `{10, 12}`, and `n = 32 ∨ n = 64`.

@@ -127,7 +127,9 @@ at `π` is `pacetti_2_8_open`.
 integral at `π`, hence none has a smaller discriminant. `MinimalModelAt2` is
 this predicate. For odd `c` it is a theorem. `minimal_even_c_open` is false:
 `8⁴ + 8⁴ = 2¹³`, and `u = π`, `r = s = t = 0` is integral at `π` and lowers
-`Δ`. `IsINStar` records Dokchitser's numerical bounds for even `n`. `SwanAtPi`
+`Δ`. `c_odd_of_coprime` is `gcd(|a|, |b|) = 1 → c` odd, so a primitive pair
+is already covered by the odd-`c` minimality theorem. `(8, 8, 2)` is not
+coprime. `IsINStar` records Dokchitser's numerical bounds for even `n`. `SwanAtPi`
 is sealed. Neither one is a Kodaira symbol or a value of `f`.
 `pi_ten_principal` is `(-√(-1))^5 · π^10 = 32` with norm `2^10`, and
 `pi_twelve_principal` is the same for `64` and `2^12`. The principal
@@ -2099,6 +2101,66 @@ theorem sq_mod_two_of_odd {n : ℤ} (h : n % 2 = 1) : n ^ 2 % 2 = 1 := by
     rw [Int.add_comm, Int.add_mul_emod_self_left]
   rw [hmod]
   decide
+
+theorem fourth_mod_four_of_odd {n : ℤ} (h : n % 2 = 1) : n ^ 4 % 4 = 1 := by
+  rw [int_odd_split h]
+  have hpoly :
+      (2 * ((n - 1) / 2) + 1) ^ 4 =
+        4 * (4 * ((n - 1) / 2) ^ 4 + 8 * ((n - 1) / 2) ^ 3 +
+          6 * ((n - 1) / 2) ^ 2 + 2 * ((n - 1) / 2)) + 1 := by
+    grind
+  rw [hpoly, Int.add_comm, Int.add_mul_emod_self_left]
+  decide
+
+theorem fourth_mod_four_of_even {n : ℤ} (h : n % 2 = 0) : n ^ 4 % 4 = 0 := by
+  rw [int_even_split h]
+  have hpoly : (2 * (n / 2)) ^ 4 = 4 * (4 * (n / 2) ^ 4) := by grind
+  rw [hpoly, Int.mul_emod_right]
+
+theorem sq_div_four_of_even {n : ℤ} (h : n % 2 = 0) : (4 : ℤ) ∣ n ^ 2 := by
+  rw [int_even_split h]
+  refine ⟨(n / 2) ^ 2, ?_⟩
+  grind
+
+theorem thirteen_mod_four_of_even {n : ℤ} (h : n % 2 = 0) : n ^ 13 % 4 = 0 := by
+  rcases sq_div_four_of_even h with ⟨m, hm⟩
+  have hpow : n ^ 13 = n ^ 2 * n ^ 11 := by
+    rw [show (13 : ℕ) = 2 + 11 by decide, Int.pow_add]
+  rw [hpow, hm, Int.mul_assoc]
+  exact Int.mul_emod_right 4 (m * n ^ 11)
+
+/-- If `c` is even then both `a` and `b` are even.
+
+An odd fourth power is `1` mod `4`, so two odd fourth powers sum to `2` mod
+`4`. An even integer has square divisible by `4`, so `c¹³` is `0` mod `4`.
+-/
+theorem both_even_of_c_even (E : FreyCurve4413) (heven : E.c.natAbs % 2 = 0) :
+    E.a % 2 = 0 ∧ E.b % 2 = 0 := by
+  have hc : E.c % 2 = 0 := int_even_of_natAbs_even heven
+  have hsum : (E.a ^ 4 + E.b ^ 4) % 4 = 0 := by
+    rw [E.h_eq]
+    exact thirteen_mod_four_of_even hc
+  have hmod : (E.a ^ 4 % 4 + E.b ^ 4 % 4) % 4 = 0 := by
+    rw [← Int.add_emod, hsum]
+  rcases int_mod_two E.a with ha | ha
+  · rcases int_mod_two E.b with hb | hb
+    · exact ⟨ha, hb⟩
+    · have hne : (E.a ^ 4 % 4 + E.b ^ 4 % 4) % 4 = 1 := by
+        rw [fourth_mod_four_of_even ha, fourth_mod_four_of_odd hb]
+        decide
+      rw [hne] at hmod
+      omega
+  · rcases int_mod_two E.b with hb | hb
+    · have hne : (E.a ^ 4 % 4 + E.b ^ 4 % 4) % 4 = 1 := by
+        rw [fourth_mod_four_of_odd ha, fourth_mod_four_of_even hb]
+        decide
+      rw [hne] at hmod
+      omega
+    · have hne : (E.a ^ 4 % 4 + E.b ^ 4 % 4) % 4 = 2 := by
+        rw [fourth_mod_four_of_odd ha, fourth_mod_four_of_odd hb]
+        decide
+      rw [hne] at hmod
+      omega
 
 /-- If `c` is odd and `a` is odd, then `b` is even. -/
 theorem b_even_of_a_odd (E : FreyCurve4413) (hodd : E.c.natAbs % 2 = 1)
@@ -5419,5 +5481,29 @@ theorem not_qiLocalMinimal_8_8_2 : ¬ qiLocalMinimalAtPi curve_8_8_2 := by
 theorem not_minimal_even_c_open : ¬ minimal_even_c_open := by
   intro h
   exact not_qiLocalMinimal_8_8_2 (h curve_8_8_2 (by decide))
+
+/-- `(8, 8, 2)` is not a primitive pair. `gcd(8, 8) = 8`. -/
+theorem curve_8_8_2_not_coprime :
+    curve_8_8_2.a.natAbs.gcd curve_8_8_2.b.natAbs ≠ 1 := by
+  decide
+
+/-- `gcd(|a|, |b|) = 1` forces `c` odd.
+
+If `c` is even then `both_even_of_c_even` gives `2 ∣ |a|` and `2 ∣ |b|`, so
+`2` divides the gcd. `(8, 8, 2)` is the even-`c` witness and is not coprime.
+-/
+theorem c_odd_of_coprime (E : FreyCurve4413)
+    (hcop : E.a.natAbs.gcd E.b.natAbs = 1) : E.c.natAbs % 2 = 1 := by
+  have hpair : E.c.natAbs % 2 = 0 ∨ E.c.natAbs % 2 = 1 := by omega
+  rcases hpair with heven | hone
+  · rcases both_even_of_c_even E heven with ⟨ha, hb⟩
+    have haN : E.a.natAbs % 2 = 0 := natAbs_of_two_dvd (Int.dvd_of_emod_eq_zero ha)
+    have hbN : E.b.natAbs % 2 = 0 := natAbs_of_two_dvd (Int.dvd_of_emod_eq_zero hb)
+    have hdg : 2 ∣ E.a.natAbs.gcd E.b.natAbs :=
+      Nat.dvd_gcd (Nat.dvd_of_mod_eq_zero haN) (Nat.dvd_of_mod_eq_zero hbN)
+    rw [hcop] at hdg
+    have hle : 2 ≤ 1 := Nat.le_of_dvd (by decide) hdg
+    omega
+  · exact hone
 
 end FreyCurve4413
