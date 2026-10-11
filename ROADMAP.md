@@ -67,6 +67,8 @@ From `a⁴ + b⁴ = c¹³` on `FreyCurve4413`, with `gcd(|a|, |b|) = 1`:
 - `(8, 8, 2)` satisfies `8⁴ + 8⁴ = 2¹³`, has `gcd(8, 8) = 8`, and is not minimal at `π`.
 - Mazur's congruence is the divisibility `13 ∣ C(q, g)`. At the newforms `32.2.a.a` and `64.2.a.a` the product `C(5, g)` is `0`, so the divisibility holds and removes neither form.
 - `(T₅ - 6){0, ∞} ≢ 0 (mod 13)` at levels `32` and `64`. Those vectors are computed by `native_decide`. The nonvanishing does not contradict the equation.
+- In `Mathlib/Modular/GL2F13.lean`, kernel axioms only: `order_thirteen` (no positive exponent below `13`), `transvection_classification_13` (an element of order `13` is conjugate to `(1 1; 0 1)`), and `normal_closure_contains_SL2` (every determinant-`1` matrix is a product of ambient conjugates of that transvection).
+- In `Mathlib/Modular/ReducibleShape13.lean`, kernel axioms only: the units of `ℤ[√-1]` are `{±1, ±√(-1)}`, they stay distinct modulo `π ^ n` for `n ≥ 3`, a `π`-unit satisfies `z ^ (2 ^ m) ≡ 1 (mod π ^ (m + 1))`, and a multiplicative character of `(ℤ[i] / π ^ n)ˣ` with values in `𝔽₁₃ˣ` has order dividing `4`. The fourth roots are `1`, `5`, `8`, `12`. This is not irreducibility.
 
 `pacetti_2_8_open` (the Artin exponent `FTameAtPi + SwanAtPi` lies in `{10, 12}`) is a theorem of `components_n_plus_five_open` alone (`pacetti_of_components`). It is not an independent open proposition.
 
@@ -92,9 +94,9 @@ Two further open propositions sit beside the sealed irreducibility predicate. Th
 
 | Proposition | Statement that is not a theorem |
 | --- | --- |
-| `rhoE13_open_of_psi` | `Psi13HasNoQiRoot` and `ImageContainsSL2` imply `RhoE13Open`. The seal has no equation lemma. |
-| `GL2F13.dickson_13_open` | An `𝔽₁₃`-irreducible subgroup containing an element of order `13` contains `SL₂(𝔽₁₃)`. |
-| `steinberg_prime_13_open` | Some prime of multiplicative reduction has `13 ∤ tateParameter`. |
+| `rhoE13_open_of_psi` | `Psi13HasNoQiRoot` and `ImageContainsSL2` imply `RhoE13Open`. The seal has no equation lemma, so the implication is not proved by unfolding. |
+| `GL2F13.dickson_13_open` | An `𝔽₁₃`-irreducible subgroup containing an element of order `13` contains `SL₂(𝔽₁₃)`. `normal_closure_contains_SL2` does not suffice: its conjugates live in the ambient group and do not move the fixed line inside an arbitrary subgroup. |
+| `steinberg_prime_13_open` | Some prime of multiplicative reduction has `13 ∤ tateParameter`. No witness is constructed. |
 
 `#print axioms` does not list hypothesis propositions. The ledger records the kernel axioms. The hypotheses are in the theorem statements.
 
@@ -106,7 +108,7 @@ Two further open propositions sit beside the sealed irreducibility predicate. Th
 - **Odd Serre level.** `OddPrimaryLevel E = 1`. The arithmetic lemma `nat_eq_one_of_prime_divisors_removed` needs two facts that are not theorems: every prime divisor of `OddPrimaryLevel` is an odd prime divisor of `c`, and `13 ∣ tateParameter` removes that prime. `odd_conductor_empty` removes primes dividing `d = 1` only.
 - **Uneven splitting**, unnamed. It is not a named open proposition. It is why `multiplicative_at_dvd_c` does not prove `tate_param_13_dvd_of_coprime`. See below. Closing it is a theorem that `13 ∣ v_𝔭(Δ)` at each Gaussian prime above `p ∣ c`. That still would not be a Tate parameter.
 - **`no_newform_32_64_open`.** Darmon–Merel Lemma 8.2. The existing Mazur products vanish, and the winding nonvanishing does not produce `False`. This is the last open proposition in `no_solution_4413_of_frontier`.
-- **`RhoE13Open`.** A term. The predicate is `opaque`, so there is no equation lemma and the body cannot be unfolded. `rhoE13_open_of_psi` is the open proposition `Psi13HasNoQiRoot → ImageContainsSL2 → RhoE13Open` on a nontrivial solution. It is not a theorem. `Psi13HasNoQiRoot` stays open on `NontrivialFrey`, and it is false for the singular curve `(0, 0, 0)` in the unrestricted form. `GL2F13.transvection_classification_13` proves that a supplied matrix of order `13` is conjugate to `(1 1; 0 1)`. `GL2F13.normal_closure_contains_SL2` writes every determinant-`1` matrix as a product of ambient `GL₂`-conjugates of that transvection. `GL2F13.dickson_13_open` is the unproved step from an `𝔽₁₃`-irreducible subgroup containing an element of order `13` to `SL₂`. `steinberg_prime_13_open` asks for a prime of multiplicative reduction with `13 ∤ tateParameter`. No such prime is constructed, and the classification does not assume the proposition: a prime is not a matrix. `multiplicative_at_dvd_c` does not give `13 ∤ tateParameter`. `tate_param_13_dvd_of_coprime` asserts the opposite divisibility at odd primes dividing `c`. None of this produces a term of `RhoE13Open`. The capstone still takes that term as a hypothesis because `ribet_level_lowering_4413` requires one.
+- **`RhoE13Open`.** A term. The predicate is `opaque`, so there is no equation lemma and the body cannot be unfolded. `rhoE13_open_of_psi` is the open proposition `Psi13HasNoQiRoot → ImageContainsSL2 → RhoE13Open` on a nontrivial solution. It is not a theorem. `Psi13HasNoQiRoot` stays open on `NontrivialFrey`, and it is false for the singular curve `(0, 0, 0)` in the unrestricted form. `GL2F13.order_thirteen` and `GL2F13.transvection_classification_13` prove that a supplied matrix of order `13` is conjugate to `(1 1; 0 1)`, with no smaller positive exponent. `GL2F13.normal_closure_contains_SL2` writes every determinant-`1` matrix as a product of ambient `GL₂`-conjugates of that transvection. That does not move the fixed line inside an arbitrary subgroup, so `GL2F13.dickson_13_open` stays open. `steinberg_prime_13_open` asks for a prime of multiplicative reduction with `13 ∤ tateParameter`. No such prime is constructed, and the classification does not assume the proposition: a prime is not a matrix. `multiplicative_at_dvd_c` does not give `13 ∤ tateParameter`. `tate_param_13_dvd_of_coprime` asserts the opposite divisibility at odd primes dividing `c`. If `13 ∣ tateParameter` at every bad prime, strategy A is dead and irreducibility must come from strategy B. None of this produces a term of `RhoE13Open`. The capstone still takes that term as a hypothesis because `ribet_level_lowering_4413` requires one. Strategy B does not discharge it either.
 - **Modularity.** Replace `frey_qcurve_modular` by ℚ-curve modularity.
 - **Level lowering.** Replace `ribet_level_lowering_4413`. `h_n_eq_of_tate` does not discharge `RibetLevel.h_n_eq`: the conclusion is a product of two sealed functions, not that field.
 - **`no_solution_4413`.** The conditional theorem is `no_solution_4413_of_frontier`. The unconditional statement is not a theorem. `(1, 0, 1)` and `(0, 1, 1)` remain solutions.
@@ -178,6 +180,19 @@ Nodes outside the requested list, printed the same way, because they sit on the 
 'FreyCurve4413.velu_target_eq_twist_neg_two' depends on axioms: [propext, Classical.choice, Quot.sound]
 'FreyCurve4413.qiLocalMinimalAtPi_of_c_odd' depends on axioms: [propext, Classical.choice, Quot.sound]
 'FreyCurve4413.gl2_F3_divisible_by_two' depends on axioms: [propext]
+'GL2F13.order_thirteen' depends on axioms: [propext, Classical.choice, Quot.sound]
+'GL2F13.transvection_classification_13' depends on axioms: [propext, Classical.choice, Quot.sound]
+'GL2F13.normal_closure_contains_SL2' depends on axioms: [propext, Classical.choice, Quot.sound]
+'ReducibleShape13.isGaussUnit_iff_four' depends on axioms: [propext, Classical.choice, Quot.sound]
+'ReducibleShape13.gauss_unit_fourth' depends on axioms: [propext, Classical.choice, Quot.sound]
+'ReducibleShape13.four_units_distinct' depends on axioms: [propext, Classical.choice, Quot.sound]
+'ReducibleShape13.sqPow_pi_congr' depends on axioms: [propext, Classical.choice, Quot.sound]
+'ReducibleShape13.piUnitChar_order_div_four' depends on axioms: [propext, Classical.choice, Quot.sound]
+'ReducibleShape13.fourth_roots' depends on axioms: [propext, Quot.sound]
+'ReducibleShape13.trace_residue_four' depends on axioms: [propext, Quot.sound]
+'ReducibleShape13.five_has_order_four' depends on axioms: [propext]
+'shape_forces_order_div_four' depends on axioms: [propext, Classical.choice, Quot.sound]
+'character_sum_matches_pacetti' depends on axioms: [propext, Classical.choice, Quot.sound]
 'FreyCurve4413.thirtyTwo_dvd_of_conductor_shape' depends on axioms: [propext]
 'FreyCurve4413.shape_dvd_does_not_give_thirtyTwo' depends on axioms: [propext, Quot.sound]
 'odd_conductor_empty' depends on axioms: [propext, Quot.sound]
@@ -276,6 +291,30 @@ The two rows on a coprime curve:
 
 `conductor_of_components` is the two sums `10` and `12` under the component hypothesis and the corresponding `IsINStar` row. `pacetti_of_components` packages them as `pacetti_2_8_open`. `serre_two_level_open` would then send `10` to `32` and `12` to `64`. That last arrow is open.
 
+## Strategy A and strategy B
+
+Strategy A is the transvection. `order_thirteen`, `transvection_classification_13`, and `normal_closure_contains_SL2` are proved in `Mathlib/Modular/GL2F13.lean`. Their `#print axioms` lines are kernel axioms only. `dickson_13_open` is not discharged by the normal closure: the conjugates are ambient, and they do not move the fixed line of the transvection inside an arbitrary subgroup. `steinberg_prime_13_open` has no witness. `rhoE13_open_of_psi` is not a theorem, because `RhoE13Open` has no equation lemma.
+
+`tate_param_13_dvd_of_coprime` wants `13 ∣ tateParameter` at every odd prime divisor of `c`. A transvection at a prime of multiplicative reduction needs `13 ∤ tateParameter` somewhere. If `13 ∣ tateParameter` at every bad prime, strategy A is dead and irreducibility must come from strategy B.
+
+Strategy B assumes a reducible residual representation and looks for a contradiction. `rho_E_13` is `GaloisRepresentation.unresolved`, so the representation is not formalized. The single open proposition for the shape is `reducible_shape_13_open`: `ρ̄^ss ≅ χ₁ ⊕ χ₂` with `χ₁ χ₂` the cyclotomic character mod `13`, written as a ray-class character `ε` and an exponent `a` with `a + (1 - a) ≡ 1 (mod 12)`. It is not proved, and it is not irreducibility.
+
+The algebraic core is proved. The units are `{±1, ±√(-1)}`. For `n ≥ 3` they remain distinct modulo `π ^ n`. A `π`-unit satisfies `z ^ (2 ^ m) ≡ 1 (mod π ^ (m + 1))`, so `(ℤ[i] / π ^ n)ˣ` is a `2`-group. A character of that group with values in `𝔽₁₃ˣ` therefore has order dividing `4` (`piUnitChar_order_div_four`). The fourth roots are `1`, `5`, `8`, `12`, and `5` has order exactly `4`. A sum `u + t u⁻¹` with `u` a fourth root is one of `1 + t`, `5 + 8t`, `8 + 5t`, `12 + 12t` (`trace_residue_four`). Class number `1` is not a theorem. `ray_class_mod_pi_open` is the missing identification of a Galois character unramified outside `{π}` with that unit-group character.
+
+The bridges are open propositions, not theorems:
+
+| Proposition | What is not formalized |
+| --- | --- |
+| `reducible_shape_13_open` | `ρ̄^ss ≅ χ₁ ⊕ χ₂` with product the cyclotomic character. One open, for the shape. |
+| `inertia_trivial_of_tate_13_open` | `13 ∣ tateParameter` at `p ∣ c` implies residual inertia is trivial. Conditional on `tate_param_13_dvd_of_coprime` in the sense that the divisibility is the hypothesis. |
+| `artin_exponent_of_characters_open` | The Artin exponent `FTameAtPi + SwanAtPi`, which `pacetti_of_components` places in `{10, 12}`, splits as the sum of the conductors of `χ₁` and `χ₂`. |
+| `ray_class_mod_pi_open` | Class field theory for the ray class group modulo a power of `π`. |
+| `frobenius_trace_sum_open` | At a good prime, `a_𝔭 = χ₁(Frob) + χ₂(Frob)`. |
+| `weil_bound_open` | `\|a_𝔭\| ≤ 2 √N(𝔭)`, written `a² ≤ 4 N(𝔭)`. |
+| `trace_outside_weil_open` | The character constraint forces a value outside that range. Not `False`, and not `¬ (a⁴ + b⁴ = c¹³)`. |
+
+`shape_forces_order_div_four` is the order bound conditional on `reducible_shape_13_open`. `character_sum_matches_pacetti` is the Artin sum conditional on `components_n_plus_five_open` and `artin_exponent_of_characters_open`. Neither claims irreducibility.
+
 ## Dependency tree
 
 Labels: **PROVED** (no project axiom; kernel axioms as in the ledger), **OPEN PROP**, **AXIOM**, **WITHDRAWN**, **SEALED** (opaque definition, equation hidden, not an axiom and not an open proposition).
@@ -334,12 +373,28 @@ a⁴ + b⁴ = c¹³                                          PROVED data on Frey
 │    rhoE13_open_of_psi                                OPEN PROP  seal does not unfold
 │    Psi13HasNoQiRoot                                  OPEN PROP  on NontrivialFrey only
 │    ImageContainsSL2                                  SEALED
-│    order-13 matrix ⇒ conjugate to (1 1; 0 1)         PROVED  transvection_classification_13
-│    normal closure in GL₂ contains SL₂                PROVED  normal_closure_contains_SL2
-│    irreducible subgroup + order 13 ⇒ SL₂             OPEN PROP  dickson_13_open
-│    Steinberg prime, 13 ∤ tateParameter               OPEN PROP  steinberg_prime_13_open
-│         not a hypothesis of the classification
-│         multiplicative_at_dvd_c does not supply it
+│    strategy A
+│    │  order exactly 13                               PROVED  order_thirteen
+│    │  order-13 matrix ⇒ conjugate to (1 1; 0 1)      PROVED  transvection_classification_13
+│    │  normal closure in GL₂ contains SL₂             PROVED  normal_closure_contains_SL2
+│    │       ambient conjugates; does not move the fixed line
+│    │       inside an arbitrary subgroup
+│    │  irreducible subgroup + order 13 ⇒ SL₂          OPEN PROP  dickson_13_open
+│    │  Steinberg prime, 13 ∤ tateParameter            OPEN PROP  steinberg_prime_13_open
+│    │       no witness
+│    │       not a hypothesis of the classification
+│    │       multiplicative_at_dvd_c does not supply it
+│    │  if 13 ∣ tateParameter at every bad prime       strategy A is dead
+│    strategy B  (does not claim irreducibility)
+│    │  ρ̄^ss ≅ χ₁ ⊕ χ₂, product cyclotomic             OPEN PROP  reducible_shape_13_open
+│    │  units {±1, ±√(-1)}, order dividing 4           PROVED  piUnitChar_order_div_four
+│    │  ray class group modulo π^n                     OPEN PROP  ray_class_mod_pi_open
+│    │  Artin 10/12 splits across χ₁, χ₂               OPEN PROP  artin_exponent_of_characters_open
+│    │       pacetti_of_components is the 10/12 input
+│    │  unramified at p∣c from the Tate divisibility   OPEN PROP  inertia_trivial_of_tate_13_open
+│    │  a_𝔭 = χ₁(Frob) + χ₂(Frob)                      OPEN PROP  frobenius_trace_sum_open
+│    │  |a_𝔭| ≤ 2√N(𝔭)                                 OPEN PROP  weil_bound_open
+│    │  character value outside that range             OPEN PROP  trace_outside_weil_open
 ├─ RibetLevel, with h_n_eq : n = 32 ∨ n = 64           AXIOM  ribet_level_lowering_4413
 │    also needs a conductor shape and pacetti_2_8_open
 │    level_eq reads the field                          PROVED projection, no axioms

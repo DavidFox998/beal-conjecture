@@ -40,16 +40,21 @@ statement is not a closed `decide`.
   well.
 * `GL2F13.transvection_classification_13` is the matrix theorem: an
   element of order `13` in `GL₂(𝔽₁₃)` is conjugate to `(1 1; 0 1)`.
-  `GL2F13.normal_closure_contains_SL2` writes every determinant-`1`
-  matrix as a product of such conjugates in the ambient group.
-  `GL2F13.dickson_13_open` is the missing step for an irreducible
-  subgroup. None of these produces a term of `RhoE13Open`.
+  `GL2F13.order_thirteen` is the same statement with no smaller positive
+  exponent. `GL2F13.normal_closure_contains_SL2` writes every
+  determinant-`1` matrix as a product of such conjugates in the ambient
+  group. Those conjugates do not move the fixed line inside an arbitrary
+  subgroup, so `GL2F13.dickson_13_open` remains the missing step. None of
+  these produces a term of `RhoE13Open`.
 * `steinberg_prime_13_open` asks for a prime of multiplicative
   reduction with `13 ∤ tateParameter`. No such prime is constructed.
   `multiplicative_at_dvd_c` does not give the Tate divisibility, and
   `tate_param_13_dvd_of_coprime` asserts the opposite inequality at
-  odd primes dividing `c`. The classification theorem does not take
-  this proposition as a hypothesis, because a prime is not a matrix.
+  odd primes dividing `c`. If that divisibility holds at every bad
+  prime, there is no transvection and strategy A stops. Strategy B,
+  the reducible shape, is `ReducibleShape13.lean`. It does not prove
+  irreducibility. The classification theorem does not take the
+  Steinberg proposition as a hypothesis, because a prime is not a matrix.
 
 `FreyConductor_OPEN` stays a hypothesis. `ribet_level_lowering_4413` takes
 `FreyConductorDivides`, `RhoE13Open`, and `pacetti_2_8_open`. The returned
