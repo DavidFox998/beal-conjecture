@@ -19,8 +19,10 @@ would force `5 ∣ a` and `5 ∣ b`. Then `5 ∤ N(Δ)` (`five_misses_discrimina
 no prime above `5` divides the norm of `Δ`. Good reduction at `5` is that
 divisibility, not an extra hypothesis. `weil_contradiction_at_five` is `False`
 for every coprime curve, from `reducible_shape_13_open`,
-`point_count_matches_shape_trace_open`, and `weil_bound_open`.
+`point_count_is_torsion_frob_trace_open`, and `weil_bound_open`.
 `frobenius_trace_sum` is the character-sum formula, proved from the shape.
+`point_count_matches_shape_trace` chains that formula with the torsion-trace
+identification.
 -/
 
 theorem five_isPrime : IsPrime 5 := by
@@ -289,21 +291,24 @@ theorem twisted_trace_at_five (u : Fin 13) (hu : u ≠ 0) (h4 : u ^ 4 = 1)
 norm `5` is an integer congruent to `6` or `7`.
 
 `frobenius_trace_sum` supplies the characters and `u ^ 4 = 1`. The
-congruence with `pointCountTrace` is `point_count_matches_shape_trace_open`.
-`5 ∤ |c|` is `five_not_dvd_c_of_coprime`, which is the good-reduction
-antecedent of that open at norm `5`.
+congruence of the sealed integer with the character sum is
+`point_count_matches_shape_trace`, from
+`point_count_is_torsion_frob_trace_open`. `5 ∤ |c|` is
+`five_not_dvd_c_of_coprime`, which is the good-reduction antecedent at
+norm `5`.
 -/
 theorem pointCount_at_five_cong
     (hshape : reducible_shape_13_open)
-    (hcount : point_count_matches_shape_trace_open)
+    (hfrob : point_count_is_torsion_frob_trace_open)
     (E : FreyCurve4413) (ha : E.a ≠ 0) (hb : E.b ≠ 0)
     (hcop : E.a.natAbs.gcd E.b.natAbs = 1) :
     IntCong13 (pointCountTrace E 5) 6 ∨ IntCong13 (pointCountTrace E 5) 7 := by
+  have hcount := point_count_matches_shape_trace hfrob
   rcases frobenius_trace_sum hshape E ha hb hcop with ⟨n, ε, exp, _hray, hmatch, htr⟩
   have h5c : ¬ 5 ∣ E.c.natAbs := five_not_dvd_c_of_coprime E.a E.b E.c E.h_eq hcop
   rcases hcount E ha hb hcop n ε exp hmatch 5 (by decide) h5c with ⟨z, hz, hcong⟩
   rcases htr z hz 5 0 with ⟨hu, h4, _hprod, _htrace⟩
-  have ht : (⟨(5 : Nat) % 13, Nat.mod_lt (5 : Nat) (by decide)⟩ : Fin 13) = 5 := by
+  have ht : normResidue13 5 = 5 := by
     apply Fin.ext
     decide
   rw [ht] at hcong
@@ -316,29 +321,29 @@ theorem pointCount_at_five_cong
     exact hcong
 
 /-- The trace at norm `5` fails `a² ≤ 4 · 5`, given the shape and
-`point_count_matches_shape_trace_open`. Inertia, the Artin split, and the
-ray-class bridge are not hypotheses. The character-sum formula is
-`frobenius_trace_sum`.
+`point_count_is_torsion_frob_trace_open`. Inertia, the Artin split, and the
+ray-class bridge are not hypotheses. The character-sum step is
+`point_count_matches_shape_trace`.
 -/
 theorem point_count_at_five_outside
     (hshape : reducible_shape_13_open)
-    (hcount : point_count_matches_shape_trace_open)
+    (hfrob : point_count_is_torsion_frob_trace_open)
     (E : FreyCurve4413) (ha : E.a ≠ 0) (hb : E.b ≠ 0)
     (hcop : E.a.natAbs.gcd E.b.natAbs = 1) :
     ¬ (pointCountTrace E 5).natAbs * (pointCountTrace E 5).natAbs ≤ 4 * 5 :=
-  int_outside_weil_at_five _ (pointCount_at_five_cong hshape hcount E ha hb hcop)
+  int_outside_weil_at_five _ (pointCount_at_five_cong hshape hfrob E ha hb hcop)
 
 /-- `trace_outside_weil_open` holds.
 
 The witness is norm `5`. The definition still lists inertia, the Artin
 split, and the ray-class bridge; this proof does not use them. The `False`
 for a coprime curve is `weil_contradiction_at_five`, whose open hypotheses
-are exactly `reducible_shape_13_open`, `point_count_matches_shape_trace_open`,
-and `weil_bound_open`.
+are exactly `reducible_shape_13_open`,
+`point_count_is_torsion_frob_trace_open`, and `weil_bound_open`.
 -/
 theorem trace_outside_weil_at_five : trace_outside_weil_open := by
-  intro hshape _hinertia _hartin _hray hcount E ha hb hcop
-  exact ⟨5, by decide, point_count_at_five_outside hshape hcount E ha hb hcop⟩
+  intro hshape _hinertia _hartin _hray hfrob E ha hb hcop
+  exact ⟨5, by decide, point_count_at_five_outside hshape hfrob E ha hb hcop⟩
 
 /-- Good reduction at `5`, as a norm, together with a trace outside the range.
 
@@ -347,29 +352,29 @@ turns that into `5 ∤ N(Δ)`. The second conjunct is the character-sum comparis
 -/
 theorem five_good_trace_outside
     (hshape : reducible_shape_13_open)
-    (hcount : point_count_matches_shape_trace_open)
+    (hfrob : point_count_is_torsion_frob_trace_open)
     (E : FreyCurve4413) (ha : E.a ≠ 0) (hb : E.b ≠ 0)
     (hcop : E.a.natAbs.gcd E.b.natAbs = 1) :
     ¬ 5 ∣ (E.discriminant_re ^ 2 + E.discriminant_im ^ 2).natAbs ∧
       ¬ (pointCountTrace E 5).natAbs * (pointCountTrace E 5).natAbs ≤ 4 * 5 := by
   have h5 : ¬ 5 ∣ E.c.natAbs := five_not_dvd_c_of_coprime E.a E.b E.c E.h_eq hcop
   exact ⟨five_misses_discriminant_norm E h5,
-    point_count_at_five_outside hshape hcount E ha hb hcop⟩
+    point_count_at_five_outside hshape hfrob E ha hb hcop⟩
 
 /-- Weil contradiction at norm `5`, for every coprime curve.
 
 The open hypotheses are exactly `reducible_shape_13_open`,
-`point_count_matches_shape_trace_open`, and `weil_bound_open`. `5 ∤ |c|` is
-`five_not_dvd_c_of_coprime`, not a hypothesis. `weil_bound_open` is Hasse's
-bound over finite fields. `frobenius_trace_sum` is the trace of the
-reducible shape, proved from that shape. The point-count identification is
-the remaining trace hypothesis: the sealed integer is not in the shape.
+`point_count_is_torsion_frob_trace_open`, and `weil_bound_open`. `5 ∤ |c|`
+is `five_not_dvd_c_of_coprime`, not a hypothesis. `weil_bound_open` is
+Hasse's bound over finite fields. `point_count_matches_shape_trace` is the
+character-sum congruence, from the torsion-trace hypothesis and
+`shapeExtension_trace`.
 -/
 theorem weil_contradiction_at_five
     (hshape : reducible_shape_13_open)
-    (hcount : point_count_matches_shape_trace_open)
+    (hfrob : point_count_is_torsion_frob_trace_open)
     (hweil : weil_bound_open)
     (E : FreyCurve4413) (ha : E.a ≠ 0) (hb : E.b ≠ 0)
     (hcop : E.a.natAbs.gcd E.b.natAbs = 1) : False := by
-  have hpack := five_good_trace_outside hshape hcount E ha hb hcop
+  have hpack := five_good_trace_outside hshape hfrob E ha hb hcop
   exact hpack.2 (hweil E 5 (by decide))
