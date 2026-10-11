@@ -18,9 +18,10 @@ is the further statement
 at levels `32` and `64`. That nonvanishing is `winding_elimination_4413`.
 It does not contradict the equation. `no_solution_4413_of_frontier` is the
 conditional negation for `a ≠ 0`, `b ≠ 0`, coprime coefficients, and
-`c > 0`. Its extra open proposition is `no_newform_32_64_open`. The
-unconditional statement is not a theorem. `(1, 0, 1)` and `(0, 1, 1)`
-remain solutions.
+`c > 0`. Its open propositions are `components_n_plus_five_open` and
+`no_newform_32_64_open`. `serre_two_level_open` and `odd_level_one_open`
+are not hypotheses. The unconditional statement is not a theorem.
+`(1, 0, 1)` and `(0, 1, 1)` remain solutions.
 -/
 
 /-- `13 ∤ 2`, the hypothesis `p ∤ 2d` of Ribet's theorem when `d = 1`. -/
@@ -104,21 +105,26 @@ def no_newform_32_64_open : Prop :=
 
 /-- No nontrivial coprime solution with `c > 0`, if the frontier holds.
 
-The open propositions are `components_n_plus_five_open`,
-`serre_two_level_open`, `odd_level_one_open`, and
-`no_newform_32_64_open`. `tate_param_13_dvd_of_coprime` is not a
-hypothesis. `inertia_trivial_of_tate_13_open` still carries the
-divisibility `13 ∣ tateParameter` in its own statement.
+The open propositions are `components_n_plus_five_open` and
+`no_newform_32_64_open`. `serre_two_level_open` and `odd_level_one_open`
+are not hypotheses. They are the inputs of `h_n_eq_of_tate`, and that
+disjunction is not used: both of its branches were the same application
+of `no_newform_32_64_open`. `qcurve_extension_169_open` implies
+`no_newform_32_64_open` by `no_newform_32_64_of_qcurve`. That theorem is
+in `CmVanishing32`, which imports this file, so this theorem does not
+take the extension as a hypothesis.
+
+`tate_param_13_dvd_of_coprime` is not a hypothesis.
+`inertia_trivial_of_tate_13_open` still carries the divisibility
+`13 ∣ tateParameter` in its own statement.
 `frey_qcurve_modular` and `ribet_level_lowering_4413` are the two axioms.
 `hIrr` is a term of `RhoE13Open`. Nothing in the repository produces one,
 and the Ribet axiom does not apply without it.
 
 `pacetti_of_components hcomp` is `pacetti_2_8_open`. The conductor shape
 `N = 32 |c|²` is `FreyConductorDivides`, not a proof that `N` is the
-conductor. `h_n_eq_of_tate` is the product of the sealed level functions.
-The case split on that product does not identify it with `RibetLevel.n`.
-Both branches are closed by `no_newform_32_64_open` applied to the
-axiom's package.
+conductor. The `False` is `no_newform_32_64_open` applied to the axiom's
+package.
 
 `(1, 0, 1)` and `(0, 1, 1)` satisfy `gcd(|a|, |b|) = 1` and `c > 0` and
 are solutions. `a ≠ 0` and `b ≠ 0` keep them out. `(8, 8, 2)` is
@@ -126,8 +132,6 @@ are solutions. `a ≠ 0` and `b ≠ 0` keep them out. `(8, 8, 2)` is
 -/
 theorem no_solution_4413_of_frontier
     (hcomp : FreyCurve4413.components_n_plus_five_open)
-    (hserre : serre_two_level_open)
-    (hodd : odd_level_one_open)
     (hnew : no_newform_32_64_open)
     (a b c : ℤ)
     (ha : a ≠ 0) (hb : b ≠ 0)
@@ -144,6 +148,4 @@ theorem no_solution_4413_of_frontier
   have hCond : FreyConductorDivides c N := Or.inl rfl
   let pkg : RibetLevel c E N :=
     ribetLevelOfAxiom N hCond (hIrr heq) hPac
-  rcases h_n_eq_of_tate hcomp hserre hodd E hcop with _h32 | _h64
-  · exact hnew a b c E N ha hb hcop hpos rfl rfl rfl hMod pkg
-  · exact hnew a b c E N ha hb hcop hpos rfl rfl rfl hMod pkg
+  exact hnew a b c E N ha hb hcop hpos rfl rfl rfl hMod pkg

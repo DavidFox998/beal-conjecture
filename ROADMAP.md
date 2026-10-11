@@ -19,14 +19,14 @@ over `a = 0` or `b = 0`. `(8, 8, 2)` fails `curve_8_8_2_not_coprime`
 
 | Hypothesis | Where the proof uses it |
 | --- | --- |
-| `components_n_plus_five_open` | `pacetti_of_components hcomp`; `h_n_eq_of_tate hcomp hserre hodd` |
-| `serre_two_level_open` | `h_n_eq_of_tate` |
-| `odd_level_one_open` | `h_n_eq_of_tate` |
-| `no_newform_32_64_open` | both branches after `rcases h_n_eq_of_tate` |
+| `components_n_plus_five_open` | `pacetti_of_components hcomp`, the input `pacetti_2_8_open` of `ribetLevelOfAxiom`. |
+| `no_newform_32_64_open` | the single `exact hnew` on the axiom's `RibetLevel`. |
 | `frey_qcurve_modular` | AXIOM. `have hMod := frey_qcurve_modular a b c E`. Not a parameter. |
 | `ribet_level_lowering_4413` | AXIOM. `ribetLevelOfAxiom` builds the `RibetLevel`. Not a parameter. |
 | `RhoE13Open (FreyCurve4413.mk' a b c h)` | Opaque hypothesis, no body. `hIrr heq` is the argument of `ribetLevelOfAxiom`. The sealed body used to be `True`; that equation is gone. Nothing produces a term. `rhoE13_open_of_psi` is not provable by unfolding and does not discharge it. |
-| `a ≠ 0`, `b ≠ 0`, `gcd(\|a\|, \|b\|) = 1`, `c > 0` | `hnew` takes all four. `h_n_eq_of_tate` also takes the gcd. |
+| `a ≠ 0`, `b ≠ 0`, `gcd(\|a\|, \|b\|) = 1`, `c > 0` | `hnew` takes all four. |
+
+`serre_two_level_open` and `odd_level_one_open` are not hypotheses. They are the inputs of `h_n_eq_of_tate`, and the capstone does not call that theorem. `qcurve_extension_169_open` implies `no_newform_32_64_open` by `no_newform_32_64_of_qcurve`. That theorem is in `CmVanishing32`, which imports file 6, so the capstone cannot take the extension without an import cycle. It still assumes `no_newform_32_64_open`.
 
 `tate_param_13_dvd_of_coprime` is not a hypothesis of this theorem. It stays in the tree. `inertia_trivial_of_tate_13_open` is the implication whose antecedent is `13 ∣ tateParameter`. That definition does not mention the name `tate_param_13_dvd_of_coprime`, and no theorem applies the name.
 
@@ -42,10 +42,10 @@ over `a = 0` or `b = 0`. `(8, 8, 2)` fails `curve_8_8_2_not_coprime`
 
 `pacetti_of_components hcomp` supplies `pacetti_2_8_open`. The axiom is
 applied at the shape `N = 32 |c|²`, which is `FreyConductorDivides` and
-not a computation of the conductor. `h_n_eq_of_tate` is cased on. That
-disjunction is the product of the sealed level functions. It is not
-`RibetLevel.n`. Both branches are closed by `no_newform_32_64_open`
-applied to the axiom's package and to `Modular E`.
+not a computation of the conductor. The `False` is `no_newform_32_64_open`
+applied once to the axiom's package and to `Modular E`. `h_n_eq_of_tate`
+is not called. Its disjunction is the product of the sealed level
+functions and is not `RibetLevel.n`.
 
 `no_newform_32_64_open` is the statement that such a package is impossible.
 `C(5, g) = 0` for both CM newforms, `mazur_trick_4413` gives `13 ∣ 0`, and
@@ -107,18 +107,18 @@ axiom ribet_level_lowering_4413 : RibetLowering
 
 `GkResidualIso` is the statement `modular_residual_13_open` proves. It is the `𝔽₉` congruence `(13 : ℤ) ∣ freyTrace3 (mod3 a) (mod3 b) - (-6)` for a coprime curve with `Modular E` and a `RibetLevel`, together with the antecedents `rho_E_p E = rho_E_p_twisted E = unresolved`. It is not under `hCond`, `hIrr`, or `hPacetti`. Those three stay on `level`. `RibetLevel` itself does not store the isomorphism: `Newform` has no fields, `LevelLowered` is opaque, and `rho_E_p` is `.unresolved`. The axiom claims the congruence for every such package, which is the statement the descent applies. `modular_residual_13_open` is `ribet_level_lowering_4413.gkResidual`.
 
-Four open propositions are hypotheses of `no_solution_4413_of_frontier`. They are `def`s of type `Prop`, not axioms and not `sorry`. Each one is applied.
+Two open propositions are hypotheses of `no_solution_4413_of_frontier`. They are `def`s of type `Prop`, not axioms and not `sorry`. Each one is applied.
 
 | Proposition | Where it is used |
 | --- | --- |
-| `components_n_plus_five_open` | `pacetti_of_components`, `h_n_eq_of_tate`, `swan_of_components`, `conductor_of_components`, `ogg_full_of_components`. |
-| `serre_two_level_open` | `h_n_eq_of_tate`, hence the capstone. |
-| `odd_level_one_open` | `h_n_eq_of_tate`, hence the capstone. |
-| `no_newform_32_64_open` | both branches of the capstone. `no_newform_32_64_of_qcurve` derives the proposition from `qcurve_extension_169_open`. The definition is not a theorem by itself. |
+| `components_n_plus_five_open` | `pacetti_of_components` in the capstone, and also `h_n_eq_of_tate`, `swan_of_components`, `conductor_of_components`, `ogg_full_of_components`. |
+| `no_newform_32_64_open` | the capstone's single application. `no_newform_32_64_of_qcurve` derives the proposition from `qcurve_extension_169_open`. The definition is not a theorem by itself. The capstone does not assume the extension: `CmVanishing32` imports file 6. |
+
+`serre_two_level_open` and `odd_level_one_open` remain `def`s of type `Prop`. The capstone does not assume them. `h_n_eq_of_tate` does.
 
 `tate_param_13_dvd_of_coprime` is a `def` of type `Prop`. It is not a capstone hypothesis. No theorem applies it. `inertia_trivial_of_tate_13_open` inlines the same divisibility as an antecedent and does not name it.
 
-`h_n_eq_of_tate` assumes the first three and concludes that the product of the two sealed level functions is `32` or `64`. It does not rewrite `OddPrimaryLevel`, and `odd_level_one_open` does not follow from the component count.
+`h_n_eq_of_tate` assumes `components_n_plus_five_open`, `serre_two_level_open`, and `odd_level_one_open`, and concludes that the product of the two sealed level functions is `32` or `64`. The capstone does not call it. It does not rewrite `OddPrimaryLevel`, and `odd_level_one_open` does not follow from the component count.
 
 Two further open propositions sit beside the sealed irreducibility predicate. They are not hypotheses of the capstone, and they do not produce a term of `RhoE13Open`.
 
@@ -134,12 +134,15 @@ Two further open propositions sit beside the sealed irreducibility predicate. Th
 
 Ranks: **1** could fall in a session, **2** a theory project, **3** infrastructure on the scale of a library. Finite means a finite check. New theory means a theorem that is not a finite enumeration.
 
-The capstone's four open hypotheses, each applied:
+The capstone's two open hypotheses, each applied:
 
 - **`components_n_plus_five_open`.** Rank **2**. The valuations, `IsINStar`, and `FTameAtPi = 2` are proved. The missing piece is the Néron component count `m = n + 5` for this Kodaira type. That is one local theorem, not a finite check, and it is not a general Néron-model library.
+- **`no_newform_32_64_open`.** Rank **2**, and it is not an independent gap. `no_newform_32_64_of_qcurve` is this proposition from `qcurve_extension_169_open` alone, together with the two axioms. The capstone still assumes the proposition rather than the extension, because `CmVanishing32` imports file 6.
+
+Off the capstone, still the Serre-level identifications. `h_n_eq_of_tate` assumes both, and the capstone does not call it.
+
 - **`serre_two_level_open`.** Rank **3**. It identifies the sealed `twoPrimaryLevel` with `32` or `64`. The proof needs the Artin conductor of `ρ̄_{E,13}`. `rho_E_13` is the unresolved marker. This is not a computation.
 - **`odd_level_one_open`.** Rank **3**. Same conductor, at the odd primes. `nat_eq_one_of_prime_divisors_removed` is the arithmetic shape and is not applied, because the support of `OddPrimaryLevel` is not a theorem.
-- **`no_newform_32_64_open`.** Rank **2**, and it is not an independent gap. `no_newform_32_64_of_qcurve` is this proposition from `qcurve_extension_169_open` alone, together with the two axioms. The capstone still assumes the proposition rather than the extension.
 
 Off the capstone, still live:
 
@@ -695,10 +698,14 @@ a⁴ + b⁴ = c¹³                                          PROVED data on Frey
 │         also uses both project axioms
 │         the definition is not a theorem by itself
 │         no_solution_4413_of_frontier still assumes it
-└─ no_solution_4413_of_frontier                        PROVED from four opens,
+│         CmVanishing32 imports file 6, so the extension
+│         is not a capstone hypothesis
+└─ no_solution_4413_of_frontier                        PROVED from two opens,
      the two axioms, and a term of RhoE13Open
-     components, serre_two_level, odd_level, no_newform
-     each of those four is applied
+     components_n_plus_five_open, no_newform_32_64_open
+     each of those two is applied
+     serre_two_level_open and odd_level_one_open are not
+     h_n_eq_of_tate is not called
      tate_param_13_dvd_of_coprime is not a hypothesis
      a ≠ 0, b ≠ 0, gcd = 1, c > 0
      unconditional no_solution_4413                     not a theorem
