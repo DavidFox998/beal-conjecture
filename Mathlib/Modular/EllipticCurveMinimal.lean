@@ -1,7 +1,8 @@
 import DarmonMerel.«1_FreyCurve4413»
 import Mathlib.Modular.QCurve4413
 import Mathlib.Modular.DiscriminantNorm
-import Mathlib.Modular.X0_32_Construction
+
+local notation "ℕ" => Nat
 
 /-!
 # Minimal Weierstrass model over `ℤ[√-1]`
@@ -105,7 +106,7 @@ second translation `x ↦ x + π` on `(0, 1, 1)`: the `a₂` slot has valuation
 every `r, s, t`, when `c` is odd: valuation `0` fails `a₃` or `a₄`,
 valuation `1` fails `a₂`, and valuation at least `2` fails `a₄`.
 `pi_sq_u_blocks_delta` is the case `v_π(u) ≥ 2`. Both quantify over `ℤ[i]`.
-`MinimalModelAt2` stays opaque. `trivialB_dokchitser_n4_inputs` is the shift
+`trivialB_dokchitser_n4_inputs` is the shift
 `r = π²` on `(0, 1, 1)`, with `v_π(a₆) = 8`. `even_a_dokchitser_n4_inputs`
 is the same pair of `x`-shifts for every even `a` when `c` is odd:
 `v_π(a₂) = 1`, `v_π(a₄) = 4`, `π⁷` divides `a₆` and `b₆`, and `v_π(D) = 8`.
@@ -123,14 +124,14 @@ at `π` is `pacetti_2_8_open`.
 `π` is not an element of `ℤ[i]`. For odd `c`, `v_π(u) ≥ 2` makes
 `v_π(Δ') < 0`, and `v_π(u) = 1` fails `a₁`, `a₂`, `a₃`, or `a₄`.
 `qiLocalMinimalAtPi_of_c_odd` is that split: no change with `v_π(u) ≥ 1` is
-integral at `π`, hence none has a smaller discriminant. `minimal_even_c_open`
-is the same statement for even `c` and has no proof. `MinimalModelAt2` stays
-opaque. The wild part and the exponent stay open.
+integral at `π`, hence none has a smaller discriminant. `MinimalModelAt2` is
+this predicate. For odd `c` it is a theorem. `minimal_even_c_open` is the
+even-`c` case and has no proof. The wild part and the exponent stay open.
 `pi_ten_principal` is `(-√(-1))^5 · π^10 = 32` with norm `2^10`, and
 `pi_twelve_principal` is the same for `64` and `2^12`. The principal
 ideals agree. That equality does not produce `n = 32 ∨ n = 64`. The
 sufficient test `v(c₄) < 4` or `v(Δ) < 12` does not apply.
-`MinimalModelAt2` stays opaque.
+`MinimalModelAt2` is `qiLocalMinimalAtPi`, proved for odd `c`.
 -/
 
 structure GaussInt where
@@ -695,6 +696,17 @@ def c6Of (A Br Bi : Int) : GaussInt :=
 
 def gmul (z w : GaussInt) : GaussInt :=
   GaussInt.mul z w
+
+/-- `c₄ = 16 A² - 48 B` for `y² = x³ + A x² + B x`, with `B` in `ℤ[√-1]`. -/
+def c4Pair (A Br Bi : Int) : Int × Int :=
+  (16 * A ^ 2 - 48 * Br, -48 * Bi)
+
+/-- `Δ = 16 B² (A² - 4 B)`. -/
+def discPair (A Br Bi : Int) : Int × Int :=
+  let B2 := FreyCurve4413.Zsqrt1_mul Br Bi Br Bi
+  let gap := (A ^ 2 - 4 * Br, -(4 * Bi))
+  let prod := FreyCurve4413.Zsqrt1_mul B2.1 B2.2 gap.1 gap.2
+  (16 * prod.1, 16 * prod.2)
 
 def discOf (A Br Bi : Int) : GaussInt :=
   ⟨(discPair A Br Bi).1, (discPair A Br Bi).2⟩
@@ -1317,9 +1329,9 @@ def v2_c6 : ℕ := 8
 
 theorem c4_Frey_eq_c4Pair (a b : ℤ) :
     c4_Frey a b =
-      ⟨(c4Pair (4 * a) (2 * a ^ 2) (2 * b ^ 2)).1,
-        (c4Pair (4 * a) (2 * a ^ 2) (2 * b ^ 2)).2⟩ := by
-  simp [c4_Frey, c4Pair]
+      ⟨(EllipticCurveMinimal.c4Pair (4 * a) (2 * a ^ 2) (2 * b ^ 2)).1,
+        (EllipticCurveMinimal.c4Pair (4 * a) (2 * a ^ 2) (2 * b ^ 2)).2⟩ := by
+  simp [c4_Frey, EllipticCurveMinimal.c4Pair]
   constructor <;> grind
 
 theorem c6_Frey_eq_c6Of (a b : ℤ) :
@@ -2689,7 +2701,7 @@ The transformed coefficient is `a₄ + 2 r a₂ + 3 r²`. Integrality for
 substitution is not an integral model. Together with
 `a2_plus_three_pi_p2_exact_three`, the `a₂` slot does not give the
 obstruction and the `a₄` slot does, for this one substitution.
-`MinimalModelAt2` stays opaque.
+This one substitution is not `MinimalModelAt2`.
 -/
 theorem pi_r_pi_a4_numerator_p2_exact_two (E : FreyCurve4413)
     (hodd : E.c.natAbs % 2 = 1) :
@@ -2766,7 +2778,7 @@ Both numerators `a₂'` and `a₂' + 3 π` differ by `3 π`, so `π` divides the
 difference. Their valuations are `1` and `3`. The residue ring
 `ℤ[√(-1)] / (π)` has two classes, and these two translations lie in one
 class. An eight-element check of `(r, s, t)` modulo `π` does not compute
-the valuations. `MinimalModelAt2` stays opaque.
+the valuations, and it is not `MinimalModelAt2`.
 -/
 theorem a2_shift_by_pi_same_residue (E : FreyCurve4413) :
     piDivides (GaussInt.sub ⟨4 * E.a + 6, 6⟩ (a2AfterPi E)) ∧
@@ -3035,8 +3047,8 @@ theorem piPow_two_exact : P2Exact (piPow 2) 2 := by
 With `r = s = 0`, the numerator is `-t²`. It is `0` at `t = 0`, and `π⁶`
 divides `0`. It is `-π²` at `t = π`, with valuation `2`, so `π⁶` does not
 divide it. Integrality for `u = π` needs valuation at least `6`. One
-representative of this class does not decide the slot. `MinimalModelAt2`
-stays opaque.
+representative of this class does not decide the slot, and it is not
+`MinimalModelAt2`.
 -/
 theorem t_zero_and_pi_split_a6 (E : FreyCurve4413) :
     piDivides (GaussInt.sub pi GaussInt.zero) ∧
@@ -3080,8 +3092,8 @@ theorem a6Numerator_pi_plus_pi_sq_trivialB :
 The `a₆` valuations are `5` and `8`. The inequality `v ≥ 6` fails for `r = π`
 and holds for `r = π + π²`. Both `a₂` numerators have valuation `1`, below
 the integrality bound `2`, so neither change is an integral model. A list of
-four representatives modulo `π²` does not compute this slot.
-`MinimalModelAt2` stays opaque.
+four representatives modulo `π²` does not compute this slot, and it is not
+`MinimalModelAt2`.
 -/
 theorem trivialB_a6_splits_mod_pi_sq :
     GaussInt.sub (GaussInt.add pi (piPow 2)) pi = piPow 2 ∧
@@ -3600,8 +3612,9 @@ theorem a4_change_fails_of_val_ge_two (E : FreyCurve4413) (hodd : E.c.natAbs % 2
 `3 r²` is the only term of valuation `0`. `v_π(r) = 1` fails `a₂`: the
 numerator has valuation `0` or `1`. `v_π(r) ≥ 2` fails `a₄`, because
 `v_π(a₄) = 2` and every correction has valuation at least `3`. These four
-cases cover every `r, s, t`. `MinimalModelAt2` stays opaque: this is the
-obstruction at valuation `1`, and the conductor exponent is not a consequence.
+cases cover every `r, s, t` in `ℤ[i]`. This is the obstruction at valuation
+`1` inside that ring. `MinimalModelAt2` is the `ℚ(i)` statement, and the
+conductor exponent is not a consequence.
 -/
 theorem no_integral_u_pi_of_c_odd (E : FreyCurve4413) (hodd : E.c.natAbs % 2 = 1)
     (r s t : GaussInt) :
@@ -5044,9 +5057,9 @@ def smallerDeltaAtPi (E : FreyCurve4413) (u : GRat) (hu : u.num ≠ GaussInt.zer
 strictly smaller discriminant.
 
 For `v_π(u) ≥ 1` the scaling `Δ' = u⁻¹² Δ` lowers the valuation whenever `Δ'`
-is integral, so the content is that no such change is integral. This is the
-local minimality condition at `π` over `ℚ(i)`. It is not the opaque
-`MinimalModelAt2`: even `c` is open, and the conductor exponent does not follow.
+is integral, so the content is that no such change is integral. `MinimalModelAt2`
+is this predicate. Even `c` is `minimal_even_c_open` and has no proof. The
+conductor exponent does not follow.
 -/
 def qiLocalMinimalAtPi (E : FreyCurve4413) : Prop :=
   ∀ (u r s t : GRat) (hu : u.num ≠ GaussInt.zero),
@@ -5060,8 +5073,8 @@ model integral at `π`.
 is a separate case. A denominator coprime to `π`, such as `3`, is not an
 element of `ℤ[i]`, so `no_integral_u_pi_of_c_odd` does not cover this
 statement. `v_π(u) ≥ 2` makes `v_π(Δ') = 18 - 12 v_π(u) < 0`. `v_π(u) = 1`
-fails `a₁`, `a₂`, `a₃`, or `a₄`. This is not `MinimalModelAt2`, and it is not
-the conductor exponent.
+fails `a₁`, `a₂`, `a₃`, or `a₄`. For odd `c` this is `MinimalModelAt2`. It is
+not the conductor exponent.
 -/
 theorem no_qi_integral_change_of_c_odd (E : FreyCurve4413) (hodd : E.c.natAbs % 2 = 1)
     (u r s t : GRat) (hu : u.num ≠ GaussInt.zero)
@@ -5161,8 +5174,8 @@ theorem qiLocalMinimalAtPi_of_c_odd (E : FreyCurve4413) (hodd : E.c.natAbs % 2 =
   intro u r s t hu hv hboth
   exact no_qi_integral_change_of_c_odd E hodd u r s t hu hv hboth.1
 
-/-- The same local condition for even `c`. No proof. Even `c` is outside
-`qiLocalMinimalAtPi_of_c_odd`, and it is not `MinimalModelAt2`.
+/-- The same local condition for even `c`. No proof. `MinimalModelAt2` on an
+even `c` is this statement, by `minimal_even_c_open_iff`.
 -/
 def minimal_even_c_open : Prop :=
   ∀ E : FreyCurve4413, E.c.natAbs % 2 = 0 → qiLocalMinimalAtPi E

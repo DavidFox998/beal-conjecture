@@ -201,11 +201,10 @@ proved to be `0`. `no_qi_integral_change_of_c_odd` extends the odd-`c`
 integrality split from `ℤ[i]` to `ℚ(i)`. `v_π(a₂) ≥ 4`, so `v_π(s) = -1`
 is a separate case, and a denominator coprime to `π` is not in `ℤ[i]`.
 `v_π(u) ≥ 2` makes the scaled discriminant non-integral, and `v_π(u) = 1`
-fails one of `a₁`, `a₂`, `a₃`, `a₄`. `qiLocalMinimalAtPi_of_c_odd` is that
-fact: for odd `c`, no change with `v_π(u) ≥ 1` is integral at `π`, so none
-has a smaller discriminant. `minimal_even_c_open` is the even-`c` statement
-and has no proof. `MinimalModelAt2` stays opaque. The wild part and the
-conductor exponent stay open, and `(π)^10 = (32)` does not give `n`.
+fails one of `a₁`, `a₂`, `a₃`, `a₄`. `MinimalModelAt2` is that local
+condition. For odd `c` it is `minimalAt2_of_c_odd`. `minimal_even_c_open` is
+the even-`c` statement and has no proof. The wild part and the conductor
+exponent stay open, and `(π)^10 = (32)` does not give `n`.
 `(-√(-1))^5 · π^10 = 32` with norm `2^10`, and `(-√(-1))^6 · π^12 = 64`
 with norm `2^12`. The principal ideals agree. That equality does not give
 `n = 32 ∨ n = 64`. `FreyValuationAt2` is `v₂(|c|)`.

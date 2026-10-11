@@ -1,6 +1,7 @@
 import Init
 import DarmonMerel.«2_Modularity4413»
 import Mathlib.Modular.Rank0_32a1
+import Mathlib.Modular.EllipticCurveMinimal
 
 notation "ℕ" => Nat
 
@@ -98,11 +99,28 @@ that pair to `RhoE13Open` is not a lemma.
 -/
 opaque RhoE13Open (E : FreyCurve4413) : Prop := True
 
-/-- The Weierstrass model is minimal at the prime above `2`.
+/-- The model is minimal at `π` over `ℚ(i)`.
 
-Tate's algorithm is not formalized. Nothing produces a term.
+This is `qiLocalMinimalAtPi`: no change of variables with `v_π(u) ≥ 1` makes
+`a₁`, `a₂`, `a₃`, `a₄`, and `Δ'` integral at `π` with a strictly smaller
+discriminant. An integral model would have to satisfy those conditions, so
+for odd `c` this is `minimalAt2_of_c_odd`. `minimal_even_c_open` is the
+even-`c` case and has no proof. The conductor exponent does not follow.
+Dokchitser's numerical inputs are not a Kodaira symbol, the Swan conductor
+is not formalized, and `(π)^10 = (32)` does not set Ribet's `n`.
+`ConductorExponentAtPrimeAbove2` stays opaque, and `h_n_eq` stays on the axiom.
 -/
-opaque MinimalModelAt2 (E : FreyCurve4413) : Prop := True
+def MinimalModelAt2 (E : FreyCurve4413) : Prop :=
+  FreyCurve4413.qiLocalMinimalAtPi E
+
+theorem minimalAt2_of_c_odd (E : FreyCurve4413) (hodd : E.c.natAbs % 2 = 1) :
+    MinimalModelAt2 E :=
+  FreyCurve4413.qiLocalMinimalAtPi_of_c_odd E hodd
+
+theorem minimal_even_c_open_iff :
+    FreyCurve4413.minimal_even_c_open =
+      (∀ E : FreyCurve4413, E.c.natAbs % 2 = 0 → MinimalModelAt2 E) :=
+  rfl
 
 /-- Conductor exponent of `E` at the prime of `ℤ[√-1]` above `2`.
 
@@ -127,7 +145,8 @@ integral. `pi_scaling_c_invariants_hold` is the comparison `4 ≤ 10` and
 `12 ≤ 18` for that scaling; `4 ∣ 10` is not the comparison. `b2Frey` is
 `16 a`. A translation leaves `c₄`, `c₆`, and `Δ` unchanged. The sufficient
 minimality test is `v(c₄) < 4` or `v(Δ) < 12`; neither inequality holds.
-`MinimalModelAt2` stays opaque, and so does this exponent. The test
+`MinimalModelAt2` is `qiLocalMinimalAtPi`. For odd `c` it is
+`minimalAt2_of_c_odd`. The exponent stays opaque. The test
 `4 ∤ 10` does not prove minimality: scaling by `π` uses `4 ≤ 10`, which
 holds. After the translation `x ↦ x + π`, `translated_a4_splits_on_trivial_curves`
 gives `v_π(a₄') = 3` on `(1, 0, 1)` and `v_π(a₄') = 6` on `(0, 1, 1)`,
@@ -166,12 +185,11 @@ not formalized, and the wild part is not proved to vanish. Ogg's formula
 is the tame conductor. The wild part at `π` is this proposition.
 `no_qi_integral_change_of_c_odd` is the same integrality split over `ℚ(i)`:
 `v_π(a₂) ≥ 4`, so `v_π(s) = -1` still occurs, and a `π`-unit denominator is
-not in `ℤ[i]`. `qiLocalMinimalAtPi_of_c_odd` turns that split into the
-statement that no change with `v_π(u) ≥ 1` is integral, so none has a smaller
-discriminant. `minimal_even_c_open` is the even-`c` case and has no proof.
-Neither statement is `MinimalModelAt2`, and neither produces the exponent.
-Dokchitser's numerical inputs are not a Kodaira symbol. The wild part is not
-the parity of `v(D)`. `(π)^10 = (32)` has norm `2^10` and does not set `n`.
+not in `ℤ[i]`. `minimalAt2_of_c_odd` is that split: for odd `c`,
+`MinimalModelAt2` holds. `minimal_even_c_open` is the even-`c` case and has
+no proof. The exponent does not follow. Dokchitser's numerical inputs are not
+a Kodaira symbol. The Swan conductor is not the parity of `v(D)`.
+`(π)^10 = (32)` has norm `2^10` and does not set `n`.
 `pi_ten_principal` is
 `(-√(-1))^5 · π^10 = 32` with `N(π^10) = 2^10`. `pi_twelve_principal` is
 `(-√(-1))^6 · π^12 = 64` with norm `2^12`. The principal ideals

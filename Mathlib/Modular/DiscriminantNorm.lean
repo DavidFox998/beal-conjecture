@@ -1,4 +1,4 @@
-import DarmonMerel.«3_RibetLowering4413»
+import DarmonMerel.«1_FreyCurve4413»
 
 /-!
 # Norm of the Frey discriminant
@@ -25,20 +25,5 @@ theorem discriminant_norm (E : FreyCurve4413) :
   have h : E.a ^ 4 + E.b ^ 4 = E.c ^ 13 := E.h_eq
   unfold discriminant_re discriminant_im
   grind
-
-/-- The norm formula, together with one Ribet level.
-
-The first conjunct is `discriminant_norm`. The second is the newform from
-`ribet_level_lowering_4413` at the supplied shape `N`. `RhoE13Open` is still
-a hypothesis. The norm does not produce it.
--/
-theorem norm_and_level_lowering_axiom
-    {c : ℤ} (E : FreyCurve4413) (N : ℕ)
-    (hCond : FreyConductorDivides c N) (hIrr : RhoE13Open E)
-    (hPacetti : pacetti_2_8_open) :
-    E.discriminant_re ^ 2 + E.discriminant_im ^ 2 = (2 : ℤ) ^ 18 * E.c ^ 39 ∧
-      ∃ n : ℕ, ∃ g : Newform n, LevelLowered E g := by
-  let pkg : RibetLevel c E N := ribet_level_lowering_4413 N hCond hIrr hPacetti
-  exact ⟨discriminant_norm E, pkg.level, pkg.output.g, pkg.output.lowered⟩
 
 end FreyCurve4413
