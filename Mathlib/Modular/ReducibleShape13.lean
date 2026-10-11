@@ -53,11 +53,15 @@ homomorphism of `(ℤ[i] / π ^ n)ˣ` trivial on the global units is
 The Artin exponent `FTameAtPi + SwanAtPi ∈ {10, 12}` is `pacetti_of_components`,
 under `components_n_plus_five_open`. Splitting that exponent across `χ₁` and
 `χ₂` is `artin_exponent_of_characters_open`. Unramifiedness at `p ∣ c`, given
-`13 ∣ tateParameter`, is `inertia_trivial_of_tate_13_open`. The trace
-`a_𝔭 = χ₁(Frob) + χ₂(Frob)` is `frobenius_trace_sum_open`. The Weil bound
+`13 ∣ tateParameter`, is `inertia_trivial_of_tate_13_open`. The trace of an
+upper-triangular extension of the two characters named by the shape is
+`frobenius_trace_sum_open`, and it is a theorem of that shape. The sealed
+integer `pointCountTrace` is not that trace: equating them at a norm that
+misses `|c|` is `point_count_matches_shape_trace_open`. The Weil bound
 `|a_𝔭| ≤ 2 √N(𝔭)` is `weil_bound_open`. A prime where the character
-constraint leaves that range is `trace_outside_weil_open`. Those three are
-the live route. The order-`12` packaging does not replace them.
+constraint leaves that range is `trace_outside_weil_open`. The live route is
+the shape, that point-count identification, and the Weil bound. The
+order-`12` packaging does not replace them.
 -/
 
 namespace ReducibleShape13
@@ -692,23 +696,63 @@ def ray_class_mod_pi_open : Prop :=
 def IntCong13 (a : Int) (r : Fin 13) : Prop :=
   ∃ k : Int, a - Int.ofNat r.val = (13 : Int) * k
 
-/-- At a prime of norm `normP`, `a_𝔭 = χ₁(Frob) + χ₂(Frob)`.
+/-- Trace of the upper-triangular extension of the shape's two characters.
 
-No Frobenius element is constructed. On the shape, that sum is
-`u · t ^ a + u⁻¹ · t ^ (1 - a)` with `u ^ 4 = 1` and `t ≡ N(𝔭) (mod 13)`.
-This proposition is the missing equality with `pointCountTrace`. It is a
-live hypothesis of the trace route. It does not by itself contradict the
-Weil bound.
+`reducible_shape_13_open` supplies a ray-class character `ε` and an exponent
+`a`. The diagonal characters are `ε · χ_cyc ^ a` and `ε⁻¹ · χ_cyc ^ (1 - a)`.
+On a `π`-unit the value `u = ε.χ z` satisfies `u ^ 4 = 1`. At cyclotomic
+residue `t`, the diagonal entries are `u · t ^ a` and `u⁻¹ · t ^ (1 - a)`.
+Their product is `t` when `t ≠ 0`, and the trace of any upper-triangular
+matrix with that diagonal is their sum, which is `twistedTrace`. The
+off-diagonal entry is the extension class; the trace does not see it.
+`pointCountTrace` is not mentioned. That sealed integer is
+`point_count_matches_shape_trace_open`.
 -/
 def frobenius_trace_sum_open : Prop :=
+  reducible_shape_13_open →
+    ∀ E : FreyCurve4413, E.a ≠ 0 → E.b ≠ 0 →
+      E.a.natAbs.gcd E.b.natAbs = 1 →
+        ∃ n, ∃ ε : ReducibleShape13.PiUnitChar n, ∃ exp : Fin 12,
+          ReducibleShape13.IsRayClassChar n ε ∧
+            RhoSemisimpleMatches E n ε exp ∧
+              ∀ z, ¬ piDivides z →
+                ∀ t : Fin 13, ∀ off : Fin 13,
+                  ε.χ z ≠ 0 ∧
+                    (ε.χ z) ^ 4 = 1 ∧
+                      (t ≠ 0 →
+                        (ε.χ z * t ^ exp.val) *
+                            (GL2F13.inv (ε.χ z) *
+                              t ^ (ReducibleShape13.complementExp exp).val) = t) ∧
+                        GL2F13.trace
+                            (GL2F13.Mat2.mk
+                              (ε.χ z * t ^ exp.val)
+                              off
+                              0
+                              (GL2F13.inv (ε.χ z) *
+                                t ^ (ReducibleShape13.complementExp exp).val)) =
+                          ReducibleShape13.twistedTrace (ε.χ z) t exp
+
+/-- The sealed point count equals the shape's character sum.
+
+`frobenius_trace_sum_open` does not mention `pointCountTrace`.
+`RhoSemisimpleMatches` is an opaque proposition and does not store a
+Frobenius element. This proposition is the missing identification: at a
+positive norm that does not divide `|c|`, some `π`-unit is the class at
+which `ε` is evaluated, and the sealed integer is congruent to
+`twistedTrace` of that value. The fourth-power condition is not restated
+here. It is the order bound on `ε`. At norm `5`, `5 ∤ |c|` is
+`five_not_dvd_c_of_coprime`, so the antecedent is the coprime case.
+-/
+def point_count_matches_shape_trace_open : Prop :=
   ∀ E : FreyCurve4413, E.a ≠ 0 → E.b ≠ 0 →
     E.a.natAbs.gcd E.b.natAbs = 1 →
       ∀ n, ∀ ε : ReducibleShape13.PiUnitChar n, ∀ exp : Fin 12,
         RhoSemisimpleMatches E n ε exp →
-          ∀ normP : Nat, 0 < normP →
-            ∃ u : Fin 13, u ≠ 0 ∧ u ^ 4 = 1 ∧
+          ∀ normP : Nat, 0 < normP → ¬ normP ∣ E.c.natAbs →
+            ∃ z, ¬ piDivides z ∧
               IntCong13 (pointCountTrace E normP)
-                (ReducibleShape13.twistedTrace u ⟨normP % 13, Nat.mod_lt _ (by decide)⟩ exp)
+                (ReducibleShape13.twistedTrace (ε.χ z)
+                  ⟨normP % 13, Nat.mod_lt _ (by decide)⟩ exp)
 
 /-- `|a_𝔭| ≤ 2 √N(𝔭)`, written as `a ^ 2 ≤ 4 N` so that no square root is required.
 
@@ -746,8 +790,9 @@ def chars_unramified_above_13_open : Prop :=
 
 /-- The character constraint forces a trace outside the Weil range.
 
-Live route. The witness at norm `5` does not use the inertia, Artin, or
-ray-class antecedents. It is not `False`, it does not negate
+Live route. The witness at norm `5` uses the shape and
+`point_count_matches_shape_trace_open`. It does not use the inertia, Artin,
+or ray-class antecedents. It is not `False`, it does not negate
 `a ^ 4 + b ^ 4 = c ^ 13`, and it does not produce `RhoE13Open`.
 -/
 def trace_outside_weil_open : Prop :=
@@ -755,7 +800,7 @@ def trace_outside_weil_open : Prop :=
     inertia_trivial_of_tate_13_open →
       artin_exponent_of_characters_open →
         ray_class_mod_pi_open →
-          frobenius_trace_sum_open →
+          point_count_matches_shape_trace_open →
             ∀ E : FreyCurve4413, E.a ≠ 0 → E.b ≠ 0 →
               E.a.natAbs.gcd E.b.natAbs = 1 →
                 ∃ normP : Nat, 0 < normP ∧
