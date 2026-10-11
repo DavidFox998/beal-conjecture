@@ -122,7 +122,10 @@ at `π` is `pacetti_2_8_open`.
 `v_π(a₂) ≥ 4`, so `v_π(s) = -1` is a real case, and a denominator coprime to
 `π` is not an element of `ℤ[i]`. For odd `c`, `v_π(u) ≥ 2` makes
 `v_π(Δ') < 0`, and `v_π(u) = 1` fails `a₁`, `a₂`, `a₃`, or `a₄`.
-`MinimalModelAt2`, the wild part, and the exponent stay open.
+`qiLocalMinimalAtPi_of_c_odd` is that split: no change with `v_π(u) ≥ 1` is
+integral at `π`, hence none has a smaller discriminant. `minimal_even_c_open`
+is the same statement for even `c` and has no proof. `MinimalModelAt2` stays
+opaque. The wild part and the exponent stay open.
 `pi_ten_principal` is `(-√(-1))^5 · π^10 = 32` with norm `2^10`, and
 `pi_twelve_principal` is the same for `64` and `2^12`. The principal
 ideals agree. That equality does not produce `n = 32 ∨ n = 64`. The
@@ -5020,6 +5023,36 @@ theorem a4_fails_r_high (E : FreyCurve4413) (hodd : E.c.natAbs % 2 = 1) (r s t :
     v_gadd_left_min (gadd (gadd (a4Orig E) (term2rA2 E r)) (term3rr r)) (term2st s t) h2 hST
   exact not_valGe_of_eq hfin (by decide)
 
+/-- The `a₁`, `a₂`, `a₃`, `a₄`, and `Δ'` integrality conditions after the change
+of variables with denominator `u`. An integral model would also have to satisfy
+the `a₆` bound. Failure of this conjunction already blocks that model.
+-/
+def integralSlotsAtPi (E : FreyCurve4413) (u r s t : GRat) (hu : u.num ≠ GaussInt.zero) :
+    Prop :=
+  valGe (a1Slot s) ((vPi u.num : Int) - (vPi u.den : Int)) ∧
+    valGe (a2Slot E r s) (2 * ((vPi u.num : Int) - (vPi u.den : Int))) ∧
+    valGe (a3Slot t) (3 * ((vPi u.num : Int) - (vPi u.den : Int))) ∧
+    valGe (a4Slot E r s t) (4 * ((vPi u.num : Int) - (vPi u.den : Int))) ∧
+    valGe (deltaSlot E u (gpow_num_ne u 12 hu)) 0
+
+/-- `v_π(Δ') < v_π(Δ)` for the scaled discriminant. -/
+def smallerDeltaAtPi (E : FreyCurve4413) (u : GRat) (hu : u.num ≠ GaussInt.zero) : Prop :=
+  ∃ k d, vRat? (deltaSlot E u (gpow_num_ne u 12 hu)) = some k ∧
+    vRat? (gOf (deltaGauss E)) = some d ∧ k < d
+
+/-- No change of variables with `v_π(u) ≥ 1` is integral at `π` and has a
+strictly smaller discriminant.
+
+For `v_π(u) ≥ 1` the scaling `Δ' = u⁻¹² Δ` lowers the valuation whenever `Δ'`
+is integral, so the content is that no such change is integral. This is the
+local minimality condition at `π` over `ℚ(i)`. It is not the opaque
+`MinimalModelAt2`: even `c` is open, and the conductor exponent does not follow.
+-/
+def qiLocalMinimalAtPi (E : FreyCurve4413) : Prop :=
+  ∀ (u r s t : GRat) (hu : u.num ≠ GaussInt.zero),
+    (1 : Int) ≤ (vPi u.num : Int) - (vPi u.den : Int) →
+      ¬ (integralSlotsAtPi E u r s t hu ∧ smallerDeltaAtPi E u hu)
+
 /-- For odd `c`, no `u, r, s, t` in `ℚ(i)` with `v_π(u) ≥ 1` makes the changed
 model integral at `π`.
 
@@ -5033,11 +5066,8 @@ the conductor exponent.
 theorem no_qi_integral_change_of_c_odd (E : FreyCurve4413) (hodd : E.c.natAbs % 2 = 1)
     (u r s t : GRat) (hu : u.num ≠ GaussInt.zero)
     (hv : (1 : Int) ≤ (vPi u.num : Int) - (vPi u.den : Int)) :
-    ¬ (valGe (a1Slot s) ((vPi u.num : Int) - (vPi u.den : Int)) ∧
-        valGe (a2Slot E r s) (2 * ((vPi u.num : Int) - (vPi u.den : Int))) ∧
-        valGe (a3Slot t) (3 * ((vPi u.num : Int) - (vPi u.den : Int))) ∧
-        valGe (a4Slot E r s t) (4 * ((vPi u.num : Int) - (vPi u.den : Int))) ∧
-        valGe (deltaSlot E u (gpow_num_ne u 12 hu)) 0) := by
+    ¬ integralSlotsAtPi E u r s t hu := by
+  unfold integralSlotsAtPi
   intro hbad
   let vu : Int := (vPi u.num : Int) - (vPi u.den : Int)
   have hvuEq : vu = (vPi u.num : Int) - (vPi u.den : Int) := rfl
@@ -5125,5 +5155,16 @@ theorem no_qi_integral_change_of_c_odd (E : FreyCurve4413) (hodd : E.c.natAbs % 
           · exact a4_fails_s_neg_one_r_neg_two E hodd r s t
               (by rw [hrm2] at hvr; exact hvr) hsv hT h4'
           · exact a2_fails_s_neg_one E r s hsv (Or.inr ⟨vr, hvr, hrm2⟩) h2'
+
+theorem qiLocalMinimalAtPi_of_c_odd (E : FreyCurve4413) (hodd : E.c.natAbs % 2 = 1) :
+    qiLocalMinimalAtPi E := by
+  intro u r s t hu hv hboth
+  exact no_qi_integral_change_of_c_odd E hodd u r s t hu hv hboth.1
+
+/-- The same local condition for even `c`. No proof. Even `c` is outside
+`qiLocalMinimalAtPi_of_c_odd`, and it is not `MinimalModelAt2`.
+-/
+def minimal_even_c_open : Prop :=
+  ∀ E : FreyCurve4413, E.c.natAbs % 2 = 0 → qiLocalMinimalAtPi E
 
 end FreyCurve4413

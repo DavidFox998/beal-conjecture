@@ -166,7 +166,13 @@ not formalized, and the wild part is not proved to vanish. Ogg's formula
 is the tame conductor. The wild part at `π` is this proposition.
 `no_qi_integral_change_of_c_odd` is the same integrality split over `ℚ(i)`:
 `v_π(a₂) ≥ 4`, so `v_π(s) = -1` still occurs, and a `π`-unit denominator is
-not in `ℤ[i]`. It is not `MinimalModelAt2` and not the exponent. `pi_ten_principal` is
+not in `ℤ[i]`. `qiLocalMinimalAtPi_of_c_odd` turns that split into the
+statement that no change with `v_π(u) ≥ 1` is integral, so none has a smaller
+discriminant. `minimal_even_c_open` is the even-`c` case and has no proof.
+Neither statement is `MinimalModelAt2`, and neither produces the exponent.
+Dokchitser's numerical inputs are not a Kodaira symbol. The wild part is not
+the parity of `v(D)`. `(π)^10 = (32)` has norm `2^10` and does not set `n`.
+`pi_ten_principal` is
 `(-√(-1))^5 · π^10 = 32` with `N(π^10) = 2^10`. `pi_twelve_principal` is
 `(-√(-1))^6 · π^12 = 64` with norm `2^12`. The principal ideals
 `(π)^10 = (32)` and `(π)^12 = (64)` agree. Dividing the exponent by `2`
