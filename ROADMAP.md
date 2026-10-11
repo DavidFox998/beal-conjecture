@@ -1,8 +1,56 @@
 # Proof outline for `a⁴ + b⁴ = c¹³`
 
-This is a dependency audit of the tree at `0b1b9ea` and the commit that adds this file. No new mathematics. `#print axioms` was run with `lake env lean` against the built environment. A line below is the tool's output, not a paraphrase.
+This is a dependency audit of the tree, plus the conditional capstone
+`no_solution_4413_of_frontier`. No open proposition on the frontier is
+proved here. `#print axioms` lines are the tool's output.
 
-`no_solution_4413` is not a theorem. `(1, 0, 1)` and `(0, 1, 1)` are solutions (`rfl` in `DarmonMerel/6_NoSolution4413.lean`). A primitive nonzero solution is not ruled out.
+## Capstone
+
+For `a ≠ 0`, `b ≠ 0`, `gcd(|a|, |b|) = 1`, and `c > 0`,
+
+```text
+¬ (a ^ 4 + b ^ 4 = c ^ 13)
+```
+
+follows from the hypotheses below. `(1, 0, 1)` and `(0, 1, 1)` are proved
+solutions with `gcd = 1` and `c > 0`, so the negation does not quantify
+over `a = 0` or `b = 0`. `(8, 8, 2)` fails `curve_8_8_2_not_coprime`
+(`capstone_excludes_curve_8_8_2`, no axioms).
+
+| Hypothesis | Label |
+| --- | --- |
+| `components_n_plus_five_open` | OPEN PROP |
+| `serre_two_level_open` | OPEN PROP |
+| `odd_level_one_open` | OPEN PROP |
+| `tate_param_13_dvd_of_coprime` | OPEN PROP, assumed and not used to obtain `False` |
+| `no_newform_32_64_open` | OPEN PROP, the missing elimination |
+| `frey_qcurve_modular` | AXIOM, a dependency, not a parameter |
+| `ribet_level_lowering_4413` | AXIOM, a dependency, not a parameter |
+| `RhoE13Open (FreyCurve4413.mk' a b c h)` | SEALED input. The Ribet axiom takes it. Nothing produces a term. |
+| `a ≠ 0`, `b ≠ 0`, `gcd(\|a\|, \|b\|) = 1`, `c > 0` | side conditions. Coprimality and the two CM solutions are proved. |
+
+`#print axioms no_solution_4413_of_frontier`:
+
+```text
+'no_solution_4413_of_frontier' depends on axioms: [frey_qcurve_modular,
+ propext,
+ ribet_level_lowering_4413,
+ Classical.choice,
+ Quot.sound]
+```
+
+`pacetti_of_components hcomp` supplies `pacetti_2_8_open`. The axiom is
+applied at the shape `N = 32 |c|²`, which is `FreyConductorDivides` and
+not a computation of the conductor. `h_n_eq_of_tate` is cased on. That
+disjunction is the product of the sealed level functions. It is not
+`RibetLevel.n`. Both branches are closed by `no_newform_32_64_open`
+applied to the axiom's package and to `Modular E`.
+
+`no_newform_32_64_open` is the statement that such a package is impossible.
+`C(5, g) = 0` for both CM newforms, `mazur_trick_4413` gives `13 ∣ 0`, and
+`winding_elimination_4413` is the nonvanishing of `(T₅ - 6) e`. The
+integral points of `Y² = X³ - X` are a different theorem. None of them is
+this `False`. The unconditional negation is not a theorem.
 
 ## What is proved
 
@@ -38,7 +86,7 @@ Four open propositions. They are `def`s of type `Prop`, not axioms and not `sorr
 | `odd_level_one_open` | On a coprime curve, the sealed `OddPrimaryLevel` is `1`. |
 | `tate_param_13_dvd_of_coprime` | At each odd prime `p ∣ c`, `13` divides the sealed `tateParameter E p`. |
 
-`h_n_eq_of_tate` assumes the first three and concludes that the product of the two sealed level functions is `32` or `64`. The fourth proposition does not appear in that proof. It does not rewrite `OddPrimaryLevel`, and `odd_level_one_open` does not follow from it.
+`h_n_eq_of_tate` assumes the first three and concludes that the product of the two sealed level functions is `32` or `64`. The fourth proposition does not appear in that proof. It does not rewrite `OddPrimaryLevel`, and `odd_level_one_open` does not follow from it. A fifth open proposition, `no_newform_32_64_open`, is the missing elimination of a `RibetLevel`. It is used only by `no_solution_4413_of_frontier`. It is not proved.
 
 `#print axioms` does not list hypothesis propositions. The ledger records the kernel axioms. The hypotheses are in the theorem statements.
 
@@ -48,11 +96,12 @@ Four open propositions. They are `def`s of type `Prop`, not axioms and not `sorr
 - **Serre 2-level.** A proof that the 2-primary part of the Serre conductor of `ρ̄_{E,13}` is `2^(f/2)` when `f = FTameAtPi + SwanAtPi` is even. The ideal norm `2^f` is a different integer (`1024` or `4096`).
 - **Tate parameter.** Tate uniformization at odd `ℓ ∣ c`: a parameter `q` with `v(q) = v(Δ)` on a minimal model, and `13 ∣ v(q)`. For `ℓ ≠ 13` that divisibility kills the Kummer class of `q` in `𝔽₁₃ˣ`. At `ℓ = 13` it is the input to finiteness of the group scheme. Neither uniformization nor the Kummer sequence is formalized. The proved input is the norm valuation, not this divisibility.
 - **Odd Serre level.** `OddPrimaryLevel E = 1`. The arithmetic lemma `nat_eq_one_of_prime_divisors_removed` needs two facts that are not theorems: every prime divisor of `OddPrimaryLevel` is an odd prime divisor of `c`, and `13 ∣ tateParameter` removes that prime. `odd_conductor_empty` removes primes dividing `d = 1` only.
-- **Uneven splitting**, unnamed. There is no fifth open proposition for it. It is why `multiplicative_at_dvd_c` does not prove `tate_param_13_dvd_of_coprime`. See below. Closing it is a theorem that `13 ∣ v_𝔭(Δ)` at each Gaussian prime above `p ∣ c`. That still would not be a Tate parameter.
-- **`RhoE13Open`.** A term. `Psi13HasNoQiRoot` (no root of `ψ₁₃` in the fraction field, for `NontrivialFrey`) together with the sealed `ImageContainsSL2` is `RhoE13NeedsSL2`. The implication to `RhoE13Open` is not a lemma. A missing linear factor is not absolute irreducibility. The unrestricted root statement is false for the singular curve `(0, 0, 0)`.
+- **Uneven splitting**, unnamed. It is not a named open proposition. It is why `multiplicative_at_dvd_c` does not prove `tate_param_13_dvd_of_coprime`. See below. Closing it is a theorem that `13 ∣ v_𝔭(Δ)` at each Gaussian prime above `p ∣ c`. That still would not be a Tate parameter.
+- **`no_newform_32_64_open`.** Darmon–Merel Lemma 8.2. The existing Mazur products vanish, and the winding nonvanishing does not produce `False`. This is the last open proposition in `no_solution_4413_of_frontier`.
+- **`RhoE13Open`.** A term. `Psi13HasNoQiRoot` (no root of `ψ₁₃` in the fraction field, for `NontrivialFrey`) together with the sealed `ImageContainsSL2` is `RhoE13NeedsSL2`. The implication to `RhoE13Open` is not a lemma. A missing linear factor is not absolute irreducibility. The unrestricted root statement is false for the singular curve `(0, 0, 0)`. The capstone takes a term of `RhoE13Open` as a hypothesis because `ribet_level_lowering_4413` requires one.
 - **Modularity.** Replace `frey_qcurve_modular` by ℚ-curve modularity.
 - **Level lowering.** Replace `ribet_level_lowering_4413`. `h_n_eq_of_tate` does not discharge `RibetLevel.h_n_eq`: the conclusion is a product of two sealed functions, not that field.
-- **`no_solution_4413`.** Darmon–Merel’s map from `X₀(N)` to the winding quotient (Crelle 490 (1997), Lemma 8.2). The computed nonvanishing of `(T₅ - 6)e` does not produce `False`. Mazur’s products at `q = 5` are zero, so `13 ∣ C(5, g)` does not remove the newform. The two CM solutions must remain solutions.
+- **`no_solution_4413`.** The conditional theorem is `no_solution_4413_of_frontier`. The unconditional statement is not a theorem. `(1, 0, 1)` and `(0, 1, 1)` remain solutions.
 
 `FreyConductorDivides c N` is the shape `N = 32|c|²` or `N = 64|c|²`. `thirtyTwo_dvd_of_conductor_shape` proves `32 ∣ N` from the shape. `shape_dvd_does_not_give_thirtyTwo` is the counterexample `c = 1`, `N = 32`, `n = 1`: the shape and `n ∣ N` do not give `32 ∣ n`. `thirtyTwo_dvd_of_tate_bound` and `n_eq_32_or_64_of_tate` read the disjunction stored on `TateAt2LowerBound`. They do not derive it.
 
@@ -284,10 +333,15 @@ a⁴ + b⁴ = c¹³                                          PROVED data on Frey
 │    N = 32|c|² is the shape hypothesis, not the conductor
 ├─ C(5, g) = 0 at both CM newforms                     native_decide
 │    mazur_trick_4413 : 13 ∣ 0                         PROVED, removes nothing
-└─ (T₅ - 6) e ≢ 0 (mod 13)                             native_decide
-     winding_elimination_4413
-     the map X₀(N) → J_e is not formalized
-     no_solution_4413                                   not a theorem
+├─ (T₅ - 6) e ≢ 0 (mod 13)                             native_decide
+│    winding_elimination_4413
+│    the map X₀(N) → J_e is not formalized
+├─ no_newform_32_64_open                               OPEN PROP
+│    RibetLevel of a modular curve with a ≠ 0, b ≠ 0 is impossible
+└─ no_solution_4413_of_frontier                        PROVED from the five opens,
+     the two axioms, and a term of RhoE13Open
+     a ≠ 0, b ≠ 0, gcd = 1, c > 0
+     unconditional no_solution_4413                     not a theorem
 ```
 
 `swan_eq_disc_excess` sits beside `swan_of_components` as a numeral identity: the excess `18 - (n + 6)` equals `12 - n` after subtracting the tame `2` from Ogg's count. It has no hypotheses and no axioms.
