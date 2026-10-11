@@ -13,10 +13,13 @@ is again some `w + 5 w⁻¹` with `w ^ 4 = 1`. Every integer congruent to
 `6` or `7` modulo `13` has absolute value at least `6`, and `6² = 36 > 20 = 4 · 5`.
 Hasse's bound at a prime of norm `5` is `a² ≤ 20`, because `2 √5 < 6`.
 
-`5 ∤ |c|` implies `5 ∤ N(Δ)` (`five_misses_discriminant_norm`). That is the
-norm condition for good reduction at `5`. The case `5 ∣ |c|` is not treated:
-norm `5` then divides `N(Δ)`, and this prime is the wrong place to apply
-the Weil bound. No replacement prime is chosen.
+A coprime solution has `5 ∤ |c|` (`five_not_dvd_c_of_coprime`). Fourth
+powers modulo `5` are `0` or `1`, and `N(α) = a⁴ + b⁴ = c¹³`, so `5 ∣ c`
+would force `5 ∣ a` and `5 ∣ b`. Then `5 ∤ N(Δ)` (`five_misses_discriminant_norm`):
+no prime above `5` divides the norm of `Δ`. Good reduction at `5` is that
+divisibility, not an extra hypothesis. `weil_contradiction_at_five` is `False`
+for every coprime curve, from `reducible_shape_13_open`,
+`frobenius_trace_sum_open`, and `weil_bound_open`.
 -/
 
 theorem five_isPrime : IsPrime 5 := by
@@ -48,6 +51,75 @@ theorem five_misses_discriminant_norm (E : FreyCurve4413) (h5 : ¬ 5 ∣ E.c.nat
     ¬ 5 ∣ (E.discriminant_re ^ 2 + E.discriminant_im ^ 2).natAbs := by
   intro hdvd
   exact h5 (odd_prime_dvd_discriminant_norm_divides_c E 5 five_isPrime (by decide) hdvd)
+
+/-- Fourth powers modulo `5` are `0` or `1`. -/
+theorem fourth_mod5 (n : Nat) : n ^ 4 % 5 = 0 ∨ n ^ 4 % 5 = 1 := by
+  have hr : n % 5 = 0 ∨ n % 5 = 1 ∨ n % 5 = 2 ∨ n % 5 = 3 ∨ n % 5 = 4 := by omega
+  have hp := Nat.pow_mod n 4 5
+  rcases hr with h0 | h1 | h2 | h3 | h4
+  · rw [hp, h0]; decide
+  · rw [hp, h1]; decide
+  · rw [hp, h2]; decide
+  · rw [hp, h3]; decide
+  · rw [hp, h4]; decide
+
+theorem fourth_mod5_zero (n : Nat) (h : n ^ 4 % 5 = 0) : n % 5 = 0 := by
+  have hr : n % 5 = 0 ∨ n % 5 = 1 ∨ n % 5 = 2 ∨ n % 5 = 3 ∨ n % 5 = 4 := by omega
+  have hp := Nat.pow_mod n 4 5
+  rcases hr with h0 | h1 | h2 | h3 | h4
+  · exact h0
+  · rw [hp, h1] at h; omega
+  · rw [hp, h2] at h; omega
+  · rw [hp, h3] at h; omega
+  · rw [hp, h4] at h; omega
+
+/-- A coprime solution has `5 ∤ |c|`.
+
+`x⁴ ≡ 0` or `1 (mod 5)`. If `5 ∣ c`, then `5 ∣ a⁴ + b⁴`. The sum of two
+residues from `{0, 1}` is `0` only when both are `0` (`1 + 1 = 2`, `1 + 0 = 1`).
+Both zero forces `5 ∣ a` and `5 ∣ b`, which contradicts the gcd.
+`N(α) = a⁴ + b⁴ = c¹³`, so the same non-divisibility is why no prime above
+`5` meets `N(Δ)`.
+-/
+theorem five_not_dvd_c_of_coprime (a b c : Int) (heq : a ^ 4 + b ^ 4 = c ^ 13)
+    (hcop : a.natAbs.gcd b.natAbs = 1) : ¬ 5 ∣ c.natAbs := by
+  intro hc
+  have hInt : (5 : Int) ∣ c := int_dvd_of_natAbs_dvd 5 c hc
+  have hpow : (5 : Int) ∣ c ^ 13 := by
+    have hc13 : c ∣ c ^ 13 := by
+      rw [show c ^ 13 = c ^ 12 * c by rw [Int.pow_succ]]
+      exact Int.dvd_mul_left _ _
+    exact Int.dvd_trans hInt hc13
+  rw [← heq] at hpow
+  have hnat : (5 : Nat) ∣ (a ^ 4 + b ^ 4).natAbs := (Int.natAbs_dvd_natAbs).mpr hpow
+  have habs : (a ^ 4 + b ^ 4).natAbs = a.natAbs ^ 4 + b.natAbs ^ 4 := by
+    have ha4 : (a ^ 4).natAbs = a.natAbs ^ 4 := Int.natAbs_pow a 4
+    have hb4 : (b ^ 4).natAbs = b.natAbs ^ 4 := Int.natAbs_pow b 4
+    have hsum' : (a ^ 4 + b ^ 4).natAbs = (a ^ 4).natAbs + (b ^ 4).natAbs :=
+      Int.natAbs_add_of_nonneg (Int.pow_nonneg_of_even (by decide : (4 : Nat) % 2 = 0))
+        (Int.pow_nonneg_of_even (by decide : (4 : Nat) % 2 = 0))
+    rw [hsum', ha4, hb4]
+  rw [habs] at hnat
+  have hsum : (a.natAbs ^ 4 + b.natAbs ^ 4) % 5 = 0 := Nat.mod_eq_zero_of_dvd hnat
+  have hmod : (a.natAbs ^ 4 + b.natAbs ^ 4) % 5 =
+      ((a.natAbs ^ 4 % 5) + (b.natAbs ^ 4 % 5)) % 5 := Nat.add_mod _ _ _
+  have ha4 := fourth_mod5 a.natAbs
+  have hb4 := fourth_mod5 b.natAbs
+  rcases ha4 with ha0 | ha1
+  · rcases hb4 with hb0 | hb1
+    · have hga : 5 ∣ a.natAbs := Nat.dvd_of_mod_eq_zero (fourth_mod5_zero _ ha0)
+      have hgb : 5 ∣ b.natAbs := Nat.dvd_of_mod_eq_zero (fourth_mod5_zero _ hb0)
+      have hgcd : 5 ∣ a.natAbs.gcd b.natAbs := Nat.dvd_gcd hga hgb
+      rw [hcop] at hgcd
+      have : 5 ≤ 1 := Nat.le_of_dvd (by decide) hgcd
+      omega
+    · rw [hmod, ha0, hb1] at hsum
+      omega
+  · rcases hb4 with hb0 | hb1
+    · rw [hmod, ha1, hb0] at hsum
+      omega
+    · rw [hmod, ha1, hb1] at hsum
+      omega
 
 theorem cast_mul_add (r n : Nat) :
     (13 : Int) * (n : Int) + (r : Int) = ↑(13 * n + r) := by
@@ -249,9 +321,11 @@ theorem point_count_at_five_outside
 
 /-- `trace_outside_weil_open` holds.
 
-The witness is norm `5`. The inertia, Artin, and ray-class antecedents of
-the definition are not used. The identification of the trace with the
-character sum remains `frobenius_trace_sum_open`.
+The witness is norm `5`. The definition still lists inertia, the Artin
+split, and the ray-class bridge; this proof does not use them. The `False`
+for a coprime curve is `weil_contradiction_at_five`, whose open hypotheses
+are exactly `reducible_shape_13_open`, `frobenius_trace_sum_open`, and
+`weil_bound_open`.
 -/
 theorem trace_outside_weil_at_five : trace_outside_weil_open := by
   intro hshape _hinertia _hartin _hray htrace E ha hb hcop
@@ -259,34 +333,33 @@ theorem trace_outside_weil_at_five : trace_outside_weil_open := by
 
 /-- Good reduction at `5`, as a norm, together with a trace outside the range.
 
-`five_misses_discriminant_norm` is the first conjunct. The second is the
-character-sum comparison. The case `5 ∣ |c|` is not this theorem.
+`five_not_dvd_c_of_coprime` supplies `5 ∤ |c|`. `five_misses_discriminant_norm`
+turns that into `5 ∤ N(Δ)`. The second conjunct is the character-sum comparison.
 -/
 theorem five_good_trace_outside
     (hshape : reducible_shape_13_open)
     (htrace : frobenius_trace_sum_open)
     (E : FreyCurve4413) (ha : E.a ≠ 0) (hb : E.b ≠ 0)
-    (hcop : E.a.natAbs.gcd E.b.natAbs = 1)
-    (h5 : ¬ 5 ∣ E.c.natAbs) :
+    (hcop : E.a.natAbs.gcd E.b.natAbs = 1) :
     ¬ 5 ∣ (E.discriminant_re ^ 2 + E.discriminant_im ^ 2).natAbs ∧
-      ¬ (pointCountTrace E 5).natAbs * (pointCountTrace E 5).natAbs ≤ 4 * 5 :=
-  ⟨five_misses_discriminant_norm E h5,
+      ¬ (pointCountTrace E 5).natAbs * (pointCountTrace E 5).natAbs ≤ 4 * 5 := by
+  have h5 : ¬ 5 ∣ E.c.natAbs := five_not_dvd_c_of_coprime E.a E.b E.c E.h_eq hcop
+  exact ⟨five_misses_discriminant_norm E h5,
     point_count_at_five_outside hshape htrace E ha hb hcop⟩
 
-/-- Weil contradiction at a prime of norm `5`, when `5 ∤ |c|`.
+/-- Weil contradiction at norm `5`, for every coprime curve.
 
-`weil_bound_open` at norm `5` and the character sum cannot both hold.
-`5 ∤ |c|` is the good-reduction case: it is exactly `5 ∤ N(Δ)`.
-If `5 ∣ |c|`, reduction at `5` is bad and this argument does not apply.
-That case is the remaining gap on this prime. No second prime is substituted,
-and no new exponent-divisibility hypothesis is used.
+The open hypotheses are exactly `reducible_shape_13_open`,
+`frobenius_trace_sum_open`, and `weil_bound_open`. `5 ∤ |c|` is
+`five_not_dvd_c_of_coprime`, not a hypothesis. `weil_bound_open` is Hasse's
+bound over finite fields. `frobenius_trace_sum_open` is the trace of the
+reducible shape. Neither is proved here.
 -/
 theorem weil_contradiction_at_five
     (hshape : reducible_shape_13_open)
     (htrace : frobenius_trace_sum_open)
     (hweil : weil_bound_open)
     (E : FreyCurve4413) (ha : E.a ≠ 0) (hb : E.b ≠ 0)
-    (hcop : E.a.natAbs.gcd E.b.natAbs = 1)
-    (h5 : ¬ 5 ∣ E.c.natAbs) : False := by
-  have hpack := five_good_trace_outside hshape htrace E ha hb hcop h5
+    (hcop : E.a.natAbs.gcd E.b.natAbs = 1) : False := by
+  have hpack := five_good_trace_outside hshape htrace E ha hb hcop
   exact hpack.2 (hweil E 5 (by decide))
