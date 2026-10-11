@@ -25,15 +25,22 @@ Proved for every odd-`a` curve:
   (`f2Quad_is_unit`);
 * the exceptional curves at the two rational singular points reduce to
   `Y² + X`, `Y² + S`, `Y² + X + 1`, and `Y² + S² + S`, and the partial
-  in the affine coordinate is a unit.
+  in the affine coordinate is a unit;
+* blowing up the closed point `X² + X + 1 = 0` in the chart
+  `X = ρ + π U`, `Y = π V`, for each geometric root `ρ`, leaves
+  `π² (V² + U)` plus a multiple of `π³` (`f4_chart_omega`,
+  `f4_chart_conj`, `odd_a_f4_val_omega`, `odd_a_f4_val_conj`).
+  The reduced curve is `V² + U` and `∂/∂U = 1`. These are two
+  multiplicity-one legs, the geometric components of one closed point
+  of residue field `𝔽₄`.
 
-`D6Node` is the fork on seven vertices, the dual graph of Kodaira `I₂*`.
-The closed point cut out by `X² + X + 1` has residue field `𝔽₄`, and the
-strict transform past `X ≡ 1` still has a singular closed point in the
-`X`-chart. Those two centers are not resolved here.
-`kodaira_neron_odd_a_open` says that the minimal regular model obtained by
-finishing them has dual graph `D6Node`, and that the Néron special fiber
-(the smooth locus of that model) therefore has seven irreducible components.
+`D6Node` is an abstract fork on seven vertices. The charts name five of
+those vertices with a computed equation (`theta`, `legUp`, `legDown`,
+`legLeft`, `legFar`) and leave `chain1` and `chain2` unidentified.
+Adjacency in the sense of `D6Node.neighbors` is not proved.
+`kodaira_neron_odd_a_open` is unchanged. Its proposition is the count
+`7`. Its docstring's identification of the finished fiber with this fork
+is not verified by the charts.
 `NeronSpecialFiberComponents` is not changed, and
 `components_n_plus_five_open` is not used.
 -/
@@ -693,9 +700,566 @@ theorem leg1Other_partial_is_unit (S : GaussInt) :
   exact not_piDivides_add_of_right (by simp [piDivides, GaussInt.one]) htwo
 
 /-!
+## The closed point of residue `𝔽₄`
+
+`X² + X + 1` is irreducible over `𝔽₂`. Adjoin a root `ω` with
+`ω² + ω + 1 = 0`, so `ω² = -1 - ω` and `ω³ = 1`. The conjugate root
+is `-1 - ω`. Both are integral over `ℤ[√(-1)]`.
+
+The second `π`-chart, reduced by the digit lemmas, is
+`Y² - π (X² + X + 1 + π) + π² ((1 - π) Y - X³)`.
+Blowing up `X = ρ`, `Y = 0` in the chart `X = ρ + π U`, `Y = π V`
+and dividing by `π²` leaves `V² - U` plus a multiple of `π`.
+In `𝔽₂` that is `V² + U`. The partial in `U` is `1`.
+-/
+
+/-- An element of `ℤ[√(-1)][ω] / (ω² + ω + 1)`, stored as `re + im · ω`. -/
+structure Quad where
+  re : GaussInt
+  im : GaussInt
+deriving DecidableEq, Repr
+
+namespace Quad
+
+def zero : Quad := ⟨GaussInt.zero, GaussInt.zero⟩
+def one : Quad := ⟨GaussInt.one, GaussInt.zero⟩
+def ofG (z : GaussInt) : Quad := ⟨z, GaussInt.zero⟩
+def omega : Quad := ⟨GaussInt.zero, GaussInt.one⟩
+
+def add (x y : Quad) : Quad :=
+  ⟨GaussInt.add x.re y.re, GaussInt.add x.im y.im⟩
+
+def sub (x y : Quad) : Quad :=
+  ⟨GaussInt.sub x.re y.re, GaussInt.sub x.im y.im⟩
+
+def neg (x : Quad) : Quad :=
+  ⟨GaussInt.neg x.re, GaussInt.neg x.im⟩
+
+/-- `(a + b ω)(c + d ω) = (ac - bd) + (ad + bc - bd) ω`, using `ω² = -1 - ω`. -/
+def mul (x y : Quad) : Quad :=
+  ⟨GaussInt.sub (GaussInt.mul x.re y.re) (GaussInt.mul x.im y.im),
+    GaussInt.sub
+      (GaussInt.add (GaussInt.mul x.re y.im) (GaussInt.mul x.im y.re))
+      (GaussInt.mul x.im y.im)⟩
+
+def piDividesQ (x : Quad) : Prop :=
+  piDivides x.re ∧ piDivides x.im
+
+theorem omega_sq : mul omega omega = sub (neg one) omega := by
+  simp [mul, omega, one, zero, sub, neg, GaussInt.mul, GaussInt.add, GaussInt.sub,
+    GaussInt.neg, GaussInt.one, GaussInt.zero]
+
+theorem omega_cube : mul (mul omega omega) omega = one := by
+  simp [mul, omega, one, zero, GaussInt.mul, GaussInt.add, GaussInt.sub, GaussInt.one,
+    GaussInt.zero]
+
+/-- Conjugate root `-1 - ω`. -/
+def omegaConj : Quad := sub (neg one) omega
+
+theorem omegaConj_sq : mul omegaConj omegaConj = sub (neg one) omegaConj := by
+  simp [omegaConj, mul, omega, one, zero, sub, neg, GaussInt.mul, GaussInt.add,
+    GaussInt.sub, GaussInt.neg, GaussInt.one, GaussInt.zero]
+
+theorem omegaConj_cube : mul (mul omegaConj omegaConj) omegaConj = one := by
+  simp [omegaConj, mul, omega, one, zero, sub, neg, GaussInt.mul, GaussInt.add,
+    GaussInt.sub, GaussInt.neg, GaussInt.one, GaussInt.zero]
+
+theorem omegaConj_rel :
+    add (add (mul omegaConj omegaConj) omegaConj) one = zero := by
+  simp [omegaConj, mul, add, omega, one, zero, sub, neg, GaussInt.mul, GaussInt.add,
+    GaussInt.sub, GaussInt.neg, GaussInt.one, GaussInt.zero]
+
+theorem omega_rel : add (add (mul omega omega) omega) one = zero := by
+  simp [mul, add, omega, one, zero, sub, neg, GaussInt.mul, GaussInt.add, GaussInt.sub,
+    GaussInt.neg, GaussInt.one, GaussInt.zero]
+
+theorem add_assoc (x y z : Quad) : add (add x y) z = add x (add y z) := by
+  cases x; cases y; cases z
+  simp [add, GaussInt.add_assoc]
+
+theorem add_comm (x y : Quad) : add x y = add y x := by
+  cases x; cases y
+  simp [add, GaussInt.add_comm]
+
+theorem zero_add (x : Quad) : add zero x = x := by
+  cases x; simp [add, zero, GaussInt.zero_add]
+
+theorem add_zero (x : Quad) : add x zero = x := by
+  cases x; simp [add, zero, GaussInt.add_zero]
+
+theorem neg_neg (x : Quad) : neg (neg x) = x := by
+  cases x; simp [neg, GaussInt.neg_neg]
+
+theorem sub_eq_add_neg (x y : Quad) : sub x y = add x (neg y) := by
+  cases x; cases y
+  simp [sub, add, neg, GaussInt.sub_eq_add_neg]
+
+theorem add_neg_self (x : Quad) : add x (neg x) = zero := by
+  cases x with
+  | mk r i =>
+    cases r; cases i
+    simp [add, neg, zero, GaussInt.add, GaussInt.neg, GaussInt.zero]
+    constructor <;> omega
+
+theorem neg_add (x y : Quad) : neg (add x y) = add (neg x) (neg y) := by
+  cases x; cases y
+  simp [neg, add, GaussInt.neg, GaussInt.add]
+  constructor <;> omega
+
+theorem mul_one (x : Quad) : mul x one = x := by
+  cases x
+  simp [mul, one, GaussInt.mul_one, GaussInt.mul_zero, GaussInt.sub_eq_add_neg, GaussInt.add_zero,
+    GaussInt.zero_add, GaussInt.neg_zero]
+
+theorem one_mul (x : Quad) : mul one x = x := by
+  cases x
+  simp [mul, one, zero, GaussInt.one_mul, GaussInt.zero_mul, GaussInt.sub_eq_add_neg,
+    GaussInt.add_zero, GaussInt.neg_zero]
+
+theorem mul_zero (x : Quad) : mul x zero = zero := by
+  cases x
+  simp [mul, zero, GaussInt.mul_zero, GaussInt.sub_eq_add_neg, GaussInt.neg_zero, GaussInt.add_zero]
+
+theorem zero_mul (x : Quad) : mul zero x = zero := by
+  cases x
+  simp [mul, zero, GaussInt.zero_mul, GaussInt.sub_eq_add_neg, GaussInt.neg_zero, GaussInt.add_zero]
+
+theorem mul_neg (x y : Quad) : mul x (neg y) = neg (mul x y) := by
+  cases x with | mk xr xi =>
+  cases y with | mk yr yi =>
+  cases xr; cases xi; cases yr; cases yi
+  simp [mul, neg, GaussInt.mul, GaussInt.neg, GaussInt.sub, GaussInt.add]
+  constructor <;> grind
+
+theorem neg_mul (x y : Quad) : mul (neg x) y = neg (mul x y) := by
+  cases x with | mk xr xi =>
+  cases y with | mk yr yi =>
+  cases xr; cases xi; cases yr; cases yi
+  simp [mul, neg, GaussInt.mul, GaussInt.neg, GaussInt.sub, GaussInt.add]
+  constructor <;> grind
+
+theorem mul_add (x y z : Quad) : mul x (add y z) = add (mul x y) (mul x z) := by
+  cases x with | mk xr xi =>
+  cases y with | mk yr yi =>
+  cases z with | mk zr zi =>
+  cases xr; cases xi; cases yr; cases yi; cases zr; cases zi
+  simp [mul, add, GaussInt.mul, GaussInt.add, GaussInt.sub]
+  constructor <;> grind
+
+theorem add_mul (x y z : Quad) : mul (add x y) z = add (mul x z) (mul y z) := by
+  cases x with | mk xr xi =>
+  cases y with | mk yr yi =>
+  cases z with | mk zr zi =>
+  cases xr; cases xi; cases yr; cases yi; cases zr; cases zi
+  simp [mul, add, GaussInt.mul, GaussInt.add, GaussInt.sub]
+  constructor <;> grind
+
+theorem mul_assoc (x y z : Quad) : mul (mul x y) z = mul x (mul y z) := by
+  cases x with | mk xr xi =>
+  cases y with | mk yr yi =>
+  cases z with | mk zr zi =>
+  cases xr; cases xi; cases yr; cases yi; cases zr; cases zi
+  simp [mul, GaussInt.mul, GaussInt.add, GaussInt.sub]
+  constructor <;> grind
+
+theorem mul_comm (x y : Quad) : mul x y = mul y x := by
+  cases x; cases y
+  simp [mul, GaussInt.mul_comm, GaussInt.add_comm, GaussInt.sub_eq_add_neg]
+
+theorem ofG_add (a b : GaussInt) : ofG (GaussInt.add a b) = add (ofG a) (ofG b) := by
+  simp [ofG, add, GaussInt.add_zero]
+
+theorem ofG_mul (a b : GaussInt) : ofG (GaussInt.mul a b) = mul (ofG a) (ofG b) := by
+  simp [ofG, mul, GaussInt.mul_zero, GaussInt.zero_mul, GaussInt.add_zero, GaussInt.sub_eq_add_neg,
+    GaussInt.neg_zero, GaussInt.mul_comm]
+
+theorem ofG_neg (a : GaussInt) : ofG (GaussInt.neg a) = neg (ofG a) := by
+  simp [ofG, neg, GaussInt.neg_zero]
+
+/-- `ℤ[√(-1)]` sits in the center of `ℤ[√(-1)][ω]`. -/
+theorem ofG_comm (a : GaussInt) (x : Quad) : mul (ofG a) x = mul x (ofG a) := by
+  rw [mul_comm]
+
+theorem add_self (x : Quad) : add x x = mul (ofG (GaussInt.ofInt 2)) x := by
+  cases x
+  simp [add, mul, ofG, GaussInt.ofInt, GaussInt.mul, GaussInt.add, GaussInt.sub, GaussInt.zero]
+  constructor <;> omega
+
+/-- `ρ² + ρ + 1 = 0` rearranges to `ρ² = -(ρ + 1)`. -/
+theorem sq_of_rel {ρ : Quad} (h : add (add (mul ρ ρ) ρ) one = zero) :
+    mul ρ ρ = neg (add ρ one) := by
+  have h' : add (mul ρ ρ) (add ρ one) = zero := by
+    simpa [add_assoc] using h
+  calc
+    mul ρ ρ = add (mul ρ ρ) (add (add ρ one) (neg (add ρ one))) := by
+      rw [add_neg_self, add_zero]
+    _ = add (add (mul ρ ρ) (add ρ one)) (neg (add ρ one)) := by
+      rw [← add_assoc]
+    _ = add zero (neg (add ρ one)) := by rw [h']
+    _ = neg (add ρ one) := by rw [zero_add]
+
+/-- A root of `ω² + ω + 1` is a cube root of `1`. -/
+theorem cube_of_rel {ρ : Quad} (h : add (add (mul ρ ρ) ρ) one = zero) :
+    mul (mul ρ ρ) ρ = one := by
+  have hsq : add (mul ρ ρ) ρ = neg one := by
+    rw [← add_zero (add (mul ρ ρ) ρ), ← add_neg_self one, ← add_assoc, h, zero_add]
+  rw [sq_of_rel h, neg_mul, add_mul, one_mul, hsq, neg_neg]
+
+end Quad
+
+/-- Second `π`-chart with every unit replaced by its digit expansion through `π`.
+
+`Y² - π (X² + X + 1 + π) + π² ((1 - π) Y - X³)`.
+-/
+def modelSecond (X Y : Quad) : Quad :=
+  let y2 := Quad.mul Y Y
+  let x2 := Quad.mul X X
+  let x3 := Quad.mul x2 X
+  let quad := Quad.add x2 (Quad.add X Quad.one)
+  let piG := Quad.ofG pi
+  let piQ := Quad.mul piG (Quad.add quad piG)
+  let lin := Quad.mul (Quad.ofG (GaussInt.sub GaussInt.one pi)) Y
+  let tail := Quad.mul (Quad.ofG (piPow 2)) (Quad.sub lin x3)
+  Quad.add (Quad.sub y2 piQ) tail
+
+/-- Chart center `X = ρ + π U`. -/
+def f4Center (ρ U : Quad) : Quad :=
+  Quad.add ρ (Quad.mul (Quad.ofG pi) U)
+
+/-- Chart height `Y = π V`. -/
+def f4Height (V : Quad) : Quad :=
+  Quad.mul (Quad.ofG pi) V
+
+/-- `modelSecond(ρ + π U, π V) - π² (V² + U)`. -/
+def f4Diff (ρ U V : Quad) : Quad :=
+  Quad.sub (modelSecond (f4Center ρ U) (f4Height V))
+    (Quad.mul (Quad.ofG (piPow 2)) (Quad.add (Quad.mul V V) U))
+
+/-- Coefficient `i = ⟨0, 1⟩`. ` -2 = i · π² `. -/
+private def gaussI : GaussInt := ⟨0, 1⟩
+
+/-- Exact quotient of the `𝔽₄` chart: `modelSecond(ρ + π U, π V) - π²(V² + U) = π³ · f4Quotient`.
+
+`bracket` is the order-`π` piece
+`-3 ρ² U + (1 - π) V - U² - π · 3 ρ U² - π² U³`.
+-/
+def f4Bracket (ρ U V : Quad) : Quad :=
+  Quad.add
+    (Quad.neg (Quad.mul (Quad.ofG (GaussInt.ofInt 3)) (Quad.mul (Quad.mul ρ ρ) U)))
+    (Quad.add (Quad.mul (Quad.ofG (GaussInt.sub GaussInt.one pi)) V)
+      (Quad.add (Quad.neg (Quad.mul U U))
+        (Quad.add
+          (Quad.neg
+            (Quad.mul (Quad.ofG pi)
+              (Quad.mul (Quad.ofG (GaussInt.ofInt 3)) (Quad.mul ρ (Quad.mul U U)))))
+          (Quad.neg
+            (Quad.mul (Quad.ofG (piPow 2)) (Quad.mul (Quad.mul U U) U))))))
+
+def f4Quotient (ρ U V : Quad) : Quad :=
+  Quad.add
+    (Quad.mul (Quad.ofG pi)
+      (Quad.mul (Quad.ofG gaussI)
+        (Quad.add (Quad.mul U (Quad.add Quad.one ρ)) Quad.one)))
+    (f4Bracket ρ U V)
+
+theorem mul_divExact_pi (z : GaussInt) (h : piDivides z) :
+    GaussInt.mul (GaussInt.divExact z pi) pi = z := by
+  cases z with
+  | mk r i =>
+    simp [piDivides] at h
+    have hre : (2 : ℤ) ∣ r + i := Int.dvd_of_emod_eq_zero h
+    have him : (2 : ℤ) ∣ -r + i := by
+      have : -r + i = (r + i) - 2 * r := by grind
+      rw [this]
+      exact Int.dvd_sub hre (Int.dvd_mul_right 2 r)
+    simp [GaussInt.divExact, GaussInt.mul, GaussInt.norm, pi, GaussInt.add, GaussInt.sub]
+    constructor
+    · have h1 := Int.mul_ediv_cancel' hre
+      have h2 := Int.mul_ediv_cancel' him
+      grind
+    · have h1 := Int.mul_ediv_cancel' hre
+      have h2 := Int.mul_ediv_cancel' him
+      grind
+
+private theorem quad_cases4 (U V : Quad)
+    {p : Quad → Quad → Prop}
+    (hp : ∀ a b c d e f g0 h0 : Int,
+      p ⟨⟨a, b⟩, ⟨c, d⟩⟩ ⟨⟨e, f⟩, ⟨g0, h0⟩⟩) :
+    p U V := by
+  cases U with | mk ur ui =>
+  cases V with | mk vr vi =>
+  cases ur with | mk a b =>
+  cases ui with | mk c d =>
+  cases vr with | mk e f =>
+  cases vi with | mk g0 h0 =>
+  exact hp a b c d e f g0 h0
+
+/-- Blowing up `ω`, in the chart `X = ω + π U`, `Y = π V`, leaves `π² (V² + U)`
+plus an explicit multiple of `π³`. The same holds for the conjugate root. -/
+theorem f4_chart_omega (U V : Quad) :
+    f4Diff Quad.omega U V =
+      Quad.mul (Quad.ofG (piPow 3)) (f4Quotient Quad.omega U V) := by
+  refine quad_cases4 (p := fun U V =>
+      f4Diff Quad.omega U V = Quad.mul (Quad.ofG (piPow 3)) (f4Quotient Quad.omega U V))
+      U V ?_
+  intro a b c d e f g0 h0
+  simp [f4Diff, f4Quotient, f4Bracket, modelSecond, f4Center, f4Height, gaussI,
+    Quad.mul, Quad.add, Quad.sub, Quad.neg, Quad.ofG, Quad.omega, Quad.one, Quad.zero,
+    pi, piPow, GaussInt.npow, GaussInt.mul, GaussInt.add, GaussInt.sub, GaussInt.neg,
+    GaussInt.one, GaussInt.zero, GaussInt.ofInt]
+  constructor <;> grind
+
+theorem f4_chart_conj (U V : Quad) :
+    f4Diff Quad.omegaConj U V =
+      Quad.mul (Quad.ofG (piPow 3)) (f4Quotient Quad.omegaConj U V) := by
+  refine quad_cases4 (p := fun U V =>
+      f4Diff Quad.omegaConj U V =
+        Quad.mul (Quad.ofG (piPow 3)) (f4Quotient Quad.omegaConj U V))
+      U V ?_
+  intro a b c d e f g0 h0
+  simp [f4Diff, f4Quotient, f4Bracket, modelSecond, f4Center, f4Height, gaussI,
+    Quad.mul, Quad.add, Quad.sub, Quad.neg, Quad.ofG, Quad.omegaConj, Quad.omega,
+    Quad.one, Quad.zero, pi, piPow, GaussInt.npow, GaussInt.mul, GaussInt.add,
+    GaussInt.sub, GaussInt.neg, GaussInt.one, GaussInt.zero, GaussInt.ofInt]
+  constructor <;> grind
+
+private theorem ofG_mul_re (a : GaussInt) (x : Quad) :
+    (Quad.mul (Quad.ofG a) x).re = GaussInt.mul a x.re := by
+  cases x with
+  | mk xr xi =>
+    cases xr; cases xi; cases a
+    simp [Quad.mul, Quad.ofG, GaussInt.mul, GaussInt.add, GaussInt.sub, GaussInt.zero]
+
+private theorem ofG_mul_im (a : GaussInt) (x : Quad) :
+    (Quad.mul (Quad.ofG a) x).im = GaussInt.mul a x.im := by
+  cases x with
+  | mk xr xi =>
+    cases xr; cases xi; cases a
+    simp [Quad.mul, Quad.ofG, GaussInt.mul, GaussInt.add, GaussInt.sub, GaussInt.zero]
+
+/-- Both components of the `ω` chart difference are divisible by `π³`. -/
+theorem f4_val_omega (U V : Quad) :
+    valAtLeast (f4Diff Quad.omega U V).re 3 ∧ valAtLeast (f4Diff Quad.omega U V).im 3 := by
+  constructor
+  · rw [f4_chart_omega, ofG_mul_re, GaussInt.mul_comm]
+    exact valAtLeast_of_dvd rfl
+  · rw [f4_chart_omega, ofG_mul_im, GaussInt.mul_comm]
+    exact valAtLeast_of_dvd rfl
+
+/-- Both components of the conjugate chart difference are divisible by `π³`. -/
+theorem f4_val_conj (U V : Quad) :
+    valAtLeast (f4Diff Quad.omegaConj U V).re 3 ∧
+      valAtLeast (f4Diff Quad.omegaConj U V).im 3 := by
+  constructor
+  · rw [f4_chart_conj, ofG_mul_re, GaussInt.mul_comm]
+    exact valAtLeast_of_dvd rfl
+  · rw [f4_chart_conj, ofG_mul_im, GaussInt.mul_comm]
+    exact valAtLeast_of_dvd rfl
+
+/-- `∂/∂U` of `V² + U` is `1`. The reduced curve is smooth. -/
+theorem f4_partial_is_unit : ¬ piDivides GaussInt.one := by
+  simp [piDivides, GaussInt.one]
+
+/-!
+## Digit bridge
+
+The real second chart uses `u₂, u₄, u₆`. The model above replaces them by
+`1`, `1`, and `1 + π`. The digit lemmas say the difference of those units is
+divisible by `π²`, so the two charts differ by a multiple of `π³`. Blowing
+up `ω` in the real chart therefore leaves the same reduced equation `V² + U`.
+-/
+
+/-- Second `π`-chart with the real unit cofactors, read in `ℤ[√(-1)][ω]`. -/
+def quadChart (u2 u4 u6 : GaussInt) (X Y : Quad) : Quad :=
+  let x2 := Quad.mul X X
+  let x3 := Quad.mul x2 X
+  let lin := Quad.add (Quad.mul (Quad.ofG u2) x2)
+      (Quad.add (Quad.mul (Quad.ofG u4) X) (Quad.ofG u6))
+  Quad.add (Quad.sub (Quad.mul Y Y) (Quad.mul (Quad.ofG pi) lin))
+    (Quad.mul (Quad.ofG (piPow 2))
+      (Quad.sub (Quad.mul (Quad.ofG (⟨0, -1⟩)) Y) x3))
+
+/-- `α₂ X² + α₄ X + α₆`. -/
+def digitPoly (a2 a4 a6 : GaussInt) (X : Quad) : Quad :=
+  Quad.add (Quad.mul (Quad.ofG a2) (Quad.mul X X))
+    (Quad.add (Quad.mul (Quad.ofG a4) X) (Quad.ofG a6))
+
+private theorem piPow_three_mul : piPow 3 = GaussInt.mul (piPow 2) pi := by
+  simp [piPow, GaussInt.npow, GaussInt.mul_one, GaussInt.mul_comm]
+
+private theorem neg_mul_neg (a b : GaussInt) :
+    GaussInt.mul (GaussInt.neg a) b = GaussInt.neg (GaussInt.mul a b) :=
+  GaussInt.neg_mul a b
+
+/-- The real chart and the model differ by `-π³ (α₂ X² + α₄ X + α₆)`. -/
+theorem quadChart_sub_model (a2 a4 a6 u2 u4 u6 : GaussInt) (X Y : Quad)
+    (h2 : GaussInt.mul a2 (piPow 2) = GaussInt.sub u2 GaussInt.one)
+    (h4 : GaussInt.mul a4 (piPow 2) = GaussInt.sub u4 GaussInt.one)
+    (h6 : GaussInt.mul a6 (piPow 2) = GaussInt.sub u6 (GaussInt.add GaussInt.one pi)) :
+    Quad.sub (quadChart u2 u4 u6 X Y) (modelSecond X Y) =
+      Quad.mul (Quad.ofG (GaussInt.neg (piPow 3))) (digitPoly a2 a4 a6 X) := by
+  have htail : Quad.mul (Quad.ofG (⟨0, -1⟩)) Y =
+      Quad.mul (Quad.ofG (GaussInt.sub GaussInt.one pi)) Y := by
+    rw [← neg_i_eq_one_sub_pi]
+  -- The `Y²` and `π²` tails agree, so only the linear form in `X` remains.
+  -- Rewrite the digit factors through `π²`.
+  have hfactor (c : GaussInt) (z : Quad) :
+      Quad.mul (Quad.ofG c) (Quad.mul (Quad.ofG (piPow 2)) z) =
+        Quad.mul (Quad.ofG (piPow 2)) (Quad.mul (Quad.ofG c) z) := by
+    rw [← Quad.mul_assoc, Quad.mul_comm (Quad.ofG c) (Quad.ofG (piPow 2)), Quad.mul_assoc]
+  have hdig : digitPoly (GaussInt.sub u2 GaussInt.one) (GaussInt.sub u4 GaussInt.one)
+      (GaussInt.sub u6 (GaussInt.add GaussInt.one pi)) X =
+      Quad.mul (Quad.ofG (piPow 2)) (digitPoly a2 a4 a6 X) := by
+    simp only [digitPoly]
+    rw [← h2, ← h4, ← h6, Quad.ofG_mul, Quad.ofG_mul, Quad.ofG_mul, Quad.mul_assoc,
+      Quad.mul_assoc, hfactor, hfactor,
+      Quad.mul_comm (Quad.ofG a6) (Quad.ofG (piPow 2)), ← Quad.mul_add, ← Quad.mul_add]
+  -- Assemble. `quadChart - model = -π · (linear difference) = -π · π² · digitPoly`.
+  have hdiff : Quad.sub (quadChart u2 u4 u6 X Y) (modelSecond X Y) =
+      Quad.mul (Quad.ofG (GaussInt.neg pi))
+        (digitPoly (GaussInt.sub u2 GaussInt.one) (GaussInt.sub u4 GaussInt.one)
+          (GaussInt.sub u6 (GaussInt.add GaussInt.one pi)) X) := by
+    simp only [quadChart, modelSecond, htail]
+    -- Both sides are `Y² - π · lin + tail`. The tails cancel.
+    cases X with | mk xr xi =>
+    cases Y with | mk yr yi =>
+    cases xr; cases xi; cases yr; cases yi
+    cases u2; cases u4; cases u6
+    simp [Quad.add, Quad.sub, Quad.mul, Quad.ofG, Quad.neg, Quad.one, pi, piPow,
+      GaussInt.npow, GaussInt.add, GaussInt.sub, GaussInt.mul, GaussInt.neg,
+      GaussInt.one, GaussInt.zero, digitPoly]
+    constructor <;> grind
+  rw [hdiff, hdig, ← Quad.mul_assoc, ← Quad.ofG_mul, neg_mul_neg,
+    GaussInt.mul_comm pi (piPow 2), ← piPow_three_mul]
+
+private theorem sub_triangle (a b c : Quad) :
+    Quad.sub a c = Quad.add (Quad.sub a b) (Quad.sub b c) := by
+  cases a with | mk ar ai =>
+  cases b with | mk br bi =>
+  cases c with | mk cr ci =>
+  cases ar; cases ai; cases br; cases bi; cases cr; cases ci
+  simp [Quad.sub, Quad.add, GaussInt.sub, GaussInt.add]
+  constructor <;> omega
+
+private theorem f4_real_val (u2 u4 u6 a2 a4 a6 : GaussInt) (ρ U V : Quad)
+    (hchart : f4Diff ρ U V = Quad.mul (Quad.ofG (piPow 3)) (f4Quotient ρ U V))
+    (h2 : GaussInt.mul a2 (piPow 2) = GaussInt.sub u2 GaussInt.one)
+    (h4 : GaussInt.mul a4 (piPow 2) = GaussInt.sub u4 GaussInt.one)
+    (h6 : GaussInt.mul a6 (piPow 2) = GaussInt.sub u6 (GaussInt.add GaussInt.one pi)) :
+    let diff := Quad.sub
+      (quadChart u2 u4 u6 (f4Center ρ U) (f4Height V))
+      (Quad.mul (Quad.ofG (piPow 2)) (Quad.add (Quad.mul V V) U))
+    valAtLeast diff.re 3 ∧ valAtLeast diff.im 3 := by
+  intro diff
+  have hsub := quadChart_sub_model a2 a4 a6 u2 u4 u6 (f4Center ρ U) (f4Height V) h2 h4 h6
+  have htri := sub_triangle
+      (quadChart u2 u4 u6 (f4Center ρ U) (f4Height V))
+      (modelSecond (f4Center ρ U) (f4Height V))
+      (Quad.mul (Quad.ofG (piPow 2)) (Quad.add (Quad.mul V V) U))
+  have hmodel : Quad.sub (modelSecond (f4Center ρ U) (f4Height V))
+      (Quad.mul (Quad.ofG (piPow 2)) (Quad.add (Quad.mul V V) U)) =
+      Quad.mul (Quad.ofG (piPow 3)) (f4Quotient ρ U V) := by
+    simpa [f4Diff] using hchart
+  have hsum : diff =
+      Quad.mul (Quad.ofG (piPow 3))
+        (Quad.add (Quad.neg (digitPoly a2 a4 a6 (f4Center ρ U))) (f4Quotient ρ U V)) := by
+    simp only [diff]
+    rw [htri, hsub, hmodel, Quad.ofG_neg, Quad.neg_mul, ← Quad.mul_neg, ← Quad.mul_add]
+  rw [hsum, ofG_mul_re, ofG_mul_im]
+  constructor
+  · rw [GaussInt.mul_comm]; exact valAtLeast_of_dvd rfl
+  · rw [GaussInt.mul_comm]; exact valAtLeast_of_dvd rfl
+
+/-- On an odd-`a` curve the real chart at `ω` differs from `π² (V² + U)` by a
+multiple of `π³`. The reduced exceptional curve is `V² + U`. -/
+theorem odd_a_f4_val_omega (E : FreyCurve4413)
+    (hodd : E.c.natAbs % 2 = 1) (ha : E.a.natAbs % 2 = 1) (U V : Quad) :
+    valAtLeast (Quad.sub
+      (quadChart (u2Of E) (u4Of E) (u6Of E) (f4Center Quad.omega U) (f4Height V))
+      (Quad.mul (Quad.ofG (piPow 2)) (Quad.add (Quad.mul V V) U))).re 3 ∧
+    valAtLeast (Quad.sub
+      (quadChart (u2Of E) (u4Of E) (u6Of E) (f4Center Quad.omega U) (f4Height V))
+      (Quad.mul (Quad.ofG (piPow 2)) (Quad.add (Quad.mul V V) U))).im 3 :=
+  f4_real_val (u2Of E) (u4Of E) (u6Of E) (u2Digit E) (u4Digit E) (u6Digit E)
+    Quad.omega U V (f4_chart_omega U V) (u2_sub_one_eq E)
+    (u4_sub_one_eq E hodd ha) (u6_sub_one_pi_eq E hodd ha)
+
+/-- Same chart at the conjugate root `-1 - ω`. -/
+theorem odd_a_f4_val_conj (E : FreyCurve4413)
+    (hodd : E.c.natAbs % 2 = 1) (ha : E.a.natAbs % 2 = 1) (U V : Quad) :
+    valAtLeast (Quad.sub
+      (quadChart (u2Of E) (u4Of E) (u6Of E) (f4Center Quad.omegaConj U) (f4Height V))
+      (Quad.mul (Quad.ofG (piPow 2)) (Quad.add (Quad.mul V V) U))).re 3 ∧
+    valAtLeast (Quad.sub
+      (quadChart (u2Of E) (u4Of E) (u6Of E) (f4Center Quad.omegaConj U) (f4Height V))
+      (Quad.mul (Quad.ofG (piPow 2)) (Quad.add (Quad.mul V V) U))).im 3 :=
+  f4_real_val (u2Of E) (u4Of E) (u6Of E) (u2Digit E) (u4Digit E) (u6Digit E)
+    Quad.omegaConj U V (f4_chart_conj U V) (u2_sub_one_eq E)
+    (u4_sub_one_eq E hodd ha) (u6_sub_one_pi_eq E hodd ha)
+
+/-!
+## Strict transform past `X ≡ -u₂`
+
+`strictSChart` is the polynomial `B² + S (A² + A + 1)`. On `S = 0` it is
+the double line `B²`, and its transverse coefficient is `f2Quad`, a unit at
+every point of `ℤ[√(-1)]`. That polynomial is not proved equal to a chart of
+the translated Weierstrass equation. The incidence of this double line with
+the curves already computed is therefore not a theorem.
+-/
+
+/-- `B² + S (A² + A + 1)`. Not yet identified with a Weierstrass chart. -/
+def strictSChart (S A B : GaussInt) : GaussInt :=
+  GaussInt.add (GaussInt.mul B B) (GaussInt.mul S (f2Quad A))
+
+theorem strictSChart_fiber (A B : GaussInt) :
+    strictSChart GaussInt.zero A B = GaussInt.mul B B := by
+  simp [strictSChart, GaussInt.mul, GaussInt.add, GaussInt.zero]
+
+/-- The transverse coefficient is `A² + A + 1`. It is a unit on `ℤ[√(-1)]`. -/
+theorem strict_transverse_is_unit (A : GaussInt) : ¬ piDivides (f2Quad A) :=
+  f2Quad_is_unit A
+
+/-- Formal `∂/∂S` of `B² + S (A² + A + 1)` along `S = 0`. -/
+theorem strict_partial_eq (A : GaussInt) :
+    f2Quad A = GaussInt.add (GaussInt.mul A A) (GaussInt.add A GaussInt.one) := rfl
+
+/-!
+## Vertex identification
+
+`D6Node` below is an abstract fork: `theta` has degree `4`, `chain1` and
+`chain2` have degree `2`, and the four legs have degree `1`. The charts in
+this file do not prove that fork.
+
+Computed components, and the incidence each chart actually shows:
+
+* `theta`. The double line of the second `π`-chart, `originPiChart`,
+  reduced equation `Y²`. The point `X = ω`, `Y = 0` lies on it, and so does
+  the conjugate. No intersection number is proved.
+* `legUp`. The exceptional curve of blowing up `ω`, equation `V² + U`
+  (`f4_chart_omega`, `odd_a_f4_val_omega`). Multiplicity one: the chart
+  equation is `π²` times a polynomial congruent to `V² + U` modulo `π`, and
+  `∂/∂U = 1` (`f4_partial_is_unit`). This is a leg, not a chain component.
+  The only incidence the chart shows is that it is the exceptional divisor of
+  a point of the double line above. The intersection multiplicity is unproved.
+* `legDown`. The same chart at `-1 - ω` (`f4_chart_conj`,
+  `odd_a_f4_val_conj`). Same status.
+* `legLeft`. `leg0Fiber`, reduced equation `Y² + X`, partial `-1`
+  (`leg0_partial_is_unit`). Adjacency to `theta` is unproved.
+* `legFar`. `leg1Fiber`, reduced equation `Y² + X + 1`, partial `1`
+  (`leg1_partial_is_unit`), and the second affine chart `Y² + S² + S`.
+  Adjacency to `chain2` is unproved.
+* `chain1`. Not identified. `strictSChart` is a double line with transverse
+  polynomial `A² + A + 1`, but it is not proved to be the strict transform.
+* `chain2`. Not identified. No computed component is a second chain curve.
+  The two `𝔽₄` exceptional curves are the multiplicity-one legs above.
+
+One closed point of residue `𝔽₄`, cut out by `π`, `Y`, and `X² + X + 1`,
+base-changes into the two geometric points `ω` and `-1 - ω`. The two
+exceptional curves are the two geometric components of that blow-up.
+
 ## The `D₆` fork
 
-Kodaira `I₂*` has seven geometric components. The dual graph is the fork
+Kodaira `I₂*` has seven geometric components. The dual graph drawn here is the fork
 with a node of degree `4` and a chain of length `2` beyond it:
 
 ```
@@ -706,10 +1270,9 @@ legLeft—theta—chain1—chain2—legFar
         legDown
 ```
 
-`d6_node_count` is the count `7`. The charts above are the two rational
-legs (`leg0Fiber`, `leg1Fiber`) and the double component
-(`originPiChart`) through `theta`. They do not by themselves name the
-three remaining vertices.
+`node_count` is the count `7`. The names above are a labelling of the
+computed curves by the vertices of this fork. They are not a proof of the
+edges `D6Node.neighbors`.
 -/
 
 inductive D6Node where
