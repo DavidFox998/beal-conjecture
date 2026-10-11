@@ -19,6 +19,11 @@ The sets are `Qᵢ = { q prime : q ∣ d, q ≡ i (mod 8) }` for `i ∈ {1,3,5,7
 For the signature `a⁴ + b⁴ = c¹³` one has `d = 1` and `p = 13`. No prime
 divides `d`, so each `Qᵢ` is empty and the lowered level is a power of `2`.
 `level_32_or_64` checks the two candidates `2⁵ = 32` and `2⁶ = 64`.
+`half_exponent_is_not_the_norm` separates `2^(f / 2)` from the ideal norm
+`2^f`. `serre_two_level_open` and `odd_level_one_open` name the two steps
+from Pacetti's exponent to a level in `{32, 64}`. `h_n_eq` stays on the
+axiom. `h_n_eq_of_tate` assumes those two propositions together with
+`components_n_plus_five_open` and does not use the axiom.
 
 ## Citations
 
@@ -108,9 +113,11 @@ for odd `c` this is `minimalAt2_of_c_odd`. `not_minimal_even_c` is the
 curve `(8, 8, 2)`: `u = π`, `r = s = t = 0` lowers `Δ`. The conductor
 exponent does not follow. `IsINStar` is Dokchitser's numerical bounds for
 even `n`. `NeronSpecialFiberComponents` and `SwanAtPi` are sealed.
-`FTameAtPi` is `v_π(Δ) - m + 1`. `(π)^10 = (32)`
-does not set Ribet's `n`.
-`ConductorExponentAtPrimeAbove2` is their sum, and `h_n_eq` stays on the axiom.
+`FTameAtPi` is the tame exponent, equal to `2` for odd `c`. `SwanAtPi` is
+Ogg's full exponent minus that tame part. `(π)^10 = (32)` does not set
+Ribet's `n`. `ConductorExponentAtPrimeAbove2` is their sum. `h_n_eq` stays
+on the axiom. `h_n_eq_of_tate` needs `components_n_plus_five_open`,
+`serre_two_level_open`, and `odd_level_one_open`.
 -/
 def MinimalModelAt2 (E : FreyCurve4413) : Prop :=
   FreyCurve4413.qiLocalMinimalAtPi E
@@ -221,11 +228,15 @@ symbol. `SwanAtPi` is sealed. It is not the parity of `v(D)`.
 `(-√(-1))^5 · π^10 = 32` with `N(π^10) = 2^10`. `pi_twelve_principal` is
 `(-√(-1))^6 · π^12 = 64` with norm `2^12`. The principal ideals
 `(π)^10 = (32)` and `(π)^12 = (64)` agree. Dividing the exponent by `2`
-is not the norm of the conductor ideal. This proposition does not prove
-`n = 32 ∨ n = 64`.
+is not the norm of the conductor ideal. `half_exponent_is_not_the_norm`
+is `2^(10 / 2) = 32` beside `2^10 = 1024`, and the same split for `12`.
+`serre_two_level_open` is the unproved step from the exponent to
+`twoPrimaryLevel`. This proposition does not prove `n = 32 ∨ n = 64`.
 That disjunction is stored on `RibetLevel` as part of the axiom's
 conclusion. `thirtyTwo_dvd_of_tate_bound` turns the disjunction into
-`32 ∣ n` and does not use this proposition.
+`32 ∣ n` and does not use this proposition. `h_n_eq_of_tate` assumes
+`components_n_plus_five_open`, `serre_two_level_open`, and
+`odd_level_one_open`.
 On a coprime pair, `minimalAt2_of_coprime` is `MinimalModelAt2`, so this
 statement does not take minimality as a hypothesis. It asks whether
 `FTameAtPi + SwanAtPi` lies in `{10, 12}` when `gcd(|a|, |b|) = 1`.
@@ -253,6 +264,9 @@ the special fiber of type `I_n*`. It is not derived from the bounds.
 count is assumed. `pacetti_of_components` is this statement under the
 component hypothesis alone. `(8, 8, 2)` fails the coprimality hypothesis
 and stays a non-minimal even-`c` curve. `h_n_eq` stays on the axiom.
+`h_n_eq_of_tate` sits beside it. The component count is not enough to
+replace the disjunction: that theorem also assumes `serre_two_level_open`
+and `odd_level_one_open`.
 -/
 def pacetti_2_8_open : Prop :=
   ∀ E : FreyCurve4413, E.a.natAbs.gcd E.b.natAbs = 1 →
@@ -275,6 +289,97 @@ theorem pacetti_of_components
   · exact Or.inl (hsum.1 (FreyCurve4413.even_a_IsINStar E hodd ha))
   · exact Or.inr (hsum.2 (FreyCurve4413.a_odd_IsINStar E hodd ha))
 
+/-- The 2-primary part of the Serre level of `ρ_{E,13}` over `ℚ`.
+
+The equation is hidden. This is not `32` or `64`, and `rfl` does not
+decide it. It is the power of `2` in the Artin conductor of
+`Gal(ℚ̄/ℚ)`, not the generator of the principal ideal `(π)^f` in `ℤ[i]`.
+`pi_ten_principal` is that generator `32` when `f = 10`, and the norm of
+the ideal is `2^10`.
+
+Citation: Serre, Duke Math. J. 54 (1987), the conductor in the level of a
+modular residual representation.
+-/
+opaque twoPrimaryLevel (E : FreyCurve4413) : ℕ := 0
+
+/-- The prime-to-`2` part of the Serre level of `ρ_{E,13}`.
+
+The equation is hidden. This is not `1`, and `rfl` does not decide it.
+`odd_conductor_empty` empties Pacetti's sets `Qᵢ` of primes dividing
+`d = 1`. It does not remove a prime dividing `c`.
+-/
+opaque OddPrimaryLevel (E : FreyCurve4413) : ℕ := 0
+
+/-- `2^(f / 2)` and the ideal norm `2^f` are different integers.
+
+`2^(10 / 2) = 32` and `2^10 = 1024`. `2^(12 / 2) = 64` and `2^12 = 4096`.
+`pi_ten_principal` is `(-√(-1))^5 · π^10 = 32` with `N(π^10) = 1024`.
+`pi_twelve_principal` is `(-√(-1))^6 · π^12 = 64` with `N(π^12) = 4096`.
+The generator of `(π)^f` is `2^(f / 2)`. The norm of that ideal is `2^f`.
+Neither integer is `RibetLevel.n`.
+-/
+theorem half_exponent_is_not_the_norm :
+    (2 ^ (10 / 2) = 32 ∧ 2 ^ 10 = 1024) ∧
+      (2 ^ (12 / 2) = 64 ∧ 2 ^ 12 = 4096) := by
+  decide
+
+/-- Serre's recipe sending an even Artin exponent `f` at `π` to `2^(f / 2)`.
+
+`f = 10` would give `twoPrimaryLevel = 32`, and `f = 12` would give `64`.
+This proposition is that identification. It is not a theorem and not an
+axiom. `half_exponent_is_not_the_norm` keeps `2^(f / 2)` apart from the
+ideal norm `2^f`. `pacetti_of_components` supplies `f ∈ {10, 12}` and does
+not supply this proposition.
+-/
+def serre_two_level_open : Prop :=
+  ∀ E : FreyCurve4413, E.a.natAbs.gcd E.b.natAbs = 1 →
+    (FreyCurve4413.FTameAtPi E + FreyCurve4413.SwanAtPi E = 10 →
+        twoPrimaryLevel E = 32) ∧
+      (FreyCurve4413.FTameAtPi E + FreyCurve4413.SwanAtPi E = 12 →
+        twoPrimaryLevel E = 64)
+
+/-- The prime-to-`2` Serre level is `1` on a coprime Frey curve.
+
+Frey's finite/flat argument is not formalized. At an odd prime `ℓ ∣ c`,
+the Tate parameter is a 13th power up to units, so `ρ_{E,13}` is finite
+at `ℓ` and level lowering removes `ℓ`. `odd_conductor_empty` is a different
+product: the sets of primes dividing `d = 1`. This proposition is not a
+theorem and not an axiom.
+-/
+def odd_level_one_open : Prop :=
+  ∀ E : FreyCurve4413, E.a.natAbs.gcd E.b.natAbs = 1 →
+    OddPrimaryLevel E = 1
+
+/-- The product of the sealed 2-primary and odd-primary levels is `32` or `64`.
+
+The hypotheses that stand in for the axiom's disjunction are
+`components_n_plus_five_open`, `serre_two_level_open`, and
+`odd_level_one_open`. The component count alone is not enough.
+`pacetti_of_components` gives the Artin exponent `f ∈ {10, 12}`.
+`serre_two_level_open` rewrites the 2-primary part, and
+`odd_level_one_open` rewrites the odd part to `1`. This theorem does not
+use `ribet_level_lowering_4413`. The conclusion is a product of two sealed
+functions. It is not the field `RibetLevel.h_n_eq`, and it does not
+discharge that field.
+-/
+theorem h_n_eq_of_tate
+    (hcomp : FreyCurve4413.components_n_plus_five_open)
+    (hserre : serre_two_level_open)
+    (hodd : odd_level_one_open)
+    (E : FreyCurve4413) (hcop : E.a.natAbs.gcd E.b.natAbs = 1) :
+    twoPrimaryLevel E * OddPrimaryLevel E = 32 ∨
+      twoPrimaryLevel E * OddPrimaryLevel E = 64 := by
+  have hf := pacetti_of_components hcomp E hcop
+  have hs := hserre E hcop
+  have ho := hodd E hcop
+  rcases hf with h10 | h12
+  · have h2 := hs.1 h10
+    left
+    rw [h2, ho, Nat.mul_one]
+  · have h2 := hs.2 h12
+    right
+    rw [h2, ho, Nat.mul_one]
+
 /-- Minimal model, Pacetti's exponent in `{10, 12}`, and `n = 32 ∨ n = 64`.
 
 The disjunction is a conjunct. It is not derived from the exponent.
@@ -296,7 +401,11 @@ structure RibetOutput (E : FreyCurve4413) (N n : ℕ) where
 /-- One Ribet output at one level.
 
 `h_n_eq` is `n = 32 ∨ n = 64`. The axiom supplies it. It is not a theorem
-from `pacetti_2_8_open`. `h_dvd` is `n ∣ N`. `h_coprime` uses `IsPrime`.
+from `pacetti_2_8_open`, and `components_n_plus_five_open` alone does not
+replace it. The further hypotheses are `serre_two_level_open` and
+`odd_level_one_open`. `h_n_eq_of_tate` is the product of the sealed levels
+under those three hypotheses. It does not discharge this field.
+`h_dvd` is `n ∣ N`. `h_coprime` uses `IsPrime`.
 `thirtyTwo_dvd_of_eq` turns `h_n_eq` into `32 ∣ n`.
 -/
 structure RibetLevel (c : ℤ) (E : FreyCurve4413) (N : ℕ) where
@@ -312,7 +421,10 @@ structure RibetLevel (c : ℤ) (E : FreyCurve4413) (N : ℕ) where
 `N` is the conductor. `hIrr` is `RhoE13Open`; there is no term of that type.
 `hPacetti` is `pacetti_2_8_open`. The result stores `n = 32 ∨ n = 64`,
 `n ∣ N`, and the prime-coprimality condition. The disjunction is part of
-this axiom. `32 ∣ n` is `RibetLevel.thirtyTwo_dvd`, from the disjunction.
+this axiom. `h_n_eq_of_tate` does not replace it: that theorem assumes
+`components_n_plus_five_open`, `serre_two_level_open`, and
+`odd_level_one_open`, and it concludes a product of sealed levels.
+`32 ∣ n` is `RibetLevel.thirtyTwo_dvd`, from the disjunction.
 
 Citation: Ribet 1990, Invent. Math. 100, and Pacetti's slide
 “Ribet's lowering the level result”.

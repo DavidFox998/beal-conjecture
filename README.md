@@ -237,7 +237,19 @@ coefficients has `v_π(d) = 10` or `8`, and the Weierstrass discriminant has
 `(π)^10 = (32)` does not give `n`.
 `(-√(-1))^5 · π^10 = 32` with norm `2^10`, and `(-√(-1))^6 · π^12 = 64`
 with norm `2^12`. The principal ideals agree. That equality does not give
-`n = 32 ∨ n = 64`. `FreyValuationAt2` is `v₂(|c|)`.
+`n = 32 ∨ n = 64`. `half_exponent_is_not_the_norm` records
+`2^(10 / 2) = 32` beside `2^10 = 1024`, and `2^(12 / 2) = 64` beside
+`2^12 = 4096`. The generator of `(π)^f` is `2^(f / 2)`. The ideal norm is
+`2^f`. Neither integer is Ribet's `n`. `twoPrimaryLevel` and
+`OddPrimaryLevel` are sealed. `serre_two_level_open` is the unproved
+identification of the 2-primary Serre level with `2^(f / 2)`.
+`odd_level_one_open` is Frey's finite/flat argument at primes dividing
+`c`. `odd_conductor_empty` empties the sets of primes dividing `d = 1`
+and does not prove that proposition. `h_n_eq_of_tate` concludes that the
+product of the two sealed levels is `32` or `64`, assuming
+`components_n_plus_five_open`, `serre_two_level_open`, and
+`odd_level_one_open`. It does not use `ribet_level_lowering_4413`, and it
+does not discharge `h_n_eq`. `FreyValuationAt2` is `v₂(|c|)`.
 `RhoE13Open` is sealed. `Psi13HasNoQiRoot` is stated only for
 `NontrivialFrey`. The unrestricted statement fails for `(0, 0, 0)`.
 `RhoE13NeedsSL2` is `Psi13HasNoQiRoot` together with the sealed
