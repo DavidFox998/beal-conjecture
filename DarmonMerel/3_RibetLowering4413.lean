@@ -2,6 +2,7 @@ import Init
 import DarmonMerel.«2_Modularity4413»
 import Mathlib.Modular.Rank0_32a1
 import Mathlib.Modular.EllipticCurveMinimal
+import Mathlib.Modular.FreyTraceF9
 
 notation "ℕ" => Nat
 
@@ -36,6 +37,11 @@ axiom. `h_n_eq_of_tate` assumes those two propositions together with
   (1990), 431–476.
 * Pacetti 2023, slide “Ribet's lowering the level result”.
 * Note: this is axiom 2 until Mathlib has Ribet's theorem for ℚ-curves.
+
+The axiom's conclusion is `RibetLowering`. `level` is the old conclusion,
+under the same three hypotheses. `gkResidual` is `GkResidualIso`, the
+residual isomorphism in the form the descent consumes. `RibetLevel` has
+no new field. `h_n_eq` is still `n = 32 ∨ n = 64`.
 -/
 
 /-- `q` belongs to Pacetti's set `Qᵣ` for the positive integer `d`:
@@ -933,24 +939,37 @@ structure RibetLevel (c : ℤ) (E : FreyCurve4413) (N : ℕ) where
   h_coprime : ∀ p, IsPrime p → p ∣ c.natAbs → ¬ p ∣ n
   output : RibetOutput E N n
 
-/-- Ribet's lowering-the-level theorem for `d = 1`, `p = 13`, at one `N`.
+/-- Residual isomorphism in the form the descent consumes: the Frey trace over `F9` is `-6` mod `13`. -/
+def GkResidualIso : Prop :=
+  ∀ (a b c : ℤ) (E : FreyCurve4413) (N : ℕ),
+    a ≠ 0 → b ≠ 0 →
+    a.natAbs.gcd b.natAbs = 1 →
+    E.a = a → E.b = b → E.c = c →
+    Modular E →
+    RibetLevel c E N →
+    rho_E_p E = GaloisRepresentation.unresolved →
+    rho_E_p_twisted E = GaloisRepresentation.unresolved →
+    (13 : ℤ) ∣ Cm32.freyTrace3 (Cm32.mod3 a) (Cm32.mod3 b) - (-6)
 
-`hCond` says `N` equals `32 |c|²` or `64 |c|²`. It does not prove that this
-`N` is the conductor. `hIrr` is `RhoE13Open`; there is no term of that type.
-`hPacetti` is `pacetti_2_8_open`. The result stores `n = 32 ∨ n = 64`,
-`n ∣ N`, and the prime-coprimality condition. The disjunction is part of
-this axiom. `h_n_eq_of_tate` does not replace it: that theorem assumes
-`components_n_plus_five_open`, `serre_two_level_open`, and
-`odd_level_one_open`, and it concludes a product of sealed levels.
-`32 ∣ n` is `RibetLevel.thirtyTwo_dvd`, from the disjunction.
+/-- Level-lowering conclusion paired with `GkResidualIso`.
 
-Citation: Ribet 1990, Invent. Math. 100, and Pacetti's slide
-“Ribet's lowering the level result”.
-Note: this is axiom 2 until Mathlib has Ribet's theorem for ℚ-curves.
+`level` is the previous conclusion, under the same three hypotheses.
+`gkResidual` is the residual isomorphism. `RibetLevel` gains no field.
 -/
-axiom ribet_level_lowering_4413 {c : ℤ} {E : FreyCurve4413} (N : ℕ)
+structure RibetLowering where
+  level :
+    ∀ {c : ℤ} {E : FreyCurve4413} (N : ℕ),
+      FreyConductorDivides c N → RhoE13Open E → pacetti_2_8_open →
+        RibetLevel c E N
+  gkResidual : GkResidualIso
+
+axiom ribet_level_lowering_4413 : RibetLowering
+
+/-- The level package, projected from `ribet_level_lowering_4413`. -/
+noncomputable abbrev ribetLevelOfAxiom {c : ℤ} {E : FreyCurve4413} (N : ℕ)
     (hCond : FreyConductorDivides c N) (hIrr : RhoE13Open E)
-    (hPacetti : pacetti_2_8_open) : RibetLevel c E N
+    (hPacetti : pacetti_2_8_open) : RibetLevel c E N :=
+  ribet_level_lowering_4413.level N hCond hIrr hPacetti
 
 abbrev RibetLevel.level {c : ℤ} {E : FreyCurve4413} {N : ℕ}
     (p : RibetLevel c E N) : ℕ :=

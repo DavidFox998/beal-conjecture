@@ -86,7 +86,7 @@ theorem norm_and_level_lowering_axiom
     (hPacetti : pacetti_2_8_open) :
     E.discriminant_re ^ 2 + E.discriminant_im ^ 2 = (2 : ℤ) ^ 18 * E.c ^ 39 ∧
       ∃ n : ℕ, ∃ g : Newform n, LevelLowered E g := by
-  let pkg : RibetLevel c E N := ribet_level_lowering_4413 N hCond hIrr hPacetti
+  let pkg : RibetLevel c E N := ribetLevelOfAxiom N hCond hIrr hPacetti
   exact ⟨discriminant_norm E, pkg.level, pkg.output.g, pkg.output.lowered⟩
 
 /-- `N(Δ) = 2¹⁸ (c³)¹³`.
@@ -186,7 +186,7 @@ theorem ribet_given_open_hypotheses
       ∃ n : ℕ, ∃ g : Newform n, LevelLowered E g := by
   refine ⟨discriminant_norm_odd_part E, hOpen, hRho, ?_⟩
   have hCond : FreyConductorDivides E.c N := FreyConductor_OPEN.toDivides hOpen
-  let pkg : RibetLevel E.c E N := ribet_level_lowering_4413 N hCond hRho hLower
+  let pkg : RibetLevel E.c E N := ribetLevelOfAxiom N hCond hRho hLower
   exact ⟨pkg.level, pkg.output.g, pkg.output.lowered⟩
 
 theorem thirtyTwo_mul_dvd_sixtyFour (m : ℕ) : 32 * m ∣ 64 * m := by
@@ -435,7 +435,7 @@ noncomputable def ribetOutput_of_open_hypotheses
     {c : ℤ} {E : FreyCurve4413} (N : ℕ)
     (hCond : FreyConductorDivides c N) (hIrr : RhoE13Open E)
     (hPacetti : pacetti_2_8_open) : RibetLevel c E N :=
-  ribet_level_lowering_4413 N hCond hIrr hPacetti
+  ribetLevelOfAxiom N hCond hIrr hPacetti
 
 /-- A conductor shape is divisible by `32 = 2⁵`.
 

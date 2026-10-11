@@ -37,8 +37,9 @@ returns one newform.
 
 `N = 32 |c|²` satisfies `FreyConductorDivides` by construction. That is the
 shape hypothesis, not a proof that the conductor equals `32 |c|²`.
-The axiom's package stores `n = 32 ∨ n = 64`. This theorem returns
-existence of a newform and does not project the disjunction.
+`ribetLevelOfAxiom` is `ribet_level_lowering_4413.level`. That package
+stores `n = 32 ∨ n = 64`. `gkResidual` is not read here. This theorem
+returns existence of a newform and does not project the disjunction.
 -/
 theorem solution_modular_and_lowered
     (a b c : ℤ) (heq : a ^ 4 + b ^ 4 = c ^ 13)
@@ -51,7 +52,7 @@ theorem solution_modular_and_lowered
   refine ⟨frey_qcurve_modular a b c E, ?_⟩
   let N : ℕ := 32 * c.natAbs ^ 2
   have hCond : FreyConductorDivides c N := Or.inl rfl
-  let pkg : RibetLevel c E N := ribet_level_lowering_4413 N hCond hIrr hPacetti
+  let pkg : RibetLevel c E N := ribetLevelOfAxiom N hCond hIrr hPacetti
   exact ⟨pkg.level, pkg.output.g, pkg.output.lowered⟩
 
 /-- Merel's nonvanishing test at both CM levels.
@@ -142,7 +143,7 @@ theorem no_solution_4413_of_frontier
   let N : ℕ := 32 * c.natAbs ^ 2
   have hCond : FreyConductorDivides c N := Or.inl rfl
   let pkg : RibetLevel c E N :=
-    ribet_level_lowering_4413 N hCond (hIrr heq) hPac
+    ribetLevelOfAxiom N hCond (hIrr heq) hPac
   rcases h_n_eq_of_tate hcomp hserre hodd E hcop with _h32 | _h64
   · exact hnew a b c E N ha hb hcop hpos rfl rfl rfl hMod pkg
   · exact hnew a b c E N ha hb hcop hpos rfl rfl rfl hMod pkg
