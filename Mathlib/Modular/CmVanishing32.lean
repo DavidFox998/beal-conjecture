@@ -34,11 +34,29 @@ extension. Weil restriction would be the direct sum of the two summands
 and the residue `10`. It is not used. `{-2, 4, 6}` meets neither `-6` nor
 `7`.
 
-The cocycle lift is not constructed. That end statement is still
-`qcurve_extension_13_open`. `modular_residual_13_open` is the projection
-`ribet_level_lowering_4413.gkResidual`, the residual isomorphism in
-`GkResidualIso`.
-`no_newform_32_64_of_qcurve` is `no_newform_32_64_open` on the extension
+The coefficient 2-isogeny lands on the twist by `-2`, not on `E`. Its
+degree is `2`, so the composition with the conjugate has degree `4` and
+the endomorphism scalar is `±2`. The twist character `χ_{-2}` takes values
+in `{±1}`, so `χ_{-2}(σ)² = 1` and does not move that scalar. `(-2 / 3) = 1`,
+and a square in the Galois group is killed by any quadratic character, so
+the trace at `Frob_3²` stays `-6`.
+
+`±2` are the residues `2` and `11` in `𝔽₁₃`. Neither is a square, and no
+scalar `c` in `𝔽₁₃` satisfies `c² · u = 1`. That rescaling is the linear
+lift over `𝔽₁₃`, and its failure is a theorem. Both residues are squares in
+`𝔽₁₃[√2]`, so the same rescaling exists over `𝔽₁₆₉`. The class of `-6` is
+the prime-field element `7`, fixed by the Frobenius of that extension.
+
+There is still no Tate module and no `GL₂`. The missing representation
+`G_ℚ → GL₂(𝔽₁₆₉)` is the single open `qcurve_extension_169_open`. It asks
+for the trace at `Frob_3²` to equal `-6`. `qcurve_extension_13_open` is
+that statement rewritten by `0² - 2·3 = -6`. `H²(G_ℚ, 𝔽₁₆₉ˣ)` is not
+defined here. The local class on the conjugation is the class of `±2`,
+which is a coboundary over `𝔽₁₆₉` by the square computation. Tate's
+theorem is not proved and is not a second hypothesis.
+`modular_residual_13_open` is the projection
+`ribet_level_lowering_4413.gkResidual`.
+`no_newform_32_64_of_qcurve` is `no_newform_32_64_open` on the `𝔽₁₆₉` open
 alone. The frontier definition is unchanged, and the closure is not
 unconditional.
 -/
@@ -423,21 +441,297 @@ theorem coefficient_qcurve_misses_neg_six :
   rw [htr]
   decide
 
-/-- End statement of the missing 2-cocycle lift.
+/-- Coefficient data for `μ : E^σ → E^{(-2)}`.
 
-`qcurve_isogeny_input` is the hypothesis this proposition consumes. The
-lift itself is not constructed: there is no projective representation
-`G_ℚ → PGL₂` and no 2-dimensional `ρ̄` with `ρ̄ |_{G_K} ≅ ρ̄_E`. The prime
-`3` is inert, so `Frob_𝔭₃ = Frob_3²`, and the trace of that square on a
-weight-2 form is `a_3² - 2·3`. The character of the `-2`-twist is trivial
-on `Frob_𝔭₃`, because that element is a square and because `(-2 / 3) = 1`.
-The formula is specialized at `a_3 = 0`, the value `cm_vanish_32` and
-`cm_vanish_64` give for `eig32` and `eig64`. `Newform` has no eigenvalue
-field, so this proposition cannot quantify over the eigenvalue of
-`RibetOutput.g`. It does not claim the congruence for any other integer,
-and it does not claim it for a bare `IsQCurve` curve.
+`FreyQCurve_is_QCurve` supplies the twist `-2` and the Vélu numerator
+degree `2`. `qcurve_isogeny_input` supplies the equality of Weierstrass
+coefficients with that twist, and `13 ∤ 2`. The target is the twist, not
+`E`. This is not a map on a mod-`13` Tate module. The scalars below are
+what `μ_* ∘ σ(μ_*)` would act by once that map exists.
 -/
-def qcurve_extension_13_open : Prop :=
+theorem mu_coefficient_data (E : FreyCurve4413) :
+    (∃ twistBy : Int, ∃ degree : Nat,
+      twistBy = -2 ∧ degree = 2 ∧
+        (FreyCurve4413.velu_target_A E = FreyCurve4413.twist_neg_two_A E ∧
+          FreyCurve4413.velu_target_B E = FreyCurve4413.twist_neg_two_B E)) ∧
+      ¬ ((13 : Int) ∣ 2) := by
+  refine ⟨?_, (qcurve_isogeny_input E).2⟩
+  rcases FreyCurve4413.FreyQCurve_is_QCurve E with ⟨tw, deg, htw, hdeg, hcoeff⟩
+  exact ⟨tw, deg, htw, hdeg, hcoeff⟩
+
+/-- Each factor has degree `2`, so the composition has degree `4`.
+Both signs square to the same degree. -/
+theorem isogeny_composition_degree :
+    (2 : Int) * 2 = 4 ∧ ((-2 : Int) * -2) = 4 := by
+  decide
+
+/-- An endomorphism scalar of a degree-`4` isogeny satisfies `n² = 4`,
+hence `n = 2` or `n = -2`. -/
+theorem scalar_of_degree_four (n : Int) (hn : n * n = 4) : n = 2 ∨ n = -2 := by
+  have hprod : (n - 2) * (n + 2) = 0 := by
+    grind
+  rcases Int.mul_eq_zero.mp hprod with h | h
+  · left
+    exact Int.sub_eq_zero.mp h
+  · right
+    have hsub : n - (-2) = n + 2 := by
+      rw [Int.sub_eq_add_neg, Int.neg_neg]
+    apply Int.sub_eq_zero.mp
+    rw [hsub]
+    exact h
+
+/-- `χ_{-2}` takes values in `{±1}`, so `χ_{-2}(σ)² = 1`. -/
+theorem chi_neg_two_square (ε : Int) (h : ε = 1 ∨ ε = -1) : ε * ε = 1 := by
+  rcases h with rfl | rfl
+  · decide
+  · decide
+
+/-- The square of the character does not move the scalar `n`. -/
+theorem twist_factor_fixes_scalar (n ε : Int) (hε : ε = 1 ∨ ε = -1) :
+    n * (ε * ε) = n := by
+  rw [chi_neg_two_square ε hε, Int.mul_one]
+
+/-- `μ_* ∘ σ(μ_*)`, up to the twist, is `[n]` with `n = ±2`.
+The factor `χ_{-2}(σ)²` equals `1`. -/
+theorem intertwiner_endomorphism_scalar (n ε : Int)
+    (hn : n * n = 4) (hε : ε = 1 ∨ ε = -1) :
+    n * (ε * ε) = 2 ∨ n * (ε * ε) = -2 := by
+  rw [twist_factor_fixes_scalar n ε hε]
+  exact scalar_of_degree_four n hn
+
+/-- `(-1 / 3) = (-1)^{(3 - 1) / 2} = -1`. -/
+theorem legendre_neg_one_at_three : (-1 : Int) ^ ((3 - 1) / 2) = -1 := by
+  decide
+
+/-- `(2 / 3) = (-1)^{(3² - 1) / 8} = -1`, since `3 ≡ 3 (mod 8)`. -/
+theorem legendre_two_at_three : (-1 : Int) ^ ((3 * 3 - 1) / 8) = -1 := by
+  decide
+
+theorem three_mod_eight : (3 : Nat) % 8 = 3 := by
+  decide
+
+/-- `(-2 / 3) = (-1 / 3) (2 / 3) = 1`. -/
+theorem legendre_neg_two_at_three :
+    ((-1 : Int) ^ ((3 - 1) / 2)) * ((-1 : Int) ^ ((3 * 3 - 1) / 8)) = 1 := by
+  decide
+
+/-- Multiplying `a_3² - 2·3` by `χ_{-2}(Frob_3²) = χ(Frob_3)² = 1`
+leaves `-6`. -/
+theorem twisted_frob_square_trace (ε : Int) (h : ε = 1 ∨ ε = -1) :
+    ((0 : Int) * 0 - 2 * 3) * (ε * ε) = -6 := by
+  rw [chi_neg_two_square ε h, Cm32.frob_square_trace_at_3]
+  decide
+
+/-- The same trace, multiplied by the Legendre value `(-2 / 3) = 1`. -/
+theorem trace_unmoved_by_legendre :
+    ((0 : Int) * 0 - 2 * 3) *
+      (((-1 : Int) ^ ((3 - 1) / 2)) * ((-1 : Int) ^ ((3 * 3 - 1) / 8))) = -6 := by
+  rw [legendre_neg_two_at_three, Cm32.frob_square_trace_at_3]
+  decide
+
+/-- Nonzero squares in `𝔽₁₃` are `{1, 3, 4, 9, 10, 12}`. -/
+theorem unit_square_residues (k : Nat) (hk : k < 13) (hk0 : k ≠ 0) :
+    (k * k) % 13 = 1 ∨ (k * k) % 13 = 3 ∨ (k * k) % 13 = 4 ∨
+      (k * k) % 13 = 9 ∨ (k * k) % 13 = 10 ∨ (k * k) % 13 = 12 := by
+  have hor : k = 0 ∨ k = 1 ∨ k = 2 ∨ k = 3 ∨ k = 4 ∨ k = 5 ∨ k = 6 ∨
+      k = 7 ∨ k = 8 ∨ k = 9 ∨ k = 10 ∨ k = 11 ∨ k = 12 := by omega
+  rcases hor with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
+  · exact absurd rfl hk0
+  all_goals decide
+
+/-- `2` and `11` are not squares in `𝔽₁₃`. These are the residues of `±2`. -/
+theorem two_and_eleven_not_squares (k : Nat) (hk : k < 13) :
+    (k * k) % 13 ≠ 2 ∧ (k * k) % 13 ≠ 11 := by
+  have hor : k = 0 ∨ k = 1 ∨ k = 2 ∨ k = 3 ∨ k = 4 ∨ k = 5 ∨ k = 6 ∨
+      k = 7 ∨ k = 8 ∨ k = 9 ∨ k = 10 ∨ k = 11 ∨ k = 12 := by omega
+  rcases hor with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
+  all_goals decide
+
+/-- `-2 ≡ 11 (mod 13)` and `2 ≡ 2`. -/
+theorem neg_two_residue : (-2 : Int) % 13 = 11 ∧ (2 : Int) % 13 = 2 := by
+  decide
+
+/-- No `c` in `𝔽₁₃` satisfies `c² · u = 1` for `u ∈ {2, 11}`.
+
+This is the failure of the linear rescaling over `𝔽₁₃`. It is not a claim
+that every representation `G_ℚ → GL₂(𝔽₁₃)` is absent. It is the statement
+that an intertwiner with `M₀² = u I` cannot be rescaled to `M² = I` by a
+scalar of `𝔽₁₃`.
+-/
+theorem f13_no_rescale (c : Nat) (hc : c < 13) :
+    (c * c * 2) % 13 ≠ 1 ∧ (c * c * 11) % 13 ≠ 1 := by
+  have hor : c = 0 ∨ c = 1 ∨ c = 2 ∨ c = 3 ∨ c = 4 ∨ c = 5 ∨ c = 6 ∨
+      c = 7 ∨ c = 8 ∨ c = 9 ∨ c = 10 ∨ c = 11 ∨ c = 12 := by omega
+  rcases hor with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
+  all_goals decide
+
+/-- The scalar `u = n · χ_{-2}(σ)²` is `±2`, its residues are not squares,
+and neither residue has a rescaling to `1`. -/
+theorem f13_linear_lift_scalar_fails (n ε : Int) (k : Nat)
+    (hn : n * n = 4) (hε : ε = 1 ∨ ε = -1) (hk : k < 13) :
+    (n * (ε * ε) = 2 ∨ n * (ε * ε) = -2) ∧
+      (k * k) % 13 ≠ 2 ∧ (k * k) % 13 ≠ 11 ∧
+      (k * k * 2) % 13 ≠ 1 ∧ (k * k * 11) % 13 ≠ 1 := by
+  refine ⟨intertwiner_endomorphism_scalar n ε hn hε, ?_⟩
+  have hsq := two_and_eleven_not_squares k hk
+  have hre := f13_no_rescale k hk
+  exact ⟨hsq.1, hsq.2, hre.1, hre.2⟩
+
+/-- Multiplication in `𝔽₁₃[√2]`: `(x₁ + y₁ √2)(x₂ + y₂ √2)`. -/
+def mul169 (a b : Nat × Nat) : Nat × Nat :=
+  ((a.1 * b.1 + 2 * a.2 * b.2) % 13, (a.1 * b.2 + a.2 * b.1) % 13)
+
+/-- Powers in `𝔽₁₃[√2]`. `pow169 a 0` is `1`. -/
+def pow169 (a : Nat × Nat) : Nat → Nat × Nat
+  | 0 => (1, 0)
+  | n + 1 => mul169 a (pow169 a n)
+
+/-- The nontrivial automorphism of `𝔽₁₆₉` over `𝔽₁₃`: `√2 ↦ -√2`. -/
+def conj169 (a : Nat × Nat) : Nat × Nat :=
+  (a.1 % 13, (13 - a.2 % 13) % 13)
+
+/-- `2 = (√2)²` in `𝔽₁₃[√2]`. -/
+theorem f169_two_is_square : mul169 (0, 1) (0, 1) = (2, 0) := by
+  decide
+
+/-- `-2 ≡ 11 = (5 √2)²` in `𝔽₁₃[√2]`. -/
+theorem f169_neg_two_is_square : mul169 (0, 5) (0, 5) = (11, 0) := by
+  decide
+
+/-- `c = 7 √2` satisfies `c² · 2 = 1`. -/
+theorem f169_rescale_two : mul169 (mul169 (0, 7) (0, 7)) (2, 0) = (1, 0) := by
+  decide
+
+/-- `c = 4 √2` satisfies `c² · 11 = 1`. -/
+theorem f169_rescale_neg_two : mul169 (mul169 (0, 4) (0, 4)) (11, 0) = (1, 0) := by
+  decide
+
+/-- Both intertwiner scalars rescale to `1` over `𝔽₁₆₉`, and both are squares. -/
+theorem f169_linear_lift_scalar_exists :
+    mul169 (0, 1) (0, 1) = (2, 0) ∧
+      mul169 (0, 5) (0, 5) = (11, 0) ∧
+      mul169 (mul169 (0, 7) (0, 7)) (2, 0) = (1, 0) ∧
+      mul169 (mul169 (0, 4) (0, 4)) (11, 0) = (1, 0) :=
+  ⟨f169_two_is_square, f169_neg_two_is_square, f169_rescale_two, f169_rescale_neg_two⟩
+
+/-- `(√2)¹³ = 2⁶ √2` and `2⁶ = 64 ≡ -1 (mod 13)`, so Frobenius sends `√2` to `-√2`. -/
+theorem sqrt_two_frobenius : pow169 (0, 1) 13 = (0, 12) ∧ (2 ^ 6) % 13 = 12 := by
+  decide
+
+def frobSweep : Nat → Bool
+  | 0 => true
+  | k + 1 =>
+    (pow169 (k / 13, k % 13) 13 == conj169 (k / 13, k % 13)) && frobSweep k
+
+theorem frobSweep_step (k : Nat) :
+    frobSweep (k + 1) =
+      ((pow169 (k / 13, k % 13) 13 == conj169 (k / 13, k % 13)) && frobSweep k) :=
+  rfl
+
+private theorem bool_and_left (a b : Bool) (h : (a && b) = true) : a = true := by
+  match a, b with
+  | true, true => rfl
+  | true, false => simp [Bool.and] at h
+  | false, true => simp [Bool.and] at h
+  | false, false => simp [Bool.and] at h
+
+private theorem bool_and_right (a b : Bool) (h : (a && b) = true) : b = true := by
+  match a, b with
+  | true, true => rfl
+  | true, false => simp [Bool.and] at h
+  | false, true => simp [Bool.and] at h
+  | false, false => simp [Bool.and] at h
+
+/-- Every one of the `169` residue classes satisfies `z¹³ = conjugate(z)`. -/
+theorem f169_frobenius_sweep : frobSweep 169 = true := by
+  decide
+
+private theorem nat_eq_of_beq (a b : Nat) (h : (a == b) = true) : a = b :=
+  (beq_iff_eq).mp h
+
+private theorem pair_eq_of_beq (p q : Nat × Nat) (h : (p == q) = true) : p = q := by
+  have hprod : ((p.1 == q.1) && (p.2 == q.2)) = true := by
+    simpa [BEq.beq] using h
+  exact Prod.ext (nat_eq_of_beq _ _ (bool_and_left _ _ hprod))
+    (nat_eq_of_beq _ _ (bool_and_right _ _ hprod))
+
+private theorem frob_at_index (n k : Nat) (hk : k < n) (h : frobSweep n = true) :
+    (pow169 (k / 13, k % 13) 13 == conj169 (k / 13, k % 13)) = true := by
+  induction n with
+  | zero => omega
+  | succ n ih =>
+    rw [frobSweep_step] at h
+    by_cases hlt : k < n
+    · exact ih hlt (bool_and_right _ _ h)
+    · have hk' : k = n := by omega
+      rw [hk']
+      exact bool_and_left _ _ h
+
+/-- Frobenius of `𝔽₁₆₉` over `𝔽₁₃` is the conjugation `√2 ↦ -√2`. -/
+theorem f169_frobenius (x y : Nat) (hx : x < 13) (hy : y < 13) :
+    pow169 (x, y) 13 = conj169 (x, y) := by
+  have hk : x * 13 + y < 169 := by omega
+  have hidx := frob_at_index 169 (x * 13 + y) hk f169_frobenius_sweep
+  have hdiv : (x * 13 + y) / 13 = x := by omega
+  have hmod : (x * 13 + y) % 13 = y := by omega
+  rw [hdiv, hmod] at hidx
+  exact pair_eq_of_beq _ _ hidx
+
+/-- A class fixed by conjugation has vanishing `√2` coefficient. -/
+theorem conj_fixed_is_prime_field (x y : Nat) (hx : x < 13) (hy : y < 13)
+    (h : conj169 (x, y) = (x, y)) : y = 0 := by
+  have h2 : (13 - y % 13) % 13 = y := by
+    have := congrArg Prod.snd h
+    simpa [conj169, Nat.mod_eq_of_lt hx] using this
+  have hym : y % 13 = y := Nat.mod_eq_of_lt hy
+  rw [hym] at h2
+  cases y with
+  | zero => rfl
+  | succ y =>
+    have hlt : 13 - (y + 1) < 13 := by omega
+    rw [Nat.mod_eq_of_lt hlt] at h2
+    omega
+
+/-- Prime-field classes are fixed by conjugation. -/
+theorem prime_field_fixed (x : Nat) (hx : x < 13) : conj169 (x, 0) = (x, 0) := by
+  unfold conj169
+  have hfst : (x, 0).fst % 13 = x := Nat.mod_eq_of_lt hx
+  have hsnd : (13 - (x, 0).snd % 13) % 13 = 0 := by
+    have hz : (x, 0).snd = 0 := rfl
+    rw [hz]
+  exact Prod.ext hfst hsnd
+
+/-- The trace value `-6` is the class `(7, 0)`.
+It is fixed by Frobenius, so it lies in `𝔽₁₃`. -/
+theorem trace_neg_six_in_prime_field :
+    (0 : Int) * 0 - 2 * 3 = -6 ∧
+      (-6 : Int) % 13 = 7 ∧
+      conj169 (7, 0) = (7, 0) ∧
+      pow169 (7, 0) 13 = (7, 0) := by
+  refine ⟨Cm32.frob_square_trace_at_3, ?_, ?_, ?_⟩
+  · decide
+  · decide
+  · decide
+
+/-- The `𝔽₁₆₉` lift, as the trace the descent consumes.
+
+A linear representation `G_ℚ → GL₂(𝔽₁₃)` whose cocycle is the intertwiner
+of `mu_coefficient_data` would need a scalar `c` with `c² · u = 1` for
+`u = ±2`. `f13_linear_lift_scalar_fails` says there is no such `c`.
+`f169_linear_lift_scalar_exists` produces one in `𝔽₁₃[√2]`.
+`trace_neg_six_in_prime_field` says the integer `-6` is fixed by Frobenius,
+so a trace equal to `-6` lands in `𝔽₁₃`.
+
+What is not formalized is the representation itself: a class
+`ρ̄_ext` with values in `GL₂(𝔽₁₆₉)`, restriction to `G_{ℚ(i)}` isomorphic
+to `ρ̄_E` up to `χ_{-2}`, and trace of `Frob_3²` equal to `-6`. The group
+`H²(G_ℚ, 𝔽₁₆₉ˣ)` is not defined in this repository. The local class on the
+conjugation is the class of `u`, and the square computation shows that
+class is a coboundary. Tate's vanishing theorem is not proved, and it is
+not a separate hypothesis: this proposition is the trace the elimination
+uses. `rho_E_p` stays unresolved. This is not a bare `IsQCurve` statement.
+-/
+def qcurve_extension_169_open : Prop :=
   ∀ (a b c : Int) (E : FreyCurve4413) (N : Nat),
     a ≠ 0 → b ≠ 0 →
     a.natAbs.gcd b.natAbs = 1 →
@@ -447,8 +741,29 @@ def qcurve_extension_13_open : Prop :=
     (FreyCurve4413.velu_target_A E = FreyCurve4413.twist_neg_two_A E ∧
         FreyCurve4413.velu_target_B E = FreyCurve4413.twist_neg_two_B E) →
     ¬ ((13 : Int) ∣ 2) →
-    (13 : Int) ∣ Cm32.freyTrace3 (Cm32.mod3 a) (Cm32.mod3 b) -
-      ((0 : Int) * 0 - 2 * 3)
+    (13 : Int) ∣ Cm32.freyTrace3 (Cm32.mod3 a) (Cm32.mod3 b) - (-6)
+
+/-- The old extension congruence, from the `𝔽₁₆₉` trace.
+
+`frob_square_trace_at_3` rewrites `-6` as `0² - 2·3`. The value is the
+same integer, and `trace_neg_six_in_prime_field` places it in `𝔽₁₃`.
+-/
+theorem qcurve_extension_13_open (hext : qcurve_extension_169_open) :
+    ∀ (a b c : Int) (E : FreyCurve4413) (N : Nat),
+      a ≠ 0 → b ≠ 0 →
+      a.natAbs.gcd b.natAbs = 1 →
+      E.a = a → E.b = b → E.c = c →
+      Modular E →
+      RibetLevel c E N →
+      (FreyCurve4413.velu_target_A E = FreyCurve4413.twist_neg_two_A E ∧
+          FreyCurve4413.velu_target_B E = FreyCurve4413.twist_neg_two_B E) →
+      ¬ ((13 : Int) ∣ 2) →
+      (13 : Int) ∣ Cm32.freyTrace3 (Cm32.mod3 a) (Cm32.mod3 b) -
+        ((0 : Int) * 0 - 2 * 3) := by
+  intro a b c E N ha hb hcop hEa hEb hEc hMod hRib hvelu hdeg
+  have h := hext a b c E N ha hb hcop hEa hEb hEc hMod hRib hvelu hdeg
+  rw [Cm32.frob_square_trace_at_3]
+  exact h
 
 /-- The residual isomorphism, projected from `ribet_level_lowering_4413`.
 
@@ -462,8 +777,8 @@ theorem modular_residual_13_open : GkResidualIso :=
 
 /-- Corrected descent: the `𝔽₉` trace is `-6` mod `13`, hence `7` mod `13`.
 
-`qcurve_descent_13_of_bridge` derives it from `qcurve_extension_13_open`
-and from `modular_residual_13_open`.
+`qcurve_descent_13_of_bridge` derives it from `qcurve_extension_169_open`,
+through `qcurve_extension_13_open`, and from `modular_residual_13_open`.
 -/
 def qcurve_descent_13_open : Prop :=
   ∀ (a b c : Int) (E : FreyCurve4413) (N : Nat),
@@ -479,14 +794,15 @@ def qcurve_descent_13_open : Prop :=
 The extension contributes `a_3² - 2·3` at `a_3 = 0`. `modular_residual_13_open`
 contributes the class `-6`. `frob_square_trace_at_3` identifies them.
 `Modular E` in the residual application is `frey_qcurve_modular`.
-The cocycle lift remains `qcurve_extension_13_open`.
+The cocycle lift is `qcurve_extension_169_open`.
 -/
 theorem qcurve_descent_13_of_bridge
-    (hext : qcurve_extension_13_open) :
+    (hext : qcurve_extension_169_open) :
     qcurve_descent_13_open := by
   intro a b c E N ha hb hcop hEa hEb hEc hMod hRib
   have hvelu := qcurve_isogeny_input E
-  have hpoly := hext a b c E N ha hb hcop hEa hEb hEc hMod hRib hvelu.1 hvelu.2
+  have hpoly := qcurve_extension_13_open hext a b c E N ha hb hcop hEa hEb hEc
+    hMod hRib hvelu.1 hvelu.2
   have hmark := modular_package_unresolved E
   have hModAx : Modular E := frey_qcurve_modular a b c E
   have hmod := modular_residual_13_open a b c E N ha hb hcop hEa hEb hEc
@@ -502,7 +818,7 @@ The point count is `freyTrace3_not_cong_neg_six`: the trace lies in
 The frontier definition `no_newform_32_64_open` is not rewritten.
 -/
 theorem lowered_form_contradicts_trace3
-    (hext : qcurve_extension_13_open)
+    (hext : qcurve_extension_169_open)
     (a b c : Int) (E : FreyCurve4413) (N : Nat)
     (ha : a ≠ 0) (hb : b ≠ 0)
     (hcop : a.natAbs.gcd b.natAbs = 1)
@@ -516,13 +832,14 @@ theorem lowered_form_contradicts_trace3
 
 /-- `no_newform_32_64_open` follows from the cocycle lift.
 
-`modular_residual_13_open` is no longer a hypothesis. `0 < c` is the
-frontier quantifier and is not used. The definition in
+`modular_residual_13_open` is no longer a hypothesis. The extension
+hypothesis is `qcurve_extension_169_open`. `0 < c` is the frontier
+quantifier and is not used. The definition in
 `DarmonMerel.«6_NoSolution4413»` is unchanged. This is not an
 unconditional proof of that definition.
 -/
 theorem no_newform_32_64_of_qcurve
-    (hext : qcurve_extension_13_open) :
+    (hext : qcurve_extension_169_open) :
     no_newform_32_64_open := by
   intro a b c E N ha hb hcop _hpos hEa hEb hEc hMod hRib
   exact lowered_form_contradicts_trace3 hext a b c E N ha hb hcop
