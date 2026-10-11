@@ -214,7 +214,10 @@ bounds live on a `u = 1` translate of the Frey equation, so they share its
 Weierstrass discriminant. For odd `c`, `v_π(Δ) = 18`. Dokchitser's cubic
 discriminant on that translate has `v_π(d) = 10` when `a` is even and
 `v_π(d) = 8` when `a` is odd. For even `a`, `Δ = 16 d` and `v_π(16) = 8`.
-Tate's Step 7 is not formalized. `swan_vanishes_open` is not
+`tate_step7_double_root` is `v(a₂² - 3 a₄) = 2` from those bounds. The
+Kodaira symbol is not a theorem, and `FTameAtPi` is not the table value `2`.
+The gap `18 - (n + 6)` is `8` or `10`; on the even-`a` translate it is
+`v_π(16)`. It is not the Swan conductor. `swan_vanishes_open` is not
 a theorem. `not_minimal_even_c` is the curve `(8, 8, 2)`, where
 `u = π` and `r = s = t = 0` lowers `Δ`, and `gcd(8, 8) = 8`.
 `IsINStar` is Dokchitser's numerical bounds for even `n` on that translate.

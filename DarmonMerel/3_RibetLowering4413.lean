@@ -231,8 +231,12 @@ statement does not take minimality as a hypothesis. It asks whether
 `a_odd_cubic_eight` give `v_π(d) = n + 6`. Tate's Step 7 is not formalized.
 `arith_eighteen_minus_four_minus_n` is the arithmetic
 `18 - 4 - 4 = 10` and `18 - 4 - 2 = 12`; it is not `FTameAtPi`.
-`swan_vanishes_open` is not a theorem, and this statement does not follow
-from it. `(8, 8, 2)` fails the coprimality hypothesis and stays a
+`weierstrass_cubic_gap` is `18 - (n + 6)`, equal to `8` or `10`. Adding the
+table value `2` recovers `18 - 4 - n`. That gap is `v_π(16)` on the even-`a`
+translate, and it is not `SwanAtPi`. `tate_step7_double_root` is
+`v(a₂² - 3 a₄) = 2` from the `IsINStar` bounds. The Kodaira symbol is not a
+theorem. `swan_vanishes_open` is not a theorem, and this statement does not
+follow from it. `(8, 8, 2)` fails the coprimality hypothesis and stays a
 non-minimal even-`c` curve. `h_n_eq` stays on the axiom.
 -/
 def pacetti_2_8_open : Prop :=

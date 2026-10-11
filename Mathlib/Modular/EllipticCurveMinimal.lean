@@ -4122,9 +4122,10 @@ opaque SwanAtPi (E : FreyCurve4413) : ℕ := 0
 
 /-- Tame part of the conductor exponent at `π`.
 
-The equation is hidden. This is not defined to be `v_π(Δ) - 4 - n`, and it
-is not `10` or `12`. `ConductorExponentAtPrimeAbove2` is this value plus
-`SwanAtPi`. `ogg_tame_of_INStar_discriminant` is `2` when `v(Δ) = n + 6`.
+The equation is hidden. This is not defined to be `2`, and it is not
+`v_π(Δ) - 4 - n`. `ogg_tame_of_INStar_discriminant` is the table arithmetic
+`(n + 6) - 4 - n = 2`. On the `IsINStar` translate the Weierstrass valuation
+is `18`, so that table slot is the cubic discriminant, not this sealed value.
 -/
 opaque FTameAtPi (E : FreyCurve4413) : ℕ := 0
 
@@ -5596,8 +5597,11 @@ theorem a_odd_disc_mismatch (E : FreyCurve4413)
 
 This needs the argument that the `3`-division field is tamely ramified at
 `π`, using `ℓ = 3 ≠ p = 2`. It is not a theorem and not an axiom. `SwanAtPi`
-stays sealed, and this proposition is not used to place
-`FTameAtPi + SwanAtPi` in `{10, 12}`.
+stays sealed. `weierstrass_cubic_gap` is the arithmetic `18 - (n + 6)`,
+equal to `8` for `n = 4` and `10` for `n = 2`. On the even-`a` translate
+that gap is `v_π(16)`, because `Δ = 16 d`. It is not `SwanAtPi`. Ogg's
+count on this model uses `v(Δ) = 18`, so `v(Δ) - 4 - n` is `10` or `12`
+before any Swan conductor.
 -/
 def swan_vanishes_open : Prop :=
   ∀ E : FreyCurve4413, E.a.natAbs.gcd E.b.natAbs = 1 → SwanAtPi E = 0
@@ -5779,6 +5783,15 @@ theorem P2Exact_ne_zero {z : GaussInt} {k : ℕ} (h : P2Exact z k) : z ≠ Gauss
 theorem vPi_of_P2Exact {z : GaussInt} {k : ℕ} (h : P2Exact z k) : vPi z = k := by
   rcases h with ⟨u, hu, hnu⟩
   exact vPi_of_shape z u k hnu hu
+
+theorem vPi_neg {z : GaussInt} (hz : z ≠ GaussInt.zero) :
+    vPi (GaussInt.neg z) = vPi z := by
+  rcases exists_pi_shape z hz with ⟨u, hnu, hu⟩
+  have hneg : ¬ piDivides (GaussInt.neg u) := by
+    intro hdiv
+    exact hnu ((piDivides_neg u).1 hdiv)
+  apply vPi_of_shape (GaussInt.neg z) (GaussInt.neg u) (vPi z) hneg
+  rw [GaussInt.neg_mul, hu]
 
 theorem vPi_ofInt_sixteen : vPi (GaussInt.ofInt 16) = 8 := by
   have h16 : (2 : ℤ) ^ 4 = 16 := by decide
@@ -5988,5 +6001,95 @@ theorem a_odd_cubic_eight (E : FreyCurve4413)
     have hDdef : quadDisc a2 a4 a6 = quadDiscAfterPiSq E := rfl
     rw [hsplit, hDdef, hjoin.2, hmainV]
   exact ⟨hΔ, hvΔ, hcub, hD⟩
+
+/-- Tate's Step 7 root test, read off the `IsINStar` bounds.
+
+`v(a₂) = 1`, so `v(a₂²) = 2`. Positive even `n` gives `(n + 4) / 2 ≥ 3`,
+so `v(3 a₄) > 2` whenever `a₄ ≠ 0`. Therefore `v(a₂² - 3 a₄) = 2`.
+Dokchitser uses this valuation to say that
+`x³ + (a₂/π) x² + (a₄/π²) x + a₆/π³` has a double root that is not a triple
+root. The Kodaira symbol and `FTameAtPi` are not conclusions of this lemma.
+-/
+theorem tate_step7_double_root {n : ℕ} {a1 a2 a3 a4 a6 b6 D : GaussInt}
+    (h : IsINStar n a1 a2 a3 a4 a6 b6 D) :
+    vPi (GaussInt.sub (GaussInt.mul a2 a2) (GaussInt.smul 3 a4)) = 2 := by
+  rcases h with ⟨hn, heven, _, ha2, _, ha4, _, _, _⟩
+  have hk : 3 ≤ (n + 4) / 2 := by omega
+  have hsq : P2Exact (GaussInt.mul a2 a2) 2 := P2Exact_mul ha2 ha2
+  have hv2 : vPi (GaussInt.mul a2 a2) = 2 := vPi_of_P2Exact hsq
+  have hsub : GaussInt.sub (GaussInt.mul a2 a2) (GaussInt.smul 3 a4) =
+      GaussInt.add (GaussInt.mul a2 a2) (GaussInt.neg (GaussInt.smul 3 a4)) :=
+    GaussInt.sub_eq_add_neg _ _
+  by_cases hzero : a4 = GaussInt.zero
+  · have h3z : GaussInt.smul 3 GaussInt.zero = GaussInt.zero := by
+      simp [GaussInt.smul, GaussInt.zero]
+    rw [hsub, hzero, h3z, GaussInt.neg_zero, GaussInt.add_zero]
+    exact hv2
+  · rcases ha4 with hz | ⟨u, hu⟩
+    · exact absurd hz hzero
+    · have hv4 : (n + 4) / 2 ≤ vPi a4 :=
+        vPi_ge_of_mul_piPow a4 u ((n + 4) / 2) hu hzero
+      have h3ne : GaussInt.ofInt 3 ≠ GaussInt.zero := by decide
+      have hv3 : vPi (GaussInt.smul 3 a4) = vPi a4 := by
+        rw [smul_eq_mul_ofInt, vPi_mul (GaussInt.ofInt 3) a4 h3ne hzero,
+          vPi_ofInt_three, Nat.zero_add]
+      have hne3 : GaussInt.smul 3 a4 ≠ GaussInt.zero := by
+        intro hz3
+        rw [smul_eq_mul_ofInt] at hz3
+        rcases GaussInt.mul_eq_zero.mp hz3 with h3 | ha
+        · exact h3ne h3
+        · exact hzero ha
+      have hvn : vPi (GaussInt.neg (GaussInt.smul 3 a4)) =
+          vPi (GaussInt.smul 3 a4) :=
+        vPi_neg hne3
+      have hlt : vPi (GaussInt.mul a2 a2) <
+          vPi (GaussInt.neg (GaussInt.smul 3 a4)) := by
+        rw [hv2, hvn, hv3]
+        exact Nat.lt_of_lt_of_le (by decide : 2 < 3) (Nat.le_trans hk hv4)
+      have hadd := vPi_add_lt (GaussInt.mul a2 a2)
+        (GaussInt.neg (GaussInt.smul 3 a4)) (P2Exact_ne_zero hsq) (by
+          intro hz
+          exact hne3 (by
+            rw [← GaussInt.neg_neg (GaussInt.smul 3 a4), hz, GaussInt.neg_zero]))
+        hlt
+      rw [hsub, hadd.2, hv2]
+
+/-- `v(Δ) = 18` and `v(d) = n + 6` belong to one translate.
+
+The even-`a` shifts and the odd-`a` shifts are `u = 1`, so their Weierstrass
+discriminant is `deltaGauss`. The cubic discriminant on those same
+coefficients has valuation `10` or `8`.
+-/
+theorem disc_one_model (E : FreyCurve4413) (hodd : E.c.natAbs % 2 = 1) :
+    (E.a.natAbs % 2 = 0 →
+      weierstrassDisc GaussInt.zero (a2AfterPiThenPiSq E) GaussInt.zero
+        (a4AfterPiThenPiSq E) (a6AfterPiThenPiSq E) = deltaGauss E ∧
+      vPi (deltaGauss E) = 18 ∧
+      vPi (cubicDisc (a2AfterPiThenPiSq E) (a4AfterPiThenPiSq E)
+        (a6AfterPiThenPiSq E)) = 4 + 6) ∧
+    (E.a.natAbs % 2 = 1 →
+      weierstrassDisc GaussInt.zero (a2AfterPi E) a3AfterPiSq (a4AfterPi E)
+        (a6AfterPiSq E) = deltaGauss E ∧
+      vPi (deltaGauss E) = 18 ∧
+      vPi (cubicDisc (a2AfterPi E) (a4AfterPi E) (a6AfterPiSq E)) = 2 + 6) := by
+  constructor
+  · intro ha
+    rcases even_a_cubic_ten E hodd ha with ⟨_, _, hd, hv, _⟩
+    exact ⟨even_a_weierstrass_eq_delta E, hv, hd⟩
+  · intro ha
+    rcases a_odd_cubic_eight E hodd ha with ⟨hw, hv, hd, _⟩
+    exact ⟨hw, hv, hd⟩
+
+/-- The gap `18 - (n + 6)` for the two rows, and what it adds to the table value `2`.
+
+For `n = 4` the gap is `8` and `2 + 8 = 18 - 4 - 4`. For `n = 2` the gap is
+`10` and `2 + 10 = 18 - 4 - 2`. On the even-`a` translate the gap equals
+`v_π(16)`, since `Δ = 16 d`. This arithmetic is not `SwanAtPi`. Ogg's
+expression on the translate uses the Weierstrass valuation `18`.
+-/
+theorem weierstrass_cubic_gap :
+    (18 - (4 + 6) = 8 ∧ 2 + 8 = 18 - 4 - 4) ∧
+    (18 - (2 + 6) = 10 ∧ 2 + 10 = 18 - 4 - 2) := by
+  decide
 
 end FreyCurve4413
