@@ -125,13 +125,16 @@ at `π` is `pacetti_2_8_open`.
 `v_π(Δ') < 0`, and `v_π(u) = 1` fails `a₁`, `a₂`, `a₃`, or `a₄`.
 `qiLocalMinimalAtPi_of_c_odd` is that split: no change with `v_π(u) ≥ 1` is
 integral at `π`, hence none has a smaller discriminant. `MinimalModelAt2` is
-this predicate. For odd `c` it is a theorem. `minimal_even_c_open` is the
-even-`c` case and has no proof. The wild part and the exponent stay open.
+this predicate. For odd `c` it is a theorem. `minimal_even_c_open` is false:
+`8⁴ + 8⁴ = 2¹³`, and `u = π`, `r = s = t = 0` is integral at `π` and lowers
+`Δ`. `IsINStar` records Dokchitser's numerical bounds for even `n`. `SwanAtPi`
+is sealed. Neither one is a Kodaira symbol or a value of `f`.
 `pi_ten_principal` is `(-√(-1))^5 · π^10 = 32` with norm `2^10`, and
 `pi_twelve_principal` is the same for `64` and `2^12`. The principal
 ideals agree. That equality does not produce `n = 32 ∨ n = 64`. The
 sufficient test `v(c₄) < 4` or `v(Δ) < 12` does not apply.
-`MinimalModelAt2` is `qiLocalMinimalAtPi`, proved for odd `c`.
+`MinimalModelAt2` is `qiLocalMinimalAtPi`, proved for odd `c`. The even-`c`
+statement is `not_minimal_even_c_open`.
 -/
 
 structure GaussInt where
@@ -3984,6 +3987,83 @@ theorem even_a_dokchitser_n4_inputs (E : FreyCurve4413)
   simp [GaussInt.smul, GaussInt.mul]
   constructor <;> grind
 
+/-- `π^k` divides `z`, with zero counted as divisible by every power. -/
+def valAtLeast (z : GaussInt) (k : ℕ) : Prop :=
+  z = GaussInt.zero ∨ ∃ u, GaussInt.mul u (piPow k) = z
+
+theorem valAtLeast_of_dvd {z u : GaussInt} {k : ℕ}
+    (h : GaussInt.mul u (piPow k) = z) : valAtLeast z k :=
+  Or.inr ⟨u, h⟩
+
+theorem valAtLeast_of_P2Exact {z : GaussInt} {m k : ℕ}
+    (h : P2Exact z m) (hk : k ≤ m) : valAtLeast z k := by
+  rcases h with ⟨u, hu, _⟩
+  have hsum : (m - k) + k = m := by omega
+  have hpow : piPow ((m - k) + k) =
+      GaussInt.mul (piPow (m - k)) (piPow k) := by
+    unfold piPow
+    exact GaussInt.npow_add pi (m - k) k
+  rw [hsum] at hpow
+  refine Or.inr ⟨GaussInt.mul u (piPow (m - k)), ?_⟩
+  calc
+    GaussInt.mul (GaussInt.mul u (piPow (m - k))) (piPow k)
+        = GaussInt.mul u (GaussInt.mul (piPow (m - k)) (piPow k)) := by
+          rw [GaussInt.mul_assoc]
+    _ = GaussInt.mul u (piPow m) := by rw [← hpow]
+    _ = z := hu
+
+/-- Dokchitser's numerical bounds for type `I_n*` at `π`, for positive even `n`.
+
+`v_π(a₂) = 1`, `v_π(a₃)` and `v_π(a₄)` are at least `(n + 4) / 2`,
+`v_π(a₆)` and `v_π(b₆)` are at least `n + 3`, and `v_π(D) = n + 4`, where
+`D = a₄² - 4 a₂ a₆`. Zero has infinite valuation, so it meets a lower bound.
+For `n = 2` the bounds are `3, 3, 5, 5` and `v(D) = 6`. For `n = 4` they are
+`4, 4, 7, 7` and `v(D) = 8`. These inequalities are not a Kodaira symbol.
+`SwanAtPi` is not part of this predicate, and `f` is not computed.
+-/
+def IsINStar (n : ℕ) (a1 a2 a3 a4 a6 b6 D : GaussInt) : Prop :=
+  0 < n ∧ n % 2 = 0 ∧
+    valAtLeast a1 1 ∧
+    P2Exact a2 1 ∧
+    valAtLeast a3 ((n + 4) / 2) ∧
+    valAtLeast a4 ((n + 4) / 2) ∧
+    valAtLeast a6 (n + 3) ∧
+    valAtLeast b6 (n + 3) ∧
+    P2Exact D (n + 4)
+
+/-- Swan conductor at `π`.
+
+The equation is hidden, so this is not the integer `0`. Nothing proves that
+it vanishes. The tame expression `v(Δ) - 4 - n` is not stated.
+-/
+opaque SwanAtPi (E : FreyCurve4413) : ℕ := 0
+
+theorem a_odd_IsINStar (E : FreyCurve4413)
+    (hodd : E.c.natAbs % 2 = 1) (ha : E.a.natAbs % 2 = 1) :
+    IsINStar 2 GaussInt.zero (a2AfterPi E) a3AfterPiSq (a4AfterPi E)
+      (a6AfterPiSq E) (b6AfterPiSq E) (quadDiscAfterPiSq E) := by
+  have h := a_odd_dokchitser_n2_inputs E hodd ha
+  refine ⟨by decide, by decide, Or.inl rfl, h.1,
+    valAtLeast_of_P2Exact h.2.1 (by decide),
+    valAtLeast_of_P2Exact h.2.2.1 (by decide),
+    valAtLeast_of_P2Exact h.2.2.2.1 (by decide),
+    valAtLeast_of_P2Exact h.2.2.2.2.1 (by decide),
+    h.2.2.2.2.2⟩
+
+theorem even_a_IsINStar (E : FreyCurve4413)
+    (hodd : E.c.natAbs % 2 = 1) (ha : E.a.natAbs % 2 = 0) :
+    IsINStar 4 GaussInt.zero (a2AfterPiThenPiSq E) GaussInt.zero
+      (a4AfterPiThenPiSq E) (a6AfterPiThenPiSq E) (b6AfterPiThenPiSq E)
+      (quadDiscAfterPiThenPiSq E) := by
+  have h := even_a_dokchitser_n4_inputs E hodd ha
+  rcases h.2.2.1 with ⟨ua6, hua6⟩
+  rcases h.2.2.2.1 with ⟨ub6, hub6⟩
+  refine ⟨by decide, by decide, Or.inl rfl, h.1, Or.inl rfl,
+    valAtLeast_of_P2Exact h.2.1 (by decide),
+    valAtLeast_of_dvd hua6,
+    valAtLeast_of_dvd hub6,
+    h.2.2.2.2⟩
+
 theorem GaussInt.npow_one_nat (n : ℕ) : GaussInt.npow GaussInt.one n = GaussInt.one := by
   induction n with
   | zero => rfl
@@ -4319,6 +4399,13 @@ def valGe (x : GRat) (n : Int) : Prop :=
   match vRat? x with
   | none => True
   | some k => n ≤ k
+
+theorem valGe_of_none {x : GRat} {n : Int} (h : vRat? x = none) : valGe x n := by
+  simp [valGe, h]
+
+theorem valGe_of_le {x : GRat} {n k : Int} (hk : vRat? x = some k) (hle : n ≤ k) :
+    valGe x n := by
+  simp [valGe, hk, hle]
 
 theorem vRat?_gOf_zero (z : GaussInt) (hz : z = GaussInt.zero) : vRat? (gOf z) = none := by
   simp [vRat?, gOf, hz]
@@ -5058,8 +5145,9 @@ strictly smaller discriminant.
 
 For `v_π(u) ≥ 1` the scaling `Δ' = u⁻¹² Δ` lowers the valuation whenever `Δ'`
 is integral, so the content is that no such change is integral. `MinimalModelAt2`
-is this predicate. Even `c` is `minimal_even_c_open` and has no proof. The
-conductor exponent does not follow.
+is this predicate. For odd `c` it is `qiLocalMinimalAtPi_of_c_odd`.
+`not_minimal_even_c_open` is the curve `(8, 8, 2)`. The conductor exponent
+does not follow.
 -/
 def qiLocalMinimalAtPi (E : FreyCurve4413) : Prop :=
   ∀ (u r s t : GRat) (hu : u.num ≠ GaussInt.zero),
@@ -5174,10 +5262,162 @@ theorem qiLocalMinimalAtPi_of_c_odd (E : FreyCurve4413) (hodd : E.c.natAbs % 2 =
   intro u r s t hu hv hboth
   exact no_qi_integral_change_of_c_odd E hodd u r s t hu hv hboth.1
 
-/-- The same local condition for even `c`. No proof. `MinimalModelAt2` on an
-even `c` is this statement, by `minimal_even_c_open_iff`.
+/-- The same local condition for even `c`.
+
+False. `not_minimal_even_c_open` is the witness `(8, 8, 2)`. The odd-`c`
+case split uses `v_π(a₄) = 2` and `v_π(Δ) = 18`, and both fail when `c` is
+even. `v_π(s) = -1` is already a case of `no_qi_integral_change_of_c_odd`.
 -/
 def minimal_even_c_open : Prop :=
   ∀ E : FreyCurve4413, E.c.natAbs % 2 = 0 → qiLocalMinimalAtPi E
+
+/-- `8⁴ + 8⁴ = 2¹³`. Both `a` and `b` are even, and `c` is even. -/
+def curve_8_8_2 : FreyCurve4413 := mk' 8 8 2 (by decide)
+
+theorem vPi_a2_8_8_2 : vPi (GaussInt.ofInt curve_8_8_2.A_int) = 10 := by
+  have h32 : (2 : ℤ) ^ 5 = 32 := by decide
+  have hA : curve_8_8_2.A_int = 32 := rfl
+  rcases p2_valuation_of_two_pow 5 with ⟨u, hu, hnu⟩
+  rw [h32] at hu
+  exact vPi_of_shape (GaussInt.ofInt curve_8_8_2.A_int) u 10 hnu
+    (by rw [hA]; exact hu)
+
+theorem vPi_a4_8_8_2 : vPi ⟨curve_8_8_2.B_re, curve_8_8_2.B_im⟩ = 15 := by
+  have h128 : (2 : ℤ) ^ 7 = 128 := by decide
+  have hB : ⟨curve_8_8_2.B_re, curve_8_8_2.B_im⟩ =
+      GaussInt.mul (GaussInt.ofInt 128) pi := by
+    simp [curve_8_8_2, mk', pi, GaussInt.mul, GaussInt.ofInt]
+  rcases p2_valuation_of_two_pow 7 with ⟨u, hu, hnu⟩
+  rw [h128] at hu
+  have hprod : GaussInt.mul u (piPow 15) =
+      GaussInt.mul (GaussInt.ofInt 128) pi := by
+    have hpow : piPow 15 = GaussInt.mul (piPow 14) pi := by
+      rw [show (15 : ℕ) = 14 + 1 by decide]
+      exact piPow_succ_right 14
+    calc
+      GaussInt.mul u (piPow 15)
+          = GaussInt.mul u (GaussInt.mul (piPow 14) pi) := by rw [hpow]
+      _ = GaussInt.mul (GaussInt.mul u (piPow 14)) pi := by
+          rw [← GaussInt.mul_assoc]
+      _ = GaussInt.mul (GaussInt.ofInt 128) pi := by rw [hu]
+  exact vPi_of_shape _ u 15 hnu (hprod.trans hB)
+
+theorem vPi_delta_8_8_2 : vPi (deltaGauss curve_8_8_2) = 57 := by
+  have hΔ : deltaGauss curve_8_8_2 =
+      GaussInt.mul (GaussInt.ofInt ((2 : ℤ) ^ 28)) pi := by
+    simp [deltaGauss, discriminant_re, discriminant_im, curve_8_8_2, mk', pi,
+      GaussInt.mul, GaussInt.ofInt]
+  rcases p2_valuation_of_two_pow 28 with ⟨u, hu, hnu⟩
+  have hprod : GaussInt.mul u (piPow 57) =
+      GaussInt.mul (GaussInt.ofInt ((2 : ℤ) ^ 28)) pi := by
+    have hpow : piPow 57 = GaussInt.mul (piPow 56) pi := by
+      rw [show (57 : ℕ) = 56 + 1 by decide]
+      exact piPow_succ_right 56
+    calc
+      GaussInt.mul u (piPow 57)
+          = GaussInt.mul u (GaussInt.mul (piPow 56) pi) := by rw [hpow]
+      _ = GaussInt.mul (GaussInt.mul u (piPow 56)) pi := by
+          rw [← GaussInt.mul_assoc]
+      _ = GaussInt.mul (GaussInt.ofInt ((2 : ℤ) ^ 28)) pi := by rw [hu]
+  exact vPi_of_shape _ u 57 hnu (hprod.trans hΔ)
+
+/-- `(8, 8, 2)` is not minimal at `π`.
+
+`u = π` and `r = s = t = 0` leaves `a₁` and `a₃` zero, `v_π(a₂) = 10`,
+`v_π(a₄) = 15`, and `v_π(Δ') = 57 - 12 = 45`, which is nonnegative and
+strictly smaller than `57`. The odd-`c` argument does not apply: it needs
+`v_π(Δ) = 18`.
+-/
+theorem not_qiLocalMinimal_8_8_2 : ¬ qiLocalMinimalAtPi curve_8_8_2 := by
+  intro hmin
+  let u : GRat := gOf pi
+  let z : GRat := gOf GaussInt.zero
+  have hu : u.num ≠ GaussInt.zero := by
+    simp [u, gOf, pi, GaussInt.zero]
+  have hpi : vPi pi = 1 := by
+    have hp : piPow 1 = pi := by
+      unfold piPow
+      exact GaussInt.npow_one pi
+    rw [← hp]
+    exact vPi_piPow 1
+  have hvu : vRat? u = some 1 := by
+    simpa [u, hpi] using vRat?_gOf_ne pi (by decide)
+  have hv : (1 : Int) ≤ (vPi u.num : Int) - (vPi u.den : Int) := by
+    have hden : vPi u.den = 0 := by
+      simpa [u, gOf] using vPi_one
+    have hnum : vPi u.num = 1 := by
+      simpa [u, gOf] using hpi
+    omega
+  apply hmin u z z z hu hv
+  have h3 : (term3r z).num = GaussInt.zero := by
+    simp [term3r, gmul, z, gOf, GaussInt.mul_zero]
+  have hss : (termSsq z).num = GaussInt.zero := by
+    simp [termSsq, gneg, gmul, z, gOf, GaussInt.mul_zero, GaussInt.neg_zero]
+  have hr : (term2rA2 curve_8_8_2 z).num = GaussInt.zero := by
+    simp [term2rA2, gmul, z, gOf, GaussInt.mul_zero]
+  have hrr : (term3rr z).num = GaussInt.zero := by
+    simp [term3rr, gmul, z, gOf, GaussInt.mul_zero]
+  have hst : (term2st z z).num = GaussInt.zero := by
+    simp [term2st, gneg, gmul, z, gOf, GaussInt.mul_zero, GaussInt.neg_zero]
+  have ha2v : vRat? (a2Slot curve_8_8_2 z z) = some 10 := by
+    have hstep := v_gadd_zero_right (a2Orig curve_8_8_2) (term3r z) h3
+    have hfin :=
+      v_gadd_zero_right (gadd (a2Orig curve_8_8_2) (term3r z)) (termSsq z) hss
+    have hne : GaussInt.ofInt curve_8_8_2.A_int ≠ GaussInt.zero := by decide
+    rw [a2Slot, hfin, hstep, a2Orig]
+    simpa [vPi_a2_8_8_2] using
+      vRat?_gOf_ne (GaussInt.ofInt curve_8_8_2.A_int) hne
+  have ha4v : vRat? (a4Slot curve_8_8_2 z z z) = some 15 := by
+    have h1 := v_gadd_zero_right (a4Orig curve_8_8_2) (term2rA2 curve_8_8_2 z) hr
+    have h2 :=
+      v_gadd_zero_right (gadd (a4Orig curve_8_8_2) (term2rA2 curve_8_8_2 z))
+        (term3rr z) hrr
+    have h3s :=
+      v_gadd_zero_right
+        (gadd (gadd (a4Orig curve_8_8_2) (term2rA2 curve_8_8_2 z)) (term3rr z))
+        (term2st z z) hst
+    have hne : ⟨curve_8_8_2.B_re, curve_8_8_2.B_im⟩ ≠ GaussInt.zero := by
+      decide
+    rw [a4Slot, h3s, h2, h1, a4Orig]
+    simpa [vPi_a4_8_8_2] using
+      vRat?_gOf_ne ⟨curve_8_8_2.B_re, curve_8_8_2.B_im⟩ hne
+  have hdne : deltaGauss curve_8_8_2 ≠ GaussInt.zero := by
+    intro hz
+    have hv0 := vPi_delta_8_8_2
+    rw [hz, vPi_zero] at hv0
+    omega
+  have hd := vRat?_gOf_ne (deltaGauss curve_8_8_2) hdne
+  rw [vPi_delta_8_8_2] at hd
+  have hpow := v_gpow u hvu 12
+  have hinv := v_ginv (gpow u 12) hpow (gpow_num_ne u 12 hu)
+  have hslot := v_gmul (gOf (deltaGauss curve_8_8_2)) (ginv (gpow u 12) (gpow_num_ne u 12 hu))
+    hd hinv
+  have hΔv : vRat? (deltaSlot curve_8_8_2 u (gpow_num_ne u 12 hu)) = some 45 := by
+    simpa [deltaSlot] using hslot
+  have ha1 : vRat? (a1Slot z) = none := by
+    simp [a1Slot, gmul, vRat?, z, gOf, GaussInt.mul_zero]
+  have ha3 : vRat? (a3Slot z) = none := by
+    simp [a3Slot, gmul, vRat?, z, gOf, GaussInt.mul_zero]
+  have hvuEq : (vPi u.num : Int) - (vPi u.den : Int) = 1 := by
+    simp [vRat?, hu] at hvu
+    exact hvu
+  constructor
+  · unfold integralSlotsAtPi
+    rw [hvuEq]
+    constructor
+    · exact valGe_of_none ha1
+    constructor
+    · simpa [Int.mul_one] using valGe_of_le ha2v (by decide)
+    constructor
+    · exact valGe_of_none ha3
+    constructor
+    · simpa [Int.mul_one] using valGe_of_le ha4v (by decide)
+    · exact valGe_of_le hΔv (by decide)
+  · unfold smallerDeltaAtPi
+    exact ⟨↑45, ↑57, hΔv, hd, by decide⟩
+
+theorem not_minimal_even_c_open : ¬ minimal_even_c_open := by
+  intro h
+  exact not_qiLocalMinimal_8_8_2 (h curve_8_8_2 (by decide))
 
 end FreyCurve4413

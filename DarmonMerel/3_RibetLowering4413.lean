@@ -104,10 +104,11 @@ opaque RhoE13Open (E : FreyCurve4413) : Prop := True
 This is `qiLocalMinimalAtPi`: no change of variables with `v_π(u) ≥ 1` makes
 `a₁`, `a₂`, `a₃`, `a₄`, and `Δ'` integral at `π` with a strictly smaller
 discriminant. An integral model would have to satisfy those conditions, so
-for odd `c` this is `minimalAt2_of_c_odd`. `minimal_even_c_open` is the
-even-`c` case and has no proof. The conductor exponent does not follow.
-Dokchitser's numerical inputs are not a Kodaira symbol, the Swan conductor
-is not formalized, and `(π)^10 = (32)` does not set Ribet's `n`.
+for odd `c` this is `minimalAt2_of_c_odd`. `not_minimal_even_c` is the
+curve `(8, 8, 2)`: `u = π`, `r = s = t = 0` lowers `Δ`. The conductor
+exponent does not follow. `IsINStar` is Dokchitser's numerical bounds for
+even `n`. `SwanAtPi` is sealed and is not proved to vanish. `(π)^10 = (32)`
+does not set Ribet's `n`.
 `ConductorExponentAtPrimeAbove2` stays opaque, and `h_n_eq` stays on the axiom.
 -/
 def MinimalModelAt2 (E : FreyCurve4413) : Prop :=
@@ -121,6 +122,11 @@ theorem minimal_even_c_open_iff :
     FreyCurve4413.minimal_even_c_open =
       (∀ E : FreyCurve4413, E.c.natAbs % 2 = 0 → MinimalModelAt2 E) :=
   rfl
+
+theorem not_minimal_even_c :
+    ¬ (∀ E : FreyCurve4413, E.c.natAbs % 2 = 0 → MinimalModelAt2 E) := by
+  rw [← minimal_even_c_open_iff]
+  exact FreyCurve4413.not_minimal_even_c_open
 
 /-- Conductor exponent of `E` at the prime of `ℤ[√-1]` above `2`.
 
@@ -186,9 +192,9 @@ is the tame conductor. The wild part at `π` is this proposition.
 `no_qi_integral_change_of_c_odd` is the same integrality split over `ℚ(i)`:
 `v_π(a₂) ≥ 4`, so `v_π(s) = -1` still occurs, and a `π`-unit denominator is
 not in `ℤ[i]`. `minimalAt2_of_c_odd` is that split: for odd `c`,
-`MinimalModelAt2` holds. `minimal_even_c_open` is the even-`c` case and has
-no proof. The exponent does not follow. Dokchitser's numerical inputs are not
-a Kodaira symbol. The Swan conductor is not the parity of `v(D)`.
+`MinimalModelAt2` holds. `not_minimal_even_c` is `(8, 8, 2)`. The exponent
+does not follow. `IsINStar` records the numerical bounds and is not a Kodaira
+symbol. `SwanAtPi` is sealed. It is not the parity of `v(D)`.
 `(π)^10 = (32)` has norm `2^10` and does not set `n`.
 `pi_ten_principal` is
 `(-√(-1))^5 · π^10 = 32` with `N(π^10) = 2^10`. `pi_twelve_principal` is

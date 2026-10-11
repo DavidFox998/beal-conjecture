@@ -202,9 +202,11 @@ integrality split from `ℤ[i]` to `ℚ(i)`. `v_π(a₂) ≥ 4`, so `v_π(s) = -
 is a separate case, and a denominator coprime to `π` is not in `ℤ[i]`.
 `v_π(u) ≥ 2` makes the scaled discriminant non-integral, and `v_π(u) = 1`
 fails one of `a₁`, `a₂`, `a₃`, `a₄`. `MinimalModelAt2` is that local
-condition. For odd `c` it is `minimalAt2_of_c_odd`. `minimal_even_c_open` is
-the even-`c` statement and has no proof. The wild part and the conductor
-exponent stay open, and `(π)^10 = (32)` does not give `n`.
+condition. For odd `c` it is `minimalAt2_of_c_odd`. `not_minimal_even_c` is
+the curve `(8, 8, 2)`, where `u = π` and `r = s = t = 0` lowers `Δ`.
+`IsINStar` is Dokchitser's numerical bounds for even `n`. `SwanAtPi` is
+sealed and is not proved to vanish. The conductor exponent stays open, and
+`(π)^10 = (32)` does not give `n`.
 `(-√(-1))^5 · π^10 = 32` with norm `2^10`, and `(-√(-1))^6 · π^12 = 64`
 with norm `2^12`. The principal ideals agree. That equality does not give
 `n = 32 ∨ n = 64`. `FreyValuationAt2` is `v₂(|c|)`.
