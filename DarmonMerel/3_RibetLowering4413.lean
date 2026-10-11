@@ -104,15 +104,19 @@ def ConductorShape (c : ℤ) (N : ℕ) : Prop :=
 def FreyConductorDivides (c : ℤ) (N : ℕ) : Prop :=
   ConductorShape c N
 
-/-- Sealed stand-in for absolute irreducibility of `ρ_{E,13}`.
+/-- Absolute irreducibility of the mod-`13` residual representation of `E`,
+equivalently a large image in `GL₂(𝔽₁₃)`.
 
-Nothing in this development produces a term. The body is sealed, so
-`trivial` does not apply. A missing linear factor of `ψ₁₃` is not this
-statement. `RhoE13NeedsSL2` in `Irreducibility13` asks for that linear
-factor together with an image containing `SL₂(𝔽₁₃)`. The implication from
-that pair to `RhoE13Open` is not a lemma.
+There is no body. `rho_E_13` is `GaloisRepresentation.unresolved`, and a
+definition would need the étale cohomology of `E`, which is not in Mathlib.
+This is not an `axiom` declaration. Nothing produces a term: `trivial` and
+`True.intro` do not apply, and `rhoE13_open_of_psi` is not provable by
+unfolding. A missing linear factor of `ψ₁₃` is not this statement.
+`RhoE13NeedsSL2` in `Irreducibility13` asks for that linear factor together
+with an image containing `SL₂(𝔽₁₃)`. The implication from that pair to
+`RhoE13Open` is not a lemma.
 -/
-opaque RhoE13Open (E : FreyCurve4413) : Prop := True
+opaque RhoE13Open (E : FreyCurve4413) : Prop
 
 /-- The model is minimal at `π` over `ℚ(i)`.
 

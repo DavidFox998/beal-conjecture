@@ -16,8 +16,11 @@ strategy A is dead.
 
 This file starts strategy B. It does not prove irreducibility
 unconditionally and it does not produce a term of `RhoE13Open`.
-`reducible_shape_contradicts_omega` is the order contradiction, conditional
-on the class-field opens and on `chars_unramified_above_13_open`.
+`chars_unramified_above_13_open` is retracted: it asks for both cyclotomic
+exponents to be divisible by `3`, and `complement_sum` says those same
+integers sum to `1` modulo `12`, so the two divisibilities force `3 ∣ 1`.
+`reducible_shape_contradicts_omega` is `False` from that inconsistent
+package. The `False` is ex falso, not an irreducibility theorem.
 
 `rho_E_13` is `GaloisRepresentation.unresolved`. There is no Galois group, no
 Frobenius element, and no residual representation. The shape
@@ -51,9 +54,10 @@ The Artin exponent `FTameAtPi + SwanAtPi ∈ {10, 12}` is `pacetti_of_components
 under `components_n_plus_five_open`. Splitting that exponent across `χ₁` and
 `χ₂` is `artin_exponent_of_characters_open`. Unramifiedness at `p ∣ c`, given
 `13 ∣ tateParameter`, is `inertia_trivial_of_tate_13_open`. The trace
-`a_𝔭 = χ₁(Frob) + χ₂(Frob)`, the Weil bound `|a_𝔭| ≤ 2 √N(𝔭)`, and a prime
-where the character constraint leaves that range are the three opens
-`frobenius_trace_sum_open`, `weil_bound_open`, and `trace_outside_weil_open`.
+`a_𝔭 = χ₁(Frob) + χ₂(Frob)` is `frobenius_trace_sum_open`. The Weil bound
+`|a_𝔭| ≤ 2 √N(𝔭)` is `weil_bound_open`. A prime where the character
+constraint leaves that range is `trace_outside_weil_open`. Those three are
+the live route. The order-`12` packaging does not replace them.
 -/
 
 namespace ReducibleShape13
@@ -692,8 +696,9 @@ def IntCong13 (a : Int) (r : Fin 13) : Prop :=
 
 No Frobenius element is constructed. On the shape, that sum is
 `u · t ^ a + u⁻¹ · t ^ (1 - a)` with `u ^ 4 = 1` and `t ≡ N(𝔭) (mod 13)`.
-This proposition is the missing equality with `pointCountTrace`. It does
-not choose a prime and it does not contradict the Weil bound.
+This proposition is the missing equality with `pointCountTrace`. It is a
+live hypothesis of the trace route. It does not by itself contradict the
+Weil bound.
 -/
 def frobenius_trace_sum_open : Prop :=
   ∀ E : FreyCurve4413, E.a ≠ 0 → E.b ≠ 0 →
@@ -707,30 +712,25 @@ def frobenius_trace_sum_open : Prop :=
 
 /-- `|a_𝔭| ≤ 2 √N(𝔭)`, written as `a ^ 2 ≤ 4 N` so that no square root is required.
 
-Not a theorem. `pointCountTrace` is sealed.
+Live hypothesis of the trace route. Not a theorem. `pointCountTrace` is
+sealed. The statement quantifies over every positive norm, including norms
+of bad reduction. The contradiction at norm `5` is applied only when
+`5` misses `|c|`.
 -/
 def weil_bound_open : Prop :=
   ∀ E : FreyCurve4413, ∀ normP : Nat, 0 < normP →
     (pointCountTrace E normP).natAbs * (pointCountTrace E normP).natAbs ≤ 4 * normP
 
-/-- Both diagonal characters meet the order-`4` criterion at the exponent of `ω`.
+/-- RETRACTED. False as stated, not an open lemma.
 
-Not a theorem, and not the statement that either character is unramified
-above `13`. `N(Δ) = 2¹⁸ c³⁹`, so a prime above `13` meets the discriminant
-only when `13 ∣ c`. Néron–Ogg–Shafarevich does not apply at the residue
-characteristic. Finite flat group schemes are not formalized. Finite flat
-of weight `2` would force the inertial exponents `0` and `1`. Those sum to
-`1` (`complement_sum`) and do not put both characters in the order-`4` group.
-
-`cyclotomic_pow_order_div_four` is the criterion that is formalized:
-`ord(2 ^ e) ∣ 4` if and only if `3 ∣ e`. The ray-class factor already has
-order dividing `4` (`piUnitChar_order_div_four`). This proposition is the
-missing constraint at primes above `13`: under `reducible_shape_13_open`,
-`ray_class_mod_pi_open`, and `inertia_trivial_of_tate_13_open`, both
-cyclotomic exponents of a shape match are divisible by `3`. It is a
-hypothesis of `reducible_shape_contradicts_omega`. It is not assumed, and
-it is in tension with the product being `ω`, whose ramification at `13` is
-itself not a theorem here.
+The two integers are `exp.val` and `(complementExp exp).val`, the same pair
+`complement_sum` adds. That sum is `1` modulo `12`, hence `1` modulo `3`.
+`3 ∣ exp.val` and `3 ∣ (complementExp exp).val` would give `3 ∣ 1`
+(`both_exponents_force_three_div_one`). Finite flat of weight `2` would
+force the inertial exponents `0` and `1`. Those sum to `1` and do not give
+order dividing `4`. The criterion `3 ∣ e` cannot be imposed on both
+exponents at once. This definition is kept so the old hypothesis still has
+a name. It is not an irreducibility input.
 -/
 def chars_unramified_above_13_open : Prop :=
   reducible_shape_13_open →
@@ -746,7 +746,8 @@ def chars_unramified_above_13_open : Prop :=
 
 /-- The character constraint forces a trace outside the Weil range.
 
-This is the missing prime. It is not `False`, it does not negate
+Live route. The witness at norm `5` does not use the inertia, Artin, or
+ray-class antecedents. It is not `False`, it does not negate
 `a ^ 4 + b ^ 4 = c ^ 13`, and it does not produce `RhoE13Open`.
 -/
 def trace_outside_weil_open : Prop :=
@@ -822,13 +823,48 @@ theorem not_three_div_complement (a : Fin 12)
   rw [hsumpow, hpows] at hprod4
   exact hnot hprod4
 
-/-- A coprime curve with `a ≠ 0` and `b ≠ 0` cannot carry the reducible shape
-if the three class-field bridges hold.
+/-- Both cyclotomic exponents divisible by `3` force `3 ∣ 1`.
 
-Conditional on `reducible_shape_13_open`, `ray_class_mod_pi_open`,
-`inertia_trivial_of_tate_13_open`, and `chars_unramified_above_13_open`.
-It is not unconditional irreducibility, it does not produce a term of
-`RhoE13Open`, and it does not rewrite the five frontier opens.
+`complement_sum` is `(e₁ + e₂) % 12 = 1`, so `e₁ + e₂ = 12 q + 1`.
+The same integers are the ones `chars_unramified_above_13_open` divides by
+`3`, and `3 ∣ e₁` together with `3 ∣ e₂` gives `3 ∣ (e₁ + e₂)`.
+`Nat.dvd_add_right` then sends that divisibility onto the remainder `1`.
+-/
+theorem both_exponents_force_three_div_one (a : Fin 12)
+    (h1 : 3 ∣ a.val) (h2 : 3 ∣ (ReducibleShape13.complementExp a).val) :
+    3 ∣ 1 := by
+  obtain ⟨k1, hk1⟩ := h1
+  obtain ⟨k2, hk2⟩ := h2
+  have hmod := ReducibleShape13.complement_sum a
+  have hrepr := Nat.div_add_mod (a.val + (ReducibleShape13.complementExp a).val) 12
+  rw [hmod] at hrepr
+  have hs : a.val + (ReducibleShape13.complementExp a).val =
+      12 * ((a.val + (ReducibleShape13.complementExp a).val) / 12) + 1 := hrepr.symm
+  rw [hk1, hk2] at hs
+  have hadd : 3 * k1 + 3 * k2 = 3 * (k1 + k2) := by omega
+  rw [hadd] at hs
+  have hq : 12 * ((3 * (k1 + k2)) / 12) =
+      3 * (4 * ((3 * (k1 + k2)) / 12)) := by omega
+  have hdvdSum : 3 ∣ 12 * ((3 * (k1 + k2)) / 12) + 1 := by
+    rw [← hs]
+    exact ⟨k1 + k2, rfl⟩
+  have hdvd12 : 3 ∣ 12 * ((3 * (k1 + k2)) / 12) := by
+    rw [hq]
+    exact ⟨4 * ((3 * (k1 + k2)) / 12), rfl⟩
+  exact (Nat.dvd_add_right hdvd12).mp hdvdSum
+
+theorem not_both_exponents_div_three (a : Fin 12)
+    (h1 : 3 ∣ a.val) (h2 : 3 ∣ (ReducibleShape13.complementExp a).val) : False := by
+  have hthree : 3 ∣ 1 := both_exponents_force_three_div_one a h1 h2
+  have hnot : ¬ 3 ∣ 1 := by decide
+  exact hnot hthree
+
+/-- VACUOUS. Valid ex falso, not an irreducibility result.
+
+`chars_unramified_above_13_open` concludes that both cyclotomic exponents
+are divisible by `3`. `complement_sum` says those same integers sum to `1`
+modulo `12`. The joint hypotheses imply `3 ∣ 1`. The `False` below is that
+arithmetic, not a proof that the residual representation is irreducible.
 -/
 theorem reducible_shape_contradicts_omega
     (hshape : reducible_shape_13_open)
@@ -839,7 +875,7 @@ theorem reducible_shape_contradicts_omega
     (hcop : E.a.natAbs.gcd E.b.natAbs = 1) : False := by
   rcases hshape E ha hb hcop with ⟨n, ε, exp, hrayc, hmatch⟩
   have hdiv := h13 hshape hray hinertia E ha hb hcop n ε exp hrayc hmatch
-  exact not_three_div_complement exp hdiv.1 hdiv.2
+  exact not_both_exponents_div_three exp hdiv.1 hdiv.2
 
 /-- Under the component count and the Artin bridge, the character-conductor
 sum equals `FTameAtPi + SwanAtPi` and that integer lies in `{10, 12}`.

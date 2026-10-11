@@ -25,7 +25,7 @@ over `a = 0` or `b = 0`. `(8, 8, 2)` fails `curve_8_8_2_not_coprime`
 | `no_newform_32_64_open` | both branches after `rcases h_n_eq_of_tate` |
 | `frey_qcurve_modular` | AXIOM. `have hMod := frey_qcurve_modular a b c E`. Not a parameter. |
 | `ribet_level_lowering_4413` | AXIOM. `ribetLevelOfAxiom` builds the `RibetLevel`. Not a parameter. |
-| `RhoE13Open (FreyCurve4413.mk' a b c h)` | SEALED input. `hIrr heq` is the argument of `ribetLevelOfAxiom`. Nothing produces a term. `rhoE13_open_of_psi` does not discharge it. |
+| `RhoE13Open (FreyCurve4413.mk' a b c h)` | Opaque hypothesis, no body. `hIrr heq` is the argument of `ribetLevelOfAxiom`. The sealed body used to be `True`; that equation is gone. Nothing produces a term. `rhoE13_open_of_psi` is not provable by unfolding and does not discharge it. |
 | `a ≠ 0`, `b ≠ 0`, `gcd(\|a\|, \|b\|) = 1`, `c > 0` | `hnew` takes all four. `h_n_eq_of_tate` also takes the gcd. |
 
 `tate_param_13_dvd_of_coprime` is not a hypothesis of this theorem. It stays in the tree. `inertia_trivial_of_tate_13_open` is the implication whose antecedent is `13 ∣ tateParameter`. That definition does not mention the name `tate_param_13_dvd_of_coprime`, and no theorem applies the name.
@@ -71,7 +71,8 @@ From `a⁴ + b⁴ = c¹³` on `FreyCurve4413`, with `gcd(|a|, |b|) = 1`:
 - In `Mathlib/Modular/GL2F13.lean`, kernel axioms only: `order_thirteen` (no positive exponent below `13`), `transvection_classification_13` (an element of order `13` is conjugate to `(1 1; 0 1)`), and `normal_closure_contains_SL2` (every determinant-`1` matrix is a product of ambient conjugates of that transvection).
 - In `Mathlib/Modular/ReducibleShape13.lean`, kernel axioms only: the units of `ℤ[√-1]` are `{±1, ±√(-1)}`, they stay distinct modulo `π ^ n` for `n ≥ 3`, a `π`-unit satisfies `z ^ (2 ^ m) ≡ 1 (mod π ^ (m + 1))`, and a multiplicative character of `(ℤ[i] / π ^ n)ˣ` with values in `𝔽₁₃ˣ` has order dividing `4`. The fourth roots are `1`, `5`, `8`, `12`. This is not irreducibility.
 - In `Mathlib/Modular/Cyclotomic13.lean`, kernel axioms only: `primitive_root_two` (`2` has order exactly `12` in `𝔽₁₃ˣ`), `shift_no_monic_factor` (`Φ₁₃(x + 1)` has no monic factor of positive degree in `ℤ[x]`), `gauss_period_square` (`η² + η = 3`), `gauss_period_disc` (`(2η + 1)² = 13`), `sqrt13_not_in_qi`, and `cyclotomic_pow_order_div_four` (`(2 ^ e) ^ 4 = 1` if and only if `3 ∣ e`, for `e < 12`). `omega_order_twelve` packages them. Gauss's lemma and the unique quadratic subfield of `ℚ(ζ₁₃)` are not theorems, so `[ℚ(i, ζ₁₃):ℚ(i)] = 12` is not a computed degree.
-- `not_three_div_complement` is kernel axioms only: both cyclotomic exponents divisible by `3` force `2 ^ 4 = 1`. `reducible_shape_contradicts_omega` is `False` for a coprime curve with `a ≠ 0` and `b ≠ 0`, conditional on `reducible_shape_13_open`, `ray_class_mod_pi_open`, `inertia_trivial_of_tate_13_open`, and `chars_unramified_above_13_open`. It is not unconditional irreducibility and it does not produce a term of `RhoE13Open`.
+- `both_exponents_force_three_div_one` is kernel axioms only. The integers are `exp.val` and `(complementExp exp).val` on both sides: `chars_unramified_above_13_open` divides each by `3`, and `complement_sum` says their sum is `1` modulo `12`. Together that is `3 ∣ 1`. `not_both_exponents_div_three` is the resulting `False`. `not_three_div_complement` is the same impossible pair packaged through `2 ^ 4 = 1`; it is not a second divisibility lemma. `chars_unramified_above_13_open` is RETRACTED: false as stated, not an open lemma. `reducible_shape_contradicts_omega` is VACUOUS. It is `False` from those inconsistent premises, ex falso, and it is not an irreducibility result. It does not produce a term of `RhoE13Open`.
+- In `Mathlib/Modular/WeilTrace13.lean`, kernel axioms only: at `t = 5` the four shapes of `trace_residue_four` are `6` or `7` (`trace_shapes_at_five`). For an arbitrary exponent, `e₁ + e₂ ≡ 1 (mod 12)` and `5 ^ 4 = 1` reduce the shape sum to one of those (`twisted_trace_at_five`). Every integer congruent to `6` or `7` modulo `13` fails `a² ≤ 20` (`int_outside_weil_at_five`), and `20 = 4 · 5` is the square form of `|a| ≤ 2 √5`. `5 ∤ |c|` implies `5 ∤ N(Δ)` (`five_misses_discriminant_norm`). `trace_outside_weil_at_five` proves `trace_outside_weil_open`; the witness is norm `5`, and the inertia, Artin, and ray-class antecedents are not used. `weil_contradiction_at_five` is `False` from `reducible_shape_13_open`, `frobenius_trace_sum_open`, `weil_bound_open`, and `5 ∤ |c|`. The case `5 ∣ |c|` is not this theorem: norm `5` then divides `N(Δ)`, so the prime is bad, and no replacement prime is chosen. None of this produces `RhoE13Open`.
 - In `Mathlib/Modular/CmVanishing32.lean`: the endomorphisms `(X, Y) ↦ (-X, i Y)` of `Y² = X³ - X` and `Y² = X³ + X` (`cm_endomorphism_x3_sub_x`, `cm_endomorphism_x3_add_x`), so both CM discriminants are `-4`. Inert primes through `19` are `3, 7, 11, 19`. `cm_vanish_32` and `cm_vanish_64` read `a_p = 0` there off `hecke32_eigenvalues` and `hecke64_eigenvalues`; they add no new `native_decide`. The same four primes have trace `0` on both Weierstrass models (`cm_curve_trace_inert_sub`, `cm_curve_trace_inert_add`), with no axioms. `three_not_dvd_c` says a coprime solution is not divisible by `3`. `freyTrace3_not_div_13` is the `𝔽₉` point count: the trace lies in `{-2, 4, 6}`. The comparison is not the residue `0`. `qcurve_isogeny_input` reuses `velu_target_eq_twist_neg_two` and `thirteen_not_dvd_two`: the conjugate is `2`-isogenous to the twist by `-2`, so the cocycle is an extension of `ρ̄_E` to `G_ℚ`. Weil restriction is `4`-dimensional and is not used; its residue would be `10` (`weil_sum_residue_ten`: `2 · 10 ≡ -6 (mod 13)` and `10 ≢ -6`). With `a_3 = 0`, `trace(Frob_3²) = -6` and `-6 ≡ 7 (mod 13)` (`frob_square_trace_at_3`, `neg_six_cong_seven`). `freyTrace3_not_cong_neg_six` says no admissible residue is `-6` or `7` mod `13`. `coefficient_qcurve_misses_neg_six` is `(1, 0, 1)`: `IsQCurve` holds and the trace is `-2`. `modular_package_unresolved` is `rho_E_p = rho_E_p_twisted = unresolved`. The intertwiner scalars are theorems: degree `2`, composition degree `4`, scalar `±2`, and `χ_{-2}(σ)² = 1` (`mu_coefficient_data`, `scalar_of_degree_four`, `intertwiner_endomorphism_scalar`). `(-2 / 3) = 1` (`legendre_neg_two_at_three`). `±2` are not squares in `𝔽₁₃` and do not rescale to `1` (`f13_linear_lift_scalar_fails`). Both are squares in `𝔽₁₃[√2]`, and the rescaling exists there (`f169_linear_lift_scalar_exists`). Frobenius of `𝔽₁₆₉` is conjugation, and the class of `-6` is the fixed prime-field element `(7, 0)` (`f169_frobenius`, `trace_neg_six_in_prime_field`). There is no Tate module. The remaining open is `qcurve_extension_169_open`, the trace of a `GL₂(𝔽₁₆₉)` lift. `qcurve_extension_13_open` is that trace rewritten by `0² - 2·3 = -6`. `H²` is not a second hypothesis. `modular_residual_13_open` is proved by projection of `ribet_level_lowering_4413.gkResidual`. `qcurve_descent_13_of_bridge` is the corrected `qcurve_descent_13_open` on the `𝔽₁₆₉` open. `no_newform_32_64_of_qcurve` is `no_newform_32_64_open` on that same hypothesis. The definition is not rewritten, and it is not a theorem by itself.
 
 `pacetti_2_8_open` (the Artin exponent `FTameAtPi + SwanAtPi` lies in `{10, 12}`) is a theorem of `components_n_plus_five_open` alone (`pacetti_of_components`). It is not an independent open proposition.
@@ -123,11 +124,11 @@ Two further open propositions sit beside the sealed irreducibility predicate. Th
 
 | Proposition | Statement that is not a theorem |
 | --- | --- |
-| `rhoE13_open_of_psi` | DANGLING. `Psi13HasNoQiRoot` and `ImageContainsSL2` imply `RhoE13Open`. No theorem takes this proposition. The seal has no equation lemma. |
+| `rhoE13_open_of_psi` | DANGLING. `Psi13HasNoQiRoot` and `ImageContainsSL2` imply `RhoE13Open`. No theorem takes this proposition. `RhoE13Open` has no body, so the implication is not provable by unfolding. Nothing produces a term. |
 | `GL2F13.dickson_13_open` | DANGLING. An `𝔽₁₃`-irreducible subgroup containing an element of order `13` contains `SL₂(𝔽₁₃)`. No theorem takes this proposition. `normal_closure_contains_SL2` does not assume it. |
 | `steinberg_prime_13_open` | ABANDONED. Some prime of multiplicative reduction has `13 ∤ tateParameter`. No witness, and no theorem takes the proposition. Strategy A does not assume it. |
 
-`#print axioms` does not list hypothesis propositions. The ledger below is the output of a fresh run after the capstone prune. The hypotheses are in the theorem statements.
+`#print axioms` does not list hypothesis propositions, and it does not list `RhoE13Open`: that opaque constant depends on no axioms. The capstone line is unchanged from the prune. The new lines for the exponent retraction and the norm-`5` comparison are from a fresh run after the seal lost its body. The hypotheses are in the theorem statements.
 
 ## Frontier triage
 
@@ -146,14 +147,17 @@ Off the capstone, still live:
 - **`reducible_shape_13_open`.** Rank **3**. The shape `ρ̄^ss ≅ χ₁ ⊕ χ₂` needs a residual representation. The marker is `.unresolved`.
 - **`ray_class_mod_pi_open`.** Rank **3**. Ray class groups modulo powers of `π`, and class number `1` of `ℚ(i)`, are not theorems. This is class field theory.
 - **`inertia_trivial_of_tate_13_open`.** Rank **2** for the implication, **3** if the Tate parameter has to be built first. The statement is `13 ∣ tateParameter →` residual inertia trivial. The Kummer sequence and Tate uniformization are absent. It is a hypothesis of `reducible_shape_contradicts_omega`.
-- **`chars_unramified_above_13_open`.** Rank **2**. Finite flat of weight `2` would force inertial exponents `{0, 1}`, and those do not give order dividing `4`. The proposition asks for both cyclotomic exponents divisible by `3`. It is in tension with `det = ω`, which is ramified at `13` and is not a theorem here. It may be the wrong lemma.
+- **`chars_unramified_above_13_open`.** RETRACTED. False as stated, not an open lemma. The exponents are `exp` and `complementExp exp`, the same integers `complement_sum` adds to `1` modulo `12`. Both divisible by `3` forces `3 ∣ 1` (`both_exponents_force_three_div_one`). Finite flat of weight `2` would have given `{0, 1}`, which sums to `1` and does not give order dividing `4`. The definition is kept. It is not an irreducibility input. `reducible_shape_contradicts_omega` is the ex falso `False` from this proposition together with the shape, the ray-class bridge, and inertia. That `False` is VACUOUS.
 - **`tate_param_13_dvd_of_coprime`.** Rank **3**. Not a capstone hypothesis. No theorem applies the name. The claim is `13 ∣ tateParameter` at odd `p ∣ c`. Uniformization is the missing theory. Uneven splitting (`13 ∣ v_p(N(Δ))` versus `13 ∣ v_𝔭(Δ)`) is not even an open proposition: unique factorization in `ℤ[i]` is missing.
 - **`GL2F13.dickson_13_open`.** Rank **1**. This is the finite one. `GL₂(𝔽₁₃)` is finite. The obstruction is bookkeeping over subgroups, not a new theorem. DANGLING: nothing assumes it. The prior is right.
-- **`rhoE13_open_of_psi`.** Rank **2**, and it is a design problem downstream of `rho_E_13`, not a finite check. DANGLING. The sealed body of `RhoE13Open` is `True`. Removing `opaque` would make the implication trivial and would not be irreducibility. The prior is right.
+- **`rhoE13_open_of_psi`.** Rank **2**, and it is a design problem downstream of `rho_E_13`, not a finite check. DANGLING. The sealed body of `RhoE13Open` was `True`. It is now an opaque proposition with no body, so the implication is not provable by unfolding, and removing `opaque` is no longer available as a way to make it `True`. Nothing produces a term. The prior is right.
 - **`Psi13HasNoQiRoot` and `psi13_no_Qi_root_Frey_OPEN`.** Rank **3**. No integral or rational root of the Frey `ψ₁₃`, a polynomial whose norm depends on `a` and `b`. Proved only on `y² = x³ - x`, which is not a Frey solution, and false for `(0, 0, 0)` in the unrestricted form. `rhoE13_open_of_psi` mentions the first name. The second is used only to record that failure.
 - **`FreyConductor_OPEN`.** Rank **3** for the real gap, which is Tate's algorithm. The proposition itself is the shape `N = 32 c² ∨ N = 64 c²`. The capstone inhabits `FreyConductorDivides` by choosing `N = 32 |c|²` and does not use this name. Theorems in `LevelLowering4413` do take it.
 - **`artin_exponent_of_characters_open`.** SUPERSEDED as a route to irreducibility. Rank **3** if anyone revived it: it splits an Artin conductor across two characters of a representation that does not exist here. Consumed by `character_sum_matches_pacetti` only.
-- **`frobenius_trace_sum_open`, `weil_bound_open`, `trace_outside_weil_open`.** SUPERSEDED. The order-12 argument replaced the Weil-bound elimination. `weil_bound_open` and `trace_outside_weil_open` have no consumer. `frobenius_trace_sum_open` occurs only inside the dangling `trace_outside_weil_open`. Do not spend a session here.
+- **`frobenius_trace_sum_open`.** Live. Rank **3**. It identifies the sealed `pointCountTrace` with the character sum. There is no Frobenius element. `point_count_at_five_outside` and `weil_contradiction_at_five` consume it.
+- **`weil_bound_open`.** Live. Rank **3**. Hasse's bound, written `a² ≤ 4 N`. The definition quantifies over every positive norm. `weil_contradiction_at_five` applies it at norm `5` only under `5 ∤ |c|`, which is `5 ∤ N(Δ)`.
+- **`trace_outside_weil_open`.** PROVED, by `trace_outside_weil_at_five`. The witness is norm `5`. The inertia, Artin, and ray-class antecedents in the definition are not used. It is not an independent gap.
+- **Case `5 ∣ |c|`.** The remaining gap on this prime, and it is not a new `def`. `five_misses_discriminant_norm` fails, norm `5` divides `N(Δ)`, and the Weil bound at that norm is the wrong input. No replacement prime is chosen. `weil_contradiction_at_five` does not claim this case.
 - **`steinberg_prime_13_open`.** ABANDONED. Rank not applicable. Strategy A has no witness, the proposition has no consumer, and `tate_param_13_dvd_of_coprime` asks for the opposite divisibility. The classification theorems do not assume it.
 - **`swan_vanishes_open`.** WITHDRAWN. `swan_vanishes_contradicts_components` is `False` on `(1, 0, 1)` assuming the component count.
 - **`minimal_even_c_open`.** Refuted. `not_minimal_even_c_open` is `¬ minimal_even_c_open`, witnessed by `(8, 8, 2)`.
@@ -168,7 +172,7 @@ Off the capstone, still live:
 - **Odd Serre level.** `OddPrimaryLevel E = 1`. The arithmetic lemma `nat_eq_one_of_prime_divisors_removed` needs two facts that are not theorems: every prime divisor of `OddPrimaryLevel` is an odd prime divisor of `c`, and `13 ∣ tateParameter` removes that prime. `odd_conductor_empty` removes primes dividing `d = 1` only.
 - **Uneven splitting**, unnamed. It is not a named open proposition. It is why `multiplicative_at_dvd_c` does not prove `tate_param_13_dvd_of_coprime`. See below. Closing it is a theorem that `13 ∣ v_𝔭(Δ)` at each Gaussian prime above `p ∣ c`. That still would not be a Tate parameter.
 - **`no_newform_32_64_open`.** Darmon–Merel Lemma 8.2. The existing Mazur products vanish, and the winding nonvanishing does not produce `False`. The extension residue at `𝔭₃` is `-6 ≡ 7 (mod 13)`. A linear rescaling of the intertwiner over `𝔽₁₃` is impossible (`f13_linear_lift_scalar_fails`). The same rescaling exists over `𝔽₁₆₉`, and the trace value `-6` lies in `𝔽₁₃`. `qcurve_extension_169_open` is the unformalized `GL₂(𝔽₁₆₉)` lift. `qcurve_extension_13_open` is a theorem on that open. `modular_residual_13_open` is proved: it is `ribet_level_lowering_4413.gkResidual`. `no_newform_32_64_of_qcurve` is this proposition on `qcurve_extension_169_open` alone. `no_solution_4413_of_frontier` still assumes the proposition itself. The general vanishing `a_p(f) = 0` for every inert prime, past the Hecke range through `19`, is not a theorem.
-- **`RhoE13Open`.** A term. The predicate is `opaque`, so there is no equation lemma and the body cannot be unfolded. `rhoE13_open_of_psi` is the open proposition `Psi13HasNoQiRoot → ImageContainsSL2 → RhoE13Open` on a nontrivial solution. It is not a theorem. `Psi13HasNoQiRoot` stays open on `NontrivialFrey`, and it is false for the singular curve `(0, 0, 0)` in the unrestricted form. `GL2F13.order_thirteen` and `GL2F13.transvection_classification_13` prove that a supplied matrix of order `13` is conjugate to `(1 1; 0 1)`, with no smaller positive exponent. `GL2F13.normal_closure_contains_SL2` writes every determinant-`1` matrix as a product of ambient `GL₂`-conjugates of that transvection. That does not move the fixed line inside an arbitrary subgroup, so `GL2F13.dickson_13_open` stays open and DANGLING: no theorem assumes it, and the check is finite. `steinberg_prime_13_open` is ABANDONED. None of this produces a term of `RhoE13Open`. The capstone still takes that term because `ribet_level_lowering_4413` requires one. `reducible_shape_contradicts_omega` is a conditional `False` and is not a term of the seal.
+- **`RhoE13Open`.** A term of an opaque proposition with no body. The previous body was `True`, which made the irreducibility hypothesis vacuous. That equation is gone. There is no `axiom` declaration, and `#print axioms` does not list `RhoE13Open`. `trivial` and `True.intro` do not inhabit it; no call site was constructing a term that way. `rhoE13_open_of_psi` is the open proposition `Psi13HasNoQiRoot → ImageContainsSL2 → RhoE13Open` on a nontrivial solution. It is DANGLING and not provable by unfolding. `Psi13HasNoQiRoot` stays open on `NontrivialFrey`, and it is false for the singular curve `(0, 0, 0)` in the unrestricted form. `GL2F13.order_thirteen` and `GL2F13.transvection_classification_13` prove that a supplied matrix of order `13` is conjugate to `(1 1; 0 1)`, with no smaller positive exponent. `GL2F13.normal_closure_contains_SL2` writes every determinant-`1` matrix as a product of ambient `GL₂`-conjugates of that transvection. That does not move the fixed line inside an arbitrary subgroup, so `GL2F13.dickson_13_open` stays open and DANGLING: no theorem assumes it, and the check is finite. `steinberg_prime_13_open` is ABANDONED. None of this produces a term of `RhoE13Open`. The capstone still takes that term because `ribet_level_lowering_4413` requires one. `reducible_shape_contradicts_omega` is VACUOUS and is not a term of the seal.
 - **Modularity.** Replace `frey_qcurve_modular` by ℚ-curve modularity.
 - **Level lowering.** Replace `ribet_level_lowering_4413`. `h_n_eq_of_tate` does not discharge `RibetLevel.h_n_eq`: the conclusion is a product of two sealed functions, not that field.
 - **`no_solution_4413`.** The conditional theorem is `no_solution_4413_of_frontier`. The unconditional statement is not a theorem. `(1, 0, 1)` and `(0, 1, 1)` remain solutions.
@@ -261,7 +265,17 @@ Nodes outside the requested list, printed the same way, because they sit on the 
 'Cyc13.cyclotomic_pow_order_div_four' depends on axioms: [propext, Quot.sound]
 'Cyc13.omega_order_twelve' depends on axioms: [propext, Classical.choice, Quot.sound]
 'not_three_div_complement' depends on axioms: [propext, Classical.choice, Quot.sound]
-'reduible_shape_contradicts_omega' depends on axioms: [propext, Classical.choice, Quot.sound]
+'both_exponents_force_three_div_one' depends on axioms: [propext, Quot.sound]
+'not_both_exponents_div_three' depends on axioms: [propext, Quot.sound]
+'reduible_shape_contradicts_omega' depends on axioms: [propext, Quot.sound]
+'trace_shapes_at_five' depends on axioms: [propext, Quot.sound]
+'twisted_trace_at_five' depends on axioms: [propext, Classical.choice, Quot.sound]
+'int_outside_weil_at_five' depends on axioms: [propext, Quot.sound]
+'five_misses_discriminant_norm' depends on axioms: [propext, Classical.choice, Quot.sound]
+'trace_outside_weil_at_five' depends on axioms: [propext, Classical.choice, Quot.sound]
+'point_count_at_five_outside' depends on axioms: [propext, Classical.choice, Quot.sound]
+'five_good_trace_outside' depends on axioms: [propext, Classical.choice, Quot.sound]
+'weil_contradiction_at_five' depends on axioms: [propext, Classical.choice, Quot.sound]
 'Cm32.cm_endomorphism_x3_sub_x' depends on axioms: [propext, Classical.choice, Quot.sound]
 'Cm32.cm_endomorphism_x3_add_x' depends on axioms: [propext, Classical.choice, Quot.sound]
 'Cm32.splitting_through_19' does not depend on any axioms
@@ -326,9 +340,11 @@ The `native_decide` axioms are the flag. They are kernel trust of the compiler f
 
 ## Import graph
 
+`#print axioms RhoE13Open` reports no axioms. The opaque declaration is not an `axiom`.
+
 `RhoE13Open` is defined in `DarmonMerel/3_RibetLowering4413.lean`. That file imports `DarmonMerel/2_Modularity4413.lean`, `Rank0_32a1`, `EllipticCurveMinimal`, and `FreyTraceF9`. It does not import `ReducibleShape13`, `Irreducibility13`, `DarmonMerel/6_NoSolution4413.lean`, or `CmVanishing32`.
 
-`reducible_shape_contradicts_omega` lives in `ReducibleShape13`, which imports `LevelLowering4413`, which imports file 3. The arrow points at the seal.
+`reducible_shape_contradicts_omega` lives in `ReducibleShape13`, which imports `LevelLowering4413`, which imports file 3. The arrow points at the seal. `WeilTrace13` imports `ReducibleShape13` and is imported by `Mathlib.lean`. `ReducibleShape13` does not import `WeilTrace13`.
 
 `qcurve_extension_169_open` lives in `CmVanishing32`, which imports file 6. File 6 imports file 7, which imports down through file 3. `DarmonMerel.lean` imports file 6 and then `CmVanishing32`. File 3 does not import `CmVanishing32`.
 
@@ -440,15 +456,15 @@ The bridges are open propositions, not theorems:
 | Proposition | What is not formalized |
 | --- | --- |
 | `reducible_shape_13_open` | `ρ̄^ss ≅ χ₁ ⊕ χ₂` with product the cyclotomic character. One open, for the shape. |
-| `inertia_trivial_of_tate_13_open` | `13 ∣ tateParameter` at `p ∣ c` implies residual inertia is trivial. The antecedent is that divisibility. The definition does not name `tate_param_13_dvd_of_coprime`. Hypothesis of `reducible_shape_contradicts_omega`. |
-| `artin_exponent_of_characters_open` | SUPERSEDED as an irreducibility route. Still a hypothesis of `character_sum_matches_pacetti`, which neither `reducible_shape_contradicts_omega` nor the capstone calls. Also an antecedent of the dangling `trace_outside_weil_open`. |
-| `ray_class_mod_pi_open` | Class field theory for the ray class group modulo a power of `π`. Hypothesis of `reducible_shape_contradicts_omega`. |
-| `frobenius_trace_sum_open` | SUPERSEDED. Its only reference is an antecedent of `trace_outside_weil_open`, which no theorem takes. |
-| `weil_bound_open` | SUPERSEDED and DANGLING. `\|a_𝔭\| ≤ 2 √N(𝔭)`, written `a² ≤ 4 N(𝔭)`. No theorem and no other open mentions the name. |
-| `trace_outside_weil_open` | SUPERSEDED and DANGLING. The character constraint forces a value outside that range. No theorem takes it. Not `False`, and not `¬ (a⁴ + b⁴ = c¹³)`. |
-| `chars_unramified_above_13_open` | OPEN. Under the shape, the ray-class bridge, and inertia trivial at `p ∣ c`, both cyclotomic exponents are divisible by `3`. Finite flat of weight `2` would force the inertial exponents `{0, 1}`. Those sum to `1` and do not give order dividing `4`, hence the order-`4` criterion is `3 ∣ e_i`, not the pair `{0, 1}`. Not assumed. |
+| `inertia_trivial_of_tate_13_open` | `13 ∣ tateParameter` at `p ∣ c` implies residual inertia is trivial. The antecedent is that divisibility. The definition does not name `tate_param_13_dvd_of_coprime`. It is a hypothesis of the vacuous `reducible_shape_contradicts_omega`. The Weil contradiction at norm `5` does not use it. |
+| `artin_exponent_of_characters_open` | SUPERSEDED as an irreducibility route. Still a hypothesis of `character_sum_matches_pacetti`. An antecedent of `trace_outside_weil_open`, unused by the proof `trace_outside_weil_at_five`. |
+| `ray_class_mod_pi_open` | Class field theory for the ray class group modulo a power of `π`. Hypothesis of the vacuous order-`12` package. Not used at norm `5`. |
+| `frobenius_trace_sum_open` | Live. `a_𝔭` equals the character sum. Consumed by `point_count_at_five_outside` and `weil_contradiction_at_five`. |
+| `weil_bound_open` | Live. `a² ≤ 4 N(𝔭)`. Consumed by `weil_contradiction_at_five` at norm `5`, under `5 ∤ \|c\|`. |
+| `trace_outside_weil_open` | PROVED by `trace_outside_weil_at_five`. The witness is norm `5`. Not an independent gap. |
+| `chars_unramified_above_13_open` | RETRACTED. False as stated. Both cyclotomic exponents divisible by `3` contradicts `e₁ + e₂ ≡ 1 (mod 12)`: the same integers, so `3 ∣ 1`. Not an open lemma and not an irreducibility input. |
 
-`shape_forces_order_div_four` is the order bound conditional on `reducible_shape_13_open`. `character_sum_matches_pacetti` is the Artin sum conditional on `components_n_plus_five_open` and `artin_exponent_of_characters_open`. The order-12 contradiction does not use that Artin sum, the Frobenius-trace sum, the Weil bound, or `trace_outside_weil_open`. `reducible_shape_contradicts_omega` is `False` for a coprime curve with `a ≠ 0` and `b ≠ 0`, conditional on `reducible_shape_13_open`, `ray_class_mod_pi_open`, `inertia_trivial_of_tate_13_open`, and `chars_unramified_above_13_open`. The proof is `not_three_div_complement`: each exponent divisible by `3` makes `2 ^ e` a fourth root, the two powers multiply to `2` because the exponents sum to `1` modulo `12`, and a product of fourth roots is a fourth root, so `2 ^ 4 = 1`, which `omega_order_twelve` forbids. None of these claims unconditional irreducibility.
+`shape_forces_order_div_four` is the order bound conditional on `reducible_shape_13_open`. `character_sum_matches_pacetti` is the Artin sum conditional on `components_n_plus_five_open` and `artin_exponent_of_characters_open`. `reducible_shape_contradicts_omega` is VACUOUS: `False` for a coprime curve with `a ≠ 0` and `b ≠ 0`, from `reducible_shape_13_open`, `ray_class_mod_pi_open`, `inertia_trivial_of_tate_13_open`, and the retracted `chars_unramified_above_13_open`. The proof is `not_both_exponents_div_three`, which is `3 ∣ 1`. It is ex falso, not an irreducibility theorem. The live comparison is the trace at norm `5`: the shapes are `6` or `7`, and those integers miss `a² ≤ 20` when `5 ∤ |c|`. The case `5 ∣ |c|` is open in the sense that this prime does not apply; it is not a new proposition. None of these claims unconditional irreducibility.
 
 ## CM vanishing at levels 32 and 64
 
@@ -527,8 +543,10 @@ a⁴ + b⁴ = c¹³                                          PROVED data on Frey
 │    not minimal                                       PROVED  not_minimal_even_c
 │
 ├─ Modular E                                           AXIOM  frey_qcurve_modular
-├─ RhoE13Open                                          SEALED  no term, no equation lemma
-│    rhoE13_open_of_psi                                DANGLING  seal does not unfold
+├─ RhoE13Open                                          OPAQUE  no body, no term
+│    body was True; that equation is removed
+│    not an axiom; #print axioms does not list it
+│    rhoE13_open_of_psi                                DANGLING  not provable by unfolding
 │    Psi13HasNoQiRoot                                  OPEN PROP  on NontrivialFrey only
 │    ImageContainsSL2                                  SEALED
 │    strategy A                                        ABANDONED as a route to a term
@@ -553,14 +571,23 @@ a⁴ + b⁴ = c¹³                                          PROVED data on Frey
 │    │  ray class group modulo π^n                     OPEN PROP  ray_class_mod_pi_open
 │    │  Artin 10/12 splits across χ₁, χ₂               SUPERSEDED  artin_exponent_of_characters_open
 │    │       character_sum_matches_pacetti still assumes it
-│    │       the order-12 proof does not
+│    │       the norm-5 comparison does not
 │    │  unramified at p∣c from the Tate divisibility   OPEN PROP  inertia_trivial_of_tate_13_open
-│    │  a_𝔭 = χ₁(Frob) + χ₂(Frob)                      SUPERSEDED  frobenius_trace_sum_open
-│    │       only an antecedent of trace_outside_weil_open
-│    │  |a_𝔭| ≤ 2√N(𝔭)                                 SUPERSEDED  weil_bound_open
-│    │       DANGLING
-│    │  character value outside that range             SUPERSEDED  trace_outside_weil_open
-│    │       DANGLING
+│    │  a_𝔭 = χ₁(Frob) + χ₂(Frob)                      OPEN PROP  frobenius_trace_sum_open
+│    │       consumed by the norm-5 comparison
+│    │  |a_𝔭| ≤ 2√N(𝔭)                                 OPEN PROP  weil_bound_open
+│    │       consumed at norm 5 under 5 ∤ |c|
+│    │  character value outside that range             PROVED  trace_outside_weil_at_five
+│    │       witness norm 5; inertia, Artin, ray class unused
+│    │  shapes at t = 5 are 6 or 7                     PROVED  trace_shapes_at_five
+│    │       twisted sum, via e₁ + e₂ ≡ 1 (mod 12)     PROVED  twisted_trace_at_five
+│    │  a ≡ 6 or 7 (mod 13) fails a² ≤ 20              PROVED  int_outside_weil_at_five
+│    │       20 = 4·5, and 2√5 < 6
+│    │  5 ∤ |c| implies 5 ∤ N(Δ)                       PROVED  five_misses_discriminant_norm
+│    │  shape + trace sum + Weil bound + 5 ∤ |c|       PROVED  weil_contradiction_at_five
+│    │       False; not a term of RhoE13Open
+│    │  case 5 ∣ |c|                                   GAP  not a new def
+│    │       norm 5 divides N(Δ); no replacement prime
 │    │  2 has order exactly 12 in F₁₃ˣ                 PROVED  primitive_root_two
 │    │       omega_order_twelve
 │    │  Φ₁₃(x+1) has no monic factor in Z[x]           PROVED  shift_no_monic_factor
@@ -571,16 +598,17 @@ a⁴ + b⁴ = c¹³                                          PROVED data on Frey
 │    │  unique quadratic subfield of Q(ζ₁₃)             not a theorem
 │    │       Galois correspondence is not formalized
 │    │  ord(2^e) | 4 iff 3 | e                          PROVED  cyclotomic_pow_order_div_four
-│    │  both exponents divisible by 3                   OPEN PROP  chars_unramified_above_13_open
-│    │       finite flat would give exponents {0, 1}
-│    │       those sum to 1 and do not give order | 4
-│    │       hence the criterion is 3 ∣ e_i
-│    │       not assumed
+│    │  both exponents divisible by 3                   RETRACTED  chars_unramified_above_13_open
+│    │       same integers as complement_sum
+│    │       e₁ + e₂ ≡ 1 (mod 12) forces 3 ∣ 1
+│    │       both_exponents_force_three_div_one
+│    │       false as stated, not an open lemma
 │    │  both such exponents force 2^4 = 1              PROVED  not_three_div_complement
-│    │  reducible shape contradicts order 12           CONDITIONAL
+│    │       cyclotomic packaging of the same impossibility
+│    │  reducible shape contradicts order 12           VACUOUS
 │    │       reducible_shape_contradicts_omega
-│    │       on the shape, ray class, inertia, and the 13-open
-│    │       not unconditional irreducibility
+│    │       ex falso from the retracted divisibility
+│    │       not an irreducibility result
 │    │       does not produce a term of RhoE13Open
 ├─ RibetLevel, with h_n_eq : n = 32 ∨ n = 64           AXIOM  ribet_level_lowering_4413
 │    also needs a conductor shape and pacetti_2_8_open

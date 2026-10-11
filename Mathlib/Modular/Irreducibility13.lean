@@ -22,8 +22,8 @@ statement is not a closed `decide`.
 
 `RhoE13Open E → Psi13HasNoQiRoot E` is not a lemma in this file.
 
-* `RhoE13Open` is opaque. Its body is sealed, so it supplies no fact about
-  `ψ₁₃`.
+* `RhoE13Open` is opaque and has no body, so it supplies no fact about
+  `ψ₁₃`. The previous sealed body was `True`; that equation is gone.
 * A root of `ψ₁₃` in `ℚ(√-1)` is a linear factor. Absolute irreducibility
   of `ρ_{E,13}` is a statement about Galois-stable subgroups. The missing
   linear factor is not that statement, and the sealed irreducibility
@@ -34,10 +34,10 @@ statement is not a closed `decide`.
   `SL₂(𝔽₁₃)`. `RhoE13NeedsSL2` is `Psi13HasNoQiRoot` together with
   `ImageContainsSL2 E 13`. `rhoE13_open_of_psi` is that implication
   with the real types. It is an open proposition, not a theorem:
-  `RhoE13Open` is `opaque`, so Lean stores no equation lemma and the
-  body cannot be unfolded into a characterization. Inhabiting it by
-  `rfl` or `decide` is not available. `ImageContainsSL2` is sealed as
-  well.
+  `RhoE13Open` is `opaque` and has no body, so there is no equation lemma
+  and the implication is not proved by unfolding. Inhabiting it by
+  `rfl`, `decide`, `trivial`, or `True.intro` is not available.
+  `ImageContainsSL2` is sealed as well.
 * `GL2F13.transvection_classification_13` is the matrix theorem: an
   element of order `13` in `GL₂(𝔽₁₃)` is conjugate to `(1 1; 0 1)`.
   `GL2F13.order_thirteen` is the same statement with no smaller positive
@@ -154,11 +154,11 @@ def RhoE13NeedsSL2 (a b c : ℤ) (heq : a ^ 4 + b ^ 4 = c ^ 13)
 
 /-- Not a theorem. The requested characterization of `RhoE13Open`.
 
-`RhoE13Open` is `opaque`. There is no equation lemma, so the body
-cannot be unfolded, and this implication is not proved by `rfl`,
-`decide`, or a rewrite of the definition. `Psi13HasNoQiRoot` stays an
-open statement on `NontrivialFrey`. `ImageContainsSL2` stays sealed.
-Nothing here produces a term of `RhoE13Open`.
+`RhoE13Open` is `opaque` and has no body. There is no equation lemma,
+so this implication is not proved by unfolding, `rfl`, `decide`,
+`trivial`, or `True.intro`. `Psi13HasNoQiRoot` stays an open statement
+on `NontrivialFrey`. `ImageContainsSL2` stays sealed. Nothing here
+produces a term of `RhoE13Open`.
 -/
 def rhoE13_open_of_psi : Prop :=
   ∀ (a b c : ℤ) (heq : a ^ 4 + b ^ 4 = c ^ 13) (h : NontrivialFrey a b),

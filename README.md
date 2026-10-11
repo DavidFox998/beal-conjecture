@@ -261,8 +261,8 @@ product of the two sealed levels is `32` or `64`, assuming
 `components_n_plus_five_open`, `serre_two_level_open`, and
 `odd_level_one_open`. It does not use `ribet_level_lowering_4413`, and it
 does not discharge `h_n_eq`. `FreyValuationAt2` is `v₂(|c|)`.
-`RhoE13Open` is sealed. Its defining equation is not available, so
-`rhoE13_open_of_psi` stays an open proposition.
+`RhoE13Open` is an opaque proposition with no body. Nothing produces a
+term, and `rhoE13_open_of_psi` is not provable by unfolding.
 `Psi13HasNoQiRoot` is stated only for
 `NontrivialFrey`. The unrestricted statement fails for `(0, 0, 0)`.
 `RhoE13NeedsSL2` is `Psi13HasNoQiRoot` together with the sealed
