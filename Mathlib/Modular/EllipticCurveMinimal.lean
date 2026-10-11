@@ -4122,10 +4122,13 @@ opaque SwanAtPi (E : FreyCurve4413) : ℕ := 0
 
 /-- Tame part of the conductor exponent at `π`.
 
-The equation is hidden. This is not defined to be `2`, and it is not
-`v_π(Δ) - 4 - n`. `ogg_tame_of_INStar_discriminant` is the table arithmetic
-`(n + 6) - 4 - n = 2`. On the `IsINStar` translate the Weierstrass valuation
-is `18`, so that table slot is the cubic discriminant, not this sealed value.
+The equation is hidden. This is not defined to be `2`, `10`, or `12`, and
+it is not `v_π(Δ) - 4 - n`. `ogg_tame_of_INStar_discriminant` is the table
+arithmetic `(n + 6) - 4 - n = 2`. `ogg_count_if_components` is
+`18 - (n + 5) + 1`, equal to `10` or `12`: Ogg's expression when a minimal
+special fiber has `m = n + 5` components. `tate_step7_inputs` is the
+valuation data of the row. It does not count those components, so this
+sealed value is not that expression.
 -/
 opaque FTameAtPi (E : FreyCurve4413) : ℕ := 0
 
@@ -5601,7 +5604,10 @@ stays sealed. `weierstrass_cubic_gap` is the arithmetic `18 - (n + 6)`,
 equal to `8` for `n = 4` and `10` for `n = 2`. On the even-`a` translate
 that gap is `v_π(16)`, because `Δ = 16 d`. It is not `SwanAtPi`. Ogg's
 count on this model uses `v(Δ) = 18`, so `v(Δ) - 4 - n` is `10` or `12`
-before any Swan conductor.
+before any Swan conductor. `ogg_count_if_components` is that arithmetic
+written as `18 - (n + 5) + 1`. The component count `m = n + 5` is not
+`IsINStar`, and `FTameAtPi` is not set to `10` or `12`. This statement
+remains the open claim that `SwanAtPi` is `0`.
 -/
 def swan_vanishes_open : Prop :=
   ∀ E : FreyCurve4413, E.a.natAbs.gcd E.b.natAbs = 1 → SwanAtPi E = 0
@@ -6091,5 +6097,51 @@ theorem weierstrass_cubic_gap :
     (18 - (4 + 6) = 8 ∧ 2 + 8 = 18 - 4 - 4) ∧
     (18 - (2 + 6) = 10 ∧ 2 + 10 = 18 - 4 - 2) := by
   decide
+
+/-- Valuation data Tate's Step 7 reads on an `IsINStar` row.
+
+`tate_step7_double_root` is `v(a₂² - 3 a₄) = 2`. The same hypothesis gives
+`v_π(D) = n + 4` and `π^(n + 3) ∣ b₆`, with `n` positive and even. A minimal
+model of type `I_n*` has `m = n + 5` irreducible components, and Ogg's
+formula then returns `v(Δ) - m + 1`. These valuations do not produce that
+component count, and they do not evaluate `FTameAtPi`.
+-/
+theorem tate_step7_inputs {n : ℕ} {a1 a2 a3 a4 a6 b6 D : GaussInt}
+    (h : IsINStar n a1 a2 a3 a4 a6 b6 D) :
+    vPi (GaussInt.sub (GaussInt.mul a2 a2) (GaussInt.smul 3 a4)) = 2 ∧
+      P2Exact D (n + 4) ∧
+      valAtLeast b6 (n + 3) ∧
+      0 < n ∧ n % 2 = 0 := by
+  have hroot := tate_step7_double_root h
+  rcases h with ⟨hn, heven, _, _, _, _, _, hb6, hD⟩
+  exact ⟨hroot, hD, hb6, hn, heven⟩
+
+/-- Ogg's numbers if the special fiber had `m = n + 5` components and `v(Δ) = 18`.
+
+`18 - (4 + 5) + 1 = 10` and `18 - (2 + 5) + 1 = 12`, the same values as
+`18 - 4 - 4` and `18 - 4 - 2`. `m = n + 5` is the component count of type
+`I_n*`. `tate_step7_inputs` does not prove that count. `FTameAtPi` is sealed
+and is not `10` or `12`. For odd `c`, minimality is `qiLocalMinimalAtPi_of_c_odd`.
+It is a hypothesis of the formula and not a value of `FTameAtPi`.
+-/
+theorem ogg_count_if_components :
+    (18 - (4 + 5) + 1 = 18 - 4 - 4 ∧ 18 - 4 - 4 = 10) ∧
+    (18 - (2 + 5) + 1 = 18 - 4 - 2 ∧ 18 - 4 - 2 = 12) := by
+  decide
+
+/-- On a coprime curve, `v_π(Δ) = 18`, so the same two expressions are `10` and `12`.
+
+`c_odd_of_coprime` supplies odd `c`, and `vPi_delta` supplies the valuation.
+The subtractions use `m = 9` and `m = 7`. They are not `FTameAtPi`.
+-/
+theorem ogg_numbers_of_coprime (E : FreyCurve4413)
+    (hcop : E.a.natAbs.gcd E.b.natAbs = 1) :
+    vPi (deltaGauss E) = 18 ∧
+      vPi (deltaGauss E) - (4 + 5) + 1 = 10 ∧
+      vPi (deltaGauss E) - (2 + 5) + 1 = 12 := by
+  have hv := vPi_delta E (c_odd_of_coprime E hcop)
+  refine ⟨hv, ?_, ?_⟩
+  · rw [hv]
+  · rw [hv]
 
 end FreyCurve4413

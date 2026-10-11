@@ -234,8 +234,13 @@ statement does not take minimality as a hypothesis. It asks whether
 `weierstrass_cubic_gap` is `18 - (n + 6)`, equal to `8` or `10`. Adding the
 table value `2` recovers `18 - 4 - n`. That gap is `v_π(16)` on the even-`a`
 translate, and it is not `SwanAtPi`. `tate_step7_double_root` is
-`v(a₂² - 3 a₄) = 2` from the `IsINStar` bounds. The Kodaira symbol is not a
-theorem. `swan_vanishes_open` is not a theorem, and this statement does not
+`v(a₂² - 3 a₄) = 2` from the `IsINStar` bounds. `tate_step7_inputs` packages
+that valuation with `v_π(D) = n + 4` and `π^(n+3) ∣ b₆`. The Kodaira symbol
+is not a theorem. `ogg_count_if_components` is `18 - (n + 5) + 1`, equal to
+`10` for `n = 4` and `12` for `n = 2`. The component count `m = n + 5` is
+the special fiber of type `I_n*`. It is not derived from the bounds.
+`minimalAt2_of_coprime` is minimality. It does not evaluate `FTameAtPi`.
+`swan_vanishes_open` is not a theorem, and this statement does not
 follow from it. `(8, 8, 2)` fails the coprimality hypothesis and stays a
 non-minimal even-`c` curve. `h_n_eq` stays on the axiom.
 -/
