@@ -244,7 +244,8 @@ the special fiber of type `I_n*`. It is not derived from the bounds.
 `minimalAt2_of_coprime` is minimality.
 `components_n_plus_five_open` is the open claim that the Néron fiber has
 `n + 5` components. `ftame_ten_twelve_of_components` is `FTameAtPi = 10`
-or `12` under that claim. `swan_vanishes_open` is not a theorem.
+or `12` under that claim. `swan_vanishes_open` is not a theorem. `gl2_F3_divisible_by_two` is
+`|GL_2(𝔽_3)| = 48` with `2 ∣ 48`, so `3 ≠ 2` does not prove it.
 `pacetti_of_components_and_swan` is this statement under both open
 hypotheses. `(8, 8, 2)` fails the coprimality hypothesis and stays a
 non-minimal even-`c` curve. `h_n_eq` stays on the axiom.

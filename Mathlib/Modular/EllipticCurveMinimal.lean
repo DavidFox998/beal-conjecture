@@ -4119,8 +4119,8 @@ def IsINStar (n : ℕ) (a1 a2 a3 a4 a6 b6 D : GaussInt) : Prop :=
 
 The equation is hidden, so this is not the integer `0`. Nothing proves that
 it vanishes. `swan_vanishes_open` asks for that vanishing on a coprime curve
-and is not a theorem: the argument that the `3`-division field is tamely
-ramified at `π`, using `ℓ = 3 ≠ p = 2`, is not formalized.
+and is not a theorem. `gl2_F3_divisible_by_two` is `|GL_2(𝔽_3)| = 48` with
+`2 ∣ 48`, so `3 ≠ 2` does not force wild inertia to act trivially on `E[3]`.
 -/
 opaque SwanAtPi (E : FreyCurve4413) : ℕ := 0
 
@@ -5608,16 +5608,93 @@ theorem a_odd_disc_mismatch (E : FreyCurve4413)
   rcases a_odd_dokchitser_n2_inputs E hodd ha with ⟨_, _, _, _, _, hD⟩
   exact ⟨hD, vPi_delta E hodd, by decide⟩
 
+/-- An odd divisor of a power of `2` is `1`.
+
+The order of a finite `2`-group image is a divisor of `2^e`. If that order
+is odd, the image is trivial.
+-/
+theorem odd_dvd_two_pow {k e : ℕ} (hodd : k % 2 = 1) (hk : k ∣ 2 ^ e) : k = 1 := by
+  induction e generalizing k with
+  | zero =>
+    rw [Nat.pow_zero] at hk
+    have hkpos : 0 < k := Nat.pos_of_dvd_of_pos hk (by decide)
+    have hle : k ≤ 1 := Nat.le_of_dvd (by decide) hk
+    omega
+  | succ e ih =>
+    rcases hk with ⟨t, ht⟩
+    have ht_even : t % 2 = 0 := by
+      rcases Nat.mod_two_eq_zero_or_one t with h0 | h1
+      · exact h0
+      · have hmul : (k * t) % 2 = 1 := by
+          have hm := Nat.mul_mod k t 2
+          rw [hodd, h1] at hm
+          simpa using hm
+        have heven : 2 ∣ 2 ^ (e + 1) := by
+          rw [Nat.pow_succ]
+          exact Nat.dvd_mul_left 2 (2 ^ e)
+        have hmod0 : (k * t) % 2 = 0 := by
+          rw [← ht]
+          exact Nat.mod_eq_zero_of_dvd heven
+        omega
+    have hsplit : 2 * (t / 2) + t % 2 = t := Nat.div_add_mod t 2
+    have ht2 : t = 2 * (t / 2) := by
+      rw [ht_even, Nat.add_zero] at hsplit
+      exact hsplit.symm
+    have hpow : 2 ^ (e + 1) = 2 * 2 ^ e := by
+      rw [Nat.pow_succ, Nat.mul_comm]
+    have hcancel : 2 ^ e = k * (t / 2) := by
+      have hmul : 2 * 2 ^ e = 2 * (k * (t / 2)) := by
+        calc
+          2 * 2 ^ e = 2 ^ (e + 1) := hpow.symm
+          _ = k * t := ht
+          _ = k * (2 * (t / 2)) := congrArg (fun z => k * z) ht2
+          _ = 2 * (k * (t / 2)) := by rw [Nat.mul_left_comm]
+      exact Nat.eq_of_mul_eq_mul_left (by decide : 0 < 2) hmul
+    exact ih hodd ⟨t / 2, hcancel⟩
+
+/-- A divisor of both `2^e` and a modulus coprime to `2` is `1`.
+
+This is the order form of the lemma that a finite `2`-group has no
+nontrivial homomorphism to a group of odd order.
+-/
+theorem image_order_coprime_to_two {k e m : ℕ}
+    (hk2 : k ∣ 2 ^ e) (hkm : k ∣ m) (hcop : Nat.gcd m 2 = 1) : k = 1 := by
+  have hodd : k % 2 = 1 := by
+    rcases Nat.mod_two_eq_zero_or_one k with h0 | h1
+    · have h2k : 2 ∣ k := Nat.dvd_of_mod_eq_zero h0
+      have h2m : 2 ∣ m := Nat.dvd_trans h2k hkm
+      have hg : 2 ∣ Nat.gcd m 2 := Nat.dvd_gcd h2m (Nat.dvd_refl 2)
+      rw [hcop] at hg
+      have hle : 2 ≤ 1 := Nat.le_of_dvd (by decide) hg
+      omega
+    · exact h1
+  exact odd_dvd_two_pow hodd hk2
+
+/-- `|GL_2(𝔽_3)| = (3² - 1)(3² - 3) = 48`, and `gcd(48, 2) = 2`.
+
+Wild inertia at `π` is a pro-`2` group, so a finite quotient of its action
+has order dividing a power of `2`. `image_order_coprime_to_two` would make
+that order `1` if the target order were coprime to `2`. The action on
+`E[3]` lands in `GL_2(𝔽_3)`, and `2` divides `48`. The coprimality
+hypothesis fails. `3 ≠ 2` is the reason the formal group in residue
+characteristic `2` has no `3`-torsion. It does not make `SwanAtPi` vanish.
+-/
+theorem gl2_F3_divisible_by_two :
+    (3 ^ 2 - 1) * (3 ^ 2 - 3) = 48 ∧ 2 ∣ 48 ∧ Nat.gcd 48 2 = 2 ∧ 3 ≠ 2 := by
+  decide
+
 /-- Open: the Swan conductor vanishes on a coprime Frey curve.
 
-This needs the argument that the `3`-division field is tamely ramified at
-`π`, using `ℓ = 3 ≠ p = 2`. It is not a theorem and not an axiom. `SwanAtPi`
-stays sealed. `weierstrass_cubic_gap` is the arithmetic `18 - (n + 6)`,
-equal to `8` for `n = 4` and `10` for `n = 2`. On the even-`a` translate
-that gap is `v_π(16)`, because `Δ = 16 d`. It is not `SwanAtPi`. Ogg's
-count on this model uses `v(Δ) = 18`, so `v(Δ) - 4 - n` is `10` or `12`
-before any Swan conductor. `ogg_count_if_components` is that arithmetic
-written as `18 - (n + 5) + 1`. `components_n_plus_five_open` is the missing
+`gl2_F3_divisible_by_two` blocks the argument from `3 ≠ 2`: wild inertia
+can map nontrivially into `GL_2(𝔽_3)`. The formal-group statement that
+there is no `3`-torsion in characteristic `2` is a different fact. This
+proposition is not a theorem and not an axiom. `SwanAtPi` stays sealed.
+`weierstrass_cubic_gap` is the arithmetic `18 - (n + 6)`, equal to `8` for
+`n = 4` and `10` for `n = 2`. On the even-`a` translate that gap is
+`v_π(16)`, because `Δ = 16 d`. It is not `SwanAtPi`. Ogg's count on this
+model uses `v(Δ) = 18`, so `v(Δ) - 4 - n` is `10` or `12` before any Swan
+conductor. `ogg_count_if_components` is that arithmetic written as
+`18 - (n + 5) + 1`. `components_n_plus_five_open` is the missing
 identification `m = n + 5`. `ftame_ten_twelve_of_components` turns it into
 `FTameAtPi = 10` or `12`. This statement remains the open claim that
 `SwanAtPi` is `0`.

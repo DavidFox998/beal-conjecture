@@ -223,8 +223,10 @@ hypothesis, `ftame_ten_twelve_of_components` is `FTameAtPi = 10` or `12`.
 `ogg_count_if_components` is the same arithmetic without that hypothesis.
 The gap `18 - (n + 6)` is `8` or `10`; on the even-`a` translate it is
 `v_π(16)`. It is not the Swan conductor. `swan_vanishes_open` is not a
-theorem. `pacetti_2_8_open` follows from those two open hypotheses and is
-not proved. `not_minimal_even_c` is the curve `(8, 8, 2)`, where
+theorem. `|GL_2(𝔽_3)| = 48` is divisible by `2`, so wild inertia at `π`
+need not act trivially on `E[3]`, and `3 ≠ 2` does not prove the Swan
+conductor vanishes. `pacetti_2_8_open` follows from the component count
+together with that open Swan claim, and it is not proved. `not_minimal_even_c` is the curve `(8, 8, 2)`, where
 `u = π` and `r = s = t = 0` lowers `Δ`, and `gcd(8, 8) = 8`.
 `IsINStar` is Dokchitser's numerical bounds for even `n` on that translate.
 It records `v_π(D) = 8` or `6`. The cubic discriminant on the same
