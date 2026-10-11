@@ -261,10 +261,17 @@ product of the two sealed levels is `32` or `64`, assuming
 `components_n_plus_five_open`, `serre_two_level_open`, and
 `odd_level_one_open`. It does not use `ribet_level_lowering_4413`, and it
 does not discharge `h_n_eq`. `FreyValuationAt2` is `v₂(|c|)`.
-`RhoE13Open` is sealed. `Psi13HasNoQiRoot` is stated only for
+`RhoE13Open` is sealed. Its defining equation is not available, so
+`rhoE13_open_of_psi` stays an open proposition.
+`Psi13HasNoQiRoot` is stated only for
 `NontrivialFrey`. The unrestricted statement fails for `(0, 0, 0)`.
 `RhoE13NeedsSL2` is `Psi13HasNoQiRoot` together with the sealed
-`ImageContainsSL2 E 13`. The implication to `RhoE13Open` is not a lemma.
+`ImageContainsSL2 E 13`. `GL2F13.transvection_classification_13`
+proves that a matrix of order `13` is conjugate to `(1 1; 0 1)`, and
+`normal_closure_contains_SL2` generates `SL₂` by ambient conjugates.
+`dickson_13_open` is the subgroup step. `steinberg_prime_13_open`
+asks for a prime with `13 ∤ tateParameter`. Neither produces
+`RhoE13Open`.
 `GaussIntRootDecidable` decides evaluation at one Gaussian integer.
 
 `Mathlib/Modular/DarmonMerel4413.lean` is the `n = 4`, `p = 13` layout of

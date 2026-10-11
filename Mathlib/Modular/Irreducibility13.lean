@@ -1,5 +1,6 @@
 import Mathlib.Modular.LevelLowering4413
 import Mathlib.Modular.EllipticCurveMinimal
+import Mathlib.Modular.GL2F13
 
 /-!
 # Irreducibility of `ρ_{E,13}` is still open
@@ -31,9 +32,24 @@ statement is not a closed `decide`.
 * A missing linear factor of `ψ₁₃` in `ℚ(√-1)` is not absolute
   irreducibility for GL2-type over `ℚ(√-1)`. The image must contain
   `SL₂(𝔽₁₃)`. `RhoE13NeedsSL2` is `Psi13HasNoQiRoot` together with
-  `ImageContainsSL2 E 13`. `RhoE13Open_of_needsSL2` is not a lemma:
-  both `RhoE13Open` and `ImageContainsSL2` are sealed, and the missing
-  linear factor is the wrong direction for absolute irreducibility.
+  `ImageContainsSL2 E 13`. `rhoE13_open_of_psi` is that implication
+  with the real types. It is an open proposition, not a theorem:
+  `RhoE13Open` is `opaque`, so Lean stores no equation lemma and the
+  body cannot be unfolded into a characterization. Inhabiting it by
+  `rfl` or `decide` is not available. `ImageContainsSL2` is sealed as
+  well.
+* `GL2F13.transvection_classification_13` is the matrix theorem: an
+  element of order `13` in `GL₂(𝔽₁₃)` is conjugate to `(1 1; 0 1)`.
+  `GL2F13.normal_closure_contains_SL2` writes every determinant-`1`
+  matrix as a product of such conjugates in the ambient group.
+  `GL2F13.dickson_13_open` is the missing step for an irreducible
+  subgroup. None of these produces a term of `RhoE13Open`.
+* `steinberg_prime_13_open` asks for a prime of multiplicative
+  reduction with `13 ∤ tateParameter`. No such prime is constructed.
+  `multiplicative_at_dvd_c` does not give the Tate divisibility, and
+  `tate_param_13_dvd_of_coprime` asserts the opposite inequality at
+  odd primes dividing `c`. The classification theorem does not take
+  this proposition as a hypothesis, because a prime is not a matrix.
 
 `FreyConductor_OPEN` stays a hypothesis. `ribet_level_lowering_4413` takes
 `FreyConductorDivides`, `RhoE13Open`, and `pacetti_2_8_open`. The returned
@@ -130,6 +146,40 @@ def RhoE13NeedsSL2 (a b c : ℤ) (heq : a ^ 4 + b ^ 4 = c ^ 13)
     (h : NontrivialFrey a b) : Prop :=
   Psi13HasNoQiRoot a b h c heq ∧
     ImageContainsSL2 (FreyCurve4413.mk' a b c heq) 13
+
+/-- Not a theorem. The requested characterization of `RhoE13Open`.
+
+`RhoE13Open` is `opaque`. There is no equation lemma, so the body
+cannot be unfolded, and this implication is not proved by `rfl`,
+`decide`, or a rewrite of the definition. `Psi13HasNoQiRoot` stays an
+open statement on `NontrivialFrey`. `ImageContainsSL2` stays sealed.
+Nothing here produces a term of `RhoE13Open`.
+-/
+def rhoE13_open_of_psi : Prop :=
+  ∀ (a b c : ℤ) (heq : a ^ 4 + b ^ 4 = c ^ 13) (h : NontrivialFrey a b),
+    Psi13HasNoQiRoot a b h c heq →
+      ImageContainsSL2 (FreyCurve4413.mk' a b c heq) 13 →
+        RhoE13Open (FreyCurve4413.mk' a b c heq)
+
+/-- A Steinberg prime: multiplicative reduction with `13 ∤ v(q)`.
+
+No prime is exhibited. `multiplicative_at_dvd_c` gives, at an odd prime
+`p ∣ c`, that `p` misses `2|a||b|`, that `v_p(N(c₄)) = 0`, and that
+`v_p(N(Δ)) = 13 · 3 · v_p(|c|)`. Those are valuations of field norms.
+They are not `13 ∤ tateParameter`. `tate_param_13_dvd_of_coprime` is
+the open claim that `13` divides that sealed parameter at every odd
+prime divisor of `c`, which is the opposite inequality. Uneven splitting
+is why `13 ∣ v_p(N(Δ))` is not `13 ∣ v_𝔭(Δ)`. This proposition does not
+build an element of `GL₂(𝔽₁₃)` and does not produce `RhoE13Open`.
+`transvection_classification_13` is not conditional on it.
+-/
+def steinberg_prime_13_open : Prop :=
+  ∀ E : FreyCurve4413, E.a ≠ 0 → E.b ≠ 0 →
+    E.a.natAbs.gcd E.b.natAbs = 1 →
+      ∃ p : ℕ, IsPrime p ∧ p ≠ 2 ∧
+        0 < padicVal p (E.discriminant_re ^ 2 + E.discriminant_im ^ 2).natAbs ∧
+        padicVal p (GaussInt.norm (FreyCurve4413.c4_Frey E.a E.b)).natAbs = 0 ∧
+        ¬ 13 ∣ tateParameter E p
 
 theorem zero_curve_not_nontrivial : ¬ NontrivialFrey 0 0 := by
   intro h

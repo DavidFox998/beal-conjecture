@@ -26,7 +26,7 @@ over `a = 0` or `b = 0`. `(8, 8, 2)` fails `curve_8_8_2_not_coprime`
 | `no_newform_32_64_open` | OPEN PROP, the missing elimination |
 | `frey_qcurve_modular` | AXIOM, a dependency, not a parameter |
 | `ribet_level_lowering_4413` | AXIOM, a dependency, not a parameter |
-| `RhoE13Open (FreyCurve4413.mk' a b c h)` | SEALED input. The Ribet axiom takes it. Nothing produces a term. |
+| `RhoE13Open (FreyCurve4413.mk' a b c h)` | SEALED input. The Ribet axiom takes it. Nothing produces a term. `rhoE13_open_of_psi` does not discharge it. |
 | `a ≠ 0`, `b ≠ 0`, `gcd(\|a\|, \|b\|) = 1`, `c > 0` | side conditions. Coprimality and the two CM solutions are proved. |
 
 `#print axioms no_solution_4413_of_frontier`:
@@ -88,6 +88,14 @@ Four open propositions. They are `def`s of type `Prop`, not axioms and not `sorr
 
 `h_n_eq_of_tate` assumes the first three and concludes that the product of the two sealed level functions is `32` or `64`. The fourth proposition does not appear in that proof. It does not rewrite `OddPrimaryLevel`, and `odd_level_one_open` does not follow from it. A fifth open proposition, `no_newform_32_64_open`, is the missing elimination of a `RibetLevel`. It is used only by `no_solution_4413_of_frontier`. It is not proved.
 
+Two further open propositions sit beside the sealed irreducibility predicate. They are not hypotheses of the capstone, and they do not produce a term of `RhoE13Open`.
+
+| Proposition | Statement that is not a theorem |
+| --- | --- |
+| `rhoE13_open_of_psi` | `Psi13HasNoQiRoot` and `ImageContainsSL2` imply `RhoE13Open`. The seal has no equation lemma. |
+| `GL2F13.dickson_13_open` | An `𝔽₁₃`-irreducible subgroup containing an element of order `13` contains `SL₂(𝔽₁₃)`. |
+| `steinberg_prime_13_open` | Some prime of multiplicative reduction has `13 ∤ tateParameter`. |
+
 `#print axioms` does not list hypothesis propositions. The ledger records the kernel axioms. The hypotheses are in the theorem statements.
 
 ## What would close each gap
@@ -98,7 +106,7 @@ Four open propositions. They are `def`s of type `Prop`, not axioms and not `sorr
 - **Odd Serre level.** `OddPrimaryLevel E = 1`. The arithmetic lemma `nat_eq_one_of_prime_divisors_removed` needs two facts that are not theorems: every prime divisor of `OddPrimaryLevel` is an odd prime divisor of `c`, and `13 ∣ tateParameter` removes that prime. `odd_conductor_empty` removes primes dividing `d = 1` only.
 - **Uneven splitting**, unnamed. It is not a named open proposition. It is why `multiplicative_at_dvd_c` does not prove `tate_param_13_dvd_of_coprime`. See below. Closing it is a theorem that `13 ∣ v_𝔭(Δ)` at each Gaussian prime above `p ∣ c`. That still would not be a Tate parameter.
 - **`no_newform_32_64_open`.** Darmon–Merel Lemma 8.2. The existing Mazur products vanish, and the winding nonvanishing does not produce `False`. This is the last open proposition in `no_solution_4413_of_frontier`.
-- **`RhoE13Open`.** A term. `Psi13HasNoQiRoot` (no root of `ψ₁₃` in the fraction field, for `NontrivialFrey`) together with the sealed `ImageContainsSL2` is `RhoE13NeedsSL2`. The implication to `RhoE13Open` is not a lemma. A missing linear factor is not absolute irreducibility. The unrestricted root statement is false for the singular curve `(0, 0, 0)`. The capstone takes a term of `RhoE13Open` as a hypothesis because `ribet_level_lowering_4413` requires one.
+- **`RhoE13Open`.** A term. The predicate is `opaque`, so there is no equation lemma and the body cannot be unfolded. `rhoE13_open_of_psi` is the open proposition `Psi13HasNoQiRoot → ImageContainsSL2 → RhoE13Open` on a nontrivial solution. It is not a theorem. `Psi13HasNoQiRoot` stays open on `NontrivialFrey`, and it is false for the singular curve `(0, 0, 0)` in the unrestricted form. `GL2F13.transvection_classification_13` proves that a supplied matrix of order `13` is conjugate to `(1 1; 0 1)`. `GL2F13.normal_closure_contains_SL2` writes every determinant-`1` matrix as a product of ambient `GL₂`-conjugates of that transvection. `GL2F13.dickson_13_open` is the unproved step from an `𝔽₁₃`-irreducible subgroup containing an element of order `13` to `SL₂`. `steinberg_prime_13_open` asks for a prime of multiplicative reduction with `13 ∤ tateParameter`. No such prime is constructed, and the classification does not assume the proposition: a prime is not a matrix. `multiplicative_at_dvd_c` does not give `13 ∤ tateParameter`. `tate_param_13_dvd_of_coprime` asserts the opposite divisibility at odd primes dividing `c`. None of this produces a term of `RhoE13Open`. The capstone still takes that term as a hypothesis because `ribet_level_lowering_4413` requires one.
 - **Modularity.** Replace `frey_qcurve_modular` by ℚ-curve modularity.
 - **Level lowering.** Replace `ribet_level_lowering_4413`. `h_n_eq_of_tate` does not discharge `RibetLevel.h_n_eq`: the conclusion is a product of two sealed functions, not that field.
 - **`no_solution_4413`.** The conditional theorem is `no_solution_4413_of_frontier`. The unconditional statement is not a theorem. `(1, 0, 1)` and `(0, 1, 1)` remain solutions.
@@ -322,10 +330,16 @@ a⁴ + b⁴ = c¹³                                          PROVED data on Frey
 │    not minimal                                       PROVED  not_minimal_even_c
 │
 ├─ Modular E                                           AXIOM  frey_qcurve_modular
-├─ RhoE13Open                                          SEALED  no term
+├─ RhoE13Open                                          SEALED  no term, no equation lemma
+│    rhoE13_open_of_psi                                OPEN PROP  seal does not unfold
 │    Psi13HasNoQiRoot                                  OPEN PROP  on NontrivialFrey only
 │    ImageContainsSL2                                  SEALED
-│    RhoE13NeedsSL2 does not produce RhoE13Open
+│    order-13 matrix ⇒ conjugate to (1 1; 0 1)         PROVED  transvection_classification_13
+│    normal closure in GL₂ contains SL₂                PROVED  normal_closure_contains_SL2
+│    irreducible subgroup + order 13 ⇒ SL₂             OPEN PROP  dickson_13_open
+│    Steinberg prime, 13 ∤ tateParameter               OPEN PROP  steinberg_prime_13_open
+│         not a hypothesis of the classification
+│         multiplicative_at_dvd_c does not supply it
 ├─ RibetLevel, with h_n_eq : n = 32 ∨ n = 64           AXIOM  ribet_level_lowering_4413
 │    also needs a conductor shape and pacetti_2_8_open
 │    level_eq reads the field                          PROVED projection, no axioms
