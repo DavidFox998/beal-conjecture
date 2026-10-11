@@ -143,9 +143,12 @@ the cubic discriminant: `v_π(d) = 10` after the even-`a` shifts
 shifts (`a_odd_cubic_eight`). Those are the values `n + 6` for `n = 4` and
 `n = 2`. `NeronSpecialFiberComponents` is sealed.
 `components_n_plus_five_open` asks whether that count is `n + 5`.
-`FTameAtPi` is `v_π(Δ) - m + 1` with that sealed `m`. It equals `10` or `12`
-only under the open component hypothesis. `SwanAtPi` stays sealed.
-`swan_vanishes_open` is not a theorem.
+`FTameAtPi` is the tame exponent `ε`. For odd `c` it is `2`.
+`SwanAtPi` is Ogg's full exponent minus `ε`, with the sealed component
+count `m`. Under `components_n_plus_five_open` that wild part is `12 - n`.
+`swan_vanishes_open` keeps the withdrawn claim `Swan = 0`. The argument
+from `3 ≠ 2` is refuted by `gl2_F3_divisible_by_two`, and the claim
+contradicts the component count.
 `pi_ten_principal` is `(-√(-1))^5 · π^10 = 32` with norm `2^10`, and
 `pi_twelve_principal` is the same for `64` and `2^12`. The principal
 ideals agree. That equality does not produce `n = 32 ∨ n = 64`. The
@@ -4115,20 +4118,11 @@ def IsINStar (n : ℕ) (a1 a2 a3 a4 a6 b6 D : GaussInt) : Prop :=
     valAtLeast b6 (n + 3) ∧
     P2Exact D (n + 4)
 
-/-- Swan conductor at `π`.
-
-The equation is hidden, so this is not the integer `0`. Nothing proves that
-it vanishes. `swan_vanishes_open` asks for that vanishing on a coprime curve
-and is not a theorem. `gl2_F3_divisible_by_two` is `|GL_2(𝔽_3)| = 48` with
-`2 ∣ 48`, so `3 ≠ 2` does not force wild inertia to act trivially on `E[3]`.
--/
-opaque SwanAtPi (E : FreyCurve4413) : ℕ := 0
-
 /-- Number of irreducible components of the Néron special fiber of `E` at `π`.
 
 The equation is hidden. This is not defined to be `n + 5`, and `rfl` does
 not decide it. The blow-ups in Tate's algorithm are not formalized.
-`FTameAtPi` is defined from this count after `vPi`.
+`SwanAtPi` subtracts `FTameAtPi` from Ogg's `v_π(Δ) - m + 1`.
 -/
 opaque NeronSpecialFiberComponents (E : FreyCurve4413) : ℕ := 0
 
@@ -4206,17 +4200,30 @@ def vPiFuel : Nat → GaussInt → Nat
 def vPi (z : GaussInt) : Nat :=
   vPiFuel ((GaussInt.norm z).toNat + 1) z
 
-/-- Tame part of the conductor exponent at `π`.
+/-- Tame conductor exponent of this equation at `π`.
 
-Ogg's expression `v_π(Δ) - m + 1`, with `m` the sealed count
-`NeronSpecialFiberComponents`. When `qiLocalMinimalAtPi E` holds, `Δ` is a
-minimal discriminant and this is the shape of Ogg's formula. It is not the
-numeral `2`, `10`, or `12`. `ftame_ogg_of_components` rewrites it to
-`18 - (n + 5) + 1` only under `components_n_plus_five_open`. `SwanAtPi` is
-not part of this expression.
+`0` if `v_π(Δ) = 0`, `1` if `v_π(Δ) > 0` and `v_π(c₄) = 0`, and `2` if both
+are positive. On a minimal model those are good, multiplicative, and additive
+reduction. For odd `c`, `ftame_two_of_additive` is `2`. This is not Ogg's
+full exponent `v_π(Δ) - m + 1`. The old equation `FTameAtPi = v_π(Δ) - m + 1`
+mislabeled that full exponent as the tame part.
 -/
 def FTameAtPi (E : FreyCurve4413) : ℕ :=
-  vPi (deltaGauss E) - NeronSpecialFiberComponents E + 1
+  if 0 < vPi (deltaGauss E) then
+    if 0 < vPi (c4_Frey E.a E.b) then 2 else 1
+  else
+    0
+
+/-- Swan conductor at `π`.
+
+`δ = (v_π(Δ) - m + 1) - ε`, where `ε` is `FTameAtPi` and `m` is the sealed
+count `NeronSpecialFiberComponents`. Ogg's formula supplies the full
+exponent `f = v_π(Δ) - m + 1 = ε + δ`. This is not the integer `0`.
+`swan_of_components` is `12 - n` when `m = n + 5`, `v_π(Δ) = 18`, and
+`ε = 2`.
+-/
+def SwanAtPi (E : FreyCurve4413) : ℕ :=
+  vPi (deltaGauss E) - NeronSpecialFiberComponents E + 1 - FTameAtPi E
 
 theorem vPiFuel_zero (n : Nat) : vPiFuel (n + 1) GaussInt.zero = 0 := by
   simp [vPiFuel]
@@ -5683,21 +5690,15 @@ theorem gl2_F3_divisible_by_two :
     (3 ^ 2 - 1) * (3 ^ 2 - 3) = 48 ∧ 2 ∣ 48 ∧ Nat.gcd 48 2 = 2 ∧ 3 ≠ 2 := by
   decide
 
-/-- Open: the Swan conductor vanishes on a coprime Frey curve.
+/-- Withdrawn claim: the Swan conductor vanishes on a coprime Frey curve.
 
-`gl2_F3_divisible_by_two` blocks the argument from `3 ≠ 2`: wild inertia
-can map nontrivially into `GL_2(𝔽_3)`. The formal-group statement that
-there is no `3`-torsion in characteristic `2` is a different fact. This
-proposition is not a theorem and not an axiom. `SwanAtPi` stays sealed.
-`weierstrass_cubic_gap` is the arithmetic `18 - (n + 6)`, equal to `8` for
-`n = 4` and `10` for `n = 2`. On the even-`a` translate that gap is
-`v_π(16)`, because `Δ = 16 d`. It is not `SwanAtPi`. Ogg's count on this
-model uses `v(Δ) = 18`, so `v(Δ) - 4 - n` is `10` or `12` before any Swan
-conductor. `ogg_count_if_components` is that arithmetic written as
-`18 - (n + 5) + 1`. `components_n_plus_five_open` is the missing
-identification `m = n + 5`. `ftame_ten_twelve_of_components` turns it into
-`FTameAtPi = 10` or `12`. This statement remains the open claim that
-`SwanAtPi` is `0`.
+Kept as a record. `image_order_coprime_to_two` would give a trivial image
+in a group of odd order. `gl2_F3_divisible_by_two` is `|GL_2(𝔽_3)| = 48`
+with `2 ∣ 48`, so that argument does not apply to wild inertia acting on
+`E[3]`. Possibility of a nontrivial action does not by itself evaluate
+`SwanAtPi`. Under the corrected split, `swan_vanishes_contradicts_components`
+shows this claim is incompatible with `components_n_plus_five_open`: the
+Ogg excess over the tame exponent `2` is `12 - n`, equal to `8` or `10`.
 -/
 def swan_vanishes_open : Prop :=
   ∀ E : FreyCurve4413, E.a.natAbs.gcd E.b.natAbs = 1 → SwanAtPi E = 0
@@ -6222,8 +6223,9 @@ theorem ogg_count_if_components :
 /-- On a coprime curve, `v_π(Δ) = 18`, so the same two expressions are `10` and `12`.
 
 `c_odd_of_coprime` supplies odd `c`, and `vPi_delta` supplies the valuation.
-The subtractions use `m = 9` and `m = 7`. `ftame_ten_twelve_of_components`
-is the same arithmetic for `FTameAtPi`, under `components_n_plus_five_open`.
+The subtractions use `m = 9` and `m = 7`. They are Ogg's full exponent.
+`FTameAtPi` is not these numbers. `conductor_of_components` is the sum
+`FTameAtPi + SwanAtPi` under `components_n_plus_five_open`.
 -/
 theorem ogg_numbers_of_coprime (E : FreyCurve4413)
     (hcop : E.a.natAbs.gcd E.b.natAbs = 1) :
@@ -6250,50 +6252,111 @@ def components_n_plus_five_open : Prop :=
     weierstrassDisc a1 a2 a3 a4 a6 = deltaGauss E →
     NeronSpecialFiberComponents E = n + 5
 
-/-- Ogg's expression equals `18 - (n + 5) + 1` when the component count is `n + 5`.
+/-- Ogg's full exponent equals `18 - (n + 5) + 1` when the component count is `n + 5`.
 
-`FTameAtPi` is `v_π(Δ) - m + 1`. `hcomp` supplies `m = n + 5`, and `hΔ`
-supplies `v_π(Δ) = 18`. The evenness hypothesis is `n % 2 = 0`.
+`v_π(Δ) - m + 1` is `f = ε + δ`, not `FTameAtPi`. The retired statement
+`ftame_ogg_of_components` assigned this number to the tame part.
+`hcomp` supplies `m = n + 5` and `hΔ` supplies `v_π(Δ) = 18`.
 -/
-theorem ftame_ogg_of_components (hcomp : components_n_plus_five_open)
+theorem ogg_full_of_components (hcomp : components_n_plus_five_open)
     {n : ℕ} {E : FreyCurve4413} {a1 a2 a3 a4 a6 b6 D : GaussInt}
     (hn : 0 < n) (heven : n % 2 = 0)
     (h : IsINStar n a1 a2 a3 a4 a6 b6 D)
     (hmin : qiLocalMinimalAtPi E)
     (hmodel : weierstrassDisc a1 a2 a3 a4 a6 = deltaGauss E)
     (hΔ : vPi (deltaGauss E) = 18) :
-    FTameAtPi E = 18 - (n + 5) + 1 := by
+    vPi (deltaGauss E) - NeronSpecialFiberComponents E + 1 = 18 - (n + 5) + 1 := by
   have hm : NeronSpecialFiberComponents E = n + 5 :=
     hcomp E n a1 a2 a3 a4 a6 b6 D hn heven h hmin hmodel
-  show vPi (deltaGauss E) - NeronSpecialFiberComponents E + 1 = 18 - (n + 5) + 1
   rw [hΔ, hm]
 
-/-- On a coprime curve, the two rows give `FTameAtPi = 10` and `FTameAtPi = 12`.
+/-- For odd `c` the minimal model is additive, so the tame exponent is `2`.
 
-`c_odd_of_coprime` and `qiLocalMinimalAtPi_of_c_odd` give minimality.
-`vPi_delta` gives `v_π(Δ) = 18`. `18 - (4 + 5) + 1 = 10` and
-`18 - (2 + 5) + 1 = 12`. Both conclusions need `components_n_plus_five_open`.
+`v_π(Δ) = 18` and `v_π(c₄) = 10` are both positive, and
+`qiLocalMinimalAtPi_of_c_odd` is minimality. The `IsINStar` bounds are not
+this criterion.
 -/
-theorem ftame_ten_twelve_of_components (hcomp : components_n_plus_five_open)
+theorem ftame_two_of_additive (E : FreyCurve4413) (hodd : E.c.natAbs % 2 = 1) :
+    FTameAtPi E = 2 := by
+  have hΔ : vPi (deltaGauss E) = 18 := vPi_delta E hodd
+  have hc4 : vPi (c4_Frey E.a E.b) = 10 := vPi_of_P2Exact (c4_p2_exact_ten E hodd)
+  rw [FTameAtPi, hΔ, hc4]
+  decide
+
+/-- `δ = (v_π(Δ) - m + 1) - 2 = 12 - n` when `m = n + 5` and `v_π(Δ) = 18`.
+
+Odd `c` gives `FTameAtPi = 2`. `hcomp` gives `m = n + 5`.
+-/
+theorem swan_of_components (hcomp : components_n_plus_five_open)
+    {n : ℕ} {E : FreyCurve4413} {a1 a2 a3 a4 a6 b6 D : GaussInt}
+    (hn : 0 < n) (heven : n % 2 = 0)
+    (h : IsINStar n a1 a2 a3 a4 a6 b6 D)
+    (hmin : qiLocalMinimalAtPi E)
+    (hmodel : weierstrassDisc a1 a2 a3 a4 a6 = deltaGauss E)
+    (hodd : E.c.natAbs % 2 = 1) :
+    SwanAtPi E = 12 - n := by
+  have hm : NeronSpecialFiberComponents E = n + 5 :=
+    hcomp E n a1 a2 a3 a4 a6 b6 D hn heven h hmin hmodel
+  have hΔ : vPi (deltaGauss E) = 18 := vPi_delta E hodd
+  have hε : FTameAtPi E = 2 := ftame_two_of_additive E hodd
+  rw [SwanAtPi, hΔ, hm, hε]
+  omega
+
+/-- The Swan values equal the excess of `v(Δ) = 18` over the cubic slot `n + 6`.
+
+For `n = 4` the excess is `8`. For `n = 2` it is `10`. On the even-`a`
+translate `Δ = 16 d` and `v_π(16) = 8`, so the `n = 4` excess equals that
+factor. `swan_of_components` identifies the excess with `δ = f - ε` once
+`ε = 2` and `m = n + 5`. The full exponent remains `ε + δ`, not `f + δ`.
+-/
+theorem swan_eq_disc_excess :
+    ((18 - (4 + 5) + 1) - 2 = 18 - (4 + 6) ∧ 18 - (4 + 6) = 12 - 4) ∧
+    ((18 - (2 + 5) + 1) - 2 = 18 - (2 + 6) ∧ 18 - (2 + 6) = 12 - 2) := by
+  decide
+
+/-- On a coprime curve the two rows give conductor `2 + 8 = 10` and `2 + 10 = 12`.
+
+`ftame_two_of_additive` is the tame part. `swan_of_components` is the wild
+part. Both rows need `components_n_plus_five_open`.
+-/
+theorem conductor_of_components (hcomp : components_n_plus_five_open)
     (E : FreyCurve4413) (hcop : E.a.natAbs.gcd E.b.natAbs = 1) :
     (IsINStar 4 GaussInt.zero (a2AfterPiThenPiSq E) GaussInt.zero
         (a4AfterPiThenPiSq E) (a6AfterPiThenPiSq E) (b6AfterPiThenPiSq E)
         (quadDiscAfterPiThenPiSq E) →
-      FTameAtPi E = 10) ∧
+      FTameAtPi E + SwanAtPi E = 10) ∧
     (IsINStar 2 GaussInt.zero (a2AfterPi E) a3AfterPiSq (a4AfterPi E)
         (a6AfterPiSq E) (b6AfterPiSq E) (quadDiscAfterPiSq E) →
-      FTameAtPi E = 12) := by
+      FTameAtPi E + SwanAtPi E = 12) := by
   have hodd := c_odd_of_coprime E hcop
   have hmin := qiLocalMinimalAtPi_of_c_odd E hodd
-  have hΔ := vPi_delta E hodd
+  have hε := ftame_two_of_additive E hodd
   refine ⟨?_, ?_⟩
   · intro h4
-    have hft := ftame_ogg_of_components (n := 4) hcomp (by decide) (by decide) h4 hmin
-      (even_a_weierstrass_eq_delta E) hΔ
-    exact hft
+    have hδ := swan_of_components (n := 4) hcomp (by decide) (by decide) h4 hmin
+      (even_a_weierstrass_eq_delta E) hodd
+    rw [hε, hδ]
   · intro h2
-    have hft := ftame_ogg_of_components (n := 2) hcomp (by decide) (by decide) h2 hmin
-      (a_odd_weierstrass_eq_delta E) hΔ
-    exact hft
+    have hδ := swan_of_components (n := 2) hcomp (by decide) (by decide) h2 hmin
+      (a_odd_weierstrass_eq_delta E) hodd
+    rw [hε, hδ]
+
+/-- `swan_vanishes_open` contradicts the component count on `(1, 0, 1)`.
+
+The curve is coprime and `a` is odd, so the `n = 2` row applies.
+`swan_of_components` gives `SwanAtPi = 10`. The withdrawn claim gives `0`.
+-/
+theorem swan_vanishes_contradicts_components
+    (hcomp : components_n_plus_five_open)
+    (hswan : swan_vanishes_open) : False := by
+  have hcop : trivial.a.natAbs.gcd trivial.b.natAbs = 1 := by decide
+  have hodd : trivial.c.natAbs % 2 = 1 := by decide
+  have ha : trivial.a.natAbs % 2 = 1 := by decide
+  have hδ := swan_of_components (n := 2) hcomp (by decide) (by decide)
+    (a_odd_IsINStar trivial hodd ha) (qiLocalMinimalAtPi_of_c_odd trivial hodd)
+    (a_odd_weierstrass_eq_delta trivial) hodd
+  have h0 := hswan trivial hcop
+  rw [hδ] at h0
+  omega
 
 end FreyCurve4413

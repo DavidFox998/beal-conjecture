@@ -141,10 +141,11 @@ theorem not_minimal_even_c :
 
 /-- Conductor exponent of `E` at the prime of `ℤ[√-1]` above `2`.
 
-`2` ramifies in `ℚ(√-1)`. The exponent is the sum of the tame part and the
-Swan conductor. `FTameAtPi` is `v_π(Δ) - m + 1` with `m` sealed, and
-`SwanAtPi` is sealed, so the sum is not a numeral and
-it is not proved to lie in `{10, 12}`. On the translated model,
+`2` ramifies in `ℚ(√-1)`. The exponent is `FTameAtPi + SwanAtPi`.
+For odd `c`, the tame part is `2`. The Swan part is
+`(v_π(Δ) - m + 1) - 2` with `m` sealed, so the sum is not a numeral.
+`conductor_of_components` is `10` or `12` under the open component count.
+On the translated model,
 `v_π(Δ) = 18` and Dokchitser's cubic discriminant has `v_π(d) = n + 6`.
 -/
 def ConductorExponentAtPrimeAbove2 (E : FreyCurve4413) : ℕ :=
@@ -168,7 +169,8 @@ integral. `pi_scaling_c_invariants_hold` is the comparison `4 ≤ 10` and
 minimality test is `v(c₄) < 4` or `v(Δ) < 12`; neither inequality holds.
 `MinimalModelAt2` is `qiLocalMinimalAtPi`. For odd `c` it is
 `minimalAt2_of_c_odd`. `ConductorExponentAtPrimeAbove2` is
-`FTameAtPi + SwanAtPi`, and both summands are sealed. The test
+`FTameAtPi + SwanAtPi`. For odd `c` the tame part is `2`, and the Swan
+part still depends on the sealed component count. The test
 `4 ∤ 10` does not prove minimality: scaling by `π` uses `4 ≤ 10`, which
 holds. After the translation `x ↦ x + π`, `translated_a4_splits_on_trivial_curves`
 gives `v_π(a₄') = 3` on `(1, 0, 1)` and `v_π(a₄') = 6` on `(0, 1, 1)`,
@@ -243,37 +245,35 @@ is not a theorem. `ogg_count_if_components` is `18 - (n + 5) + 1`, equal to
 the special fiber of type `I_n*`. It is not derived from the bounds.
 `minimalAt2_of_coprime` is minimality.
 `components_n_plus_five_open` is the open claim that the Néron fiber has
-`n + 5` components. `ftame_ten_twelve_of_components` is `FTameAtPi = 10`
-or `12` under that claim. `swan_vanishes_open` is not a theorem. `gl2_F3_divisible_by_two` is
-`|GL_2(𝔽_3)| = 48` with `2 ∣ 48`, so `3 ≠ 2` does not prove it.
-`pacetti_of_components_and_swan` is this statement under both open
-hypotheses. `(8, 8, 2)` fails the coprimality hypothesis and stays a
-non-minimal even-`c` curve. `h_n_eq` stays on the axiom.
+`n + 5` components. `ftame_two_of_additive` is the tame exponent `2`.
+`swan_of_components` is `12 - n`. `conductor_of_components` is the sum
+`10` or `12`. `swan_vanishes_open` is the withdrawn claim `Swan = 0`.
+`gl2_F3_divisible_by_two` refutes the proof from `3 ≠ 2`, and
+`swan_vanishes_contradicts_components` refutes the claim once the component
+count is assumed. `pacetti_of_components` is this statement under the
+component hypothesis alone. `(8, 8, 2)` fails the coprimality hypothesis
+and stays a non-minimal even-`c` curve. `h_n_eq` stays on the axiom.
 -/
 def pacetti_2_8_open : Prop :=
   ∀ E : FreyCurve4413, E.a.natAbs.gcd E.b.natAbs = 1 →
     ExponentIn1012 (FreyCurve4413.FTameAtPi E + FreyCurve4413.SwanAtPi E)
 
-/-- `pacetti_2_8_open` follows from the component count and `SwanAtPi = 0`.
+/-- `pacetti_2_8_open` follows from the component count alone.
 
-A coprime curve has odd `c`, so exactly one of `a` and `b` is even.
-`even_a_IsINStar` and `a_odd_IsINStar` supply the rows. Neither open
-hypothesis is proved here.
+`pacetti_of_components_and_swan` is retired. It added a vanishing Swan
+conductor on top of a tame part that had already been set to Ogg's full
+exponent. The corrected split is `FTameAtPi = 2` and `SwanAtPi = 12 - n`,
+and their sum is that full exponent. `swan_vanishes_open` contradicts the
+component hypothesis.
 -/
-theorem pacetti_of_components_and_swan
-    (hcomp : FreyCurve4413.components_n_plus_five_open)
-    (hswan : FreyCurve4413.swan_vanishes_open) : pacetti_2_8_open := by
+theorem pacetti_of_components
+    (hcomp : FreyCurve4413.components_n_plus_five_open) : pacetti_2_8_open := by
   intro E hcop
   have hodd := FreyCurve4413.c_odd_of_coprime E hcop
-  have hft := FreyCurve4413.ftame_ten_twelve_of_components hcomp E hcop
-  have hsw := hswan E hcop
+  have hsum := FreyCurve4413.conductor_of_components hcomp E hcop
   rcases Nat.mod_two_eq_zero_or_one E.a.natAbs with ha | ha
-  · have h10 := hft.1 (FreyCurve4413.even_a_IsINStar E hodd ha)
-    apply Or.inl
-    rw [h10, hsw]
-  · have h12 := hft.2 (FreyCurve4413.a_odd_IsINStar E hodd ha)
-    apply Or.inr
-    rw [h12, hsw]
+  · exact Or.inl (hsum.1 (FreyCurve4413.even_a_IsINStar E hodd ha))
+  · exact Or.inr (hsum.2 (FreyCurve4413.a_odd_IsINStar E hodd ha))
 
 /-- Minimal model, Pacetti's exponent in `{10, 12}`, and `n = 32 ∨ n = 64`.
 

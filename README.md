@@ -218,15 +218,17 @@ discriminant on that translate has `v_π(d) = 10` when `a` is even and
 `tate_step7_inputs` packages it with `v_π(D) = n + 4`. The Kodaira symbol
 is not a theorem. `NeronSpecialFiberComponents` is sealed.
 `components_n_plus_five_open` asks whether that count is `n + 5`, and it is
-not a theorem. `FTameAtPi` is `v_π(Δ) - m + 1`. Under the open component
-hypothesis, `ftame_ten_twelve_of_components` is `FTameAtPi = 10` or `12`.
-`ogg_count_if_components` is the same arithmetic without that hypothesis.
-The gap `18 - (n + 6)` is `8` or `10`; on the even-`a` translate it is
-`v_π(16)`. It is not the Swan conductor. `swan_vanishes_open` is not a
-theorem. `|GL_2(𝔽_3)| = 48` is divisible by `2`, so wild inertia at `π`
-need not act trivially on `E[3]`, and `3 ≠ 2` does not prove the Swan
-conductor vanishes. `pacetti_2_8_open` follows from the component count
-together with that open Swan claim, and it is not proved. `not_minimal_even_c` is the curve `(8, 8, 2)`, where
+not a theorem. `FTameAtPi` is the tame exponent. For odd `c` it is `2`, from
+`v_π(Δ) = 18` and `v_π(c₄) = 10` on a minimal model. `SwanAtPi` is Ogg's
+full exponent minus that tame part. Under the open component hypothesis it
+is `12 - n`, so the sum is `10` or `12`. `ogg_count_if_components` is the
+full exponent `18 - (n + 5) + 1`. The gap `18 - (n + 6)` is `8` or `10`;
+on the even-`a` translate the `n = 4` gap is `v_π(16)`, and
+`swan_eq_disc_excess` identifies that gap with `δ = f - 2`.
+`swan_vanishes_open` remains in the file as the withdrawn claim `Swan = 0`.
+`|GL_2(𝔽_3)| = 48` is divisible by `2`, so `3 ≠ 2` does not prove it, and
+the claim contradicts the component count. `pacetti_2_8_open` follows from
+the component hypothesis alone and is not proved. `not_minimal_even_c` is the curve `(8, 8, 2)`, where
 `u = π` and `r = s = t = 0` lowers `Δ`, and `gcd(8, 8) = 8`.
 `IsINStar` is Dokchitser's numerical bounds for even `n` on that translate.
 It records `v_π(D) = 8` or `6`. The cubic discriminant on the same
