@@ -34,13 +34,16 @@ Proved for every odd-`a` curve:
   multiplicity-one legs, the geometric components of one closed point
   of residue field `𝔽₄`.
 
-`D6Node` is an abstract fork on seven vertices. The charts name five of
-those vertices with a computed equation (`theta`, `legUp`, `legDown`,
-`legLeft`, `legFar`) and leave `chain1` and `chain2` unidentified.
-Adjacency in the sense of `D6Node.neighbors` is not proved.
-`kodaira_neron_odd_a_open` is unchanged. Its proposition is the count
-`7`. Its docstring's identification of the finished fiber with this fork
-is not verified by the charts.
+Seven distinct components are exhibited. Three have multiplicity two:
+the first double line `Y²` (`chain1`, the slice `S = 0`), the second
+`π`-chart `Y²` (`theta`, the slice `t = 0`), and `B² - u₂ A`
+(`chain2`, where the pullback of `π` is `t² A`). Four have multiplicity
+one: the cusp `T² - x`, the conic `Y² + X + 1` at `X ≡ -u₂`, and the two
+`𝔽₄` curves `V² + U`. `chain1` and `theta` are the two slices of one chart,
+separated by the point `t = 1`. `chain2` and the cusp reduce to the same
+equation and are separated by the power of the transverse coordinate in `π`.
+Adjacency is not proved, and neither is the absence of a further singularity.
+`kodaira_neron_odd_a_open` is unchanged. Its proposition is the count `7`.
 `NeronSpecialFiberComponents` is not changed, and
 `components_n_plus_five_open` is not used.
 -/
@@ -1198,81 +1201,436 @@ theorem odd_a_f4_val_conj (E : FreyCurve4413)
     (u4_sub_one_eq E hodd ha) (u6_sub_one_pi_eq E hodd ha)
 
 /-!
-## Strict transform past `X ≡ -u₂`
+## Direct substitution into the translated model
 
-`strictSChart` is the polynomial `B² + S (A² + A + 1)`. On `S = 0` it is
-the double line `B²`, and its transverse coefficient is `f2Quad`, a unit at
-every point of `ℤ[√(-1)]`. That polynomial is not proved equal to a chart of
-the translated Weierstrass equation. The incidence of this double line with
-the curves already computed is therefore not a theorem.
+The odd-`a` model is `y² + a₃ y = x³ + a₂ x² + a₄ x + a₆` with
+`a₂ = u₂ π`, `a₃ = (-√(-1)) π⁴`, `a₄ = u₄ π³`, and `a₆ = u₆ π⁵`.
+Every chart below is this polynomial after a coordinate substitution, divided
+by the power of the chart parameter that the substitution produces. The
+equality is the substitution itself.
 -/
 
-/-- `B² + S (A² + A + 1)`. Not yet identified with a Weierstrass chart. -/
-def strictSChart (S A B : GaussInt) : GaussInt :=
-  GaussInt.add (GaussInt.mul B B) (GaussInt.mul S (f2Quad A))
+/-- `y² + (-√(-1)) π⁴ y - x³ - u₂ π x² - u₄ π³ x - u₆ π⁵`. -/
+def oddModel (u2 u4 u6 x y : GaussInt) : GaussInt :=
+  GaussInt.sub
+    (GaussInt.add (GaussInt.mul y y)
+      (GaussInt.mul (GaussInt.mul ⟨0, -1⟩ (piPow 4)) y))
+    (GaussInt.add (GaussInt.mul (GaussInt.mul x x) x)
+      (GaussInt.add (GaussInt.mul (GaussInt.mul u2 pi) (GaussInt.mul x x))
+        (GaussInt.add (GaussInt.mul (GaussInt.mul u4 (piPow 3)) x)
+          (GaussInt.mul u6 (piPow 5)))))
 
-theorem strictSChart_fiber (A B : GaussInt) :
-    strictSChart GaussInt.zero A B = GaussInt.mul B B := by
-  simp [strictSChart, GaussInt.mul, GaussInt.add, GaussInt.zero]
+/-- `x = π X`, `y = π Y`, divided by `π²`, is `piChart`. -/
+theorem oddModel_pi_chart (u2 u4 u6 X Y : GaussInt) :
+    oddModel u2 u4 u6 (GaussInt.mul pi X) (GaussInt.mul pi Y) =
+      GaussInt.mul (piPow 2) (piChart u2 u4 u6 X Y) := by
+  cases u2; cases u4; cases u6; cases X; cases Y
+  simp [oddModel, piChart, piPow, pi, GaussInt.npow, GaussInt.one,
+    GaussInt.mul, GaussInt.add, GaussInt.sub]
+  constructor <;> grind
 
-/-- The transverse coefficient is `A² + A + 1`. It is a unit on `ℤ[√(-1)]`. -/
-theorem strict_transverse_is_unit (A : GaussInt) : ¬ piDivides (f2Quad A) :=
-  f2Quad_is_unit A
+/-- `piChart` with the uniformizer left as a parameter, so a later chart can
+set that parameter equal to a product of coordinates. -/
+def piChartIn (p u2 u4 u6 X Y : GaussInt) : GaussInt :=
+  let p2 := GaussInt.mul p p
+  let p3 := GaussInt.mul p2 p
+  GaussInt.sub
+    (GaussInt.add (GaussInt.mul Y Y) (GaussInt.mul p3 (GaussInt.mul ⟨0, -1⟩ Y)))
+    (GaussInt.add (GaussInt.mul p (GaussInt.mul (GaussInt.mul X X) X))
+      (GaussInt.add (GaussInt.mul p (GaussInt.mul u2 (GaussInt.mul X X)))
+        (GaussInt.add (GaussInt.mul p2 (GaussInt.mul u4 X))
+          (GaussInt.mul p3 u6))))
 
-/-- Formal `∂/∂S` of `B² + S (A² + A + 1)` along `S = 0`. -/
-theorem strict_partial_eq (A : GaussInt) :
-    f2Quad A = GaussInt.add (GaussInt.mul A A) (GaussInt.add A GaussInt.one) := rfl
+theorem piChartIn_pi (u2 u4 u6 X Y : GaussInt) :
+    piChartIn pi u2 u4 u6 X Y = piChart u2 u4 u6 X Y := by
+  cases u2; cases u4; cases u6; cases X; cases Y
+  simp [piChartIn, piChart, piPow, pi, GaussInt.npow, GaussInt.one,
+    GaussInt.mul, GaussInt.add, GaussInt.sub]
+
+/-- Substitute `X = π X₁`, `Y = π Y₁` into `piChart` and divide by `π²`. -/
+theorem piChart_origin_subst (u2 u4 u6 X Y : GaussInt) :
+    piChart u2 u4 u6 (GaussInt.mul pi X) (GaussInt.mul pi Y) =
+      GaussInt.mul (piPow 2) (originPiChart u2 u4 u6 X Y) := by
+  cases u2; cases u4; cases u6; cases X; cases Y
+  simp [piChart, originPiChart, originTransverse, piPow, pi, GaussInt.npow, GaussInt.one,
+    GaussInt.mul, GaussInt.add, GaussInt.sub]
+  constructor <;> grind
+
+/-- On `π = 0` the second chart is the double line `Y²`.
+
+`originPiChart - Y² = π · (π · ((-√(-1)) Y - X³) - Q)`.
+-/
+theorem originPiChart_fiber (u2 u4 u6 X Y : GaussInt) :
+    valAtLeast (GaussInt.sub (originPiChart u2 u4 u6 X Y) (GaussInt.mul Y Y)) 1 := by
+  refine valAtLeast_of_dvd
+    (u := GaussInt.sub
+      (GaussInt.mul pi
+        (GaussInt.sub (GaussInt.mul ⟨0, -1⟩ Y) (GaussInt.mul (GaussInt.mul X X) X)))
+      (originTransverse u2 u4 u6 X)) ?_
+  rw [piPow, GaussInt.npow_one, GaussInt.mul_comm]
+  cases u2; cases u4; cases u6; cases X; cases Y
+  simp [originPiChart, originTransverse, piPow, pi, GaussInt.npow, GaussInt.one,
+    GaussInt.mul, GaussInt.add, GaussInt.sub]
+  constructor <;> grind
+
+/-!
+## The blow-up past `X ≡ -u₂`
+
+Two charts of the ideal `(π, X + u₂, Y)`.
+
+* `π`-chart: `X = -u₂ + π A`, `Y = π B`. Dividing `piChart` by `π²` leaves a
+  polynomial whose reduction is `B² - u₂² A + u₂ u₄`. That is the exceptional
+  curve, multiplicity one.
+* `X`-chart: `π = t S`, `X = -u₂ + t`, `Y = t T`. Dividing `piChart` by `t²`
+  leaves `pastU2Strict`. The slice `S = 0` is `T²`. The slice `t = 0` is the
+  other affine of the exceptional curve.
+-/
+
+/-- Quotient of the `π`-chart past `X = -u₂`. -/
+def pastU2Pi (u2 u4 u6 A B : GaussInt) : GaussInt :=
+  let A2 := GaussInt.mul A A
+  GaussInt.add
+    (GaussInt.sub (GaussInt.add (GaussInt.mul B B) (GaussInt.mul u2 u4))
+      (GaussInt.mul (GaussInt.mul u2 u2) A))
+    (GaussInt.add
+      (GaussInt.mul pi
+        (GaussInt.sub
+          (GaussInt.sub (GaussInt.mul (GaussInt.mul (GaussInt.ofInt 2) u2) A2) (GaussInt.mul u4 A))
+          u6))
+      (GaussInt.mul (piPow 2)
+        (GaussInt.sub (GaussInt.mul ⟨0, -1⟩ B) (GaussInt.mul A2 A))))
+
+theorem piChart_past_u2 (u2 u4 u6 A B : GaussInt) :
+    piChart u2 u4 u6 (GaussInt.add (GaussInt.neg u2) (GaussInt.mul pi A)) (GaussInt.mul pi B) =
+      GaussInt.mul (piPow 2) (pastU2Pi u2 u4 u6 A B) := by
+  cases u2; cases u4; cases u6; cases A; cases B
+  simp [piChart, pastU2Pi, piPow, pi, GaussInt.npow, GaussInt.one, GaussInt.ofInt,
+    GaussInt.mul, GaussInt.add, GaussInt.sub, GaussInt.neg]
+  constructor <;> grind
+
+/-- Setting the chart parameter to `0` kills every positive power of `π`. -/
+theorem pastU2Pi_fiber (u2 u4 A B : GaussInt) :
+    GaussInt.sub (GaussInt.add (GaussInt.mul B B) (GaussInt.mul u2 u4))
+        (GaussInt.mul (GaussInt.mul u2 u2) A) =
+      leg1Fiber u2 u4 A B := by
+  rw [GaussInt.mul_comm u2 u4]
+  cases u2 <;> cases u4 <;> cases A <;> cases B
+  simp [leg1Fiber, GaussInt.mul, GaussInt.add, GaussInt.sub, GaussInt.neg]
+  constructor <;> omega
+
+/-- `π`-free part of `pastU2Pi`. It is `leg1Fiber`. -/
+theorem pastU2_exceptional_eq_leg (u2 u4 u6 A B : GaussInt) :
+    valAtLeast (GaussInt.sub (pastU2Pi u2 u4 u6 A B) (leg1Fiber u2 u4 A B)) 1 := by
+  refine valAtLeast_of_dvd
+    (u := GaussInt.add
+      (GaussInt.sub
+        (GaussInt.sub (GaussInt.mul (GaussInt.mul (GaussInt.ofInt 2) u2) (GaussInt.mul A A))
+          (GaussInt.mul u4 A))
+        u6)
+      (GaussInt.mul pi
+        (GaussInt.sub (GaussInt.mul ⟨0, -1⟩ B) (GaussInt.mul (GaussInt.mul A A) A)))) ?_
+  cases u2; cases u4; cases u6; cases A; cases B
+  simp [pastU2Pi, leg1Fiber, piPow, pi, GaussInt.npow, GaussInt.one, GaussInt.ofInt,
+    GaussInt.mul, GaussInt.add, GaussInt.sub]
+  constructor <;> grind
+
+/-- Formal `∂/∂A` of `B² - u₂² A + u₂ u₄` is `-u₂²`. A unit square stays a unit. -/
+theorem pastU2_partial (u2 : GaussInt) (hu : ¬ piDivides u2) :
+    ¬ piDivides (GaussInt.neg (GaussInt.mul u2 u2)) := by
+  intro h
+  have hsq : piDivides (GaussInt.mul u2 u2) := (piDivides_neg _).1 h
+  exact hu (((piDivides_mul u2 u2).1 hsq).elim id id)
+
+/-- Quotient of the `X`-chart `π = t S`, `X = -u₂ + t`, `Y = t T`. -/
+def pastU2Strict (u2 u4 u6 t S T : GaussInt) : GaussInt :=
+  let t2 := GaussInt.mul t t
+  let s2 := GaussInt.mul S S
+  let s3 := GaussInt.mul s2 S
+  GaussInt.add (GaussInt.mul T T)
+    (GaussInt.add
+      (GaussInt.mul S
+        (GaussInt.sub
+          (GaussInt.sub (GaussInt.mul (GaussInt.mul (GaussInt.ofInt 2) u2) t)
+            (GaussInt.mul u2 u2))
+          t2))
+      (GaussInt.add
+        (GaussInt.mul s2 (GaussInt.sub (GaussInt.mul u2 u4) (GaussInt.mul u4 t)))
+        (GaussInt.add
+          (GaussInt.neg (GaussInt.mul s3 (GaussInt.mul u6 t)))
+          (GaussInt.mul (GaussInt.mul ⟨0, -1⟩ s3) (GaussInt.mul T t2)))))
+
+theorem piChart_past_u2_strict (u2 u4 u6 t S T : GaussInt) :
+    piChartIn (GaussInt.mul t S) u2 u4 u6
+        (GaussInt.add (GaussInt.neg u2) t) (GaussInt.mul t T) =
+      GaussInt.mul (GaussInt.mul t t) (pastU2Strict u2 u4 u6 t S T) := by
+  cases u2; cases u4; cases u6; cases t; cases S; cases T
+  simp [piChartIn, pastU2Strict, GaussInt.ofInt, GaussInt.mul, GaussInt.add,
+    GaussInt.sub, GaussInt.neg]
+  constructor <;> grind
+
+/-- The slice `S = 0` is the double line `T²`. -/
+theorem pastU2Strict_chain_fiber (u2 u4 u6 t T : GaussInt) :
+    pastU2Strict u2 u4 u6 t GaussInt.zero T = GaussInt.mul T T := by
+  cases u2; cases u4; cases u6; cases t; cases T
+  simp [pastU2Strict, GaussInt.mul, GaussInt.add, GaussInt.sub, GaussInt.neg,
+    GaussInt.zero, GaussInt.ofInt]
+
+/-- The slice `t = 0` is `T² - u₂² S + u₂ u₄ S²`. -/
+def pastU2Other (u2 u4 S T : GaussInt) : GaussInt :=
+  GaussInt.add (GaussInt.mul T T)
+    (GaussInt.add
+      (GaussInt.neg (GaussInt.mul (GaussInt.mul u2 u2) S))
+      (GaussInt.mul (GaussInt.mul u2 u4) (GaussInt.mul S S)))
+
+theorem pastU2Strict_leg_fiber (u2 u4 u6 S T : GaussInt) :
+    pastU2Strict u2 u4 u6 GaussInt.zero S T = pastU2Other u2 u4 S T := by
+  cases u2; cases u4; cases u6; cases S; cases T
+  simp [pastU2Strict, pastU2Other, GaussInt.mul, GaussInt.add, GaussInt.sub,
+    GaussInt.neg, GaussInt.zero, GaussInt.ofInt]
+  constructor <;> grind
+
+/-- On the overlap `A S = 1`, `T = B S`, the two exceptional fibers match.
+They are the two affines of one exceptional curve, the leg `Y² + X + 1`. -/
+theorem leg_charts_overlap (u2 u4 A B S : GaussInt)
+    (h : GaussInt.mul A S = GaussInt.one) :
+    GaussInt.mul (GaussInt.mul A A)
+        (pastU2Other u2 u4 S (GaussInt.mul B S)) =
+      leg1Fiber u2 u4 A B := by
+  cases u2; cases u4; cases A; cases B; cases S
+  simp [pastU2Other, leg1Fiber, GaussInt.mul, GaussInt.add, GaussInt.sub,
+    GaussInt.neg, GaussInt.one] at h ⊢
+  constructor <;> grind
+
+/-!
+## The two multiplicity-two slices, and the third double component
+
+`originXChart` is the chart `X = t`, `π = t S`, `Y = t T` of the point
+`X = Y = 0` on the first double line. Its special fiber is `π = t S = 0`,
+hence `t = 0` or `S = 0`.
+
+* `t = 0` forces `T² = 0`. That exceptional curve is `theta`.
+* `S = 0` forces `T² = 0`, for every `t`. That is the strict transform of the
+  first double line. Call it `chain1`. The point `t = 1`, `S = T = 0` lies on
+  it and not on `t = 0`.
+
+The coefficient of `S` is `-(t - u₂)²` plus terms with a further `S`. It
+vanishes at `t = u₂`, which is `X = 0`, the center of `theta`. Blowing that
+point up again recovers the double line `B²`, already named `theta`.
+
+The remaining multiplicity-two curve is the exceptional divisor of the point
+at infinity of `theta`. In coordinates `S = t A`, `T = t B` the quotient is
+`chain2Chart`, the pullback of `π` is `t² A`, and the fiber `t = 0` is
+`B² - u₂ A`. The reduced equation is `Y² + X`, and the power of `t` in `π`
+is `2`. `leg0Fiber` is this fiber. It is not a multiplicity-one leg.
+
+The multiplicity-one curve with the same reduced equation is the strict
+transform of the original cusp, `cuspChart` at `S = 0`, equation `T² - x`,
+with `π = x S`.
+-/
+
+/-- Quotient of `X = t`, `π = t S`, `Y = t T` in `piChart`. -/
+def originXChart (u2 u4 u6 t S T : GaussInt) : GaussInt :=
+  let t2 := GaussInt.mul t t
+  let s2 := GaussInt.mul S S
+  let s3 := GaussInt.mul s2 S
+  GaussInt.sub (GaussInt.mul T T)
+    (GaussInt.add
+      (GaussInt.mul (GaussInt.mul S t) u2)
+      (GaussInt.add (GaussInt.mul S t2)
+        (GaussInt.add (GaussInt.mul (GaussInt.mul s2 t) u4)
+          (GaussInt.sub (GaussInt.mul (GaussInt.mul s3 t) u6)
+            (GaussInt.mul (GaussInt.mul ⟨0, -1⟩ s3) (GaussInt.mul T t2))))))
+
+theorem piChart_origin_x (u2 u4 u6 t S T : GaussInt) :
+    piChartIn (GaussInt.mul t S) u2 u4 u6 t (GaussInt.mul t T) =
+      GaussInt.mul (GaussInt.mul t t) (originXChart u2 u4 u6 t S T) := by
+  cases u2; cases u4; cases u6; cases t; cases S; cases T
+  simp [piChartIn, originXChart, GaussInt.mul, GaussInt.add, GaussInt.sub, GaussInt.neg]
+  constructor <;> grind
+
+theorem originX_exceptional (u2 u4 u6 S T : GaussInt) :
+    originXChart u2 u4 u6 GaussInt.zero S T = GaussInt.mul T T := by
+  cases u2; cases u4; cases u6; cases S; cases T
+  simp [originXChart, GaussInt.mul, GaussInt.add, GaussInt.sub, GaussInt.neg, GaussInt.zero]
+
+theorem originX_strict (u2 u4 u6 t : GaussInt) :
+    originXChart u2 u4 u6 t GaussInt.zero GaussInt.zero = GaussInt.zero := by
+  cases u2; cases u4; cases u6; cases t
+  simp [originXChart, GaussInt.mul, GaussInt.add, GaussInt.sub, GaussInt.neg, GaussInt.zero]
+
+/-- `t = 1` lies on the strict slice and not on the exceptional slice. -/
+theorem chain1_point_off_theta (u2 u4 u6 : GaussInt) :
+    originXChart u2 u4 u6 GaussInt.one GaussInt.zero GaussInt.zero = GaussInt.zero ∧
+      ¬ GaussInt.one = GaussInt.zero := by
+  constructor
+  · exact originX_strict u2 u4 u6 GaussInt.one
+  · simp [GaussInt.one, GaussInt.zero]
+
+/-- Quotient after `S = t A`, `T = t B` in `originXChart`. -/
+def chain2Chart (u2 u4 u6 t A B : GaussInt) : GaussInt :=
+  GaussInt.sub (GaussInt.mul B B)
+    (GaussInt.add (GaussInt.mul u2 A)
+      (GaussInt.add (GaussInt.mul t A)
+        (GaussInt.add (GaussInt.mul (GaussInt.mul u4 t) (GaussInt.mul A A))
+          (GaussInt.sub (GaussInt.mul (GaussInt.mul u6 (GaussInt.mul t t))
+              (GaussInt.mul (GaussInt.mul A A) A))
+            (GaussInt.mul (GaussInt.mul ⟨0, -1⟩ (GaussInt.mul (GaussInt.mul (GaussInt.mul t t) t) t))
+              (GaussInt.mul (GaussInt.mul (GaussInt.mul A A) A) B))))))
+
+theorem originX_chain2 (u2 u4 u6 t A B : GaussInt) :
+    originXChart u2 u4 u6 t (GaussInt.mul t A) (GaussInt.mul t B) =
+      GaussInt.mul (GaussInt.mul t t) (chain2Chart u2 u4 u6 t A B) := by
+  cases u2; cases u4; cases u6; cases t; cases A; cases B
+  simp [originXChart, chain2Chart, GaussInt.mul, GaussInt.add, GaussInt.sub, GaussInt.neg]
+  constructor <;> grind
+
+theorem chain2_fiber (u2 u4 u6 A B : GaussInt) :
+    chain2Chart u2 u4 u6 GaussInt.zero A B = leg0Fiber u2 A B := by
+  cases u2; cases u4; cases u6; cases A; cases B
+  simp [chain2Chart, leg0Fiber, GaussInt.mul, GaussInt.add, GaussInt.sub, GaussInt.neg,
+    GaussInt.zero]
+
+/-- The chart sets `π = t · S` and `S = t A`, so `π = t² A`. -/
+theorem chain2_uniformizer (t A : GaussInt) :
+    GaussInt.mul t (GaussInt.mul t A) = GaussInt.mul (GaussInt.mul t t) A := by
+  cases t <;> cases A
+  simp [GaussInt.mul]
+  constructor <;> grind
+
+theorem chain2_fiber_unit_point (u2 : GaussInt) :
+    leg0Fiber u2 u2 u2 = GaussInt.zero := by
+  cases u2
+  simp [leg0Fiber, GaussInt.mul, GaussInt.sub, GaussInt.zero]
+
+theorem chain2_partial (u2 : GaussInt) (hu : ¬ piDivides u2) :
+    ¬ piDivides (GaussInt.neg u2) :=
+  fun h => hu ((piDivides_neg u2).1 h)
+
+/-- `π = x S`, `y = x T`, divided by `x²`, in the model with uniformizer `x S`. -/
+def oddModelIn (p u2 u4 u6 x y : GaussInt) : GaussInt :=
+  let p2 := GaussInt.mul p p
+  let p3 := GaussInt.mul p2 p
+  let p4 := GaussInt.mul p3 p
+  let p5 := GaussInt.mul p4 p
+  GaussInt.sub
+    (GaussInt.add (GaussInt.mul y y) (GaussInt.mul (GaussInt.mul ⟨0, -1⟩ p4) y))
+    (GaussInt.add (GaussInt.mul (GaussInt.mul x x) x)
+      (GaussInt.add (GaussInt.mul (GaussInt.mul u2 p) (GaussInt.mul x x))
+        (GaussInt.add (GaussInt.mul (GaussInt.mul u4 p3) x)
+          (GaussInt.mul u6 p5))))
+
+def cuspChart (u2 u4 u6 x S T : GaussInt) : GaussInt :=
+  let s2 := GaussInt.mul S S
+  let s3 := GaussInt.mul s2 S
+  let s4 := GaussInt.mul s3 S
+  let s5 := GaussInt.mul s4 S
+  GaussInt.sub (GaussInt.mul T T)
+    (GaussInt.add x
+      (GaussInt.add (GaussInt.mul (GaussInt.mul u2 S) x)
+        (GaussInt.add (GaussInt.mul (GaussInt.mul u4 s3) (GaussInt.mul x x))
+          (GaussInt.sub (GaussInt.mul (GaussInt.mul u6 s5) (GaussInt.mul (GaussInt.mul x x) x))
+            (GaussInt.mul (GaussInt.mul ⟨0, -1⟩ s4)
+              (GaussInt.mul T (GaussInt.mul (GaussInt.mul x x) x)))))))
+
+theorem oddModelIn_cusp (u2 u4 u6 x S T : GaussInt) :
+    oddModelIn (GaussInt.mul x S) u2 u4 u6 x (GaussInt.mul x T) =
+      GaussInt.mul (GaussInt.mul x x) (cuspChart u2 u4 u6 x S T) := by
+  cases u2; cases u4; cases u6; cases x; cases S; cases T
+  simp [oddModelIn, cuspChart, GaussInt.mul, GaussInt.add, GaussInt.sub, GaussInt.neg]
+  constructor <;> grind
+
+theorem cusp_fiber (u2 u4 u6 x T : GaussInt) :
+    cuspChart u2 u4 u6 x GaussInt.zero T =
+      GaussInt.sub (GaussInt.mul T T) x := by
+  cases u2; cases u4; cases u6; cases x; cases T
+  simp [cuspChart, GaussInt.mul, GaussInt.add, GaussInt.sub, GaussInt.neg, GaussInt.zero]
+
+theorem cusp_point (u2 u4 u6 : GaussInt) :
+    cuspChart u2 u4 u6 GaussInt.one GaussInt.zero GaussInt.one = GaussInt.zero ∧
+      ¬ piDivides GaussInt.one := by
+  constructor
+  · rw [cusp_fiber]
+    simp [GaussInt.mul, GaussInt.sub, GaussInt.one, GaussInt.zero]
+  · simp [piDivides, GaussInt.one]
+
+theorem oddModel_agrees (u2 u4 u6 x y : GaussInt) :
+    oddModelIn pi u2 u4 u6 x y = oddModel u2 u4 u6 x y := by
+  cases u2; cases u4; cases u6; cases x; cases y
+  simp [oddModelIn, oddModel, piPow, pi, GaussInt.npow, GaussInt.one,
+    GaussInt.mul, GaussInt.add, GaussInt.sub]
+
+/-- `∂/∂x` of `T² - x` is `-1`. -/
+theorem cusp_partial : ¬ piDivides (GaussInt.neg GaussInt.one) :=
+  leg0_partial_is_unit
+
+/-- `chain2` and the cusp both reduce to `Y² + X`. The fibers differ by the
+value at `(A, B) = (0, 1)` against `(x, T) = (0, 0)`. -/
+theorem chain2_cusp_fibers_differ (u2 : GaussInt) :
+    leg0Fiber u2 GaussInt.zero GaussInt.one = GaussInt.one ∧
+      GaussInt.sub (GaussInt.mul GaussInt.zero GaussInt.zero) GaussInt.zero =
+        GaussInt.zero ∧
+      ¬ GaussInt.one = GaussInt.zero := by
+  refine ⟨?_, ?_, ?_⟩
+  · cases u2
+    simp [leg0Fiber, GaussInt.mul, GaussInt.sub, GaussInt.zero, GaussInt.one]
+  · simp [GaussInt.mul, GaussInt.sub, GaussInt.zero]
+  · simp [GaussInt.one, GaussInt.zero]
+
+theorem leg_not_chain (u2 : GaussInt) :
+    leg1Reduced GaussInt.zero GaussInt.zero = GaussInt.one ∧
+      leg0Fiber u2 GaussInt.zero GaussInt.zero = GaussInt.zero ∧
+      ¬ GaussInt.one = GaussInt.zero := by
+  refine ⟨?_, ?_, ?_⟩
+  · simp [leg1Reduced, GaussInt.mul, GaussInt.add, GaussInt.zero, GaussInt.one]
+  · cases u2
+    simp [leg0Fiber, GaussInt.mul, GaussInt.sub, GaussInt.zero]
+  · simp [GaussInt.one, GaussInt.zero]
+
+theorem f4_centers_distinct : Quad.omega ≠ Quad.omegaConj := by
+  simp [Quad.omega, Quad.omegaConj, Quad.sub, Quad.neg, Quad.one, Quad.omega,
+    GaussInt.zero, GaussInt.one, GaussInt.neg, GaussInt.sub]
+
+theorem f4_equation_at_unit :
+    Quad.add (Quad.mul Quad.zero Quad.zero) Quad.one = Quad.one := by
+  simp [Quad.add, Quad.mul, Quad.zero, Quad.one, GaussInt.mul, GaussInt.add, GaussInt.sub,
+    GaussInt.zero, GaussInt.one, GaussInt.neg]
 
 /-!
 ## Vertex identification
 
-`D6Node` below is an abstract fork: `theta` has degree `4`, `chain1` and
-`chain2` have degree `2`, and the four legs have degree `1`. The charts in
-this file do not prove that fork.
+`D6Node` below is an abstract fork on seven vertices. Nothing proved here
+is an edge of `D6Node.neighbors`.
 
-Computed components, and the incidence each chart actually shows:
+The seven curves, separated by the chart that cuts them out:
 
-* `theta`. The double line of the second `π`-chart, `originPiChart`,
-  reduced equation `Y²`. The point `X = ω`, `Y = 0` lies on it, and so does
-  the conjugate. No intersection number is proved.
-* `legUp`. The exceptional curve of blowing up `ω`, equation `V² + U`
-  (`f4_chart_omega`, `odd_a_f4_val_omega`). Multiplicity one: the chart
-  equation is `π²` times a polynomial congruent to `V² + U` modulo `π`, and
-  `∂/∂U = 1` (`f4_partial_is_unit`). This is a leg, not a chain component.
-  The only incidence the chart shows is that it is the exceptional divisor of
-  a point of the double line above. The intersection multiplicity is unproved.
-* `legDown`. The same chart at `-1 - ω` (`f4_chart_conj`,
-  `odd_a_f4_val_conj`). Same status.
-* `legLeft`. `leg0Fiber`, reduced equation `Y² + X`, partial `-1`
-  (`leg0_partial_is_unit`). Adjacency to `theta` is unproved.
-* `legFar`. `leg1Fiber`, reduced equation `Y² + X + 1`, partial `1`
-  (`leg1_partial_is_unit`), and the second affine chart `Y² + S² + S`.
-  Adjacency to `chain2` is unproved.
-* `chain1`. Not identified. `strictSChart` is a double line with transverse
-  polynomial `A² + A + 1`, but it is not proved to be the strict transform.
-* `chain2`. Not identified. No computed component is a second chain curve.
-  The two `𝔽₄` exceptional curves are the multiplicity-one legs above.
+* `chain1`. The first double line. `piChart` is `Y²` plus a multiple of `π`
+  (`piChart_reduces_to_ySq`). In `originXChart` it is the slice `S = 0`,
+  equation `T²`, and `π = t S`. Multiplicity two. The point `t = 1`,
+  `S = T = 0` lies on this slice (`chain1_point_off_theta`).
+* `theta`. The exceptional slice `t = 0` of the same chart, equation `T²`
+  (`originX_exceptional`). It is also `originPiChart`, equation `Y²`
+  (`originPiChart_fiber`). Same equation as `chain1`, different slice.
+* `chain2`. `chain2Chart` at `t = 0` is `leg0Fiber`, equation `B² - u₂ A`.
+  The pullback of `π` is `t² A` (`chain2_uniformizer`). At `A = B = u₂` the
+  fiber vanishes and, when `u₂` is a unit, `A` is a unit, so the power is
+  exactly two (`chain2_fiber_unit_point`, `chain2_partial`). The old name
+  `legLeft` was this curve. The reduced polynomial is square-free; the
+  multiplicity is the power of `t`.
+* `cusp`. `cuspChart` at `S = 0` is `T² - x` (`cusp_fiber`), and `π = x S`.
+  The point `x = T = 1`, `S = 0` lies on it and `x` is a unit (`cusp_point`),
+  so the power of `S` is one. Same reduced equation as `chain2`, different
+  multiplicity (`chain2_cusp_fibers_differ`). `∂/∂x = -1`.
+* `legFar`. `pastU2Pi` reduces to `leg1Fiber`, equation `Y² + X + 1`
+  (`pastU2_exceptional_eq_leg`, `leg1Fiber_reduces`). `∂/∂A = -u₂²` is a unit
+  (`pastU2_partial`). The slice `t = 0` of `pastU2Strict` is the other affine,
+  and on `A S = 1` the fibers match (`leg_charts_overlap`). Multiplicity one:
+  the `π`-chart equation is not divisible by `π`.
+* `legUp`, `legDown`. `V² + U` at `ω` and at `-1 - ω`
+  (`odd_a_f4_val_omega`, `odd_a_f4_val_conj`). The centers are distinct
+  (`f4_centers_distinct`). `∂/∂U = 1`. Multiplicity one.
 
-One closed point of residue `𝔽₄`, cut out by `π`, `Y`, and `X² + X + 1`,
-base-changes into the two geometric points `ω` and `-1 - ω`. The two
-exceptional curves are the two geometric components of that blow-up.
-
-## The `D₆` fork
-
-Kodaira `I₂*` has seven geometric components. The dual graph drawn here is the fork
-with a node of degree `4` and a chain of length `2` beyond it:
-
-```
-        legUp
-          |
-legLeft—theta—chain1—chain2—legFar
-          |
-        legDown
-```
-
-`node_count` is the count `7`. The names above are a labelling of the
-computed curves by the vertices of this fork. They are not a proof of the
-edges `D6Node.neighbors`.
+No intersection number is proved. Completeness — the claim that these seven
+charts leave no further singularity — is not proved.
 -/
 
 inductive D6Node where
@@ -1327,12 +1685,11 @@ end D6Node
 /-- Kodaira–Néron for the odd-`a` row.
 
 The Néron model is the smooth locus of the minimal regular model. The
-blow-ups in this file produce the reduced equations of the two rational
-legs and of the double component through `D6Node.theta`. Finishing the
-blow-up at the closed point `X² + X + 1 = 0` and at the remaining singular
-point of the strict transform makes the special fiber the fork `D6Node`.
-That fiber has `D6Node.node_count = 7` irreducible components, and this
-proposition identifies the count with `NeronSpecialFiberComponents`.
+charts exhibit seven distinct components: three of multiplicity two
+(`chain1`, `theta`, `chain2`) and four of multiplicity one (the cusp, the
+conic at `X ≡ -u₂`, and the two `𝔽₄` curves). Adjacency is not proved, and
+neither is the absence of a further singularity. This proposition identifies
+the count `D6Node.node_count = 7` with `NeronSpecialFiberComponents`.
 
 It is not a theorem. `NeronSpecialFiberComponents` stays opaque.
 `components_n_plus_five_open` is a different sentence: it asks for `n + 5`
