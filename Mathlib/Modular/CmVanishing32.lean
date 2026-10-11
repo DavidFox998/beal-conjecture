@@ -1,4 +1,5 @@
 import DarmonMerel.«6_NoSolution4413»
+import Mathlib.Modular.CoefficientQCurve
 
 /-!
 # CM vanishing toward Darmon–Merel Lemma 8.2
@@ -21,13 +22,23 @@ link from the eigenline to the CM curve is not proved for all `p`.
 
 At the inert prime `3`, a coprime solution has `3 ∤ c`, because a sum of
 two fourth powers vanishes mod `3` only when both bases do. The Frey model
-over `𝔽₉` then has trace in `{-2, 4, 6}`, so the trace is not `0` mod `13`.
+over `𝔽₉` then has trace in `{-2, 4, 6}`.
 
-`ρ̄_f` is a representation of `G_ℚ` and `ρ̄_E` is a representation of
-`G_{ℚ(i)}`. `LevelLowered` is sealed and does not equate a Hecke eigenvalue
-with this point count. That comparison is `qcurve_descent_13_open`.
-`lowered_form_contradicts_trace3` is `False` conditional on it. It is not
-`no_newform_32_64_open`.
+The comparison with a lowered newform is not the residue `0`. A weight-2
+form with `a_3 = 0` has `trace(Frob_3²) = 0² - 2·3 = -6`, and `-6 ≡ 7`
+mod `13`. That is the extension of `ρ̄_E` to `G_ℚ`: `Frob_𝔭₃ = Frob_3²`.
+`velu_target_eq_twist_neg_two` is a 2-isogeny from the conjugate to the
+twist by `-2`, with `13 ∤ 2`, so the ℚ-curve cocycle is the input of that
+extension. Weil restriction would be the direct sum of the two summands
+and the residue `10`. It is not used. `{-2, 4, 6}` meets neither `-6` nor
+`7`.
+
+The cocycle lift is not constructed, and neither axiom stores a residual
+isomorphism. Those end statements are `qcurve_extension_13_open` and
+`modular_residual_13_open`. Together they give the corrected
+`qcurve_descent_13_open`. `no_newform_32_64_of_qcurve` is
+`no_newform_32_64_open` on those two hypotheses. The frontier definition
+is unchanged, and the closure is not unconditional.
 -/
 
 namespace Cm32
@@ -326,18 +337,186 @@ theorem three_not_dvd_c (a b c : Int) (heq : a ^ 4 + b ^ 4 = c ^ 13)
     · rw [hmod, ha1, hb1] at hsum
       omega
 
+/-- `a_3 = 0` gives `trace(Frob_3²) = a_3² - 2·3 = -6`. -/
+theorem frob_square_trace_at_3 : (0 : Int) * 0 - 2 * 3 = -6 := by
+  decide
+
+/-- `-6 ≡ 7 (mod 13)`. -/
+theorem neg_six_cong_seven : (13 : Int) ∣ 7 - (-6) := by
+  decide
+
+/-- The Weil-restriction residue `10` is not the extension residue `-6`.
+
+`2 · 10 ≡ -6 (mod 13)`, which is candidate (b), and `10 ≢ -6 (mod 13)`.
+-/
+theorem weil_sum_residue_ten :
+    (13 : Int) ∣ 2 * 10 - (-6) ∧ ¬ (13 : Int) ∣ 10 - (-6) := by
+  decide
+
+/-- Each admissible `𝔽₉` trace differs from `-6` and from `7`. -/
+theorem not_thirteen_dvd_trace_minus_neg_six (t : Int)
+    (h : t = 6 ∨ t = -2 ∨ t = 4) :
+    ¬ (13 : Int) ∣ t - (-6) ∧ ¬ (13 : Int) ∣ t - 7 := by
+  rcases h with h | h | h
+  · rw [h]; decide
+  · rw [h]; decide
+  · rw [h]; decide
+
+/-- The rejected residue `10` is also disjoint from `{-2, 4, 6}`.
+
+Disjointness does not choose the formalism. `qcurve_isogeny_input` does.
+-/
+theorem not_thirteen_dvd_trace_minus_ten (t : Int)
+    (h : t = 6 ∨ t = -2 ∨ t = 4) : ¬ (13 : Int) ∣ t - 10 := by
+  rcases h with h | h | h
+  · rw [h]; decide
+  · rw [h]; decide
+  · rw [h]; decide
+
+/-- No admissible residue mod `3` has Frey trace `-6` mod `13`. -/
+theorem freyTrace3_not_cong_neg_six (a b : Nat) (ha : a < 3) (hb : b < 3)
+    (hne : a ≠ 0 ∨ b ≠ 0) :
+    ¬ (13 : Int) ∣ freyTrace3 a b - (-6) := by
+  have hsplit : a = 0 ∨ a = 1 ∨ a = 2 := by omega
+  have hsplitb : b = 0 ∨ b = 1 ∨ b = 2 := by omega
+  rcases hsplit with ha0 | ha1 | ha2
+  · rcases hsplitb with hb0 | hb1 | hb2
+    · exact hne.elim (fun h => absurd ha0 h) (fun h => absurd hb0 h)
+    · rw [ha0, hb1]
+      exact (not_thirteen_dvd_trace_minus_neg_six _
+        (Or.inl freyTrace3_table.1)).1
+    · rw [ha0, hb2]
+      exact (not_thirteen_dvd_trace_minus_neg_six _
+        (Or.inl freyTrace3_table.2.1)).1
+  · rcases hsplitb with hb0 | hb1 | hb2
+    · rw [ha1, hb0]
+      exact (not_thirteen_dvd_trace_minus_neg_six _
+        (Or.inr (Or.inl freyTrace3_table.2.2.1))).1
+    · rw [ha1, hb1]
+      exact (not_thirteen_dvd_trace_minus_neg_six _
+        (Or.inr (Or.inr freyTrace3_table.2.2.2.2.1))).1
+    · rw [ha1, hb2]
+      exact (not_thirteen_dvd_trace_minus_neg_six _
+        (Or.inr (Or.inr freyTrace3_table.2.2.2.2.2.1))).1
+  · rcases hsplitb with hb0 | hb1 | hb2
+    · rw [ha2, hb0]
+      exact (not_thirteen_dvd_trace_minus_neg_six _
+        (Or.inr (Or.inl freyTrace3_table.2.2.2.1))).1
+    · rw [ha2, hb1]
+      exact (not_thirteen_dvd_trace_minus_neg_six _
+        (Or.inr (Or.inr freyTrace3_table.2.2.2.2.2.2.1))).1
+    · rw [ha2, hb2]
+      exact (not_thirteen_dvd_trace_minus_neg_six _
+        (Or.inr (Or.inr freyTrace3_table.2.2.2.2.2.2.2))).1
+
 end Cm32
 
-/-- The lowered newform's residual trace at the inert prime `3` matches the
-Frey point count over `𝔽₉`.
+/-- The proved ℚ-curve input: the conjugate's Vélu target equals the twist
+by `-2`, and the isogeny degree `2` is not divisible by `13`.
 
-`ρ̄_f` is a representation of `G_ℚ`. `ρ̄_E` is a representation of `G_{ℚ(i)}`.
-`LevelLowered` is sealed and stores no Hecke eigenvalue. `Newform` does not
-identify `RibetOutput.g` with `eig32` or `eig64`. The eigenvalues
-`a_3 = 0` on those lines are `Cm32.cm_vanish_32` and `Cm32.cm_vanish_64`.
-This proposition is the missing comparison: for a coprime curve with
-`a ≠ 0` and `b ≠ 0`, modularity and a `RibetLevel` force the `𝔽₉` trace to
-be `0` modulo `13`. It is not a theorem.
+This is a coefficient identity. It is not a Galois representation. It
+selects the extension, not Weil restriction. A 2-isogeny of degree coprime
+to `13` is the cocycle of a projective representation of `G_ℚ` whose
+2-dimensional lift restricts to `ρ̄_E` on `G_{ℚ(i)}`. Weil restriction of
+`ρ̄_E` is 4-dimensional on `G_ℚ` and restricts as `ρ̄_E ⊕ ρ̄_{E^σ}`. A
+weight-2 newform supplies a 2-dimensional residual representation, so the
+direct-sum comparison is not the one `RibetLevel` can carry. The residue
+of the extension at `𝔭₃` is `a_3² - 2·3`. The residue of the direct sum,
+with equal summand traces, would be the class `10`. `Cm32.weil_sum_residue_ten`
+separates them. The dimension comparison itself is not a formal theorem.
+-/
+theorem qcurve_isogeny_input (E : FreyCurve4413) :
+    (FreyCurve4413.velu_target_A E = FreyCurve4413.twist_neg_two_A E ∧
+        FreyCurve4413.velu_target_B E = FreyCurve4413.twist_neg_two_B E) ∧
+      ¬ ((13 : Int) ∣ 2) :=
+  ⟨FreyCurve4413.velu_target_eq_twist_neg_two E, thirteen_not_dvd_two⟩
+
+/-- `rho_E_p` and `rho_E_p_twisted` are the unresolved marker.
+
+`frey_qcurve_modular` returns `Modular E`. `RibetLevel.output` stores
+`g : Newform n` and `lowered : LevelLowered E g`. `Newform` has no fields.
+`LevelLowered` is opaque. `ResidualEqual` is not a field of `RibetOutput`.
+None of these is `ρ̄_f ≅ ρ̄_A` or `ρ̄_f |_{G_K} ≅ ρ̄_E`.
+-/
+theorem modular_package_unresolved (E : FreyCurve4413) :
+    rho_E_p E = GaloisRepresentation.unresolved ∧
+      rho_E_p_twisted E = GaloisRepresentation.unresolved :=
+  ⟨rfl, rfl⟩
+
+/-- The coefficient ℚ-curve relation does not force the residue `-6`.
+
+`FreyCurve4413.trivial` is `(1, 0, 1)`. It is a ℚ-curve, and its `𝔽₉` trace
+is `-2`. An open stated for bare `IsQCurve` would be false.
+-/
+theorem coefficient_qcurve_misses_neg_six :
+    FreyCurve4413.IsQCurve FreyCurve4413.trivial ∧
+      ¬ ((13 : Int) ∣ Cm32.freyTrace3 (Cm32.mod3 FreyCurve4413.trivial.a)
+          (Cm32.mod3 FreyCurve4413.trivial.b) - (-6)) := by
+  refine ⟨FreyCurve4413.FreyQCurve_is_QCurve _, ?_⟩
+  have ha : FreyCurve4413.trivial.a = 1 := rfl
+  have hb : FreyCurve4413.trivial.b = 0 := rfl
+  rw [ha, hb]
+  have hma : Cm32.mod3 (1 : Int) = 1 := by decide
+  have hmb : Cm32.mod3 (0 : Int) = 0 := by decide
+  rw [hma, hmb]
+  have htr : Cm32.freyTrace3 1 0 = -2 := Cm32.freyTrace3_table.2.2.1
+  rw [htr]
+  decide
+
+/-- End statement of the missing 2-cocycle lift.
+
+`qcurve_isogeny_input` is the hypothesis this proposition consumes. The
+lift itself is not constructed: there is no projective representation
+`G_ℚ → PGL₂` and no 2-dimensional `ρ̄` with `ρ̄ |_{G_K} ≅ ρ̄_E`. The prime
+`3` is inert, so `Frob_𝔭₃ = Frob_3²`, and the trace of that square on a
+weight-2 form is `a_3² - 2·3`. The character of the `-2`-twist is trivial
+on `Frob_𝔭₃`, because that element is a square and because `(-2 / 3) = 1`.
+The formula is specialized at `a_3 = 0`, the value `cm_vanish_32` and
+`cm_vanish_64` give for `eig32` and `eig64`. `Newform` has no eigenvalue
+field, so this proposition cannot quantify over the eigenvalue of
+`RibetOutput.g`. It does not claim the congruence for any other integer,
+and it does not claim it for a bare `IsQCurve` curve.
+-/
+def qcurve_extension_13_open : Prop :=
+  ∀ (a b c : Int) (E : FreyCurve4413) (N : Nat),
+    a ≠ 0 → b ≠ 0 →
+    a.natAbs.gcd b.natAbs = 1 →
+    E.a = a → E.b = b → E.c = c →
+    Modular E →
+    RibetLevel c E N →
+    (FreyCurve4413.velu_target_A E = FreyCurve4413.twist_neg_two_A E ∧
+        FreyCurve4413.velu_target_B E = FreyCurve4413.twist_neg_two_B E) →
+    ¬ ((13 : Int) ∣ 2) →
+    (13 : Int) ∣ Cm32.freyTrace3 (Cm32.mod3 a) (Cm32.mod3 b) -
+      ((0 : Int) * 0 - 2 * 3)
+
+/-- End statement of the missing residual identification.
+
+The antecedents `rho_E_p E` and `rho_E_p_twisted E` are discharged by
+`modular_package_unresolved`. They are not an isomorphism. `Modular` is
+the opaque output of `frey_qcurve_modular`. `RibetLevel.output.g` is not
+identified with `eig32` or `eig64`, so `cm_vanish_32` and `cm_vanish_64`
+do not apply to it. `s2Gamma0NewformCount32` and `s2Gamma0NewformCount64`
+are the numeral `1`, not that identification. The missing step is that
+the attached trace at `3` is the CM value `0`, and therefore the Frey
+trace is `-6` mod `13`.
+-/
+def modular_residual_13_open : Prop :=
+  ∀ (a b c : Int) (E : FreyCurve4413) (N : Nat),
+    a ≠ 0 → b ≠ 0 →
+    a.natAbs.gcd b.natAbs = 1 →
+    E.a = a → E.b = b → E.c = c →
+    Modular E →
+    RibetLevel c E N →
+    rho_E_p E = GaloisRepresentation.unresolved →
+    rho_E_p_twisted E = GaloisRepresentation.unresolved →
+    (13 : Int) ∣ Cm32.freyTrace3 (Cm32.mod3 a) (Cm32.mod3 b) - (-6)
+
+/-- Corrected descent: the `𝔽₉` trace is `-6` mod `13`, hence `7` mod `13`.
+
+This is not the residue `0`, and it is not the Weil-restriction residue
+`10`. It is still not a theorem. `qcurve_descent_13_of_bridge` derives it
+from `qcurve_extension_13_open` and `modular_residual_13_open`.
 -/
 def qcurve_descent_13_open : Prop :=
   ∀ (a b c : Int) (E : FreyCurve4413) (N : Nat),
@@ -346,25 +525,60 @@ def qcurve_descent_13_open : Prop :=
     E.a = a → E.b = b → E.c = c →
     Modular E →
     RibetLevel c E N →
-    (13 : Int) ∣ Cm32.freyTrace3 (Cm32.mod3 a) (Cm32.mod3 b)
+    (13 : Int) ∣ Cm32.freyTrace3 (Cm32.mod3 a) (Cm32.mod3 b) - (-6)
 
-/-- A coprime modular curve with a lowered newform cannot have Frey trace `0`
-mod `13` at the prime `3`, if the ℚ-curve comparison holds.
+/-- The two end statements are the corrected descent.
 
-Conditional on `qcurve_descent_13_open`. `three_not_dvd_c` keeps `3` out of
-`c`, and `freyTrace3_not_div_13` is the point count. This is not
-`no_newform_32_64_open`: that proposition has no trace hypothesis, and this
-theorem does not rewrite it.
+The extension contributes `a_3² - 2·3` at `a_3 = 0`. The residual gap
+contributes the class `-6`. `frob_square_trace_at_3` identifies them.
+`qcurve_isogeny_input` and `modular_package_unresolved` discharge the
+proved antecedents. What remains is the unformalized lift and the
+unformalized identification of `RibetOutput.g` with the CM eigenline.
+-/
+theorem qcurve_descent_13_of_bridge
+    (hext : qcurve_extension_13_open)
+    (hres : modular_residual_13_open) :
+    qcurve_descent_13_open := by
+  intro a b c E N ha hb hcop hEa hEb hEc hMod hRib
+  have hvelu := qcurve_isogeny_input E
+  have hpoly := hext a b c E N ha hb hcop hEa hEb hEc hMod hRib hvelu.1 hvelu.2
+  have hmark := modular_package_unresolved E
+  have hmod := hres a b c E N ha hb hcop hEa hEb hEc hMod hRib hmark.1 hmark.2
+  rw [Cm32.frob_square_trace_at_3] at hpoly
+  exact And.left ⟨hpoly, hmod⟩
+
+/-- A coprime modular curve with a lowered newform cannot have Frey trace
+`-6` mod `13` at the prime `3`, if the two bridge statements hold.
+
+The point count is `freyTrace3_not_cong_neg_six`: the trace lies in
+`{-2, 4, 6}`. `three_not_dvd_c` is not required for this `False`. The
+frontier definition `no_newform_32_64_open` is not rewritten.
 -/
 theorem lowered_form_contradicts_trace3
-    (hdesc : qcurve_descent_13_open)
+    (hext : qcurve_extension_13_open)
+    (hres : modular_residual_13_open)
     (a b c : Int) (E : FreyCurve4413) (N : Nat)
     (ha : a ≠ 0) (hb : b ≠ 0)
     (hcop : a.natAbs.gcd b.natAbs = 1)
     (hEa : E.a = a) (hEb : E.b = b) (hEc : E.c = c)
     (hMod : Modular E) (hRib : RibetLevel c E N) : False := by
-  have hdiv := hdesc a b c E N ha hb hcop hEa hEb hEc hMod hRib
+  have hdiv := qcurve_descent_13_of_bridge hext hres a b c E N ha hb hcop
+    hEa hEb hEc hMod hRib
   have hne := Cm32.mod3_not_both_zero a b hcop
-  exact Cm32.freyTrace3_not_div_13 (Cm32.mod3 a) (Cm32.mod3 b)
+  exact Cm32.freyTrace3_not_cong_neg_six (Cm32.mod3 a) (Cm32.mod3 b)
     (Cm32.mod3_lt a) (Cm32.mod3_lt b) hne hdiv
+
+/-- `no_newform_32_64_open` follows from the two bridge statements.
+
+`0 < c` is the frontier quantifier and is not used. The definition in
+`DarmonMerel.«6_NoSolution4413»` is unchanged. This is not an
+unconditional proof of that definition.
+-/
+theorem no_newform_32_64_of_qcurve
+    (hext : qcurve_extension_13_open)
+    (hres : modular_residual_13_open) :
+    no_newform_32_64_open := by
+  intro a b c E N ha hb hcop _hpos hEa hEb hEc hMod hRib
+  exact lowered_form_contradicts_trace3 hext hres a b c E N ha hb hcop
+    hEa hEb hEc hMod hRib
 
