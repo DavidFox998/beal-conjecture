@@ -14,4 +14,5 @@ import Mathlib.Modular.EllipticCurveMinimal
 import Mathlib.Modular.QiDivisors13
 import Mathlib.Modular.GL2F13
 import Mathlib.Modular.Irreducibility13
+import Mathlib.Modular.Cyclotomic13
 import Mathlib.Modular.ReducibleShape13

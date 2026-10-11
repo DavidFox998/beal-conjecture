@@ -1,5 +1,6 @@
 import Mathlib.Modular.LevelLowering4413
 import Mathlib.Modular.GL2F13
+import Mathlib.Modular.Cyclotomic13
 
 open FreyCurve4413
 
@@ -13,8 +14,10 @@ asks for the opposite divisibility at every odd prime divisor of `c`. If
 `13 ∣ tateParameter` at every bad prime, that transvection does not exist and
 strategy A is dead.
 
-This file starts strategy B. It does not prove irreducibility and it does not
-produce a term of `RhoE13Open`.
+This file starts strategy B. It does not prove irreducibility
+unconditionally and it does not produce a term of `RhoE13Open`.
+`reducible_shape_contradicts_omega` is the order contradiction, conditional
+on the class-field opens and on `chars_unramified_above_13_open`.
 
 `rho_E_13` is `GaloisRepresentation.unresolved`. There is no Galois group, no
 Frobenius element, and no residual representation. The shape
@@ -710,6 +713,37 @@ def weil_bound_open : Prop :=
   ∀ E : FreyCurve4413, ∀ normP : Nat, 0 < normP →
     (pointCountTrace E normP).natAbs * (pointCountTrace E normP).natAbs ≤ 4 * normP
 
+/-- Both diagonal characters meet the order-`4` criterion at the exponent of `ω`.
+
+Not a theorem, and not the statement that either character is unramified
+above `13`. `N(Δ) = 2¹⁸ c³⁹`, so a prime above `13` meets the discriminant
+only when `13 ∣ c`. Néron–Ogg–Shafarevich does not apply at the residue
+characteristic. Finite flat group schemes are not formalized. Finite flat
+of weight `2` would force the inertial exponents `0` and `1`. Those sum to
+`1` (`complement_sum`) and do not put both characters in the order-`4` group.
+
+`cyclotomic_pow_order_div_four` is the criterion that is formalized:
+`ord(2 ^ e) ∣ 4` if and only if `3 ∣ e`. The ray-class factor already has
+order dividing `4` (`piUnitChar_order_div_four`). This proposition is the
+missing constraint at primes above `13`: under `reducible_shape_13_open`,
+`ray_class_mod_pi_open`, and `inertia_trivial_of_tate_13_open`, both
+cyclotomic exponents of a shape match are divisible by `3`. It is a
+hypothesis of `reducible_shape_contradicts_omega`. It is not assumed, and
+it is in tension with the product being `ω`, whose ramification at `13` is
+itself not a theorem here.
+-/
+def chars_unramified_above_13_open : Prop :=
+  reducible_shape_13_open →
+    ray_class_mod_pi_open →
+      inertia_trivial_of_tate_13_open →
+        ∀ E : FreyCurve4413, E.a ≠ 0 → E.b ≠ 0 →
+          E.a.natAbs.gcd E.b.natAbs = 1 →
+            ∀ n, ∀ ε : ReducibleShape13.PiUnitChar n, ∀ exp : Fin 12,
+              ReducibleShape13.IsRayClassChar n ε →
+                RhoSemisimpleMatches E n ε exp →
+                  3 ∣ exp.val ∧
+                    3 ∣ (ReducibleShape13.complementExp exp).val
+
 /-- The character constraint forces a trace outside the Weil range.
 
 This is the missing prime. It is not `False`, it does not negate
@@ -742,6 +776,70 @@ theorem shape_forces_order_div_four
   rcases h E ha hb hcop with ⟨n, ε, exp, hray, hmatch⟩
   exact ⟨n, ε, exp, hmatch, hray,
     fun z hz => ReducibleShape13.piUnitChar_order_div_four ε z hz⟩
+
+theorem fin_mul_pow (a b : Fin 13) (n : Nat) : (a * b) ^ n = a ^ n * b ^ n := by
+  induction n with
+  | zero =>
+    rw [ReducibleShape13.fin_pow_zero, ReducibleShape13.fin_pow_zero,
+      ReducibleShape13.fin_pow_zero, Fin.one_mul]
+  | succ n ih =>
+    rw [ReducibleShape13.fin_pow_succ, ih, ReducibleShape13.fin_pow_succ,
+      ReducibleShape13.fin_pow_succ]
+    grind
+
+/-- Both cyclotomic exponents divisible by `3` force `2 ^ 4 = 1`.
+
+`cyclotomic_pow_order_div_four` turns each divisibility into
+`ord(2 ^ e) ∣ 4`. The product of the two powers is `2 ^ 1`, because
+`complement_sum` is `a + (1 - a) ≡ 1 (mod 12)` and `2 ^ 12 = 1`. A product
+of two elements of order dividing `4` still has order dividing `4`, so
+`2 ^ 4 = 1`, which `omega_order_twelve` forbids.
+-/
+theorem not_three_div_complement (a : Fin 12)
+    (h1 : 3 ∣ a.val) (h2 : 3 ∣ (ReducibleShape13.complementExp a).val) : False := by
+  have hord := Cyc13.omega_order_twelve
+  have h12 : (2 : Fin 13) ^ 12 = 1 := hord.1
+  have hnot : (2 : Fin 13) ^ 4 ≠ 1 := hord.2.2.1
+  have ha4 : ((2 : Fin 13) ^ a.val) ^ 4 = 1 :=
+    (Cyc13.cyclotomic_pow_order_div_four a.val a.isLt).2 h1
+  have hc4 : ((2 : Fin 13) ^ (ReducibleShape13.complementExp a).val) ^ 4 = 1 :=
+    (Cyc13.cyclotomic_pow_order_div_four _ (ReducibleShape13.complementExp a).isLt).2 h2
+  have hprod4 : ((2 : Fin 13) ^ a.val * (2 : Fin 13) ^ (ReducibleShape13.complementExp a).val) ^ 4 = 1 := by
+    rw [fin_mul_pow, ha4, hc4, Fin.mul_one]
+  generalize hs : a.val + (ReducibleShape13.complementExp a).val = s
+  have hmod : s % 12 = 1 := by
+    rw [← hs]
+    exact ReducibleShape13.complement_sum a
+  have hrepr := Nat.div_add_mod s 12
+  rw [hmod] at hrepr
+  have hsplit : s = 12 * (s / 12) + 1 := hrepr.symm
+  have hpows : (2 : Fin 13) ^ s = 2 := by
+    rw [hsplit, ReducibleShape13.fin_pow_add, ReducibleShape13.fin_pow_mul, h12,
+      ReducibleShape13.fin_one_pow, Fin.one_mul, ReducibleShape13.fin_pow_one]
+  have hsumpow : (2 : Fin 13) ^ a.val * (2 : Fin 13) ^ (ReducibleShape13.complementExp a).val =
+      (2 : Fin 13) ^ s := by
+    rw [← hs, ReducibleShape13.fin_pow_add]
+  rw [hsumpow, hpows] at hprod4
+  exact hnot hprod4
+
+/-- A coprime curve with `a ≠ 0` and `b ≠ 0` cannot carry the reducible shape
+if the three class-field bridges hold.
+
+Conditional on `reducible_shape_13_open`, `ray_class_mod_pi_open`,
+`inertia_trivial_of_tate_13_open`, and `chars_unramified_above_13_open`.
+It is not unconditional irreducibility, it does not produce a term of
+`RhoE13Open`, and it does not rewrite the five frontier opens.
+-/
+theorem reducible_shape_contradicts_omega
+    (hshape : reducible_shape_13_open)
+    (hray : ray_class_mod_pi_open)
+    (hinertia : inertia_trivial_of_tate_13_open)
+    (h13 : chars_unramified_above_13_open)
+    (E : FreyCurve4413) (ha : E.a ≠ 0) (hb : E.b ≠ 0)
+    (hcop : E.a.natAbs.gcd E.b.natAbs = 1) : False := by
+  rcases hshape E ha hb hcop with ⟨n, ε, exp, hrayc, hmatch⟩
+  have hdiv := h13 hshape hray hinertia E ha hb hcop n ε exp hrayc hmatch
+  exact not_three_div_complement exp hdiv.1 hdiv.2
 
 /-- Under the component count and the Artin bridge, the character-conductor
 sum equals `FTameAtPi + SwanAtPi` and that integer lies in `{10, 12}`.
