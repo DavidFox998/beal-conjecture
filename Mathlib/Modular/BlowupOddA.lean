@@ -491,6 +491,195 @@ theorem leg1Other_reduces (u2 S Y : GaussInt) (hu : congOne u2) :
     ((piDivides_mul _ _).2 (Or.inl hu1))
     ((piDivides_mul _ _).2 (Or.inl hu1))
 
+/-!
+## Digits of the unit cofactors
+
+`u₂ ≡ 1` modulo `π²`, `u₄ ≡ 1` modulo `π²`, and `u₆ ≡ 1 + π` modulo `π²`.
+The second `π`-chart is therefore
+`Y² - π (X² + X + 1 + π) + π² ((1 - π) Y - X³)`
+up to an error divisible by `π³`. Every reduced chart below is read from that
+model, so it is the same equation for the whole odd-`a` row.
+-/
+
+/-- Cofactor of `a₂'`: `a₂' = u₂ π`. -/
+def u2Of (E : FreyCurve4413) : GaussInt :=
+  ⟨2 * E.a + 3, -(2 * E.a)⟩
+
+theorem u2Of_spec (E : FreyCurve4413) :
+    GaussInt.mul (u2Of E) pi = a2AfterPi E := by
+  simp [u2Of, a2AfterPi, pi, GaussInt.mul]
+  constructor <;> omega
+
+/-- `(u₂ - 1) / π² = ⟨-a, -(a + 1)⟩`. -/
+def u2Digit (E : FreyCurve4413) : GaussInt :=
+  ⟨-E.a, -(E.a + 1)⟩
+
+theorem u2_sub_one_eq (E : FreyCurve4413) :
+    GaussInt.mul (u2Digit E) (piPow 2) =
+      GaussInt.sub (u2Of E) GaussInt.one := by
+  rw [piPow_two]
+  simp [u2Digit, u2Of, GaussInt.mul, GaussInt.sub, GaussInt.one]
+  constructor <;> omega
+
+/-- The third `π`-digit of `u₂` is a unit when `a` is odd. -/
+theorem u2_digit_not_pi (E : FreyCurve4413) (ha : E.a.natAbs % 2 = 1) :
+    ¬ piDivides (u2Digit E) := by
+  have ha2 := int_odd_of_natAbs_odd ha
+  simp [piDivides, u2Digit]
+  omega
+
+/-- Cofactor of `a₄'` at valuation `3`. -/
+def u4Of (E : FreyCurve4413) : GaussInt :=
+  ⟨(E.b ^ 2 - E.a ^ 2 + 3) / 2, -((E.a ^ 2 + E.b ^ 2 + 8 * E.a + 3) / 2)⟩
+
+theorem four_dvd_a_sq_b_sq_eight_a_three {a b : ℤ} (ha : a % 2 = 1) (hb : b % 2 = 0) :
+    (4 : ℤ) ∣ a ^ 2 + b ^ 2 + 8 * a + 3 := by
+  let p := (a - 1) / 2
+  let q := b / 2
+  have ha' : a = 2 * p + 1 := int_odd_split ha
+  have hb' : b = 2 * q := int_even_split hb
+  refine ⟨p ^ 2 + q ^ 2 + 5 * p + 3, ?_⟩
+  rw [ha', hb']
+  grind
+
+theorem four_dvd_b_sq_sub_a_sq_one {a b : ℤ} (ha : a % 2 = 1) (hb : b % 2 = 0) :
+    (4 : ℤ) ∣ b ^ 2 - a ^ 2 + 1 := by
+  let p := (a - 1) / 2
+  let q := b / 2
+  have ha' : a = 2 * p + 1 := int_odd_split ha
+  have hb' : b = 2 * q := int_even_split hb
+  refine ⟨q ^ 2 - p ^ 2 - p, ?_⟩
+  rw [ha', hb']
+  grind
+
+/-- `(u₄ - 1) / π²`. -/
+def u4Digit (E : FreyCurve4413) : GaussInt :=
+  ⟨-((E.a ^ 2 + E.b ^ 2 + 8 * E.a + 3) / 4), -((E.b ^ 2 - E.a ^ 2 + 1) / 4)⟩
+
+theorem u4Of_spec (E : FreyCurve4413)
+    (hodd : E.c.natAbs % 2 = 1) (ha : E.a.natAbs % 2 = 1) :
+    GaussInt.mul (u4Of E) (piPow 3) = a4AfterPi E := by
+  have hb0 := b_even_of_a_odd E hodd ha
+  have ha2 := int_odd_of_natAbs_odd ha
+  have hb2 := int_even_of_natAbs_even hb0
+  have hre := two_dvd_b_sq_sub_a_sq_add_three ha2 hb2
+  have him := two_dvd_a_sq_add_b_sq_add_eight_a_add_three ha2 hb2
+  rw [piPow_three]
+  simp [u4Of, a4AfterPi, GaussInt.mul]
+  constructor
+  · have hdiv : (2 : ℤ) * ((E.b ^ 2 - E.a ^ 2 + 3) / 2) = E.b ^ 2 - E.a ^ 2 + 3 :=
+      Int.mul_ediv_cancel' hre
+    have hdiv' : (2 : ℤ) * ((E.a ^ 2 + E.b ^ 2 + 8 * E.a + 3) / 2) =
+        E.a ^ 2 + E.b ^ 2 + 8 * E.a + 3 := Int.mul_ediv_cancel' him
+    grind
+  · have hdiv : (2 : ℤ) * ((E.b ^ 2 - E.a ^ 2 + 3) / 2) = E.b ^ 2 - E.a ^ 2 + 3 :=
+      Int.mul_ediv_cancel' hre
+    have hdiv' : (2 : ℤ) * ((E.a ^ 2 + E.b ^ 2 + 8 * E.a + 3) / 2) =
+        E.a ^ 2 + E.b ^ 2 + 8 * E.a + 3 := Int.mul_ediv_cancel' him
+    grind
+
+theorem u4_sub_one_eq (E : FreyCurve4413)
+    (hodd : E.c.natAbs % 2 = 1) (ha : E.a.natAbs % 2 = 1) :
+    GaussInt.mul (u4Digit E) (piPow 2) =
+      GaussInt.sub (u4Of E) GaussInt.one := by
+  have hb0 := b_even_of_a_odd E hodd ha
+  have ha2 := int_odd_of_natAbs_odd ha
+  have hb2 := int_even_of_natAbs_even hb0
+  have h4a := four_dvd_a_sq_b_sq_eight_a_three ha2 hb2
+  have h4b := four_dvd_b_sq_sub_a_sq_one ha2 hb2
+  have h2a := two_dvd_a_sq_add_b_sq_add_eight_a_add_three ha2 hb2
+  have h2b := two_dvd_b_sq_sub_a_sq_add_three ha2 hb2
+  rw [piPow_two]
+  simp [u4Digit, u4Of, GaussInt.mul, GaussInt.sub, GaussInt.one]
+  constructor
+  · have hq : (4 : ℤ) * ((E.a ^ 2 + E.b ^ 2 + 8 * E.a + 3) / 4) =
+        E.a ^ 2 + E.b ^ 2 + 8 * E.a + 3 := Int.mul_ediv_cancel' h4a
+    have h2 : (2 : ℤ) * ((E.a ^ 2 + E.b ^ 2 + 8 * E.a + 3) / 2) =
+        E.a ^ 2 + E.b ^ 2 + 8 * E.a + 3 := Int.mul_ediv_cancel' h2a
+    grind
+  · have hq : (4 : ℤ) * ((E.b ^ 2 - E.a ^ 2 + 1) / 4) = E.b ^ 2 - E.a ^ 2 + 1 :=
+      Int.mul_ediv_cancel' h4b
+    have h2 : (2 : ℤ) * ((E.b ^ 2 - E.a ^ 2 + 3) / 2) = E.b ^ 2 - E.a ^ 2 + 3 :=
+      Int.mul_ediv_cancel' h2b
+    grind
+
+/-- Cofactor of `a₆` after `y ↦ y + π²`: `a₆ = u₆ π⁵`. -/
+def u6Of (E : FreyCurve4413) : GaussInt :=
+  ⟨-(((E.a + 1) ^ 2) / 2), -((E.b ^ 2 + 2 * E.a) / 2)⟩
+
+theorem four_dvd_sq_succ_of_odd {a : ℤ} (ha : a % 2 = 1) :
+    (4 : ℤ) ∣ (a + 1) ^ 2 := by
+  let p := (a - 1) / 2
+  have ha' : a = 2 * p + 1 := int_odd_split ha
+  refine ⟨(p + 1) ^ 2, ?_⟩
+  rw [ha']
+  grind
+
+theorem four_dvd_b_sq_two_a_two {a b : ℤ} (ha : a % 2 = 1) (hb : b % 2 = 0) :
+    (4 : ℤ) ∣ b ^ 2 + 2 * a + 2 := by
+  let p := (a - 1) / 2
+  let q := b / 2
+  have ha' : a = 2 * p + 1 := int_odd_split ha
+  have hb' : b = 2 * q := int_even_split hb
+  refine ⟨q ^ 2 + p + 1, ?_⟩
+  rw [ha', hb']
+  grind
+
+/-- `(u₆ - (1 + π)) / π²`. -/
+def u6Digit (E : FreyCurve4413) : GaussInt :=
+  ⟨-((E.b ^ 2 + 2 * E.a + 2) / 4), ((E.a + 1) ^ 2) / 4 + 1⟩
+
+theorem u6Of_spec (E : FreyCurve4413)
+    (hodd : E.c.natAbs % 2 = 1) (ha : E.a.natAbs % 2 = 1) :
+    GaussInt.mul (u6Of E) (piPow 5) = a6AfterPiSq E := by
+  have hb0 := b_even_of_a_odd E hodd ha
+  have ha2 := int_odd_of_natAbs_odd ha
+  have hb2 := int_even_of_natAbs_even hb0
+  have hre := two_dvd_sq_succ_of_odd ha2
+  have him := two_dvd_b_sq_add_two_a ha2 hb2
+  rw [piPow_five]
+  simp [u6Of, a6AfterPiSq, GaussInt.mul]
+  constructor
+  · have hdiv : (2 : ℤ) * (((E.a + 1) ^ 2) / 2) = (E.a + 1) ^ 2 :=
+      Int.mul_ediv_cancel' hre
+    have hdiv' : (2 : ℤ) * ((E.b ^ 2 + 2 * E.a) / 2) = E.b ^ 2 + 2 * E.a :=
+      Int.mul_ediv_cancel' him
+    grind
+  · have hdiv : (2 : ℤ) * (((E.a + 1) ^ 2) / 2) = (E.a + 1) ^ 2 :=
+      Int.mul_ediv_cancel' hre
+    have hdiv' : (2 : ℤ) * ((E.b ^ 2 + 2 * E.a) / 2) = E.b ^ 2 + 2 * E.a :=
+      Int.mul_ediv_cancel' him
+    grind
+
+theorem u6_sub_one_pi_eq (E : FreyCurve4413)
+    (hodd : E.c.natAbs % 2 = 1) (ha : E.a.natAbs % 2 = 1) :
+    GaussInt.mul (u6Digit E) (piPow 2) =
+      GaussInt.sub (u6Of E) (GaussInt.add GaussInt.one pi) := by
+  have hb0 := b_even_of_a_odd E hodd ha
+  have ha2 := int_odd_of_natAbs_odd ha
+  have hb2 := int_even_of_natAbs_even hb0
+  have h4a := four_dvd_sq_succ_of_odd ha2
+  have h4b := four_dvd_b_sq_two_a_two ha2 hb2
+  have h2a := two_dvd_sq_succ_of_odd ha2
+  have h2b := two_dvd_b_sq_add_two_a ha2 hb2
+  rw [piPow_two]
+  simp [u6Digit, u6Of, pi, GaussInt.mul, GaussInt.sub, GaussInt.add, GaussInt.one]
+  constructor
+  · have hq : (4 : ℤ) * ((E.b ^ 2 + 2 * E.a + 2) / 4) = E.b ^ 2 + 2 * E.a + 2 :=
+      Int.mul_ediv_cancel' h4b
+    have h2 : (2 : ℤ) * ((E.b ^ 2 + 2 * E.a) / 2) = E.b ^ 2 + 2 * E.a :=
+      Int.mul_ediv_cancel' h2b
+    grind
+  · have hq : (4 : ℤ) * (((E.a + 1) ^ 2) / 4) = (E.a + 1) ^ 2 :=
+      Int.mul_ediv_cancel' h4a
+    have h2 : (2 : ℤ) * (((E.a + 1) ^ 2) / 2) = (E.a + 1) ^ 2 :=
+      Int.mul_ediv_cancel' h2a
+    grind
+
+/-- `-√(-1) = 1 - π`. -/
+theorem neg_i_eq_one_sub_pi : GaussInt.sub GaussInt.one pi = ⟨0, -1⟩ := by
+  simp [GaussInt.sub, GaussInt.one, pi]
+
 /-- Formal `∂/∂S` of `Y² + S² + S` is `1 + 2 S`, hence congruent to `1`. -/
 theorem leg1Other_partial_is_unit (S : GaussInt) :
     ¬ piDivides (GaussInt.add (GaussInt.one) (GaussInt.smul 2 S)) := by
