@@ -116,7 +116,11 @@ part, and not the conductor exponent. When `a` is odd, the further shift
 (`a_odd_after_pi_sq_valuations`), and `b6AfterPiSq_p2_exact_eight` together
 with `quadDiscAfterPiSq_p2_exact_six` give `v_π(b₆) = 8` and `v_π(D) = 6`.
 Those are the numerical inputs of Dokchitser's criterion for type `I₂*`.
-The criterion is not formalized, and neither is a wild part. They are not
+The exit valuations are `tate_exit_not_II_IV_of_a_odd`,
+`tate_exit_not_I0Star_of_a_odd`, and `tate_exit_not_triple_root_of_a_odd`,
+and the same three for even `a`. The criterion itself is
+`kodaira_in_star_of_tate_exits_open`. It is not a theorem, and neither is a
+wild part. They are not
 the conductor exponent. Ogg's formula is the tame conductor. On type `I_n*`
 the table uses discriminant valuation `n + 6`. `even_a_cubic_ten` and
 `a_odd_cubic_eight` put Dokchitser's cubic discriminant and the Weierstrass
@@ -6207,6 +6211,209 @@ theorem tate_step7_inputs {n : ℕ} {a1 a2 a3 a4 a6 b6 D : GaussInt}
   rcases h with ⟨hn, heven, _, _, _, _, _, hb6, hD⟩
   exact ⟨hroot, hD, hb6, hn, heven⟩
 
+/-- A higher proved divisibility is a lower one. -/
+theorem valAtLeast_anti {z : GaussInt} {k m : ℕ} (h : valAtLeast z m) (hk : k ≤ m) :
+    valAtLeast z k := by
+  rcases h with hz | ⟨u, hu⟩
+  · exact Or.inl hz
+  · have hadd := GaussInt.npow_add pi (m - k) k
+    have hm : (m - k) + k = m := by omega
+    rw [hm] at hadd
+    have hpow : piPow m = GaussInt.mul (piPow (m - k)) (piPow k) := by
+      unfold piPow
+      exact hadd
+    refine Or.inr ⟨GaussInt.mul u (piPow (m - k)), ?_⟩
+    calc
+      GaussInt.mul (GaussInt.mul u (piPow (m - k))) (piPow k)
+          = GaussInt.mul u (GaussInt.mul (piPow (m - k)) (piPow k)) := by
+            rw [GaussInt.mul_assoc]
+      _ = GaussInt.mul u (piPow m) := by rw [← hpow]
+      _ = z := hu
+
+/-- Tate's Step 3 exit. The algorithm labels it type II.
+
+`π² ∤ a₆`. This predicate is that divisibility. It is not a Kodaira symbol.
+-/
+def TateExitII (a6 : GaussInt) : Prop :=
+  ¬ valAtLeast a6 2
+
+/-- Tate's Step 5 exit. The algorithm labels it type IV.
+
+`π³ ∤ b₆`, with `b₆ = a₃² + 4 a₆`. The test is not a condition on `a₆` alone.
+This predicate is that divisibility. It is not a Kodaira symbol.
+-/
+def TateExitIV (b6 : GaussInt) : Prop :=
+  ¬ valAtLeast b6 3
+
+/-- Tate's Step 6 exit. The algorithm labels it type `I₀*`.
+
+`v(d) = 6`, where `d` is the cubic discriminant. This predicate is that
+equality. It is not a Kodaira symbol.
+-/
+def TateExitI0Star (d : GaussInt) : Prop :=
+  vPi d = 6
+
+/-- The triple-root valuation on `a₂² - 3 a₄`.
+
+A reduced cubic `T³ + A T² + B T + C` has a triple root only if `A² - 3 B = 0`.
+With `A = a₂/π` and `B = a₄/π²`, that vanishing is `v(a₂² - 3 a₄) ≥ 3`.
+Steps 8–10 of the algorithm, types IV*, III*, and II*, are the triple-root
+branch. This predicate is the valuation. It does not name those symbols.
+-/
+def TateExitTripleRoot (a2 a4 : GaussInt) : Prop :=
+  2 < vPi (GaussInt.sub (GaussInt.mul a2 a2) (GaussInt.smul 3 a4))
+
+theorem not_TateExitII_of_valAtLeast {a6 : GaussInt} {k : ℕ}
+    (h : valAtLeast a6 k) (hk : 2 ≤ k) : ¬ TateExitII a6 :=
+  fun hex => hex (valAtLeast_anti h hk)
+
+theorem not_TateExitIV_of_valAtLeast {b6 : GaussInt} {k : ℕ}
+    (h : valAtLeast b6 k) (hk : 3 ≤ k) : ¬ TateExitIV b6 :=
+  fun hex => hex (valAtLeast_anti h hk)
+
+theorem not_TateExitI0Star_of_gt {d : GaussInt} {k : ℕ}
+    (h : vPi d = k) (hk : 6 < k) : ¬ TateExitI0Star d ∧ 6 < vPi d := by
+  refine ⟨?_, ?_⟩
+  · intro hex
+    rw [TateExitI0Star, h] at hex
+    omega
+  · rw [h]
+    exact hk
+
+theorem not_TateExitTripleRoot_of_eq_two {a2 a4 : GaussInt}
+    (h : vPi (GaussInt.sub (GaussInt.mul a2 a2) (GaussInt.smul 3 a4)) = 2) :
+    ¬ TateExitTripleRoot a2 a4 := by
+  intro hex
+  rw [TateExitTripleRoot, h] at hex
+  omega
+
+/-- On the odd-`a` translate, Steps 3 and 5 fail.
+
+`v_π(a₆) = 5`, so `π² ∣ a₆` and the type II exit fails.
+`v_π(b₆) = 8`, so `π³ ∣ b₆` and the type IV exit fails.
+Step 5 reads `b₆`, not `a₆`. Both values are `a_odd_dokchitser_n2_inputs`.
+-/
+theorem tate_exit_not_II_IV_of_a_odd (E : FreyCurve4413)
+    (hodd : E.c.natAbs % 2 = 1) (ha : E.a.natAbs % 2 = 1) :
+    valAtLeast (a6AfterPiSq E) 5 ∧ ¬ TateExitII (a6AfterPiSq E) ∧
+      valAtLeast (b6AfterPiSq E) 8 ∧ ¬ TateExitIV (b6AfterPiSq E) := by
+  have ha6 := a6AfterPiSq_p2_exact_five_of_a_odd E hodd ha
+  have hb6 := b6AfterPiSq_p2_exact_eight E hodd ha
+  have h5 : valAtLeast (a6AfterPiSq E) 5 := valAtLeast_of_P2Exact ha6 (by decide)
+  have h8 : valAtLeast (b6AfterPiSq E) 8 := valAtLeast_of_P2Exact hb6 (by decide)
+  exact ⟨h5, not_TateExitII_of_valAtLeast h5 (by decide),
+    h8, not_TateExitIV_of_valAtLeast h8 (by decide)⟩
+
+/-- On the even-`a` translate, Steps 3 and 5 fail.
+
+`π⁷ ∣ a₆`, so `π² ∣ a₆` and the type II exit fails.
+`π⁷ ∣ b₆`, so `π³ ∣ b₆` and the type IV exit fails.
+Both divisibilities are `even_a_dokchitser_n4_inputs`. `a₃` stays `0`.
+-/
+theorem tate_exit_not_II_IV_of_a_even (E : FreyCurve4413)
+    (hodd : E.c.natAbs % 2 = 1) (ha : E.a.natAbs % 2 = 0) :
+    valAtLeast (a6AfterPiThenPiSq E) 7 ∧ ¬ TateExitII (a6AfterPiThenPiSq E) ∧
+      valAtLeast (b6AfterPiThenPiSq E) 7 ∧ ¬ TateExitIV (b6AfterPiThenPiSq E) := by
+  rcases even_a_dokchitser_n4_inputs E hodd ha with ⟨_, _, ⟨ua6, hua6⟩, ⟨ub6, hub6⟩, _⟩
+  have h7a : valAtLeast (a6AfterPiThenPiSq E) 7 := valAtLeast_of_dvd hua6
+  have h7b : valAtLeast (b6AfterPiThenPiSq E) 7 := valAtLeast_of_dvd hub6
+  exact ⟨h7a, not_TateExitII_of_valAtLeast h7a (by decide),
+    h7b, not_TateExitIV_of_valAtLeast h7b (by decide)⟩
+
+/-- On the odd-`a` translate, the type `I₀*` exit fails.
+
+`v_π(d) = 8`. Step 6 sends `v(d) = 6` to type `I₀*`. The value `8` is
+`a_odd_cubic_eight`.
+-/
+theorem tate_exit_not_I0Star_of_a_odd (E : FreyCurve4413)
+    (hodd : E.c.natAbs % 2 = 1) (ha : E.a.natAbs % 2 = 1) :
+    ¬ TateExitI0Star (cubicDisc (a2AfterPi E) (a4AfterPi E) (a6AfterPiSq E)) ∧
+      6 < vPi (cubicDisc (a2AfterPi E) (a4AfterPi E) (a6AfterPiSq E)) :=
+  not_TateExitI0Star_of_gt (a_odd_cubic_eight E hodd ha).2.2.1 (by decide)
+
+/-- On the even-`a` translate, the type `I₀*` exit fails.
+
+`v_π(d) = 10`. Step 6 sends `v(d) = 6` to type `I₀*`. The value `10` is
+`even_a_cubic_ten`.
+-/
+theorem tate_exit_not_I0Star_of_a_even (E : FreyCurve4413)
+    (hodd : E.c.natAbs % 2 = 1) (ha : E.a.natAbs % 2 = 0) :
+    ¬ TateExitI0Star
+        (cubicDisc (a2AfterPiThenPiSq E) (a4AfterPiThenPiSq E)
+          (a6AfterPiThenPiSq E)) ∧
+      6 < vPi (cubicDisc (a2AfterPiThenPiSq E) (a4AfterPiThenPiSq E)
+        (a6AfterPiThenPiSq E)) :=
+  not_TateExitI0Star_of_gt (even_a_cubic_ten E hodd ha).2.2.1 (by decide)
+
+/-- On the odd-`a` translate, the triple-root valuation fails.
+
+`tate_step7_double_root` gives `v(a₂² - 3 a₄) = 2` from `IsINStar 2`.
+The triple-root test is `v ≥ 3`. Steps 8–10 would call that branch
+IV*, III*, and II*. Those symbols are not a conclusion of this lemma.
+-/
+theorem tate_exit_not_triple_root_of_a_odd (E : FreyCurve4413)
+    (hodd : E.c.natAbs % 2 = 1) (ha : E.a.natAbs % 2 = 1) :
+    vPi (GaussInt.sub (GaussInt.mul (a2AfterPi E) (a2AfterPi E))
+        (GaussInt.smul 3 (a4AfterPi E))) = 2 ∧
+      ¬ TateExitTripleRoot (a2AfterPi E) (a4AfterPi E) := by
+  have hv := tate_step7_double_root (a_odd_IsINStar E hodd ha)
+  exact ⟨hv, not_TateExitTripleRoot_of_eq_two hv⟩
+
+/-- On the even-`a` translate, the triple-root valuation fails.
+
+`tate_step7_double_root` gives `v(a₂² - 3 a₄) = 2` from `IsINStar 4`.
+The triple-root test is `v ≥ 3`. Steps 8–10 would call that branch
+IV*, III*, and II*. Those symbols are not a conclusion of this lemma.
+-/
+theorem tate_exit_not_triple_root_of_a_even (E : FreyCurve4413)
+    (hodd : E.c.natAbs % 2 = 1) (ha : E.a.natAbs % 2 = 0) :
+    vPi (GaussInt.sub (GaussInt.mul (a2AfterPiThenPiSq E) (a2AfterPiThenPiSq E))
+        (GaussInt.smul 3 (a4AfterPiThenPiSq E))) = 2 ∧
+      ¬ TateExitTripleRoot (a2AfterPiThenPiSq E) (a4AfterPiThenPiSq E) := by
+  have hv := tate_step7_double_root (even_a_IsINStar E hodd ha)
+  exact ⟨hv, not_TateExitTripleRoot_of_eq_two hv⟩
+
+/-- Kodaira type `I_n*` of the translated model of `E` at `π`.
+
+There is no body. `n = 2` is the odd-`a` row and `n = 4` is the even-`a`
+row. The exit tests do not produce a term. This is not the component
+count `n + 5`.
+-/
+opaque KodairaInStar (n : ℕ) (E : FreyCurve4413) : Prop
+
+/-- The exit tests do not yield Kodaira type `I_n*`.
+
+Dokchitser–Dokchitser, arXiv:1209.1414, Theorem 1, sends a minimal model
+with `v(d) > 6` and `v(a₂² - 3 a₄) = 2` to type `I_n*` for some `n > 0`.
+Proposition 2 recovers even `n` from `v(d) = n + 6`. On these two rows
+the antecedents are proved: `IsINStar`, `v(d) = 8` or `10`, and the three
+exits `tate_exit_not_II_IV_*`, `tate_exit_not_I0Star_*`, and
+`tate_exit_not_triple_root_*`. The implication to `KodairaInStar` is this
+proposition. Step 4, type III (`π³ ∤ b₈`), is not an antecedent.
+`components_n_plus_five_open` is the component count, not this symbol.
+-/
+def kodaira_in_star_of_tate_exits_open : Prop :=
+  ∀ E : FreyCurve4413, qiLocalMinimalAtPi E →
+    (IsINStar 2 GaussInt.zero (a2AfterPi E) a3AfterPiSq (a4AfterPi E)
+        (a6AfterPiSq E) (b6AfterPiSq E) (quadDiscAfterPiSq E) →
+      vPi (cubicDisc (a2AfterPi E) (a4AfterPi E) (a6AfterPiSq E)) = 8 →
+      ¬ TateExitII (a6AfterPiSq E) →
+      ¬ TateExitIV (b6AfterPiSq E) →
+      ¬ TateExitI0Star (cubicDisc (a2AfterPi E) (a4AfterPi E) (a6AfterPiSq E)) →
+      ¬ TateExitTripleRoot (a2AfterPi E) (a4AfterPi E) →
+      KodairaInStar 2 E) ∧
+    (IsINStar 4 GaussInt.zero (a2AfterPiThenPiSq E) GaussInt.zero
+        (a4AfterPiThenPiSq E) (a6AfterPiThenPiSq E) (b6AfterPiThenPiSq E)
+        (quadDiscAfterPiThenPiSq E) →
+      vPi (cubicDisc (a2AfterPiThenPiSq E) (a4AfterPiThenPiSq E)
+          (a6AfterPiThenPiSq E)) = 10 →
+      ¬ TateExitII (a6AfterPiThenPiSq E) →
+      ¬ TateExitIV (b6AfterPiThenPiSq E) →
+      ¬ TateExitI0Star (cubicDisc (a2AfterPiThenPiSq E) (a4AfterPiThenPiSq E)
+          (a6AfterPiThenPiSq E)) →
+      ¬ TateExitTripleRoot (a2AfterPiThenPiSq E) (a4AfterPiThenPiSq E) →
+      KodairaInStar 4 E)
+
 /-- Ogg's numbers if the special fiber had `m = n + 5` components and `v(Δ) = 18`.
 
 `18 - (4 + 5) + 1 = 10` and `18 - (2 + 5) + 1 = 12`, the same values as
@@ -6239,10 +6446,14 @@ theorem ogg_numbers_of_coprime (E : FreyCurve4413)
 
 /-- Open: a minimal model whose `u = 1` translate satisfies `IsINStar n` has `n + 5` components.
 
-The blow-up sequence of Tate's algorithm Steps 3–6 and the component count
-of the Néron special fiber are not formalized. `tate_step7_double_root` is
-only `v(a₂² - 3 a₄) = 2`. The discriminant hypothesis says the row is a
-`u = 1` model of `E`. This proposition is not a theorem and not an axiom.
+The exit tests are `tate_exit_not_II_IV_of_a_odd`,
+`tate_exit_not_I0Star_of_a_odd`, `tate_exit_not_triple_root_of_a_odd`, and
+the three even-`a` twins. They do not produce a Kodaira symbol.
+`kodaira_in_star_of_tate_exits_open` is that missing implication.
+The component count of the Néron special fiber is still this proposition.
+`tate_step7_double_root` is only `v(a₂² - 3 a₄) = 2`. The discriminant
+hypothesis says the row is a `u = 1` model of `E`. This proposition is not
+a theorem and not an axiom.
 -/
 def components_n_plus_five_open : Prop :=
   ∀ (E : FreyCurve4413) (n : ℕ) (a1 a2 a3 a4 a6 b6 D : GaussInt),
