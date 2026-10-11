@@ -107,9 +107,9 @@ discriminant. An integral model would have to satisfy those conditions, so
 for odd `c` this is `minimalAt2_of_c_odd`. `not_minimal_even_c` is the
 curve `(8, 8, 2)`: `u = π`, `r = s = t = 0` lowers `Δ`. The conductor
 exponent does not follow. `IsINStar` is Dokchitser's numerical bounds for
-even `n`. `SwanAtPi` is sealed and is not proved to vanish. `(π)^10 = (32)`
+even `n`. `FTameAtPi` and `SwanAtPi` are sealed. `(π)^10 = (32)`
 does not set Ribet's `n`.
-`ConductorExponentAtPrimeAbove2` stays opaque, and `h_n_eq` stays on the axiom.
+`ConductorExponentAtPrimeAbove2` is their sum, and `h_n_eq` stays on the axiom.
 -/
 def MinimalModelAt2 (E : FreyCurve4413) : Prop :=
   FreyCurve4413.qiLocalMinimalAtPi E
@@ -140,10 +140,14 @@ theorem not_minimal_even_c :
 
 /-- Conductor exponent of `E` at the prime of `ℤ[√-1]` above `2`.
 
-`2` ramifies in `ℚ(√-1)`. The body is sealed, so this is not the integer
-`0` and it is not proved to lie in `{10, 12}`.
+`2` ramifies in `ℚ(√-1)`. The exponent is the sum of the tame part and the
+Swan conductor. Both summands are sealed, so the sum is not a numeral and
+it is not proved to lie in `{10, 12}`. `ogg_tame_of_INStar_discriminant`
+is `2` when `v(Δ) = n + 6`. For odd `c`, `v_π(Δ) = 18` is not `n + 6` for
+`n = 2` or `n = 4`.
 -/
-opaque ConductorExponentAtPrimeAbove2 (E : FreyCurve4413) : ℕ := 0
+def ConductorExponentAtPrimeAbove2 (E : FreyCurve4413) : ℕ :=
+  FreyCurve4413.FTameAtPi E + FreyCurve4413.SwanAtPi E
 
 /-- The exponent lies in `{10, 12}`, as in Pacetti's Lemma 2.8(2). -/
 def ExponentIn1012 (e : ℕ) : Prop :=
@@ -162,7 +166,8 @@ integral. `pi_scaling_c_invariants_hold` is the comparison `4 ≤ 10` and
 `16 a`. A translation leaves `c₄`, `c₆`, and `Δ` unchanged. The sufficient
 minimality test is `v(c₄) < 4` or `v(Δ) < 12`; neither inequality holds.
 `MinimalModelAt2` is `qiLocalMinimalAtPi`. For odd `c` it is
-`minimalAt2_of_c_odd`. The exponent stays opaque. The test
+`minimalAt2_of_c_odd`. `ConductorExponentAtPrimeAbove2` is
+`FTameAtPi + SwanAtPi`, and both summands are sealed. The test
 `4 ∤ 10` does not prove minimality: scaling by `π` uses `4 ≤ 10`, which
 holds. After the translation `x ↦ x + π`, `translated_a4_splits_on_trivial_curves`
 gives `v_π(a₄') = 3` on `(1, 0, 1)` and `v_π(a₄') = 6` on `(0, 1, 1)`,
@@ -198,7 +203,10 @@ inputs for `n = 4`. They are not a wild part and not `f = 10`.
 `a_odd_dokchitser_n2_inputs` meets the numerical inputs for `n = 2`,
 including `v_π(b₆) = 8` and `v_π(D) = 6`. Dokchitser's proposition is
 not formalized, and the wild part is not proved to vanish. Ogg's formula
-is the tame conductor. The wild part at `π` is this proposition.
+is the tame conductor. On type `I_n*` it uses `v(Δ) = n + 6` and equals `2`.
+`v_π(Δ) = 18` is not that valuation for `n = 2` or `n = 4`.
+`swan_vanishes_open` is the unproved claim that `SwanAtPi` is `0`. This
+proposition is the unproved claim that the sum lies in `{10, 12}`.
 `no_qi_integral_change_of_c_odd` is the same integrality split over `ℚ(i)`:
 `v_π(a₂) ≥ 4`, so `v_π(s) = -1` still occurs, and a `π`-unit denominator is
 not in `ℤ[i]`. `minimalAt2_of_c_odd` is that split: for odd `c`,
@@ -216,13 +224,19 @@ That disjunction is stored on `RibetLevel` as part of the axiom's
 conclusion. `thirtyTwo_dvd_of_tate_bound` turns the disjunction into
 `32 ∣ n` and does not use this proposition.
 On a coprime pair, `minimalAt2_of_coprime` is `MinimalModelAt2`, so this
-statement does not take minimality as a hypothesis. It asks for the exponent
-when `gcd(|a|, |b|) = 1`. The exponent stays opaque. `(8, 8, 2)` fails the
-coprimality hypothesis and stays a non-minimal even-`c` curve.
+statement does not take minimality as a hypothesis. It asks whether
+`FTameAtPi + SwanAtPi` lies in `{10, 12}` when `gcd(|a|, |b|) = 1`.
+`frey_delta_not_INStar_discriminant` is `v_π(Δ) = 18` for odd `c`, while
+type `I_n*` has `v(Δ) = n + 6`. `ogg_tame_of_INStar_discriminant` is `2`
+on that discriminant. `arith_eighteen_minus_four_minus_n` is the arithmetic
+`18 - 4 - 4 = 10` and `18 - 4 - 2 = 12`; it is not `FTameAtPi`.
+`swan_vanishes_open` is not a theorem, and this statement does not follow
+from it. `(8, 8, 2)` fails the coprimality hypothesis and stays a
+non-minimal even-`c` curve. `h_n_eq` stays on the axiom.
 -/
 def pacetti_2_8_open : Prop :=
   ∀ E : FreyCurve4413, E.a.natAbs.gcd E.b.natAbs = 1 →
-    ExponentIn1012 (ConductorExponentAtPrimeAbove2 E)
+    ExponentIn1012 (FreyCurve4413.FTameAtPi E + FreyCurve4413.SwanAtPi E)
 
 /-- Minimal model, Pacetti's exponent in `{10, 12}`, and `n = 32 ∨ n = 64`.
 

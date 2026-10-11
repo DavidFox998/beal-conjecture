@@ -117,8 +117,10 @@ part, and not the conductor exponent. When `a` is odd, the further shift
 with `quadDiscAfterPiSq_p2_exact_six` give `v_π(b₆) = 8` and `v_π(D) = 6`.
 Those are the numerical inputs of Dokchitser's criterion for type `I₂*`.
 The criterion is not formalized, and neither is a wild part. They are not
-the conductor exponent. Ogg's formula is the tame conductor; the wild part
-at `π` is `pacetti_2_8_open`.
+the conductor exponent. Ogg's formula is the tame conductor. On type `I_n*`
+it uses `v(Δ) = n + 6` and equals `2`. `swan_vanishes_open` is the unproved
+claim that the Swan conductor vanishes, and `pacetti_2_8_open` is the
+unproved claim that the sum of the two sealed parts lies in `{10, 12}`.
 `no_qi_integral_change_of_c_odd` quantifies over `ℚ(i)`, not only `ℤ[i]`.
 `v_π(a₂) ≥ 4`, so `v_π(s) = -1` is a real case, and a denominator coprime to
 `π` is not an element of `ℤ[i]`. For odd `c`, `v_π(u) ≥ 2` makes
@@ -129,8 +131,12 @@ this predicate. For odd `c` it is a theorem. `minimal_even_c_open` is false:
 `8⁴ + 8⁴ = 2¹³`, and `u = π`, `r = s = t = 0` is integral at `π` and lowers
 `Δ`. `c_odd_of_coprime` is `gcd(|a|, |b|) = 1 → c` odd, so a primitive pair
 is already covered by the odd-`c` minimality theorem. `(8, 8, 2)` is not
-coprime. `IsINStar` records Dokchitser's numerical bounds for even `n`. `SwanAtPi`
-is sealed. Neither one is a Kodaira symbol or a value of `f`.
+coprime. `IsINStar` records Dokchitser's numerical bounds for even `n`. Those
+bounds constrain `v_π(D)`, not `v_π(Δ)`. `FTameAtPi` and `SwanAtPi` are
+sealed. Their sum is the conductor exponent, and neither summand is a
+numeral. `swan_vanishes_open` is not a theorem. On a minimal model of type
+`I_n*` one has `v(Δ) = n + 6`, and Ogg's tame value is then `2`. For odd
+`c`, `v_π(Δ) = 18`, which is not `2 + 6` and not `4 + 6`.
 `pi_ten_principal` is `(-√(-1))^5 · π^10 = 32` with norm `2^10`, and
 `pi_twelve_principal` is the same for `64` and `2^12`. The principal
 ideals agree. That equality does not produce `n = 32 ∨ n = 64`. The
@@ -1924,7 +1930,8 @@ theorem a4_p2_exact_two (E : FreyCurve4413) (hodd : E.c.natAbs % 2 = 1) :
 A model is minimal at `π` if `v_π(c₄) < 4` or `v_π(Δ) < 12`. The Frey
 valuations are `10` and `18`. The bounds `12`, `18`, and `24` are the
 divisibilities for scaling by `π³`. `v_π(c₄) = 10` does not give
-`MinimalModelAt2`, and `ConductorExponentAtPrimeAbove2` stays opaque.
+`MinimalModelAt2`. `FTameAtPi` and `SwanAtPi` stay sealed, so their sum is
+not a numeral.
 -/
 theorem silverman_test_does_not_apply (E : FreyCurve4413) (hodd : E.c.natAbs % 2 = 1) :
     P2Exact (c4_Frey E.a E.b) 10 ∧ P2Exact (deltaGauss E) 18 ∧
@@ -2446,8 +2453,8 @@ different valuations of the translated `a₄`.
 Both have odd `c`. After `x ↦ x + π`, `v_π(a₄') = 3` on `(1, 0, 1)` and
 `v_π(a₄') = 6` on `(0, 1, 1)`. `v_π(a₆')` is `4` and `5`. A single
 `decide` on `v_π(c₄) = 10` and `v_π(Δ) = 18` does not choose one
-conductor exponent. `MinimalModelAt2` and
-`ConductorExponentAtPrimeAbove2` stay opaque.
+conductor exponent. `MinimalModelAt2` is `qiLocalMinimalAtPi`. `FTameAtPi`
+and `SwanAtPi` stay sealed.
 -/
 theorem translated_a4_splits_on_trivial_curves :
     P2Exact (c4_Frey trivial.a trivial.b) 10 ∧
@@ -2673,7 +2680,8 @@ Dokchitser's bounds for a minimal model of type `I₂*` ask for
 `v(a₂) = 1`, `v(a₃) ≥ 3`, `v(a₄) ≥ 3`, and `v(a₆) ≥ 5`. These
 valuations meet the bounds. The converse, Tate's exit
 `f = v(Δ) - 4 - n`, and the wild Swan conductor are not theorems.
-`ConductorExponentAtPrimeAbove2` stays opaque. Pacetti's Lemma 2.8(2)
+Type `I₂*` has `v(Δ) = 8`, and this model has `v_π(Δ) = 18`. `FTameAtPi`
+and `SwanAtPi` stay sealed. Pacetti's Lemma 2.8(2)
 prints type `I₂*` and exponent `12` for the even-`b` branch, which is
 this `a`-odd case, and type `I₄*` and exponent `10` for odd `b`.
 The printed value `v(a₄') = 4` on that second branch does not hold:
@@ -3354,7 +3362,8 @@ for `n = 2`.
 The inputs are `v(a₂) = 1`, `v(a₃) = 4 ≥ 3`, `v(a₄) = 3`, `v(a₆) = 5`,
 `v(b₆) = 8 ≥ 5`, and `v(D) = 6`. Dokchitser's proposition is not
 formalized. These valuations do not produce a Kodaira symbol, a conductor
-exponent, or a wild part. `ConductorExponentAtPrimeAbove2` stays opaque.
+exponent, or a wild part. `FTameAtPi` and `SwanAtPi` stay sealed. The
+proved value `v_π(D) = 6` is not `v_π(Δ) = 18`.
 -/
 theorem piDivides_add_left {a b : GaussInt} (hb : piDivides b) :
     piDivides (GaussInt.add a b) ↔ piDivides a := by
@@ -4081,7 +4090,10 @@ theorem valAtLeast_of_P2Exact {z : GaussInt} {m k : ℕ}
 `D = a₄² - 4 a₂ a₆`. Zero has infinite valuation, so it meets a lower bound.
 For `n = 2` the bounds are `3, 3, 5, 5` and `v(D) = 6`. For `n = 4` they are
 `4, 4, 7, 7` and `v(D) = 8`. These inequalities are not a Kodaira symbol.
-`SwanAtPi` is not part of this predicate, and `f` is not computed.
+They do not mention the Weierstrass discriminant. A minimal model of type
+`I_n*` has `v(Δ) = n + 6`, and `v_π(Δ) = 18` is not that valuation for
+`n = 2` or `n = 4`. `SwanAtPi` is not part of this predicate, and `f` is
+not computed.
 -/
 def IsINStar (n : ℕ) (a1 a2 a3 a4 a6 b6 D : GaussInt) : Prop :=
   0 < n ∧ n % 2 = 0 ∧
@@ -4096,9 +4108,19 @@ def IsINStar (n : ℕ) (a1 a2 a3 a4 a6 b6 D : GaussInt) : Prop :=
 /-- Swan conductor at `π`.
 
 The equation is hidden, so this is not the integer `0`. Nothing proves that
-it vanishes. The tame expression `v(Δ) - 4 - n` is not stated.
+it vanishes. `swan_vanishes_open` asks for that vanishing on a coprime curve
+and is not a theorem: the argument that the `3`-division field is tamely
+ramified at `π`, using `ℓ = 3 ≠ p = 2`, is not formalized.
 -/
 opaque SwanAtPi (E : FreyCurve4413) : ℕ := 0
+
+/-- Tame part of the conductor exponent at `π`.
+
+The equation is hidden. This is not defined to be `v_π(Δ) - 4 - n`, and it
+is not `10` or `12`. `ConductorExponentAtPrimeAbove2` is this value plus
+`SwanAtPi`. `ogg_tame_of_INStar_discriminant` is `2` when `v(Δ) = n + 6`.
+-/
+opaque FTameAtPi (E : FreyCurve4413) : ℕ := 0
 
 theorem a_odd_IsINStar (E : FreyCurve4413)
     (hodd : E.c.natAbs % 2 = 1) (ha : E.a.natAbs % 2 = 1) :
@@ -5505,5 +5527,77 @@ theorem c_odd_of_coprime (E : FreyCurve4413)
     have hle : 2 ≤ 1 := Nat.le_of_dvd (by decide) hdg
     omega
   · exact hone
+
+/-- Ogg's tame conductor on a genuine minimal model of type `I_n*`.
+
+Silverman's table gives `v(Δ) = n + 6` and `m = n + 5` components, so
+`v(Δ) - m + 1 = (n + 6) - 4 - n = 2`. This identity uses the discriminant
+valuation `n + 6`. It is not a value of `FTameAtPi`.
+-/
+theorem ogg_tame_of_INStar_discriminant (n : ℕ) : (n + 6) - 4 - n = 2 := by
+  have h : n + 6 = (n + 2) + 4 := by omega
+  rw [h, Nat.add_sub_cancel, Nat.add_sub_cancel_left]
+
+/-- The subtractions `18 - 4 - 4` and `18 - 4 - 2`.
+
+These are equalities in `ℕ`. They are not values of `FTameAtPi`. Ogg's
+formula on type `I_n*` uses `v(Δ) = n + 6` and equals `2`.
+-/
+theorem arith_eighteen_minus_four_minus_n :
+    18 - 4 - 4 = 10 ∧ 18 - 4 - 2 = 12 := by
+  decide
+
+/-- When `c` is odd, `v_π(Δ) = 18` is not the discriminant of type `I₂*` or `I₄*`.
+
+Type `I_n*` has `v(Δ) = n + 6`. For `n = 2` that is `8`, and for `n = 4`
+that is `10`. The model is minimal at `π` by `qiLocalMinimalAtPi_of_c_odd`,
+so `18` is the valuation of a minimal discriminant.
+-/
+theorem frey_delta_not_INStar_discriminant (E : FreyCurve4413)
+    (hodd : E.c.natAbs % 2 = 1) :
+    vPi (deltaGauss E) = 18 ∧ 18 ≠ 2 + 6 ∧ 18 ≠ 4 + 6 :=
+  ⟨vPi_delta E hodd, by decide, by decide⟩
+
+/-- A coprime pair has odd `c`, so the same discriminant obstruction applies. -/
+theorem frey_delta_not_INStar_discriminant_of_coprime (E : FreyCurve4413)
+    (hcop : E.a.natAbs.gcd E.b.natAbs = 1) :
+    vPi (deltaGauss E) = 18 ∧ 18 ≠ 2 + 6 ∧ 18 ≠ 4 + 6 :=
+  frey_delta_not_INStar_discriminant E (c_odd_of_coprime E hcop)
+
+/-- The even-`a` shift has `v_π(D) = 8` while `v_π(Δ) = 18`.
+
+`IsINStar 4` records `v(D) = n + 4`. Dokchitser's comparison of that
+valuation with `v(Δ) = n + 6` would ask for `8 + 2 = 10`. The Weierstrass
+discriminant of the Frey model has valuation `18`.
+-/
+theorem even_a_disc_mismatch (E : FreyCurve4413)
+    (hodd : E.c.natAbs % 2 = 1) (ha : E.a.natAbs % 2 = 0) :
+    P2Exact (quadDiscAfterPiThenPiSq E) 8 ∧
+      vPi (deltaGauss E) = 18 ∧ 8 + 2 ≠ 18 := by
+  rcases even_a_dokchitser_n4_inputs E hodd ha with ⟨_, _, _, _, hD⟩
+  exact ⟨hD, vPi_delta E hodd, by decide⟩
+
+/-- The odd-`a` shift has `v_π(D) = 6` while `v_π(Δ) = 18`.
+
+`IsINStar 2` records `v(D) = n + 4`. The comparison `v(Δ) = v(D) + 2`
+would give `8`, and type `I₂*` asks for `v(Δ) = 8`. The Frey discriminant
+has valuation `18`.
+-/
+theorem a_odd_disc_mismatch (E : FreyCurve4413)
+    (hodd : E.c.natAbs % 2 = 1) (ha : E.a.natAbs % 2 = 1) :
+    P2Exact (quadDiscAfterPiSq E) 6 ∧
+      vPi (deltaGauss E) = 18 ∧ 6 + 2 ≠ 18 := by
+  rcases a_odd_dokchitser_n2_inputs E hodd ha with ⟨_, _, _, _, _, hD⟩
+  exact ⟨hD, vPi_delta E hodd, by decide⟩
+
+/-- Open: the Swan conductor vanishes on a coprime Frey curve.
+
+This needs the argument that the `3`-division field is tamely ramified at
+`π`, using `ℓ = 3 ≠ p = 2`. It is not a theorem and not an axiom. `SwanAtPi`
+stays sealed, and this proposition is not used to place
+`FTameAtPi + SwanAtPi` in `{10, 12}`.
+-/
+def swan_vanishes_open : Prop :=
+  ∀ E : FreyCurve4413, E.a.natAbs.gcd E.b.natAbs = 1 → SwanAtPi E = 0
 
 end FreyCurve4413

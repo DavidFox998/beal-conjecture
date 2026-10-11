@@ -153,8 +153,9 @@ is `ConductorShape`: the same alternative for `N : ℕ` and `|c|`.
 `thirtyTwo_dvd_of_eq` turns it into `32 ∣ n`.
 `n_dvd_32_or_64_of_prime_to_c` removes those primes and concludes `n ∣ 32`
 or `n ∣ 64`. The positive divisors of `64` are `1, 2, 4, 8, 16, 32, 64`.
-`pacetti_2_8_open` is the open statement that a minimal model has conductor
-exponent `10` or `12` at the prime above `2`. `TateAt2LowerBound E n`
+`pacetti_2_8_open` is the open statement that, on a coprime curve,
+`FTameAtPi + SwanAtPi` lies in `{10, 12}`. Both summands are sealed.
+`TateAt2LowerBound E n`
 packages that exponent with the conjunct `n = 32 ∨ n = 64`. It is not an
 axiom and not a theorem. `thirtyTwo_dvd_of_tate_bound` uses only the
 disjunction. `thirtyTwo_dvd_of_conductor_shape` proves `32 ∣ N` from the
@@ -204,10 +205,15 @@ is a separate case, and a denominator coprime to `π` is not in `ℤ[i]`.
 fails one of `a₁`, `a₂`, `a₃`, `a₄`. `MinimalModelAt2` is that local
 condition. For odd `c` it is `minimalAt2_of_c_odd`. `c_odd_of_coprime` is
 `gcd(|a|, |b|) = 1 → c` odd, and `minimalAt2_of_coprime` is minimality for
-that pair. `pacetti_2_8_open` asks for the exponent on coprime curves; the
-exponent stays opaque. `not_minimal_even_c` is the curve `(8, 8, 2)`, where
+that pair. `pacetti_2_8_open` asks whether `FTameAtPi + SwanAtPi` lies in
+`{10, 12}` on coprime curves. Both summands stay sealed. For odd `c`,
+`v_π(Δ) = 18`, while type `I_n*` has `v(Δ) = n + 6`. Ogg's tame value is
+then `2`, and `18 - 4 - n` is not that formula. `swan_vanishes_open` is not
+a theorem. `not_minimal_even_c` is the curve `(8, 8, 2)`, where
 `u = π` and `r = s = t = 0` lowers `Δ`, and `gcd(8, 8) = 8`.
-`IsINStar` is Dokchitser's numerical bounds for even `n`. `SwanAtPi` is
+`IsINStar` is Dokchitser's numerical bounds for even `n`. It records
+`v_π(D)`, not `v_π(Δ)`. The even-`a` shift has `v_π(D) = 8` and the odd-`a`
+shift has `v_π(D) = 6`, against `v_π(Δ) = 18`. `SwanAtPi` is
 sealed and is not proved to vanish. `(π)^10 = (32)` does not give `n`.
 `(-√(-1))^5 · π^10 = 32` with norm `2^10`, and `(-√(-1))^6 · π^12 = 64`
 with norm `2^12`. The principal ideals agree. That equality does not give
