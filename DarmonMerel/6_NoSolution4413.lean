@@ -105,18 +105,20 @@ def no_newform_32_64_open : Prop :=
 /-- No nontrivial coprime solution with `c > 0`, if the frontier holds.
 
 The open propositions are `components_n_plus_five_open`,
-`serre_two_level_open`, `odd_level_one_open`, `tate_param_13_dvd_of_coprime`,
-and `no_newform_32_64_open`. `frey_qcurve_modular` and
-`ribet_level_lowering_4413` are the two axioms. `hIrr` is a term of
-`RhoE13Open`. Nothing in the repository produces one, and the Ribet axiom
-does not apply without it.
+`serre_two_level_open`, `odd_level_one_open`, and
+`no_newform_32_64_open`. `tate_param_13_dvd_of_coprime` is not a
+hypothesis. `inertia_trivial_of_tate_13_open` still carries the
+divisibility `13 ∣ tateParameter` in its own statement.
+`frey_qcurve_modular` and `ribet_level_lowering_4413` are the two axioms.
+`hIrr` is a term of `RhoE13Open`. Nothing in the repository produces one,
+and the Ribet axiom does not apply without it.
 
 `pacetti_of_components hcomp` is `pacetti_2_8_open`. The conductor shape
 `N = 32 |c|²` is `FreyConductorDivides`, not a proof that `N` is the
 conductor. `h_n_eq_of_tate` is the product of the sealed level functions.
 The case split on that product does not identify it with `RibetLevel.n`.
 Both branches are closed by `no_newform_32_64_open` applied to the
-axiom's package. `htate` is assumed and is not an input to that `False`.
+axiom's package.
 
 `(1, 0, 1)` and `(0, 1, 1)` satisfy `gcd(|a|, |b|) = 1` and `c > 0` and
 are solutions. `a ≠ 0` and `b ≠ 0` keep them out. `(8, 8, 2)` is
@@ -126,7 +128,6 @@ theorem no_solution_4413_of_frontier
     (hcomp : FreyCurve4413.components_n_plus_five_open)
     (hserre : serre_two_level_open)
     (hodd : odd_level_one_open)
-    (htate : tate_param_13_dvd_of_coprime)
     (hnew : no_newform_32_64_open)
     (a b c : ℤ)
     (ha : a ≠ 0) (hb : b ≠ 0)
@@ -137,7 +138,6 @@ theorem no_solution_4413_of_frontier
     ¬ (a ^ 4 + b ^ 4 = c ^ 13) := by
   intro heq
   let E : FreyCurve4413 := FreyCurve4413.mk' a b c heq
-  have _hTate : tate_param_13_dvd_of_coprime := htate
   have hMod : Modular E := frey_qcurve_modular a b c E
   have hPac : pacetti_2_8_open := pacetti_of_components hcomp
   let N : ℕ := 32 * c.natAbs ^ 2

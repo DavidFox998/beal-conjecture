@@ -17,17 +17,18 @@ solutions with `gcd = 1` and `c > 0`, so the negation does not quantify
 over `a = 0` or `b = 0`. `(8, 8, 2)` fails `curve_8_8_2_not_coprime`
 (`capstone_excludes_curve_8_8_2`, no axioms).
 
-| Hypothesis | Label |
+| Hypothesis | Where the proof uses it |
 | --- | --- |
-| `components_n_plus_five_open` | OPEN PROP |
-| `serre_two_level_open` | OPEN PROP |
-| `odd_level_one_open` | OPEN PROP |
-| `tate_param_13_dvd_of_coprime` | OPEN PROP, assumed and not used to obtain `False` |
-| `no_newform_32_64_open` | OPEN PROP, the missing elimination |
-| `frey_qcurve_modular` | AXIOM, a dependency, not a parameter |
-| `ribet_level_lowering_4413` | AXIOM, a dependency, not a parameter |
-| `RhoE13Open (FreyCurve4413.mk' a b c h)` | SEALED input. The Ribet axiom takes it. Nothing produces a term. `rhoE13_open_of_psi` does not discharge it. |
-| `a ≠ 0`, `b ≠ 0`, `gcd(\|a\|, \|b\|) = 1`, `c > 0` | side conditions. Coprimality and the two CM solutions are proved. |
+| `components_n_plus_five_open` | `pacetti_of_components hcomp`; `h_n_eq_of_tate hcomp hserre hodd` |
+| `serre_two_level_open` | `h_n_eq_of_tate` |
+| `odd_level_one_open` | `h_n_eq_of_tate` |
+| `no_newform_32_64_open` | both branches after `rcases h_n_eq_of_tate` |
+| `frey_qcurve_modular` | AXIOM. `have hMod := frey_qcurve_modular a b c E`. Not a parameter. |
+| `ribet_level_lowering_4413` | AXIOM. `ribetLevelOfAxiom` builds the `RibetLevel`. Not a parameter. |
+| `RhoE13Open (FreyCurve4413.mk' a b c h)` | SEALED input. `hIrr heq` is the argument of `ribetLevelOfAxiom`. Nothing produces a term. `rhoE13_open_of_psi` does not discharge it. |
+| `a ≠ 0`, `b ≠ 0`, `gcd(\|a\|, \|b\|) = 1`, `c > 0` | `hnew` takes all four. `h_n_eq_of_tate` also takes the gcd. |
+
+`tate_param_13_dvd_of_coprime` is not a hypothesis of this theorem. It stays in the tree. `inertia_trivial_of_tate_13_open` is the implication whose antecedent is `13 ∣ tateParameter`. That definition does not mention the name `tate_param_13_dvd_of_coprime`, and no theorem applies the name.
 
 `#print axioms no_solution_4413_of_frontier`:
 
@@ -105,36 +106,69 @@ axiom ribet_level_lowering_4413 : RibetLowering
 
 `GkResidualIso` is the statement `modular_residual_13_open` proves. It is the `𝔽₉` congruence `(13 : ℤ) ∣ freyTrace3 (mod3 a) (mod3 b) - (-6)` for a coprime curve with `Modular E` and a `RibetLevel`, together with the antecedents `rho_E_p E = rho_E_p_twisted E = unresolved`. It is not under `hCond`, `hIrr`, or `hPacetti`. Those three stay on `level`. `RibetLevel` itself does not store the isomorphism: `Newform` has no fields, `LevelLowered` is opaque, and `rho_E_p` is `.unresolved`. The axiom claims the congruence for every such package, which is the statement the descent applies. `modular_residual_13_open` is `ribet_level_lowering_4413.gkResidual`.
 
-Four open propositions. They are `def`s of type `Prop`, not axioms and not `sorry`.
+Four open propositions are hypotheses of `no_solution_4413_of_frontier`. They are `def`s of type `Prop`, not axioms and not `sorry`. Each one is applied.
 
-| Proposition | Statement that is not a theorem |
+| Proposition | Where it is used |
 | --- | --- |
-| `components_n_plus_five_open` | On a minimal `u = 1` translate in the `IsINStar n` range, `NeronSpecialFiberComponents E = n + 5`. |
-| `serre_two_level_open` | If the Artin exponent is `10`, the sealed `twoPrimaryLevel` is `32`; if it is `12`, the level is `64`. |
-| `odd_level_one_open` | On a coprime curve, the sealed `OddPrimaryLevel` is `1`. |
-| `tate_param_13_dvd_of_coprime` | At each odd prime `p ∣ c`, `13` divides the sealed `tateParameter E p`. |
+| `components_n_plus_five_open` | `pacetti_of_components`, `h_n_eq_of_tate`, `swan_of_components`, `conductor_of_components`, `ogg_full_of_components`. |
+| `serre_two_level_open` | `h_n_eq_of_tate`, hence the capstone. |
+| `odd_level_one_open` | `h_n_eq_of_tate`, hence the capstone. |
+| `no_newform_32_64_open` | both branches of the capstone. `no_newform_32_64_of_qcurve` derives the proposition from `qcurve_extension_169_open`. The definition is not a theorem by itself. |
 
-`h_n_eq_of_tate` assumes the first three and concludes that the product of the two sealed level functions is `32` or `64`. The fourth proposition does not appear in that proof. It does not rewrite `OddPrimaryLevel`, and `odd_level_one_open` does not follow from it. A fifth open proposition, `no_newform_32_64_open`, is the missing elimination of a `RibetLevel`. It is used only by `no_solution_4413_of_frontier`. It is not proved.
+`tate_param_13_dvd_of_coprime` is a `def` of type `Prop`. It is not a capstone hypothesis. No theorem applies it. `inertia_trivial_of_tate_13_open` inlines the same divisibility as an antecedent and does not name it.
+
+`h_n_eq_of_tate` assumes the first three and concludes that the product of the two sealed level functions is `32` or `64`. It does not rewrite `OddPrimaryLevel`, and `odd_level_one_open` does not follow from the component count.
 
 Two further open propositions sit beside the sealed irreducibility predicate. They are not hypotheses of the capstone, and they do not produce a term of `RhoE13Open`.
 
 | Proposition | Statement that is not a theorem |
 | --- | --- |
-| `rhoE13_open_of_psi` | `Psi13HasNoQiRoot` and `ImageContainsSL2` imply `RhoE13Open`. The seal has no equation lemma, so the implication is not proved by unfolding. |
-| `GL2F13.dickson_13_open` | An `𝔽₁₃`-irreducible subgroup containing an element of order `13` contains `SL₂(𝔽₁₃)`. `normal_closure_contains_SL2` does not suffice: its conjugates live in the ambient group and do not move the fixed line inside an arbitrary subgroup. |
-| `steinberg_prime_13_open` | Some prime of multiplicative reduction has `13 ∤ tateParameter`. No witness is constructed. |
+| `rhoE13_open_of_psi` | DANGLING. `Psi13HasNoQiRoot` and `ImageContainsSL2` imply `RhoE13Open`. No theorem takes this proposition. The seal has no equation lemma. |
+| `GL2F13.dickson_13_open` | DANGLING. An `𝔽₁₃`-irreducible subgroup containing an element of order `13` contains `SL₂(𝔽₁₃)`. No theorem takes this proposition. `normal_closure_contains_SL2` does not assume it. |
+| `steinberg_prime_13_open` | ABANDONED. Some prime of multiplicative reduction has `13 ∤ tateParameter`. No witness, and no theorem takes the proposition. Strategy A does not assume it. |
 
-`#print axioms` does not list hypothesis propositions. The ledger records the kernel axioms. The hypotheses are in the theorem statements.
+`#print axioms` does not list hypothesis propositions. The ledger below is the output of a fresh run after the capstone prune. The hypotheses are in the theorem statements.
+
+## Frontier triage
+
+Ranks: **1** could fall in a session, **2** a theory project, **3** infrastructure on the scale of a library. Finite means a finite check. New theory means a theorem that is not a finite enumeration.
+
+The capstone's four open hypotheses, each applied:
+
+- **`components_n_plus_five_open`.** Rank **2**. The valuations, `IsINStar`, and `FTameAtPi = 2` are proved. The missing piece is the Néron component count `m = n + 5` for this Kodaira type. That is one local theorem, not a finite check, and it is not a general Néron-model library.
+- **`serre_two_level_open`.** Rank **3**. It identifies the sealed `twoPrimaryLevel` with `32` or `64`. The proof needs the Artin conductor of `ρ̄_{E,13}`. `rho_E_13` is the unresolved marker. This is not a computation.
+- **`odd_level_one_open`.** Rank **3**. Same conductor, at the odd primes. `nat_eq_one_of_prime_divisors_removed` is the arithmetic shape and is not applied, because the support of `OddPrimaryLevel` is not a theorem.
+- **`no_newform_32_64_open`.** Rank **2**, and it is not an independent gap. `no_newform_32_64_of_qcurve` is this proposition from `qcurve_extension_169_open` alone, together with the two axioms. The capstone still assumes the proposition rather than the extension.
+
+Off the capstone, still live:
+
+- **`qcurve_extension_169_open`.** Rank **2**. The `F_13` rescaling is a theorem of non-existence, and the trace value `-6` is proved to lie in `F_13`. What remains is a representation `G_ℚ → GL₂(𝔽₁₆₉)`. That is one cocycle-lifting theorem. `H²` is not formalized here, and Tate's theorem is not the thing to prove from scratch. It is not a finite check.
+- **`reducible_shape_13_open`.** Rank **3**. The shape `ρ̄^ss ≅ χ₁ ⊕ χ₂` needs a residual representation. The marker is `.unresolved`.
+- **`ray_class_mod_pi_open`.** Rank **3**. Ray class groups modulo powers of `π`, and class number `1` of `ℚ(i)`, are not theorems. This is class field theory.
+- **`inertia_trivial_of_tate_13_open`.** Rank **2** for the implication, **3** if the Tate parameter has to be built first. The statement is `13 ∣ tateParameter →` residual inertia trivial. The Kummer sequence and Tate uniformization are absent. It is a hypothesis of `reducible_shape_contradicts_omega`.
+- **`chars_unramified_above_13_open`.** Rank **2**. Finite flat of weight `2` would force inertial exponents `{0, 1}`, and those do not give order dividing `4`. The proposition asks for both cyclotomic exponents divisible by `3`. It is in tension with `det = ω`, which is ramified at `13` and is not a theorem here. It may be the wrong lemma.
+- **`tate_param_13_dvd_of_coprime`.** Rank **3**. Not a capstone hypothesis. No theorem applies the name. The claim is `13 ∣ tateParameter` at odd `p ∣ c`. Uniformization is the missing theory. Uneven splitting (`13 ∣ v_p(N(Δ))` versus `13 ∣ v_𝔭(Δ)`) is not even an open proposition: unique factorization in `ℤ[i]` is missing.
+- **`GL2F13.dickson_13_open`.** Rank **1**. This is the finite one. `GL₂(𝔽₁₃)` is finite. The obstruction is bookkeeping over subgroups, not a new theorem. DANGLING: nothing assumes it. The prior is right.
+- **`rhoE13_open_of_psi`.** Rank **2**, and it is a design problem downstream of `rho_E_13`, not a finite check. DANGLING. The sealed body of `RhoE13Open` is `True`. Removing `opaque` would make the implication trivial and would not be irreducibility. The prior is right.
+- **`Psi13HasNoQiRoot` and `psi13_no_Qi_root_Frey_OPEN`.** Rank **3**. No integral or rational root of the Frey `ψ₁₃`, a polynomial whose norm depends on `a` and `b`. Proved only on `y² = x³ - x`, which is not a Frey solution, and false for `(0, 0, 0)` in the unrestricted form. `rhoE13_open_of_psi` mentions the first name. The second is used only to record that failure.
+- **`FreyConductor_OPEN`.** Rank **3** for the real gap, which is Tate's algorithm. The proposition itself is the shape `N = 32 c² ∨ N = 64 c²`. The capstone inhabits `FreyConductorDivides` by choosing `N = 32 |c|²` and does not use this name. Theorems in `LevelLowering4413` do take it.
+- **`artin_exponent_of_characters_open`.** SUPERSEDED as a route to irreducibility. Rank **3** if anyone revived it: it splits an Artin conductor across two characters of a representation that does not exist here. Consumed by `character_sum_matches_pacetti` only.
+- **`frobenius_trace_sum_open`, `weil_bound_open`, `trace_outside_weil_open`.** SUPERSEDED. The order-12 argument replaced the Weil-bound elimination. `weil_bound_open` and `trace_outside_weil_open` have no consumer. `frobenius_trace_sum_open` occurs only inside the dangling `trace_outside_weil_open`. Do not spend a session here.
+- **`steinberg_prime_13_open`.** ABANDONED. Rank not applicable. Strategy A has no witness, the proposition has no consumer, and `tate_param_13_dvd_of_coprime` asks for the opposite divisibility. The classification theorems do not assume it.
+- **`swan_vanishes_open`.** WITHDRAWN. `swan_vanishes_contradicts_components` is `False` on `(1, 0, 1)` assuming the component count.
+- **`minimal_even_c_open`.** Refuted. `not_minimal_even_c_open` is `¬ minimal_even_c_open`, witnessed by `(8, 8, 2)`.
+- **`pacetti_2_8_open`.** Not an open hypothesis. `pacetti_of_components` proves it from `components_n_plus_five_open`.
+- **`qcurve_descent_13_open`.** Not an open hypothesis. `qcurve_descent_13_of_bridge` proves it from `qcurve_extension_169_open`.
 
 ## What would close each gap
 
 - **Components.** A formal Néron special fiber of the `u = 1` translate, with component count `m = n + 5`. That discharges `pacetti_2_8_open`, `swan_of_components` (`SwanAtPi = 12 - n`), and `conductor_of_components` (sum `10` or `12`). It does not identify Ribet's `n`.
 - **Serre 2-level.** A proof that the 2-primary part of the Serre conductor of `ρ̄_{E,13}` is `2^(f/2)` when `f = FTameAtPi + SwanAtPi` is even. The ideal norm `2^f` is a different integer (`1024` or `4096`).
-- **Tate parameter.** Tate uniformization at odd `ℓ ∣ c`: a parameter `q` with `v(q) = v(Δ)` on a minimal model, and `13 ∣ v(q)`. For `ℓ ≠ 13` that divisibility kills the Kummer class of `q` in `𝔽₁₃ˣ`. At `ℓ = 13` it is the input to finiteness of the group scheme. Neither uniformization nor the Kummer sequence is formalized. The proved input is the norm valuation, not this divisibility.
+- **Tate parameter.** Not a hypothesis of the capstone. Tate uniformization at odd `ℓ ∣ c`: a parameter `q` with `v(q) = v(Δ)` on a minimal model, and `13 ∣ v(q)`. For `ℓ ≠ 13` that divisibility kills the Kummer class of `q` in `𝔽₁₃ˣ`. At `ℓ = 13` it is the input to finiteness of the group scheme. Neither uniformization nor the Kummer sequence is formalized. The proved input is the norm valuation, not this divisibility. No theorem applies `tate_param_13_dvd_of_coprime`.
 - **Odd Serre level.** `OddPrimaryLevel E = 1`. The arithmetic lemma `nat_eq_one_of_prime_divisors_removed` needs two facts that are not theorems: every prime divisor of `OddPrimaryLevel` is an odd prime divisor of `c`, and `13 ∣ tateParameter` removes that prime. `odd_conductor_empty` removes primes dividing `d = 1` only.
 - **Uneven splitting**, unnamed. It is not a named open proposition. It is why `multiplicative_at_dvd_c` does not prove `tate_param_13_dvd_of_coprime`. See below. Closing it is a theorem that `13 ∣ v_𝔭(Δ)` at each Gaussian prime above `p ∣ c`. That still would not be a Tate parameter.
 - **`no_newform_32_64_open`.** Darmon–Merel Lemma 8.2. The existing Mazur products vanish, and the winding nonvanishing does not produce `False`. The extension residue at `𝔭₃` is `-6 ≡ 7 (mod 13)`. A linear rescaling of the intertwiner over `𝔽₁₃` is impossible (`f13_linear_lift_scalar_fails`). The same rescaling exists over `𝔽₁₆₉`, and the trace value `-6` lies in `𝔽₁₃`. `qcurve_extension_169_open` is the unformalized `GL₂(𝔽₁₆₉)` lift. `qcurve_extension_13_open` is a theorem on that open. `modular_residual_13_open` is proved: it is `ribet_level_lowering_4413.gkResidual`. `no_newform_32_64_of_qcurve` is this proposition on `qcurve_extension_169_open` alone. `no_solution_4413_of_frontier` still assumes the proposition itself. The general vanishing `a_p(f) = 0` for every inert prime, past the Hecke range through `19`, is not a theorem.
-- **`RhoE13Open`.** A term. The predicate is `opaque`, so there is no equation lemma and the body cannot be unfolded. `rhoE13_open_of_psi` is the open proposition `Psi13HasNoQiRoot → ImageContainsSL2 → RhoE13Open` on a nontrivial solution. It is not a theorem. `Psi13HasNoQiRoot` stays open on `NontrivialFrey`, and it is false for the singular curve `(0, 0, 0)` in the unrestricted form. `GL2F13.order_thirteen` and `GL2F13.transvection_classification_13` prove that a supplied matrix of order `13` is conjugate to `(1 1; 0 1)`, with no smaller positive exponent. `GL2F13.normal_closure_contains_SL2` writes every determinant-`1` matrix as a product of ambient `GL₂`-conjugates of that transvection. That does not move the fixed line inside an arbitrary subgroup, so `GL2F13.dickson_13_open` stays open. `steinberg_prime_13_open` asks for a prime of multiplicative reduction with `13 ∤ tateParameter`. No such prime is constructed, and the classification does not assume the proposition: a prime is not a matrix. `multiplicative_at_dvd_c` does not give `13 ∤ tateParameter`. `tate_param_13_dvd_of_coprime` asserts the opposite divisibility at odd primes dividing `c`. If `13 ∣ tateParameter` at every bad prime, strategy A is dead and irreducibility must come from strategy B. None of this produces a term of `RhoE13Open`. The capstone still takes that term as a hypothesis because `ribet_level_lowering_4413` requires one. Strategy B does not discharge it either. `reducible_shape_contradicts_omega` is a conditional `False` under the reducible shape and three further opens; it is not a term of the seal.
+- **`RhoE13Open`.** A term. The predicate is `opaque`, so there is no equation lemma and the body cannot be unfolded. `rhoE13_open_of_psi` is the open proposition `Psi13HasNoQiRoot → ImageContainsSL2 → RhoE13Open` on a nontrivial solution. It is not a theorem. `Psi13HasNoQiRoot` stays open on `NontrivialFrey`, and it is false for the singular curve `(0, 0, 0)` in the unrestricted form. `GL2F13.order_thirteen` and `GL2F13.transvection_classification_13` prove that a supplied matrix of order `13` is conjugate to `(1 1; 0 1)`, with no smaller positive exponent. `GL2F13.normal_closure_contains_SL2` writes every determinant-`1` matrix as a product of ambient `GL₂`-conjugates of that transvection. That does not move the fixed line inside an arbitrary subgroup, so `GL2F13.dickson_13_open` stays open and DANGLING: no theorem assumes it, and the check is finite. `steinberg_prime_13_open` is ABANDONED. None of this produces a term of `RhoE13Open`. The capstone still takes that term because `ribet_level_lowering_4413` requires one. `reducible_shape_contradicts_omega` is a conditional `False` and is not a term of the seal.
 - **Modularity.** Replace `frey_qcurve_modular` by ℚ-curve modularity.
 - **Level lowering.** Replace `ribet_level_lowering_4413`. `h_n_eq_of_tate` does not discharge `RibetLevel.h_n_eq`: the conclusion is a product of two sealed functions, not that field.
 - **`no_solution_4413`.** The conditional theorem is `no_solution_4413_of_frontier`. The unconditional statement is not a theorem. `(1, 0, 1)` and `(0, 1, 1)` remain solutions.
@@ -259,17 +293,46 @@ Nodes outside the requested list, printed the same way, because they sit on the 
 'trace_neg_six_in_prime_field' does not depend on any axioms
 'qcurve_extension_13_open' does not depend on any axioms
 'modular_residual_13_open' depends on axioms: [ribet_level_lowering_4413]
-'qcurve_descent_13_of_bridge' depends on axioms: [frey_qcurve_modular, propext, ribet_level_lowering_4413, Classical.choice, Quot.sound]
-'lowered_form_contradicts_trace3' depends on axioms: [frey_qcurve_modular, propext, ribet_level_lowering_4413, Classical.choice, Quot.sound]
-'no_newform_32_64_of_qcurve' depends on axioms: [frey_qcurve_modular, propext, ribet_level_lowering_4413, Classical.choice, Quot.sound]
+'qcurve_descent_13_of_bridge' depends on axioms: [frey_qcurve_modular,
+ propext,
+ ribet_level_lowering_4413,
+ Classical.choice,
+ Quot.sound]
+'lowered_form_contradicts_trace3' depends on axioms: [frey_qcurve_modular,
+ propext,
+ ribet_level_lowering_4413,
+ Classical.choice,
+ Quot.sound]
+'no_newform_32_64_of_qcurve' depends on axioms: [frey_qcurve_modular,
+ propext,
+ ribet_level_lowering_4413,
+ Classical.choice,
+ Quot.sound]
 'FreyCurve4413.thirtyTwo_dvd_of_conductor_shape' depends on axioms: [propext]
 'FreyCurve4413.shape_dvd_does_not_give_thirtyTwo' depends on axioms: [propext, Quot.sound]
 'odd_conductor_empty' depends on axioms: [propext, Quot.sound]
 'level_32_or_64' does not depend on any axioms
 'not_minimal_even_c' depends on axioms: [propext, Classical.choice, Quot.sound]
+'FreyCurve4413.not_minimal_even_c_open' depends on axioms: [propext, Classical.choice, Quot.sound]
+'capstone_excludes_curve_8_8_2' does not depend on any axioms
+'no_solution_4413_of_frontier' depends on axioms: [frey_qcurve_modular,
+ propext,
+ ribet_level_lowering_4413,
+ Classical.choice,
+ Quot.sound]
 ```
 
-The `native_decide` axioms are the flag. They are kernel trust of the compiler for the Manin-symbol matrices and for `C(5, g) = 0`. They are not `frey_qcurve_modular` or `ribet_level_lowering_4413`. They do not appear in the conductor chain (`FTameAtPi` through `h_n_eq_of_tate`). `cm_vanish_32` and `cm_vanish_64` depend on the existing Hecke `native_decide` axioms. They do not add one. The point counts `cm_curve_trace_inert_sub`, `cm_curve_trace_inert_add`, and `freyTrace3_table` depend on no axioms. `frob_square_trace_at_3` and `modular_package_unresolved` depend on no axioms. `legendre_neg_two_at_three`, `twisted_frob_square_trace`, `f169_linear_lift_scalar_exists`, `f169_frobenius_sweep`, `trace_neg_six_in_prime_field`, and `qcurve_extension_13_open` depend on no axioms. `mu_coefficient_data`, `scalar_of_degree_four`, `intertwiner_endomorphism_scalar`, and `f13_linear_lift_scalar_fails` depend on `propext`, `Classical.choice`, and `Quot.sound`. `f169_frobenius` depends on `propext` and `Quot.sound`. `modular_residual_13_open` depends only on `ribet_level_lowering_4413`. `qcurve_descent_13_of_bridge`, `lowered_form_contradicts_trace3`, and `no_newform_32_64_of_qcurve` depend on `frey_qcurve_modular`, `ribet_level_lowering_4413`, `propext`, `Classical.choice`, and `Quot.sound`. The hypothesis that remains is `qcurve_extension_169_open`. There is no new `native_decide`.
+The `native_decide` axioms are the flag. They are kernel trust of the compiler for the Manin-symbol matrices and for `C(5, g) = 0`. They are not `frey_qcurve_modular` or `ribet_level_lowering_4413`. They do not appear in the conductor chain (`FTameAtPi` through `h_n_eq_of_tate`). `cm_vanish_32` and `cm_vanish_64` depend on the existing Hecke `native_decide` axioms. They do not add one. The point counts `cm_curve_trace_inert_sub`, `cm_curve_trace_inert_add`, and `freyTrace3_table` depend on no axioms. `frob_square_trace_at_3` and `modular_package_unresolved` depend on no axioms. `legendre_neg_two_at_three`, `twisted_frob_square_trace`, `f169_linear_lift_scalar_exists`, `f169_frobenius_sweep`, `trace_neg_six_in_prime_field`, and `qcurve_extension_13_open` depend on no axioms. `mu_coefficient_data`, `scalar_of_degree_four`, `intertwiner_endomorphism_scalar`, and `f13_linear_lift_scalar_fails` depend on `propext`, `Classical.choice`, and `Quot.sound`. `f169_frobenius` depends on `propext` and `Quot.sound`. `modular_residual_13_open` depends only on `ribet_level_lowering_4413`. `qcurve_descent_13_of_bridge`, `lowered_form_contradicts_trace3`, and `no_newform_32_64_of_qcurve` depend on `frey_qcurve_modular`, `ribet_level_lowering_4413`, `propext`, `Classical.choice`, and `Quot.sound`. The hypothesis that remains on the elimination is `qcurve_extension_169_open`. There is no new `native_decide`. No proved node depends on a project axiom beyond the nodes whose label is that dependence: the two axioms themselves, `solution_modular_and_lowered`, `modular_residual_13_open` (the Ribet axiom only), `qcurve_descent_13_of_bridge`, `lowered_form_contradicts_trace3`, `no_newform_32_64_of_qcurve`, and `no_solution_4413_of_frontier`. The `native_decide` axioms stay on the winding and Hecke nodes, and on `cm_vanish_32` and `cm_vanish_64`, which read the existing Hecke axioms.
+
+## Import graph
+
+`RhoE13Open` is defined in `DarmonMerel/3_RibetLowering4413.lean`. That file imports `DarmonMerel/2_Modularity4413.lean`, `Rank0_32a1`, `EllipticCurveMinimal`, and `FreyTraceF9`. It does not import `ReducibleShape13`, `Irreducibility13`, `DarmonMerel/6_NoSolution4413.lean`, or `CmVanishing32`.
+
+`reducible_shape_contradicts_omega` lives in `ReducibleShape13`, which imports `LevelLowering4413`, which imports file 3. The arrow points at the seal.
+
+`qcurve_extension_169_open` lives in `CmVanishing32`, which imports file 6. File 6 imports file 7, which imports down through file 3. `DarmonMerel.lean` imports file 6 and then `CmVanishing32`. File 3 does not import `CmVanishing32`.
+
+The Ribet axiom is applied from file 6 (`ribetLevelOfAxiom`), from `LevelLowering4413`, and from `CmVanishing32` (`gkResidual`). None of those files is imported by file 3. `X0Moduli32` imports file 3 and file 6. File 6 does not import `X0Moduli32`.
 
 ## No cycle in the tame/wild split
 
@@ -377,15 +440,15 @@ The bridges are open propositions, not theorems:
 | Proposition | What is not formalized |
 | --- | --- |
 | `reducible_shape_13_open` | `ρ̄^ss ≅ χ₁ ⊕ χ₂` with product the cyclotomic character. One open, for the shape. |
-| `inertia_trivial_of_tate_13_open` | `13 ∣ tateParameter` at `p ∣ c` implies residual inertia is trivial. Conditional on `tate_param_13_dvd_of_coprime` in the sense that the divisibility is the hypothesis. |
-| `artin_exponent_of_characters_open` | The Artin exponent `FTameAtPi + SwanAtPi`, which `pacetti_of_components` places in `{10, 12}`, splits as the sum of the conductors of `χ₁` and `χ₂`. |
-| `ray_class_mod_pi_open` | Class field theory for the ray class group modulo a power of `π`. |
-| `frobenius_trace_sum_open` | At a good prime, `a_𝔭 = χ₁(Frob) + χ₂(Frob)`. |
-| `weil_bound_open` | `\|a_𝔭\| ≤ 2 √N(𝔭)`, written `a² ≤ 4 N(𝔭)`. |
-| `trace_outside_weil_open` | The character constraint forces a value outside that range. Not `False`, and not `¬ (a⁴ + b⁴ = c¹³)`. |
+| `inertia_trivial_of_tate_13_open` | `13 ∣ tateParameter` at `p ∣ c` implies residual inertia is trivial. The antecedent is that divisibility. The definition does not name `tate_param_13_dvd_of_coprime`. Hypothesis of `reducible_shape_contradicts_omega`. |
+| `artin_exponent_of_characters_open` | SUPERSEDED as an irreducibility route. Still a hypothesis of `character_sum_matches_pacetti`, which neither `reducible_shape_contradicts_omega` nor the capstone calls. Also an antecedent of the dangling `trace_outside_weil_open`. |
+| `ray_class_mod_pi_open` | Class field theory for the ray class group modulo a power of `π`. Hypothesis of `reducible_shape_contradicts_omega`. |
+| `frobenius_trace_sum_open` | SUPERSEDED. Its only reference is an antecedent of `trace_outside_weil_open`, which no theorem takes. |
+| `weil_bound_open` | SUPERSEDED and DANGLING. `\|a_𝔭\| ≤ 2 √N(𝔭)`, written `a² ≤ 4 N(𝔭)`. No theorem and no other open mentions the name. |
+| `trace_outside_weil_open` | SUPERSEDED and DANGLING. The character constraint forces a value outside that range. No theorem takes it. Not `False`, and not `¬ (a⁴ + b⁴ = c¹³)`. |
 | `chars_unramified_above_13_open` | OPEN. Under the shape, the ray-class bridge, and inertia trivial at `p ∣ c`, both cyclotomic exponents are divisible by `3`. Finite flat of weight `2` would force the inertial exponents `{0, 1}`. Those sum to `1` and do not give order dividing `4`, hence the order-`4` criterion is `3 ∣ e_i`, not the pair `{0, 1}`. Not assumed. |
 
-`shape_forces_order_div_four` is the order bound conditional on `reducible_shape_13_open`. `character_sum_matches_pacetti` is the Artin sum conditional on `components_n_plus_five_open` and `artin_exponent_of_characters_open`. `reducible_shape_contradicts_omega` is `False` for a coprime curve with `a ≠ 0` and `b ≠ 0`, conditional on `reducible_shape_13_open`, `ray_class_mod_pi_open`, `inertia_trivial_of_tate_13_open`, and `chars_unramified_above_13_open`. The proof is `not_three_div_complement`: each exponent divisible by `3` makes `2 ^ e` a fourth root, the two powers multiply to `2` because the exponents sum to `1` modulo `12`, and a product of fourth roots is a fourth root, so `2 ^ 4 = 1`, which `omega_order_twelve` forbids. None of these claims unconditional irreducibility.
+`shape_forces_order_div_four` is the order bound conditional on `reducible_shape_13_open`. `character_sum_matches_pacetti` is the Artin sum conditional on `components_n_plus_five_open` and `artin_exponent_of_characters_open`. The order-12 contradiction does not use that Artin sum, the Frobenius-trace sum, the Weil bound, or `trace_outside_weil_open`. `reducible_shape_contradicts_omega` is `False` for a coprime curve with `a ≠ 0` and `b ≠ 0`, conditional on `reducible_shape_13_open`, `ray_class_mod_pi_open`, `inertia_trivial_of_tate_13_open`, and `chars_unramified_above_13_open`. The proof is `not_three_div_complement`: each exponent divisible by `3` makes `2 ^ e` a fourth root, the two powers multiply to `2` because the exponents sum to `1` modulo `12`, and a product of fourth roots is a fourth root, so `2 ^ 4 = 1`, which `omega_order_twelve` forbids. None of these claims unconditional irreducibility.
 
 ## CM vanishing at levels 32 and 64
 
@@ -450,6 +513,9 @@ a⁴ + b⁴ = c¹³                                          PROVED data on Frey
 │   ├─ 13 ∣ v_𝔭(Δ) at each 𝔭 above p                   not a theorem and not an open Prop
 │   │    uneven-splitting obstruction; UFD of ℤ[i] missing
 │   ├─ 13 ∣ tateParameter E p                          OPEN PROP  tate_param_13_dvd_of_coprime
+│   │    not a capstone hypothesis
+│   │    no theorem applies the name
+│   │    inertia_trivial_of_tate_13_open inlines the divisibility
 │   │    does not imply odd_level_one_open
 │   └─ nat_eq_one_of_prime_divisors_removed            PROVED arithmetic
 │        not applied to OddPrimaryLevel
@@ -462,18 +528,19 @@ a⁴ + b⁴ = c¹³                                          PROVED data on Frey
 │
 ├─ Modular E                                           AXIOM  frey_qcurve_modular
 ├─ RhoE13Open                                          SEALED  no term, no equation lemma
-│    rhoE13_open_of_psi                                OPEN PROP  seal does not unfold
+│    rhoE13_open_of_psi                                DANGLING  seal does not unfold
 │    Psi13HasNoQiRoot                                  OPEN PROP  on NontrivialFrey only
 │    ImageContainsSL2                                  SEALED
-│    strategy A
+│    strategy A                                        ABANDONED as a route to a term
 │    │  order exactly 13                               PROVED  order_thirteen
 │    │  order-13 matrix ⇒ conjugate to (1 1; 0 1)      PROVED  transvection_classification_13
 │    │  normal closure in GL₂ contains SL₂             PROVED  normal_closure_contains_SL2
 │    │       ambient conjugates; does not move the fixed line
 │    │       inside an arbitrary subgroup
-│    │  irreducible subgroup + order 13 ⇒ SL₂          OPEN PROP  dickson_13_open
-│    │  Steinberg prime, 13 ∤ tateParameter            OPEN PROP  steinberg_prime_13_open
-│    │       no witness
+│    │  irreducible subgroup + order 13 ⇒ SL₂          DANGLING  dickson_13_open
+│    │       finite; no theorem assumes it
+│    │  Steinberg prime, 13 ∤ tateParameter            ABANDONED  steinberg_prime_13_open
+│    │       no witness, no consumer
 │    │       not a hypothesis of the classification
 │    │       multiplicative_at_dvd_c does not supply it
 │    │  if 13 ∣ tateParameter at every bad prime       strategy A is dead
@@ -484,13 +551,16 @@ a⁴ + b⁴ = c¹³                                          PROVED data on Frey
 │    │  shape forces the unit character order | 4      PROVED from the shape open
 │    │       shape_forces_order_div_four
 │    │  ray class group modulo π^n                     OPEN PROP  ray_class_mod_pi_open
-│    │  Artin 10/12 splits across χ₁, χ₂               OPEN PROP  artin_exponent_of_characters_open
-│    │       pacetti_of_components is the 10/12 input
-│    │       character_sum_matches_pacetti
+│    │  Artin 10/12 splits across χ₁, χ₂               SUPERSEDED  artin_exponent_of_characters_open
+│    │       character_sum_matches_pacetti still assumes it
+│    │       the order-12 proof does not
 │    │  unramified at p∣c from the Tate divisibility   OPEN PROP  inertia_trivial_of_tate_13_open
-│    │  a_𝔭 = χ₁(Frob) + χ₂(Frob)                      OPEN PROP  frobenius_trace_sum_open
-│    │  |a_𝔭| ≤ 2√N(𝔭)                                 OPEN PROP  weil_bound_open
-│    │  character value outside that range             OPEN PROP  trace_outside_weil_open
+│    │  a_𝔭 = χ₁(Frob) + χ₂(Frob)                      SUPERSEDED  frobenius_trace_sum_open
+│    │       only an antecedent of trace_outside_weil_open
+│    │  |a_𝔭| ≤ 2√N(𝔭)                                 SUPERSEDED  weil_bound_open
+│    │       DANGLING
+│    │  character value outside that range             SUPERSEDED  trace_outside_weil_open
+│    │       DANGLING
 │    │  2 has order exactly 12 in F₁₃ˣ                 PROVED  primitive_root_two
 │    │       omega_order_twelve
 │    │  Φ₁₃(x+1) has no monic factor in Z[x]           PROVED  shift_no_monic_factor
@@ -577,8 +647,11 @@ a⁴ + b⁴ = c¹³                                          PROVED data on Frey
 │         also uses both project axioms
 │         the definition is not a theorem by itself
 │         no_solution_4413_of_frontier still assumes it
-└─ no_solution_4413_of_frontier                        PROVED from the five opens,
+└─ no_solution_4413_of_frontier                        PROVED from four opens,
      the two axioms, and a term of RhoE13Open
+     components, serre_two_level, odd_level, no_newform
+     each of those four is applied
+     tate_param_13_dvd_of_coprime is not a hypothesis
      a ≠ 0, b ≠ 0, gcd = 1, c > 0
      unconditional no_solution_4413                     not a theorem
 ```
