@@ -24,6 +24,10 @@ divides `d`, so each `Qᵢ` is empty and the lowered level is a power of `2`.
 from Pacetti's exponent to a level in `{32, 64}`. `h_n_eq` stays on the
 axiom. `h_n_eq_of_tate` assumes those two propositions together with
 `components_n_plus_five_open` and does not use the axiom.
+`multiplicative_at_dvd_c` is the norm computation at an odd prime dividing
+`c`: that prime misses `2ab` and `c₄`, and `13` divides `v_p(N(Δ))`.
+`tate_param_13_dvd_of_coprime` is the Tate parameter. It does not rewrite
+`OddPrimaryLevel`.
 
 ## Citations
 
@@ -340,15 +344,529 @@ def serre_two_level_open : Prop :=
 
 /-- The prime-to-`2` Serre level is `1` on a coprime Frey curve.
 
-Frey's finite/flat argument is not formalized. At an odd prime `ℓ ∣ c`,
-the Tate parameter is a 13th power up to units, so `ρ_{E,13}` is finite
-at `ℓ` and level lowering removes `ℓ`. `odd_conductor_empty` is a different
-product: the sets of primes dividing `d = 1`. This proposition is not a
+`multiplicative_at_dvd_c` is the proved input at an odd prime `p ∣ c`:
+`p` misses `2 |a| |b|`, `v_p(N(c₄)) = 0`, and
+`v_p(N(Δ)) = 13 · 3 · v_p(|c|)`. `tate_param_13_dvd_of_coprime` asks for
+the same divisibility of a Tate parameter. Neither statement rewrites
+`OddPrimaryLevel`. `rho_E_13` is unresolved, so "unramified at `p` removes
+`p` from the Serre level" is this proposition. `odd_conductor_empty`
+empties the sets of primes dividing `d = 1`. This proposition is not a
 theorem and not an axiom.
 -/
 def odd_level_one_open : Prop :=
   ∀ E : FreyCurve4413, E.a.natAbs.gcd E.b.natAbs = 1 →
     OddPrimaryLevel E = 1
+
+/-- `v_p(n)` for `p ≥ 2`. The value at `0` is `0` and is not a valuation. -/
+def padicVal (p n : ℕ) : ℕ :=
+  if p ≤ 1 ∨ n = 0 then 0
+  else if n % p = 0 then padicVal p (n / p) + 1
+  else 0
+termination_by n
+decreasing_by
+  have hpgt : 1 < p := by omega
+  have hnpos : 0 < n := by omega
+  exact Nat.div_lt_self hnpos hpgt
+
+theorem padicVal_succ_div (p n : ℕ) (hp : 2 ≤ p) (hn : n ≠ 0) (hmod : n % p = 0) :
+    padicVal p n = padicVal p (n / p) + 1 := by
+  have hor : ¬ (p ≤ 1 ∨ n = 0) := by
+    intro h
+    rcases h with h | h
+    · omega
+    · exact hn h
+  rw [padicVal.eq_1, ite_eq_right hor, ite_eq_left hmod]
+
+theorem padicVal_succ_not_div (p n : ℕ) (hp : 2 ≤ p) (hn : n ≠ 0) (hmod : ¬ n % p = 0) :
+    padicVal p n = 0 := by
+  have hor : ¬ (p ≤ 1 ∨ n = 0) := by
+    intro h
+    rcases h with h | h
+    · omega
+    · exact hn h
+  rw [padicVal.eq_1, ite_eq_right hor, ite_eq_right hmod]
+
+theorem padicVal_pow_mul (p k m : ℕ) (hp : 2 ≤ p) (hm : ¬ p ∣ m) :
+    padicVal p (p ^ k * m) = k := by
+  induction k with
+  | zero =>
+    rw [Nat.pow_zero, Nat.one_mul]
+    have hm0 : m ≠ 0 := by
+      intro hz
+      exact hm (by rw [hz]; exact Nat.dvd_zero p)
+    have hmod : ¬ m % p = 0 := by
+      intro h
+      exact hm (Nat.dvd_of_mod_eq_zero h)
+    exact padicVal_succ_not_div p m hp hm0 hmod
+  | succ k ih =>
+    have hm0 : m ≠ 0 := by
+      intro hz
+      exact hm (by rw [hz]; exact Nat.dvd_zero p)
+    have hposp : 0 < p := by omega
+    have hpk : 0 < p ^ (k + 1) := Nat.pow_pos_iff.mpr (Or.inl hposp)
+    have hnz : p ^ (k + 1) * m ≠ 0 := Nat.mul_ne_zero (Nat.ne_of_gt hpk) hm0
+    have hdivp : p ∣ p ^ (k + 1) * m := by
+      rw [Nat.pow_succ]
+      exact ⟨p ^ k * m, by rw [Nat.mul_assoc, Nat.mul_left_comm]⟩
+    have hmod : (p ^ (k + 1) * m) % p = 0 := Nat.mod_eq_zero_of_dvd hdivp
+    have hquot : (p ^ (k + 1) * m) / p = p ^ k * m := by
+      rw [Nat.pow_succ, Nat.mul_assoc]
+      have hcomm : p ^ k * (p * m) = p * (p ^ k * m) := Nat.mul_left_comm (p ^ k) p m
+      rw [hcomm]
+      exact Nat.mul_div_cancel_left (p ^ k * m) hposp
+    rw [padicVal_succ_div p (p ^ (k + 1) * m) hp hnz hmod, hquot, ih]
+
+theorem padicVal_eq_zero_of_not_dvd (p n : ℕ) (hp : 2 ≤ p) (hn : n ≠ 0)
+    (hd : ¬ p ∣ n) : padicVal p n = 0 := by
+  have hmod : ¬ n % p = 0 := by
+    intro h
+    exact hd (Nat.dvd_of_mod_eq_zero h)
+  exact padicVal_succ_not_div p n hp hn hmod
+
+theorem padicVal_zero (p : ℕ) : padicVal p 0 = 0 := by
+  rw [padicVal.eq_1, ite_eq_left (Or.inr rfl)]
+
+/-- `n = p^v · m` with `p` not dividing `m`, for `n ≠ 0` and `p ≥ 2`. -/
+theorem padicVal_split (p n : ℕ) (hp : 2 ≤ p) (hn : n ≠ 0) :
+    n = p ^ padicVal p n * (n / p ^ padicVal p n) ∧
+      ¬ p ∣ n / p ^ padicVal p n := by
+  induction n using Nat.strongRecOn with
+  | ind n ih =>
+    by_cases hmod : n % p = 0
+    · have hdvd : p ∣ n := Nat.dvd_of_mod_eq_zero hmod
+      have hlt : n / p < n := Nat.div_lt_self (by omega) (by omega)
+      have hmul : p * (n / p) = n := Nat.mul_div_cancel' hdvd
+      have hq0 : n / p ≠ 0 := by
+        intro hz
+        exact hn (by simpa [hz] using hmul.symm)
+      have hval : padicVal p n = padicVal p (n / p) + 1 :=
+        padicVal_succ_div p n hp hn hmod
+      rcases ih (n / p) hlt hq0 with ⟨heq, hnd⟩
+      let v := padicVal p (n / p)
+      let q := (n / p) / p ^ v
+      have hN : n = p ^ (v + 1) * q := by
+        have hstep : n = p * (p ^ v * q) := by
+          rw [← heq]
+          exact hmul.symm
+        calc
+          n = p * (p ^ v * q) := hstep
+          _ = p * p ^ v * q := by rw [Nat.mul_assoc]
+          _ = p ^ v * p * q := by rw [Nat.mul_comm p (p ^ v)]
+          _ = p ^ (v + 1) * q := by rw [← Nat.pow_succ]
+      have hqq : n / p ^ (v + 1) = q := by
+        rw [hN]
+        exact Nat.mul_div_cancel_left q (Nat.pow_pos_iff.mpr (Or.inl (by omega)))
+      have hqeq : q = n / p ^ padicVal p n := by
+        rw [hval]
+        exact hqq.symm
+      constructor
+      · calc
+          n = p ^ (v + 1) * q := hN
+          _ = p ^ padicVal p n * q := by rw [← hval]
+          _ = p ^ padicVal p n * (n / p ^ padicVal p n) := by rw [hqeq]
+      · intro hdiv
+        rw [hval] at hdiv
+        rw [hqq] at hdiv
+        exact hnd hdiv
+    · have hval : padicVal p n = 0 :=
+        padicVal_succ_not_div p n hp hn hmod
+      rw [hval, Nat.pow_zero, Nat.one_mul, Nat.div_one]
+      exact ⟨rfl, fun h => hmod (Nat.mod_eq_zero_of_dvd h)⟩
+
+theorem prime_not_dvd_mul {p a b : ℕ} (hp : IsPrime p) (ha : ¬ p ∣ a) (hb : ¬ p ∣ b) :
+    ¬ p ∣ a * b := by
+  intro h
+  exact hb (prime_dvd_mul hp h ha)
+
+theorem prime_not_dvd_two_pow (p e : ℕ) (hp : IsPrime p) (h2 : p ≠ 2) : ¬ p ∣ 2 ^ e := by
+  induction e with
+  | zero =>
+    intro h
+    have h1 : p ∣ 1 := by simpa [Nat.pow_zero] using h
+    have hp1 : p = 1 := Nat.dvd_one.mp h1
+    have hge : 2 ≤ p := hp.1
+    omega
+  | succ e ih =>
+    intro h
+    rw [Nat.pow_succ, Nat.mul_comm] at h
+    exact ih (prime_dvd_mul hp h (by
+      intro h2d
+      have hle : p ≤ 2 := Nat.le_of_dvd (by decide) h2d
+      exact h2 (Nat.le_antisymm hle hp.1)))
+
+theorem prime_dvd_pow {p m n : ℕ} (_hp : IsPrime p) (hm : p ∣ m) (hn : 0 < n) : p ∣ m ^ n := by
+  cases n with
+  | zero => omega
+  | succ n =>
+    rw [Nat.pow_succ]
+    exact Nat.dvd_mul_left_of_dvd hm _
+
+theorem prime_dvd_fourth {p m : ℕ} (hp : IsPrime p) (h : p ∣ m ^ 4) : p ∣ m := by
+  have h2 : m ^ 2 = m * m := by
+    rw [Nat.pow_succ, Nat.pow_succ, Nat.pow_zero, Nat.one_mul]
+  rw [show (4 : ℕ) = 2 + 2 by decide, Nat.pow_add, h2] at h
+  exact prime_dvd_sq hp (prime_dvd_sq hp h)
+
+theorem int_dvd_of_natAbs_dvd (p : ℕ) (z : ℤ) (h : p ∣ z.natAbs) : (p : ℤ) ∣ z := by
+  have hc : (p : ℤ) ∣ ↑z.natAbs := (Int.ofNat_dvd).mpr h
+  rcases Int.natAbs_eq z with hz | hz
+  · rw [hz]
+    exact hc
+  · rw [hz]
+    exact Int.dvd_neg.mpr hc
+
+theorem neg_fourth_pow (z : ℤ) : (-z) ^ 4 = z ^ 4 := by
+  have hsq : ∀ w : ℤ, w ^ 2 = w * w := by
+    intro w
+    rw [Int.pow_succ, Int.pow_succ, Int.pow_zero, Int.one_mul]
+  rw [show (4 : ℕ) = 2 + 2 by decide, Int.pow_add, Int.pow_add, hsq (-z), hsq z,
+    Int.neg_mul_neg]
+
+theorem fourth_pow_natCast (n : ℤ) : n ^ 4 = ↑(n.natAbs ^ 4) := by
+  have h0 : 0 ≤ n ^ 4 := by
+    cases n with
+    | ofNat k => exact Int.natCast_nonneg _
+    | negSucc k =>
+      rw [Int.negSucc_eq, neg_fourth_pow]
+      exact Int.natCast_nonneg _
+  rw [← Int.natAbs_of_nonneg h0, Int.natAbs_pow]
+
+/-- `N(a² + b² √(-1)) = c¹³`.
+
+This factor of `Δ = 2⁹ (a² + b² √(-1)) c¹³` is not a unit at a prime
+divisor of `c`. Its norm contributes `13` to the exponent `39` of `N(Δ)`.
+-/
+theorem sum_squares_norm_eq_c_pow (E : FreyCurve4413) :
+    GaussInt.norm ⟨E.a ^ 2, E.b ^ 2⟩ = E.c ^ 13 := by
+  simp [GaussInt.norm]
+  rw [show E.a ^ 2 * E.a ^ 2 = E.a ^ 4 by rw [← Int.pow_add],
+    show E.b ^ 2 * E.b ^ 2 = E.b ^ 4 by rw [← Int.pow_add], E.h_eq]
+
+theorem c4_norm_factored (a b : ℤ) :
+    GaussInt.norm (FreyCurve4413.c4_Frey a b) =
+      (2 : ℤ) ^ 10 * (25 * a ^ 4 + 9 * b ^ 4) := by
+  rw [FreyCurve4413.c4_Frey_factor]
+  simp [GaussInt.norm, GaussInt.smul, FreyCurve4413.v2_c4, Int.neg_mul, Int.mul_neg]
+  grind
+
+theorem delta_norm_natAbs (E : FreyCurve4413) :
+    (E.discriminant_re ^ 2 + E.discriminant_im ^ 2).natAbs =
+      2 ^ 18 * E.c.natAbs ^ 39 := by
+  rw [FreyCurve4413.discriminant_norm E, Int.natAbs_mul, Int.natAbs_pow, Int.natAbs_pow]
+  rfl
+
+theorem natAbs_fourth_sum (E : FreyCurve4413) :
+    E.a.natAbs ^ 4 + E.b.natAbs ^ 4 = E.c.natAbs ^ 13 := by
+  have h0 : 0 ≤ E.c ^ 13 := by
+    rw [← E.h_eq, fourth_pow_natCast E.a, fourth_pow_natCast E.b, Int.ofNat_add_ofNat]
+    exact Int.natCast_nonneg _
+  have hcast :
+      (↑(E.a.natAbs ^ 4 + E.b.natAbs ^ 4) : ℤ) = ↑(E.c.natAbs ^ 13) := by
+    rw [← Int.ofNat_add_ofNat, ← fourth_pow_natCast E.a, ← fourth_pow_natCast E.b, E.h_eq,
+      ← Int.natAbs_of_nonneg h0, Int.natAbs_pow]
+  exact Int.ofNat_inj.mp hcast
+
+/-- An odd prime divisor of `c` misses `2`, `|a|`, and `|b|`. -/
+theorem odd_prime_misses_two_ab (E : FreyCurve4413)
+    (hcop : E.a.natAbs.gcd E.b.natAbs = 1) (p : ℕ) (hp : IsPrime p) (h2 : p ≠ 2)
+    (hdvd : p ∣ E.c.natAbs) : ¬ p ∣ 2 * E.a.natAbs * E.b.natAbs := by
+  have hab := natAbs_fourth_sum E
+  have ha : ¬ p ∣ E.a.natAbs := by
+    intro hpa
+    have hpa4 : p ∣ E.a.natAbs ^ 4 := prime_dvd_pow hp hpa (by decide)
+    have hsump : p ∣ E.a.natAbs ^ 4 + E.b.natAbs ^ 4 := by
+      rw [hab]
+      exact prime_dvd_pow hp hdvd (by decide)
+    have hb4 : p ∣ E.b.natAbs ^ 4 := by
+      have hsub : p ∣ (E.a.natAbs ^ 4 + E.b.natAbs ^ 4) - E.a.natAbs ^ 4 :=
+        Nat.dvd_sub hsump hpa4
+      simpa [Nat.add_sub_cancel_left] using hsub
+    have hpb : p ∣ E.b.natAbs := prime_dvd_fourth hp hb4
+    have hdg : p ∣ E.a.natAbs.gcd E.b.natAbs := Nat.dvd_gcd hpa hpb
+    rw [hcop] at hdg
+    have hp1 : p = 1 := Nat.dvd_one.mp hdg
+    have hge : 2 ≤ p := hp.1
+    omega
+  have hb : ¬ p ∣ E.b.natAbs := by
+    intro hpb
+    have hpb4 : p ∣ E.b.natAbs ^ 4 := prime_dvd_pow hp hpb (by decide)
+    have hsump : p ∣ E.a.natAbs ^ 4 + E.b.natAbs ^ 4 := by
+      rw [hab]
+      exact prime_dvd_pow hp hdvd (by decide)
+    have ha4 : p ∣ E.a.natAbs ^ 4 := by
+      have hsub : p ∣ (E.a.natAbs ^ 4 + E.b.natAbs ^ 4) - E.b.natAbs ^ 4 :=
+        Nat.dvd_sub hsump hpb4
+      have hre : E.a.natAbs ^ 4 + E.b.natAbs ^ 4 - E.b.natAbs ^ 4 = E.a.natAbs ^ 4 := by
+        rw [Nat.add_comm, Nat.add_sub_cancel_left]
+      simpa [hre] using hsub
+    exact ha (prime_dvd_fourth hp ha4)
+  have h2d : ¬ p ∣ 2 := by
+    intro h
+    have hle : p ≤ 2 := Nat.le_of_dvd (by decide) h
+    exact h2 (Nat.le_antisymm hle hp.1)
+  exact prime_not_dvd_mul hp (prime_not_dvd_mul hp h2d ha) hb
+
+/-- `v_p(N(c₄)) = 0` for an odd prime `p ∣ c` on a coprime curve.
+
+`N(c₄) = 2¹⁰ (25 a⁴ + 9 b⁴)`. From `a⁴ + b⁴ = c¹³`, the second factor is
+`25 c¹³ - 16 b⁴`, so a prime divisor of `c` that divided it would divide
+`16 b⁴` and then both `a` and `b`.
+-/
+theorem c4_norm_padicVal_zero (E : FreyCurve4413)
+    (hcop : E.a.natAbs.gcd E.b.natAbs = 1) (p : ℕ) (hp : IsPrime p) (h2 : p ≠ 2)
+    (hdvd : p ∣ E.c.natAbs) :
+    padicVal p (GaussInt.norm (FreyCurve4413.c4_Frey E.a E.b)).natAbs = 0 := by
+  have hfact := c4_norm_factored E.a E.b
+  have hnat :
+      (GaussInt.norm (FreyCurve4413.c4_Frey E.a E.b)).natAbs =
+        2 ^ 10 * (25 * E.a.natAbs ^ 4 + 9 * E.b.natAbs ^ 4) := by
+    have hparts :
+        (25 : ℤ) * E.a ^ 4 + (9 : ℤ) * E.b ^ 4 =
+          Int.ofNat (25 * E.a.natAbs ^ 4 + 9 * E.b.natAbs ^ 4) := by
+      rw [fourth_pow_natCast E.a, fourth_pow_natCast E.b]
+      have h25 : (25 : ℤ) = ↑(25 : ℕ) := rfl
+      have h9 : (9 : ℤ) = ↑(9 : ℕ) := rfl
+      rw [h25, h9, Int.ofNat_mul_ofNat, Int.ofNat_mul_ofNat]
+      exact Int.ofNat_add_ofNat (25 * E.a.natAbs ^ 4) (9 * E.b.natAbs ^ 4)
+    rw [hfact, hparts, Int.natAbs_mul, Int.natAbs_pow]
+    rfl
+  have hmiss : ¬ p ∣ 25 * E.a.natAbs ^ 4 + 9 * E.b.natAbs ^ 4 := by
+    intro hdiv
+    have hab := natAbs_fourth_sum E
+    have hsum : p ∣ E.a.natAbs ^ 4 + E.b.natAbs ^ 4 := by
+      rw [hab]
+      exact prime_dvd_pow hp hdvd (by decide)
+    have h25 : p ∣ 25 * (E.a.natAbs ^ 4 + E.b.natAbs ^ 4) :=
+      Nat.dvd_mul_left_of_dvd hsum 25
+    have hsub :
+        p ∣ 25 * (E.a.natAbs ^ 4 + E.b.natAbs ^ 4) -
+          (25 * E.a.natAbs ^ 4 + 9 * E.b.natAbs ^ 4) := Nat.dvd_sub h25 hdiv
+    have hid :
+        25 * (E.a.natAbs ^ 4 + E.b.natAbs ^ 4) -
+          (25 * E.a.natAbs ^ 4 + 9 * E.b.natAbs ^ 4) = 16 * E.b.natAbs ^ 4 := by
+      have hdist :
+          25 * (E.a.natAbs ^ 4 + E.b.natAbs ^ 4) =
+            25 * E.a.natAbs ^ 4 + 25 * E.b.natAbs ^ 4 := by
+        rw [Nat.left_distrib]
+      have h25b : (25 : ℕ) * E.b.natAbs ^ 4 =
+          16 * E.b.natAbs ^ 4 + 9 * E.b.natAbs ^ 4 := by
+        have hsplit : (25 : ℕ) = 16 + 9 := by decide
+        rw [hsplit, Nat.right_distrib]
+      have hrearr :
+          25 * E.a.natAbs ^ 4 + (16 * E.b.natAbs ^ 4 + 9 * E.b.natAbs ^ 4) =
+            (25 * E.a.natAbs ^ 4 + 9 * E.b.natAbs ^ 4) + 16 * E.b.natAbs ^ 4 := by
+        rw [Nat.add_comm (16 * E.b.natAbs ^ 4) (9 * E.b.natAbs ^ 4), ← Nat.add_assoc]
+      rw [hdist, h25b, hrearr, Nat.add_sub_cancel_left]
+    rw [hid] at hsub
+    have h16 : ¬ p ∣ 16 := by
+      rw [show (16 : ℕ) = 2 ^ 4 by decide]
+      exact prime_not_dvd_two_pow p 4 hp h2
+    have hb : p ∣ E.b.natAbs := prime_dvd_fourth hp (prime_dvd_mul hp hsub h16)
+    exact odd_prime_misses_two_ab E hcop p hp h2 hdvd
+      (Nat.dvd_mul_left_of_dvd hb (2 * E.a.natAbs))
+  have hprod : ¬ p ∣ (GaussInt.norm (FreyCurve4413.c4_Frey E.a E.b)).natAbs := by
+    rw [hnat]
+    exact prime_not_dvd_mul hp (prime_not_dvd_two_pow p 10 hp h2) hmiss
+  have hnz : (GaussInt.norm (FreyCurve4413.c4_Frey E.a E.b)).natAbs ≠ 0 := by
+    intro hz
+    rw [hnat] at hz
+    have hrest : 0 < 25 * E.a.natAbs ^ 4 + 9 * E.b.natAbs ^ 4 := by
+      rcases Nat.eq_zero_or_pos E.a.natAbs with ha | ha
+      · rcases Nat.eq_zero_or_pos E.b.natAbs with hb | hb
+        · have hdg : E.a.natAbs.gcd E.b.natAbs = 0 := by rw [ha, hb]; rfl
+          rw [hdg] at hcop
+          omega
+        · have : 0 < 9 * E.b.natAbs ^ 4 :=
+            Nat.mul_pos (by decide) (Nat.pow_pos_iff.mpr (Or.inl hb))
+          omega
+      · have : 0 < 25 * E.a.natAbs ^ 4 :=
+          Nat.mul_pos (by decide) (Nat.pow_pos_iff.mpr (Or.inl ha))
+        omega
+    have hpos : 0 < 2 ^ 10 * (25 * E.a.natAbs ^ 4 + 9 * E.b.natAbs ^ 4) :=
+      Nat.mul_pos (by decide) hrest
+    omega
+  exact padicVal_eq_zero_of_not_dvd p _ hp.1 hnz hprod
+
+/-- `v_p(N(Δ)) = 13 · 3 · v_p(|c|)` for an odd prime `p`.
+
+`N(Δ) = 2¹⁸ c³⁹`. The exponent `39 = 13 · 3` is
+`v_p(N(a² + b² √(-1))) + v_p(N(c¹³)) = 13 v_p(|c|) + 26 v_p(|c|)`.
+`sum_squares_norm_eq_c_pow` is the first summand. This is not
+`v_𝔭(Δ) = 13 v_p(|c|)` at a prime `𝔭` of `ℤ[i]` above `p`.
+-/
+theorem delta_norm_padicVal (E : FreyCurve4413) (p : ℕ) (hp : IsPrime p) (h2 : p ≠ 2) :
+    padicVal p (E.discriminant_re ^ 2 + E.discriminant_im ^ 2).natAbs =
+      13 * (3 * padicVal p E.c.natAbs) := by
+  have hnorm := delta_norm_natAbs E
+  have hp2 : 2 ≤ p := hp.1
+  by_cases hc0 : E.c.natAbs = 0
+  · have hvalc : padicVal p E.c.natAbs = 0 := by
+      rw [hc0, padicVal_zero]
+    have hN : (E.discriminant_re ^ 2 + E.discriminant_im ^ 2).natAbs = 0 := by
+      rw [hnorm, hc0]
+    have hvalN : padicVal p (E.discriminant_re ^ 2 + E.discriminant_im ^ 2).natAbs = 0 := by
+      rw [hN, padicVal_zero]
+    rw [hvalc, hvalN]
+  · rcases padicVal_split p E.c.natAbs hp2 hc0 with ⟨hc, hm⟩
+    let k := padicVal p E.c.natAbs
+    let m := E.c.natAbs / p ^ k
+    have ht : k * 39 = 13 * (3 * k) := by
+      calc
+        k * 39 = k * (13 * 3) := rfl
+        _ = (k * 13) * 3 := by rw [Nat.mul_assoc]
+        _ = (13 * k) * 3 := by rw [Nat.mul_comm k 13]
+        _ = 13 * (k * 3) := by rw [Nat.mul_assoc]
+        _ = 13 * (3 * k) := by rw [Nat.mul_comm k 3]
+    have hgroup :
+        2 ^ 18 * (p ^ (13 * (3 * k)) * m ^ 39) =
+          p ^ (13 * (3 * k)) * (2 ^ 18 * m ^ 39) := by
+      calc
+        2 ^ 18 * (p ^ (13 * (3 * k)) * m ^ 39) =
+            2 ^ 18 * p ^ (13 * (3 * k)) * m ^ 39 := by rw [Nat.mul_assoc]
+        _ = p ^ (13 * (3 * k)) * 2 ^ 18 * m ^ 39 := by
+          rw [Nat.mul_comm (2 ^ 18) (p ^ (13 * (3 * k)))]
+        _ = p ^ (13 * (3 * k)) * (2 ^ 18 * m ^ 39) := by rw [Nat.mul_assoc]
+    have hgoalform :
+        (E.discriminant_re ^ 2 + E.discriminant_im ^ 2).natAbs =
+          p ^ (13 * (3 * k)) * (2 ^ 18 * m ^ 39) := by
+      rw [hnorm, hc, Nat.mul_pow, ← Nat.pow_mul, ht, hgroup]
+    have hm39 : ¬ p ∣ m ^ 39 := by
+      have hall : ∀ n, ¬ p ∣ m ^ n := by
+        intro n
+        induction n with
+        | zero =>
+          intro h
+          have h1 : p ∣ 1 := by simpa [Nat.pow_zero] using h
+          have hp1 : p = 1 := Nat.dvd_one.mp h1
+          omega
+        | succ n ih =>
+          intro h
+          rw [Nat.pow_succ, Nat.mul_comm] at h
+          exact ih (prime_dvd_mul hp h hm)
+      exact hall 39
+    have hcof : ¬ p ∣ 2 ^ 18 * m ^ 39 :=
+      prime_not_dvd_mul hp (prime_not_dvd_two_pow p 18 hp h2) hm39
+    rw [hgoalform]
+    exact padicVal_pow_mul p (13 * (3 * k)) (2 ^ 18 * m ^ 39) hp2 hcof
+
+/-- An odd prime dividing `N(Δ)` divides `c`.
+
+`N(Δ) = 2¹⁸ c³⁹`, so the only odd prime divisors of the norm are the prime
+divisors of `c`. These are the odd primes of bad reduction of the norm.
+This does not remove them from `OddPrimaryLevel`.
+-/
+theorem odd_prime_dvd_discriminant_norm_divides_c (E : FreyCurve4413) (p : ℕ)
+    (hp : IsPrime p) (h2 : p ≠ 2)
+    (hdvd : p ∣ (E.discriminant_re ^ 2 + E.discriminant_im ^ 2).natAbs) :
+    p ∣ E.c.natAbs := by
+  rw [delta_norm_natAbs E] at hdvd
+  have hc39 : p ∣ E.c.natAbs ^ 39 :=
+    prime_dvd_mul hp hdvd (prime_not_dvd_two_pow p 18 hp h2)
+  by_cases hpc : p ∣ E.c.natAbs
+  · exact hpc
+  · have hall : ∀ n, ¬ p ∣ E.c.natAbs ^ n := by
+      intro n
+      induction n with
+      | zero =>
+        intro h1
+        have hp1 : p = 1 := Nat.dvd_one.mp (by simpa [Nat.pow_zero] using h1)
+        have hge : 2 ≤ p := hp.1
+        omega
+      | succ n ih =>
+        intro hk
+        rw [Nat.pow_succ, Nat.mul_comm] at hk
+        exact ih (prime_dvd_mul hp hk hpc)
+    exact absurd hc39 (hall 39)
+
+/-- Multiplicative-reduction inputs at an odd prime `p ∣ c`.
+
+`p` misses `2 |a| |b|`. `v_p(N(c₄)) = 0`, so every prime of `ℤ[i]` above
+`p` misses `c₄`. `v_p(N(Δ)) = 13 · 3 · v_p(|c|)` is positive. Silverman's
+criterion on a minimal model is `v(Δ) > 0` and `v(c₄) = 0` at that prime.
+The quantities here are rational valuations of the field norms.
+`sum_squares_norm_eq_c_pow` is why the exponent is `39 v_p(|c|)` rather
+than `13 v_p(|c|)`. The Kodaira symbol is not a theorem.
+-/
+theorem multiplicative_at_dvd_c (E : FreyCurve4413)
+    (hcop : E.a.natAbs.gcd E.b.natAbs = 1) (p : ℕ) (hp : IsPrime p) (h2 : p ≠ 2)
+    (hdvd : p ∣ E.c.natAbs) :
+    ¬ p ∣ 2 * E.a.natAbs * E.b.natAbs ∧
+      0 < padicVal p (E.discriminant_re ^ 2 + E.discriminant_im ^ 2).natAbs ∧
+      padicVal p (E.discriminant_re ^ 2 + E.discriminant_im ^ 2).natAbs =
+        13 * (3 * padicVal p E.c.natAbs) ∧
+      padicVal p (GaussInt.norm (FreyCurve4413.c4_Frey E.a E.b)).natAbs = 0 := by
+  refine ⟨odd_prime_misses_two_ab E hcop p hp h2 hdvd, ?_, delta_norm_padicVal E p hp h2,
+    c4_norm_padicVal_zero E hcop p hp h2 hdvd⟩
+  have hval := delta_norm_padicVal E p hp h2
+  have hc0 : E.c.natAbs ≠ 0 := by
+    intro hz
+    have hab := natAbs_fourth_sum E
+    rw [hz] at hab
+    have hsum0 : E.a.natAbs ^ 4 + E.b.natAbs ^ 4 = 0 := by simpa using hab
+    have ha0 : E.a.natAbs = 0 := (Nat.pow_eq_zero.mp (by omega : E.a.natAbs ^ 4 = 0)).1
+    have hb0 : E.b.natAbs = 0 := (Nat.pow_eq_zero.mp (by omega : E.b.natAbs ^ 4 = 0)).1
+    have hdg : E.a.natAbs.gcd E.b.natAbs = 0 := by rw [ha0, hb0]; rfl
+    rw [hdg] at hcop
+    omega
+  have hsplit := padicVal_split p E.c.natAbs hp.1 hc0
+  have hk : 0 < padicVal p E.c.natAbs := by
+    cases Nat.eq_zero_or_pos (padicVal p E.c.natAbs) with
+    | inl hkz =>
+      rw [hkz, Nat.pow_zero, Nat.one_mul, Nat.div_one] at hsplit
+      exact False.elim (hsplit.2 hdvd)
+    | inr hkpos => exact hkpos
+  rw [hval]
+  have : 0 < 13 * (3 * padicVal p E.c.natAbs) := by
+    have h3 : 0 < 3 * padicVal p E.c.natAbs := Nat.mul_pos (by decide) hk
+    exact Nat.mul_pos (by decide) h3
+  exact this
+
+/-- Valuation of a Tate parameter of `E` at the odd prime `p`.
+
+The equation is hidden. This is not `padicVal p` of `N(Δ)`, and `rfl` does
+not decide it. Tate uniformization would identify it with the valuation of
+`Δ` on a minimal model at a prime above `p`.
+-/
+opaque tateParameter (E : FreyCurve4413) (p : ℕ) : ℕ := 0
+
+/-- `13` divides the Tate parameter at every odd prime divisor of `c`.
+
+Tate uniformization supplies `q` with `v(q) = v(Δ)` on the minimal model.
+For a Tate curve the residual representation on the `13`-torsion is
+unramified at `ℓ ≠ 13` when `13 ∣ v(q)`, because the Kummer class of `q`
+is trivial in `𝔽₁₃ˣ`. At `ℓ = 13` the same divisibility is the input to
+finiteness of the group scheme. Neither uniformization nor that Kummer
+sequence is formalized. `multiplicative_at_dvd_c` gives
+`13 ∣ v_p(N(Δ))` and does not give this proposition. This proposition is
+not a theorem and not an axiom. It does not rewrite `OddPrimaryLevel`.
+-/
+def tate_param_13_dvd_of_coprime : Prop :=
+  ∀ E : FreyCurve4413, E.a.natAbs.gcd E.b.natAbs = 1 →
+    ∀ p : ℕ, IsPrime p → p ≠ 2 → p ∣ E.c.natAbs →
+      13 ∣ tateParameter E p
+
+/-- If every prime divisor of `n` is an odd prime divisor of `c`, and none
+of those primes divide `n`, then `n = 1`.
+
+This is the shape of "level lowering removes every odd bad prime".
+Applying it to `OddPrimaryLevel` would need `p ∣ OddPrimaryLevel → p ∣ c`
+and `13 ∣ tateParameter → ¬ p ∣ OddPrimaryLevel`. `tate_param_13_dvd_of_coprime`
+is the second hypothesis's missing input, and it does not produce the
+negated divisibility. `odd_level_one_open` remains that identification.
+-/
+theorem nat_eq_one_of_prime_divisors_removed (n c : ℕ) (hn : n ≠ 0)
+    (hsupport : ∀ p, IsPrime p → p ∣ n → p ≠ 2 ∧ p ∣ c)
+    (hremove : ∀ p, IsPrime p → p ≠ 2 → p ∣ c → ¬ p ∣ n) : n = 1 := by
+  cases n with
+  | zero => exact absurd rfl hn
+  | succ n =>
+    cases n with
+    | zero => rfl
+    | succ n =>
+      have hge : 2 ≤ n.succ.succ := by omega
+      rcases exists_prime_factor (n.succ.succ) hge with ⟨p, hp, hpn⟩
+      rcases hsupport p hp hpn with ⟨h2, hc⟩
+      exact absurd hpn (hremove p hp h2 hc)
 
 /-- The product of the sealed 2-primary and odd-primary levels is `32` or `64`.
 

@@ -243,9 +243,20 @@ with norm `2^12`. The principal ideals agree. That equality does not give
 `2^f`. Neither integer is Ribet's `n`. `twoPrimaryLevel` and
 `OddPrimaryLevel` are sealed. `serre_two_level_open` is the unproved
 identification of the 2-primary Serre level with `2^(f / 2)`.
-`odd_level_one_open` is Frey's finite/flat argument at primes dividing
-`c`. `odd_conductor_empty` empties the sets of primes dividing `d = 1`
-and does not prove that proposition. `h_n_eq_of_tate` concludes that the
+`odd_level_one_open` is the unproved identification of the prime-to-`2`
+Serre level with `1`. `multiplicative_at_dvd_c` is the proved input at an
+odd prime `p ∣ c`: `p` misses `2 |a| |b|`, `v_p(N(c₄)) = 0`, and
+`v_p(N(Δ)) = 13 · 3 · v_p(|c|)`. The exponent is `39`, not `13`, because
+`N(a² + b² √(-1)) = c¹³`. That is a valuation of the field norm, not
+`v_𝔭(Δ)` and not a Tate parameter. `tate_param_13_dvd_of_coprime` asks
+whether `13` divides the sealed `tateParameter` at each such prime. It
+is not a theorem and not an axiom, and it does not rewrite
+`OddPrimaryLevel`. `nat_eq_one_of_prime_divisors_removed` is the shape of
+"every odd bad prime has been removed". Applying it to `OddPrimaryLevel`
+would still need the support of that sealed function and the step from
+the Tate parameter to "unramified, so the prime is gone".
+`odd_conductor_empty` empties the sets of primes dividing `d = 1` and
+does not prove `odd_level_one_open`. `h_n_eq_of_tate` concludes that the
 product of the two sealed levels is `32` or `64`, assuming
 `components_n_plus_five_open`, `serre_two_level_open`, and
 `odd_level_one_open`. It does not use `ribet_level_lowering_4413`, and it
