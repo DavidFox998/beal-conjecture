@@ -77,9 +77,15 @@ The capstone applies it once, to the package returned by the level-lowering axio
 It is the missing \texttt{False} from Darmon--Merel Lemma~8.2. The Mazur products at the newforms $32.2.a.a$ and $64.2.a.a$ are $0$, and $(T_5-6)e\not\equiv 0\pmod{13}$ at both levels, so those two calculations do not yet contradict each other.
 \item \texttt{RhoE13Open}, an \texttt{opaque} proposition with no body, in the same file.
 Nothing in the repository produces a term. The level-lowering axiom does not apply without one.
+\texttt{structure RhoE13} in \texttt{DarmonMerel/8\_Galois4413.lean} is the carrier: an unresolved representation space and the residual \texttt{rho\_E\_p} of the Frey curve.
+\texttt{rhoE13\_irreducible\_open} is this proposition.
+The carrier does not produce a term of it.
 \item \texttt{qcurve\_extension\_169\_open}, stated as the trace divisibility $13\mid \texttt{freyTrace3}-(-6)$ for a lift through $\mathrm{GL}_2(\mathbb F_{169})$.
 \texttt{no\_newform\_32\_64\_of\_qcurve} derives item~3 from this sentence.
 The capstone does not assume it.
+\texttt{structure qcurve\_extension\_169} in the same file stores the conjugate coefficient and \texttt{velu\_target\_eq\_twist\_neg\_two}.
+\texttt{qcurve\_extension\_169\_cocycle\_open} is this proposition.
+The structure does not prove the divisibility.
 \texttt{thirteen\_not\_dvd\_two}, the integrality $13\nmid 2$, is a theorem in file~3 and is used by the isogeny input of that derivation.
 \end{enumerate}
 

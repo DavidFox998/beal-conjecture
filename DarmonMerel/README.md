@@ -4,7 +4,7 @@ Public location: [DavidFox998/beal-conjecture](https://github.com/DavidFox998/be
 
 ## Layperson summary
 
-These seven files are the spine of one attempted proof that a fourth power plus a fourth power is never a thirteenth power, except the known cases where one of the fourth powers is zero. The files define the curve, assume modularity, assume Ribet's level lowering, run Mazur's test, compute a winding element, and record a conditional nonexistence theorem. The conditional theorem still takes five open propositions and two axioms. It is not the Beal conjecture.
+These eight files are the spine of one attempted proof that a fourth power plus a fourth power is never a thirteenth power, except the known cases where one of the fourth powers is zero. The files define the curve, assume modularity, assume Ribet's level lowering, run Mazur's test, compute a winding element, package the unresolved mod-13 residual, and record a conditional nonexistence theorem. The conditional theorem still takes five open propositions and two axioms. It is not the Beal conjecture.
 
 ## Referee
 
@@ -17,6 +17,7 @@ These seven files are the spine of one attempted proof that a fourth power plus 
 | `5_WindingQuotient4413.lean` | `C(5, g) = 0` at the newforms `32.2.a.a` and `64.2.a.a`. |
 | `7_WindingQuotientAxiom4413.lean` | `(T₅ - 6) e ≢ 0 (mod 13)` at levels 32 and 64. A theorem, not an axiom, despite the filename. |
 | `6_NoSolution4413.lean` | `no_solution_4413_of_frontier`. Imports file 7 and `Mathlib.Modular.CmVanishing32`. Calls `pacetti_of_kodaira_neron`. |
+| `8_Galois4413.lean` | `structure RhoE13` and `structure qcurve_extension_169`. `rhoE13_irreducible_open` is `RhoE13Open`. `qcurve_extension_169_cocycle_open` is `qcurve_extension_169_open`. No axiom. |
 
 The capstone hypotheses are `kodaira_neron_odd_a_open`, `kodaira_neron_even_a_open`, `no_newform_32_64_open`, coprimality and the sign conditions, and a term of `RhoE13Open`. `qcurve_extension_169_open` is not a hypothesis. `#print axioms no_solution_4413_of_frontier` is `frey_qcurve_modular`, `ribet_level_lowering_4413`, `propext`, `Classical.choice`, `Quot.sound`.
 
