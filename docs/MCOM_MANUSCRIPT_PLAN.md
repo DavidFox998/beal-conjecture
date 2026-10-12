@@ -25,7 +25,7 @@ not a patch of the old draft.
 
 ## 2. Critical accuracy issue — must be resolved before any submission
 
-`beal-level-26-foundations`'s `BealForall_real_witness_none` and
+`beal-conjecture`'s `BealForall_real_witness_none` and
 `beal_forall_in_kernel_from_beal_forall_none_separated` are **not** proofs of
 the quantified Beal statement.  Traced to source:
 
@@ -61,7 +61,7 @@ reduction of the true `BealConjecture` to five explicit, ordinary theorem
 arguments (not global axioms).  One-line proof term, `#print axioms` checked.
 This is the strongest, most defensible result and should carry the paper.
 
-**`beal-level-26-foundations`:** the computational number theory, presented
+**`beal-conjecture`:** the computational number theory, presented
 without the "none"/"BealForall" branding:
 
 - PARI/GP-verified 2-descent on `26a1` (Δ = −17576) / `26b1` (Δ = −1664),
@@ -81,7 +81,7 @@ without the "none"/"BealForall" branding:
    assembly vs. computable evidence base).
 3. The conditional theorem (`beal-conjecture`) — full statement of the five
    premises in plain language, the one-line derivation.
-4. Computational certificates at level 26 (`beal-level-26-foundations`) — PARI
+4. Computational certificates at level 26 (`beal-conjecture`) — PARI
    2-descent, Selmer, LMFDB cross-checks, reproducibility instructions.
 5. Formal audit methodology — Core/Wrapper/named-hypothesis layering,
    `#print axioms` tooling, and an explicit disclaimer table translating every

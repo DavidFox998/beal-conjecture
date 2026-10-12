@@ -120,7 +120,7 @@ stays `def Prop`.
 This is **not** Matveev 2000 interpolation, **not** the unrestricted
 Level26 `matveev_inequality_real_target` (the product is false for
 huge `B`), and **not** a Mathlib-only `baker_bound_gap3` / `hLLL`.
-Not a minted unconditional v25 tag. Slug `beal-level-26-foundations`,
+Not a minted unconditional v25 tag. Slug `beal-conjecture`,
 concept DOI `10.5281/zenodo.22379293`.
 
 Latest kernel tag / HEAD: `v24.4.0-Beal-44-13-Level-26-v24x-Final-Summary`

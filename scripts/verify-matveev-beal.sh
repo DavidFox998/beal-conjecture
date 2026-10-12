@@ -4923,8 +4923,8 @@ if re.search(r"^theorem baker_bound_gap3\b", interp, re.M):
     sys.exit(1)
 
 readme = pathlib.Path("README.md").read_text(encoding="utf-8")
-if not readme.startswith("# foundations-level-26"):
-    print("README.md must start with the foundations-level-26 title", file=sys.stderr)
+if not readme.startswith("# beal-conjecture"):
+    print("README.md must start with the beal-conjecture title", file=sys.stderr)
     sys.exit(1)
 if "beal-conjecture stays beal-conjecture" not in readme:
     print("README.md must keep the monorepo slug note", file=sys.stderr)
@@ -4938,7 +4938,7 @@ level26_needles = [
     "Matveev-Beal Level 26: Rank-3 B0/C cutoff nogo",
     'version: "v24-v24x-final-rank3-b0-div-c-nogo"',
     'doi: "10.5281/zenodo.22379293"',
-    'repository-code: "https://github.com/DavidFox998/beal-level-26-foundations"',
+    'repository-code: "https://github.com/DavidFox998/beal-conjecture"',
     "C1_floor=143186215390",
     "B0_nat=1000000",
     "10.5281/zenodo.22732209",
@@ -5109,7 +5109,7 @@ print("  does not claim Euclidean >= B0; does not import MatveevThm14General; v2
 print("  matveev_gap3_lower stays the integer-gap B<=B0 close; not a minted v25 tag")
 print("  not a minted v25.0.0-Beal-44-13-Level-26-Baker-B0-Unconditional-foundations tag")
 print("  bare-real matveev_thm14_n2_real_explicit stays false def Prop")
-print("  concept DOI 10.5281/zenodo.22379293, slug beal-level-26-foundations")
+print("  concept DOI 10.5281/zenodo.22379293, slug beal-conjecture")
 print("  BealMatveevBealV25B0Search: separate Lake target; B<1000 no-sol via mod16+fourth-root")
 print("  check_range is foldl; ten shards of 100; check_range_true_of_all is the foldl invariant")
 print("  |Lambda| <= 2/B^9 on B>=100; abs_Lambda_ge_inv_B_pow_eight stays def Prop")

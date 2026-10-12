@@ -1,6 +1,6 @@
 # Foundations complement (current HEAD)
 
-`beal-level-26-foundations` proves the **B≤10^6 integer-gap** bound
+`beal-conjecture` proves the **B≤10^6 integer-gap** bound
 `matveev_gap3_lower` / `matveev_gap3_lower_B_le_B0_target` (0 sorry):
 on $A^4+B^4=(B+3)^{13}$ with $B\le 10^6$,
 $|\Lambda|>\exp(-\mathrm{height}_{B_0}\log\mathrm{height}_{B_0})$,
