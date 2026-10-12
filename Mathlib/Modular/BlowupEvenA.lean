@@ -2226,4 +2226,314 @@ theorem chain4SReduced_singular_on_a (S a b : Quad) (ha : piDividesQ a)
 
 end Inert
 
+
+
+
+/-!
+## Chart coverage
+
+Each blow-up is the blow-up of one closed point of a surface in ambient affine
+3-space, so it has three standard affine charts. A chart is terminal when one
+formal partial is a unit along the special fiber. An intermediate chart is
+accounted for when every singular point of that fiber is a center blown up
+later.
+
+* Stage A, center `C0 = (π, x, y) = (0, 0, 0)`. Charts: `π` (`piChartIn`,
+  singular at `C1 = (X, Y) = (0, 0)` and `C2 = (X, Y) ≡ (-u₂, 0)`), `x`
+  (`cuspChart`, singular only at `C2`), `y` (`cuspY`, terminal).
+* Stage B, center `C1` on `piChartIn`. Charts: `π` (`originPiIn`, singular
+  only at the origin `C1a`), `X` (`originX`, singular at `C1b = (t, S, T) =
+  (0, 0, 0)` and at `C2`), `Y` (`originY`, empty special fiber).
+* Stage C, center `C1b`. Charts: `t` (`chain2Chart`; `π ∣ t` is regular,
+  `π ∣ A` is singular only at `C2`), `S` (`chain2S`, terminal), `T`
+  (`chain2T`, terminal).
+* Stage D, center `C1a`. Charts: `π` (`thirdPi`), `X` (`thirdX`), `Y`
+  (`thirdY`, empty). On `thirdPi` the transverse polynomial is
+  `u₂ X² + u₄ X + u₆`. If `π ∣ u₆` it is singular at `X ≡ 0` and `X ≡ 1`.
+  If `u₆ ≡ 1` it has no singularity over `ℤ[√(-1)]`; over `𝔽₄` it is singular
+  at the two roots of `X² + X + 1`. `thirdX` carries the same roots, as
+  `S ≡ ω` and `S ≡ ω̄`, together with `S ≡ 0`.
+* Stage E, center `S ≡ 0` on `thirdX`. Charts: `t` (`chain4Chart`, terminal
+  on the whole special fiber), `S` (`chain4S`; the exceptional slice is
+  regular, and `π ∣ a` is singular only at the two remaining roots), `T`
+  (`chain4T`, terminal).
+* Stage F, the two roots. In the split row they are the rational points
+  `X ≡ 0` and `X ≡ 1`, each with a `π`-chart, an `X`-chart singular only at
+  the other root, and a `Y`-chart with empty special fiber. In the inert row
+  the same three charts are `legPi`, `legS`, and `legY` at `ω` and at `ω̄`.
+* Stage G, center `C2` on `piChartIn`. Charts: `π` (`pastPi`, terminal),
+  `X` (`pastX`; the exceptional slice `π ∣ t` is regular, and `π ∣ S` is
+  singular only at `C1`, already blown up), `Y` (`pastY`, terminal).
+
+The two rows are two presentations of stage F, not two blow-ups of one curve.
+No chart contributes a tenth reduced equation. Adjacency is not proved.
+-/
+
+inductive EvenAComponent where
+  | chain1
+  | theta
+  | chain2
+  | chain3
+  | chain4
+  | cusp
+  | legFar
+  | legUp
+  | legDown
+  deriving DecidableEq, Repr
+
+namespace EvenAComponent
+
+def all : List EvenAComponent :=
+  [.chain1, .theta, .chain2, .chain3, .chain4, .cusp, .legFar, .legUp, .legDown]
+
+theorem length_nine : all.length = 9 := rfl
+
+theorem nodup : all.Nodup := by decide
+
+end EvenAComponent
+
+/-- `t = 1`, `S = T = 0` lies on `chain1` and not on `theta`. -/
+theorem chain1_off_theta (u2 u4 u6 : GaussInt) :
+    originX u2 u4 u6 GaussInt.one GaussInt.zero GaussInt.zero = GaussInt.zero ∧
+      ¬ piDivides GaussInt.one := by
+  refine ⟨?_, not_piDivides_one⟩
+  simp [originX, GaussInt.mul, GaussInt.add, GaussInt.neg, GaussInt.one, GaussInt.zero]
+
+/-- `t = 0`, `S = 1`, `T = 0` lies on `theta` and not on `chain1`. -/
+theorem theta_off_chain1 (u2 u4 u6 : GaussInt) :
+    originX u2 u4 u6 GaussInt.zero GaussInt.one GaussInt.zero = GaussInt.zero ∧
+      ¬ piDivides GaussInt.one := by
+  refine ⟨?_, not_piDivides_one⟩
+  simp [originX, GaussInt.mul, GaussInt.add, GaussInt.neg, GaussInt.one, GaussInt.zero]
+
+/-- The resolved even-`a` special fiber has exactly nine components.
+
+Five have multiplicity two: `chain1`, `theta`, `chain2`, `chain3`, and
+`chain4`. Four have multiplicity one: `cusp`, `legFar`, `legUp`, and
+`legDown`. `chain2` and `chain4` pull `π` back as `t² A` with `A` a unit at
+the point `(A, B) = (u₂, u₂)`. The other three double components are double
+lines; the coefficient that exhibits multiplicity two is a unit at an `𝔽₄`
+point, not at an integral point.
+
+`legUp` and `legDown` are the two roots of the transverse polynomial on the
+third `π`-chart. If `π ∣ u₆` those roots are `X ≡ 0` and `X ≡ 1`. If
+`u₆ ≡ 1` they are the roots of `X² + X + 1` in `𝔽₄`, and the charts are the
+reduced equation `Y² - p (X² + X + 1) - p³ X³`.
+
+Every terminal chart is regular on its special fiber. Every intermediate
+chart is singular only at a center blown up later. The `s`-chart at either
+`𝔽₄` root is singular only at the other root. No tenth component appears.
+
+Adjacency, normal crossings, minimality, and the identification of the Néron
+model with the smooth locus are not proved. The equation-level overlap of
+`pastX` at `t = 0` with the conic `B² - u₂² A` is not re-proved; both cut
+the exceptional divisor of `C2`.
+-/
+theorem even_a_nine_components
+    (u2 u4 u6 : GaussInt) (h2 : congOne u2) (h4 : congOne u4) :
+    EvenAComponent.all.length = 9 ∧ EvenAComponent.all.Nodup ∧
+      (∀ p X Y, piDivides p →
+        piDivides (piChartIn p u2 u4 u6 X Y) →
+        piDivides (piChartPartialP p u2 u4 u6 X Y) →
+        piDivides Y ∧ (piDivides X ∨ piDivides (GaussInt.add X u2))) ∧
+      (∀ x S T, piDivides S → ¬ piDivides (cuspPartialX u2 u4 u6 x S T)) ∧
+      (∀ x S T, piDivides x →
+        piDivides (cuspChart u2 u4 u6 x S T) →
+        piDivides (cuspPartialX u2 u4 u6 x S T) →
+        piDivides T ∧ piDivides (GaussInt.add GaussInt.one (GaussInt.mul u2 S))) ∧
+      (∀ y A B, piDivides (GaussInt.mul y A) →
+        piDivides (cuspY u2 u4 u6 y A B) →
+        piDivides (cuspYPartialA u2 u4 u6 y A B) → False) ∧
+      (∀ Y a b, piDivides (GaussInt.mul Y a) → ¬ piDivides (originY u2 u4 u6 Y a b)) ∧
+      (∀ p X Y, piDivides p →
+        piDivides (originPiIn p u2 u4 u6 X Y) →
+        piDivides (originPiPartialP p u2 u4 u6 X Y) →
+        piDivides Y ∧ piDivides X) ∧
+      (∀ t S T, piDivides S →
+        piDivides (originX u2 u4 u6 t S T) →
+        piDivides (originXPartialS u2 u4 u6 t S T) →
+        piDivides T ∧ (piDivides t ∨ piDivides (GaussInt.add t u2))) ∧
+      (∀ t S T, piDivides t →
+        piDivides (originX u2 u4 u6 t S T) →
+        piDivides (originXPartialT u2 u4 u6 t S T) →
+        piDivides T ∧ piDivides S) ∧
+      (∀ t A B, piDivides t → ¬ piDivides (chain2PartialA u2 u4 u6 t A B)) ∧
+      (∀ t A B, piDivides A →
+        piDivides (chain2Chart u2 u4 u6 t A B) →
+        piDivides (chain2PartialA u2 u4 u6 t A B) →
+        piDivides B ∧ piDivides (GaussInt.add t u2)) ∧
+      (∀ S a b, piDivides (GaussInt.mul S a) →
+        ¬ piDivides (chain2SPartialA u2 u4 u6 S a b)) ∧
+      (∀ r p q, piDivides (GaussInt.mul (GaussInt.mul r r) (GaussInt.mul p q)) →
+        piDivides (chain2T u2 u4 u6 r p q) →
+        piDivides (chain2TPartialP u2 u4 u6 r p q) → False) ∧
+      (∀ Y a b, piDivides (GaussInt.mul Y a) → ¬ piDivides (thirdY u2 u4 u6 Y a b)) ∧
+      (∀ t A B, piDivides (GaussInt.mul (GaussInt.mul t t) A) →
+        ¬ piDivides (chain4PartialA u2 u4 u6 t A B)) ∧
+      (∀ S a b, piDivides S → ¬ piDivides (chain4SPartialA u2 u4 u6 S a b)) ∧
+      (∀ r p q, piDivides (GaussInt.mul (GaussInt.mul r r) (GaussInt.mul p q)) →
+        piDivides (chain4T u2 u4 u6 r p q) →
+        piDivides (chain4TPartialP u2 u4 u6 r p q) → False) ∧
+      (∀ p A B, piDivides p → ¬ piDivides (pastPiPartialA u2 u4 u6 p A B)) ∧
+      (∀ t S T, piDivides t → ¬ piDivides (pastXPartialS u2 u4 u6 t S T)) ∧
+      (∀ t S T, piDivides S →
+        piDivides (pastX u2 u4 u6 t S T) →
+        piDivides (pastXPartialS u2 u4 u6 t S T) →
+        piDivides T ∧ piDivides (GaussInt.sub t u2)) ∧
+      (∀ Y a b, piDivides (GaussInt.mul Y a) →
+        piDivides (pastY u2 u4 u6 Y a b) →
+        piDivides (pastYPartialB u2 u4 u6 Y a b) → False) ∧
+      (piDivides u6 →
+        (∀ p X Y, piDivides p →
+          piDivides (thirdPi u2 u4 u6 p X Y) →
+          piDivides (thirdPiPartialP u2 u4 u6 p X Y) →
+          piDivides Y ∧ (piDivides X ∨ piDivides (GaussInt.sub X GaussInt.one))) ∧
+        (∀ t S T, piDivides t →
+          piDivides (thirdX u2 u4 u6 t S T) →
+          piDivides (thirdXPartialT u2 u4 u6 t S T) →
+          piDivides T ∧ (piDivides S ∨ piDivides (GaussInt.sub S GaussInt.one))) ∧
+        (∀ v6 p U V, piDivides p → ¬ piDivides (leg0PartialU u2 u4 v6 p U V)) ∧
+        (∀ v6 s A B, piDivides s → ¬ piDivides (leg0XPartialA u2 u4 v6 s A B)) ∧
+        (∀ v6 s A B, piDivides A →
+          piDivides (leg0X u2 u4 v6 s A B) →
+          piDivides (leg0XPartialA u2 u4 v6 s A B) →
+          piDivides B ∧ piDivides (GaussInt.sub s GaussInt.one)) ∧
+        (∀ v6 Y a b, piDivides (GaussInt.mul Y a) →
+          piDivides (leg0Y u2 u4 v6 Y a b) →
+          piDivides (leg0YPartialB u2 u4 v6 Y a b) → False) ∧
+        (∀ v6 sig p U V, piDivides p → ¬ piDivides (leg1PartialU u2 v6 sig p U V)) ∧
+        (∀ v6 sig s A B, piDivides s → ¬ piDivides (leg1XPartialA u2 v6 sig s A B)) ∧
+        (∀ v6 sig s A B, piDivides A →
+          piDivides (leg1X u2 v6 sig s A B) →
+          piDivides (leg1XPartialA u2 v6 sig s A B) →
+          piDivides B ∧ piDivides (GaussInt.add s GaussInt.one)) ∧
+        (∀ v6 sig Y a b, piDivides (GaussInt.mul Y a) →
+          piDivides (leg1Y u2 v6 sig Y a b) →
+          piDivides (leg1YPartialB u2 v6 sig Y a b) → False)) ∧
+      (congOne u6 →
+        (∀ p X Y, piDivides p → ¬ piDivides (thirdPiPartialP u2 u4 u6 p X Y)) ∧
+        (∀ t S T, piDivides t →
+          piDivides (thirdX u2 u4 u6 t S T) →
+          piDivides (thirdXPartialT u2 u4 u6 t S T) →
+          piDivides T ∧ piDivides S) ∧
+        (∀ S a b, piDivides a → ¬ piDivides (chain4SPartialA u2 u4 u6 S a b)) ∧
+        (∀ p X Y, BlowupOddA.Quad.piDividesQ p →
+          BlowupOddA.Quad.piDividesQ (thirdReduced p X Y) →
+          BlowupOddA.Quad.piDividesQ (thirdReducedPartialP p X Y) →
+          BlowupOddA.Quad.piDividesQ Y ∧
+            (BlowupOddA.Quad.piDividesQ (BlowupOddA.Quad.sub X BlowupOddA.Quad.omega) ∨
+              BlowupOddA.Quad.piDividesQ (BlowupOddA.Quad.sub X BlowupOddA.Quad.omegaConj))) ∧
+        (∀ t S T, BlowupOddA.Quad.piDividesQ t →
+          BlowupOddA.Quad.piDividesQ (thirdXReduced t S T) →
+          BlowupOddA.Quad.piDividesQ (thirdXReducedPartialT t S T) →
+          BlowupOddA.Quad.piDividesQ T ∧
+            (BlowupOddA.Quad.piDividesQ S ∨
+              BlowupOddA.Quad.piDividesQ (BlowupOddA.Quad.sub S BlowupOddA.Quad.omega) ∨
+              BlowupOddA.Quad.piDividesQ (BlowupOddA.Quad.sub S BlowupOddA.Quad.omegaConj))) ∧
+        (∀ S a, BlowupOddA.Quad.piDividesQ S →
+          ¬ BlowupOddA.Quad.piDividesQ (chain4SReducedPartial S a)) ∧
+        (∀ S a b, BlowupOddA.Quad.piDividesQ a →
+          BlowupOddA.Quad.piDividesQ (chain4SReduced S a b) →
+          BlowupOddA.Quad.piDividesQ (chain4SReducedPartial S a) →
+          BlowupOddA.Quad.piDividesQ b ∧
+            (BlowupOddA.Quad.piDividesQ (BlowupOddA.Quad.sub S BlowupOddA.Quad.omega) ∨
+              BlowupOddA.Quad.piDividesQ (BlowupOddA.Quad.sub S BlowupOddA.Quad.omegaConj))) ∧
+        (∀ ρ p U V, (ρ = BlowupOddA.Quad.omega ∨ ρ = BlowupOddA.Quad.omegaConj) →
+          BlowupOddA.Quad.piDividesQ p →
+          ¬ BlowupOddA.Quad.piDividesQ (legPiPartial ρ p U V)) ∧
+        (∀ ρ s A B, (ρ = BlowupOddA.Quad.omega ∨ ρ = BlowupOddA.Quad.omegaConj) →
+          BlowupOddA.Quad.piDividesQ s →
+          ¬ BlowupOddA.Quad.piDividesQ (legSPartial ρ s A B)) ∧
+        (∀ ρ s A B, BlowupOddA.Quad.piDividesQ A →
+          BlowupOddA.Quad.piDividesQ (legS ρ s A B) →
+          BlowupOddA.Quad.piDividesQ (legSPartial ρ s A B) →
+          BlowupOddA.Quad.piDividesQ B ∧
+            BlowupOddA.Quad.piDividesQ (BlowupOddA.Quad.sub s (legShift ρ))) ∧
+        (∀ ρ y a b, (ρ = BlowupOddA.Quad.omega ∨ ρ = BlowupOddA.Quad.omegaConj) →
+          BlowupOddA.Quad.piDividesQ (BlowupOddA.Quad.mul y a) →
+          BlowupOddA.Quad.piDividesQ (legY ρ y a b) →
+          BlowupOddA.Quad.piDividesQ (legYPartial ρ y a b) → False) ∧
+        (∀ ρ p U V, rel ρ = BlowupOddA.Quad.zero →
+          thirdReduced p (BlowupOddA.Quad.add ρ (BlowupOddA.Quad.mul p U))
+            (BlowupOddA.Quad.mul p V) =
+            BlowupOddA.Quad.mul (BlowupOddA.Quad.mul p p) (legPi ρ p U V)) ∧
+        (∀ ρ s A B, rel ρ = BlowupOddA.Quad.zero →
+          thirdReduced (BlowupOddA.Quad.mul s A) (BlowupOddA.Quad.add ρ s)
+            (BlowupOddA.Quad.mul s B) =
+            BlowupOddA.Quad.mul (BlowupOddA.Quad.mul s s) (legS ρ s A B)) ∧
+        (∀ ρ y a b, rel ρ = BlowupOddA.Quad.zero →
+          thirdReduced (BlowupOddA.Quad.mul y a)
+            (BlowupOddA.Quad.add ρ (BlowupOddA.Quad.mul y b)) y =
+            BlowupOddA.Quad.mul (BlowupOddA.Quad.mul y y) (legY ρ y a b))) := by
+  let hu2 : ¬ piDivides u2 := not_pi_of_congOne u2 h2
+  let hu4 : ¬ piDivides u4 := not_pi_of_congOne u4 h4
+  exact ⟨rfl, EvenAComponent.nodup,
+    fun p X Y hp hF hD => piChart_singular u2 u4 u6 p X Y hp hF hD,
+    fun x S T hS => cusp_regular_on_S u2 u4 u6 x S T hS,
+    fun x S T hx hF hD => cusp_singular_on_x u2 u4 u6 x S T hx hF hD,
+    fun y A B hπ hF hD => cuspY_regular_on_fiber u2 u4 u6 y A B hu2 hπ hF hD,
+    fun Y a b hπ => originY_fiber_empty u2 u4 u6 Y a b hπ,
+    fun p X Y hp hF hD => originPi_only_origin u2 u4 u6 p X Y hu2 hp hF hD,
+    fun t S T hS hF hD => originX_singular_on_S u2 u4 u6 t S T hS hF hD,
+    fun t S T ht hF hD => originX_singular_on_t u2 u4 u6 t S T hu2 ht hF hD,
+    fun t A B ht => chain2_regular_on_t u2 u4 u6 t A B hu2 ht,
+    fun t A B hA hF hD => chain2_singular_on_A u2 u4 u6 t A B hA hF hD,
+    fun S a b hπ => chain2S_regular u2 u4 u6 S a b hu2 hπ,
+    fun r p q hπ hF hD => chain2T_regular u2 u4 u6 r p q hu2 hπ hF hD,
+    fun Y a b hπ => thirdY_fiber_empty u2 u4 u6 Y a b hπ,
+    fun t A B hπ => chain4_regular u2 u4 u6 t A B hu2 hπ,
+    fun S a b hS => chain4S_regular_on_S u2 u4 u6 S a b hu2 hS,
+    fun r p q hπ hF hD => chain4T_regular u2 u4 u6 r p q hu2 hπ hF hD,
+    fun p A B hp => pastPi_regular u2 u4 u6 p A B hu2 hp,
+    fun t S T ht => pastX_regular_on_t u2 u4 u6 t S T hu2 ht,
+    fun t S T hS hF hD => pastX_singular_on_S u2 u4 u6 t S T hS hF hD,
+    fun Y a b hπ hF hD => pastY_regular u2 u4 u6 Y a b hu2 hπ hF hD,
+    fun h6 => ⟨
+      fun p X Y hp hF hD => thirdPi_singular_split u2 u4 u6 p X Y h2 h4 h6 hp hF hD,
+      fun t S T ht hF hD => thirdX_singular_on_t_split u2 u4 u6 t S T h2 h4 h6 ht hF hD,
+      fun v6 p U V hp => leg0_regular u2 u4 v6 p U V hu4 hp,
+      fun v6 s A B hs => leg0X_regular_on_s u2 u4 v6 s A B hu4 hs,
+      fun v6 s A B hA hF hD => leg0X_singular_on_A u2 u4 v6 s A B h2 h4 hA hF hD,
+      fun v6 Y a b hπ hF hD => leg0Y_regular u2 u4 v6 Y a b hu4 hπ hF hD,
+      fun v6 sig p U V hp => leg1_regular u2 v6 sig p U V hu2 hp,
+      fun v6 sig s A B hs => leg1X_regular_on_s u2 v6 sig s A B hu2 hs,
+      fun v6 sig s A B hA hF hD => leg1X_singular_on_A u2 v6 sig s A B hu2 hA hF hD,
+      fun v6 sig Y a b hπ hF hD => leg1Y_regular u2 v6 sig Y a b hu2 hπ hF hD⟩,
+    fun h6 => ⟨
+      fun p X Y hp => thirdPi_regular_inert u2 u4 u6 p X Y h2 h4 h6 hp,
+      fun t S T ht hF hD => thirdX_singular_on_t_inert u2 u4 u6 t S T h2 h4 h6 ht hF hD,
+      fun S a b ha => chain4S_regular_on_a_inert u2 u4 u6 S a b h2 h4 h6 ha,
+      fun p X Y hp hF hD => thirdReduced_singular p X Y hp hF hD,
+      fun t S T ht hF hD => thirdXReduced_singular_on_t t S T ht hF hD,
+      fun S a hS => chain4SReduced_regular_on_S S a hS,
+      fun S a b ha hF hD => chain4SReduced_singular_on_a S a b ha hF hD,
+      fun ρ p U V hρ hp => legPi_regular ρ p U V hρ hp,
+      fun ρ s A B hρ hs => legS_regular_on_s ρ s A B hρ hs,
+      fun ρ s A B hA hF hD => legS_singular_on_A ρ s A B hA hF hD,
+      fun ρ y a b hρ hπ hF hD => legY_regular ρ y a b hρ hπ hF hD,
+      fun ρ p U V hρ => thirdReduced_legPi ρ p U V hρ,
+      fun ρ s A B hρ => thirdReduced_legS ρ s A B hρ,
+      fun ρ y a b hρ => thirdReduced_legY ρ y a b hρ⟩⟩
+
+/-- Kodaira–Néron for the even-`a` row.
+
+The Néron model is the smooth locus of the minimal regular model. The charts
+exhibit nine distinct components: five of multiplicity two (`chain1`, `theta`,
+`chain2`, `chain3`, `chain4`) and four of multiplicity one (`cusp`, the conic
+at `X ≡ -u₂`, and the two legs of the transverse polynomial). When `π ∣ u₆`
+those legs are the rational points `X ≡ 0` and `X ≡ 1`. When `u₆ ≡ 1` they
+are the roots of `X² + X + 1` in `𝔽₄`. Adjacency is not proved.
+
+This proposition identifies the count `EvenAComponent.all.length = 9` with
+`NeronSpecialFiberComponents`. It is not a theorem.
+`NeronSpecialFiberComponents` stays opaque. `components_n_plus_five_open` is
+a different sentence: it asks for `n + 5` on every `IsINStar` row.
+-/
+def kodaira_neron_even_a_open : Prop :=
+  ∀ E : FreyCurve4413,
+    E.c.natAbs % 2 = 1 →
+    E.a.natAbs % 2 = 0 →
+    qiLocalMinimalAtPi E →
+    NeronSpecialFiberComponents E = EvenAComponent.all.length
+
 end BlowupEvenA
