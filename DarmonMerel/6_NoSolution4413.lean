@@ -18,9 +18,11 @@ is the further statement
 at levels `32` and `64`. That nonvanishing is `winding_elimination_4413`.
 It does not contradict the equation. `no_solution_4413_of_frontier` is the
 conditional negation for `a ≠ 0`, `b ≠ 0`, coprime coefficients, and
-`c > 0`. Its open propositions are `components_n_plus_five_open` and
-`no_newform_32_64_open`. `serre_two_level_open` and `odd_level_one_open`
-are not hypotheses. The unconditional statement is not a theorem.
+`c > 0`. Its open propositions are `kodaira_neron_odd_a_open`,
+`kodaira_neron_even_a_open`, and `no_newform_32_64_open`.
+`components_n_plus_five_open`, `serre_two_level_open`, and
+`odd_level_one_open` are not hypotheses. The unconditional statement is
+not a theorem.
 `(1, 0, 1)` and `(0, 1, 1)` remain solutions.
 -/
 
@@ -105,14 +107,16 @@ def no_newform_32_64_open : Prop :=
 
 /-- No nontrivial coprime solution with `c > 0`, if the frontier holds.
 
-The open propositions are `components_n_plus_five_open` and
-`no_newform_32_64_open`. `serre_two_level_open` and `odd_level_one_open`
-are not hypotheses. They are the inputs of `h_n_eq_of_tate`, and that
-disjunction is not used: both of its branches were the same application
-of `no_newform_32_64_open`. `qcurve_extension_169_open` implies
-`no_newform_32_64_open` by `no_newform_32_64_of_qcurve`. That theorem is
-in `CmVanishing32`, which imports this file, so this theorem does not
-take the extension as a hypothesis.
+The open propositions are `kodaira_neron_odd_a_open`,
+`kodaira_neron_even_a_open`, and `no_newform_32_64_open`.
+`components_n_plus_five_open` is not a hypothesis.
+`serre_two_level_open` and `odd_level_one_open` are not hypotheses.
+They are inputs of `h_n_eq_of_tate`, and that disjunction is not used:
+both of its branches were the same application of `no_newform_32_64_open`.
+`qcurve_extension_169_open` implies `no_newform_32_64_open` by
+`no_newform_32_64_of_qcurve`. That theorem is in `CmVanishing32`, which
+imports this file, so this theorem does not take the extension as a
+hypothesis.
 
 `tate_param_13_dvd_of_coprime` is not a hypothesis.
 `inertia_trivial_of_tate_13_open` still carries the divisibility
@@ -121,7 +125,7 @@ take the extension as a hypothesis.
 `hIrr` is a term of `RhoE13Open`. Nothing in the repository produces one,
 and the Ribet axiom does not apply without it.
 
-`pacetti_of_components hcomp` is `pacetti_2_8_open`. The conductor shape
+`pacetti_of_kodaira_neron hOdd hEven` is `pacetti_2_8_open`. The conductor shape
 `N = 32 |c|²` is `FreyConductorDivides`, not a proof that `N` is the
 conductor. The `False` is `no_newform_32_64_open` applied to the axiom's
 package.
@@ -131,7 +135,8 @@ are solutions. `a ≠ 0` and `b ≠ 0` keep them out. `(8, 8, 2)` is
 `capstone_excludes_curve_8_8_2`.
 -/
 theorem no_solution_4413_of_frontier
-    (hcomp : FreyCurve4413.components_n_plus_five_open)
+    (hOdd : BlowupOddA.kodaira_neron_odd_a_open)
+    (hEven : BlowupEvenA.kodaira_neron_even_a_open)
     (hnew : no_newform_32_64_open)
     (a b c : ℤ)
     (ha : a ≠ 0) (hb : b ≠ 0)
@@ -143,7 +148,7 @@ theorem no_solution_4413_of_frontier
   intro heq
   let E : FreyCurve4413 := FreyCurve4413.mk' a b c heq
   have hMod : Modular E := frey_qcurve_modular a b c E
-  have hPac : pacetti_2_8_open := pacetti_of_components hcomp
+  have hPac : pacetti_2_8_open := pacetti_of_kodaira_neron hOdd hEven
   let N : ℕ := 32 * c.natAbs ^ 2
   have hCond : FreyConductorDivides c N := Or.inl rfl
   let pkg : RibetLevel c E N :=

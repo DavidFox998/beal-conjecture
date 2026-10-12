@@ -25,7 +25,8 @@ divides `d`, so each `Qᵢ` is empty and the lowered level is a power of `2`.
 `2^f`. `serre_two_level_open` and `odd_level_one_open` name the two steps
 from Pacetti's exponent to a level in `{32, 64}`. `h_n_eq` stays on the
 axiom. `h_n_eq_of_tate` assumes those two propositions together with
-`components_n_plus_five_open` and does not use the axiom.
+`kodaira_neron_odd_a_open` and `kodaira_neron_even_a_open`, and does not
+use the axiom.
 `multiplicative_at_dvd_c` is the norm computation at an odd prime dividing
 `c`: that prime misses `2ab` and `c₄`, and `13` divides `v_p(N(Δ))`.
 `tate_param_13_dvd_of_coprime` is the Tate parameter. It does not rewrite
@@ -131,8 +132,9 @@ even `n`. `NeronSpecialFiberComponents` and `SwanAtPi` are sealed.
 `FTameAtPi` is the tame exponent, equal to `2` for odd `c`. `SwanAtPi` is
 Ogg's full exponent minus that tame part. `(π)^10 = (32)` does not set
 Ribet's `n`. `ConductorExponentAtPrimeAbove2` is their sum. `h_n_eq` stays
-on the axiom. `h_n_eq_of_tate` needs `components_n_plus_five_open`,
-`serre_two_level_open`, and `odd_level_one_open`.
+on the axiom. `h_n_eq_of_tate` needs `kodaira_neron_odd_a_open`,
+`kodaira_neron_even_a_open`, `serre_two_level_open`, and
+`odd_level_one_open`.
 -/
 def MinimalModelAt2 (E : FreyCurve4413) : Prop :=
   FreyCurve4413.qiLocalMinimalAtPi E
@@ -250,8 +252,8 @@ is `2^(10 / 2) = 32` beside `2^10 = 1024`, and the same split for `12`.
 That disjunction is stored on `RibetLevel` as part of the axiom's
 conclusion. `thirtyTwo_dvd_of_tate_bound` turns the disjunction into
 `32 ∣ n` and does not use this proposition. `h_n_eq_of_tate` assumes
-`components_n_plus_five_open`, `serre_two_level_open`, and
-`odd_level_one_open`.
+`kodaira_neron_odd_a_open`, `kodaira_neron_even_a_open`,
+`serre_two_level_open`, and `odd_level_one_open`.
 On a coprime pair, `minimalAt2_of_coprime` is `MinimalModelAt2`, so this
 statement does not take minimality as a hypothesis. It asks whether
 `FTameAtPi + SwanAtPi` lies in `{10, 12}` when `gcd(|a|, |b|) = 1`.
@@ -915,9 +917,11 @@ theorem nat_eq_one_of_prime_divisors_removed (n c : ℕ) (hn : n ≠ 0)
 /-- The product of the sealed 2-primary and odd-primary levels is `32` or `64`.
 
 The hypotheses that stand in for the axiom's disjunction are
-`components_n_plus_five_open`, `serre_two_level_open`, and
-`odd_level_one_open`. The component count alone is not enough.
-`pacetti_of_components` gives the Artin exponent `f ∈ {10, 12}`.
+`kodaira_neron_odd_a_open`, `kodaira_neron_even_a_open`,
+`serre_two_level_open`, and `odd_level_one_open`. The component count
+alone is not enough. `pacetti_of_kodaira_neron` gives the Artin exponent
+`f ∈ {10, 12}`. `pacetti_of_components` is the same exponent under
+`components_n_plus_five_open`, and this theorem does not use it.
 `serre_two_level_open` rewrites the 2-primary part, and
 `odd_level_one_open` rewrites the odd part to `1`. This theorem does not
 use `ribet_level_lowering_4413`. The conclusion is a product of two sealed
@@ -925,13 +929,14 @@ functions. It is not the field `RibetLevel.h_n_eq`, and it does not
 discharge that field.
 -/
 theorem h_n_eq_of_tate
-    (hcomp : FreyCurve4413.components_n_plus_five_open)
+    (hOdd : BlowupOddA.kodaira_neron_odd_a_open)
+    (hEven : BlowupEvenA.kodaira_neron_even_a_open)
     (hserre : serre_two_level_open)
     (hodd : odd_level_one_open)
     (E : FreyCurve4413) (hcop : E.a.natAbs.gcd E.b.natAbs = 1) :
     twoPrimaryLevel E * OddPrimaryLevel E = 32 ∨
       twoPrimaryLevel E * OddPrimaryLevel E = 64 := by
-  have hf := pacetti_of_components hcomp E hcop
+  have hf := pacetti_of_kodaira_neron hOdd hEven E hcop
   have hs := hserre E hcop
   have ho := hodd E hcop
   rcases hf with h10 | h12
@@ -963,10 +968,11 @@ structure RibetOutput (E : FreyCurve4413) (N n : ℕ) where
 /-- One Ribet output at one level.
 
 `h_n_eq` is `n = 32 ∨ n = 64`. The axiom supplies it. It is not a theorem
-from `pacetti_2_8_open`, and `components_n_plus_five_open` alone does not
-replace it. The further hypotheses are `serre_two_level_open` and
+from `pacetti_2_8_open`, and the two Kodaira–Néron opens do not replace
+it. The further hypotheses are `serre_two_level_open` and
 `odd_level_one_open`. `h_n_eq_of_tate` is the product of the sealed levels
-under those three hypotheses. It does not discharge this field.
+under the two Kodaira–Néron opens and those two level propositions. It
+does not discharge this field.
 `h_dvd` is `n ∣ N`. `h_coprime` uses `IsPrime`.
 `thirtyTwo_dvd_of_eq` turns `h_n_eq` into `32 ∣ n`.
 -/

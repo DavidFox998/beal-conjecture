@@ -50,8 +50,10 @@ identification of a Galois character unramified outside `{π}` with a
 homomorphism of `(ℤ[i] / π ^ n)ˣ` trivial on the global units is
 `ray_class_mod_pi_open`. The order bound does not use it.
 
-The Artin exponent `FTameAtPi + SwanAtPi ∈ {10, 12}` is `pacetti_of_components`,
-under `components_n_plus_five_open`. Splitting that exponent across `χ₁` and
+The Artin exponent `FTameAtPi + SwanAtPi ∈ {10, 12}` is
+`pacetti_of_kodaira_neron`, under the two Kodaira–Néron opens.
+`pacetti_of_components` is the same exponent under
+`components_n_plus_five_open` and is not used here. Splitting that exponent across `χ₁` and
 `χ₂` is `artin_exponent_of_characters_open`. Unramifiedness at `p ∣ c`, given
 `13 ∣ tateParameter`, is `inertia_trivial_of_tate_13_open`. The trace of an
 upper-triangular extension of the two characters named by the shape is
@@ -673,9 +675,10 @@ def inertia_trivial_of_tate_13_open : Prop :=
 
 /-- The Artin exponent at `π` is the sum of the conductors of `χ₁` and `χ₂`.
 
-`pacetti_of_components` puts `FTameAtPi + SwanAtPi` in `{10, 12}` when the
-component count is assumed. It does not distribute that sum across the two
-characters of a reducible semisimplification. This proposition is that
+`pacetti_of_kodaira_neron` puts `FTameAtPi + SwanAtPi` in `{10, 12}` from
+the two Kodaira–Néron opens. `pacetti_of_components` is the same membership
+under `components_n_plus_five_open`. Neither distributes that sum across the
+two characters of a reducible semisimplification. This proposition is that
 distribution. It is not a theorem.
 -/
 def artin_exponent_of_characters_open : Prop :=
@@ -968,15 +971,17 @@ theorem reducible_shape_contradicts_omega
 /-- Under the component count and the Artin bridge, the character-conductor
 sum equals `FTameAtPi + SwanAtPi` and that integer lies in `{10, 12}`.
 
-`pacetti_of_components` is the second conjunct. The first conjunct is the
+`pacetti_of_kodaira_neron` is the second conjunct. The first conjunct is the
 open `artin_exponent_of_characters_open`, not a computation.
+`components_n_plus_five_open` is not a hypothesis.
 -/
 theorem character_sum_matches_pacetti
-    (hcomp : FreyCurve4413.components_n_plus_five_open)
+    (hOdd : BlowupOddA.kodaira_neron_odd_a_open)
+    (hEven : BlowupEvenA.kodaira_neron_even_a_open)
     (hartin : artin_exponent_of_characters_open)
     (E : FreyCurve4413) (hcop : E.a.natAbs.gcd E.b.natAbs = 1)
     (n : Nat) (ε : ReducibleShape13.PiUnitChar n) (exp : Fin 12)
     (hmatch : RhoSemisimpleMatches E n ε exp) :
     characterArtinSum E n ε exp = ConductorExponentAtPrimeAbove2 E ∧
       ExponentIn1012 (ConductorExponentAtPrimeAbove2 E) := by
-  exact ⟨hartin E hcop n ε exp hmatch, pacetti_of_components hcomp E hcop⟩
+  exact ⟨hartin E hcop n ε exp hmatch, pacetti_of_kodaira_neron hOdd hEven E hcop⟩

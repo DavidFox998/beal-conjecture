@@ -19,7 +19,8 @@ over `a = 0` or `b = 0`. `(8, 8, 2)` fails `curve_8_8_2_not_coprime`
 
 | Hypothesis | Where the proof uses it |
 | --- | --- |
-| `components_n_plus_five_open` | `pacetti_of_components hcomp`, the input `pacetti_2_8_open` of `ribetLevelOfAxiom`. |
+| `kodaira_neron_odd_a_open` | `pacetti_of_kodaira_neron hOdd hEven`, the input `pacetti_2_8_open` of `ribetLevelOfAxiom`. |
+| `kodaira_neron_even_a_open` | the same call. |
 | `no_newform_32_64_open` | the single `exact hnew` on the axiom's `RibetLevel`. |
 | `frey_qcurve_modular` | AXIOM. `have hMod := frey_qcurve_modular a b c E`. Not a parameter. |
 | `ribet_level_lowering_4413` | AXIOM. `ribetLevelOfAxiom` builds the `RibetLevel`. Not a parameter. |
@@ -40,7 +41,7 @@ over `a = 0` or `b = 0`. `(8, 8, 2)` fails `curve_8_8_2_not_coprime`
  Quot.sound]
 ```
 
-`pacetti_of_components hcomp` supplies `pacetti_2_8_open`. The axiom is
+`pacetti_of_kodaira_neron hOdd hEven` supplies `pacetti_2_8_open`. The axiom is
 applied at the shape `N = 32 |c|²`, which is `FreyConductorDivides` and
 not a computation of the conductor. The `False` is `no_newform_32_64_open`
 applied once to the axiom's package and to `Modular E`. `h_n_eq_of_tate`
@@ -75,7 +76,7 @@ From `a⁴ + b⁴ = c¹³` on `FreyCurve4413`, with `gcd(|a|, |b|) = 1`:
 - In `Mathlib/Modular/WeilTrace13.lean`, kernel axioms only: at `t = 5` the four shapes of `trace_residue_four` are `6` or `7` (`trace_shapes_at_five`). For an arbitrary exponent, `e₁ + e₂ ≡ 1 (mod 12)` and `5 ^ 4 = 1` reduce the shape sum to one of those (`twisted_trace_at_five`). Every integer congruent to `6` or `7` modulo `13` fails `a² ≤ 20` (`int_outside_weil_at_five`), and `20 = 4 · 5` is the square form of `|a| ≤ 2 √5`. Fourth powers modulo `5` are `0` or `1`. `five_not_dvd_c_of_coprime` is `gcd(|a|, |b|) = 1 → 5 ∤ |c|`: if `5 ∣ c` then `5 ∣ a⁴ + b⁴`, and the only vanishing sum of residues in `{0, 1}` is `0 + 0`, which forces `5 ∣ a` and `5 ∣ b`. `N(α) = a⁴ + b⁴ = c¹³`, so `5 ∤ |c|` implies `5 ∤ N(Δ)` (`five_misses_discriminant_norm`). Good reduction at `5` is that divisibility. It is not assumed. `trace_outside_weil_at_five` proves `trace_outside_weil_open`; the witness is norm `5`, and the inertia, Artin, and ray-class antecedents of that definition are not used. The irreducibility branch is reducible `→ False`, conditional on exactly `{reducible_shape_13_open, point_count_is_torsion_frob_trace_open, weil_bound_open}` (`weil_contradiction_at_five`). `5 ∤ |c|` is the proved lemma feeding that theorem, not a hypothesis. `weil_bound_open` is Hasse's theorem over finite fields, standard and unformalized. `frobenius_trace_sum` proves the character-sum formula from the shape. `point_count_matches_shape_trace` proves the sealed integer is congruent to that sum, from `point_count_is_torsion_frob_trace_open`. Unfolding `rho_E_13` and `rho_E_p_twisted` gives `GaloisRepresentation.unresolved` (`rho_construction_is_unresolved`), so `tr(ρ(Frob)) = N + 1 - #E` is not a definition. The torsion-trace open is that missing congruence of `pointCountTrace` with the extension's trace. `#print axioms point_count_matches_shape_trace` is `[propext]`. None of this produces `RhoE13Open`.
 - In `Mathlib/Modular/CmVanishing32.lean`: the endomorphisms `(X, Y) ↦ (-X, i Y)` of `Y² = X³ - X` and `Y² = X³ + X` (`cm_endomorphism_x3_sub_x`, `cm_endomorphism_x3_add_x`), so both CM discriminants are `-4`. Inert primes through `19` are `3, 7, 11, 19`. `cm_vanish_32` and `cm_vanish_64` read `a_p = 0` there off `hecke32_eigenvalues` and `hecke64_eigenvalues`; they add no new `native_decide`. The same four primes have trace `0` on both Weierstrass models (`cm_curve_trace_inert_sub`, `cm_curve_trace_inert_add`), with no axioms. `three_not_dvd_c` says a coprime solution is not divisible by `3`. `freyTrace3_not_div_13` is the `𝔽₉` point count: the trace lies in `{-2, 4, 6}`. The comparison is not the residue `0`. `qcurve_isogeny_input` reuses `velu_target_eq_twist_neg_two` and `thirteen_not_dvd_two`: the conjugate is `2`-isogenous to the twist by `-2`, so the cocycle is an extension of `ρ̄_E` to `G_ℚ`. Weil restriction is `4`-dimensional and is not used; its residue would be `10` (`weil_sum_residue_ten`: `2 · 10 ≡ -6 (mod 13)` and `10 ≢ -6`). With `a_3 = 0`, `trace(Frob_3²) = -6` and `-6 ≡ 7 (mod 13)` (`frob_square_trace_at_3`, `neg_six_cong_seven`). `freyTrace3_not_cong_neg_six` says no admissible residue is `-6` or `7` mod `13`. `coefficient_qcurve_misses_neg_six` is `(1, 0, 1)`: `IsQCurve` holds and the trace is `-2`. `modular_package_unresolved` is `rho_E_p = rho_E_p_twisted = unresolved`. The intertwiner scalars are theorems: degree `2`, composition degree `4`, scalar `±2`, and `χ_{-2}(σ)² = 1` (`mu_coefficient_data`, `scalar_of_degree_four`, `intertwiner_endomorphism_scalar`). `(-2 / 3) = 1` (`legendre_neg_two_at_three`). `±2` are not squares in `𝔽₁₃` and do not rescale to `1` (`f13_linear_lift_scalar_fails`). Both are squares in `𝔽₁₃[√2]`, and the rescaling exists there (`f169_linear_lift_scalar_exists`). Frobenius of `𝔽₁₆₉` is conjugation, and the class of `-6` is the fixed prime-field element `(7, 0)` (`f169_frobenius`, `trace_neg_six_in_prime_field`). There is no Tate module. The remaining open is `qcurve_extension_169_open`, the trace of a `GL₂(𝔽₁₆₉)` lift. `qcurve_extension_13_open` is that trace rewritten by `0² - 2·3 = -6`. `H²` is not a second hypothesis. `modular_residual_13_open` is proved by projection of `ribet_level_lowering_4413.gkResidual`. `qcurve_descent_13_of_bridge` is the corrected `qcurve_descent_13_open` on the `𝔽₁₆₉` open. `no_newform_32_64_of_qcurve` is `no_newform_32_64_open` on that same hypothesis. The definition is not rewritten, and it is not a theorem by itself.
 
-`pacetti_2_8_open` (the Artin exponent `FTameAtPi + SwanAtPi` lies in `{10, 12}`) is a theorem of `components_n_plus_five_open` alone (`pacetti_of_components`). It is not an independent open proposition.
+`pacetti_2_8_open` (the Artin exponent `FTameAtPi + SwanAtPi` lies in `{10, 12}`) is a theorem of the two Kodaira–Néron opens (`pacetti_of_kodaira_neron`). It is also a theorem of `components_n_plus_five_open` (`pacetti_of_components`). The capstone uses the first derivation. It is not an independent open proposition.
 
 ## What is assumed
 
@@ -107,18 +108,19 @@ axiom ribet_level_lowering_4413 : RibetLowering
 
 `GkResidualIso` is the statement `modular_residual_13_open` proves. It is the `𝔽₉` congruence `(13 : ℤ) ∣ freyTrace3 (mod3 a) (mod3 b) - (-6)` for a coprime curve with `Modular E` and a `RibetLevel`, together with the antecedents `rho_E_p E = rho_E_p_twisted E = unresolved`. It is not under `hCond`, `hIrr`, or `hPacetti`. Those three stay on `level`. `RibetLevel` itself does not store the isomorphism: `Newform` has no fields, `LevelLowered` is opaque, and `rho_E_p` is `.unresolved`. The axiom claims the congruence for every such package, which is the statement the descent applies. `modular_residual_13_open` is `ribet_level_lowering_4413.gkResidual`.
 
-Two open propositions are hypotheses of `no_solution_4413_of_frontier`. They are `def`s of type `Prop`, not axioms and not `sorry`. Each one is applied.
+Three open propositions are hypotheses of `no_solution_4413_of_frontier`. They are `def`s of type `Prop`, not axioms and not `sorry`. Each one is applied.
 
 | Proposition | Where it is used |
 | --- | --- |
-| `components_n_plus_five_open` | `pacetti_of_components` in the capstone, and also `h_n_eq_of_tate`, `swan_of_components`, `conductor_of_components`, `ogg_full_of_components`. |
+| `kodaira_neron_odd_a_open` | `pacetti_of_kodaira_neron` in the capstone, and also `h_n_eq_of_tate`. |
+| `kodaira_neron_even_a_open` | the same two theorems. |
 | `no_newform_32_64_open` | the capstone's single application. `no_newform_32_64_of_qcurve` derives the proposition from `qcurve_extension_169_open`. The definition is not a theorem by itself. The capstone does not assume the extension: `CmVanishing32` imports file 6. |
 
-`serre_two_level_open` and `odd_level_one_open` remain `def`s of type `Prop`. The capstone does not assume them. `h_n_eq_of_tate` does.
+`components_n_plus_five_open` remains a `def` of type `Prop`. The capstone does not assume it. `swan_of_components`, `conductor_of_components`, `pacetti_of_components`, and `ogg_full_of_components` still do. `serre_two_level_open` and `odd_level_one_open` remain `def`s of type `Prop`. The capstone does not assume them. `h_n_eq_of_tate` does.
 
 `tate_param_13_dvd_of_coprime` is a `def` of type `Prop`. It is not a capstone hypothesis. No theorem applies it. `inertia_trivial_of_tate_13_open` inlines the same divisibility as an antecedent and does not name it.
 
-`h_n_eq_of_tate` assumes `components_n_plus_five_open`, `serre_two_level_open`, and `odd_level_one_open`, and concludes that the product of the two sealed level functions is `32` or `64`. The capstone does not call it. It does not rewrite `OddPrimaryLevel`, and `odd_level_one_open` does not follow from the component count.
+`h_n_eq_of_tate` assumes `kodaira_neron_odd_a_open`, `kodaira_neron_even_a_open`, `serre_two_level_open`, and `odd_level_one_open`, and concludes that the product of the two sealed level functions is `32` or `64`. The capstone does not call it. It does not rewrite `OddPrimaryLevel`, and `odd_level_one_open` does not follow from the component count.
 
 Two further open propositions sit beside the sealed irreducibility predicate. They are not hypotheses of the capstone, and they do not produce a term of `RhoE13Open`.
 
@@ -175,7 +177,7 @@ Off the capstone, still live:
 - **`steinberg_prime_13_open`.** ABANDONED. Rank not applicable. Strategy A has no witness, the proposition has no consumer, and `tate_param_13_dvd_of_coprime` asks for the opposite divisibility. The classification theorems do not assume it.
 - **`swan_vanishes_open`.** WITHDRAWN. `swan_vanishes_contradicts_components` is `False` on `(1, 0, 1)` assuming the component count.
 - **`minimal_even_c_open`.** Refuted. `not_minimal_even_c_open` is `¬ minimal_even_c_open`, witnessed by `(8, 8, 2)`.
-- **`pacetti_2_8_open`.** Not an open hypothesis. `pacetti_of_components` proves it from `components_n_plus_five_open`.
+- **`pacetti_2_8_open`.** Not an open hypothesis. `pacetti_of_kodaira_neron` proves it from the two Kodaira–Néron opens. `pacetti_of_components` proves it from `components_n_plus_five_open`.
 - **`qcurve_descent_13_open`.** Not an open hypothesis. `qcurve_descent_13_of_bridge` proves it from `qcurve_extension_169_open`.
 
 ## What would close each gap
@@ -223,7 +225,7 @@ Off the capstone, still live:
 'ribet_level_lowering_4413' depends on axioms: [ribet_level_lowering_4413]
 ```
 
-Nothing in that list depends on more than `propext`, `Classical.choice`, and `Quot.sound`, except the two axioms, which depend only on themselves. `h_n_eq_of_tate` does not depend on `ribet_level_lowering_4413`. Its hypotheses are `components_n_plus_five_open`, `serre_two_level_open`, and `odd_level_one_open`.
+Nothing in that list depends on more than `propext`, `Classical.choice`, and `Quot.sound`, except the two axioms, which depend only on themselves. `h_n_eq_of_tate` does not depend on `ribet_level_lowering_4413`. Its hypotheses are `kodaira_neron_odd_a_open`, `kodaira_neron_even_a_open`, `serre_two_level_open`, and `odd_level_one_open`.
 
 Nodes outside the requested list, printed the same way, because they sit on the path to `no_solution_4413`:
 
@@ -387,7 +389,7 @@ The dependency order is one way:
 2. `swan_of_components` assumes `components_n_plus_five_open`, unfolds `SwanAtPi`, and calls `ftame_two_of_additive`.
 3. `conductor_of_components` calls both, still under the component hypothesis.
 4. `pacetti_of_components` calls `conductor_of_components`.
-5. `h_n_eq_of_tate` calls `pacetti_of_components` and the two level propositions.
+5. `h_n_eq_of_tate` calls `pacetti_of_kodaira_neron` and the two level propositions. The capstone does the same for the exponent. Neither calls `pacetti_of_components`.
 
 `swan_eq_disc_excess` is a closed identity in `ℕ`. It does not mention `FTameAtPi` or `SwanAtPi`.
 
@@ -483,7 +485,7 @@ The bridges are open propositions, not theorems:
 | `trace_outside_weil_open` | PROVED by `trace_outside_weil_at_five`. The witness is norm `5`. Not an independent gap. |
 | `chars_unramified_above_13_open` | RETRACTED. False as stated. Both cyclotomic exponents divisible by `3` contradicts `e₁ + e₂ ≡ 1 (mod 12)`: the same integers, so `3 ∣ 1`. Not an open lemma and not an irreducibility input. |
 
-`shape_forces_order_div_four` is the order bound conditional on `reducible_shape_13_open`. `character_sum_matches_pacetti` is the Artin sum conditional on `components_n_plus_five_open` and `artin_exponent_of_characters_open`. `reducible_shape_contradicts_omega` is VACUOUS: `False` for a coprime curve with `a ≠ 0` and `b ≠ 0`, from `reducible_shape_13_open`, `ray_class_mod_pi_open`, `inertia_trivial_of_tate_13_open`, and the retracted `chars_unramified_above_13_open`. The proof is `not_both_exponents_div_three`, which is `3 ∣ 1`. It is ex falso, not an irreducibility theorem. The irreducibility branch is reducible `→ False`, conditional on exactly `{reducible_shape_13_open, point_count_is_torsion_frob_trace_open, weil_bound_open}`. `weil_bound_open` is Hasse's theorem over finite fields, standard and unformalized. `frobenius_trace_sum` is the trace formula from the shape. `point_count_matches_shape_trace` is the character-sum congruence for the sealed integer, from the torsion-trace open. `point_count_is_torsion_frob_trace_open` is what unfolding `rho_E_13` does not give. Both remaining opens are precise referenceable statements. `5 ∤ |c|` is `five_not_dvd_c_of_coprime`, proved from the gcd, and it feeds `5 ∤ N(Δ)`. The case `5 ∣ |c|` is empty for a coprime curve. None of these claims unconditional irreducibility.
+`shape_forces_order_div_four` is the order bound conditional on `reducible_shape_13_open`. `character_sum_matches_pacetti` is the Artin sum conditional on `kodaira_neron_odd_a_open`, `kodaira_neron_even_a_open`, and `artin_exponent_of_characters_open`. `reducible_shape_contradicts_omega` is VACUOUS: `False` for a coprime curve with `a ≠ 0` and `b ≠ 0`, from `reducible_shape_13_open`, `ray_class_mod_pi_open`, `inertia_trivial_of_tate_13_open`, and the retracted `chars_unramified_above_13_open`. The proof is `not_both_exponents_div_three`, which is `3 ∣ 1`. It is ex falso, not an irreducibility theorem. The irreducibility branch is reducible `→ False`, conditional on exactly `{reducible_shape_13_open, point_count_is_torsion_frob_trace_open, weil_bound_open}`. `weil_bound_open` is Hasse's theorem over finite fields, standard and unformalized. `frobenius_trace_sum` is the trace formula from the shape. `point_count_matches_shape_trace` is the character-sum congruence for the sealed integer, from the torsion-trace open. `point_count_is_torsion_frob_trace_open` is what unfolding `rho_E_13` does not give. Both remaining opens are precise referenceable statements. `5 ∤ |c|` is `five_not_dvd_c_of_coprime`, proved from the gcd, and it feeds `5 ∤ N(Δ)`. The case `5 ∣ |c|` is empty for a coprime curve. None of these claims unconditional irreducibility.
 
 ## CM vanishing at levels 32 and 64
 
@@ -536,19 +538,25 @@ a⁴ + b⁴ = c¹³                                          PROVED data on Frey
 │   │    KodairaInStar has no body
 │   ├─ Step 4, type III, π³ ∣ b₈                       PROVED from IsINStar
 │   │    tate_exit_III_of_IsINStar; not a bridge antecedent
-│   ├─ m = n + 5                                       OPEN PROP  components_n_plus_five_open
-│   │    Dokchitser arXiv:1209.1414 Prop. 2 is the valuation criterion
-│   │    the count is the D_{n+4} resolution, two subscripts only
-│   │    ├─ δ = SwanAtPi = 12 - n                      PROVED from that open
-│   │    ├─ f = ε + δ ∈ {10, 12}                       PROVED from that open
-│   │    │    pacetti_of_components → pacetti_2_8_open
+│   ├─ m = n + 5                                       LEGACY  components_n_plus_five_open
+│   │    not a hypothesis of the capstone
+│   │    swan_of_components, conductor_of_components,
+│   │    pacetti_of_components, ogg_full_of_components
+│   ├─ odd a: m = 7; even a: m = 9                     OPEN PROPS
+│   │    kodaira_neron_odd_a_open, kodaira_neron_even_a_open
+│   │    the chart counts are theorems
+│   │    the Néron identification is not
+│   │    ├─ f = ε + δ ∈ {10, 12}                       PROVED
+│   │    │    pacetti_of_kodaira_neron → pacetti_2_8_open
 │   │    └─ SwanAtPi = 0                               WITHDRAWN  swan_vanishes_open
 │   │         refuted by swan_vanishes_contradicts_components
-│   │         on (1, 0, 1), assuming the component open
+│   │         on (1, 0, 1), assuming the legacy component open
 │   ├─ twoPrimaryLevel = 2^(f/2)                       OPEN PROP  serre_two_level_open
 │   ├─ OddPrimaryLevel = 1                             OPEN PROP  odd_level_one_open
-│   └─ twoPrimaryLevel * OddPrimaryLevel ∈ {32, 64}   PROVED from the three opens
+│   └─ twoPrimaryLevel * OddPrimaryLevel ∈ {32, 64}   PROVED from four opens
 │        h_n_eq_of_tate
+│        the two Kodaira–Néron opens, serre_two_level_open,
+│        odd_level_one_open
 │        does not read ribet_level_lowering_4413
 │        does not discharge RibetLevel.h_n_eq
 │
@@ -720,10 +728,12 @@ a⁴ + b⁴ = c¹³                                          PROVED data on Frey
 │         no_solution_4413_of_frontier still assumes it
 │         CmVanishing32 imports file 6, so the extension
 │         is not a capstone hypothesis
-└─ no_solution_4413_of_frontier                        PROVED from two opens,
+└─ no_solution_4413_of_frontier                        PROVED from three opens,
      the two axioms, and a term of RhoE13Open
-     components_n_plus_five_open, no_newform_32_64_open
-     each of those two is applied
+     kodaira_neron_odd_a_open, kodaira_neron_even_a_open,
+     no_newform_32_64_open
+     each of those three is applied
+     components_n_plus_five_open is not a hypothesis
      serre_two_level_open and odd_level_one_open are not
      h_n_eq_of_tate is not called
      tate_param_13_dvd_of_coprime is not a hypothesis
