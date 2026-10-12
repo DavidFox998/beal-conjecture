@@ -983,6 +983,36 @@ structure RibetLevel (c : ℤ) (E : FreyCurve4413) (N : ℕ) where
   h_coprime : ∀ p, IsPrime p → p ∣ c.natAbs → ¬ p ∣ n
   output : RibetOutput E N n
 
+/-- `13 ∤ 2`, the hypothesis `p ∤ 2d` of Ribet's theorem when `d = 1`. -/
+theorem thirteen_not_dvd_two : ¬ ((13 : ℤ) ∣ 2) := by
+  intro h
+  have hnat : (13 : ℕ) ∣ 2 := (Int.ofNat_dvd (m := 13) (n := 2)).mp h
+  omega
+
+/-- A lowered newform of a nontrivial coprime solution is impossible.
+
+`darmon_merel_elimination_4413` is `C(5, g) = 0` for `32.2.a.a` and
+`64.2.a.a`. `mazur_trick_4413` then says `13 ∣ 0`. `winding_elimination_4413`
+is `(T₅ - 6) e ≢ 0 (mod 13)` at both levels. The integral points of
+`Y² = X³ - X` are classified in `Rank0_32a1`. None of these is `False`.
+Darmon–Merel Lemma 8.2, the map `X₀(N) → J_e`, is not formalized.
+
+This proposition is that missing `False`. It applies to a `RibetLevel`
+of a modular curve with `a ≠ 0`, `b ≠ 0`, `gcd(|a|, |b|) = 1`, and `c > 0`.
+`(1, 0, 1)` and `(0, 1, 1)` are proved solutions and lie outside the
+quantifiers. `(8, 8, 2)` fails `curve_8_8_2_not_coprime`. This proposition
+is not a theorem and not an axiom.
+-/
+def no_newform_32_64_open : Prop :=
+  ∀ (a b c : ℤ) (E : FreyCurve4413) (N : ℕ),
+    a ≠ 0 → b ≠ 0 →
+    a.natAbs.gcd b.natAbs = 1 →
+    0 < c →
+    E.a = a → E.b = b → E.c = c →
+    Modular E →
+    RibetLevel c E N →
+    False
+
 /-- Residual isomorphism in the form the descent consumes: the Frey trace over `F9` is `-6` mod `13`. -/
 def GkResidualIso : Prop :=
   ∀ (a b c : ℤ) (E : FreyCurve4413) (N : ℕ),

@@ -27,7 +27,7 @@ over `a = 0` or `b = 0`. `(8, 8, 2)` fails `curve_8_8_2_not_coprime`
 | `RhoE13Open (FreyCurve4413.mk' a b c h)` | Opaque hypothesis, no body. `hIrr heq` is the argument of `ribetLevelOfAxiom`. The sealed body used to be `True`; that equation is gone. Nothing produces a term. `rhoE13_open_of_psi` is not provable by unfolding and does not discharge it. |
 | `a ≠ 0`, `b ≠ 0`, `gcd(\|a\|, \|b\|) = 1`, `c > 0` | `hnew` takes all four. |
 
-`serre_two_level_open` and `odd_level_one_open` are not hypotheses. They are the inputs of `h_n_eq_of_tate`, and the capstone does not call that theorem. `qcurve_extension_169_open` implies `no_newform_32_64_open` by `no_newform_32_64_of_qcurve`. That theorem is in `CmVanishing32`, which imports file 6, so the capstone cannot take the extension without an import cycle. It still assumes `no_newform_32_64_open`.
+`serre_two_level_open` and `odd_level_one_open` are not hypotheses. They are the inputs of `h_n_eq_of_tate`, and the capstone does not call that theorem. `qcurve_extension_169_open` implies `no_newform_32_64_open` by `no_newform_32_64_of_qcurve`. That theorem is in `CmVanishing32`. `no_newform_32_64_open` and `thirteen_not_dvd_two` live in file 3, and `CmVanishing32` imports file 3. File 6 imports `CmVanishing32`, so the name is in scope. The capstone still assumes `no_newform_32_64_open`.
 
 `tate_param_13_dvd_of_coprime` is not a hypothesis of this theorem. It stays in the tree. `inertia_trivial_of_tate_13_open` is the implication whose antecedent is `13 ∣ tateParameter`. That definition does not mention the name `tate_param_13_dvd_of_coprime`, and no theorem applies the name.
 
@@ -114,7 +114,7 @@ Three open propositions are hypotheses of `no_solution_4413_of_frontier`. They a
 | --- | --- |
 | `kodaira_neron_odd_a_open` | `pacetti_of_kodaira_neron` in the capstone, and also `h_n_eq_of_tate`. |
 | `kodaira_neron_even_a_open` | the same two theorems. |
-| `no_newform_32_64_open` | the capstone's single application. `no_newform_32_64_of_qcurve` derives the proposition from `qcurve_extension_169_open`. The definition is not a theorem by itself. The capstone does not assume the extension: `CmVanishing32` imports file 6. |
+| `no_newform_32_64_open` | the capstone's single application. The definition lives in file 3. `no_newform_32_64_of_qcurve` derives the proposition from `qcurve_extension_169_open`. The definition is not a theorem by itself. File 6 imports `CmVanishing32`. The capstone does not assume the extension. |
 
 `components_n_plus_five_open` remains a `def` of type `Prop`. The capstone does not assume it. `swan_of_components`, `conductor_of_components`, `pacetti_of_components`, and `ogg_full_of_components` still do. `serre_two_level_open` and `odd_level_one_open` remain `def`s of type `Prop`. The capstone does not assume them. `h_n_eq_of_tate` does.
 
@@ -149,7 +149,7 @@ Steps 1–2 are done (`v_π(Δ) = 18`, `v_π(c₄) = 10`). The translations `x �
 The integer `n + 5` is not a valuation. It is the number of vertices of the `D_{n+4}` dual graph of the minimal regular special fiber. For these two subscripts the resolution is short, and `(ℤ[i]/π)ˣ` has one element. On the odd-`a` row each chart reduces to one equation over `𝔽₂`. On the even-`a` row that fails at the third `π`-chart: the transverse polynomial is `X(X + 1)` when `π ∣ u₆` and `X² + X + 1` when `u₆ ≡ 1`. `even_a_nine_components` counts nine components, five of multiplicity two and four of multiplicity one, with no tenth. Adjacency is not proved. `kodaira_neron_even_a_open` identifies that count with `NeronSpecialFiberComponents` and is not a theorem. That is the minimal path: package the exit tests, then count components on those two resolutions. It is not Tate's algorithm for a general Weierstrass model, and it is not a Néron-model library. The hard part is the charts and the regularity check at the end. The exit tests are the same kind of `π`-adic arithmetic as `P2Exact`. Kodaira–Néron (Néron model equals the smooth locus of that regular model) is the external sentence that makes the count the function in the docstring. Neither axiom talks about the special fiber.
 
 The odd-`a` charts are in `Mathlib/Modular/BlowupOddA.lean`. `oddModel_pi_chart` is the substitution `x = π X`, `y = π Y` into the translated model, divided by `π²`. The quotient is `piChart`, which reduces to `Y²`. On `Y = 0` the cofactor reduces to `X² (X + 1)`, so both `𝔽₂`-points of that line are singular. The second `π`-chart is the further substitution `X = π X₁`, `Y = π Y₁` (`piChart_origin_subst`); its fiber is `Y²` again, the other slice of `originXChart`. Those two slices are `chain1` (`S = 0`) and `theta` (`t = 0`), separated by the point `t = 1`. Past `X = -u₂`, `piChart_past_u2` divides by `π²` and the quotient reduces to `Y² + X + 1`, a multiplicity-one leg; `piChart_past_u2_strict` is the chart `π = t S`, whose slice `S = 0` is the same double line `T²`. `chain2Chart` is the next substitution `S = t A`, `T = t B`. Its fiber is `B² - u₂ A` and the pullback of `π` is `t² A`, so the multiplicity is two. The curve of the same reduced equation with multiplicity one is the cusp, `T² - x`, from `oddModelIn_cusp`. The `𝔽₄` blow-up is unchanged: `V² + U` at two distinct centers, multiplicity one. Seven components are thereby distinct. `odd_a_seven_components` is the count: the resolved special fiber has these seven and no eighth. Adjacency is not proved. `D6Node` is still the abstract seven-vertex fork. The charts do not prove its edges. `kodaira_neron_odd_a_open` is unchanged: its proposition is the count `7`, and its docstring now says only that seven distinct components are exhibited. `NeronSpecialFiberComponents` is unchanged. `components_n_plus_five_open` is a different sentence: `m = n + 5` on every `IsINStar` row, including even `a`.
-- **`no_newform_32_64_open`.** Rank **2**, and it is not an independent gap. `no_newform_32_64_of_qcurve` is this proposition from `qcurve_extension_169_open` alone, together with the two axioms. The capstone still assumes the proposition rather than the extension, because `CmVanishing32` imports file 6.
+- **`no_newform_32_64_open`.** Rank **2**, and it is not an independent gap. `no_newform_32_64_of_qcurve` is this proposition from `qcurve_extension_169_open` alone, together with the two axioms. The capstone still assumes the proposition rather than the extension. File 6 imports `CmVanishing32`, and the extension is not a hypothesis of `no_solution_4413_of_frontier`.
 
 Off the capstone, still the Serre-level identifications. `h_n_eq_of_tate` assumes both, and the capstone does not call it.
 
@@ -365,7 +365,7 @@ The `native_decide` axioms are the flag. They are kernel trust of the compiler f
 
 `reducible_shape_contradicts_omega` lives in `ReducibleShape13`, which imports `LevelLowering4413`, which imports file 3. The arrow points at the seal. `FrobeniusTrace13` imports `ReducibleShape13`, `LevelLowering4413`, and `EllipticCurveMinimal`. `WeilTrace13` imports `FrobeniusTrace13`. Both are imported by `Mathlib.lean`. `ReducibleShape13` does not import either.
 
-`qcurve_extension_169_open` lives in `CmVanishing32`, which imports file 6. File 6 imports file 7, which imports down through file 3. `DarmonMerel.lean` imports file 6 and then `CmVanishing32`. File 3 does not import `CmVanishing32`.
+`no_newform_32_64_open` and `thirteen_not_dvd_two` live in file 3, after `RibetLevel`. `CmVanishing32` imports file 3, file 4, `CoefficientQCurve`, and `FreyTraceF9`. File 4 defines `inertInK` and `splitsInK`. It does not import file 6. File 6 imports file 7 and `CmVanishing32`. File 7 imports down through file 3. `DarmonMerel.lean` imports file 6 and then `CmVanishing32`. File 3 does not import `CmVanishing32`.
 
 The Ribet axiom is applied from file 6 (`ribetLevelOfAxiom`), from `LevelLowering4413`, and from `CmVanishing32` (`gkResidual`). None of those files is imported by file 3. `X0Moduli32` imports file 3 and file 6. File 6 does not import `X0Moduli32`.
 
@@ -726,8 +726,8 @@ a⁴ + b⁴ = c¹³                                          PROVED data on Frey
 │         also uses both project axioms
 │         the definition is not a theorem by itself
 │         no_solution_4413_of_frontier still assumes it
-│         CmVanishing32 imports file 6, so the extension
-│         is not a capstone hypothesis
+│         file 6 imports CmVanishing32
+│         the extension is not a capstone hypothesis
 └─ no_solution_4413_of_frontier                        PROVED from three opens,
      the two axioms, and a term of RhoE13Open
      kodaira_neron_odd_a_open, kodaira_neron_even_a_open,

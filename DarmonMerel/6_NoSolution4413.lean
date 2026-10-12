@@ -1,5 +1,6 @@
 import Init
 import DarmonMerel.«7_WindingQuotientAxiom4413»
+import Mathlib.Modular.CmVanishing32
 
 /-!
 # What is proved about `a⁴ + b⁴ = c¹³`
@@ -25,12 +26,6 @@ conditional negation for `a ≠ 0`, `b ≠ 0`, coprime coefficients, and
 not a theorem.
 `(1, 0, 1)` and `(0, 1, 1)` remain solutions.
 -/
-
-/-- `13 ∤ 2`, the hypothesis `p ∤ 2d` of Ribet's theorem when `d = 1`. -/
-theorem thirteen_not_dvd_two : ¬ ((13 : ℤ) ∣ 2) := by
-  intro h
-  have hnat : (13 : ℕ) ∣ 2 := (Int.ofNat_dvd (m := 13) (n := 2)).mp h
-  omega
 
 example : (1 : ℤ) ^ 4 + (0 : ℤ) ^ 4 = (1 : ℤ) ^ 13 := rfl
 example : (0 : ℤ) ^ 4 + (1 : ℤ) ^ 4 = (1 : ℤ) ^ 13 := rfl
@@ -81,30 +76,6 @@ theorem capstone_excludes_curve_8_8_2 :
         FreyCurve4413.curve_8_8_2.b.natAbs ≠ 1 :=
   FreyCurve4413.curve_8_8_2_not_coprime
 
-/-- A lowered newform of a nontrivial coprime solution is impossible.
-
-`darmon_merel_elimination_4413` is `C(5, g) = 0` for `32.2.a.a` and
-`64.2.a.a`. `mazur_trick_4413` then says `13 ∣ 0`. `winding_elimination_4413`
-is `(T₅ - 6) e ≢ 0 (mod 13)` at both levels. The integral points of
-`Y² = X³ - X` are classified in `Rank0_32a1`. None of these is `False`.
-Darmon–Merel Lemma 8.2, the map `X₀(N) → J_e`, is not formalized.
-
-This proposition is that missing `False`. It applies to a `RibetLevel`
-of a modular curve with `a ≠ 0`, `b ≠ 0`, `gcd(|a|, |b|) = 1`, and `c > 0`.
-`(1, 0, 1)` and `(0, 1, 1)` are proved solutions and lie outside the
-quantifiers. `(8, 8, 2)` fails `curve_8_8_2_not_coprime`. This proposition
-is not a theorem and not an axiom.
--/
-def no_newform_32_64_open : Prop :=
-  ∀ (a b c : ℤ) (E : FreyCurve4413) (N : ℕ),
-    a ≠ 0 → b ≠ 0 →
-    a.natAbs.gcd b.natAbs = 1 →
-    0 < c →
-    E.a = a → E.b = b → E.c = c →
-    Modular E →
-    RibetLevel c E N →
-    False
-
 /-- No nontrivial coprime solution with `c > 0`, if the frontier holds.
 
 The open propositions are `kodaira_neron_odd_a_open`,
@@ -115,7 +86,7 @@ They are inputs of `h_n_eq_of_tate`, and that disjunction is not used:
 both of its branches were the same application of `no_newform_32_64_open`.
 `qcurve_extension_169_open` implies `no_newform_32_64_open` by
 `no_newform_32_64_of_qcurve`. That theorem is in `CmVanishing32`, which
-imports this file, so this theorem does not take the extension as a
+this file imports. This theorem does not take the extension as a
 hypothesis.
 
 `tate_param_13_dvd_of_coprime` is not a hypothesis.

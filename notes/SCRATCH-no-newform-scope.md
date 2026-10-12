@@ -2,7 +2,7 @@
 
 Not part of the proof. Do not import this file. No theorem was changed to write it.
 
-`no_solution_4413_of_frontier` assumes `no_newform_32_64_open`. The definition, in `DarmonMerel/6_NoSolution4413.lean`, is: a modular Frey curve with `a ≠ 0`, `b ≠ 0`, `gcd(|a|, |b|) = 1`, `c > 0`, and a `RibetLevel`, is impossible.
+`no_solution_4413_of_frontier` assumes `no_newform_32_64_open`. The definition, in `DarmonMerel/3_RibetLowering4413.lean` after `RibetLevel`, is: a modular Frey curve with `a ≠ 0`, `b ≠ 0`, `gcd(|a|, |b|) = 1`, `c > 0`, and a `RibetLevel`, is impossible.
 
 ## Inventory
 
@@ -83,26 +83,28 @@ Two further gaps sit in front of the geometric step. `Newform` has no eigenvalue
 
 ## The `CmVanishing32` / file 6 layering
 
+The re-layer is in place. `thirteen_not_dvd_two` and `no_newform_32_64_open` are in file 3, after `RibetLevel`. `CmVanishing32` imports file 3. File 6 imports file 7 and `CmVanishing32`. File 3 does not import `CmVanishing32` or file 6.
+
 Import chain:
 
-- `DarmonMerel/6_NoSolution4413.lean` imports file 7.
+- `DarmonMerel/6_NoSolution4413.lean` imports file 7 and `CmVanishing32`.
 - File 7 imports file 5 and `WindingQuotient`. File 5 imports file 4, which imports file 3.
-- `CmVanishing32.lean` imports file 6, because `no_newform_32_64_of_qcurve` mentions `no_newform_32_64_open` and `qcurve_isogeny_input` uses `thirteen_not_dvd_two`. Both are defined in file 6.
+- `CmVanishing32.lean` imports file 3 and file 4. `no_newform_32_64_of_qcurve` mentions `no_newform_32_64_open` and `qcurve_isogeny_input` uses `thirteen_not_dvd_two`. Both are defined in file 3. `inertInK` and `splitsInK` are defined in file 4.
 - `DarmonMerel.lean` imports file 6 and then `CmVanishing32`. That order builds. It is not a Lean import cycle.
 
-The cycle appears if file 6 imports `CmVanishing32` in order to replace its hypothesis by `qcurve_extension_169_open`. File 6 would import a file that imports file 6.
+File 6 sees `no_newform_32_64_of_qcurve`. The capstone still assumes `no_newform_32_64_open`. `qcurve_extension_169_open` is not a hypothesis of `no_solution_4413_of_frontier`.
 
 Candidate fixes:
 
-1. Re-layer. Move `no_newform_32_64_open` and `thirteen_not_dvd_two` into a module below file 6 (file 3 already has `RibetLevel` and `Modular` is in file 2). Point `CmVanishing32` at that module instead of file 6. File 6 can then import `CmVanishing32`. This moves the open; it does not prove it.
+1. Re-layer. Done. `no_newform_32_64_open` and `thirteen_not_dvd_two` are in file 3. `CmVanishing32` imports that module. File 6 imports `CmVanishing32`. This moved the open; it did not prove it.
 2. Duplicate. Copy the trace contradiction into a file that file 6 already imports. The proof uses `freyTrace3_not_cong_neg_six`, the Vélu/twist match, and `gkResidual`. Duplicating those is the same dependency list without the import edge.
-3. Prove the winding form of Lemma 8.2 in file 7 or file 6, which already see the nonvanishing and do not import `CmVanishing32`. That avoids the cycle. It does not use `qcurve_extension_169_open`.
+3. Prove the winding form of Lemma 8.2 in file 7, which sees the nonvanishing and does not import `CmVanishing32`. That does not use `qcurve_extension_169_open`.
 
 ## Minimal path
 
 The trace route is the short one. Its arithmetic is proved. One statement is not.
 
-1. Re-layer as in fix 1, so a proof or a hypothesis above `CmVanishing32` can reach the capstone. This is an import edit, not a mathematical proof. `no_newform_32_64_of_qcurve` is already the implication.
+1. Re-layer as in fix 1. Done. File 6 imports `CmVanishing32`, so `no_newform_32_64_of_qcurve` is in scope above the capstone. This was an import edit, not a mathematical proof. The implication is already `no_newform_32_64_of_qcurve`. The capstone hypothesis is still `no_newform_32_64_open`.
 2. Prove `qcurve_extension_169_open`: a class in `GL₂(𝔽₁₆₉)` restricting to `ρ̄_E` up to `χ_{-2}`, with trace of `Frob_3²` equal to `-6`. `H²(G_ℚ, 𝔽₁₆₉ˣ)` is not defined. The local class of `±2` is already a coboundary over `𝔽₁₆₉` (`f169_linear_lift_scalar_exists`). This step is not a `decide`.
 3. Apply `no_newform_32_64_of_qcurve`. The conclusion is `no_newform_32_64_open`. The proof is `freyTrace3_not_cong_neg_six`: the Frey trace is in `{-2, 4, 6}`.
 
