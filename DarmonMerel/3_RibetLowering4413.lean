@@ -3,6 +3,7 @@ import DarmonMerel.«2_Modularity4413»
 import Mathlib.Modular.Rank0_32a1
 import Mathlib.Modular.EllipticCurveMinimal
 import Mathlib.Modular.FreyTraceF9
+import Mathlib.Modular.ComponentsOfKodairaNeron
 
 notation "ℕ" => Nat
 
@@ -302,6 +303,39 @@ theorem pacetti_of_components
   rcases Nat.mod_two_eq_zero_or_one E.a.natAbs with ha | ha
   · exact Or.inl (hsum.1 (FreyCurve4413.even_a_IsINStar E hodd ha))
   · exact Or.inr (hsum.2 (FreyCurve4413.a_odd_IsINStar E hodd ha))
+
+/-- `pacetti_2_8_open` from the two resolved rows.
+
+`pacetti_of_components` reaches the same disjunction through
+`components_n_plus_five_open`. This theorem uses
+`components_even_a_instance` and `components_odd_a_instance` in its place.
+Each instance is the `n = 4` or `n = 2` witness that
+`conductor_of_components` feeds to the general open, and the count `9` or
+`7` comes from `components_of_kodaira_neron`. The Swan step is the same
+arithmetic as `swan_of_components`: `v_π(Δ) = 18`, `FTameAtPi = 2`, and
+`δ = 12 - n`. `components_n_plus_five_open` is not a hypothesis.
+-/
+theorem pacetti_of_kodaira_neron
+    (hOdd : BlowupOddA.kodaira_neron_odd_a_open)
+    (hEven : BlowupEvenA.kodaira_neron_even_a_open) : pacetti_2_8_open := by
+  intro E hcop
+  have hc := FreyCurve4413.c_odd_of_coprime E hcop
+  have hmin := FreyCurve4413.qiLocalMinimalAtPi_of_c_odd E hc
+  have hε := FreyCurve4413.ftame_two_of_additive E hc
+  have hΔ := FreyCurve4413.vPi_delta E hc
+  rcases Nat.mod_two_eq_zero_or_one E.a.natAbs with ha | ha
+  · have hrow := FreyCurve4413.components_even_a_instance hOdd hEven E hc ha hmin
+    have hm : FreyCurve4413.NeronSpecialFiberComponents E = 9 := hrow.2.2
+    have hδ : FreyCurve4413.SwanAtPi E = 12 - 4 := by
+      rw [FreyCurve4413.SwanAtPi, hΔ, hm, hε]
+    refine Or.inl ?_
+    rw [hε, hδ]
+  · have hrow := FreyCurve4413.components_odd_a_instance hOdd hEven E hc ha hmin
+    have hm : FreyCurve4413.NeronSpecialFiberComponents E = 7 := hrow.2.2
+    have hδ : FreyCurve4413.SwanAtPi E = 12 - 2 := by
+      rw [FreyCurve4413.SwanAtPi, hΔ, hm, hε]
+    refine Or.inr ?_
+    rw [hε, hδ]
 
 /-- The 2-primary part of the Serre level of `ρ_{E,13}` over `ℚ`.
 
