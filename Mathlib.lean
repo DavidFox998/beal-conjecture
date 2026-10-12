@@ -12,6 +12,7 @@ import Mathlib.Modular.LevelLowering4413
 import Mathlib.Modular.DarmonMerel4413
 import Mathlib.Modular.EllipticCurveMinimal
 import Mathlib.Modular.BlowupOddA
+import Mathlib.Modular.BlowupEvenA
 import Mathlib.Modular.QiDivisors13
 import Mathlib.Modular.GL2F13
 import Mathlib.Modular.Irreducibility13
