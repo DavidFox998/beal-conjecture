@@ -488,7 +488,7 @@ Releases:
 - v8.88.0-Zsig-Bgt2M-gap3 Zsig 5983 + LTE ledger for B>2M; `beal_gap3_B_gt_2M_eliminated` stays Prop (named-row pools are B≤2M; q|A gives q⁴|(C¹³−B⁴) not q⁴|C¹³); `frey_conductor_general` unchanged; `conductor_86` / `B14_honest` stay Prop; not BCDT
 - v8.87.0-general-conductor-bound `frey_conductor_general`: Mathlib Weierstrass `|Δ| = 2^e * N0` with `e ≤ 5` and `N0 ∣ (ABC)^26 * 13`; `[propext, Quot.sound]`; not Tate; `conductor_86` stays Prop; 266+86 residue kills unchanged
 - v8.86.0-paper-B14-final-DOI paper-only DOI write: `.zenodo.json` title is the 352-row residue cover; CITATION/paper cite math `10.5281/zenodo.22712897` and paper `10.5281/zenodo.22713047`; `B14_honest` stays a Prop; no Lean change
-- v8.85.0-paper-B14-full paper unification; `beal_..._B14_full` covers the 352 named `B≡14` rows (266+77+9, empty axioms); KrausB14 `eliminated_full` stays the two-element mod-16 kill; `B14_honest` stays a Prop; math release remains https://github.com/DavidFox998/beal-level-26-foundations/releases/tag/v8.84.0-B14-modq-kill
+- v8.85.0-paper-B14-full paper unification; `beal_..._B14_full` covers the 352 named `B≡14` rows (266+77+9, empty axioms); KrausB14 `eliminated_full` stays the two-element mod-16 kill; `B14_honest` stays a Prop; math release remains https://github.com/DavidFox998/beal-conjecture/releases/tag/v8.84.0-B14-modq-kill
 - v8.84.0-B14-modq-kill the 86 mod-53 survivors die by fourth-power non-residues at q=17/29/109; 29 kills 77 and 109 kills the remaining 9; `beal_..._86_modq` is `¬∃ A` (empty axioms); not Ribet; the pack `eliminated_86` and `B14_honest` stay Props
 - v8.83.0-B14-86-props-honest `gcd(B,B+3)∣3` inhabited; Euler miss displayed as `IrreducibleMod13Trace` on the 86 (not Mazur); `conductor_86` / `level_lowering_86` / `eliminated_86` stay Props; Classical.choice is not BCDT/Ribet; Zsig 5983 is not `N|32*3*13`
 - v8.82.0-B14-a53-miss-86 Euler `a53` of Beal Frey cubic on the 86 mod-53 survivors is in `{-10,-2,1,6,14}` and misses `0,12` at ℓ=13 under hEq; `[propext, Quot.sound]`; not `¬∃ A` for those 86; B14_honest stays Prop; not Ribet
@@ -1149,8 +1149,8 @@ and [`certs/README.md`](certs/README.md).
   `BealLevel26FoundationsFullProof` green twice,
   `scripts/verify-scaffold.sh` passed, `#print axioms`
   `[propext, Classical.choice, Quot.sound]`.
-- Releases: [`v8.19.9`](https://github.com/DavidFox998/beal-level-26-foundations/releases/tag/v8.19.9)
-  and [`v8.19.9-fourth-power-residue`](https://github.com/DavidFox998/beal-level-26-foundations/releases/tag/v8.19.9-fourth-power-residue)
+- Releases: [`v8.19.9`](https://github.com/DavidFox998/beal-conjecture/releases/tag/v8.19.9)
+  and [`v8.19.9-fourth-power-residue`](https://github.com/DavidFox998/beal-conjecture/releases/tag/v8.19.9-fourth-power-residue)
   carry version DOI `10.5281/zenodo.22654189`.
 
 **The wider work:** this repository is one chamber of David Fox's *Opera Numerorum* — see [`docs/OPERA_NUMERORUM_LINKS.md`](docs/OPERA_NUMERORUM_LINKS.md) for the coordination index across all repositories, including the parent [beal-conjecture](https://github.com/DavidFox998/beal-conjecture) assembly.

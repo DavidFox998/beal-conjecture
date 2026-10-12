@@ -1,15 +1,15 @@
 > **Root v33 (documentation, not a CI guarantee):** `Beal/Beal.General/` checks `CompatChart2t` (191 lines), `CompatChartXt`/`CompatChartYt` (105 each), six polynomial-to-abstract restrictions, and `SpecialFibreGluing` (167 lines); product overlaps are abstract. See `Beal/RELEASE_NOTES_v33.md`.
 
-[![Matveev-Beal CI](https://github.com/DavidFox998/beal-level-26-foundations/actions/workflows/main.yml/badge.svg)](https://github.com/DavidFox998/beal-level-26-foundations/actions/workflows/main.yml)
+[![Matveev-Beal CI](https://github.com/DavidFox998/beal-conjecture/actions/workflows/main.yml/badge.svg)](https://github.com/DavidFox998/beal-conjecture/actions/workflows/main.yml)
 [![Concept DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22379293.svg)](https://doi.org/10.5281/zenodo.22379293)
 
 # .github/
 
 GitHub Actions for
-[DavidFox998/beal-level-26-foundations](https://github.com/DavidFox998/beal-level-26-foundations)
-(display title: foundations-level-26 Matveev–Beal). The GitHub slug is
-unchanged so concept DOI `10.5281/zenodo.22379293` stays attached.
-Monorepo `beal-conjecture` stays `beal-conjecture`.
+[DavidFox998/beal-conjecture](https://github.com/DavidFox998/beal-conjecture)
+(display title: foundations-level-26 Matveev–Beal).
+The public repository is `beal-conjecture`. Concept DOI
+`10.5281/zenodo.22379293` stays attached to the historical record.
 
 [`workflows/main.yml`](workflows/main.yml) runs on pushes and pull
 requests to **`main`**, and on `workflow_dispatch`:

@@ -3,7 +3,7 @@
 # .github/workflows/
 
 GitHub Actions workflow for
-[DavidFox998/beal-level-26-foundations](https://github.com/DavidFox998/beal-level-26-foundations).
+[DavidFox998/beal-conjecture](https://github.com/DavidFox998/beal-conjecture).
 
 [`main.yml`](main.yml) runs `lake exe cache get`, `lake build
 BealMatveevBeal`, and `./scripts/verify-matveev-beal.sh` on

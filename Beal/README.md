@@ -1,5 +1,27 @@
 # Beal/
 
+## Layperson summary
+
+This folder is the Matveev–Baker and even-valuation blow-up work on `main`. It checks special charts and records many conditional or no-go statements. It does not prove the Beal conjecture.
+
+## Referee
+
+The v33 gluing identifies `Proj(ReesMod2)` with a three-open cover whose overlaps are abstract pullbacks. It does not identify that Proj with the actual special-fiber pullback. Printed axioms of the gluing declarations are `propext`, `Classical.choice`, and `Quot.sound`. A full `lake build BealGeneral` was not the v33 check. The file-by-file notes below are the referee ledger.
+
+## Dependencies
+
+Lean 4.12.0 and community Mathlib `v4.12.0`, from the repository root.
+
+## Workflow
+
+```bash
+lake build
+```
+
+Individual v33 modules can be checked with `lake env lean` on the paths named below. Public location: [beal-conjecture](https://github.com/DavidFox998/beal-conjecture).
+
+---
+
 ## Working v33: even-valuation special fibre
 
 `Beal.General` now checks the quotient-induced `2t`, `Xt`, and `Yt`
@@ -24,11 +46,9 @@ Verify with `lake env lean Beal/Beal.General/SpecialFibreGluing.lean`,
 and `git diff --check`. A full `lake build BealGeneral` has not
 been verified for v33. See [`RELEASE_NOTES_v33.md`](RELEASE_NOTES_v33.md).
 
-For v33 the main whole-project audit/release source is
-[`beal-conjecture`](https://github.com/DavidFox998/beal-conjecture);
-[`beal-level-26-foundations`](https://github.com/DavidFox998/beal-level-26-foundations)
-is the work-repository mirror, to be synced after minting. Zenodo should
-ingest the `beal-conjecture` GitHub release, not the mirror. The proved
+For v33 the public audit and release source is
+[`beal-conjecture`](https://github.com/DavidFox998/beal-conjecture).
+Zenodo should ingest a GitHub release of that repository. The proved
 gluing concerns `Proj(ReesMod2)`, not an identified global isomorphism
 with the actual special-fibre pullback; the degree-one formula and
 nonvanishing of `overline{2t}` are not checked claims.

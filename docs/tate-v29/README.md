@@ -2,7 +2,7 @@
 
 # `tate-v29` — Tate conductor display at `29`
 
-Working branch of **beal-level-26-foundations**, cut from
+Working branch of **beal-conjecture**, cut from
 `phase-darmon-merel-4413` at `43735b3`. Not cut from `main`
 (`6247c63`). Do **not** merge back to `phase-darmon-merel-4413`
 until asked.

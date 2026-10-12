@@ -5,15 +5,11 @@
   branch `beal-10e6-inhabited-43735b3`, proposed tag `v33`.
   No tag or release has been made yet.
 - **Deposit:** Zenodo should ingest the GitHub release from
-  `beal-conjecture`, **not** from `beal-level-26-foundations`.
+  [beal-conjecture](https://github.com/DavidFox998/beal-conjecture).
   This records the intended source, not proof that the GitHub–Zenodo
   connection or a new DOI already exists.
-- **Mirror:** [`DavidFox998/beal-level-26-foundations`](https://github.com/DavidFox998/beal-level-26-foundations),
-  configured locally as `level26`, is the work-repository mirror.
-  After minting, the proposed sync is
-  `git push level26 beal-10e6-inhabited-43735b3:main`
-  (or a mirror clone), **only after checking** the mirror's `main`
-  ancestry and obtaining a separate push order. Do not force-push.
+- **Other copies:** any non-public copy is not a release source and is
+  not linked here.
 - **Verified:** seven v33 modules passed direct `lake env lean`;
   their printed axiom sets are only
   `[propext, Classical.choice, Quot.sound]`. The 2,249-line existing

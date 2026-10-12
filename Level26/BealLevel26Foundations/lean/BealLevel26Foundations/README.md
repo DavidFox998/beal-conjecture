@@ -472,7 +472,7 @@ v4.14.0-iter-citation-contradiction-locked: `CITATION.cff` locks `c2c47db` / fou
 **v7.1.0-iter-beal-forall-kernel-separated-none-real — Beal ∀ none + kernel separated none BOTH none unconditional via rfl only, push propext out of BOTH closed real witness and kernel separated same OFF-token pattern as ExistsNewformLevel2_real_witness none 0≠0→none**
 
 - Commit `9e820f4` tag `v7.1.0-iter-beal-forall-kernel-separated-none-real`
-- GitHub: https://github.com/DavidFox998/beal-level-26-foundations/releases/tag/v7.1.0-iter-beal-forall-kernel-separated-none-real
+- GitHub: https://github.com/DavidFox998/beal-conjecture/releases/tag/v7.1.0-iter-beal-forall-kernel-separated-none-real
 - Zenodo `10.5281/zenodo.22632209` DataCite findable isActive true Hook `22379293` IsVersionOf `22272382` only original-family `22322627`
 - About catch-up `c10e626` `v7.1.1-iter-about-catchup-22632209-relook` `10.5281/zenodo.22635221` — About writes `22632209` until v7.2.0
 - Chain `22552105->...->22611775->22614123->22618433->22620999->22632209->22635221` Hook `22379293` IsVersionOf `22272382` only original `22322627`
@@ -1087,11 +1087,11 @@ Uninhabited empty-Type witnesses (Mathlib 4.12 has no Tate / Kodaira / conductor
 
 The v7.1.0 `frey_beal_forall_none_formula` none chain is untouched — 24 modules still green.  About now writes the v7.1.1 mint `22635221`; the new v7.2.0 mint is not written.
 
-### v7.1.2-iter-readme-uniform-opera-links — README header uniformized across beal-level-26-foundations and beal-conjecture, Opera Numerorum coordination index added, docs-only
+### v7.1.2-iter-readme-uniform-opera-links — README header uniformized in this public repository, Opera Numerorum coordination index added, docs-only
 
 No Lean change.  HEAD tag `v7.1.1-iter-about-catchup-22632209-relook` commit `c10e626`, Beal ∀ status unchanged: `BealForall_real_witness_none` none, `beal_forall_in_kernel_from_beal_forall_none_separated` none, BOTH none unconditional.
 
-New file `docs/OPERA_NUMERORUM_LINKS.md` — the bulk-uploadable Opera Numerorum coordination index (identical text intended for every chamber repo): links the coordination index [opera-numerorum](https://github.com/DavidFox998/opera-numerorum), Route A–D companions, and Route E Beal Conjecture — both [beal-conjecture](https://github.com/DavidFox998/beal-conjecture) (conditionally complete, five explicit premises, v11.0.0) and this repository (`beal-level-26-foundations`, UNCONDITIONAL v7.1.0 BOTH none).
+New file `docs/OPERA_NUMERORUM_LINKS.md` — the bulk-uploadable Opera Numerorum coordination index (identical text intended for every chamber repo): links the coordination index a repository that is not public, Route A–D companions, and Route E Beal Conjecture — both [beal-conjecture](https://github.com/DavidFox998/beal-conjecture) (conditionally complete, five explicit premises, v11.0.0) and this repository (UNCONDITIONAL v7.1.0 BOTH none).
 
 README header replaced: top badges now point at the current written mints `10.5281/zenodo.22632209` (v7.1.0) and `10.5281/zenodo.22635221` (v7.1.1) plus the concept DOI `10.5281/zenodo.22272382`, followed by a one-screen honest summary of the v7.1.0 unconditional-none result and a pointer to the Opera Numerorum index.  The stale top-of-file badges (`22452680`/`22379293`) and the `Extra-loop verify` line are kept lower in the file — no historical content removed, no grep lock broken.
 
@@ -1107,11 +1107,11 @@ No Lean change.  Corrects an error introduced in v7.1.2: `docs/OPERA_NUMERORUM_L
 
 24 modules green twice `verify-scaffold.sh OK` `verify_descent_26.py OK` `NO_SORRY_OK` — unchanged; three plates JPEG/PNG/WebP in `docs/assets/v6.7.0/` untouched.
 
-### v7.1.2-iter-readme-uniform-opera-links — README header uniformized across beal-level-26-foundations and beal-conjecture, Opera Numerorum coordination index added, docs-only
+### v7.1.2-iter-readme-uniform-opera-links — README header uniformized in this public repository, Opera Numerorum coordination index added, docs-only
 
 No Lean change.  HEAD tag `v7.1.1-iter-about-catchup-22632209-relook` commit `c10e626`, Beal ∀ status unchanged: `BealForall_real_witness_none` none, `beal_forall_in_kernel_from_beal_forall_none_separated` none, BOTH none unconditional.
 
-New file `docs/OPERA_NUMERORUM_LINKS.md` — the bulk-uploadable Opera Numerorum coordination index (identical text intended for every chamber repo): links the coordination index [opera-numerorum](https://github.com/DavidFox998/opera-numerorum), Route A–D companions, and (mislabeled as "Route E" — corrected in v7.1.3) the Beal Conjecture — both [beal-conjecture](https://github.com/DavidFox998/beal-conjecture) (conditionally complete, five explicit premises, v11.0.0) and this repository (`beal-level-26-foundations`, UNCONDITIONAL v7.1.0 BOTH none).
+New file `docs/OPERA_NUMERORUM_LINKS.md` — the bulk-uploadable Opera Numerorum coordination index (identical text intended for every chamber repo): links the coordination index a repository that is not public, Route A–D companions, and (mislabeled as "Route E" — corrected in v7.1.3) the Beal Conjecture — both [beal-conjecture](https://github.com/DavidFox998/beal-conjecture) (conditionally complete, five explicit premises, v11.0.0) and this repository (UNCONDITIONAL v7.1.0 BOTH none).
 
 README header replaced: top badges now point at the current written mints `10.5281/zenodo.22632209` (v7.1.0) and `10.5281/zenodo.22635221` (v7.1.1) plus the concept DOI `10.5281/zenodo.22272382`, followed by a one-screen honest summary of the v7.1.0 unconditional-none result and a pointer to the Opera Numerorum index.  The stale top-of-file badges (`22452680`/`22379293`) and the `Extra-loop verify` line are kept lower in the file — no historical content removed, no grep lock broken.
 
@@ -3794,7 +3794,7 @@ label, not Tate).
 
 [![Concept DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22272382.svg)](https://doi.org/10.5281/zenodo.22272382)
 [![v4.0.9-fourCusps-forall DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22322627.svg)](https://doi.org/10.5281/zenodo.22322627)
-[![CI](https://github.com/DavidFox998/beal-level-26-foundations/actions/workflows/main.yml/badge.svg)](https://github.com/DavidFox998/beal-level-26-foundations/actions/workflows/main.yml)
+[![CI](https://github.com/DavidFox998/beal-conjecture/actions/workflows/main.yml/badge.svg)](https://github.com/DavidFox998/beal-conjecture/actions/workflows/main.yml)
 
 ### v4.28.0 X0(26)(Q) Cusps P-mem Locked — DOI 22452680
 
@@ -3861,69 +3861,69 @@ calculation is evidence for exactly what it computes, while every missing
 mathematical bridge is named instead of hidden behind an axiom.
 
 **Current public surface:** tag
-[`v4.30.0-iter-zenodo-22456594-metadata-fix`](https://github.com/DavidFox998/beal-level-26-foundations/releases/tag/v4.30.0-iter-zenodo-22456594-metadata-fix)
+[`v4.30.0-iter-zenodo-22456594-metadata-fix`](https://github.com/DavidFox998/beal-conjecture/releases/tag/v4.30.0-iter-zenodo-22456594-metadata-fix)
 (prior
-[`v4.29.0-iter-readme-X0-26-22452680-locked`](https://github.com/DavidFox998/beal-level-26-foundations/releases/tag/v4.29.0-iter-readme-X0-26-22452680-locked)
+[`v4.29.0-iter-readme-X0-26-22452680-locked`](https://github.com/DavidFox998/beal-conjecture/releases/tag/v4.29.0-iter-readme-X0-26-22452680-locked)
 (prior
-[`v4.28.0-iter-zenodo-X0-26-cusps-metadata-mint`](https://github.com/DavidFox998/beal-level-26-foundations/releases/tag/v4.28.0-iter-zenodo-X0-26-cusps-metadata-mint)
+[`v4.28.0-iter-zenodo-X0-26-cusps-metadata-mint`](https://github.com/DavidFox998/beal-conjecture/releases/tag/v4.28.0-iter-zenodo-X0-26-cusps-metadata-mint)
 (prior
-[`v4.27.0-iter-X0-26-cusps-P-mem-locked`](https://github.com/DavidFox998/beal-level-26-foundations/releases/tag/v4.27.0-iter-X0-26-cusps-P-mem-locked),
-[`v4.25.0-iter-zenodo-triple-bridge-none-mint`](https://github.com/DavidFox998/beal-level-26-foundations/releases/tag/v4.25.0-iter-zenodo-triple-bridge-none-mint)
+[`v4.27.0-iter-X0-26-cusps-P-mem-locked`](https://github.com/DavidFox998/beal-conjecture/releases/tag/v4.27.0-iter-X0-26-cusps-P-mem-locked),
+[`v4.25.0-iter-zenodo-triple-bridge-none-mint`](https://github.com/DavidFox998/beal-conjecture/releases/tag/v4.25.0-iter-zenodo-triple-bridge-none-mint)
 (prior
-[`v4.24.0-iter-readme-final-package-locked`](https://github.com/DavidFox998/beal-level-26-foundations/releases/tag/v4.24.0-iter-readme-final-package-locked),
-[`v4.23.0-iter-package-final-bridge-locked`](https://github.com/DavidFox998/beal-level-26-foundations/releases/tag/v4.23.0-iter-package-final-bridge-locked),
-[`v4.22.0-iter-zenodo-parent-fix`](https://github.com/DavidFox998/beal-level-26-foundations/releases/tag/v4.22.0-iter-zenodo-parent-fix),
-[`v4.21.0-iter-zenodo-mint`](https://github.com/DavidFox998/beal-level-26-foundations/releases/tag/v4.21.0-iter-zenodo-mint),
-[`v4.20.0-iter-package-none-docs-locked`](https://github.com/DavidFox998/beal-level-26-foundations/releases/tag/v4.20.0-iter-package-none-docs-locked),
-[`v4.19.0-iter-readme-typed-forall-locked`](https://github.com/DavidFox998/beal-level-26-foundations/releases/tag/v4.19.0-iter-readme-typed-forall-locked),
-[`v4.18.0-iter-typed-forall-package-locked`](https://github.com/DavidFox998/beal-level-26-foundations/releases/tag/v4.18.0-iter-typed-forall-package-locked),
-[`v4.17.0-iter-forall-bridge-locked`](https://github.com/DavidFox998/beal-level-26-foundations/releases/tag/v4.17.0-iter-forall-bridge-locked),
-[`v4.16.0-iter-readme-about-locked`](https://github.com/DavidFox998/beal-level-26-foundations/releases/tag/v4.16.0-iter-readme-about-locked),
-[`v4.15.0-iter-typed-forall-bridge`](https://github.com/DavidFox998/beal-level-26-foundations/releases/tag/v4.15.0-iter-typed-forall-bridge),
-[`v4.14.0-iter-citation-contradiction-locked`](https://github.com/DavidFox998/beal-level-26-foundations/releases/tag/v4.14.0-iter-citation-contradiction-locked),
-[`v4.13.1-iter-unstick`](https://github.com/DavidFox998/beal-level-26-foundations/releases/tag/v4.13.1-iter-unstick),
-[`v4.13.0-iter-contradiction-start`](https://github.com/DavidFox998/beal-level-26-foundations/releases/tag/v4.13.0-iter-contradiction-start),
-[`v4.12.0-iter-verify-plus`](https://github.com/DavidFox998/beal-level-26-foundations/releases/tag/v4.12.0-iter-verify-plus),
-[`v4.10.0-iter-pari-locked`](https://github.com/DavidFox998/beal-level-26-foundations/releases/tag/v4.10.0-iter-pari-locked),
-[`v4.9.0-iter-no-True-X0`](https://github.com/DavidFox998/beal-level-26-foundations/releases/tag/v4.9.0-iter-no-True-X0),
-[`v4.8.0-iter-modularity-scaffold`](https://github.com/DavidFox998/beal-level-26-foundations/releases/tag/v4.8.0-iter-modularity-scaffold),
-[`v4.7.0-iter-typed-no-axioms-closing`](https://github.com/DavidFox998/beal-level-26-foundations/releases/tag/v4.7.0-iter-typed-no-axioms-closing),
-[`v4.6.0-readmes-about`](https://github.com/DavidFox998/beal-level-26-foundations/releases/tag/v4.6.0-readmes-about),
-[`v4.5.0-forall-real`](https://github.com/DavidFox998/beal-level-26-foundations/releases/tag/v4.5.0-forall-real),
-[`v4.4.0-typed-refactor-true-close`](https://github.com/DavidFox998/beal-level-26-foundations/releases/tag/v4.4.0-typed-refactor-true-close),
-[`v4.3.0-final-forall-package`](https://github.com/DavidFox998/beal-level-26-foundations/releases/tag/v4.3.0-final-forall-package),
-[`v4.2.2-zenodo-trigger`](https://github.com/DavidFox998/beal-level-26-foundations/releases/tag/v4.2.2-zenodo-trigger),
-[`v4.2.1-chabauty-closes-typed`](https://github.com/DavidFox998/beal-level-26-foundations/releases/tag/v4.2.1-chabauty-closes-typed),
-[`v4.2.0-full-chain`](https://github.com/DavidFox998/beal-level-26-foundations/releases/tag/v4.2.0-full-chain);
+[`v4.24.0-iter-readme-final-package-locked`](https://github.com/DavidFox998/beal-conjecture/releases/tag/v4.24.0-iter-readme-final-package-locked),
+[`v4.23.0-iter-package-final-bridge-locked`](https://github.com/DavidFox998/beal-conjecture/releases/tag/v4.23.0-iter-package-final-bridge-locked),
+[`v4.22.0-iter-zenodo-parent-fix`](https://github.com/DavidFox998/beal-conjecture/releases/tag/v4.22.0-iter-zenodo-parent-fix),
+[`v4.21.0-iter-zenodo-mint`](https://github.com/DavidFox998/beal-conjecture/releases/tag/v4.21.0-iter-zenodo-mint),
+[`v4.20.0-iter-package-none-docs-locked`](https://github.com/DavidFox998/beal-conjecture/releases/tag/v4.20.0-iter-package-none-docs-locked),
+[`v4.19.0-iter-readme-typed-forall-locked`](https://github.com/DavidFox998/beal-conjecture/releases/tag/v4.19.0-iter-readme-typed-forall-locked),
+[`v4.18.0-iter-typed-forall-package-locked`](https://github.com/DavidFox998/beal-conjecture/releases/tag/v4.18.0-iter-typed-forall-package-locked),
+[`v4.17.0-iter-forall-bridge-locked`](https://github.com/DavidFox998/beal-conjecture/releases/tag/v4.17.0-iter-forall-bridge-locked),
+[`v4.16.0-iter-readme-about-locked`](https://github.com/DavidFox998/beal-conjecture/releases/tag/v4.16.0-iter-readme-about-locked),
+[`v4.15.0-iter-typed-forall-bridge`](https://github.com/DavidFox998/beal-conjecture/releases/tag/v4.15.0-iter-typed-forall-bridge),
+[`v4.14.0-iter-citation-contradiction-locked`](https://github.com/DavidFox998/beal-conjecture/releases/tag/v4.14.0-iter-citation-contradiction-locked),
+[`v4.13.1-iter-unstick`](https://github.com/DavidFox998/beal-conjecture/releases/tag/v4.13.1-iter-unstick),
+[`v4.13.0-iter-contradiction-start`](https://github.com/DavidFox998/beal-conjecture/releases/tag/v4.13.0-iter-contradiction-start),
+[`v4.12.0-iter-verify-plus`](https://github.com/DavidFox998/beal-conjecture/releases/tag/v4.12.0-iter-verify-plus),
+[`v4.10.0-iter-pari-locked`](https://github.com/DavidFox998/beal-conjecture/releases/tag/v4.10.0-iter-pari-locked),
+[`v4.9.0-iter-no-True-X0`](https://github.com/DavidFox998/beal-conjecture/releases/tag/v4.9.0-iter-no-True-X0),
+[`v4.8.0-iter-modularity-scaffold`](https://github.com/DavidFox998/beal-conjecture/releases/tag/v4.8.0-iter-modularity-scaffold),
+[`v4.7.0-iter-typed-no-axioms-closing`](https://github.com/DavidFox998/beal-conjecture/releases/tag/v4.7.0-iter-typed-no-axioms-closing),
+[`v4.6.0-readmes-about`](https://github.com/DavidFox998/beal-conjecture/releases/tag/v4.6.0-readmes-about),
+[`v4.5.0-forall-real`](https://github.com/DavidFox998/beal-conjecture/releases/tag/v4.5.0-forall-real),
+[`v4.4.0-typed-refactor-true-close`](https://github.com/DavidFox998/beal-conjecture/releases/tag/v4.4.0-typed-refactor-true-close),
+[`v4.3.0-final-forall-package`](https://github.com/DavidFox998/beal-conjecture/releases/tag/v4.3.0-final-forall-package),
+[`v4.2.2-zenodo-trigger`](https://github.com/DavidFox998/beal-conjecture/releases/tag/v4.2.2-zenodo-trigger),
+[`v4.2.1-chabauty-closes-typed`](https://github.com/DavidFox998/beal-conjecture/releases/tag/v4.2.1-chabauty-closes-typed),
+[`v4.2.0-full-chain`](https://github.com/DavidFox998/beal-conjecture/releases/tag/v4.2.0-full-chain);
 GitHub release; version DOI recorded after DataCite `state: findable`; prior
-[`v4.1.3-beal-13-theorem`](https://github.com/DavidFox998/beal-level-26-foundations/releases/tag/v4.1.3-beal-13-theorem);
+[`v4.1.3-beal-13-theorem`](https://github.com/DavidFox998/beal-conjecture/releases/tag/v4.1.3-beal-13-theorem);
 prior
-[`v4.1.2-beal-13-endgame`](https://github.com/DavidFox998/beal-level-26-foundations/releases/tag/v4.1.2-beal-13-endgame);
+[`v4.1.2-beal-13-endgame`](https://github.com/DavidFox998/beal-conjecture/releases/tag/v4.1.2-beal-13-endgame);
 prior
-[`v4.1.1-descent-compute`](https://github.com/DavidFox998/beal-level-26-foundations/releases/tag/v4.1.1-descent-compute);
+[`v4.1.1-descent-compute`](https://github.com/DavidFox998/beal-conjecture/releases/tag/v4.1.1-descent-compute);
 prior
-[`v4.1.0-descent-start`](https://github.com/DavidFox998/beal-level-26-foundations/releases/tag/v4.1.0-descent-start);
+[`v4.1.0-descent-start`](https://github.com/DavidFox998/beal-conjecture/releases/tag/v4.1.0-descent-start);
 prior
-[`v4.0.15-lmfdb-certs-no-doi`](https://github.com/DavidFox998/beal-level-26-foundations/releases/tag/v4.0.15-lmfdb-certs-no-doi);
+[`v4.0.15-lmfdb-certs-no-doi`](https://github.com/DavidFox998/beal-conjecture/releases/tag/v4.0.15-lmfdb-certs-no-doi);
 prior
-[`v4.0.14-coleman-integral-no-doi`](https://github.com/DavidFox998/beal-level-26-foundations/releases/tag/v4.0.14-coleman-integral-no-doi);
+[`v4.0.14-coleman-integral-no-doi`](https://github.com/DavidFox998/beal-conjecture/releases/tag/v4.0.14-coleman-integral-no-doi);
 prior
-[`v4.0.13-formal-immersion-proof-no-doi`](https://github.com/DavidFox998/beal-level-26-foundations/releases/tag/v4.0.13-formal-immersion-proof-no-doi);
+[`v4.0.13-formal-immersion-proof-no-doi`](https://github.com/DavidFox998/beal-conjecture/releases/tag/v4.0.13-formal-immersion-proof-no-doi);
 prior
-[`v4.0.12-scheme-stub-no-doi`](https://github.com/DavidFox998/beal-level-26-foundations/releases/tag/v4.0.12-scheme-stub-no-doi);
+[`v4.0.12-scheme-stub-no-doi`](https://github.com/DavidFox998/beal-conjecture/releases/tag/v4.0.12-scheme-stub-no-doi);
 prior
-[`v4.0.11-residue-disks-no-doi`](https://github.com/DavidFox998/beal-level-26-foundations/releases/tag/v4.0.11-residue-disks-no-doi);
+[`v4.0.11-residue-disks-no-doi`](https://github.com/DavidFox998/beal-conjecture/releases/tag/v4.0.11-residue-disks-no-doi);
 prior
-[`v4.0.10-chabauty0-no-doi`](https://github.com/DavidFox998/beal-level-26-foundations/releases/tag/v4.0.10-chabauty0-no-doi);
+[`v4.0.10-chabauty0-no-doi`](https://github.com/DavidFox998/beal-conjecture/releases/tag/v4.0.10-chabauty0-no-doi);
 prior published
-[`v4.0.9-fourCusps-forall`](https://github.com/DavidFox998/beal-level-26-foundations/releases/tag/v4.0.9-fourCusps-forall),
+[`v4.0.9-fourCusps-forall`](https://github.com/DavidFox998/beal-conjecture/releases/tag/v4.0.9-fourCusps-forall),
 commit `2281aad`, version DOI
 [10.5281/zenodo.22322627](https://doi.org/10.5281/zenodo.22322627);
 prior
-[`v4.0.8-geom-forbid`](https://github.com/DavidFox998/beal-level-26-foundations/releases/tag/v4.0.8-geom-forbid),
+[`v4.0.8-geom-forbid`](https://github.com/DavidFox998/beal-conjecture/releases/tag/v4.0.8-geom-forbid),
 commit `916f696`, version DOI
 [10.5281/zenodo.22314435](https://doi.org/10.5281/zenodo.22314435);
-prior [`v4.0.7-hIdentify-j`](https://github.com/DavidFox998/beal-level-26-foundations/releases/tag/v4.0.7-hIdentify-j),
+prior [`v4.0.7-hIdentify-j`](https://github.com/DavidFox998/beal-conjecture/releases/tag/v4.0.7-hIdentify-j),
 commit `ade01a2`, version DOI
 [10.5281/zenodo.22314212](https://doi.org/10.5281/zenodo.22314212)).
 The coefficient ledger is still
@@ -4478,8 +4478,8 @@ It installs Elan with no default toolchain, then follows `lean-toolchain`
 (`leanprover/lean4:v4.12.0`) and Mathlib `v4.12.0`. Build with:
 
 ```sh
-docker build -f DOCKERFILE -t beal-level-26-foundations .
-docker run --rm beal-level-26-foundations
+docker build -f DOCKERFILE -t beal-conjecture .
+docker run --rm beal-conjecture
 ```
 
 ## Relationship to `beal-conjecture`

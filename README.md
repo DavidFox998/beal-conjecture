@@ -1,3 +1,39 @@
+# beal-conjecture
+
+Public location: [DavidFox998/beal-conjecture](https://github.com/DavidFox998/beal-conjecture). This `main` branch is the public face of the Matveev–Baker and level-26 foundations line. It is not a proof of the Beal conjecture.
+
+## Layperson summary
+
+The Beal conjecture says that if `aˣ + bʸ = cᶻ` with integers `a, b, c > 0` and exponents `x, y, z > 2`, then `a`, `b`, and `c` share a common factor. This branch does not prove that. It holds a large checked ledger of special cases, no-go arguments, and explicit hypotheses, plus a six-file scaffold for one Fermat-style signature. The scaffold has no definitions and no proofs.
+
+The current prototype for `a⁴ + b⁴ = c¹³` is a different branch of this same repository, `mathlib/remove-ribet-axiom`. There the odd-`a` blow-up has seven components and the even-`a` blow-up has nine. Identifying those counts with the Néron special fiber is still open. That branch also has two axioms and three further open propositions. Its README states the inventory. Publishing that prototype is an editorial decision. It is not the Beal proof.
+
+## Referee
+
+On this branch, `DarmonMerel/` is the 2026-10-09 scaffold (`1` through `6`). Each file says so. `darmon_merel_4413` is not a theorem here. `BealTrueV25.lean` still has `axiom darmon_merel_4413_axiom` for a different, displayed argument. Do not treat the scaffold as a replacement for that axiom.
+
+`Mathlib/Modular/` and `notes/` are not on this branch. `Beal/`, `docs/`, `papers/`, and `paper/` are. `papers/mcom-darmon-merel-4413.tex` describes the other branch. `papers/main.tex` is the v33 quotient-Rees manuscript of this history. `paper/mcom-draft.tex` is the older gap-3 level-26 draft.
+
+Two axioms and five opens of the prototype are not claims of this branch's Lean. This branch's own open hypotheses are the `def Prop` targets named in the ledger below (`hLLL`, `baker_bound_gap3`, and the rest). A green build of a no-go is not an unconditional `∀`.
+
+## Dependencies
+
+Lean 4.12.0, pinned in `lean-toolchain`. Community Mathlib `v4.12.0` is a Lake requirement. The vendored package `Level26/BealLevel26Foundations` is a local directory of this repository, not a second public project.
+
+## Workflow
+
+```bash
+lake exe cache get
+lake build
+lake build Mathlib
+```
+
+`lake build` is the default target. `lake build Mathlib` builds the community Mathlib dependency at the pinned revision. A README edit does not change a theorem.
+
+The historical ledger follows.
+
+---
+
 # foundations-level-26 — Beal Level 26 Matveev-Baker Foundations
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22379293.svg)](https://doi.org/10.5281/zenodo.22379293)
@@ -164,9 +200,8 @@ changing the existing `TateEvenBranch.lean`. This working version has not
 been tagged or minted.
 
 For v33, [`beal-conjecture`](https://github.com/DavidFox998/beal-conjecture)
-is the main whole-project audit repository and intended GitHub-release and
-Zenodo deposit source. [`beal-level-26-foundations`](https://github.com/DavidFox998/beal-level-26-foundations)
-is the work-repository mirror, to be synchronized after minting. The checked
+is the public repository and the intended GitHub-release and Zenodo deposit
+source. There is no second public mirror. The checked
 global statement is `Proj(ReesMod2) ≅ Glue(S_2t/(2), S_Xt/(2), S_Yt/(2))`,
 with abstract pullback overlaps; no global identification with the actual
 special-fibre pullback or degree-one/nonvanishing certificate is claimed.
@@ -316,10 +351,9 @@ Build: `lake build BealMatveevBeal` green — `./scripts/verify-matveev-beal.sh`
 - **Rank-3 B0/C cutoff nogo `BealMatveevBealV25Rank3`** — **separate** Lake target, not in the default `BealMatveevBeal` glob (`lake build BealMatveevBeal` stays independent). Wraps `gap3_B_lt_A_of_sol` (`B < A`), `|Λ| < 1/B`, and rank-3 `v = 4 b₁ − 13 b₂` with `‖v‖ < 32` on `B > B0`. `C_LLL_v25 = C1_floor` (not `C1²`); `B0/C > 1/B` is true (`B0_div_C_gt_inv_B`); on a solution `|Λ| < 1/B < B0/C`, so `|Λ| ≥ B0/C` fails (`lll_B0_div_C_lower_bound_fails`). `λ₁ < 32 < B0`, so a vector of scale `C|Λ| < B0` is long versus `λ₁`. Does **not** import `MatveevThm14General`. Does **not** claim Euclidean length `≥ B0` or `|u α + v| > exp(−B0)` (`lll_euclidean_lower_bound_fails`, `lll_form_lower_bound_fails`). `LLL_reduces_bound_to_B0` / `LLL_reduces_bound_to_B0_v25` / `hGen` / `hLLL` stay `def Prop`; **v25 not minted**. Prior tag `v24-v24x-final-rank3-shape-nogo` stays at `c1d173e`.
 - **Gap-3 `B ≤ B0` search slice `BealMatveevBealV25B0Search`** — **separate** Lake target (also compiles root `LLLTargetB8`). Mod-16 reject plus floor fourth-root (`Nat.sqrt` twice). `check_B_true_no_sol` extracts the Bool checker. `check_range` is `List.range.foldl` (not an `hi`-deep recursive loop); `check_range_true_of_all` is the foldl invariant. `∀ B < 1000` is ten `native_decide` shards of 100 (`shard_0_100` … `shard_900_1000`), not one shard of 1000 and not 100 shards through 10000. On a solution with `B ≥ 100`, `|Λ| ≤ 2/B⁹` (`abs_Lambda_lt_two_div_B_pow_nine`); that tightens `|Λ| < 1/B` but does not mint v25 (`abs_Lambda_ge_B_pow_neg_eight` / `LLL_reduces_C1_to_lt_nine` stay `def Prop`). Phase-lift lattices: old `L` with `C=10⁴⁸`, `b1=(1,0)` still has `λ₁=1` (no nonzero `ℤ×ℤ` vector of Euclidean length `< 1`); new `L'` with `b1'=(C, ⌊C log(B+3)⌋)`, `b2'=(0,C)`, `det=C²`, `λ₁=C`. `C/B⁸ ≤ 1` on `B≥B0`; `C·(2/B⁹) < C/2`. Candidate `v_short'` is in `L'` on `|Λ|<B⁻⁸` only if it is `0`. 3-dim `L3` with `C₃=10³⁰` has `det=C₃` and `λ₁=1` (not `C₃^{1/3}`); need `C1'≤8` vs typical `30`–`50`. The short-vector hyp of `LLL_lift_to_B8_of_short_vector_C48` stays uninhabited. The implication `|Λ| ≥ B⁻⁸` ⇒ no `B ≥ B0` solution is a theorem; the LLL hypothesis is not inhabited. The full `∀ B ≤ 10⁶` statement stays `def Prop` (`Gap3B0Million` wires 10k foldl shards of 100 as an implication, not a `native_decide` close). Root `LLLTargetB8_C1_lower_bound` proves `C1' ≤ 8` cannot hold on a solution (`2/B⁹ < 1/B⁸`); `LLL_reduces_C1_to_lt_nine` is equivalent to “no `B ≥ B0` solution” and `LLL_cannot_reach_B8` stays `def Prop`. Root `DarmonMerelFrey4413` is the displayed Frey curve `y²=x(x−A⁴)(x+B⁴)` (`Δ=16 A⁸ B⁸ (A⁴+B⁴)²`, on a solution `16 A⁸ B⁸ C²⁶`); Ribet-to-32 and the level-32 table stay `def Prop` (no new axiom). Root `Level32Table` recomputes LMFDB `32a1` (`a₃=0`, `a₅=−2`, `a₂₉=−10`) by `𝔽_p` point counts; `l=3,5` match so they do not eliminate, and `level_32_no_newform_for_Frey_gap3` stays `def Prop`. Root `Level928Table` splits `29 ∣ ABC` (at most one of `A,B,C`) and records displayed residual `928`; `level_928_no_match_bad_29` stays `def Prop`. Root `Ribet29C_Lowering` re-exports `v₂₉(Δ)=26 v₂₉(C)` and inhabits `a₇=−4 ≠ 0` on residue `(A,B)≡(2,3) (mod 7)`; Ribet-to-32 and the full `29 ∣ C` branch stay `def Prop` (residue `(1,6)` still matches). Root `Ribet29C_Residue16` recomputes `a₁₁(32a1)=0`; the `(1,6)` class is mixed at `l=11` (`a₁₁=0` lifts exist) so `full_29C_eliminated` stays `def Prop`. Root `Ribet29C_Residue16_L23` recomputes `a₂₃(32a1)=0` (not `−6`); the same class is mixed at `l=23`. Root `MazurIrreducibility13` inhabits `29 ∣ j.den` when `29 ∣ C` and `29 ∤ AB`; Mazur irreducibility / Ribet inertia / Serre image stay `def Prop` (no new axiom). Root `Inertia29Unramified` inhabits `v₂₉(c₄)=0`; Kodaira `I_{26k}` stays `def Prop`. Root `SerreImage13` inhabits `32a1` `j=1728`; CM image / Serre open image stay `def Prop`. Root `MazurIrreducibilityFull` / `TateGalois` / `SerreImageFull` name the four Mathlib gaps as `def Prop`. Root `X0_26_Full2Torsion` inhabits LMFDB `26.42.2.a.1` / González `Y²=x⁶−8x⁵+8x⁴−18x³+8x²−8x+1` and affine `(0,±1)` (`f(0)=1 ≠ 49`), plus displayed `|Sel₂|=1` (`2⁰=1`) and torsion Nats `3`/`7`; Kenku / mwrank / `|J₀(26)(ℚ)|=21` stay `def Prop`. Root `Tate_I29_Inertia` inhabits truncated `j(q)=q⁻¹+744+196884q` and `v(j⁻¹)=26k=v(Δ)`; Tate uniformization stays `def Prop`. Root `Ribet_Level32` inhabits `928/29=32`; abstract Ribet / Frey-needs-Wiles stay `def Prop`. Root `Serre_Large_vs_CM_Small` inhabits `2²+3²=13` and Cartan `288`; `card(im)≤48` / `ρ_Frey ≅ ρ_{32a1}` stay `def Prop`. Root `J0_26_BSD_26a1_26b1` inhabits Cremona `26a1`/`26b1` `Δ=−17576/−1664` and BSD quotients `1/3`,`1/7`; Kolyvagin rank 0 stays `def Prop`. See `ARCHIVE_4413.md`. Popcount is not a sound reject. **v25 not minted**.
 
-The historical foundations mirror slug remains `beal-level-26-foundations`
-(not renamed: its concept DOI
+The concept DOI
 [10.5281/zenodo.22379293](https://doi.org/10.5281/zenodo.22379293) stays
-attached). Display title:
+attached to the historical foundations record. Display title:
 **Beal Level 26 Foundations — Matveev 2000 Thm1.4 n=2 + Bugeaud LLL → Baker B0=10^6**.
 
 This URL formerly hosted the Level 26 kernel through

@@ -2,7 +2,7 @@
 
 # `kolyvagin-fintype` — `Fintype` rank 0, not Subsingleton
 
-Working branch of **beal-level-26-foundations**, cut from
+Working branch of **beal-conjecture**, cut from
 `phase-darmon-merel-4413` at `43735b3`. Not cut from `main`.
 Do **not** merge back until asked.
 

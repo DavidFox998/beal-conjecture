@@ -2,7 +2,7 @@
 
 # `ribet-928-32` — residual `928 / 29 = 32`
 
-Working branch of **beal-level-26-foundations**, cut from
+Working branch of **beal-conjecture**, cut from
 `phase-darmon-merel-4413` at `43735b3`. Not cut from `main`.
 Do **not** merge back until asked.
 

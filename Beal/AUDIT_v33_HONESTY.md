@@ -61,9 +61,9 @@ File:line references below point to the current working tree.
    do not retroactively untrack them. No tracked files were removed.
 - No root `VERSION` file or Lake version field exists. The annotated
   `v33` tag and audit branch on `origin` now point to release marker
-  `207c2bfa` in `DavidFox998/beal-conjecture`. Mirror `level26`
-  (`DavidFox998/beal-level-26-foundations`) fast-forwarded its `main`
-  to that commit and received the same tag; no force-push was used.
+  `207c2bfa` in `DavidFox998/beal-conjecture`. A non-public copy was
+  fast-forwarded to that commit and received the same tag; no force-push
+  was used. That copy is not a public location.
   The audit repo's default `main` was not updated.
 - The root About and both Beal READMEs now route **v33** to the main
   repo, with mirror sync after mint. The CI badge targets the main repo.

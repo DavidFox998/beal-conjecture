@@ -18,7 +18,7 @@ PARI lock: 26a1 Δ `-17576` 26b1 Δ `-1664` `|Sel2|=1` det `M3=2` SHA `d9d907f6c
 # .github/
 
 GitHub Actions for
-[DavidFox998/beal-level-26-foundations](https://github.com/DavidFox998/beal-level-26-foundations).
+[DavidFox998/beal-conjecture](https://github.com/DavidFox998/beal-conjecture).
 
 [`workflows/main.yml`](workflows/main.yml) runs on pushes and pull
 requests to **`main`**:
