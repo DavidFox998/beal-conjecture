@@ -1,0 +1,97 @@
+\documentclass[11pt]{amsart}
+\usepackage{amsmath,amssymb,amsthm,hyperref}
+\usepackage[margin=1in]{geometry}
+
+\title[A prototype for $a^4+b^4=c^{13}$]{A checked prototype of one method for $a^4+b^4=c^{13}$}
+\author{David Fox}
+\thanks{Source: \url{https://github.com/DavidFox998/beal-conjecture}, branch \texttt{mathlib/remove-ribet-axiom}.
+Lean~4.34.1, Init only, no community Mathlib.
+This note is a prototype of the method. It is not a proof of the Beal conjecture.
+It may be published on its own, at the editors' discretion.}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We record a Lean~4 prototype for the equation $a^4+b^4=c^{13}$, following the Frey $\mathbb Q$-curve over $\mathbb Q(i)$ and the level-lowering pattern at levels $32$ and $64$.
+The special-fiber blow-up is counted: seven components when $a$ is odd, and nine when $a$ is even.
+Pacetti's Artin exponent is then a theorem of the two propositions that identify those counts with the N\'eron special fiber.
+The nonexistence statement for coprime $a,b$ both nonzero remains conditional on those two propositions, on the absence of a newform of level $32$ or $64$, on an opaque irreducibility hypothesis, and on two named axioms.
+A further trace hypothesis over $\mathbb F_{169}$ implies the newform proposition and is not assumed by the capstone.
+This is a prototype of the method, not a proof of the Beal conjecture.
+\end{abstract}
+
+\section{What the prototype is}
+The equation is Pacetti's equation $x^4+dy^2=z^p$ at $d=1$ and $p=13$, with $x=a$, $y=b^2$, and $z=c$.
+The curve is
+\[
+y^2 = X^3 + 4a X^2 + 2\bigl(a^2 + b^2\sqrt{-1}\bigr) X,
+\]
+with discriminant $\Delta = 2^9(a^2+b^2\sqrt{-1})\,c^{13}$.
+The checked library is the branch named in the thanks.
+\texttt{lake build} and \texttt{lake build Mathlib} are the two build targets.
+The printed axioms of the capstone \texttt{no\_solution\_4413\_of\_frontier} are \texttt{frey\_qcurve\_modular}, \texttt{ribet\_level\_lowering\_4413}, \texttt{propext}, \texttt{Classical.choice}, and \texttt{Quot.sound}.
+There is no \texttt{sorry}.
+
+The pairs $(1,0,1)$ and $(0,1,1)$ satisfy the equation, with $\gcd=1$ and $c>0$.
+They are excluded by the quantifiers $a\neq 0$ and $b\neq 0$.
+The pair $(8,8,2)$ fails coprimality.
+There is no theorem that $a$ and $b$ cannot both be nonzero.
+
+\section{The two component counts}
+For odd $a$, the charts in \texttt{Mathlib/Modular/BlowupOddA.lean} give
+\[
+\texttt{OddAComponent.all.length} = 7
+\]
+(\texttt{length\_seven}).
+The count is two components of multiplicity greater than one and five of multiplicity one, written $2+5$ in \texttt{ComponentsOfKodairaNeron.lean}.
+For even $a$, \texttt{BlowupEvenA.lean} gives
+\[
+\texttt{EvenAComponent.all.length} = 9
+\]
+(\texttt{length\_nine}, \texttt{even\_a\_nine\_components}), written $4+5$.
+
+\texttt{kodaira\_neron\_odd\_a\_open} and \texttt{kodaira\_neron\_even\_a\_open} are the propositions that identify these counts with the opaque constant \texttt{NeronSpecialFiberComponents}.
+They are hypotheses, not theorems.
+Adjacency of the components, normal crossings, minimality of the model, and the identification of the N\'eron model with the smooth locus are not proved.
+
+\section{The rewired Pacetti path}
+\texttt{pacetti\_2\_8\_open} says that, on a coprime curve, the sum of the sealed tame and Swan conductors at $\pi$ lies in $\{10,12\}$.
+\texttt{pacetti\_of\_kodaira\_neron} proves that sentence from the two Kodaira--N\'eron opens above.
+The capstone calls this theorem and no other derivation of the exponent.
+\texttt{pacetti\_of\_components} still derives the same sentence from the separate open \texttt{components\_n\_plus\_five\_open}.
+The capstone does not assume that open and does not call that theorem.
+
+The conductor shape $N=32|c|^2$ passed to Ribet's axiom is the predicate \texttt{FreyConductorDivides}.
+It is not a computation of the conductor.
+
+\section{Open inventory}
+Five propositions remain open. None is an \texttt{axiom} and none is \texttt{sorry}.
+
+\begin{enumerate}
+\item \texttt{kodaira\_neron\_odd\_a\_open}, as above. Hypothesis of the capstone.
+\item \texttt{kodaira\_neron\_even\_a\_open}, as above. Hypothesis of the capstone.
+\item \texttt{no\_newform\_32\_64\_open}, defined in \texttt{DarmonMerel/3\_RibetLowering4413.lean} immediately after \texttt{structure RibetLevel}, and before \texttt{GkResidualIso}.
+The capstone applies it once, to the package returned by the level-lowering axiom.
+It is the missing \texttt{False} from Darmon--Merel Lemma~8.2. The Mazur products at the newforms $32.2.a.a$ and $64.2.a.a$ are $0$, and $(T_5-6)e\not\equiv 0\pmod{13}$ at both levels, so those two calculations do not yet contradict each other.
+\item \texttt{RhoE13Open}, an \texttt{opaque} proposition with no body, in the same file.
+Nothing in the repository produces a term. The level-lowering axiom does not apply without one.
+\item \texttt{qcurve\_extension\_169\_open}, stated as the trace divisibility $13\mid \texttt{freyTrace3}-(-6)$ for a lift through $\mathrm{GL}_2(\mathbb F_{169})$.
+\texttt{no\_newform\_32\_64\_of\_qcurve} derives item~3 from this sentence.
+The capstone does not assume it.
+\texttt{thirteen\_not\_dvd\_two}, the integrality $13\nmid 2$, is a theorem in file~3 and is used by the isogeny input of that derivation.
+\end{enumerate}
+
+\section{The two axioms}
+\texttt{frey\_qcurve\_modular} produces \texttt{Modular E}.
+\texttt{ribet\_level\_lowering\_4413} is a structure \texttt{RibetLowering}: a level field that returns a \texttt{RibetLevel} from the conductor shape, a term of \texttt{RhoE13Open}, and \texttt{pacetti\_2\_8\_open}, together with a residual isomorphism \texttt{GkResidualIso}.
+The disjunction $n=32\lor n=64$ is part of that axiom. It is not deduced from the component counts.
+
+\section{Closing}
+The library is a prototype of this method for one signature.
+It is not a proof of $a^x+b^y=c^z$ for general exponents, and it is not yet a proof of $a^4+b^4=c^{13}$.
+The component counts, the rewired exponent, and the conditional capstone are separately readable.
+Whether that prototype is published is the editors' decision.
+A DOI for the repository is a separate question: the default branch \texttt{main} is a different history, and this branch still carries the two axioms and the five opens above.
+\end{document}

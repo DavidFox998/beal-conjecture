@@ -1,5 +1,62 @@
 # Frey ℚ-curve for `a⁴ + b⁴ = c¹³`
 
+Public location: [DavidFox998/beal-conjecture](https://github.com/DavidFox998/beal-conjecture), branch `mathlib/remove-ribet-axiom`. This branch is a prototype of one method for the equation `a⁴ + b⁴ = c¹³`. It is not a proof of the Beal conjecture.
+
+## Layperson summary
+
+The equation asks whether two fourth powers can add to a thirteenth power. The checked argument attaches a curve over the Gaussian numbers to a supposed solution and tries to rule that curve out by modular forms at levels 32 and 64. Two steps are still taken as axioms, and five propositions are still hypotheses. The blow-up of the special fiber has been counted: seven components when `a` is odd, nine when `a` is even. Identifying that count with the Néron special fiber is still a hypothesis. `(1, 0, 1)` and `(0, 1, 1)` are solutions. There is no theorem that `a` and `b` cannot both be nonzero.
+
+## Referee
+
+The conditional capstone is `no_solution_4413_of_frontier`. For `a ≠ 0`, `b ≠ 0`, `gcd(|a|, |b|) = 1`, and `c > 0`, it concludes `¬ (a ^ 4 + b ^ 4 = c ^ 13)` from the inventory below. `#print axioms` reports `frey_qcurve_modular`, `ribet_level_lowering_4413`, `propext`, `Classical.choice`, and `Quot.sound`.
+
+Proved on this branch, and used by the capstone only through the opens:
+
+- Odd `a`: `BlowupOddA.length_seven` and the chart count `OddAComponent.all.length = 7`.
+- Even `a`: `BlowupEvenA.length_nine` and `even_a_nine_components` (`EvenAComponent.all.length = 9`).
+- `pacetti_of_kodaira_neron` turns the two Kodaira–Néron opens into `pacetti_2_8_open`. The capstone calls that theorem. It does not call `pacetti_of_components`.
+- `components_of_kodaira_neron` is the same pair of opens, read as component counts `7 = 2 + 5` and `9 = 4 + 5`.
+
+Adjacency, normal crossings, minimality of the model, and the identification of the Néron model with the smooth locus are not proved.
+
+Two axioms:
+
+| Axiom | Role |
+| --- | --- |
+| `frey_qcurve_modular` | produces `Modular E` |
+| `ribet_level_lowering_4413` | `RibetLowering`: a `RibetLevel` from the conductor shape, `RhoE13Open`, and `pacetti_2_8_open`, plus `GkResidualIso` |
+
+Five open propositions on the frontier. Each is a `def` or `opaque` of type `Prop`, not an `axiom` and not `sorry`.
+
+| Open | Status |
+| --- | --- |
+| `kodaira_neron_odd_a_open` | Identifies the opaque `NeronSpecialFiberComponents` with the seven-component count. Hypothesis of the capstone. |
+| `kodaira_neron_even_a_open` | The same identification for the nine-component count. Hypothesis of the capstone. |
+| `no_newform_32_64_open` | Defined in `DarmonMerel/3_RibetLowering4413.lean` after `structure RibetLevel`. The capstone applies it once. It is not a theorem. |
+| `RhoE13Open` | Opaque, no body. Nothing in the repository produces a term. |
+| `qcurve_extension_169_open` | Trace divisibility `13 ∣ freyTrace3 − (−6)` for a `GL₂(𝔽₁₆₉)` lift. `no_newform_32_64_of_qcurve` derives `no_newform_32_64_open` from it. The capstone does not assume it. |
+
+`pacetti_2_8_open` is not a sixth open. `components_n_plus_five_open` remains a separate `def`. The capstone does not assume it.
+
+The ledger below this section is the file-by-file account. `ROADMAP.md` is the dependency audit.
+
+## Dependencies
+
+Lean 4.34.1, pinned in `lean-toolchain`. The package is Init only. It does not depend on community Mathlib. `Mathlib/` in this tree is the local library.
+
+This branch has `DarmonMerel/`, `Mathlib/Modular/`, `notes/`, and `papers/`. `Beal/` and `docs/` are on `main` of the same public repository. They are a different history.
+
+## Workflow
+
+```bash
+lake build
+lake build Mathlib
+```
+
+`lake build` builds the `DarmonMerel` library (23 jobs on the current tip). `lake build Mathlib` builds the local Manin-symbol library (35 jobs). The digit-prefixed modules also have aliases `lake build DarmonMerel.1_FreyCurve4413` through `DarmonMerel.7_WindingQuotientAxiom4413`.
+
+---
+
 Lean 4 definitions of the Frey ℚ-curve over `ℚ(√-1)` attached to an integer
 solution of `a^4 + b^4 = c^13`.
 
@@ -228,7 +285,10 @@ on the even-`a` translate the `n = 4` gap is `v_π(16)`, and
 `swan_vanishes_open` remains in the file as the withdrawn claim `Swan = 0`.
 `|GL_2(𝔽_3)| = 48` is divisible by `2`, so `3 ≠ 2` does not prove it, and
 the claim contradicts the component count. `pacetti_2_8_open` follows from
-the component hypothesis alone and is not proved. `not_minimal_even_c` is the curve `(8, 8, 2)`, where
+the two Kodaira–Néron opens by `pacetti_of_kodaira_neron`, and also from
+`components_n_plus_five_open` by `pacetti_of_components`. The capstone uses
+the first derivation. The sentence is not an independent open.
+`not_minimal_even_c` is the curve `(8, 8, 2)`, where
 `u = π` and `r = s = t = 0` lowers `Δ`, and `gcd(8, 8) = 8`.
 `IsINStar` is Dokchitser's numerical bounds for even `n` on that translate.
 It records `v_π(D) = 8` or `6`. The cubic discriminant on the same
