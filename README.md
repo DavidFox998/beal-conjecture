@@ -1,5 +1,5 @@
 
-# Beal Conjecture — Lean 4 Formalization
+# beal-conjecture — Lean 4 Formalization
 
 [![Matveev-Beal CI](https://github.com/DavidFox998/beal-conjecture/actions/workflows/main.yml/badge.svg)](https://github.com/DavidFox998/beal-conjecture/actions/workflows/main.yml)
 [![Concept DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22379293.svg)](https://doi.org/10.5281/zenodo.22379293)
@@ -7,6 +7,8 @@
 **Author: David J. Fox | ORCID: 0009-0008-1290-6105**
 
 A Lean 4 / Mathlib formalization of the modular approach to Beal's conjecture: if `a^x + b^y = c^z` with `x, y, z > 2`, then `a`, `b`, `c` share a common prime factor.
+
+> Monorepo slug note: beal-conjecture stays beal-conjecture.
 
 > **Ensemble note (October 2026):** the Opera Numerorum repositories are being structurally reworked with mechanical methods, so their contents are in flux and may state misleading claims until that work lands. Beal and Navier–Stokes are the two repositories held stable for academic review.
 
