@@ -11,7 +11,7 @@ GitHub Actions for
 The public repository is `beal-conjecture`. Concept DOI
 `10.5281/zenodo.22379293` stays attached to the historical record.
 
-[`workflows/main.yml`](workflows/main.yml) runs on pushes and pull
+[`.github/workflows/main.yml`](.github/workflows/main.yml) runs on pushes and pull
 requests to **`main`**, and on `workflow_dispatch`:
 
 1. `lake exe cache get`
