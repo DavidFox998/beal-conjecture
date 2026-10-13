@@ -1,4 +1,3 @@
-
 # beal-conjecture — Lean 4 Formalization
 
 [![Matveev-Beal CI](https://github.com/DavidFox998/beal-conjecture/actions/workflows/main.yml/badge.svg)](https://github.com/DavidFox998/beal-conjecture/actions/workflows/main.yml)
