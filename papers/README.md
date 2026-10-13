@@ -52,5 +52,5 @@ before changing the claims or releasing the PDF.
 
 Build from this directory with `latexmk -pdf main.tex` when available,
 or `tectonic main.tex`. The older gap-3 draft remains
-`paper/mcom-draft.tex`. The v33 DOI and release date
-must only be added after they exist and have been verified.
+`paper/mcom-draft.tex`. The v33 manuscript was released 2026-09-30 with
+DOI [10.5281/zenodo.23054568](https://doi.org/10.5281/zenodo.23054568) (verified).
