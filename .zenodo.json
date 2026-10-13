@@ -1,28 +1,7 @@
 {
-  "title": "Beal special-fibre charts - v38 EQUIV chain chartOfModelTrue_injective_from_Ei_constraint",
-  "version": "beal-v38",
-  "description": "Prep only. No DOI is minted by this file. Next Zenodo upload supersedes 10.5281/zenodo.23120540 (v37-true-chart). beal-v38 final notes: main a2a23292 merges PR 25 and contains 81105fd7 and 792b3f8 EQUIV:3 chartOfModelTrue_injective_from_Ei_constraint, with B=1 nonzero outside the cusp. Chain ddfb2642, e466e5a, 792b3f8. Y^3 is nonzero and stays outside the Yt cusp. centreNormalPoly stays outside I^2. centreAlphaBound 2 0 = 1. X+V^2 stays outside the cusp. ann(1+Y·S^3) is not ann(X^2). Seven theorems. Axiom footprint propext, Classical.choice, Quot.sound. This is not a proof of the Beal conjecture.",
   "creators": [
-    {
-      "name": "Fox, David"
-    }
-  ],
-  "keywords": [
-    "beal-conjecture",
-    "lean4",
-    "2-adic",
-    "Tate-normal-form",
-    "Rees-algebra",
-    "special-fibre",
-    "chart",
-    "modelXtChart"
+    {"name": "Fox, David", "orcid": "0009-0008-1290-6105"}
   ],
   "license": "MIT",
-  "related_identifiers": [
-    {
-      "identifier": "10.5281/zenodo.23120540",
-      "relation": "isNewVersionOf",
-      "scheme": "doi"
-    }
-  ]
+  "description": "Lean 4 / Mathlib formalization of the modular approach to Beal's conjecture: Frey curves, Ribet level-lowering, Darmon–Merel method."
 }
